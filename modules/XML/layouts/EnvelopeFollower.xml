@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="inLevel" x="100" y="10" width="50" height="180"/>
+  <control id="vu1" x="160" y="10" width="20" height="100"/>
+   <control id="onset" x="190" y="10" width="85" height="100"/>
+</controls>

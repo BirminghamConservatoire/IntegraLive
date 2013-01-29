@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="mute" x="20" y="20" width="70" height="85"/>
+  <control id="outLevel" x="100" y="10" width="50" height="180"/>
+  <control id="chNumber" x="160" y="0" width="85" height="95"/>
+  <control id="test" x="160" y="95" width="85" height="95"/>
+  <control id="waveform" x="250" y="10" width="80" height="160"/>
+  <control id="attack" x="350" y="10" width="80" height="160"/>
+  <control id="decay" x="450" y="10" width="80" height="160"/>
+  <control id="sustain" x="550" y="10" width="80" height="160"/>
+  <control id="release" x="650" y="10" width="80" height="160"/>
+  <control id="formant1freq" x="750" y="10" width="80" height="160"/>
+  <control id="formant1Q" x="850" y="10" width="80" height="160"/>
+  <control id="formant2freq" x="950" y="10" width="80" height="160"/>
+  <control id="formant2Q" x="1050" y="10" width="80" height="160"/>
+  <control id="lp" x="1150" y="10" width="80" height="160"/>
+  <control id="lpmod" x="1250" y="10" width="80" height="160"/>
+</controls>

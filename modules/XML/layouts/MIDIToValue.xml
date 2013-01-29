@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="midiChannel" x="10" y="10" width="80" height="100"/>
+  <control id="noteMonitor" x="10" y="120" width="80" height="100"/>
+  <control id="sendNoteOff" x="100" y="10" width="80" height="100"/>
+  <control id="velocityOn" x="100" y="120" width="80" height="100"/>
+
+
+
+
+  <control id="fixNote1" x="200" y="20" width="80" height="80"/>
+  <control id="fix1" x="280" y="30" width="50" height="60"/>
+  <control id="velOut1" x="330" y="20" width="80" height="80"/>
+
+  <control id="fixNote9" x="200" y="130" width="80" height="80"/>
+  <control id="fix9" x="280" y="140" width="50" height="60"/>
+  <control id="velOut9" x="330" y="130" width="80" height="80"/>
+
+
+
+  <control id="fixNote2" x="430" y="20" width="80" height="80"/>
+  <control id="fix2" x="510" y="30" width="50" height="60"/>
+  <control id="velOut2" x="560" y="20" width="80" height="80"/>
+
+  <control id="fixNote10" x="430" y="130" width="80" height="80"/>
+  <control id="fix10" x="510" y="140" width="50" height="60"/>
+  <control id="velOut10" x="560" y="130" width="80" height="80"/>
+
+
+
+  <control id="fixNote3" x="660" y="20" width="80" height="80"/>
+  <control id="fix3" x="740" y="30" width="50" height="60"/>
+  <control id="velOut3" x="790" y="20" width="80" height="80"/>
+
+  <control id="fixNote11" x="660" y="130" width="80" height="80"/>
+  <control id="fix11" x="740" y="140" width="50" height="60"/>
+  <control id="velOut11" x="790" y="130" width="80" height="80"/>
+
+
+
+  <control id="fixNote4" x="890" y="20" width="80" height="80"/>
+  <control id="fix4" x="970" y="30" width="50" height="60"/>
+  <control id="velOut4" x="1020" y="20" width="80" height="80"/>
+
+  <control id="fixNote12" x="890" y="130" width="80" height="80"/>
+  <control id="fix12" x="970" y="140" width="50" height="60"/>
+  <control id="velOut12" x="1020" y="130" width="80" height="80"/>
+
+
+
+  <control id="fixNote5" x="1120" y="20" width="80" height="80"/>
+  <control id="fix5" x="1200" y="30" width="50" height="60"/>
+  <control id="velOut5" x="1250" y="20" width="80" height="80"/>
+
+  <control id="fixNote13" x="1120" y="130" width="80" height="80"/>
+  <control id="fix13" x="1200" y="140" width="50" height="60"/>
+  <control id="velOut13" x="1250" y="130" width="80" height="80"/>
+
+
+
+  <control id="fixNote6" x="1350" y="20" width="80" height="80"/>
+  <control id="fix6" x="1430" y="30" width="50" height="60"/>
+  <control id="velOut6" x="1480" y="20" width="80" height="80"/>
+
+  <control id="fixNote14" x="1350" y="130" width="80" height="80"/>
+  <control id="fix14" x="1430" y="140" width="50" height="60"/>
+  <control id="velOut14" x="1480" y="130" width="80" height="80"/>
+
+
+
+  <control id="fixNote7" x="1580" y="20" width="80" height="80"/>
+  <control id="fix7" x="1660" y="30" width="50" height="60"/>
+  <control id="velOut7" x="1710" y="20" width="80" height="80"/>
+
+  <control id="fixNote15" x="1580" y="130" width="80" height="80"/>
+  <control id="fix15" x="1660" y="140" width="50" height="60"/>
+  <control id="velOut15" x="1710" y="130" width="80" height="80"/>
+
+
+
+  <control id="fixNote8" x="1810" y="20" width="80" height="80"/>
+  <control id="fix8" x="1890" y="30" width="50" height="60"/>
+  <control id="velOut8" x="1940" y="20" width="80" height="80"/>
+
+  <control id="fixNote16" x="1810" y="130" width="80" height="80"/>
+  <control id="fix16" x="1890" y="140" width="50" height="60"/>
+  <control id="velOut16" x="1940" y="130" width="80" height="80"/>
+
+
+</controls>

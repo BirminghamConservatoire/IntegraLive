@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ -->
+
+<IntegraView xmlns="components.views.*" 
+			 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:RibbonBar="components.views.RibbonBar.*" 
+				width="100%"  
+				creationComplete="onCreationComplete()">
+
+	<fx:Script>
+		<![CDATA[
+		import components.controller.serverCommands.SetPlaying;
+		import components.controller.IntegraController;
+		import components.controller.userDataCommands.SetViewMode;
+		import components.controller.userDataCommands.SetColorScheme;
+		
+		import components.model.IntegraModel;
+		import components.model.userData.ViewMode;
+		import components.model.userData.ColorScheme;
+		import components.utils.FontSize;
+
+		import flexunit.framework.Assert;
+		import mx.core.ScrollPolicy;
+		
+
+		override public function styleChanged( style:String ):void
+		{
+			if( !style || style == ColorScheme.STYLENAME )
+			{
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					case ColorScheme.LIGHT:
+						opaqueBackground = 0xf5f5f5;
+						_lightButton.selected = true;
+						break;
+						
+					case ColorScheme.DARK:
+						opaqueBackground = 0x000000;
+						_lightButton.selected = false;
+						break;
+				}
+			}
+			
+			if( !style || style == FontSize.STYLENAME )
+			{
+				height = FontSize.getTextRowHeight( this ) * 1.5;
+			}
+		}
+
+
+		override protected function onAllDataChanged():void 
+		{
+			updateViewmodeButtons();
+			updatePlaystateButtons();
+		}
+
+		
+		private function onCreationComplete():void
+		{
+			horizontalScrollPolicy = ScrollPolicy.OFF; 
+			verticalScrollPolicy = ScrollPolicy.OFF;   
+			
+			addUpdateMethod( SetViewMode, onViewModeChanged );
+			addUpdateMethod( SetPlaying, onPlaystateChanged );
+		}
+
+
+		private function onViewModeChanged( command:SetViewMode ):void
+		{
+			updateViewmodeButtons();
+		}
+		
+		
+		private function onPlaystateChanged( command:SetPlaying ):void
+		{
+			updatePlaystateButtons();
+		}
+
+
+		private function updateViewmodeButtons():void
+		{
+			var viewMode:String = model.project.userData.viewMode.mode;
+
+			_arrangeButton.selected = ( viewMode == ViewMode.ARRANGE );
+			_liveButton.selected = ( viewMode == ViewMode.LIVE );
+		}
+		
+		
+		private function updatePlaystateButtons():void
+		{
+			var playing:Boolean = model.project.player.playing;
+			
+			_playButton.selected = playing;
+			_pauseButton.selected = !playing; 
+		}
+		
+		
+ 		private function switchToArrangeView():void
+ 		{
+ 			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+			viewMode.mode = ViewMode.ARRANGE;
+ 			controller.processCommand( new SetViewMode( viewMode ) );
+ 		}
+
+
+ 		private function switchToLiveView():void
+ 		{
+ 			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+ 			viewMode.mode = ViewMode.LIVE;
+ 			controller.processCommand( new SetViewMode( viewMode ) );
+ 		}
+ 		
+ 		
+ 		private function play():void
+ 		{
+ 			controller.processCommand( new SetPlaying( true ) );
+ 		}
+
+
+ 		private function pause():void
+ 		{
+ 			controller.processCommand( new SetPlaying( false ) );
+ 		}
+ 		
+ 		
+ 		private function toggleLighting():void
+ 		{
+ 			switch( model.project.userData.colorScheme )
+ 			{
+ 				case ColorScheme.LIGHT:
+ 					controller.processCommand( new SetColorScheme( ColorScheme.DARK ) );
+ 					break;
+
+ 				case ColorScheme.DARK:
+ 					controller.processCommand( new SetColorScheme( ColorScheme.LIGHT ) );
+ 					break;
+ 					
+ 				default:
+ 					Assert.assertTrue( false );
+ 					break;
+ 			}
+ 		}
+
+		
+		]]>
+	</fx:Script>	
+
+	<mx:HBox paddingLeft="5" horizontalGap="20" verticalCenter="0">
+		<mx:HBox horizontalGap="5">
+			<RibbonBar:RibbonButton id="_playButton" 
+									ribbonButtonIcon="{RibbonButton.RIBBONICON_PLAY}" 
+									click="{play()}" 
+									toolTip="Start playhead"/>
+			<RibbonBar:RibbonButton id="_pauseButton" 
+									ribbonButtonIcon="{RibbonButton.RIBBONICON_PAUSE}" 
+									click="{pause()}"
+									toolTip="Pause playhead"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="5">
+			<RibbonBar:RibbonButton id="_arrangeButton" 
+									ribbonButtonLabel="Arrange" 
+									click="{switchToArrangeView()}"
+									toolTip="Switch to Arrange View"/>
+			<RibbonBar:RibbonButton id="_liveButton" 
+									ribbonButtonLabel="Live" 
+									click="{switchToLiveView()}"
+									toolTip="Switch to Live View"/>
+		</mx:HBox>
+	</mx:HBox>
+	<RibbonBar:RibbonButton id="_lightButton" 
+							right="20" 
+							verticalCenter="0" 
+							ribbonButtonIcon="{RibbonButton.RIBBONICON_LIGHT}" 
+							click="{toggleLighting()}"
+							toolTip="Toggle light / dark mode"/>
+	
+
+</IntegraView>

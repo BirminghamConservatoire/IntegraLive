@@ -1,0 +1,1229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+ * Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ -->
+
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns:RibbonBar="components.views.RibbonBar.*" 
+	xmlns:views="components.views.*"
+	xmlns:viewContainers="components.views.viewContainers.*"
+	xmlns:skins="components.views.Skins.*"
+	title="Integra Live"
+	showStatusBar="false"
+	minWidth="800"
+	minHeight="600"
+	visible="false"
+	invoke="{ onInvoke( event ) }"
+	resize="{ onResize( event ) }">
+
+	<fx:Script>
+		<![CDATA[
+			import com.mattism.http.xmlrpc.MethodCallImpl;
+			
+			import components.controlSDK.core.ControlManager;
+			import components.controller.IntegraController;
+			import components.controller.RemoteCommandHandler;
+			import components.controller.events.AllDataChangedEvent;
+			import components.controller.events.CrashReportEvent;
+			import components.controller.events.ImportEvent;
+			import components.controller.events.IntegraCommandEvent;
+			import components.controller.events.LoadFailedEvent;
+			import components.controller.events.ReloadAllDataEvent;
+			import components.controller.events.SaveFailedEvent;
+			import components.controller.events.ServerShutdownEvent;
+			import components.controller.serverCommands.NextScene;
+			import components.controller.serverCommands.PreviousScene;
+			import components.controller.serverCommands.ResetAllBlocks;
+			import components.controller.serverCommands.SetPlaying;
+			import components.controller.userDataCommands.SetColorScheme;
+			import components.controller.userDataCommands.SetDisplayedInfo;
+			import components.controller.userDataCommands.SetProjectModified;
+			import components.model.Info;
+			import components.model.IntegraModel;
+			import components.model.userData.ColorScheme;
+			import components.utils.Config;
+			import components.utils.ControlContainer;
+			import components.utils.ControlMeasurer;
+			import components.utils.FontSize;
+			import components.utils.IntegraAlert;
+			import components.utils.LoggingSystem;
+			import components.utils.MessagePopup;
+			import components.utils.ModalState;
+			import components.utils.OSCServer;
+			import components.utils.Trace;
+			import components.utils.Utilities;
+			import components.views.AboutBox.AboutBox;
+			import components.views.CrashReport.CrashReport;
+			import components.views.InfoView.InfoMarkupForViews;
+			import components.views.IntegraView;
+			import components.views.MenuHandlers;
+			import components.views.MouseCapture;
+			import components.views.Upgrades.UpgradeWarning;
+			import components.views.viewContainers.ViewHolder;
+			
+			import flash.system.Capabilities;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.controls.Alert;
+			import mx.core.Container;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.managers.FocusManager;
+			import mx.managers.PopUpManager;
+			import mx.managers.ToolTipManager;
+
+			
+			public function reloadAndUpdate( event:Event = null ):void
+			{
+				displayProgressPopup( "Reloading from Backend..." );
+				_controller.loadModel();
+			}			
+			
+			
+			public function newProject( event:Event ):void
+			{
+				_functionToExecuteAfterSaveModifiedAlert = doNewProject; 
+				saveModified( "Start New Project" );
+			}
+			
+			
+			public function load(event:Event):void
+			{
+				_functionToExecuteAfterSaveModifiedAlert = doLoad; 
+				saveModified( "Load Project" );
+			}
+			
+			
+			public function save(event:Event):void
+			{
+				if( _lastFilename )
+				{
+					_controller.saveProject( _lastFilename );
+					
+					onProjectSaved();
+				}
+				else
+				{
+					saveAs(event);
+				}
+			}
+			
+			
+			public function saveAs(event:Event):void
+			{
+				var filenamePrompt:String;
+				if( _lastFilename )
+				{
+					filenamePrompt = _lastFilename;
+					if( filenamePrompt.substr( filenamePrompt.length - 4 ) == ".ixd" )
+					{
+						//update extension
+						filenamePrompt = filenamePrompt.substr( 0, filenamePrompt.length - 4 ) + Utilities.integraFileExtension;
+					}
+				}
+				else
+				{
+					filenamePrompt = File.documentsDirectory.nativePath + "/" + _model.project.name + Utilities.integraFileExtension;
+				}
+				
+				var filter:FileFilter = new FileFilter( "Integra Projects", "*" + Utilities.integraFileExtension );
+				var file:File = new File( filenamePrompt );
+				file.browseForSave( "Save Project" );
+				
+				file.addEventListener( Event.SELECT, onSelectFileToSave );      			
+			}
+			
+			
+			public function quit( event:Event ):void
+			{
+				_functionToExecuteAfterSaveModifiedAlert = beginShutdown; 
+				saveModified( "Quit" );
+			}
+			
+			
+			public function get aboutBox():AboutBox { return _aboutBox; }
+			
+			
+			override public function styleChanged( style:String ):void
+			{
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					switch( getStyle( ColorScheme.STYLENAME ) )
+					{
+						case ColorScheme.LIGHT:
+							mainVBox.opaqueBackground = 0xf5f5f5;
+							break;
+
+						case ColorScheme.DARK:
+							mainVBox.opaqueBackground = 0x0b0b0b;
+							break;
+					}
+				}
+				
+				if( _aboutBox.isShowing )
+				{
+					_aboutBox.onStyleChanged( style );
+				}
+			}			
+
+			
+			public function set fontSize( fontSize:Number ):void
+			{
+				if( this.fontSize != fontSize )
+				{
+					setStyle( FontSize.STYLENAME, fontSize );
+				}
+			}
+			
+			
+			public function get fontSize():Number
+			{
+				return getStyle( FontSize.STYLENAME );
+			}
+			
+			
+			private function onInvoke( event:InvokeEvent ):void
+			{
+				if( !_doneInitialize )
+				{
+					doInitialize();
+				}
+
+				handleOSFileActivation( event.arguments );
+			}	
+
+			
+			private function doInitialize():void
+			{
+				Assert.assertFalse( _doneInitialize );
+				
+				_loggingSystem.initialize( loaderInfo.uncaughtErrorEvents );
+				
+				Trace.progress( "IntegraLive gui version", Utilities.integraLiveVersion );
+
+				dumpControlInfo();
+				
+				var config:Config = Config.singleInstance;
+
+				launchServer();
+
+				_model = IntegraModel.singleInstance;
+				_controller = IntegraController.singleInstance;
+				_controller.serverUrl = config.serverUrl + ":" + config.xmlrpcServerPort;
+				_controller.addEventListener( AllDataChangedEvent.EVENT_NAME, onAllDataChanged, false, 1 );
+				_controller.addEventListener( ReloadAllDataEvent.EVENT_NAME, onReloadAllData );
+				_controller.addEventListener( ImportEvent.EVENT_NAME, onImport );
+				_controller.addEventListener( LoadFailedEvent.EVENT_NAME, onLoadFailed );
+				_controller.addEventListener( SaveFailedEvent.EVENT_NAME, onSaveFailed );
+				_controller.addEventListener( ServerShutdownEvent.EVENT_NAME, onServerShutdownResponse );
+				_controller.addEventListener( IntegraCommandEvent.EVENT_NAME, onCommand );
+				
+				_menuHandlers = new MenuHandlers( this );
+				
+				addEventListener( Event.CLOSING, onClosing );
+				
+				MouseCapture.instance.setSystemManager( systemManager );
+				
+				loadPersistantState();
+				
+				validateNow();
+
+				styleManager.registerInheritingStyle( ColorScheme.STYLENAME );
+
+				stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );
+				stage.addEventListener( KeyboardEvent.KEY_UP, onStageKeyUp );
+				stage.addEventListener( MouseEvent.MOUSE_MOVE, onStageMouseMove );
+				stage.addEventListener( Event.REMOVED, onStageRemoved );
+				stage.quality = StageQuality.BEST;
+
+				ToolTipManager.showDelay = 1000;
+				ToolTipManager.scrubDelay = 200;
+				
+				_oscServer = new OSCServer( config.guiUrl + ":" + config.oscClientPort, RemoteCommandHandler.singleInstance );
+				
+				MethodCallImpl.debugMode = config.traceVerbose;
+				
+				_inactiveGuiTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onInactiveGuiTimer );
+				
+				InfoMarkupForViews.instance.loadContent();
+				
+				visible = true;
+				
+				_upgradeWarning.showIfNecessary( this );
+				
+				displayProgressPopup( "Initializing..." );
+				_controller.loadModel();
+				
+				Trace.progress( "initialization complete" );
+				
+				_doneInitialize = true;
+			}
+
+
+			private function handleOSFileActivation( arguments:Array ):void
+			{
+				if( Utilities.isObjectEmpty( arguments ) ) 
+				{
+					return;
+				}
+
+				if( Utilities.isWindows )
+				{
+					_autoLoadFilename = "";
+					for each( var argument:String in arguments )
+					{
+						if( _autoLoadFilename.length > 0 ) _autoLoadFilename += " ";
+						
+						_autoLoadFilename += argument; 
+					}
+				}
+				else
+				{
+					Assert.assertTrue( Utilities.isMac );
+				
+					_autoLoadFilename = arguments[ 0 ];
+				}
+
+				var autoLoadFile:File = new File( _autoLoadFilename );
+				if( !autoLoadFile.exists )
+				{
+					Trace.error( "Can't autoload - file not found", _autoLoadFilename );
+					_autoLoadFilename = null;
+				}
+
+				doAutoloadIfNecessary();
+			}
+			
+			
+			private function launchServer(): void
+			{
+				if( !NativeProcess.isSupported )
+				{
+					Trace.error( "NativeProcess not supported, unable to launch server" );
+					return;
+				}
+
+				var config:Config = Config.singleInstance;
+				var serverPath:String = config.serverPath;
+				
+				if( !serverPath || ( serverPath.length == 0 ) )
+				{
+					Trace.error( "Can't launch server - no server path provided" );
+					return;
+				}
+
+				var applicationDirectoryPath:String = File.applicationDirectory.nativePath;
+				var applicationDirectory:File = new File( applicationDirectoryPath );
+				
+				var serverFile:File = applicationDirectory.resolvePath( serverPath );
+				if( !serverFile.exists || serverFile.isDirectory )
+				{
+					Trace.error( "Can't find server at " + serverFile.nativePath + ".  Unable to launch server" );
+					return;
+				}
+				
+				var serverArguments:Vector.<String> = new Vector.<String>;
+				serverArguments.push( "-bridge=" + config.bridgePath );
+				serverArguments.push( "-module_paths=" + config.modulesPath );
+				serverArguments.push( "-host=" + config.hostPath );
+				serverArguments.push( "-xmlrpc_server_port=" + config.xmlrpcServerPort );
+				serverArguments.push( "-osc_server_port=" + config.oscServerPort );
+				serverArguments.push( "-osc_client_port=" + config.oscClientPort );
+
+				serverArguments.push( "-trace_errors=" + ( config.traceErrors ? "1" : "0" ) );
+				serverArguments.push( "-trace_progress=" + ( config.traceProgress ? "1" : "0" ) );
+				serverArguments.push( "-trace_verbose=" + ( config.traceVerbose ? "1" : "0" ) );
+				if( config.timestampTrace ) serverArguments.push( "-timestamp_trace" );
+				if( config.locationstampTrace ) serverArguments.push( "-locationstamp_trace" );
+				if( config.threadstampTrace )  serverArguments.push( "-threadstamp_trace" );
+
+				serverArguments.push( "-hostargs" );
+				
+				for each( var hostArgument:String in config.hostArgs )
+				{
+					serverArguments.push( hostArgument );
+				}
+				
+				var serverStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+				serverStartupInfo.executable = serverFile;
+				serverStartupInfo.arguments = serverArguments;
+				serverStartupInfo.workingDirectory = serverFile.parent;
+
+				Trace.progress( "launching server..." );
+
+				_serverProcess = new NativeProcess;
+				_serverProcess.addEventListener( ProgressEvent.STANDARD_OUTPUT_DATA, onServerOutput ); 
+				
+				if( config.traceVerbose )
+				{
+					_serverProcess.addEventListener( ProgressEvent.STANDARD_ERROR_DATA, onServerError );
+				}
+				
+				_serverProcess.addEventListener( NativeProcessExitEvent.EXIT, onServerExit );
+				_serverProcess.addEventListener( Event.STANDARD_ERROR_CLOSE, onServerExit );
+				_serverProcess.addEventListener( Event.STANDARD_OUTPUT_CLOSE, onServerExit );
+				_serverProcess.start( serverStartupInfo );
+			}
+			
+			
+			private function onReloadAllData( event:ReloadAllDataEvent ):void
+			{
+				MouseCapture.instance.relinquishCapture();
+				reloadAndUpdate();
+			}
+
+			
+			private function onImport( event:ImportEvent ):void
+			{
+				switch( event.mode )
+				{
+					case ImportEvent.STARTED:
+						displayProgressPopup( "Importing..." );
+						break;
+
+					case ImportEvent.FINISHED:
+						hideProgressPopup();
+						_controller.processCommand( new ResetAllBlocks() );
+						_controller.dispatchEvent( new AllDataChangedEvent() );
+
+						break;
+
+					default:
+						Assert.assertTrue( false );
+						break;
+				}
+			}
+			
+			
+			private function onLoadFailed( event:LoadFailedEvent ):void
+			{
+				IntegraAlert.show( event.errorString, "Error loading file", Alert.OK, this );
+			}
+
+			
+			private function onSaveFailed( event:SaveFailedEvent ):void
+			{
+				IntegraAlert.show( event.errorString, "Error saving file", Alert.OK, this );
+			}
+			
+
+			private function onAllDataChanged( event:AllDataChangedEvent ):void
+			{
+				_model.updateProjectLength();
+				
+				if( event.isDataLoaded )
+				{
+					if( _isDisplayingProgressPopup )
+					{
+						hideProgressPopup();
+					}
+					
+					updateApplicationTitle();
+				}
+			}
+			
+			
+			private function onCommand( event:IntegraCommandEvent ):void
+			{
+				if( event.command is SetProjectModified )
+				{
+					updateApplicationTitle();
+				}
+			}
+
+
+			private function doAutoloadIfNecessary():void
+			{
+				if( _autoLoadFilename != null && !ModalState.isInModalState )
+				{
+					_functionToExecuteAfterSaveModifiedAlert = doAutoLoad; 
+					saveModified( "Load Project" );
+				}
+			}
+
+			
+			private function doAutoLoad():void
+			{
+				Trace.progress( "autoload path:", _autoLoadFilename );
+				
+				_lastFilename = _autoLoadFilename;
+				_autoLoadFilename = null;
+				
+				displayProgressPopup( "Loading: " + Utilities.fileNameFromPath( _lastFilename ) + "..." );
+				_controller.loadProject( _lastFilename );
+			}
+			
+
+			private function displayProgressPopup( message:String = null ):void
+			{
+				Assert.assertFalse( _isDisplayingProgressPopup );
+
+				PopUpManager.addPopUp( _progressPopup, this, true );
+				PopUpManager.bringToFront( _progressPopup );
+
+				if( message )
+				{
+					_progressPopup.message = message;		
+					_progressPopup.alpha = 0.8;
+				}
+				else
+				{
+					_progressPopup.alpha = 0;
+				}
+
+				PopUpManager.centerPopUp( _progressPopup );
+				
+				_isDisplayingProgressPopup = true;
+				_doneInactiveGuiTimer = false;
+				enterModalState();
+			}
+
+
+			private function hideProgressPopup():void
+			{
+				Assert.assertTrue( _isDisplayingProgressPopup );
+
+				mx.managers.PopUpManager.removePopUp( _progressPopup );
+
+				if( _inactiveGuiTimer.running )
+				{
+					_inactiveGuiTimer.reset();
+				}
+
+				_isDisplayingProgressPopup = false;
+
+				finishModalState();
+				
+				if( _crashReportView && _crashReportView.crashType == CrashReport.CRASHTYPE_GUI )
+				{
+					hideCrashReportView();
+				}
+			}
+
+
+			private function onResize( event:Event ):void
+			{
+				if( _isDisplayingProgressPopup )
+				{
+					mx.managers.PopUpManager.centerPopUp( _progressPopup );
+				}
+			}
+
+
+			private function doNewProject():void
+			{
+				displayProgressPopup( "Starting new Project...");
+				_lastFilename = null;
+				_controller.newProject();
+			}
+
+
+			private function doLoad():void
+			{
+				var filter:FileFilter = new FileFilter( "Integra Projects", "*" + Utilities.integraFileExtension + ";*.ixd" );
+				var file:File = new File();
+				file.browseForOpen( "Open Project", [filter] );
+
+				file.addEventListener( Event.SELECT, onSelectFileToLoad );      			
+			}
+
+			
+			private function onSelectFileToLoad( event:Event ):void
+			{
+				_lastFilename = event.target.nativePath;
+
+				displayProgressPopup( "Loading: " + Utilities.fileNameFromPath( _lastFilename ) + "..." );
+				_controller.loadProject( _lastFilename );
+			}
+
+
+			private function onSelectFileToSave( event:Event ):void
+			{
+				_lastFilename = event.target.nativePath;
+
+				var extension:String = Utilities.integraFileExtension;
+				if( _lastFilename.length <= extension.length || _lastFilename.substr( _lastFilename.length - extension.length ).toLowerCase() != extension.toLowerCase() )
+				{
+					_lastFilename += extension;	
+				} 
+
+				_controller.saveProject( _lastFilename );
+
+				onProjectSaved();
+				
+				updateApplicationTitle();
+			}
+
+
+			private function saveModified( caption:String ):void
+			{
+				if( _model.isProjectModified )
+				{
+					if( nativeWindow.displayState == NativeWindowDisplayState.MINIMIZED )
+					{
+						restore();
+					}
+					
+					IntegraAlert.show( "The project \"" + _model.project.name + "\" has changed.\nWould you like to save your changes?", caption, Alert.YES | Alert.NO | Alert.CANCEL, this, saveModifiedHandler );
+					enterModalState();
+				}
+				else
+				{
+					Assert.assertNotNull( _functionToExecuteAfterSaveModifiedAlert );
+					_functionToExecuteAfterSaveModifiedAlert();
+				}
+			}
+
+
+			private function saveModifiedHandler( event:CloseEvent ):void
+			{
+				finishModalState();
+
+				Assert.assertNotNull( _functionToExecuteAfterSaveModifiedAlert );
+
+				switch( event.detail )
+				{
+					case Alert.NO:
+						_functionToExecuteAfterSaveModifiedAlert();
+						break;
+
+					case Alert.YES:
+						_functionToExecuteAfterSave = _functionToExecuteAfterSaveModifiedAlert;
+						save(null);
+						break;
+
+					case Alert.CANCEL:
+						break;
+
+					default:
+						Assert.assertTrue( false );
+						break;		
+				}
+
+				_functionToExecuteAfterSaveModifiedAlert = null;
+			}
+
+
+			private function onProjectSaved():void
+			{
+				if( _functionToExecuteAfterSave != null )
+				{
+					_functionToExecuteAfterSave();
+					_functionToExecuteAfterSave = null;     				
+				}
+			}
+
+			private function enterModalState():void
+			{
+				if( ModalState.isInModalState )
+				{
+					return;
+				}	
+
+				ModalState.isInModalState = true;
+				_menuHandlers.enableMenus( false );
+			} 
+
+
+			private function finishModalState():void
+			{
+				if( !ModalState.isInModalState )
+				{
+					return;
+				}	
+
+				ModalState.isInModalState = false;
+				_menuHandlers.enableMenus( true );
+				
+				doAutoloadIfNecessary();
+			} 
+
+
+			private function onClosing( event:Event ):void
+			{
+				event.preventDefault();
+
+				if( _crashReportView != null )
+				{
+					//if crash report view is being displayed, close immediately
+					beginShutdown();
+				}
+				else
+				{
+					if( _isDisplayingProgressPopup )
+					{
+						if( _doneInactiveGuiTimer )
+						{
+							showCrashReportView( CrashReport.CRASHTYPE_GUI );
+						}
+						else
+						{
+							if( !_inactiveGuiTimer.running )
+							{
+								_inactiveGuiTimer.start();
+							}
+						}
+					}
+					else
+					{
+						if( !ModalState.isInModalState )
+						{
+							//if application is active, go through the 'save modified' procedure
+							quit( null );
+						}
+					}
+				}
+			}
+
+			
+			private function onInactiveGuiTimer( event:TimerEvent ):void
+			{
+				_inactiveGuiTimer.reset();
+				
+				showCrashReportView( CrashReport.CRASHTYPE_GUI );
+				_doneInactiveGuiTimer = true;
+			}
+			
+
+			private function beginShutdown():void
+			{
+				if( _inShutdown ) return;	//prevent reentry
+				_inShutdown = true;
+				
+				storePersistantState();
+				
+				if( _oscServer )
+				{
+					_oscServer.close();
+				}
+				
+				if( _serverProcess && _serverProcess.running )
+				{
+					if( _crashReportView && _crashReportView.crashType == CrashReport.CRASHTYPE_GUI )
+					{
+						//force server to stop if normal communication seems broken
+						_serverProcess.exit( true );
+					}
+					else
+					{
+						_controller.shutdownServer();
+					}
+					
+					if( !_isDisplayingProgressPopup )
+					{
+						displayProgressPopup( "Shutting down..." );
+					}
+				}
+				else
+				{
+					finishShutdown();
+				}
+			}
+
+			
+			private function onServerOutput( event:ProgressEvent ):void
+			{
+				var logfileName:String = _loggingSystem.serverLogfile;
+				
+				if( logfileName && _serverProcess )
+				{
+					var serverOutput:IDataInput = _serverProcess.standardOutput;
+					
+					var stream:FileStream = new FileStream;
+					stream.open( new File( _loggingSystem.serverLogfile ), FileMode.APPEND );
+					
+					var buffer:ByteArray = new ByteArray;
+					serverOutput.readBytes( buffer )
+						
+					stream.writeBytes( buffer );
+					stream.close();
+				}				
+			}
+
+			
+			private function onServerError( event:ProgressEvent ):void
+			{
+				var logfileName:String = _loggingSystem.serverLogfile;
+				
+				if( logfileName && _serverProcess )
+				{
+					var serverError:IDataInput = _serverProcess.standardError;
+					
+					var stream:FileStream = new FileStream;
+					stream.open( new File( _loggingSystem.serverLogfile ), FileMode.APPEND );
+					
+					var buffer:ByteArray = new ByteArray;
+					serverError.readBytes( buffer )
+					
+					stream.writeUTFBytes( "Standard Error: " );
+					stream.writeBytes( buffer );
+					stream.close();
+				}				
+			}
+			
+			
+			private function onServerExit( event:Event ):void
+			{
+				_serverProcess = null;
+					
+				if( _inShutdown )
+				{
+					finishShutdown();
+				}
+				else
+				{
+					showCrashReportView( CrashReport.CRASHTYPE_SERVER );
+				}
+			}
+			
+			
+			private function onServerShutdownResponse( event:ServerShutdownEvent ):void
+			{
+				Assert.assertTrue( _inShutdown );
+				
+				finishShutdown();
+			}
+			
+			
+			private function finishShutdown():void
+			{
+				_loggingSystem.shutdown();
+
+				NativeApplication.nativeApplication.exit( 0 );
+			}
+			
+			
+			private function showCrashReportView( crashType:String ):void
+			{
+				if( _crashReportView )
+				{
+					//prevent re-entry!
+					return;
+				}
+				
+				Trace.error( "Crash!  crashtype =", crashType );
+
+				_crashReportView = new CrashReport;
+				_crashReportView.crashType = crashType;
+				_crashReportView.addEventListener( CrashReportEvent.KEEP_WAITING, onCrashReportKeepWaiting );
+				_crashReportView.addEventListener( CrashReportEvent.CLOSE, onCrashReportClose );
+
+				var filesInCrashReport:Vector.<String> = new Vector.<String>;
+				_loggingSystem.getLogFiles( filesInCrashReport );
+				if( _lastFilename )
+				{
+					filesInCrashReport.push( _lastFilename );
+				}
+				
+				_crashReportView.filesToUpload = filesInCrashReport;
+				
+				mx.managers.PopUpManager.addPopUp( _crashReportView, this, true );
+				mx.managers.PopUpManager.centerPopUp( _crashReportView );
+				mx.managers.PopUpManager.bringToFront( _crashReportView );
+				
+				enterModalState();
+			}
+			
+			
+			private function hideCrashReportView():void
+			{
+				if( !_crashReportView )
+				{
+					return;
+				}
+				
+				mx.managers.PopUpManager.removePopUp( _crashReportView );
+				_crashReportView = null;
+			}
+			
+			
+			private function onCrashReportKeepWaiting( event:Event ):void
+			{
+				hideCrashReportView();
+			}
+			
+			
+			private function onCrashReportClose( event:Event ):void
+			{
+				beginShutdown();
+			}
+
+			
+			private function loadPersistantState():void
+			{
+				var file:File = File.applicationStorageDirectory.resolvePath( _persistantStateFileName );
+				if( !file.exists )
+				{
+					setDefaultState();
+					return;	
+				}				
+
+				var fileSize:int = file.size;
+				var fileStream:FileStream = new FileStream();
+				fileStream.open( file, FileMode.READ );
+				var xmlString:String = fileStream.readUTFBytes( fileSize );
+				fileStream.close();			
+
+				XML.ignoreWhitespace = true;
+				var xml:XML = new XML( xmlString );
+
+				if( xml.hasOwnProperty( "fontSize" ) )
+				{
+					fontSize = Number( xml.child( "fontSize" ).toString() );
+				}
+				else
+				{
+					fontSize = FontSize.NORMAL;
+				}
+
+				if( xml.hasOwnProperty( "x" ) && xml.hasOwnProperty( "y" ) && xml.hasOwnProperty( "width" ) && xml.hasOwnProperty( "height" ) )
+				{
+					nativeWindow.x = Number( xml.child( "x" ).toString() );
+					nativeWindow.y = Number( xml.child( "y" ).toString() );
+					nativeWindow.width = Number( xml.child( "width" ).toString() );
+					nativeWindow.height = Number( xml.child( "height" ).toString() );
+				}
+
+				if( xml.hasOwnProperty( "displayState" ) )
+				{
+					switch( xml.child( "displayState" ).toString() )
+					{
+						case "maximized":
+							maximize();
+							break;
+
+						case "normal":
+							restore();
+							break;
+
+						default:
+							maximize();
+							break;
+					}
+				}
+
+				mainViewContainer.loadPersistantState( xml );
+			}
+
+
+			private function setDefaultState():void
+			{
+				fontSize = FontSize.NORMAL;
+				maximize();
+			}
+
+
+			private function storePersistantState():void
+			{
+				XML.ignoreWhitespace = true;
+				var xml:XML = new XML( "<applicationState></applicationState>" );
+
+				mainViewContainer.storePersistantState( xml );
+
+				xml.appendChild( <fontSize>{ fontSize }</fontSize> );
+
+				xml.appendChild( <displayState>{ nativeWindow.displayState }</displayState> );
+
+				if( nativeWindow.displayState == NativeWindowDisplayState.NORMAL )
+				{
+					xml.appendChild( <x>{ nativeWindow.x }</x> );
+					xml.appendChild( <y>{ nativeWindow.y }</y> );
+					xml.appendChild( <width>{ nativeWindow.width }</width> );
+					xml.appendChild( <height>{ nativeWindow.height }</height> );
+				}
+
+				var file:File = File.applicationStorageDirectory.resolvePath( _persistantStateFileName );
+				var fileStream:FileStream = new FileStream();
+				fileStream.open( file, FileMode.WRITE );
+				fileStream.writeUTFBytes( xml.toString() );
+				fileStream.close();
+			}
+			
+			
+			private function onStageRemoved( event:Event ):void
+			{
+				callLater( giveFocusToStageIfNeeded );
+			}
+			
+			
+			private function giveFocusToStageIfNeeded():void
+			{
+				if( !stage.focus || !stage.focus.stage )
+				{
+					stage.focus = stage;
+				}
+			}
+
+
+			private function onStageKeyDown( event:KeyboardEvent ):void
+			{
+				//handle keyboard accelerators (except main menu, which is automatic)
+				
+				if( event.target is TextField )
+				{
+					return;		//don't fire accelerators when typing into a text field
+				}
+				
+				if( _isKeyRepeat )
+				{
+					return;		//only fire accelerators on first keypress!
+				}
+
+				//these are the application level accelerators that are not represented in main menu
+				
+				switch( event.keyCode )
+				{
+					case Keyboard.SPACE:
+						_controller.processCommand( new SetPlaying( !_model.project.player.playing ) );
+						break;
+
+					case Keyboard.LEFT:
+						_controller.processCommand( new PreviousScene() );
+						break;
+
+					case Keyboard.RIGHT:
+						_controller.processCommand( new NextScene() );
+						break;
+
+					default:
+						//see if it's a view-specific context menu accelerator
+						var handledAccelerator:Boolean = false;
+		  				for( var iterator:DisplayObject = event.target as DisplayObject; iterator; iterator = iterator.parent )
+						{
+							if( iterator is IntegraView )
+							{
+								if( ( iterator as IntegraView ).handleContextMenu( event ) )
+								{
+									handledAccelerator = true;
+									break;
+								}
+							}
+						}
+						
+						if( !handledAccelerator )
+						{
+							return;
+						}
+						
+						break;
+				}
+
+				event.preventDefault();		//don't allow these keydown events to do anything else
+				_isKeyRepeat = true;
+			}
+			
+			
+			private function onStageKeyUp( event:KeyboardEvent ):void
+			{
+				_isKeyRepeat = false;
+			}
+			
+			
+			private function onStageMouseMove( event:MouseEvent ):void
+			{
+				var displayedInfo:Info = null;
+				
+				for( var ancestorWalker:DisplayObject = event.target as DisplayObject; ancestorWalker && ancestorWalker != this; ancestorWalker = ancestorWalker.parent )
+				{
+					if( ancestorWalker is IntegraView )
+					{
+						displayedInfo = ( ancestorWalker as IntegraView ).getInfoToDisplay( event );
+						if( displayedInfo )
+						{
+							break;
+						}
+					}
+					
+					if( ancestorWalker is ViewHolder )
+					{
+						displayedInfo = ( ancestorWalker as ViewHolder ).view.getInfoToDisplay( event );
+						if( displayedInfo )
+						{
+							break;
+						}
+						break;
+					}
+				}
+				
+				if( displayedInfo != _model.currentInfo )
+				{
+					_controller.processCommand( new SetDisplayedInfo( displayedInfo ) );
+				}
+			}
+			
+			
+			private function updateApplicationTitle():void
+			{
+				var title:String = getApplicationTitle();
+				
+				if( title != this.title )
+				{
+					this.title = title;
+				}
+			}
+			
+			
+			private function getApplicationTitle():String
+			{
+				var title:String = "Integra Live";
+				if( _lastFilename ) title += " - " + Utilities.fileTitleFromPath( _lastFilename );
+				
+				if( _model.isProjectModified )
+				{
+					title += " *";
+				}
+				
+				return title;
+			}			
+			
+			
+			private function dumpControlInfo():void
+			{
+				var controls:Array = [
+					"Checkbox",
+					"DryWetBalance",
+					"EarlyLateBalance",
+					"ExampleBalance",
+					"ExampleFileLoadDialog",
+					"FileLoadDialog",
+					"FileSaveDialog",
+					"Knob",
+					"LocateFolderDialog",
+					"NumberBox",
+					"PanoramaBalance",
+					"PlayButton",
+					"RadioGroup",
+					"RangeSlider",
+					"RecButton",
+					"Slider",
+					"SoundFileLoadDialog",
+					"StopButton",
+					"Trigger",
+					"VuMeter",
+					"XYPanPad",
+					"XYScratchPad" ];
+
+				var xml:XML = new XML( "<widgets></widgets>" );	
+								
+				for each( var controlName:String in controls )
+				{
+					var widgetXML:XML = new XML( "<widget></widget>" );
+					
+					var controlClass:Class = ControlManager.getClassReference( controlName );
+					
+					var control:ControlManager = new ControlManager( controlClass, null, null ); 
+					
+					var defaultSize:Point = control.defaultSize;
+					var minimumSize:Point = control.minimumSize;
+					var maximumSize:Point = control.maximumSize;
+					
+					widgetXML.@name = controlName;
+					widgetXML.@minWidth = minimumSize.x;
+					widgetXML.@minHeight = minimumSize.y;
+					widgetXML.@defaultWidth = defaultSize.x;
+					widgetXML.@defaultHeight = defaultSize.y;
+					widgetXML.@maxWidth = maximumSize.x;
+					widgetXML.@maxHeight = maximumSize.y;
+					
+					for( var attributeName:String in control.attributes )
+					{
+						widgetXML.appendChild( <attribute>{ attributeName }</attribute> );
+					}
+					
+					xml.appendChild( widgetXML );
+				}
+				
+				Trace.progress( "Widgets: \n" + xml.toString() );
+			}
+			
+
+	    private var _model:IntegraModel; 
+	    private var _controller:IntegraController;
+
+	    private var _oscServer:OSCServer;
+
+	    private var _serverProcess:NativeProcess;
+		private var _loggingSystem:LoggingSystem = new LoggingSystem;
+
+	    private var _progressPopup:MessagePopup = new MessagePopup;
+	    private var _isDisplayingProgressPopup:Boolean = false;
+
+	    private var _lastFilename:String = null;
+	    private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
+	    private var _functionToExecuteAfterSave:Function = null;
+		private var _autoLoadFilename:String;
+
+		private var _menuHandlers:MenuHandlers = null;
+		private var _isKeyRepeat:Boolean = false;
+
+		private var _crashReportView:CrashReport = null;
+		private var _inactiveGuiTimer:Timer = new Timer( _inactiveGuiMilliseconds, 1 );
+		private var _doneInactiveGuiTimer:Boolean = false; 
+		
+		private var _aboutBox:AboutBox = new AboutBox;
+
+		private var _upgradeWarning:UpgradeWarning = new UpgradeWarning;
+					
+		private var _doneInitialize:Boolean = false;
+		private var _inShutdown:Boolean = false;
+			
+	    private static const _persistantStateFileName:String = "IntegraLiveGUIApplicationState.xml";
+		private static const _inactiveGuiMilliseconds:int = 10000;
+
+		]]>
+	</fx:Script>					
+
+	<fx:Style>
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		{
+			font-family: "Lucida Grande", Verdana, Helvetica, "_sans";
+		}
+		mx|ScrollBar
+		{
+			up-arrow-skin: ClassReference( null );
+			down-arrow-skin: ClassReference( null );
+			track-skin: ClassReference( "components.views.Skins.IntegraScrollTrackSkin" );
+			thumb-skin: ClassReference( "components.views.Skins.IntegraScrollThumbSkin" );
+		}
+
+		mx|ComboBox
+		{
+			skin: ClassReference( "components.views.Skins.ComboBoxSkin" );
+			fontWeight: normal;
+		}
+		
+		global {
+			modalTransparencyBlur: 0;
+			modalTransparency: 0;
+			modalTransparencyColor: black;
+			modalTransparencyDuration: 500;
+		}
+
+	</fx:Style>
+
+	<mx:VBox id="mainVBox" width="100%" height="100%">
+		<RibbonBar:RibbonBar id="ribbonBar"/>
+		<viewContainers:MainViewContainer id="mainViewContainer"/>
+	</mx:VBox>
+
+</s:WindowedApplication>

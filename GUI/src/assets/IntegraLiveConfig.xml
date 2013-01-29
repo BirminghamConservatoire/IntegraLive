@@ -1,0 +1,156 @@
+<!-- 
+IntegraLiveConfig.xml 
+This config file is loaded by IntegraLive_GUI on startup.  
+It allows configuration of IntegraLive_GUI and Integra Server (via arguments passed into Integra Server's commandline 
+-->
+
+
+<integraliveconfig>
+
+	<!--        configuration of startup of components:												-->
+	<startup>
+
+		<!--			windows-specific filename settings											-->
+		<windows>
+			<!--		path and filename of server executable, relative to gui						-->
+         	<serverpath>..\server\IntegraServer.exe</serverpath>						    									 
+		
+			<!--		path and filename of server->host bridge, relative to server				-->
+			<bridgepath>OscBridge.dll</bridgepath>
+
+			<!--		path to modules directory, relative to server									-->
+			<modulespath>..\modules</modulespath>
+			
+			<!-- 		path and filename of host executable, relative to serve						-->
+			<hostpath>..\host\bin\pd.exe</hostpath>
+		</windows>
+		
+		<!--			mac-specific filename settings												-->
+		<mac>
+			<!--		path and filename of server executable, relative to gui						-->
+                        <serverpath>server/bin/integra_server</serverpath>
+		
+			<!--		path and filename of server->host bridge, relative to server				-->
+                        <bridgepath>../lib/integra/integra_osc_bridge.so</bridgepath>
+			
+			<!--		path to modules directory, relative to server									-->
+                        <modulespath>../../modules</modulespath>
+
+			<!-- 		path and filename of host executable, relative to serve						-->
+                        <hostpath>../../host/bin/pd_integra</hostpath>
+		</mac>
+	
+		<!-- 		arguments to be passed into host executable on startup							-->
+		<hostargs>
+	  		<hostarg>-nogui</hostarg>	   
+			<hostarg>-noprefs</hostarg>
+			<hostarg>Integra_Host.pd</hostarg>
+		</hostargs>
+	</startup>
+
+	<!--        configuration of connections between components:									-->
+	<connections>
+		<!-- 		url the gui should use to connect to server's xmlrpc interface					-->
+		<serverurl>http://localhost</serverurl>
+	
+		<!-- 		url the gui should use to listen for osc feedback from server					-->
+		<guiurl>127.0.0.1</guiurl>
+
+		<!-- 		port on which libIntegra's xmlrpc interface listens for connections 			-->
+		<xmlrpcserverport>8000</xmlrpcserverport>
+
+		<!-- 		port on which libIntegra's osc interface listens for connections	 			-->
+		<oscserverport>8001</oscserverport>
+		
+		<!-- 		port on which libIntegra sends osc feedback about executed server commands		-->
+		<oscclientport>8002</oscclientport>
+	</connections>
+
+	<!--        configuration of documentation file locations										-->
+	<documentation>
+		
+		<!--			windows-specific documentation settings										-->
+		<windows>
+			<!--		path and filename of documentation directory, relative to gui				-->
+			<documentspath>..\documentation</documentspath>
+		</windows>
+		
+		<!--			mac-specific documentation settings											-->
+		<mac>
+			<!--		path and filename of documentation directory, relative to gui				-->
+			<documentspath>documentation</documentspath>
+		</mac>
+		
+		
+		<!-- 		path and filename of acknowledgements file, relative to documentation directory	-->
+		<acknowledgementspath>html/acknowledgements/acknowledgements.htm</acknowledgementspath>
+		
+		<!-- 		help links.  Can be web or local relative to documentation directory			-->
+		<helplinks>
+			<helplink name="Quick Start Guide">
+				html/quick-start-guide/quickstart.htm
+			</helplink>
+
+  			<helplink name="Scripting Tutorial 1">
+				html/scripting1/scripting1.htm
+			</helplink>
+			<helplink name="Scripting Tutorial 2">
+				html/scripting2/scripting2.htm
+			</helplink>
+<!--	Temporarily removed help link for module development
+
+			<helplink name="Module Development Guide">
+				html/module-development/module-development.htm
+			</helplink>
+-->
+			<helplink name="www.integralive.org">
+				http://www.integralive.org
+			</helplink>
+			<helplink name="User Forum">
+				http://integralive.uservoice.com/forums/58883-general
+			</helplink>
+		</helplinks>		
+		
+	</documentation>
+
+	<!--        configuration of debugging options													-->
+	<debugging>
+
+		<!-- 		enable tracing of failures or unexpected behaviours								-->
+		<traceerrors>true</traceerrors>
+
+		<!-- 		enable tracing of normal progress (things that don't occur very often)			-->
+		<traceprogress>true</traceprogress>
+
+		<!-- 		enable tracing of normal progress (things that occur very often)				-->
+		<traceverbose>false</traceverbose>
+	
+		<!-- 		stamp all logged output with current date/time									-->
+		<timestamptrace>true</timestamptrace>
+
+		<!-- 		stamp all logged output with filename, line number and function					-->
+		<locationstamptrace>true</locationstamptrace>
+
+		<!-- 		stamp all logged output with thread id of caller (not gui)						-->
+		<threadstamptrace>false</threadstamptrace>
+		
+		<!-- 		stamp all errors with full callstack (gui only)								-->
+		<callstackstamperrors>false</callstackstamperrors>
+		
+		<!-- 		number of days for which old log files should be retained						-->
+		<logfileretentiondays>30</logfileretentiondays>
+
+		<!-- 		url to which crash logs should be uploaded										-->
+		<crashreporturl>http://integralive.org/upload_crash_log.php</crashreporturl>
+
+		<!-- 		show 'tests' menu in gui (tests menu is always shown when running in debugger )	-->
+		<showdebugmenu>false</showdebugmenu>
+
+	</debugging>
+
+	<!--        configuration of upgrade options													-->
+	<upgrades>
+		<upgradeinformationurl>http://integralive.org/upgrade_information.xml</upgradeinformationurl>
+	</upgrades>
+
+</integraliveconfig>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ -->
+ <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			xmlns:s="library://ns.adobe.com/flex/spark" 
+			xmlns:mx="library://ns.adobe.com/flex/mx"
+			creationComplete="{onCreationComplete()}"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+	<s:Label text="{data.toString()}" 
+				paddingLeft="6" paddingRight="6" paddingTop="6" paddingBottom="6"/>
+
+	<fx:Script>
+    	<![CDATA[
+    		import components.model.userData.ColorScheme;
+			import spark.filters.BevelFilter;
+			import spark.filters.GlowFilter;
+    		
+			override public function styleChanged( style:String ):void
+			{
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					invalidateDisplayList();
+					updateFilters();
+				}
+			}
+
+
+			override protected function updateDisplayList( width:Number, height:Number):void
+			{
+				super.updateDisplayList( width, height );
+	
+	            graphics.clear();
+
+				var isUserItem:Boolean = false;
+				if( data && data.hasOwnProperty( "isUserItem" ) )
+				{
+					isUserItem = data.isUserItem;			
+				}
+
+				var colors:Array;
+				
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						colors = isUserItem ? [ 0xc8c8c8, 0xdfdfdf ] : [ 0xd8d8d8, 0xefefef ];
+						break;
+						
+					case ColorScheme.DARK:
+						colors = isUserItem ? [ 0x383838, 0x202020 ] : [ 0x282828, 0x101010 ];
+						break;
+				}
+	
+				var alphas:Array =  [ 1, 1 ];
+				var ratios:Array = [0x00, 0xFF];
+	
+				var matrix:Matrix = new Matrix();
+	  			matrix.createGradientBox( width, height, Math.PI / 2 );
+	
+				graphics.beginGradientFill( GradientType.LINEAR, colors, alphas, ratios, matrix );
+	        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
+	        	graphics.endFill();
+			}
+			
+			
+			private function onCreationComplete():void
+			{
+				addEventListener( MouseEvent.ROLL_OVER, onRollOver );
+				addEventListener( MouseEvent.ROLL_OUT, onRollOut ); 
+
+				updateFilters();
+			}
+
+
+			private function onRollOver( event:MouseEvent ):void
+			{
+				_over = true;
+				updateFilters();
+			}
+
+
+			private function onRollOut( event:MouseEvent ):void
+			{
+				_over = false;
+				updateFilters();
+			}
+			
+			
+			private function updateFilters():void
+			{
+				var highlightColor:uint;
+				var shadowColor:uint;
+	
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						highlightColor = 0xd0d0d0;
+						shadowColor = 0xb0b0b0;
+						break;
+						
+					case ColorScheme.DARK:
+						highlightColor = 0x707070;
+						shadowColor = 0x101010;
+						break;
+				}		
+				
+				var filterArray:Array = new Array;
+				var filter:BevelFilter = new BevelFilter( 3, 45, highlightColor, 0.5, shadowColor, 0.5 );
+				filterArray.push( filter );
+				
+				if( _over )
+				{
+					var glow:GlowFilter = new GlowFilter( 0x808080, 0.6, 10, 10, 2 );
+					filterArray.push( glow );
+				}				
+				
+				filters = filterArray;
+			}				
+
+			private var _over:Boolean = false;
+			
+			private static const _cornerWidth:Number = 18;
+			private static const _cornerHeight:Number = 12;
+		]]>
+	</fx:Script>
+</mx:Canvas> 

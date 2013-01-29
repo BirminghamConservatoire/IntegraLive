@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="SchemaTransform.xsl"?>
+<!-- imports and stuff -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:ntg="http://db.integralive.org/CoreSchema"
+            targetNamespace="http://db.integralive.org/CoreSchema"
+            elementFormDefault="qualified">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      Core XML Schema file for the Integra Environment class definition
+      and its associated module definition XML files. This XML Schema 
+      shall correspond to the database core Schema. Instances of this
+      Schema must have the &#91;coreSchemaVersionMajor&#93; and the 
+      &#91;coreSchemaVersionMinor&#93; attributes to the root &#60;Class&#93;
+      element.
+
+      The &#91;coreSchemaVersionMajor&#93; (but not the &#91;coreSchemaVersionMinor&#93;)
+      is declared as fixed and the instance will *not* validate against this
+      Schema unless its versionMajor is identical to that declared
+      in the Schema.
+      
+      The list of legal values for the unit, scale, control and type elements
+      should eventually be dynamically updated from the database as new UI
+      objects gets added.
+    </xsd:documentation>
+  </xsd:annotation>
+  <xsd:element name="Class">
+    <xsd:complexType mixed="true">
+      <xsd:sequence>
+        <xsd:element name="name" type="ntg:class.name" />
+        <xsd:element name="label" />
+        <xsd:element name="description" />
+        <xsd:element name="parent" />
+        <xsd:element name="attributes">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="name" type="ntg:attribute.name" />
+                    <xsd:element name="description" type="xsd:string" />
+                    <xsd:element name="module-attribute" minOccurs="0" maxOccurs="1">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="minimum" type="xsd:string" />
+                          <xsd:element name="maximum" type="xsd:string" />
+                          <xsd:element name="default" type="xsd:string" />
+                          <xsd:element name="control-group" type="xsd:string" minOccurs="0" />
+                          <xsd:element name="legal-values" minOccurs="0">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="value" minOccurs="0" maxOccurs="9" />
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                          <xsd:element name="value-labels" minOccurs="0">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="value" minOccurs="0" maxOccurs="9">
+                                  <xsd:complexType>
+                                    <xsd:simpleContent>
+                                      <xsd:extension base="xsd:string"> 
+                                        <xsd:attribute name="label" type="xsd:string" use="required" />
+                                      </xsd:extension>
+                                    </xsd:simpleContent>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="undoable" type="xsd:boolean" />
+                        <xsd:attribute name="unit">
+                          <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                              <xsd:enumeration value="None" />
+                              <xsd:enumeration value="Hertz" />
+                              <xsd:enumeration value="MIDIcent" />
+                              <xsd:enumeration value="dBFS" />                            
+                              <xsd:enumeration value="degree" />                            
+                              <xsd:enumeration value="radian" />                            
+                              <xsd:enumeration value="second" />                            
+                              <xsd:enumeration value="metre" />                            
+                            </xsd:restriction>
+                          </xsd:simpleType>
+                        </xsd:attribute>
+                        <xsd:attribute name="scale">
+                          <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                              <xsd:enumeration value="linear" />
+                              <xsd:enumeration value="percent" />
+                              <xsd:enumeration value="log" />
+                              <xsd:enumeration value="log10" />                            
+                              <xsd:enumeration value="exponential" />                            
+                              <xsd:enumeration value="minute" />                            
+                            </xsd:restriction>
+                          </xsd:simpleType>
+                        </xsd:attribute>
+                        <xsd:attribute name="control">
+                          <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                              <xsd:enumeration value="XYScratchPad"/>
+                              <xsd:enumeration value="Slider"/>
+                              <xsd:enumeration value="Knob"/>
+                              <xsd:enumeration value="Checkbox"/>
+                              <xsd:enumeration value="RadioGroup"/>
+                              <xsd:enumeration value="VuMeter"/>
+                              <xsd:enumeration value="FileLoadDialog"/>
+                              <xsd:enumeration value="TimeDecay"/>
+                              <xsd:enumeration value="RoomShape"/>
+                              <xsd:enumeration value="RoomVolume"/>
+                              <xsd:enumeration value="SourceDistance"/>
+                              <xsd:enumeration value="EarlyLateBalance"/>
+                              <xsd:enumeration value="EarlyPanorama"/>
+                              <xsd:enumeration value="PanoramaBalance"/>
+                              <xsd:enumeration value="SoundFileLoadDialog"/>
+                              <xsd:enumeration value="DryWetBalance"/>
+                              <xsd:enumeration value="RecButton"/>
+                              <xsd:enumeration value="RangeSlider"/>
+                              <xsd:enumeration value="Trigger"/>
+                              <xsd:enumeration value="PlayButton"/>
+                              <xsd:enumeration value="NumberBox"/>
+                              <xsd:enumeration value="LocateFolderDialog"/>
+                            </xsd:restriction>
+                          </xsd:simpleType>
+                        </xsd:attribute>
+                        <xsd:attribute name="control-attribute" type="xsd:string" fixed="value" />
+                        <xsd:attribute name="is-signal" type="xsd:boolean" />
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="scope">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="input" />
+                        <xsd:enumeration value="output" />
+                        <xsd:enumeration value="visible" />
+                        <xsd:enumeration value="hidden" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                  <xsd:attribute name="type">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="integer" />
+                        <xsd:enumeration value="float" />
+                        <xsd:enumeration value="string" />
+                        <xsd:enumeration value="blob" />
+                        <xsd:enumeration value="nil" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:attribute>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="ntg:root.attributes" />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:annotation>
+    <xsd:documentation>
+      This is the restriction for class names: maximum 32 characters (no
+      digits and ny hyphened characters), must begin with capital letter.
+    </xsd:documentation>
+  </xsd:annotation>
+    <xsd:simpleType name="class.name">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value="[A-Z]([a-zA-Z]){1,32}"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+  <xsd:annotation>
+    <xsd:documentation>
+      This is the restriction for attribute names: maximum 32 characters (no
+      digits), must begin with lowercase letter.
+    </xsd:documentation>
+  </xsd:annotation>
+    <xsd:simpleType name="attribute.name">
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value="[a-z]([a-zA-Z]){1,31}"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+  <xsd:annotation>
+    <xsd:documentation>
+      These are the legal and required attributes to the Class root node.
+    </xsd:documentation>
+  </xsd:annotation>
+  <xsd:attributeGroup name="root.attributes">
+    <xsd:attribute name="coreSchemaVersionMajor" 
+                   type="xsd:int" use="required" 
+                   fixed="0" />
+    <xsd:attribute name="coreSchemaVersionMinor" 
+                   type="xsd:int" use="required"
+                   fixed="3" />
+    <xsd:attribute name="classAbsoluteVersion"
+                   type="xsd:int" use="required" 
+                   fixed="0" />
+    <xsd:attribute name="instantiable"
+                   type="xsd:boolean" use="optional" 
+                   default="1" />
+    <xsd:attribute name="core"
+                   type="xsd:boolean" use="optional" 
+                   default="0" />
+    <xsd:attribute name="system"
+                   type="xsd:boolean" use="optional" 
+                   default="0" />
+    <xsd:anyAttribute />
+  </xsd:attributeGroup>
+</xsd:schema>

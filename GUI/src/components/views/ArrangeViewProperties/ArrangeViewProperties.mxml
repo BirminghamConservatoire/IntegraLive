@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ -->
+
+<IntegraView 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns="components.views.*" 
+	xmlns:arrangeViewProperties="components.views.ArrangeViewProperties.*" 
+	creationComplete="onCreationComplete()"
+	minHeight="100" height="200" maxHeight="400">
+		
+	<fx:Style>
+	.tabButtonStyle 
+	{
+		skin: ClassReference("components.views.Skins.TabButtonSkin");
+		font-weight: "normal"; 
+	}
+  	</fx:Style>
+  	
+	<mx:HBox left="2" right="4" top="4" bottom="16" horizontalGap="0">
+		<mx:VBox id="tabButtons">
+			<mx:Button 
+				id="routingButton"
+				styleName="tabButtonStyle"
+				toolTip="Switch to Routing View"
+				label="Routing" 
+				width="100%" 
+				click="onClickRouting();"/>
+			<mx:Button 
+				id="scriptingButton" 
+				styleName="tabButtonStyle" 
+				toolTip="Switch to Scripting View"
+				label="Scripting" 
+				width="100%" 
+				click="onClickScripting();"/>
+		</mx:VBox>
+		<arrangeViewProperties:ArrangeViewPropertiesViewStack id="viewStack" width="100%" height="100%">
+				<arrangeViewProperties:RoutingView id="routingView">
+				</arrangeViewProperties:RoutingView>
+				<arrangeViewProperties:ScriptingView id="scriptingView">
+				</arrangeViewProperties:ScriptingView>
+		</arrangeViewProperties:ArrangeViewPropertiesViewStack>
+	</mx:HBox>	
+	
+	<fx:Script>
+		<![CDATA[
+			import components.controller.IntegraController;
+			import components.controller.serverCommands.RenameObject;
+			import components.controller.serverCommands.SelectScene;
+			import components.controller.userDataCommands.SetColorScheme;
+			import components.controller.userDataCommands.SetPrimarySelectedChild;
+			import components.model.Block;
+			import components.model.Info;
+			import components.model.IntegraContainer;
+			import components.model.IntegraDataObject;
+			import components.model.IntegraModel;
+			import components.model.Scene;
+			import components.model.userData.ColorScheme;
+			import components.views.InfoView.InfoMarkupForViews;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.core.Container;
+		
+			override public function free():void
+			{
+				super.free();
+				
+				routingView.free();
+				scriptingView.free();
+				_blockTitlebarView.free();
+				_sceneTitlebarView.free();
+				_projectTitlebarView.free();
+			}				
+			
+			
+			override public function get isSidebarColours():Boolean { return true; }
+			
+			override public function get isTitleEditable():Boolean { return true; }
+
+			override public function get title():String
+			{
+				if( !model.project ) return "";
+				
+				if( model.primarySelectedBlock != null )
+				{
+					return model.primarySelectedBlock.name;
+				} 
+
+				if( model.selectedTrack != null )
+				{
+					return model.selectedTrack.name;
+				} 
+				
+				if( model.selectedScene != null )
+				{
+					return model.selectedScene.name;
+				}
+				
+				return model.project.name;
+			} 
+			
+			
+			override public function set title( title:String ):void
+			{
+				var idToRename:int = -1;
+				if( model.primarySelectedBlock )
+				{
+					idToRename = model.primarySelectedBlock.id;
+				}
+				else
+				{
+					if( model.selectedTrack )
+					{
+						idToRename = model.selectedTrack.id;
+					}
+					else
+					{
+						if( model.selectedScene )
+						{
+							idToRename = model.selectedScene.id;
+						}
+						else
+						{
+							idToRename = model.project.id;
+						}
+					}
+				}
+				
+				Assert.assertTrue( idToRename >= 0 );
+				controller.processCommand( new RenameObject( idToRename, title ) );
+			}
+
+
+			override public function get titlebarView():IntegraView 
+			{
+				if( model.primarySelectedBlock != null )
+				{
+					return _blockTitlebarView;
+				} 
+				
+				if( model.selectedTrack != null )
+				{
+					return null;
+				}
+
+				if( model.selectedScene != null )
+				{
+					return _sceneTitlebarView;
+				}
+
+				return _projectTitlebarView;
+			}
+			
+			
+			override public function get breadcrumbsView():IntegraView 
+			{
+				return _breadcrumbs;
+			}
+			
+			
+			override public function get color():uint
+			{
+				switch( model.project.userData.colorScheme )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						return 0x747474;
+						
+					case ColorScheme.DARK:
+						return 0x8c8c8c;
+				}
+			}
+			
+			
+			override public function getInfoToDisplay( event:MouseEvent ):Info
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties" );
+			}
+			
+			
+			public function get selectedTab():String 
+			{ 
+				return viewStack.selectedChild == scriptingView ? SCRIPTING_TABNAME : ROUTING_TABNAME; 
+			}
+			
+			
+			public function set selectedTab( selectedTab:String ):void 
+			{ 
+				switch( selectedTab )
+				{
+					default:
+					case ROUTING_TABNAME:
+						viewStack.selectedChild = routingView;
+						break;
+
+					case SCRIPTING_TABNAME:
+						viewStack.selectedChild = scriptingView;
+						break;
+				}
+				
+				updateButtons();
+			}
+
+		
+			override public function styleChanged( style:String ):void
+			{
+				super.styleChanged( style );
+				
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					switch( getStyle( ColorScheme.STYLENAME ) )
+					{
+						default:
+						case ColorScheme.LIGHT:
+							_leftColor = 0xCCCCCC;
+							_rightColor = 0xE1E1E1;
+							_normalTabButtonColor = 0x6D6D6D;
+							_selectedTabButtonColor = 0x020202;
+							break;
+							
+						case ColorScheme.DARK:
+							_leftColor = 0x353535;
+							_rightColor = 0x1F1F1F;
+							_normalTabButtonColor = 0x939393;
+							_selectedTabButtonColor = 0xfefefe;
+							break;
+					}
+					
+					invalidateDisplayList();
+					
+					if( tabButtons )
+					{
+						updateButtonColors();
+					}
+				}
+			}
+			
+			
+			override protected function onAllDataChanged():void
+			{
+				updateShowState();
+			}
+			
+			
+			override protected function updateDisplayList( width:Number, height:Number ):void
+			{
+				super.updateDisplayList( width, height );
+				
+				graphics.clear();
+	
+				var matrix:Matrix = new Matrix();
+	  			matrix.createGradientBox( width, height, 0 );
+
+				const bottomCornerRadius:Number = 8;
+				const alphas:Array = [ 1, 1 ];
+				const ratios:Array = [0x00, 0xFF];
+
+				var colors:Array = [ _leftColor, _rightColor ];
+
+				graphics.beginGradientFill( GradientType.LINEAR, colors, alphas, ratios, matrix );
+	        	graphics.drawRoundRectComplex( 0, 0, width, height, 0, 0, bottomCornerRadius, bottomCornerRadius );
+    	    	graphics.endFill();
+			}
+
+
+			private function onPrimarySelectionChanged( command:SetPrimarySelectedChild ):void
+			{
+				updateShowState();
+			}
+
+			
+			private function onSceneSelected( command:SelectScene ):void
+			{
+				updateShowState();
+			}
+			
+
+			private function onCreationComplete():void
+			{
+				viewStack.selectedChild = routingView;
+				updateButtons();
+				
+				addUpdateMethod( SetPrimarySelectedChild, onPrimarySelectionChanged );
+				addUpdateMethod( SelectScene, onSceneSelected );
+				
+				addTitleInvalidatingCommand( SetPrimarySelectedChild );
+				addTitleInvalidatingCommand( SelectScene );
+				addTitleInvalidatingCommand( RenameObject );
+				addTitlebarInvalidatingCommand( SetPrimarySelectedChild );
+				addTitlebarInvalidatingCommand( SelectScene );
+				addColorChangingCommand( SetColorScheme );
+			}
+
+
+			private function onClickRouting():void
+			{
+				viewStack.selectedChild = routingView;
+				updateButtons();
+			}			
+
+
+			private function onClickScripting():void
+			{
+				viewStack.selectedChild = scriptingView;
+				updateButtons();
+			}
+			
+			
+			private function updateButtons():void
+			{
+				var buttons:Array = tabButtons.getChildren();
+				var selectedButtonIndex:uint = viewStack.selectedIndex;
+				
+				for( var buttonIndex:uint = 0; buttonIndex < buttons.length; buttonIndex++ )
+				{
+					var button:Button = buttons[ buttonIndex ] as Button;
+					Assert.assertNotNull( button );
+					button.selected = ( buttonIndex == selectedButtonIndex );
+				}
+				
+				updateButtonColors();
+			}			
+			
+			
+			private function updateButtonColors():void
+			{
+				for each( var button:Button in tabButtons.getChildren() )
+				{
+					var color:uint = button.selected ? _selectedTabButtonColor : _normalTabButtonColor;
+					button.setStyle( "color", color );
+					button.setStyle( "textRollOverColor", color );
+				}				
+			}
+			
+			
+			private function updateShowState():void
+			{
+				if( model.primarySelectedBlock != null )
+				{
+					visible = true;
+				}
+				else
+				{
+					if( model.selectedTrack != null )
+					{
+						visible = true;
+					} 
+					else
+					{
+						if( model.selectedScene == null )
+						{
+							visible = true;
+						}
+						else
+						{
+							visible = false;
+						}
+					}
+				}
+			}
+			
+			
+			private var _leftColor:uint;
+			private var _rightColor:uint;
+
+			private var _normalTabButtonColor:uint;
+			private var _selectedTabButtonColor:uint;
+			
+			private var _blockTitlebarView:BlockPropertiesTitlebar = new BlockPropertiesTitlebar; 
+			private var _sceneTitlebarView:ScenePropertiesTitlebar = new ScenePropertiesTitlebar;
+			private var _projectTitlebarView:ProjectPropertiesTitlebar = new ProjectPropertiesTitlebar;
+			
+			private var _breadcrumbs:Breadcrumbs = new Breadcrumbs;
+			
+			private static const ROUTING_TABNAME:String = "routing";
+			private static const SCRIPTING_TABNAME:String = "scripting";
+		]]>
+	</fx:Script>			
+</IntegraView>

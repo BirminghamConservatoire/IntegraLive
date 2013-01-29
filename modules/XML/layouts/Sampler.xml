@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="zPan" x="116" y="20" width="86" height="110"/>
+  <control id="zPitch" x="202" y="20" width="83" height="110"/>
+  <control id="zRelease" x="721" y="67" width="173" height="43"/>
+  <control id="LoopRangeSlider" x="371" y="20" width="175" height="100"/>
+  <control id="zLevel" x="285" y="20" width="86" height="110"/>
+  <control id="zAttack" x="546" y="24" width="175" height="43"/>
+  <control id="zDecay" x="546" y="67" width="175" height="43"/>
+  <control id="zSustain" x="721" y="24" width="173" height="43"/>
+  <control id="zSamplerate" x="911" y="20" width="57" height="60"/>
+  <control id="omniEdit" x="968" y="20" width="55" height="60"/>
+  <control id="loadSamples" x="1038" y="20" width="173" height="60"/>
+  <control id="maxVoices" x="371" y="120" width="175" height="63"/>
+  <control id="zLoop" x="911" y="80" width="57" height="61"/>
+  <control id="zVelocityOn" x="968" y="80" width="57" height="61"/>
+  <control id="mute" x="12" y="20" width="50" height="60"/>
+  <control id="outLevel" x="62" y="20" width="42" height="149"/>
+  <control id="xFadeSamples" x="1223" y="20" width="90" height="100"/>
+  <control id="zTrigMode" x="1320" y="20" width="200" height="150"/>
+  <control id="panic" x="1520" y="20" width="90" height="110"/>
+  <control id="sampleName" x="560" y="110" width="400" height="82"/>
+</controls>

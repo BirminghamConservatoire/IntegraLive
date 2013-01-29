@@ -1,0 +1,17 @@
+===============================
+libIntegra release instructions
+===============================
+
+- Ensure that the version details in trunk/configure.in are correct
+- Make a BUGS.txt, by going to the bug tracker on sourceforge.net, and listing all open bugs. Selecting the bugs, and then 'view selection source'. Save the source to a text file and then run the scrip 'sftracker2txt.sh' on it
+- cd trunk/
+- run autogen.sh
+- run configure with the desired options
+- run make
+- run make dist
+- Upload the tarball to upload.sf.net, username: anonymous, password: your@email.address, directory: incoming/
+- Make the ChangeLog by running release/svn2cl.sh
+- Write some release notes!
+- Add the release on the sourceforge site including the ChangeLog and release notes
+- upload the contents of /home/groups/i/in/integralive/htdocs: scp ./* <username>@shell.sf.net:/home/groups/i/in/integralive/htdocs
+

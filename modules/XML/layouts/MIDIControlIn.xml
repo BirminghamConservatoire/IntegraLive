@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="chIn" x="10" y="0" width="85" height="95"/>
+  <control id="ccIn" x="100" y="0" width="85" height="95"/>
+  <control id="valueIn" x="190" y="0" width="85" height="95"/>
+  <control id="chNumber" x="10" y="95" width="85" height="110"/>
+  <control id="ccNumber" x="100" y="95" width="85" height="110"/>
+  <control id="value" x="190" y="95" width="85" height="110"/>
+</controls>

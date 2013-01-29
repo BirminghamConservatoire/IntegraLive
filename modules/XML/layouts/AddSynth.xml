@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="mute" x="20" y="20" width="70" height="85"/>
+  <control id="outLevel" x="100" y="10" width="50" height="180"/>
+  <control id="chNumber" x="170" y="0" width="85" height="95"/>
+  <control id="test" x="170" y="95" width="85" height="95"/>
+  <control id="partial1" x="260" y="10" width="80" height="160"/>
+  <control id="partial2" x="360" y="10" width="80" height="160"/>
+  <control id="partial3" x="460" y="10" width="80" height="160"/>
+  <control id="partial4" x="560" y="10" width="80" height="160"/>
+  <control id="partial5" x="660" y="10" width="80" height="160"/>
+  <control id="partial6" x="760" y="10" width="80" height="160"/>
+  <control id="partial7" x="860" y="10" width="80" height="160"/>
+  <control id="partial8" x="960" y="10" width="80" height="160"/>
+  <control id="attack" x="1060" y="10" width="80" height="160"/>
+  <control id="decay" x="1160" y="10" width="80" height="160"/>
+  <control id="sustain" x="1260" y="10" width="80" height="160"/>
+  <control id="release" x="1360" y="10" width="80" height="160"/>
+</controls>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="250"
+		   creationComplete="onCreationComplete()">
+
+	<mx:VBox verticalGap="20" top="0" bottom="20" left="10" right="10">
+		<mx:HBox>
+			<mx:Button id="_titleCloseButton" 
+					   width="{_titleHeight}" 
+					   height="{_titleHeight}" 
+					   click="onClickCloseButton()"/> 
+			<mx:Label text="Upgrade Integra Live..." 
+					  color="0x000000" 
+					  textAlign="center"/> 
+		</mx:HBox>
+		
+		<mx:TextArea id="_message"
+			width="100%" height="100%"
+			editable="false"
+			focusEnabled="false"
+			selectable="false"
+			horizontalScrollPolicy="off"
+			verticalScrollPolicy="off"
+			backgroundAlpha="0"
+			color="0x747474"
+			borderStyle="none"/>
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:LinkButton id="_linkButton" 
+						   label="Download latest version of Integra Live" 
+						   click="onClickDownloadButton()"
+						   rollOverColor="{_backgroundColor}"
+						   color="0x0000ff"
+						   textRollOverColor="0x0000ff"
+						   textSelectedColor="0x0000ff"
+						   rollOver="{event.target.setStyle('textDecoration', 'underline')}"
+						   rollOut="{event.target.setStyle('textDecoration', 'none')}"/>  
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Button id="_closeButton" 
+					   label="Close" 
+					   click="onClickCloseButton()" 
+					   styleName="textButtonStyle"
+					   color="0x6D6D6D"
+					   textRollOverColor="0x6D6D6D"
+					   textSelectedColor="0x6D6D6D"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<fx:Style>
+		.textButtonStyle
+		{
+			skin: ClassReference("components.views.Skins.TextButtonSkin");
+			font-weight: "normal"; 
+		}
+	</fx:Style>	
+	
+	<fx:Script>
+		<![CDATA[
+			import components.utils.Config;
+			import components.utils.Trace;
+			import components.utils.Utilities;
+			import components.views.Skins.CloseButtonSkin;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			
+			
+			public function showIfNecessary( parent:DisplayObject ):void
+			{
+				Assert.assertFalse( _isShowing );
+				Assert.assertNull( _infoLoader );
+				
+				_popupParent = parent;
+				
+				var upgradeInformationUrl:String = Config.singleInstance.upgradeInformationUrl;
+				if( !upgradeInformationUrl )
+				{
+					Trace.error( "Failed to read upgradeInformationUrl from config" );
+					return;
+				}
+				
+				_infoLoader = new URLLoader();
+				_infoLoader.addEventListener( Event.COMPLETE, onInfoLoaded );
+				_infoLoader.addEventListener( IOErrorEvent.IO_ERROR, onIOError );
+				_infoLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onSecurityError );
+				_infoLoader.load( new URLRequest( upgradeInformationUrl ) );
+			}
+			
+			
+			protected override function updateDisplayList( width:Number, height:Number ):void
+			{
+				super.updateDisplayList( width, height );
+				
+				graphics.clear();
+				
+				graphics.lineStyle( _borderThickness, _borderColor ); 
+				graphics.beginFill( _backgroundColor );
+				graphics.drawRoundRect( 0, 0, width, height, _cornerRadius, _cornerRadius );
+				graphics.endFill();
+				
+				graphics.beginFill( _borderColor );
+				graphics.drawRoundRectComplex( 0, 0, width, _titleHeight, _cornerRadius, _cornerRadius, 0, 0 );
+				graphics.endFill();
+			}
+			
+			
+			private function onCreationComplete():void
+			{
+				_message.text = "A newer version of Integra Live is available!\n\nYou can carry on using this version, but you will not have the latest features or bugfixes.\n\nPlease download and install the latest version of Integra Live:";
+				
+				_titleCloseButton.setStyle( "fillColor", 0x000000 );
+				_titleCloseButton.setStyle( "skin", CloseButtonSkin );
+				_titleCloseButton.setStyle( "fillAlpha", 1 );
+				_titleCloseButton.setStyle( "color", _borderColor );
+			}
+			
+			
+			private function onInfoLoaded( event:Event ):void
+			{
+				var infoString:String = String( _infoLoader.data );
+				
+				try
+				{ 
+					var infoXml:XML = new XML( infoString );
+				}
+				catch( error:Error )
+				{
+					Trace.error( "Can't parse upgrade info xml:\n", infoString );
+					return;
+				}
+				
+				if( !infoXml.hasOwnProperty( "LatestIntegraLiveVersion" ) )
+				{
+					Trace.error( "update info xml missing LatestIntegraLiveVersion tag" );
+					return;
+				}
+				
+				var latestVersion:String = infoXml.LatestIntegraLiveVersion.toString();
+				var currentVersion:String = Utilities.integraLiveVersion;
+				
+				Trace.progress( "Loaded Upgrade Information: latest version = " + latestVersion );
+				
+				if( isCurrentVersionOutOfDate( currentVersion, latestVersion ) )
+				{
+					Trace.progress( "Current version = " + currentVersion + " - OUT OF DATE!" );
+				}
+				else
+				{
+					Trace.progress( "Current version = " + currentVersion + " (not out of date)" );
+					return;
+				}
+				
+				
+				if( !infoXml.hasOwnProperty( "UpgradeUrl" ) )
+				{
+					Trace.error( "update info xml missing UpgradeUrl tag" );
+					return;
+				}
+				
+				var upgradeUrlXML:XMLList = infoXml.child( "UpgradeUrl" );
+				
+				var osTag:String = Utilities.isWindows ? "Windows" : "Mac"
+					
+				if( !upgradeUrlXML.hasOwnProperty( osTag ) )
+				{
+					Trace.error( "UpgradeUrl xml missing " + osTag + " tag" );
+					return;
+				}
+				
+				_upgradeUrl = upgradeUrlXML.child( osTag ).toString();
+				
+				PopUpManager.addPopUp( this, _popupParent );
+				PopUpManager.centerPopUp( this );
+				PopUpManager.bringToFront( this );
+				_isShowing = true;					
+			}
+
+			
+			private function onIOError( event:IOErrorEvent ):void
+			{
+				Trace.error( "Upgrade warning...  IO error: id", event.errorID );
+			}
+			
+			
+			private function onSecurityError( event:SecurityErrorEvent ):void
+			{
+				Trace.error( "Upgrade warning...  Security error: id", event.errorID );
+			}
+			
+			
+			private function onClickDownloadButton():void
+			{
+				navigateToURL( new URLRequest( _upgradeUrl ), "_blank" );
+			}
+			
+			
+			private function onClickCloseButton():void
+			{
+				Assert.assertTrue( _isShowing );
+				
+				PopUpManager.removePopUp( this );
+				_isShowing = false;
+			}
+			
+			
+			private function isCurrentVersionOutOfDate( currentVersion:String, latestVersion:String ):Boolean
+			{
+				var currentSvnVersion:int = extractRevisionNumber( currentVersion );
+				var latestSvnVersion:int = extractRevisionNumber( latestVersion );
+				
+				if( currentSvnVersion == 0 || latestSvnVersion == 0 )
+				{
+					Trace.error( "failed to extract SVN version from version string", currentVersion, latestVersion );
+					return false;	//failsafe
+				}
+				
+				return ( currentSvnVersion < latestSvnVersion );
+			}
+			
+			
+			private function extractRevisionNumber( versionString:String ):int
+			{
+				var indexOfLastDot:int = versionString.lastIndexOf( "." );
+				if( indexOfLastDot < 0 )
+				{
+					return 0;
+				}
+				
+				return int( versionString.substr( indexOfLastDot + 1 ) );
+			}
+			
+
+			private var _popupParent:DisplayObject = null;
+			
+			private var _infoLoader:URLLoader = null;
+			
+			private var _isShowing:Boolean = false;
+
+			private var _upgradeUrl:String = null;
+			
+			private const _backgroundColor:uint = 0xffffff;
+			private const _borderColor:uint = 0xe95d0f;
+			private const _titleHeight:uint = 20;
+			private const _borderThickness:Number = 4;
+			private const _cornerRadius:Number = 15;
+		]]>
+	</fx:Script>					
+			
+</mx:Canvas>

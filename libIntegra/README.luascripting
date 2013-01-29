@@ -1,0 +1,131 @@
+
+
+************************************************************************
+************************************************************************
+*********** Functions to access the integra library ********************
+************************************************************************
+************************************************************************
+
+
+********
+integra.set(instance_name,attribute_name,new_value) -> void
+
+Example:
+  integra.set("TapDelay1","delayTime",2.3)
+
+********
+integra.get(instance_name,atribute_nane) -> value
+
+Example:
+    dt = integra.get("TapDelay1", "delayTime")
+
+
+***********
+set_typecheck(onoroff) -> void
+Turn on or off typechecking before accessing
+libintegra functions. set_typecheck requires
+true or false as argument. Typechecking is
+on by default.
+
+
+
+************************************************************************
+************************************************************************
+*********** Functions to handle time and scheduling ********************
+************************************************************************
+************************************************************************
+
+***********
+get_time() -> number
+Returns the number of seconds since program started.
+
+Note that the returned value will not increase
+until all current running coroutines has finished.
+I.e. the time returned by get_time() will never change
+until wait() or yield() has been called.
+
+
+********
+spawn_abs(time,func)
+'func' is run when the global time is 'time' seconds.
+
+
+********
+spawn(time,func) -> void
+Same as calling spawn_abs(get_time() + time, func)
+
+
+********
+spawn(func) -> void
+Same as calling spawn_abs(get_time(),func)
+
+
+**********
+wait(time) -> void
+Pauses execution of current coroutine for 'time' seconds
+wait(0) is not a dummy operation, but will instead yield()
+
+
+*********
+yield() -> void
+Switches execution context to another waiting coroutine, if any.
+Same as calling wait(0)
+
+
+
+
+
+************************************************************************
+************************************************************************
+************************* Event handling *******************************
+************************************************************************
+************************************************************************
+
+eventhandler_update_frequency -> number
+A variable holding the number of eventhandler checks which are performed
+per second.
+
+
+*********
+add_eventhandler(checkfunc,dofunc) -> void
+Example: add_eventhandler(function() return output.rms_value > 2.0 end,
+                          function() print("Warning. Very high volume!") end)
+
+
+*********
+remove_eventhandler(checkfunc,dofunc) -> void
+Example: add_eventhandler(a,b)
+         remove_eventhandler(a,b)
+
+
+
+
+************************************************************************
+************************************************************************
+************************* Various functions ****************************
+************************************************************************
+************************************************************************
+
+**********
+is_member(tabla,member) -> boolean
+Returns true if 'member' is an element in the table 'tabla'.
+The function does not check recursively.
+
+
+*********
+c_tostring(...) -> string
+A completely general tostring function. Handles all types
+and multiple arguments. Plus:
+ * Prints the content of tables, not just "table: <address>"
+ * Put quotes around strings.
+ * Does not give error for userdata and function values.
+
+
+*********
+c_print(...) -> void
+Implemented like this:
+function c_print(...)
+   print(c_tostring(...))
+end
+
+

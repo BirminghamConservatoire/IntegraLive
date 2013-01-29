@@ -1,0 +1,288 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration guid="8b1826a1-1a76-d13a-0488-e84b06c97f7f" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>AudioSettings</Name>
+    <Label>AudioSettings</Label>
+    <Description>Manages Audio setup (selecting valid backends, selecting available devices, selecting device properties)</Description>
+    <Tags>
+      <Tag>core</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
+    <HostImplementations>
+      <Host>pd</Host>
+    </HostImplementations>
+    <Author>Leighton Hargreaves</Author>
+    <CreatedDate>2012-10-05 21:18:49.467000</CreatedDate>
+    <ModifiedDate>2012-10-05 21:19:25.799000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>availableDrivers</Name>
+      <Label>Available Drivers</Label>
+      <Description>The set of available audio drivers.Represented as a list concatenated into a single string, with each element prepended by its length and a colonExample: "First Item", "Second Item" would be represented as 10:First Item11:Second Item</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>availableInputDevices</Name>
+      <Label>Available Input Devices</Label>
+      <Description>The set of available audio input devices for the selected driver.Represented as a list concatenated into a single string, with each element prepended by its length and a colonExample: "First Item", "Second Item" would be represented as 10:First Item11:Second Item</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>availableOutputDevices</Name>
+      <Label>Available Output Devices</Label>
+      <Description>The set of available audio output devices for the selected driver.Represented as a list concatenated into a single string, with each element prepended by its length and a colonExample: "First Item", "Second Item" would be represented as 10:First Item11:Second Item</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>selectedDriver</Name>
+      <Label>Selected Driver</Label>
+      <Description>the name of the Audio driver to be used</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>selectedOutputDevice</Name>
+      <Label>Selected Output Device</Label>
+      <Description>The selected audio output device</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>bufferSize</Name>
+      <Label>bufferSize</Label>
+      <Description>Audio buffer size. This controls overall audio latency.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>1</Minimum>
+              <Maximum>100</Maximum>
+            </Range>
+          </Constraint>
+          <Default>50</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>sampleRate</Name>
+      <Label>sampleRate</Label>
+      <Description>The sample rate the software runs at</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <AllowedStates>
+              <State>11025</State>
+              <State>22050</State>
+              <State>44100</State>
+              <State>48000</State>
+              <State>96000</State>
+              <State>192000</State>
+            </AllowedStates>
+          </Constraint>
+          <Default>44100</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inputChannels</Name>
+      <Label>inputChannels</Label>
+      <Description>The number of input channels to be used on the device</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000</Maximum>
+            </Range>
+          </Constraint>
+          <Default>2</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>outputChannels</Name>
+      <Label>outputChannels</Label>
+      <Description>The number of output channels to be used on the device</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000</Maximum>
+            </Range>
+          </Constraint>
+          <Default>2</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>userData</Name>
+      <Label>userData</Label>
+      <Description>Arbitrary data associated with a class instance</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>selectedInputDevice</Name>
+      <Label>Selected Input Device</Label>
+      <Description>The selected audio input device</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+</InterfaceDeclaration>

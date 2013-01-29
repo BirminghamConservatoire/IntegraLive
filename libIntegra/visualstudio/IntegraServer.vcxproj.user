@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)\..\..\..\..\build\$(Configuration)\server</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments> -host=..\host\bin\pd.exe -bridge=OscBridge.dll -module_paths=..\modules,c:\somewhere_else -xmlrpc_server_port=8000 -osc_server_port=8001 -osc_client_port=8002 -timestamp_trace -locationstamp_trace -hostargs -noprefs -nogui ..\host\extra\Integra_Host.pd</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)\..\..\..\..\build\$(Configuration)\server</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments> -host=..\host\bin\pd.exe -bridge=OscBridge.dll -module_paths=..\modules,c:\somewhere_else -xmlrpc_server_port=8000 -osc_server_port=8001 -osc_client_port=8002 -timestamp_trace -locationstamp_trace -hostargs -noprefs -nogui ..\host\extra\Integra_Host.pd</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+</Project>

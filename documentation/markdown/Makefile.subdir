@@ -1,0 +1,8 @@
+include Make.config
+MARKDOWN=../Markdown.pl
+
+all:
+	$(MARKDOWN) $(NAME).md > $(NAME).htm
+
+clean:
+	rm -f *.htm

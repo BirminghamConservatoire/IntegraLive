@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="tuioPad" x="20" y="10" width="180" height="180"/>
+  <control id="port" x="210" y="10" width="120" height="120"/>
+  <control id="element" x="330" y="10" width="120" height="120"/>
+  <control id="message" x="450" y="10" width="500" height="120"/>
+</controls>

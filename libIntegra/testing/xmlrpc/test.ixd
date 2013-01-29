@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<IntegraCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-node" collectionSchemaVersionMajor="1" collectionSchemaVersionMinor="0" collectionAbsoluteVersion="0">
+ <object classId="7" name="Project1">
+  <attribute name="userData" typeCode="3">&lt;userdata&gt;
+  &lt;primarySelectedChild&gt;Track1&lt;/primarySelectedChild&gt;
+  &lt;viewMode&gt;arrange&lt;/viewMode&gt;
+  &lt;blockPropertiesOpen&gt;true&lt;/blockPropertiesOpen&gt;
+  &lt;preferencesOpen&gt;false&lt;/preferencesOpen&gt;
+  &lt;timelineScroll&gt;0&lt;/timelineScroll&gt;
+  &lt;timelineZoom&gt;0.4&lt;/timelineZoom&gt;
+  &lt;colorScheme&gt;light&lt;/colorScheme&gt;
+  &lt;scenes/&gt;
+&lt;/userdata&gt;</attribute>
+  <attribute name="active" typeCode="1">1</attribute>
+  <attribute name="zIndex" typeCode="1">0</attribute>
+  <object classId="20" name="Player1">
+   <attribute name="userData" typeCode="3"></attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+   <attribute name="tick" typeCode="1">0</attribute>
+   <attribute name="rate" typeCode="1">40</attribute>
+   <attribute name="start" typeCode="1">0</attribute>
+   <attribute name="end" typeCode="1">0</attribute>
+   <attribute name="loop" typeCode="1">0</attribute>
+   <attribute name="play" typeCode="1">0</attribute>
+  </object>
+  <object classId="7" name="Track1">
+   <attribute name="userData" typeCode="3">&lt;userdata&gt;
+  &lt;primarySelectedChild&gt;Block1&lt;/primarySelectedChild&gt;
+  &lt;color&gt;1483505&lt;/color&gt;
+  &lt;arrangeViewHeight&gt;100&lt;/arrangeViewHeight&gt;
+  &lt;arrangeViewExpanded&gt;true&lt;/arrangeViewExpanded&gt;
+  &lt;liveViewExpanded&gt;true&lt;/liveViewExpanded&gt;
+&lt;/userdata&gt;</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+   <attribute name="zIndex" typeCode="1">0</attribute>
+   <object classId="7" name="Block1">
+    <attribute name="userData" typeCode="3">&lt;userdata&gt;
+  &lt;isSelected&gt;true&lt;/isSelected&gt;
+  &lt;primarySelectedChild&gt;Flanger1&lt;/primarySelectedChild&gt;
+  &lt;modulePositions&gt;
+    &lt;modulePosition name=&quot;StereoAudioOut1&quot;&gt;
+      &lt;x&gt;28.875&lt;/x&gt;
+      &lt;y&gt;5.25&lt;/y&gt;
+      &lt;width&gt;7&lt;/width&gt;
+      &lt;height&gt;3&lt;/height&gt;
+    &lt;/modulePosition&gt;
+    &lt;modulePosition name=&quot;Flanger1&quot;&gt;
+      &lt;x&gt;26.1694214876033&lt;/x&gt;
+      &lt;y&gt;14.822314049586774&lt;/y&gt;
+      &lt;width&gt;7&lt;/width&gt;
+      &lt;height&gt;3&lt;/height&gt;
+    &lt;/modulePosition&gt;
+    &lt;modulePosition name=&quot;AudioIn1&quot;&gt;
+      &lt;x&gt;0.875&lt;/x&gt;
+      &lt;y&gt;5.25&lt;/y&gt;
+      &lt;width&gt;7&lt;/width&gt;
+      &lt;height&gt;3&lt;/height&gt;
+    &lt;/modulePosition&gt;
+  &lt;/modulePositions&gt;
+  &lt;liveViewControls/&gt;
+&lt;/userdata&gt;</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+    <attribute name="zIndex" typeCode="1">0</attribute>
+    <object classId="8" name="AudioIn1">
+     <attribute name="userData" typeCode="3"></attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+     <attribute name="outLevel" typeCode="2">0.800000011920928955078125</attribute>
+     <attribute name="vu" typeCode="2">-120.</attribute>
+    </object>
+    <object classId="33" name="StereoAudioOut1">
+     <attribute name="userData" typeCode="3"></attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="vu" typeCode="2">-120.</attribute>
+    </object>
+    <object classId="49" name="Flanger1">
+     <attribute name="userData" typeCode="3">&lt;userdata&gt;
+  &lt;isSelected&gt;true&lt;/isSelected&gt;
+&lt;/userdata&gt;</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="modulationDepth" typeCode="2">0.699999988079071044921875</attribute>
+     <attribute name="modulationFrequency" typeCode="2">0.100000001490116119384765625</attribute>
+    </object>
+   </object>
+   <object classId="17" name="BlockEnvelope1">
+    <attribute name="userData" typeCode="3"></attribute>
+    <attribute name="currentValue" typeCode="2">0.</attribute>
+    <attribute name="currentTick" typeCode="1">0</attribute>
+    <attribute name="interpolationType" typeCode="1">0</attribute>
+    <attribute name="startTick" typeCode="1">0</attribute>
+    <object classId="18" name="ControlPoint1">
+     <attribute name="userData" typeCode="3"></attribute>
+     <attribute name="containerId" typeCode="1">8</attribute>
+     <attribute name="tick" typeCode="1">-1</attribute>
+     <attribute name="value" typeCode="1">0</attribute>
+    </object>
+    <object classId="18" name="ControlPoint2">
+     <attribute name="userData" typeCode="3"></attribute>
+     <attribute name="containerId" typeCode="1">8</attribute>
+     <attribute name="tick" typeCode="1">0</attribute>
+     <attribute name="value" typeCode="1">1</attribute>
+    </object>
+    <object classId="18" name="ControlPoint3">
+     <attribute name="userData" typeCode="3"></attribute>
+     <attribute name="containerId" typeCode="1">8</attribute>
+     <attribute name="tick" typeCode="1">799</attribute>
+     <attribute name="value" typeCode="1">1</attribute>
+    </object>
+    <object classId="18" name="ControlPoint4">
+     <attribute name="userData" typeCode="3"></attribute>
+     <attribute name="containerId" typeCode="1">8</attribute>
+     <attribute name="tick" typeCode="1">800</attribute>
+     <attribute name="value" typeCode="1">0</attribute>
+    </object>
+   </object>
+   <object classId="35" name="Connection1">
+    <attribute name="userData" typeCode="3">&lt;userdata&gt;
+  &lt;isSelected&gt;true&lt;/isSelected&gt;
+&lt;/userdata&gt;</attribute>
+    <attribute name="targetPath" typeCode="3">Block1.active</attribute>
+    <attribute name="sourcePath" typeCode="3">BlockEnvelope1.currentValue</attribute>
+   </object>
+  </object>
+  <object classId="35" name="Connection1">
+   <attribute name="userData" typeCode="3">&lt;userdata&gt;
+  &lt;isSelected&gt;true&lt;/isSelected&gt;
+&lt;/userdata&gt;</attribute>
+   <attribute name="targetPath" typeCode="3">Track1.BlockEnvelope1.currentTick</attribute>
+   <attribute name="sourcePath" typeCode="3">Player1.tick</attribute>
+  </object>
+  <object classId="7" name="Track2">
+   <attribute name="userData" typeCode="3">&lt;userdata&gt;
+  &lt;color&gt;15293710&lt;/color&gt;
+  &lt;arrangeViewHeight&gt;100&lt;/arrangeViewHeight&gt;
+  &lt;arrangeViewExpanded&gt;true&lt;/arrangeViewExpanded&gt;
+  &lt;liveViewExpanded&gt;true&lt;/liveViewExpanded&gt;
+&lt;/userdata&gt;</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+   <attribute name="zIndex" typeCode="1">1</attribute>
+  </object>
+ </object>
+</IntegraCollection>

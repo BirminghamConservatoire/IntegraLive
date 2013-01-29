@@ -1,0 +1,388 @@
+/* Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ */
+
+
+package components.utils
+{
+	import components.controlSDK.core.ControlManager;
+	import components.controller.serverCommands.RenameObject;
+	import components.controller.serverCommands.SetBlockTrack;
+	import components.controller.serverCommands.SetModuleAttribute;
+	import components.controller.userDataCommands.SetTrackColor;
+	import components.model.Block;
+	import components.model.IntegraContainer;
+	import components.model.IntegraDataObject;
+	import components.model.ModuleInstance;
+	import components.model.Project;
+	import components.model.Track;
+	import components.model.interfaceDefinitions.EndpointDefinition;
+	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.interfaceDefinitions.StreamInfo;
+	import components.model.interfaceDefinitions.WidgetDefinition;
+	import components.model.userData.ColorScheme;
+	import components.views.IntegraView;
+	
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	import flash.utils.getTimer;
+	
+	import flexunit.framework.Assert;
+	
+	import mx.core.Container;
+	import mx.core.ScrollPolicy;
+	
+	import org.osmf.net.StreamType;
+
+	
+	public class AggregateVUContainer extends IntegraView
+	{
+		public function AggregateVUContainer()
+		{
+			super();
+		
+			horizontalScrollPolicy = ScrollPolicy.OFF;
+			verticalScrollPolicy = ScrollPolicy.OFF;
+
+			var controlClass:Class = ControlManager.getClassReference( _vuMeterControlName );
+			if( !controlClass )
+			{
+				Assert.assertTrue( false );
+				return;
+			}
+			
+			_control = new ControlManager( controlClass, this, null );
+
+			_control.leftPadding = 0;
+			_control.rightPadding = 0;
+			_control.topPadding = 0;
+			_control.bottomPadding = 0;
+
+			var controlAttributes:Object = _control.attributes;
+			Assert.assertTrue( Utilities.getNumberOfProperties( controlAttributes ) == 1 );
+			Assert.assertTrue( controlAttributes.hasOwnProperty( _vuMeterControlAttributeName ) );
+			Assert.assertTrue( controlAttributes[ _vuMeterControlAttributeName ] == CONTROL_ATTRIBUTE_TYPE_NUMBER );
+			
+			setControlBackgroundColors();
+			setControlForegroundColor();
+			setControlAttributeLabels();
+			setControlAllowedValues();
+			setControlValue( 0 );
+			setControlTextEquivalents();
+			setControlWritableFlags();
+			setControlRepositionable();
+			
+			addUpdateMethod( SetModuleAttribute, onModuleAttributeChanged );
+			addUpdateMethod( SetTrackColor, onTrackColorChanged );
+			addUpdateMethod( SetBlockTrack, onBlockChangedTrack );
+			addUpdateMethod( RenameObject, onObjectRenamed );
+		}
+		
+		
+		public function set containerID( containerID:int ):void
+		{
+			 _containerID = containerID;
+		 	setControlForegroundColor();
+			updateTooltip();
+		}
+		
+		
+		public function set backgroundColors( backgroundColors:Array ):void
+		{
+			Assert.assertTrue( backgroundColors.length == 2 );
+			
+			_topBackgroundColor = backgroundColors[ 0 ];
+			_bottomBackgroundColor = backgroundColors[ 1 ];
+			
+			setControlBackgroundColors();
+		}
+		
+		
+ 		override public function styleChanged( style:String ):void
+		{
+			if( !style || style == ColorScheme.STYLENAME )
+			{
+				if( _containerID == model.project.id )
+				{
+					setControlForegroundColor();
+				}
+			}
+		}
+
+		
+		override protected function onAllDataChanged():void
+		{
+			//update tracked endpoints from model
+			_trackedEndpoints = new Object;
+			_mapTrackedInterfaceGuidsToEndpoints = new Object;
+			
+			for each( var interfaceName:String in _audioOutputInterfaces )
+			{
+				var interfaceDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( interfaceName );
+				if( !interfaceDefinition )
+				{
+					continue;
+				}
+				
+				var guid:String = interfaceDefinition.guid;
+				
+				for each( var widget:WidgetDefinition in interfaceDefinition.widgets )
+				{
+					if( widget.type == _vuMeterControlName )
+					{
+						for each( var endpointName:String in widget.attributeToEndpointMap )
+						{
+							_trackedEndpoints[ endpointName ] = 1;
+							var endpointsForThisInterface:Object = null;
+							
+							if( _mapTrackedInterfaceGuidsToEndpoints.hasOwnProperty( guid ) )
+							{
+								endpointsForThisInterface = _mapTrackedInterfaceGuidsToEndpoints[ guid ];
+							}
+							else
+							{
+								endpointsForThisInterface = new Object;
+								_mapTrackedInterfaceGuidsToEndpoints[ guid ] = endpointsForThisInterface;
+							}
+							
+							endpointsForThisInterface[ endpointName ] = 1;
+						}
+					}
+				}
+			}
+		}
+		
+
+		private function setControlValue( value:Number ):void
+		{
+			var controlValues:Object = new Object;
+			controlValues[ _vuMeterControlAttributeName ] = value;
+			_control.setControlValues( controlValues );
+		}
+		
+		
+		private function setControlTextEquivalents():void
+		{
+			var controlTextEquivalents:Object = new Object;
+			controlTextEquivalents[ _vuMeterControlAttributeName ] = "";
+			_control.setControlTextEquivalents( controlTextEquivalents );
+		}
+		
+		
+		private function setControlWritableFlags():void
+		{
+			var writableFlags:Object = new Object;
+			writableFlags[ _vuMeterControlAttributeName ] = true;
+			_control.setControlWritableFlags( writableFlags ); 
+		}
+		
+		
+		private function setControlAllowedValues():void
+		{
+			_control.setControlAllowedValues( new Object ); 
+		}
+		
+		
+		private function setControlRepositionable():void
+		{
+			_control.setControlRepositionable( false );
+		}
+		
+		
+		private function setControlForegroundColor():void
+		{
+			if( _containerID < 0 ) 
+			{
+				return;
+			}
+			
+			var color:uint = 0;
+
+			var container:IntegraContainer = model.getContainer( _containerID );
+			Assert.assertNotNull( container );
+			
+			if( container is Project )
+			{	
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						color = 0x606060;
+						break;
+						
+					case ColorScheme.DARK:
+						color = 0xFFFFFF;
+						break;
+				}
+			}
+			else
+			{
+				if( container is Track )
+				{
+					color = ( container as Track ).userData.color;
+				}
+				else
+				{
+					Assert.assertTrue( container is Block );
+					
+					color = model.getTrackFromBlock( _containerID ).userData.color;
+				}
+			}
+			
+			_control.setControlForegroundColor( color );
+		}
+
+		
+		private function setControlBackgroundColors():void
+		{
+			_control.setControlBackgroundColors( _topBackgroundColor, _bottomBackgroundColor );
+		}
+		
+		
+		private function setControlAttributeLabels():void
+		{
+			var attributeLabels:Object = new Object;
+			attributeLabels[ _vuMeterControlAttributeName ] = "";
+			_control.setControlAttributeLabels( attributeLabels );
+		}
+		
+		
+		private function onModuleAttributeChanged( command:SetModuleAttribute ):void
+		{
+			if( !_containerID < 0 )
+			{
+				return;
+			}
+			
+			if( !_trackedEndpoints.hasOwnProperty( command.endpointName ) )
+			{
+				return;
+			}
+
+			var moduleID:int = command.moduleID;
+			var module:ModuleInstance = model.getModuleInstance( moduleID );
+			Assert.assertNotNull( module );
+
+			var interfaceDefinition:InterfaceDefinition = module.interfaceDefinition;
+			Assert.assertNotNull( interfaceDefinition );
+			
+			if( !_mapTrackedInterfaceGuidsToEndpoints.hasOwnProperty( interfaceDefinition.guid ) ) 
+			{
+				return;
+			}
+
+			var endpointsToTrack:Object = _mapTrackedInterfaceGuidsToEndpoints[ interfaceDefinition.guid ];
+			if( !endpointsToTrack.hasOwnProperty( command.endpointName ) )
+			{
+				return;
+			}
+			
+			var isChild:Boolean = false;
+			for( var ancestorObject:IntegraDataObject = model.getParent( moduleID ); ancestorObject; ancestorObject = model.getParent( ancestorObject.id ) )
+			{
+				if( ancestorObject.id == _containerID )
+				{
+					isChild = true;
+					break;
+				}  
+			} 
+			
+			if( !isChild )
+			{
+				return;
+			}
+			
+			var endpointDefinition:EndpointDefinition = interfaceDefinition.getEndpointDefinition( command.endpointName );
+			Assert.assertNotNull( endpointDefinition && endpointDefinition.controlInfo.stateInfo );
+			
+			Assert.assertTrue( command.value is Number );
+			var value:Number = ControlScaler.endpointValueToControlUnit( Number( command.value ), endpointDefinition.controlInfo.stateInfo ); 
+			setControlValue( value );
+		}
+		
+		
+		private function onTrackColorChanged( command:SetTrackColor ):void
+		{
+			if( _containerID < 0 ) 
+			{
+				return;
+			}
+			
+			var trackID:int = command.trackID;
+			var parent:IntegraDataObject = model.getParent( _containerID );
+			if( !parent )
+			{
+				Assert.assertEquals( _containerID, model.project.id );
+				return;
+			}
+			
+			if( _containerID != trackID && parent.id !== trackID )
+			{
+				return;			
+			} 
+			
+			setControlForegroundColor();
+		}
+		
+		
+		private function onBlockChangedTrack( command:SetBlockTrack ):void
+		{
+			if( command.blockID == _containerID )
+			{
+				setControlForegroundColor();
+			}			
+		}
+		
+		
+		private function onObjectRenamed( command:RenameObject ):void
+		{
+			if( command.objectID == _containerID )
+			{
+				updateTooltip();
+			}
+		}
+		
+		
+		private function updateTooltip():void
+		{
+			var container:IntegraContainer = model.getContainer( _containerID );
+			Assert.assertNotNull( container );
+
+			toolTip = Utilities.getClassNameFromObject( container ) + " VU";
+		}
+		
+		
+		private var _containerID:int = -1;
+		
+		private var _control:ControlManager = null;
+
+		private var _bottomBackgroundColor:uint = 0;
+		private var _topBackgroundColor:uint = 0;
+
+		private var _trackedEndpoints:Object = new Object;
+		private var _mapTrackedInterfaceGuidsToEndpoints:Object = new Object;
+		
+		private static const _vuMeterControlName:String = "VuMeter"; 
+		private static const _vuMeterControlAttributeName:String = "level";
+
+		private static const _audioOutputInterfaces:Array = [ "AudioOut", "StereoAudioOut", "QuadAudioOut" ];
+		
+	    private static const CONTROL_ATTRIBUTE_TYPE_NUMBER:String = "n";
+	}
+}

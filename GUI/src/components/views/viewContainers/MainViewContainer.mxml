@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ -->
+
+<IntegraView xmlns="components.views.*" 
+			 xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx"
+			 xmlns:viewContainers="components.views.viewContainers.*"
+				creationComplete="onCreationComplete()" 
+				horizontalScrollPolicy="off"
+				verticalScrollPolicy="off" xmlns:utils="components.utils.*">
+
+	<states>
+		<s:State name="ArrangeState"/>
+		<s:State name="ModuleGraphState"/>
+		<s:State name="LiveState"/>
+	</states> 
+	
+	<mx:HBox width="100%" height="100%" paddingLeft="5" paddingRight="5" horizontalGap="2" includeIn="ArrangeState">
+		<mx:VBox width="100%" height="100%" verticalGap="2">
+			<viewContainers:ViewHolder view="{_arrangeView}" timelineMode="{TimelineMode.EDITABLE}"/>
+			<viewContainers:ViewHolder view="{_arrangeViewProperties}" canCollapse="true" changeHeightFromTop="true"/> 
+		</mx:VBox>
+		<mx:VBox height="100%" verticalGap="2">
+			<viewContainers:ViewHolder view="{_blockLibrary}" changeWidthFromLeft="true"/>
+			<viewContainers:ViewHolder view="{_arrangeInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true"/>
+		</mx:VBox>
+	</mx:HBox> 
+	
+	<mx:HBox width="100%" height="100%" paddingLeft="5" paddingRight="5" horizontalGap="2" includeIn="ModuleGraphState">
+		<mx:VBox width="100%" height="100%" verticalGap="2">
+			<viewContainers:ViewHolder view="{_moduleGraph}"/>
+			<viewContainers:ViewHolder view="{_moduleProperties}" canCollapse="true" changeHeightFromTop="true"/>
+		</mx:VBox>
+		<mx:VBox height="100%" verticalGap="2">
+			<viewContainers:ViewHolder view="{_moduleLibrary}" changeWidthFromLeft="true"/>
+			<viewContainers:ViewHolder view="{_moduleGraphInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%" paddingLeft="5" paddingRight="5" horizontalGap="2" includeIn="LiveState">
+		<mx:VBox width="100%" height="100%" verticalGap="2">
+			<viewContainers:ViewHolder view="{_liveView}" timelineMode="{TimelineMode.READONLY}"/>
+			<viewContainers:ViewHolder view="{_keybindingView}" canCollapse="true" changeHeightFromTop="true"/> 
+		</mx:VBox>
+		<viewContainers:ViewHolder view="{_liveInfoView}" height="100%" changeWidthFromLeft="true"/>
+	</mx:HBox>
+
+	<fx:Declarations>
+		<utils:DimensionSharer view1="{_blockLibrary}" view2="{_arrangeInfoView}" dimension="WIDTH"/>
+		<utils:DimensionSharer view1="{_arrangeViewProperties}" view2="{_arrangeInfoView}" dimension="HEIGHT"/>
+		<utils:DimensionSharer view1="{_moduleLibrary}" view2="{_moduleGraphInfoView}" dimension="WIDTH"/>
+		<utils:DimensionSharer view1="{_moduleProperties}" view2="{_moduleGraphInfoView}" dimension="HEIGHT"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import components.controller.IntegraController;
+			import components.controller.serverCommands.RenameObject;
+			import components.controller.userDataCommands.SetColorScheme;
+			import components.controller.userDataCommands.SetContrast;
+			import components.controller.userDataCommands.SetViewMode;
+			import components.model.IntegraModel;
+			import components.model.Project;
+			import components.model.userData.ColorScheme;
+			import components.model.userData.ViewMode;
+			import components.utils.Trace;
+			import components.views.ArrangeView.ArrangeView;
+			import components.views.ArrangeViewProperties.ArrangeViewProperties;
+			import components.views.BlockLibrary.BlockLibrary;
+			import components.views.LiveView.KeybindingView;
+			import components.views.LiveView.LiveView;
+			import components.views.ModuleGraph.ModuleGraph;
+			import components.views.ModuleLibrary.ModuleLibrary;
+			import components.views.ModuleProperties.ModuleProperties;
+			import components.views.Preferences.Preferences;
+			import components.views.Timeline.TimelineMode;
+			import components.views.InfoView.InfoView;
+			import components.views.viewContainers.ViewTree;
+			
+			import flash.filters.ColorMatrixFilter;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.containers.Canvas;
+			import mx.core.Container;
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
+			
+			
+			public function loadPersistantState( xml:XML ):void
+			{
+				loadHeight( xml, _arrangeViewProperties, "arrangeViewPropertiesHeight" );
+				loadCollapsed( xml, _arrangeViewProperties, "arrangeViewPropertiesCollapsed" );
+				loadWidth( xml, _blockLibrary, "blockLibraryWidth" );
+				loadHeight( xml, _arrangeInfoView, "arrangeInfoViewHeight" );
+				loadWidth( xml, _arrangeInfoView, "arrangeInfoViewWidth" );
+				loadHeight( xml, _moduleProperties, "modulePropertiesHeight" );
+				loadCollapsed( xml, _moduleProperties, "modulePropertiesCollapsed" );
+				loadWidth( xml, _moduleLibrary, "moduleLibraryWidth" );
+				loadHeight( xml, _moduleGraphInfoView, "moduleGraphInfoViewHeight" );
+				loadWidth( xml, _moduleGraphInfoView, "moduleGraphInfoViewWidth" );
+				loadHeight( xml, _keybindingView, "keybindingViewHeight" );
+				loadCollapsed( xml, _keybindingView, "keybindingViewCollapsed" );
+				loadWidth( xml, _liveInfoView, "liveInfoViewWidth" );
+
+
+				if( xml.hasOwnProperty( "arrangeViewPropertiesTab" ) )
+				{
+					_arrangeViewProperties.selectedTab = xml.child( "arrangeViewPropertiesTab" ).toString();
+				}				
+
+				if( xml.hasOwnProperty( "lastModuleDirectory" ) )
+				{
+					_moduleGraph.lastModuleDirectory = xml.child( "lastModuleDirectory" ).toString();
+				}
+
+				if( xml.hasOwnProperty( "lastBlockDirectory" ) )
+				{
+					_arrangeView.lastBlockDirectory = xml.child( "lastBlockDirectory" ).toString();
+				}
+
+				if( xml.hasOwnProperty( "lastTrackDirectory" ) )
+				{
+					_arrangeView.lastTrackDirectory = xml.child( "lastTrackDirectory" ).toString();
+				}
+			}
+
+
+			public function storePersistantState( xml:XML ):void
+			{
+				xml.appendChild( <arrangeViewPropertiesHeight>{ _arrangeViewProperties.height }</arrangeViewPropertiesHeight> );
+				xml.appendChild( <arrangeViewPropertiesCollapsed>{ _arrangeViewProperties.collapsed }</arrangeViewPropertiesCollapsed> );
+				xml.appendChild( <blockLibraryWidth>{ _blockLibrary.width }</blockLibraryWidth> );
+				xml.appendChild( <arrangeInfoViewHeight>{ _arrangeInfoView.height }</arrangeInfoViewHeight> );
+				xml.appendChild( <arrangeInfoViewWidth>{ _arrangeInfoView.width }</arrangeInfoViewWidth> );
+
+				xml.appendChild( <modulePropertiesHeight>{ _moduleProperties.height }</modulePropertiesHeight> );
+				xml.appendChild( <modulePropertiesCollapsed>{ _moduleProperties.collapsed }</modulePropertiesCollapsed> );
+				xml.appendChild( <moduleLibraryWidth>{ _moduleLibrary.width }</moduleLibraryWidth> );
+				xml.appendChild( <moduleGraphInfoViewHeight>{ _moduleGraphInfoView.height }</moduleGraphInfoViewHeight> );
+				xml.appendChild( <moduleGraphInfoViewWidth>{ _moduleGraphInfoView.width }</moduleGraphInfoViewWidth> );
+
+				xml.appendChild( <keybindingViewHeight>{ _keybindingView.height }</keybindingViewHeight> );
+				xml.appendChild( <keybindingViewCollapsed>{ _keybindingView.collapsed }</keybindingViewCollapsed> );
+				xml.appendChild( <liveInfoViewWidth>{ _liveInfoView.width }</liveInfoViewWidth> );
+
+				
+				xml.appendChild( <arrangeViewPropertiesTab>{ _arrangeViewProperties.selectedTab }</arrangeViewPropertiesTab> );
+				
+				if( _moduleGraph.lastModuleDirectory )
+				{
+					xml.appendChild( <lastModuleDirectory>{ _moduleGraph.lastModuleDirectory }</lastModuleDirectory> );
+				}
+
+				if( _arrangeView.lastBlockDirectory )
+				{
+					xml.appendChild( <lastBlockDirectory>{ _arrangeView.lastBlockDirectory }</lastBlockDirectory> );
+				}
+				
+				if( _arrangeView.lastTrackDirectory )
+				{
+					xml.appendChild( <lastTrackDirectory>{ _arrangeView.lastTrackDirectory }</lastTrackDirectory> );
+				}
+			}
+
+
+			override public function styleChanged( style:String ):void
+			{
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					var comboTextColor:uint;
+					var comboBackgroundColor:uint;
+					var comboSelectedBackgroundColor:uint;
+					
+					switch( getStyle( ColorScheme.STYLENAME ) )
+					{
+						default:
+						case ColorScheme.LIGHT:
+							opaqueBackground = 0xf5f5f5;
+							_moduleGraphTransitionCanvas.setStyle( "backgroundColor", 0xC0C0C0 );
+
+							comboTextColor = 0xcfcfcf;
+							comboBackgroundColor = 0x747474;
+							comboSelectedBackgroundColor = 0x848484;
+							
+							break;
+							
+						case ColorScheme.DARK:
+							opaqueBackground = 0x0b0b0b;
+							_moduleGraphTransitionCanvas.setStyle( "backgroundColor", 0x404040 );
+
+							comboTextColor = 0x313131;
+							comboBackgroundColor = 0x8c8c8c;
+							comboSelectedBackgroundColor = 0x7c7c7c;
+							break;
+					}
+
+					var comboBoxStyle:CSSStyleDeclaration = FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration( "mx.controls.ComboBox" );
+					if( comboBoxStyle )
+					{
+						comboBoxStyle.setStyle( "color", comboTextColor );
+						comboBoxStyle.setStyle( "textRollOverColor", comboTextColor );
+						comboBoxStyle.setStyle( "textSelectedColor", comboTextColor );
+						comboBoxStyle.setStyle( "rollOverColor", comboSelectedBackgroundColor );
+						comboBoxStyle.setStyle( "selectionColor", comboSelectedBackgroundColor );
+						comboBoxStyle.setStyle( "alternatingItemColors", [ comboBackgroundColor, comboBackgroundColor ] ); 					
+					}
+				}
+
+				if( _isDisplayingPreferences )
+				{
+					_preferences.onStyleChanged( style );	
+				}
+			}
+	
+	
+			override protected function onAllDataChanged():void 
+			{
+				endModuleGraphTransition();
+
+				updateState();
+				
+				updateColorSchemeAndContrast();
+				
+				updatePreferences();
+			}
+
+
+			private function onCreationComplete():void
+			{
+				addUpdateMethod( SetColorScheme, onColorSchemeChanged );
+				addUpdateMethod( SetContrast, onContrastChanged );
+				addUpdateMethod( SetViewMode, onViewModeChanged ); 
+				
+				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER, onModuleGraphTransitionTimer );
+				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onModuleGraphTransitionComplete );
+				
+				_moduleGraphTransitionCanvas.alpha = 0.5;
+				
+				addEventListener( Event.RESIZE, onResize );
+			}
+			
+			
+			private function onResize( event:Event ):void
+			{
+				if( _isDisplayingPreferences )
+				{
+					_preferences.updateSize();
+					mx.managers.PopUpManager.centerPopUp( _preferences );
+				}
+			}
+	
+	
+			private function onViewModeChanged( command:SetViewMode ):void
+			{
+				updatePreferences();
+
+				var viewMode:ViewMode = model.project.userData.viewMode;
+				if( viewMode.mode == ViewMode.ARRANGE )
+				{
+					if( viewMode.blockPropertiesOpen && currentState == "ArrangeState" )
+					{
+						startModuleGraphTransition();
+						return;
+					}
+					else
+					{
+						if( !viewMode.blockPropertiesOpen && currentState == "ModuleGraphState" )
+						{
+							updateState();
+							startModuleGraphTransition();
+							return;
+						}
+					}
+				}
+				
+				updateState();
+			}
+			
+			
+			private function onColorSchemeChanged( command:SetColorScheme ):void
+			{
+				updateColorSchemeAndContrast();
+			}
+
+			
+			private function onContrastChanged( command:SetContrast ):void
+			{
+				updateColorSchemeAndContrast();
+			}
+			
+			
+			private function updateState():void
+			{
+				var viewMode:ViewMode = model.project.userData.viewMode;
+				
+				switch( viewMode.mode )
+				{
+					case ViewMode.ARRANGE:
+						if( viewMode.blockPropertiesOpen )
+						{
+							currentState = "ModuleGraphState";
+						}
+						else
+						{	
+							currentState = "ArrangeState";
+						}
+						break;
+	
+					case ViewMode.LIVE:
+						currentState = "LiveState";
+						break;
+						
+					default:
+						Assert.assertTrue( false );
+						break;
+				}
+			}
+			
+			
+			private function updateColorSchemeAndContrast():void
+			{
+				const contrastMultiplier:Number = 2;
+				
+				var colorScheme:String = model.project.userData.colorScheme;
+				if( parentApplication.getStyle( ColorScheme.STYLENAME ) != colorScheme )
+				{
+					parentApplication.setStyle( ColorScheme.STYLENAME, colorScheme );
+				}
+
+				const filterMatrixInvert:Array = 
+					[
+						-1, 0, 0, 0, 255,
+						0, -1, 0, 0, 255,
+						0, 0, -1, 0, 255,
+						0, 0, 0, 1, 0 
+					];
+
+				
+				const filterMatrixIncreaseDark:Array = 
+				[
+					contrastMultiplier, 0, 0, 0, 0,
+					0, contrastMultiplier, 0, 0, 0,
+					0, 0, contrastMultiplier, 0, 0,
+					0, 0, 0, 1, 0 
+				];	
+
+				if( model.project.userData.highContrast )
+				{
+					switch( colorScheme )
+					{
+						case ColorScheme.LIGHT:
+							
+							parentApplication.filters = 
+								[ 
+									new ColorMatrixFilter( filterMatrixInvert ),
+									new ColorMatrixFilter( filterMatrixIncreaseDark ), 
+									new ColorMatrixFilter( filterMatrixInvert )
+								];
+							
+							break;
+
+						case ColorScheme.DARK:
+							
+							parentApplication.filters = 
+							[ 
+								new ColorMatrixFilter( filterMatrixIncreaseDark ), 
+							];
+							
+							break;
+						
+						default:
+							Assert.assertTrue( false );
+							break;
+					}
+				}
+				else
+				{
+					parentApplication.filters = [];
+				}
+			}
+			
+			
+			private function updatePreferences():void
+			{
+     			if( model.project.userData.viewMode.preferencesOpen )
+     			{
+     				if( !_isDisplayingPreferences )
+     				{
+						mx.managers.PopUpManager.addPopUp( _preferences, this );
+						mx.managers.PopUpManager.centerPopUp( _preferences );
+						_preferences.onStyleChanged( null );	
+						mx.managers.PopUpManager.bringToFront( _preferences );
+						_isDisplayingPreferences = true;
+     				}
+     			}
+     			else
+     			{
+     				if( _isDisplayingPreferences )
+     				{
+    					mx.managers.PopUpManager.removePopUp( _preferences );
+ 	      				_isDisplayingPreferences = false;
+ 	      			}
+     			}
+			}
+			
+			
+			private function startModuleGraphTransition():void
+			{
+				endModuleGraphTransition();
+				
+				_moduleGraphTransitionRectangle = _arrangeView.getPrimaryBlockRectangle();
+				if( !_moduleGraphTransitionRectangle ) 
+				{
+					Trace.error( "failed to query module graph transition rectangle" );
+					_moduleGraphTransitionRectangle = new Rectangle();	//failsafe
+				}
+				
+				var arrangeViewRect:Rectangle = _arrangeView.getRect( this );
+				_moduleGraphTransitionRectangle.offset( arrangeViewRect.x, arrangeViewRect.y );
+
+				_moduleGraphTransitionCanvas.visible = false;
+				addElement( _moduleGraphTransitionCanvas );
+				
+				_moduleGraphTransitionTimer.start();
+				
+				_moduleGraphTransitionActive = true;
+				
+				doModuleGraphTransition();
+			}
+			
+			
+			private function endModuleGraphTransition():void
+			{
+				if( !_moduleGraphTransitionActive )
+				{
+					return;
+				}
+				removeElement( _moduleGraphTransitionCanvas );
+				_moduleGraphTransitionCanvas.visible = false;
+				
+				_moduleGraphTransitionTimer.stop();
+				_moduleGraphTransitionTimer.reset();
+				
+				_moduleGraphTransitionActive = false;
+			}
+
+
+			private function onModuleGraphTransitionTimer( event:TimerEvent ):void
+			{
+				doModuleGraphTransition();				
+			}
+
+
+			private function doModuleGraphTransition():void
+			{
+				var transition:Number = _moduleGraphTransitionTimer.currentCount / _moduleGraphTransitionTimer.repeatCount;
+				
+				//easing function
+				transition = 0.5 - Math.cos( transition * Math.PI ) * 0.5;
+				
+				if( !model.project.userData.viewMode.blockPropertiesOpen )
+				{
+					transition = 1 - transition;
+				}
+				
+				var transitionOpposite:Number = 1 - transition;
+				  
+				_moduleGraphTransitionCanvas.x = _moduleGraphTransitionRectangle.x * transitionOpposite;
+				_moduleGraphTransitionCanvas.y = _moduleGraphTransitionRectangle.y * transitionOpposite;
+				_moduleGraphTransitionCanvas.width = width * transition + _moduleGraphTransitionRectangle.width * transitionOpposite;
+				_moduleGraphTransitionCanvas.height = height * transition +  _moduleGraphTransitionRectangle.height * transitionOpposite;
+				_moduleGraphTransitionCanvas.visible = true;
+			}
+
+
+			private function onModuleGraphTransitionComplete( event:TimerEvent ):void
+			{
+				endModuleGraphTransition();
+				updateState();
+			}
+			
+			
+			private function loadHeight( xml:XML, view:IntegraView, key:String ):void
+			{
+				if( xml.hasOwnProperty( key ) )
+				{
+					view.height = Number( xml.child( key ).toString() );
+				}
+			}
+
+			
+			private function loadWidth( xml:XML, view:IntegraView, key:String ):void
+			{
+				if( xml.hasOwnProperty( key ) )
+				{
+					view.width = Number( xml.child( key ).toString() );
+				}
+			}
+
+			
+			private function loadCollapsed( xml:XML, view:IntegraView, key:String ):void
+			{
+				if( xml.hasOwnProperty( key ) )
+				{
+					view.collapsed = ( xml.child( key ).toString() == "true" );
+				}
+			}
+			
+			
+			
+			[Bindable] private var _arrangeView:ArrangeView = new ArrangeView;
+			[Bindable] private var _arrangeViewProperties:ArrangeViewProperties = new ArrangeViewProperties;
+			[Bindable] private var _blockLibrary:BlockLibrary = new BlockLibrary;
+			[Bindable] private var _moduleGraph:ModuleGraph = new ModuleGraph;
+			[Bindable] private var _moduleLibrary:ModuleLibrary = new ModuleLibrary;
+			[Bindable] private var _moduleProperties:ModuleProperties = new ModuleProperties;
+			[Bindable] private var _liveView:LiveView = new LiveView;
+			[Bindable] private var _keybindingView:KeybindingView = new KeybindingView;
+			[Bindable] private var _preferences:Preferences = new Preferences;
+			[Bindable] private var _arrangeInfoView:InfoView = new InfoView( true );
+			[Bindable] private var _moduleGraphInfoView:InfoView = new InfoView( true );
+			[Bindable] private var _liveInfoView:InfoView = new InfoView( false );
+            private var _isDisplayingPreferences:Boolean = false;
+
+			private var _moduleGraphTransitionTimer:Timer = new Timer( _moduleGraphTransitionDelay, _moduleGraphTransitionDuration / _moduleGraphTransitionDelay );
+			private var _moduleGraphTransitionCanvas:Canvas = new Canvas;
+			private var _moduleGraphTransitionActive:Boolean = false;
+			private var _moduleGraphTransitionRectangle:Rectangle = null;
+
+			private const _moduleGraphTransitionDelay:Number = 50;
+			private const _moduleGraphTransitionDuration:Number = 300;
+			
+		]]>
+	</fx:Script>					
+
+</IntegraView>

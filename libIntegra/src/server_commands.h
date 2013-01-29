@@ -1,0 +1,82 @@
+/* libIntegra multimedia module interface
+ *  
+ * Copyright (C) 2007 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+ * USA.
+ */
+
+#ifndef INTEGRA_SERVER_COMMANDS_PRIVATE_H
+#define INTEGRA_SERVER_COMMANDS_PRIVATE_H
+#include "server.h"
+#include "command.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* this is also the order the arguments should be passed */
+typedef struct ntg_args_set_ {
+    unsigned int source;
+    const ntg_path *path;
+    const ntg_value *value;
+} ntg_args_set;
+
+ntg_command_status ntg_set_(ntg_server *server,
+        ntg_command_source cmd_source,
+        const ntg_path *attribute_path,
+        const ntg_value *value);
+
+ntg_command_status ntg_new_(ntg_server *server,
+        ntg_command_source cmd_source,
+        const GUID *module_id,
+        const char *node_name,
+        const ntg_path *path);
+
+ntg_command_status  ntg_delete_(ntg_server *server,
+        ntg_command_source cmd_source,
+        const ntg_path *path);
+
+ntg_command_status ntg_rename_(ntg_server *server,
+        ntg_command_source cmd_source,
+        const ntg_path *path,
+        const char *name);
+
+ntg_command_status ntg_move_(ntg_server *server,
+        ntg_command_source cmd_source,
+        const ntg_path *node_path,
+        const ntg_path *parent_path);
+
+ntg_command_status ntg_load_(ntg_server * server,
+        ntg_command_source cmd_source,
+        const char *file_path,
+        const ntg_path * path);
+
+ntg_list *ntg_nodelist_(ntg_server *server, const ntg_path * path);
+
+
+ntg_command_status ntg_save_(ntg_server *server, const ntg_path * path,
+        const char *file_path);
+
+ntg_value *ntg_get_(ntg_server *server, const ntg_path * path);
+
+
+void ntg_print_state_();
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

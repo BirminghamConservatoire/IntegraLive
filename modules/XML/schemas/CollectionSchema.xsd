@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:annotation>
+    <xsd:documentation>
+      The XML Schema for the main container format for the Integra Environment. Instances of this Schema defines a given DSP graph and its current state at some point in time. Following is an example instance:
+
+&lt;IntegraCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   integraVersion="x.x.x.xxxx"&gt;
+  
+  &lt;object classId="7" name="Project1"&gt;
+    &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+    &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+    &lt;object classId="7" name="Block1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="5" name="TapDelay1"&gt;
+        &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+        &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+        &lt;attribute name="out1" typeCode="5"&gt;&lt;/attribute&gt;
+        &lt;attribute name="in1" typeCode="5"&gt;&lt;/attribute&gt;
+        &lt;attribute name="delayTime" typeCode="2"&gt;0.5&lt;/attribute&gt;
+        &lt;attribute name="feedback" typeCode="2"&gt;0.5&lt;/attribute&gt;
+      &lt;/object&gt;
+      &lt;object classId="5" name="TapDelay2"&gt;
+        &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+        &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+      &lt;/object&gt;
+    &lt;/object&gt;
+    &lt;object classId="7" name="Block2"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="5" name="TapDelay1"&gt;
+        &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+        &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+        &lt;attribute name="out1" typeCode="5"&gt;&lt;/attribute&gt;
+      &lt;/object&gt;
+    &lt;/object&gt;
+  &lt;/object&gt;
+&lt;/IntegraCollection&gt;
+
+An object represents a container (a module, a connection, a player) that has attributes that defins its current state as well as other objects that are contained in its parent object.
+    </xsd:documentation>
+  </xsd:annotation>
+  <xsd:element name="IntegraCollection">
+    <xsd:complexType>
+      <xsd:sequence>
+
+        <xsd:annotation>
+          <xsd:documentation>
+            Collection root object.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:element name="object" minOccurs="1" maxOccurs="unbounded" type="objectAttributes" />
+      </xsd:sequence>
+	  <xsd:attribute name="integraVersion"
+					 type="xsd:string" use="optional"/>
+      <xsd:attribute name="collectionSchemaVersionMajor" 
+                     type="xsd:int" use="optional"/>
+      <xsd:attribute name="collectionSchemaVersionMinor" 
+                     type="xsd:int" use="optional"
+                     fixed="0" />
+      <xsd:attribute name="collectionAbsoluteVersion"
+                     type="xsd:int" use="optional" 
+                     fixed="0" />
+      <xsd:anyAttribute />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:annotation>
+    <xsd:documentation>
+      The type that gives the legal values for the object child elements. This definition defines itself as a legal child.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:complexType name="objectAttributes">
+      <xsd:sequence>
+        <xsd:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType mixed="true">
+            <xsd:attribute name="name" type="xsd:string" use="required" />
+            <xsd:attribute name="typeCode" type="xsd:int" use="required" />
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="object" minOccurs="0" maxOccurs="unbounded"
+                       type="objectAttributes" />
+      </xsd:sequence>
+      <xsd:attribute name="moduleId" type="xsd:string" use="optional" />
+      <xsd:attribute name="originId" type="xsd:string" use="optional" />
+      <xsd:attribute name="instanceId" type="xsd:string" use="optional" />
+      <xsd:attribute name="classId" type="xsd:int" use="optional" />
+      <xsd:attribute name="name" type="xsd:string" use="optional" />
+    </xsd:complexType>
+</xsd:schema>

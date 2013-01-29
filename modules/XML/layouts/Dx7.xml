@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<controls>
+  <control id="mute" x="20" y="20" width="70" height="85"/>
+  <control id="outLevel" x="100" y="10" width="50" height="180"/>
+  <control id="loadSysEx" x="180" y="10" width="135" height="85" />
+  <control id="programNumber" x="320" y="10" width="85" height="110"/>
+  <control id="test" x="405" y="10" width="85" height="110"/>
+  <control id="portamentoOnOff" x="490" y="10" width="85" height="110"/>
+  <control id="portamentoTime" x="575" y="10" width="200" height="110"/>
+  <control id="reset" x="775" y="10" width="85" height="110"/>
+</controls>

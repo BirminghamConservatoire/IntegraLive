@@ -1,0 +1,94 @@
+
+[THIS README IS OBSOLETE AND NEEDS UPDATING]
+
+==========
+LibIntegra
+==========
+
+LibIntegra provides a number of components that can be used in isolation or in combination. These components can be used by an application wishing to support the Integra protocol for multimedia module design and intermodule communication.
+
+A complete list of features can be found by viewing the header files, or reading the doxygen documentation, available with this package, or at http://integralive.sourceforge.net
+
+There is also a substantial amount of documentation on the wiki at http://wiki.integralive.org
+
+
+Dependencies
+------------
+
+libIntegra requires:
+
+- automake >= 1.6
+- xmlrpc-c >= 1.06.27
+- libxml2 >= 2.6.20
+
+For Lua scripting:
+
+- liblua >= 5.1.0
+
+For the OSC interface and OSC bridge
+
+- liblo >= 0.26
+
+Installation
+------------
+
+To build and install the library with the common options enabled type:
+
+    sh libIntegra-install.sh
+
+Otherwise the general build and install commands are of the form:
+
+    ./configure --osc_interface
+    make
+    sudo make install
+
+To find out more configuration options:
+
+    ./configure --help
+
+The standard install directory is /usr/local/lib. The PD [integra] external (see below for more information) relies on libIntegra and you may need to set LD_LIBRARY_PATH for PD to be able to find the libIntegra shared lib. In a bash shell:
+
+    $ export LD_LIBRARY_PATH=/usr/local/lib
+
+If you would rather install the library in /usr/lib add a --prefix flag to the configure script:
+
+    ./configure --enable-osc_interface --prefix=/usr
+
+
+Building the PD example
+-----------------------
+
+In examples/PD there is an example PD external that illustrates the use of libIntegra and the integra_pd_bridge.
+
+To build this:
+
+    cd examples/PD
+        make pd_darwin 
+            -or-
+        make pd_linux
+            -or-
+        make mingw
+    sudo make install
+
+You should also make sure that /usr/local/lib/pd/extra is in PD's path
+
+If you want to try the example patches, you must make sure that both the patches/ and patches/ntg directories are in PD's path.
+
+
+Disclaimer
+----------
+ 
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+ 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+USA.

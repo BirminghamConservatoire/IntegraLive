@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300"
+		   addedToStage="onAddedToStage()"
+		   creationComplete="onCreationComplete()">
+
+	<mx:VBox verticalGap="20" top="0" bottom="20" left="10" right="10">
+		<mx:Label id="_titleLabel" text="Integra Live has stopped working!" fontWeight="bold" fontSize="16" textAlign="center"/> 
+		<mx:TextArea id="_message"
+			width="100%" height="100%"
+			editable="false"
+			focusEnabled="false"
+			selectable="false"
+			horizontalScrollPolicy="off"
+			verticalScrollPolicy="off"
+			backgroundAlpha="0"
+			borderStyle="none"/>
+		<mx:HBox width="100%" horizontalAlign="center" horizontalGap="20">
+			<mx:Button id="_reportButton" label="Send Report" click="onClickSendReportButton()" styleName="textButtonStyle"/>
+			<mx:Button id="_waitButton" label="Keep Waiting" click="onClickWaitButton()" styleName="textButtonStyle"/>
+			<mx:Button id="_closeButton" label="Close" click="onClickCloseButton()" styleName="textButtonStyle"/>
+			<mx:Button id="_cancelButton" label="Cancel" click="onClickCancelButton()" styleName="textButtonStyle"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<fx:Style>
+		.textButtonStyle
+		{
+			skin: ClassReference("components.views.Skins.TextButtonSkin");
+			font-weight: "normal"; 
+		}
+	</fx:Style>	
+	
+	<fx:Script>
+		<![CDATA[
+
+			import com.reijii.POSTUploadBuilder;
+			
+			import components.controller.events.CrashReportEvent;
+			import components.model.userData.ColorScheme;
+			import components.utils.Config;
+			import components.utils.Trace;
+			import components.utils.Utilities;
+			
+			import flexunit.framework.Assert;
+			
+			public function get crashType():String { return _crashType; }
+			public function set crashType( crashType:String ):void { _crashType = crashType; }
+				
+			public function set filesToUpload( files:Vector.<String> ):void { _filesToUpload = files; }
+			
+			
+			protected override function updateDisplayList( width:Number, height:Number ):void
+			{
+				super.updateDisplayList( width, height );
+				
+				graphics.clear();
+				
+				graphics.lineStyle( _borderThickness, _borderColor ); 
+				graphics.beginFill( _backgroundColor );
+				graphics.drawRoundRect( 0, 0, width, height, _cornerRadius, _cornerRadius );
+				graphics.endFill();
+				
+				graphics.beginFill( _borderColor );
+				graphics.drawRoundRectComplex( 0, 0, width, _titleHeight, _cornerRadius, _cornerRadius, 0, 0 );
+				graphics.endFill();
+			}
+			
+			
+			private function onAddedToStage():void
+			{
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						_backgroundColor = 0xffffff;
+						break;
+					
+					case ColorScheme.DARK:
+						_backgroundColor = 0x000000;
+						break;
+				}
+			}
+			
+			
+			private function onCreationComplete():void
+			{
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						_titleLabel.setStyle( "color", 0x000000 );
+						_message.setStyle( "color", 0x747474 );
+						setButtonTextColor( _reportButton, 0x6D6D6D );
+						setButtonTextColor( _waitButton, 0x6D6D6D );
+						setButtonTextColor( _closeButton, 0x6D6D6D );
+						setButtonTextColor( _cancelButton, 0x6D6D6D );
+						break;
+				
+					case ColorScheme.DARK:
+						_titleLabel.setStyle( "color", 0xffffff );		
+						_message.setStyle( "color", 0x8c8c8c );
+						setButtonTextColor( _reportButton, 0x939393 );
+						setButtonTextColor( _waitButton, 0x939393 );
+						setButtonTextColor( _closeButton, 0x939393 );
+						setButtonTextColor( _cancelButton, 0x939393 );
+						break;
+				}
+				
+				invalidateDisplayList();
+				
+				updateContent();
+			}
+			
+			
+			private function updateContent():void
+			{
+				switch( _uploadPhase )
+				{
+					case null:
+						switch( _crashType )
+						{
+							case CRASHTYPE_SERVER:
+								_message.text = "Integra Live's server has crashed.\n\nWe'd love it if you upload a crash report to the developers.\n\nYou can do this by clicking 'send report'.";
+								showButton( _reportButton );
+								hideButton( _waitButton );
+								showButton( _closeButton );
+								hideButton( _cancelButton );
+								break;
+							
+							case CRASHTYPE_GUI:
+								_message.text = "It seems that Integra Live's gui has stopped working.\n\nIf you're in the middle of a lengthy operation such as loading a large file, it's possible that the operation will finish if you carry on waiting.\n\nOtherwise, we'd love it if you upload a crash report to the developers.\n\nYou can do this by clicking 'send report'."; 
+								showButton( _reportButton );
+								showButton( _waitButton );
+								showButton( _closeButton );
+								hideButton( _cancelButton );
+								break;
+							
+							default:
+								Assert.assertTrue( false );
+								break;
+						}
+
+						_message.text += "\n\n(all crash reports are anonymous)"; 
+						break;
+						
+					case UPLOADPHASE_UPLOADING:
+						_message.text = "Your crash report is uploading..."; 
+						hideButton( _reportButton );
+						hideButton( _waitButton );
+						hideButton( _closeButton );
+						showButton( _cancelButton );
+						break;
+						
+					case UPLOADPHASE_COMPLETE:
+						_message.text = "Your crash report has been uploaded to the developers.\n\nThank you."; 
+						hideButton( _reportButton );
+						hideButton( _waitButton );
+						showButton( _closeButton );
+						hideButton( _cancelButton );
+						break;
+					
+					case UPLOADPHASE_CANCELLED:
+						_message.text = "Cancelled uploading your crash report."; 
+						showButton( _reportButton );
+						hideButton( _waitButton );
+						showButton( _closeButton );
+						hideButton( _cancelButton );
+						break;
+
+					case UPLOADPHASE_FAILED:
+						_message.text = "The crash report failed to upload";
+						if( _uploadError )
+						{
+							_message.text += ( ": " + _uploadError ); 
+						}
+						else
+						{
+							_message.text += ".";
+						}
+						
+						Trace.error( _message.text );
+						
+						showButton( _reportButton );
+						hideButton( _waitButton );
+						showButton( _closeButton );
+						hideButton( _cancelButton );
+						break;
+
+					default:
+						Assert.assertTrue( false );
+						break;
+				}
+			}
+
+			
+			private function showButton( button:Button ):void
+			{
+				button.width = _buttonWidth;
+				button.visible = true;
+			}
+
+			
+			private function hideButton( button:Button ):void
+			{
+				button.width = 0;
+				button.visible = false;
+			}
+
+			
+			private function setButtonTextColor( button:Button, color:uint ):void
+			{
+				button.setStyle( "color", color );
+				button.setStyle( "textRollOverColor", color );
+				button.setStyle( "textSelectedColor", color );
+			}
+			
+			
+			private function onClickSendReportButton():void
+			{
+				_uploadPhase = UPLOADPHASE_UPLOADING;
+				updateContent();
+				
+				var uploadUrl:String = Config.singleInstance.crashReportUrl;
+				if( !uploadUrl )
+				{
+					_uploadError = "No upload url provided in config file";
+					onUploadError();
+					return;
+				}
+			
+				if( !_filesToUpload )
+				{
+					_uploadError = "No crash report files";
+					onUploadError();
+					return;
+				}
+				
+				var uploadRequest:URLRequest = new URLRequest( Config.singleInstance.crashReportUrl );
+                      
+				uploadRequest.contentType = 'multipart/form-data;boundary=' + POSTUploadBuilder.boundary;
+				uploadRequest.method = URLRequestMethod.POST;
+          
+            	var array: Array = [];
+          
+            	for each( var filePath:String in _filesToUpload )
+            	{
+					var file:File = new File( filePath );
+					if( !file.exists )
+					{
+						Trace.error( "can't find crash report file: " + filePath );
+						continue;
+					}
+					
+					var fileStream:FileStream = new FileStream();
+					fileStream.open( file, FileMode.READ );
+					
+					var fileData:ByteArray = new ByteArray;
+					fileStream.readBytes( fileData );
+					fileStream.close();
+					
+					var fileName:String = Utilities.fileNameFromPath( filePath );
+		
+					array.push( POSTUploadBuilder.buildUploadDataVO( fileName, fileData ) );
+            	}          
+           
+				uploadRequest.data = POSTUploadBuilder.buildPOSTData( array, buildPostVariables() );
+				
+				var dataString:String = uploadRequest.data.toString(); 
+				
+				_crashReportLoader = new URLLoader();
+           
+				_crashReportLoader.addEventListener( Event.COMPLETE, onUploadComplete );
+				_crashReportLoader.addEventListener( IOErrorEvent.IO_ERROR, onUploadError );
+				_crashReportLoader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onUploadError );
+           
+				_crashReportLoader.dataFormat = URLLoaderDataFormat.BINARY;
+           
+				_crashReportLoader.load( uploadRequest );
+			}
+			
+			
+			private function buildPostVariables():Array
+			{
+				var postVariables:Array = new Array;
+				
+				postVariables.push( POSTUploadBuilder.buildVariable( "upload", "IntegraLive Crash Report" ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "crashType", _crashType ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "integraLiveVersion", Utilities.integraLiveVersion ) );
+				
+				//removed to protect privacy of crash reporter
+				//postVariables.push( POSTUploadBuilder.buildVariable( "userName", Utilities.userName ) );
+
+				postVariables.push( POSTUploadBuilder.buildVariable( "os", Capabilities.os ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "cpuArchitecture", Capabilities.cpuArchitecture ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "screenResolutionX", Capabilities.screenResolutionX ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "screenResolutionY", Capabilities.screenResolutionY ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "supports32BitProcesses", Capabilities.supports32BitProcesses ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "supports64BitProcesses", Capabilities.supports64BitProcesses ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "language", Capabilities.language ) );
+
+				postVariables.push( POSTUploadBuilder.buildVariable( "flashVersion", Capabilities.version ) );
+				postVariables.push( POSTUploadBuilder.buildVariable( "isDebugger", Capabilities.isDebugger ) );
+				
+				return postVariables;
+			}
+			
+			
+			private function onUploadComplete( event:Event ):void
+			{
+				if( _uploadPhase == UPLOADPHASE_CANCELLED ) return;
+				
+				_uploadPhase = UPLOADPHASE_COMPLETE;
+				updateContent();
+				
+				var urlLoader:URLLoader = event.target as URLLoader;
+				Trace.progress( "crash report upload complete: ", urlLoader.data );
+			}
+
+			
+			private function onUploadError( event:Event = null ):void
+			{
+				if( _uploadPhase == UPLOADPHASE_CANCELLED ) return;
+
+				if( event )
+				{
+					_uploadError = Utilities.getClassNameFromObject( event );
+				}
+				
+				_uploadPhase = UPLOADPHASE_FAILED;
+				updateContent();				
+			}
+			
+			
+			private function onClickWaitButton():void
+			{
+				dispatchEvent( new CrashReportEvent( CrashReportEvent.KEEP_WAITING ) );	
+			}
+
+			
+			private function onClickCloseButton():void
+			{
+				dispatchEvent( new CrashReportEvent( CrashReportEvent.CLOSE ) );	
+			}
+
+			
+			private function onClickCancelButton():void
+			{
+				if( _crashReportLoader )
+				{
+					try
+					{
+						_crashReportLoader.close();
+					}
+					catch( error:Error )
+					{
+					}
+				}
+				
+				_uploadPhase = UPLOADPHASE_CANCELLED;
+				updateContent();			
+			}
+
+			private var _crashType:String = null;
+			private var _filesToUpload:Vector.<String> = null;
+						
+			private var _uploadPhase:String = null;
+			private var _uploadError:String = null;
+
+			private var _backgroundColor:uint = 0;
+
+			private var _crashReportLoader:URLLoader = null;
+			
+			private const _titleHeight:uint = 20;
+			private const _buttonWidth:Number = 100;
+			private const _borderColor:uint = 0xe95d0f;
+			private const _borderThickness:Number = 4;
+			private const _cornerRadius:Number = 15;
+
+			private static const UPLOADPHASE_UPLOADING:String = "uploadInProgress";
+			private static const UPLOADPHASE_COMPLETE:String = "uploadComplete";
+			private static const UPLOADPHASE_FAILED:String = "uploadFailed";
+			private static const UPLOADPHASE_CANCELLED:String = "uploadCancelled";
+
+			public static const CRASHTYPE_SERVER:String = "Server";
+			public static const CRASHTYPE_GUI:String = "Gui";
+		]]>
+	</fx:Script>					
+			
+</mx:Canvas>

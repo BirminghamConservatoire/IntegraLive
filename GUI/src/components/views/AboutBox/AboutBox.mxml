@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="500" height="400"
+		   creationComplete="onCreationComplete()">
+
+	<mx:VBox verticalGap="10" top="0" bottom="20" left="10" right="10">
+		<mx:HBox>
+			<mx:Button id="_titleCloseButton" width="{_titleHeight}" height="{_titleHeight}" click="onClickCloseButton()"/> 
+			<mx:Label id="_titleLabel" text="About Integra Live"/> 
+		</mx:HBox>
+		<mx:Image id="_logoImage"/>
+		<mx:Label id="_headingLabel" text="Integra Live" fontWeight="bold" fontSize="32"/>
+		<mx:Label id="_versionLabel" text="[version]"/>
+		<mx:TextArea id="_copyrightNotice"
+					 width="100%" height="100%"
+					 editable="false"
+					 focusEnabled="false"
+					 selectable="false"
+					 horizontalScrollPolicy="off"
+					 verticalScrollPolicy="off"
+					 backgroundAlpha="0"
+					 borderStyle="none"/>		
+		<mx:HBox width="100%" horizontalAlign="center" horizontalGap="20">
+			<mx:Button id="_acknowledgementsButton" label="Acknowledgements" click="onClickAcknowledgementsButton()" styleName="textButtonStyle"/>
+			<mx:Button id="_licenseAgreementButton" label="License Agreement" click="onClickLicenseAgreementButton()" styleName="textButtonStyle"/>
+			<mx:Button id="_closeButton" label="Close" click="onClickCloseButton()" styleName="textButtonStyle"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<fx:Style>
+		.textButtonStyle
+		{
+			skin: ClassReference("components.views.Skins.TextButtonSkin");
+			font-weight: "normal"; 
+		}
+	</fx:Style>	
+	
+	<fx:Script>
+		<![CDATA[
+			import components.model.userData.ColorScheme;
+			import components.utils.Config;
+			import components.utils.Trace;
+			import components.utils.Utilities;
+			import components.views.Skins.CloseButtonSkin;
+			
+			import flash.net.navigateToURL;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.managers.PopUpManager;
+
+			
+			public function toggle( parent:DisplayObject ):void
+			{
+				if( _isShowing )
+				{
+					mx.managers.PopUpManager.removePopUp( this );
+					_isShowing = false;
+				}
+				else
+				{
+					mx.managers.PopUpManager.addPopUp( this, parent );
+					onStyleChanged( null );	
+					mx.managers.PopUpManager.centerPopUp( this );
+					mx.managers.PopUpManager.bringToFront( this );
+					_isShowing = true;
+				}
+			}
+			
+			
+			public function get isShowing():Boolean { return _isShowing; }
+			
+			public function onStyleChanged( style:String ):void
+			{
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					_acknowledgementsButton.setStyle( ColorScheme.STYLENAME, getStyle( ColorScheme.STYLENAME ) );
+					_licenseAgreementButton.setStyle( ColorScheme.STYLENAME, getStyle( ColorScheme.STYLENAME ) );
+					_closeButton.setStyle( ColorScheme.STYLENAME, getStyle( ColorScheme.STYLENAME ) );
+
+					switch( getStyle( ColorScheme.STYLENAME ) )
+					{
+						default:
+						case ColorScheme.LIGHT:
+							_backgroundColor = 0xffffff;
+							_titleLabel.setStyle( "color", 0x000000 );
+							_titleCloseButton.setStyle( "fillColor", 0x000000 );
+							_headingLabel.setStyle( "color", 0x000000 );
+							_versionLabel.setStyle( "color", 0x747474 );
+							_copyrightNotice.setStyle( "color", 0x747474 );
+							setButtonTextColor( _acknowledgementsButton, 0x6D6D6D );
+							setButtonTextColor( _licenseAgreementButton, 0x6D6D6D );
+							setButtonTextColor( _closeButton, 0x6D6D6D );
+							break;
+						
+						case ColorScheme.DARK:
+							_backgroundColor = 0x000000;
+							_titleLabel.setStyle( "color", 0xffffff );		
+							_titleCloseButton.setStyle( "fillColor", 0xffffff );
+							_headingLabel.setStyle( "color", 0xffffff );
+							_versionLabel.setStyle( "color", 0x8c8c8c );
+							_copyrightNotice.setStyle( "color", 0x8c8c8c );
+							setButtonTextColor( _acknowledgementsButton, 0x939393 );
+							setButtonTextColor( _licenseAgreementButton, 0x939393 );
+							setButtonTextColor( _closeButton, 0x939393 );
+							break;
+					}
+					
+					invalidateDisplayList();
+				}
+			}
+			
+			
+			protected override function updateDisplayList( width:Number, height:Number ):void
+			{
+				super.updateDisplayList( width, height );
+				
+				graphics.clear();
+				
+				graphics.lineStyle( _borderThickness, _borderColor ); 
+				graphics.beginFill( _backgroundColor );
+				graphics.drawRoundRect( 0, 0, width, height, _cornerRadius, _cornerRadius );
+				graphics.endFill();
+				
+				graphics.beginFill( _borderColor );
+				graphics.drawRoundRectComplex( 0, 0, width, _titleHeight, _cornerRadius, _cornerRadius, 0, 0 );
+				graphics.endFill();
+			}
+
+			
+			private function onCreationComplete():void
+			{
+				_titleCloseButton.setStyle( "skin", CloseButtonSkin );
+				_titleCloseButton.setStyle( "fillAlpha", 1 );
+				_titleCloseButton.setStyle( "color", _borderColor );
+				
+				_logoImage.source = _logoClass;
+				
+				_versionLabel.text = Utilities.integraLiveVersion;
+				
+				_copyrightNotice.text = new _copyrightNoticeText();
+				
+				invalidateDisplayList();
+			}
+			
+			
+			private function setButtonTextColor( button:Button, color:uint ):void
+			{
+				button.setStyle( "color", color );
+				button.setStyle( "textRollOverColor", color );
+				button.setStyle( "textSelectedColor", color );
+			}
+			
+			
+			private function onClickAcknowledgementsButton():void
+			{
+				var acknowledgementsFile:File = new File( Config.singleInstance.acknowledgementsPath );
+				if( acknowledgementsFile.exists )
+				{
+					navigateToURL( new URLRequest( "file://" + acknowledgementsFile.nativePath ), "_blank" );
+				}
+				else
+				{
+					Trace.error( "can't find acknowledgements file", acknowledgementsFile.nativePath );
+				}
+			}
+
+			
+			private function onClickLicenseAgreementButton():void
+			{
+				var licenseFile:File = File.applicationDirectory.resolvePath( _licenseFileName );
+				if( licenseFile.exists )
+				{
+					navigateToURL( new URLRequest( "file://" + licenseFile.nativePath ), "_blank" );
+				}
+				else
+				{
+					Trace.error( "can't find  license agreement file", licenseFile.nativePath );
+				}
+			}
+
+			
+			private function onClickCloseButton():void
+			{
+				Assert.assertTrue( _isShowing );
+				
+				toggle( null );				
+			}
+			
+
+			[ Embed( source="/assets/logo.png" ) ]
+			static private var _logoClass:Class;
+			
+			[ Embed( source="/assets/copyrightNotice.txt", mimeType="application/octet-stream" ) ]
+			static private var _copyrightNoticeText:Class;
+			
+			private var _isShowing:Boolean = false;
+			private var _backgroundColor:uint = 0;
+			
+			private const _titleHeight:uint = 20;
+			private const _buttonWidth:Number = 120;
+			private const _borderColor:uint = 0xe95d0f;
+			private const _borderThickness:Number = 4;
+			private const _cornerRadius:Number = 15;
+			
+			private const _licenseFileName:String = "assets/GNU General Public License v2.0.htm"
+		]]>
+	</fx:Script>					
+			
+</mx:Canvas>

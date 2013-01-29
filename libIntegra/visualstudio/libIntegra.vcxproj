@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FC44D9BF-1E20-44A7-B456-BEECA84DA30F}</ProjectGuid>
+    <RootNamespace>libIntegra</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\..\..\build\$(Configuration)\server\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(TargetName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\..\..\build\$(Configuration)\server\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(TargetName)\</IntDir>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../../../libIntegra_dependencies/xmlrpc-c/include;../../../../libIntegra_dependencies/pthreads-win32/include;../../../../libIntegra_dependencies/liblo-master;../../../../libIntegra_dependencies/include;../../../../libIntegra_dependencies/lua-5.2.0/include;../../../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;INTEGRA_DEBUG=1;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;BUILD_LUASCRIPTING=1;_CRT_SECURE_NO_WARNINGS
+;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;liblo_d.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;lua52.lib;Ws2_32.lib;Version.lib;%(AdditionalDependencies);Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../libIntegra_dependencies/xmlrpc-c/bin/Debug-Win32;../../../../libIntegra_dependencies/liblo-master/lib/debuglib;../../../../libIntegra_dependencies/pthreads-win32/lib;../../../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../../../libIntegra_dependencies/lua-5.2.0;../../../../libIntegra_dependencies/zlib-1.2.5/lib;../../../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <OptimizeReferences>false</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>call versioning/StampVer.bat ../../../build/Debug/Server/libIntegra.dll
+call gui_autobuild\buildgui.bat ..\..\..\build\Debug\gui
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>call autogenerateLuaFiles.bat</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../../../libIntegra_dependencies/pthreads-win32/include;../../../../libIntegra_dependencies/xmlrpc-c/include;../../../../libIntegra_dependencies/liblo-master;../../../../libIntegra_dependencies/include;../../../../libIntegra_dependencies/lua-5.2.0/include;../../../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;BUILD_LUASCRIPTING=1;_CRT_SECURE_NO_WARNINGS
+;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;liblo.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;lua52.lib;Ws2_32.lib;Version.lib;%(AdditionalDependencies);Iphlpapi.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../../libIntegra_dependencies/xmlrpc-c/bin/Release-Win32;../../../../libIntegra_dependencies/liblo-master/lib/releaselib;../../../../libIntegra_dependencies/pthreads-win32/lib;../../../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../../../libIntegra_dependencies/lua-5.2.0;../../../../libIntegra_dependencies/zlib-1.2.5/lib;../../../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>call versioning/StampVer.bat ../../../build/Release/Server/libIntegra.dll
+call gui_autobuild\buildgui.bat ..\..\..\build\Release\gui
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>call autogenerateLuaFiles.bat</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\externals\minizip\ioapi.c" />
+    <ClCompile Include="..\externals\minizip\iowin32.c" />
+    <ClCompile Include="..\externals\minizip\mztools.c" />
+    <ClCompile Include="..\externals\minizip\unzip.c" />
+    <ClCompile Include="..\externals\minizip\zip.c" />
+    <ClCompile Include="..\src\attribute.c" />
+    <ClCompile Include="..\src\bridge_host.c" />
+    <ClCompile Include="..\src\command.c" />
+    <ClCompile Include="..\src\data_directory.c" />
+    <ClCompile Include="..\src\error.c" />
+    <ClCompile Include="..\src\file_io.c" />
+    <ClCompile Include="..\src\hashtable.c" />
+    <ClCompile Include="..\src\helper.c" />
+    <ClCompile Include="..\src\id.c" />
+    <ClCompile Include="..\src\init.c" />
+    <ClCompile Include="..\src\interface.c" />
+    <ClCompile Include="..\src\list.c" />
+    <ClCompile Include="..\src\luascripting.c" />
+    <ClCompile Include="..\src\memory.c" />
+    <ClCompile Include="..\src\module_manager.c" />
+    <ClCompile Include="..\src\MurmurHash2.c" />
+    <ClCompile Include="..\src\node.c" />
+    <ClCompile Include="..\src\node_list.c" />
+    <ClCompile Include="..\src\osc.c" />
+    <ClCompile Include="..\src\osc_client.c" />
+    <ClCompile Include="..\src\path.c" />
+    <ClCompile Include="..\src\player_handler.c" />
+    <ClCompile Include="..\src\queue.c" />
+    <ClCompile Include="..\src\reentrance_checker.c" />
+    <ClCompile Include="..\src\scratch_directory.c" />
+    <ClCompile Include="..\src\server.c" />
+    <ClCompile Include="..\src\server_commands.c" />
+    <ClCompile Include="..\src\server_public.c" />
+    <ClCompile Include="..\src\signals.c" />
+    <ClCompile Include="..\src\system_class_handlers.c" />
+    <ClCompile Include="..\src\trace.c" />
+    <ClCompile Include="..\src\validate.c" />
+    <ClCompile Include="..\src\value.c" />
+    <ClCompile Include="..\src\xmlrpc_common.c" />
+    <ClCompile Include="..\src\xmlrpc_server.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\externals\minizip\crypt.h" />
+    <ClInclude Include="..\externals\minizip\ioapi.h" />
+    <ClInclude Include="..\externals\minizip\iowin32.h" />
+    <ClInclude Include="..\externals\minizip\mztools.h" />
+    <ClInclude Include="..\externals\minizip\unzip.h" />
+    <ClInclude Include="..\externals\minizip\zip.h" />
+    <ClInclude Include="..\src\attribute.h" />
+    <ClInclude Include="..\src\bridge_host.h" />
+    <ClInclude Include="..\src\command.h" />
+    <ClInclude Include="..\src\data_directory.h" />
+    <ClInclude Include="..\src\file_io.h" />
+    <ClInclude Include="..\src\globals.h" />
+    <ClInclude Include="..\src\hashtable.h" />
+    <ClInclude Include="..\src\helper.h" />
+    <ClInclude Include="..\src\id.h" />
+    <ClInclude Include="..\Integra\integra.h" />
+    <ClInclude Include="..\src\interface.h" />
+    <ClInclude Include="..\src\list.h" />
+    <ClInclude Include="..\src\lo_ansi.h" />
+    <ClInclude Include="..\src\lua.h" />
+    <ClInclude Include="..\src\luascripting.h" />
+    <ClInclude Include="..\src\memory.h" />
+    <ClInclude Include="..\src\module_manager.h" />
+    <ClInclude Include="..\src\node.h" />
+    <ClInclude Include="..\src\node_list.h" />
+    <ClInclude Include="..\src\osc.h" />
+    <ClInclude Include="..\src\osc_client.h" />
+    <ClInclude Include="..\src\path.h" />
+    <ClInclude Include="..\src\platform_specifics.h" />
+    <ClInclude Include="..\src\player_handler.h" />
+    <ClInclude Include="..\src\queue.h" />
+    <ClInclude Include="..\src\reentrance_checker.h" />
+    <ClInclude Include="..\src\scratch_directory.h" />
+    <ClInclude Include="..\src\server.h" />
+    <ClInclude Include="..\src\server_commands.h" />
+    <ClInclude Include="..\src\signals.h" />
+    <ClInclude Include="..\src\system_class_handlers.h" />
+    <ClInclude Include="..\src\system_class_literals.h" />
+    <ClInclude Include="..\src\validate.h" />
+    <ClInclude Include="..\src\value.h" />
+    <ClInclude Include="..\src\xmlrpc_common.h" />
+    <ClInclude Include="..\src\xmlrpc_server.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libIntegra.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

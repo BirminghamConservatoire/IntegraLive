@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration guid="122fadb9-215e-4bd3-9e11-2ed792ea90b0" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>Script</Name>
+    <Label>Script</Label>
+    <Description>Class for running Integra script</Description>
+    <Tags>
+      <Tag>core</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>true</ImplementedInLibIntegra>
+    <Author>Jamie Bullock</Author>
+    <CreatedDate>2012-10-26 13:09:51.520000</CreatedDate>
+    <ModifiedDate>2012-10-26 13:10:08.562000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>userData</Name>
+      <Label>userData</Label>
+      <Description>Arbitrary data associated with a class instance</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>text</Name>
+      <Label>text</Label>
+      <Description>The actual script as a string</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default>/*	This is a script.  You can write lua code here in order to programatically get and set module endpoints.	For documentation of the lua language please visit http://www.lua.org/docs.html	Scripts can be executed in the following ways:		1) manually, by context-clicking the script's name and choosing 'Execute'.		2) automatically, by adding a routing item and setting the target to the script's 'trigger' endpoint.  			(the script will execute when the routing item's source endpoint is set)	Scripts can access module endpoints using the following syntax:	integra.set( "&lt;module path&gt;", "&lt;endpoint name&gt;", value )	integra.get( "&lt;module path&gt;", "&lt;endpoint name&gt;" )	Module paths are relative to the container which owns the script.  	For example, to access a module in a block from a track-level script, the module's path would be "&lt;block name&gt;.&lt;module name&gt;"*/</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>trigger</Name>
+      <Label>trigger</Label>
+      <Description>Manually trigger execution of script</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>bang</ControlType>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+</InterfaceDeclaration>

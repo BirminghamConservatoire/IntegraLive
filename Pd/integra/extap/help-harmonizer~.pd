@@ -1,0 +1,103 @@
+#N canvas 44 11 611 660 10;
+#X obj 64 109 osc~ 500;
+#X obj 133 15 vsl 15 128 50 10000 1 1 empty empty empty 20 8 0 8 -262144
+-1 -1 6900 1;
+#X floatatom 129 150 8 0 0 0 - - -;
+#X obj 28 32 tgl 15 0 empty empty empty 20 8 0 8 -262144 -1 -1 1 1
+;
+#X obj 28 53 dsp;
+#X floatatom 28 76 5 0 0 0 - - -;
+#X obj 163 205 vsl 15 121 -1200 1200 0 1 empty empty transp. 20 8 0
+10 -262144 -1 -1 0 1;
+#X floatatom 163 333 5 0 0 0 - - -;
+#X floatatom 221 349 5 1 499 0 - - -;
+#X msg 136 206 0;
+#X text 202 332 transp in cents <int> (-2400 <= 2400 );
+#X text 262 348 wsize ms <int> (n >= 1);
+#X text 186 150 Hz;
+#X text 99 14 freq;
+#X obj 64 166 mull~ 0 100;
+#X obj 94 147 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
+;
+#X text 67 130 Osc_ON_OFF;
+#X obj 65 200 +~;
+#X msg 267 119 open \$1;
+#X obj 267 92 openpanel;
+#X obj 268 70 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
+-1;
+#X obj 237 129 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+1;
+#X text 292 68 Sounfile_Open;
+#X text 173 126 Start_Stop;
+#X obj 267 157 readsf~ 1;
+#X msg 330 119 set open \$1;
+#X msg 340 94 open D:/Projekte/Cube_Praesentation/sounds/purcell.wav
+;
+#X obj 318 182 del 10;
+#X obj 320 206 del 100;
+#X msg 321 228 1;
+#X msg 292 183 0;
+#X text 195 442 arg1: transp in cents <int> (-2400 <= 2400 );
+#X text 195 453 arg2: wsize ms <int> (n >= 1);
+#X obj 38 471 vsl 15 101 0 100 0 1 empty empty empty 20 8 0 8 -262144
+-1 -1 10000 1;
+#X obj 66 531 dac~ 1 2;
+#X text 32 452 gain;
+#X obj 128 514 prvu~;
+#X obj 129 537 vu 15 120 empty empty -1 -8 0 8 -66577 -1 1 0;
+#X obj 65 496 mull~ 0 50;
+#X obj 92 473 dbtorms;
+#X obj 66 442 bypass_effect~;
+#X obj 488 317 vsl 15 101 0 100 0 1 empty empty empty 20 8 0 8 -262144
+-1 -1 10000 1;
+#X text 510 307 effect;
+#X text 511 409 bypass;
+#X text 458 296 modulation-effekt;
+#X obj 106 387 harmonizer~ -200 100 2;
+#X text 285 367 delay ms <int> (n >= 1);
+#X text 196 463 arg3: delay ms <int> (n >= 1);
+#X floatatom 247 369 5 1 499 0 - - -;
+#X msg 222 266 30;
+#X msg 230 291 40;
+#X msg 283 303 1.46;
+#X connect 0 0 14 0;
+#X connect 1 0 2 0;
+#X connect 1 0 0 0;
+#X connect 3 0 4 0;
+#X connect 4 0 5 0;
+#X connect 6 0 7 0;
+#X connect 7 0 45 1;
+#X connect 8 0 45 2;
+#X connect 9 0 6 0;
+#X connect 14 0 17 0;
+#X connect 15 0 14 1;
+#X connect 17 0 40 0;
+#X connect 17 0 45 0;
+#X connect 18 0 24 0;
+#X connect 19 0 18 0;
+#X connect 19 0 25 0;
+#X connect 20 0 19 0;
+#X connect 21 0 24 0;
+#X connect 24 0 17 1;
+#X connect 24 1 27 0;
+#X connect 24 1 30 0;
+#X connect 25 0 26 0;
+#X connect 26 0 24 0;
+#X connect 27 0 28 0;
+#X connect 27 0 26 0;
+#X connect 28 0 29 0;
+#X connect 29 0 21 0;
+#X connect 30 0 21 0;
+#X connect 33 0 39 0;
+#X connect 36 0 37 0;
+#X connect 38 0 34 0;
+#X connect 38 0 34 1;
+#X connect 38 0 36 0;
+#X connect 39 0 38 1;
+#X connect 40 0 38 0;
+#X connect 41 0 40 2;
+#X connect 45 0 40 1;
+#X connect 48 0 45 3;
+#X connect 49 0 8 0;
+#X connect 50 0 8 0;
+#X connect 51 0 48 0;

@@ -1,0 +1,51 @@
+These are the send/receive messages used in the individual cues to control DSP
+
+Sampler:
+	N=1...4	(sampler voices)
+	M=1...2 (tabread outputs)
+	P=1...8 (outs)
+
+	/samN/load filename.wav
+
+	/samN/play 1
+	/samN/play 0
+
+	/samN/chnM/outP dB msec
+
+Harmonizer:
+	N=1...3	(harmonizer voices)
+	P=1...8 (outs)
+
+	/harmN/transp cents
+	
+	/harmN/outP dB msec
+
+Reverb:
+	N=1...4 (reverb inputs)
+	Q=1...2 (reverb outputs)
+	P=1...8 (outputs)
+
+	/rev/revtime (0-100)
+	
+	/rev/inN dB msec
+	/rev/chnQ/outP db msec
+
+Delay
+	N=1...4 (delay voices)
+	M=1...4 (delay inputs)
+	P=1...8 (outputs)
+
+	/delN/deltime msec
+	/delN/inM dB msec
+	/delN/outP dB msec
+
+Filtre-ecriture
+	/filt_ecr/freq hz
+	/filt_ecr/dry dB msec
+	/filt_ecr/wet dB msec
+
+Filtre-soprano2
+	P=1...8 (outputs)
+	/filt_sop2/hp_freq hz
+	/filt_sop2/lp_freq hz
+	/filt_sop2/outP dB msec

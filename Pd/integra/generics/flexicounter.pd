@@ -1,0 +1,46 @@
+#N canvas 417 50 666 591 10;
+#X obj 190 530 outlet;
+#X obj 75 522 outlet;
+#X obj 12 298 inlet;
+#X obj 117 300 inlet;
+#X text 141 128 inlet 1;
+#X text 138 199 inlet 3;
+#X text 141 219 inlet 4;
+#X text 221 218 float: maximum value;
+#X text 220 199 float: increment size;
+#X text 225 131 bang: trigger increment;
+#X text 223 147 float: set current value and trigger increment;
+#X obj 168 308 inlet;
+#X obj 75 405 f \$1;
+#X text 221 181 float: initial/next value;
+#X text 139 179 inlet 2;
+#X text 96 179 arg 1/;
+#X obj 147 404 + \$2;
+#X text 98 199 arg 2/;
+#X text 99 218 arg 3/;
+#X obj 12 335 route reset;
+#X obj 96 368 f \$1;
+#X text 223 163 symbol: "reset" resets counter to initial value on
+next bang;
+#X obj 190 499 t b;
+#X obj 75 465 moses \$3;
+#X text 52 21 flexicounter counts from init to max with a step size
+of inc. A bang at the first inlet outputs the next value. The first
+outlet outputs the current value \, the second outlet outputs a bang
+on overflow.;
+#X obj 304 308 inlet;
+#X obj 75 427 t f f;
+#X connect 2 0 19 0;
+#X connect 3 0 20 1;
+#X connect 11 0 16 1;
+#X connect 12 0 26 0;
+#X connect 16 0 12 1;
+#X connect 19 0 20 0;
+#X connect 19 1 12 0;
+#X connect 20 0 12 1;
+#X connect 22 0 0 0;
+#X connect 23 0 1 0;
+#X connect 23 1 22 0;
+#X connect 25 0 23 1;
+#X connect 26 0 23 0;
+#X connect 26 1 16 0;

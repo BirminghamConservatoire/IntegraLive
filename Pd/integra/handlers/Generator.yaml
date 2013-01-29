@@ -1,0 +1,86 @@
+---
+definition:
+    name:           Generator
+    label:          ~
+    documentation:  ~
+    core:           true
+    instantiable:   FALSE
+    parent:         Module
+    description:    The base class for all generating modules
+attributes:
+    - name:             mute 
+      description:      ~ 
+      scope:            public
+      type:             integer
+      unit:             ~
+      scale:            ~
+      minimum:          0
+      maximum:          1
+      default:          1
+      undoable:         true
+      legalvalues:      ~
+      valuelabels:      {0: 'off', 1: 'on'}
+      control:          ~
+      controlattribute: ~
+      controlgroup:     ~
+    - name:             outLevel
+      description:      ~
+      scope:            public
+      type:             float
+      unit:             ~
+      scale:            ~
+      minimum:          0.
+      maximum:          1.
+      default:          1.
+      undoable:         true
+      legalvalues:      ~
+      valuelabels:      ~
+      control:          ~
+      controlattribute: ~
+      controlgroup:     ~
+    - name:             input
+      description:      Optional input to feed sound tables
+      scope:            public
+      type:             integer
+      unit:             ~
+      scale:            ~
+      minimum:          0
+      maximum:          1
+      default:          0
+      undoable:         true
+      legalvalues:      ~
+      valuelabels:      {0: 'no', 1: 'yes'}
+      control:          ~
+      controlattribute: ~
+      controlgroup:     ~
+    - name:             nVoices
+      description:      Number of voices of the generator module
+      scope:            public
+      type:             integer
+      unit:             ~
+      scale:            ~
+      minimum:          1.
+      maximum:          16.
+      default:          8.
+      undoable:         true
+      legalvalues:      ~
+      valuelabels:      ~
+      control:          ~
+      controlattribute: ~
+      controlgroup:     ~
+    - name:             voiceStealing
+      description:      Allows overwriting a not finished voice
+      scope:            public
+      type:             float
+      unit:             ~
+      scale:            ~
+      minimum:          0
+      maximum:          1
+      default:          1
+      undoable:         true
+      legalvalues:      ~
+      valuelabels:      {0: 'off', 1: 'on'}
+      control:          ~
+      controlattribute: ~
+      controlgroup:     ~
+...

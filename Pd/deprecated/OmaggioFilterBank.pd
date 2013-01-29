@@ -1,0 +1,118 @@
+#N canvas 50 45 1228 697 10;
+#X text 306 99 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 336 129 description: switches the module on and off from DSP
+tree;
+#X text 336 299 description: switches a bypass path in parallel;
+#X text 346 313 to the processor on and off;
+#X text 335 365 description: mutes the effect way of the processor
+;
+#X text 336 414 description: makes a mix of the effected signal (wet
+= 1);
+#X text 346 429 and the input signal (dry = 0);
+#X text 336 182 description: multiplies the incoming signal with this
+value;
+#X text 346 197 before it is going further to effect input;
+#X text 336 247 description: multiplies the signal from effect output
+;
+#X text 336 114 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 336 232 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 336 167 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 336 284 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 336 349 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 336 399 initial-value: 1 \, range: (0...1) \, class: processor
+;
+#X obj 17 179 cnv 10 135 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 15 124 inlet~;
+#X obj 16 232 outlet~;
+#X text 867 644 Thomas Musil \, 11.11.2009;
+#X text 306 152 2.) parameter: "inLevel" \, type: <float> \, unit [-]
+;
+#X text 307 217 3.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 308 269 4.) parameter: "bypass" \, type: <bool> \, unit [-]
+;
+#X text 306 334 5.) parameter: "mute" \, type: <bool> \, unit [-];
+#X text 306 384 6.) parameter: "mix" \, type: <float> \, unit [-];
+#X obj 95 123 handlers/ntg_receive \$1;
+#X text 14 635 1.) initial argument: <float> unique id of the module
+;
+#X obj 91 231 handlers/ntg_send \$1;
+#N canvas 580 67 494 405 omaggio_filterbank_module________ 0;
+#X obj 17 8 inlet~;
+#X obj 17 345 outlet~;
+#X obj 94 281 switch~;
+#X obj 144 19 inlet;
+#X obj 291 22 inlet;
+#X text 291 5 named parameter-messages;
+#X text 144 2 init-bang;
+#X obj 213 20 inlet;
+#X text 213 3 fini-bang;
+#X obj 17 104 handlers/mono_pre_processor \$0 __;
+#X obj 17 195 handlers/mono_post_processor \$0 _;
+#X obj 17 242 handlers/mono_module \$0 _________;
+#X obj 294 351 outlet;
+#N canvas 541 97 600 345 omaggio_filterbank_________ 0;
+#X obj 366 26 inlet;
+#X obj 18 31 inlet~;
+#X obj 18 247 outlet~;
+#X obj 180 34 inlet;
+#X obj 314 247 outlet;
+#X text 174 18 init-bang;
+#X text 366 10 route parameters;
+#X text 310 266 rejected parameters;
+#X text 17 5 from pre-processor;
+#X text 21 273 to post-processor;
+#X obj 181 245 outlet;
+#X text 170 280 init-bang;
+#X text 175 6 from prev.;
+#X text 177 266 to next;
+#X obj 180 143 t b b;
+#X obj 280 34 inlet;
+#X text 274 18 fini-bang;
+#X obj 479 244 outlet;
+#X text 475 263 outgoing parameters;
+#X obj 17 186 core/omaggio_filterbank~ _________________________;
+#X connect 0 0 19 3;
+#X connect 1 0 19 0;
+#X connect 3 0 14 0;
+#X connect 14 0 10 0;
+#X connect 14 1 19 1;
+#X connect 15 0 19 2;
+#X connect 19 0 2 0;
+#X connect 19 1 4 0;
+#X restore 93 146 pd omaggio_filterbank_________;
+#X connect 0 0 9 0;
+#X connect 3 0 9 1;
+#X connect 4 0 9 2;
+#X connect 7 0 13 2;
+#X connect 9 0 10 0;
+#X connect 9 1 13 0;
+#X connect 9 2 13 1;
+#X connect 9 3 13 3;
+#X connect 10 0 11 0;
+#X connect 10 1 11 1;
+#X connect 10 2 11 2;
+#X connect 11 0 1 0;
+#X connect 11 1 2 0;
+#X connect 13 0 10 1;
+#X connect 13 1 10 2;
+#X connect 13 2 10 3;
+#X connect 13 3 12 0;
+#X restore 16 176 pd omaggio_filterbank_module________;
+#X text 316 69 6 data in ports;
+#X text 315 37 1 signal in ports;
+#X text 315 53 1 signal out ports;
+#X text 315 14 omaggio_filterbank: 5 band filterbank for a nono-piece
+;
+#X connect 17 0 28 0;
+#X connect 25 0 28 1;
+#X connect 25 1 28 2;
+#X connect 25 2 28 3;
+#X connect 28 0 18 0;
+#X connect 28 1 27 0;

@@ -1,0 +1,256 @@
+#N canvas 332 55 755 643 10;
+#X text 246 41 1 signal out port;
+#X text 259 87 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 289 117 description: switches the module on and off from DSP
+tree;
+#X text 288 225 description: mutes the effect way of the processor
+;
+#X text 289 171 description: multiplies the signal from effect output
+;
+#X text 289 102 initial-value: 1 \, range: (0/1) \, class: module;
+#X obj 18 129 cnv 10 125 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X text 289 156 initial-value: 1 \, range: (0...4) \, class: generator
+;
+#X text 289 209 initial-value: 0 \, range: (0/1) \, class: generator
+;
+#X text 289 265 initial-value: 0 rad \, range: (0...2*pi) \, class:
+oscillator;
+#X text 288 281 description: the read out vector of the lookup table
+;
+#X text 299 296 will be set at this time to this value (if zero is
+the;
+#X text 298 311 beginning and 2*pi is the end of the table);
+#X obj 18 170 outlet~;
+#X text 309 549 value to the target value;
+#X text 259 250 4.) parameter: "phase" \, type: <float> \, unit [rad]
+;
+#X text 259 194 3.) parameter: "mute" \, type: <bool> \, unit [-];
+#X text 290 505 unit [sec] \, initial-value: 0.05 \, range: (0..10
+sec);
+#X text 290 520 class: oscillator \, description: defines the ramp
+time;
+#X text 305 534 (portamento time) of a signal value from the current
+;
+#X text 289 425 initial-value: 0.5 \, range: (0...1) \, class: square
+;
+#X text 288 441 description: is the ratio of positive pulse width to
+;
+#X text 299 456 periode width;
+#X text 246 14 square: square oscillator replacing the vertical slopes
+by band-limited slopes;
+#X text 246 57 7 data in ports;
+#X text 338 581 Thomas Musil \, 11.11.2009;
+#X text 260 490 7.) parameter: "portamentoTime" \, type: <float>;
+#X text 259 410 6.) parameter: "pulseWidthRatio" \, type: <float> \,
+unit [-];
+#X text 260 141 2.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 259 339 5.) parameter: "frequency" \, type: <float> \, unit
+[Hz];
+#X text 289 354 initial-value: 440 Hz \, range: (20...20000 Hz);
+#X text 288 370 class: oscillator \, description: is the value \, how
+many;
+#X text 299 385 times per second the lookup table will be read out
+;
+#N canvas 747 241 403 419 square_module________________ 0;
+#X obj 21 359 outlet~;
+#X obj 88 342 switch~;
+#X obj 22 215 cnv 10 164 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 82 27 inlet;
+#X obj 221 31 inlet;
+#X text 221 14 named parameter-messages;
+#X text 82 10 init-bang;
+#X text 19 7 dummy;
+#X obj 20 25 inlet;
+#N canvas 543 144 999 618 square_______________ 0;
+#X obj 771 44 inlet;
+#X obj 128 507 outlet~;
+#X obj 587 51 inlet;
+#X obj 771 526 outlet;
+#X text 581 35 init-bang;
+#X text 771 28 route parameters;
+#X text 767 545 rejected parameters;
+#X text 127 533 to post-processor;
+#X obj 587 514 outlet;
+#X text 575 551 init-bang;
+#X text 580 22 from prev;
+#X text 581 537 to next;
+#X obj 34 338 -~;
+#X obj 387 295 /~;
+#X obj 494 190 clip~ 1 999999;
+#X obj 21 215 *~;
+#X obj 21 239 clip~ -0.5 0.5;
+#X obj 21 263 *~ 1000;
+#X obj 21 287 +~ 501;
+#X obj 52 176 -~ 0.5;
+#X obj 21 311 tabread4~ \$0-transition;
+#X obj 386 202 samplerate~;
+#X obj 128 481 *~ 1.852;
+#X text 559 259 this is from miller puckette's "J09.bandlimited.pd"
+;
+#X obj 51 53 inlet~;
+#X obj 493 48 inlet~;
+#X obj 225 150 wrap~;
+#X obj 771 94 clip 0 1;
+#X obj 225 126 +~;
+#X obj 207 338 -~;
+#X obj 194 215 *~;
+#X obj 194 239 clip~ -0.5 0.5;
+#X obj 194 263 *~ 1000;
+#X obj 194 287 +~ 501;
+#X obj 225 176 -~ 0.5;
+#X obj 194 311 tabread4~ \$0-transition;
+#X obj 129 399 -~;
+#N canvas 151 52 820 498 make-transition-table 0;
+#X text 137 160 back the phase up one sample;
+#X text 172 229 twice the table length;
+#X text 166 214 period is 2000 samples \,;
+#N canvas 0 22 450 300 (subpatch) 0;
+#X array \$0-transition 1002 float 0;
+#X coords 0 1 1002 -1 200 140 1;
+#X restore 440 78 graph;
+#X text 438 225 ----- 1002 samples ----;
+#X text 24 63 Logically the half-cycle is in samples 1 through 1000
+\; samples 0 and 1001 are provided so that the 4-point interpolation
+will work everywhere.;
+#X obj 36 115 inlet;
+#X floatatom 567 345 5 0 0 0 - - -;
+#X floatatom 571 400 0 0 0 0 - - -;
+#X obj 571 375 tabread4 \$0-transition;
+#X msg 554 308 1;
+#N canvas 0 22 221 255 counter 0;
+#X obj 56 38 inlet;
+#X obj 55 111 until;
+#X obj 56 140 f;
+#X obj 90 141 + 1;
+#X obj 55 165 outlet;
+#X msg 101 111 0;
+#X obj 55 63 t f b;
+#X connect 0 0 6 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 2 0 4 0;
+#X connect 3 0 2 1;
+#X connect 5 0 2 1;
+#X connect 6 0 1 0;
+#X connect 6 1 5 0;
+#X restore 36 236 pd counter;
+#X msg 36 213 1002;
+#X obj 36 258 t f f;
+#X obj 36 394 tabwrite \$0-transition;
+#X obj 36 293 - 1;
+#X obj 36 181 t b b;
+#X obj 125 258 expr 4*atan(1)/1000;
+#X obj 36 318 *;
+#X obj 36 342 expr (cos(3*$f1)/3-cos($f1)-cos(5*$f1)/5+cos(7*$f1)/7-cos(9*$f1)/18)*0.641548
+;
+#X text 196 388 This alternate one puts in harmonics 1 \, 3 \, 5 \,
+7 \, 9;
+#X text 213 320 0.641548 normalize to -0.5 at begin and +0.5 at end
+;
+#X text 201 405 the 9th harmonic fades out with half of amplitude;
+#X text 26 26 This network puts a half cycle of a band-limited square
+wave into the table "\$0-transition.";
+#X msg 591 308 1000;
+#X connect 6 0 16 0;
+#X connect 7 0 9 0;
+#X connect 9 0 8 0;
+#X connect 10 0 7 0;
+#X connect 11 0 13 0;
+#X connect 12 0 11 0;
+#X connect 13 0 15 0;
+#X connect 13 1 14 1;
+#X connect 15 0 18 0;
+#X connect 16 0 12 0;
+#X connect 16 1 17 0;
+#X connect 17 0 18 1;
+#X connect 18 0 19 0;
+#X connect 19 0 14 0;
+#X connect 24 0 7 0;
+#X restore 599 192 pd make-transition-table;
+#X obj 386 225 * 0.08;
+#X text 434 224 ~ 16 kHz cutoff @ 44.1 kHz SR (9*0.08*SR/2 ???);
+#X text 205 393 pulse width variable square wave oscillator is based
+on the difference signal of 2 saw-tooth oscillators;
+#X obj 386 270 sig~ 3528;
+#X obj 771 71 route pulseWidthRatio;
+#X obj 771 119 pack 0.5 20;
+#X obj 587 78 t b b;
+#X obj 771 189 line~;
+#X obj 785 150 unpack 0 0;
+#X obj 733 148 f 0.5;
+#X connect 0 0 42 0;
+#X connect 2 0 44 0;
+#X connect 12 0 36 0;
+#X connect 13 0 15 1;
+#X connect 13 0 30 1;
+#X connect 14 0 13 1;
+#X connect 15 0 16 0;
+#X connect 16 0 17 0;
+#X connect 17 0 18 0;
+#X connect 18 0 20 0;
+#X connect 19 0 15 0;
+#X connect 19 0 12 1;
+#X connect 20 0 12 0;
+#X connect 21 0 38 0;
+#X connect 22 0 1 0;
+#X connect 24 0 19 0;
+#X connect 24 0 28 0;
+#X connect 25 0 14 0;
+#X connect 26 0 34 0;
+#X connect 27 0 43 0;
+#X connect 28 0 26 0;
+#X connect 29 0 36 1;
+#X connect 30 0 31 0;
+#X connect 31 0 32 0;
+#X connect 32 0 33 0;
+#X connect 33 0 35 0;
+#X connect 34 0 30 0;
+#X connect 34 0 29 1;
+#X connect 35 0 29 0;
+#X connect 36 0 22 0;
+#X connect 38 0 41 0;
+#X connect 41 0 13 0;
+#X connect 42 0 27 0;
+#X connect 42 1 3 0;
+#X connect 43 0 45 0;
+#X connect 43 0 46 0;
+#X connect 44 0 8 0;
+#X connect 44 1 37 0;
+#X connect 44 1 21 0;
+#X connect 44 1 47 0;
+#X connect 45 0 28 1;
+#X connect 46 0 47 1;
+#X connect 47 0 45 0;
+#X restore 21 212 pd square_______________;
+#X obj 20 154 handlers/mono_oscillator;
+#X obj 21 254 handlers/mono_generator;
+#X obj 21 297 handlers/mono_module __;
+#X obj 152 27 inlet;
+#X text 152 10 fini-bang;
+#X connect 3 0 10 1;
+#X connect 4 0 10 2;
+#X connect 8 0 10 0;
+#X connect 9 0 11 0;
+#X connect 9 1 11 1;
+#X connect 9 2 11 2;
+#X connect 10 0 9 0;
+#X connect 10 1 9 1;
+#X connect 10 2 9 2;
+#X connect 10 3 9 3;
+#X connect 11 0 12 0;
+#X connect 11 1 12 1;
+#X connect 11 2 12 2;
+#X connect 12 0 0 0;
+#X connect 12 1 1 0;
+#X restore 18 126 pd square_module________________;
+#X obj 85 92 handlers/ntg_receive \$1;
+#X text 14 608 1.) initial argument: <float> unique id of the module
+;
+#X connect 33 0 13 0;
+#X connect 34 0 33 1;
+#X connect 34 1 33 2;
+#X connect 34 2 33 3;

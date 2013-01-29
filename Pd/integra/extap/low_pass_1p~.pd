@@ -1,0 +1,28 @@
+#N canvas 155 55 411 394 10;
+#X obj 78 309 biquad~;
+#X obj 144 52 inlet;
+#X text 146 34 freq;
+#X obj 79 52 inlet~;
+#X obj 78 330 outlet~;
+#X text 220 157 rcp;
+#X obj 135 267 pack 0 0 0 0 0;
+#X obj 123 192 expr ($f1-1)*$f2 \; $f2 \; $f2;
+#X obj 144 130 expr $f1 \; 1/($f1+1);
+#X text 119 157 l;
+#X text 327 103 l;
+#X obj 144 105 f_transform \$1;
+#X text 26 17 low_pass_1p~ : low pass filter of first order (one pole)
+;
+#X obj 328 55 inlet;
+#X text 330 37 init-bang;
+#X connect 0 0 4 0;
+#X connect 1 0 11 0;
+#X connect 3 0 0 0;
+#X connect 6 0 0 0;
+#X connect 7 0 6 0;
+#X connect 7 1 6 2;
+#X connect 7 2 6 3;
+#X connect 8 0 7 0;
+#X connect 8 1 7 1;
+#X connect 11 0 8 0;
+#X connect 13 0 11 1;

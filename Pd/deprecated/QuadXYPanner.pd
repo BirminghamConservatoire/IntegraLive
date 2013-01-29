@@ -1,0 +1,175 @@
+#N canvas 61 178 822 696 10;
+#X text 336 99 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 366 129 description: switches the module on and off from DSP
+tree;
+#X text 366 299 description: switches a bypass path in parallel;
+#X text 376 313 to the processor on and off;
+#X text 365 365 description: mutes the effect way of the processor
+;
+#X text 366 414 description: makes a mix of the effected signal (wet
+= 1);
+#X text 376 429 and the input signal (dry = 0);
+#X text 366 182 description: multiplies the incoming signal with this
+value;
+#X text 376 197 before it is going further to effect input;
+#X text 366 247 description: multiplies the signal from effect output
+;
+#X text 366 114 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 366 232 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 366 167 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 366 284 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 366 349 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 366 399 initial-value: 1 \, range: (0...1) \, class: processor
+;
+#X obj 17 179 cnv 10 135 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 78 234 outlet~;
+#X obj 15 124 inlet~;
+#X obj 16 232 outlet~;
+#X text 336 152 2.) parameter: "inLevel" \, type: <float> \, unit [-]
+;
+#X text 337 217 3.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 338 269 4.) parameter: "bypass" \, type: <bool> \, unit [-]
+;
+#X text 336 334 5.) parameter: "mute" \, type: <bool> \, unit [-];
+#X text 336 384 6.) parameter: "mix" \, type: <float> \, unit [-];
+#X obj 66 125 handlers/ntg_receive \$1;
+#X text 373 614 Thomas Musil \, 16.04.2010;
+#X text 323 69 7 data in ports;
+#X text 323 37 1 signal in ports;
+#X text 323 14 QuadPanner: a 1 to 4 channel audio panner;
+#X text 323 53 4 signal out ports;
+#N canvas 554 291 494 405 quad_panner_module________ 0;
+#X obj 17 8 inlet~;
+#X obj 17 345 outlet~;
+#X obj 176 276 switch~;
+#X obj 75 344 outlet~;
+#X obj 119 20 inlet;
+#X obj 266 23 inlet;
+#X text 266 6 named parameter-messages;
+#X text 119 3 init-bang;
+#X obj 188 21 inlet;
+#X text 188 4 fini-bang;
+#X obj 17 104 handlers/mono_pre_processor \$0 __;
+#N canvas 817 90 567 504 quad_panner_________ 0;
+#X obj 285 31 inlet;
+#X obj 18 31 inlet~;
+#X obj 16 348 outlet~;
+#X obj 97 62 inlet;
+#X obj 240 403 outlet;
+#X text 91 46 init-bang;
+#X text 285 15 route parameters;
+#X text 290 403 rejected parameters;
+#X text 19 12 from pre-processor;
+#X text 21 373 to post-processor;
+#X obj 211 375 outlet;
+#X text 254 381 init-bang;
+#X text 92 34 from prev.;
+#X text 258 368 to next;
+#X obj 70 347 outlet~;
+#X obj 103 133 t b b;
+#X obj 122 348 outlet~;
+#X obj 175 348 outlet~;
+#X obj 187 89 inlet;
+#X text 187 73 fini;
+#X obj 269 432 outlet;
+#X text 314 434 output parameters;
+#X obj 17 186 core/stereo_panner~ _________________________;
+#X obj 285 54 route xPosition yPosition;
+#X obj 70 226 core/stereo_panner~ _________________________;
+#X obj 18 272 core/stereo_panner~ _________________________;
+#X msg 285 150 panning \$1;
+#X msg 370 150 panning \$1;
+#X obj 285 95 * 90;
+#X obj 287 123 - 45;
+#X obj 368 94 * 90;
+#X obj 370 122 - 45;
+#X connect 0 0 23 0;
+#X connect 1 0 22 0;
+#X connect 3 0 15 0;
+#X connect 15 0 10 0;
+#X connect 15 1 22 1;
+#X connect 15 1 25 1;
+#X connect 15 1 24 1;
+#X connect 18 0 22 2;
+#X connect 18 0 24 2;
+#X connect 18 0 25 2;
+#X connect 22 0 25 0;
+#X connect 22 1 24 0;
+#X connect 23 0 28 0;
+#X connect 23 1 30 0;
+#X connect 23 2 4 0;
+#X connect 24 0 14 0;
+#X connect 24 1 17 0;
+#X connect 25 0 2 0;
+#X connect 25 1 16 0;
+#X connect 26 0 22 3;
+#X connect 27 0 24 3;
+#X connect 27 0 25 3;
+#X connect 28 0 29 0;
+#X connect 29 0 26 0;
+#X connect 30 0 31 0;
+#X connect 31 0 27 0;
+#X restore 92 153 pd quad_panner_________;
+#X obj 17 195 handlers/quad_post_processor \$0 _;
+#X obj 17 242 handlers/quad_module \$0 _________;
+#X obj 134 345 outlet~;
+#X obj 192 345 outlet~;
+#X obj 254 345 outlet;
+#X obj 57 55 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X connect 0 0 10 0;
+#X connect 4 0 10 1;
+#X connect 5 0 10 2;
+#X connect 8 0 11 2;
+#X connect 10 0 12 0;
+#X connect 10 0 12 1;
+#X connect 10 0 12 2;
+#X connect 10 0 12 3;
+#X connect 10 1 11 0;
+#X connect 10 2 11 1;
+#X connect 10 3 11 3;
+#X connect 11 0 12 4;
+#X connect 11 1 12 5;
+#X connect 11 2 12 6;
+#X connect 11 3 12 7;
+#X connect 11 4 12 8;
+#X connect 11 5 12 9;
+#X connect 11 6 16 0;
+#X connect 12 0 13 0;
+#X connect 12 1 13 1;
+#X connect 12 2 13 2;
+#X connect 12 3 13 3;
+#X connect 12 4 13 4;
+#X connect 12 5 13 5;
+#X connect 13 0 1 0;
+#X connect 13 1 3 0;
+#X connect 13 2 14 0;
+#X connect 13 3 15 0;
+#X connect 13 4 2 0;
+#X connect 17 0 10 1;
+#X restore 16 176 pd quad_panner_module________;
+#X obj 200 236 outlet~;
+#X obj 138 234 outlet~;
+#X text 14 578 1.) initial argument: <float> unique id of the module
+;
+#X obj 201 206 handlers/ntg_send \$1;
+#X text 335 450 7.) parameter: "panning" \, type: <float>;
+#X text 375 476 value of spatial position of input signal.;
+#X text 365 464 unit [degree] \, initial-value: 0 \, range: (-180...+180)
+;
+#X connect 18 0 31 0;
+#X connect 25 0 31 1;
+#X connect 25 1 31 2;
+#X connect 25 2 31 3;
+#X connect 31 0 19 0;
+#X connect 31 1 17 0;
+#X connect 31 2 33 0;
+#X connect 31 3 32 0;
+#X connect 31 4 35 0;

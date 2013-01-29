@@ -1,0 +1,117 @@
+#N canvas 192 22 819 739 10;
+#X text 393 37 1 signal in port;
+#X text 436 169 description: switches the module on and off from DSP
+tree;
+#X text 436 221 description: multiplies the incoming signal with this
+value;
+#X text 446 236 before it is going further to effect input;
+#X text 436 154 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 436 206 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X obj 18 141 cnv 10 135 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 18 57 inlet~;
+#X obj 103 103 handlers/ntg_receive \$1;
+#N canvas 6 22 798 626 prototyp_mono_processor_child_module 1;
+#X obj 17 505 outlet~;
+#X obj 144 64 inlet;
+#X obj 17 25 inlet~;
+#X obj 271 160 inlet;
+#X obj 82 430 switch~;
+#X obj 17 406 handlers/mono_module \$0 _________;
+#X obj 229 113 inlet;
+#X text 182 63 init-bang: it replaces the loadbang object;
+#X text 269 112 fini-bang: opposite of loadbang;
+#X text 346 408 controls the "active" state of module;
+#X text 347 362 controls "mix" "mute" "bypass" "outLevel" of processor
+module;
+#X text 307 194 controls "inLevel" of processor module;
+#X text 16 5 incoming signal;
+#X obj 271 480 outlet;
+#X text 316 480 outgoing parameter messages;
+#X text 312 160 named parameter-messages;
+#X obj 147 275 t b b;
+#X obj 17 195 handlers/mono_pre_processor \$0 ____________;
+#X text 16 529 processed outgoing signal;
+#X text 180 32 This subpatch can be switched off from DSP-tree;
+#N canvas 305 131 811 608 core/my_process~__________________________
+1;
+#X obj 65 515 outlet~;
+#X obj 69 58 inlet~;
+#X obj 413 69 inlet;
+#X obj 188 64 inlet;
+#X text 187 45 init-bang;
+#X text 70 38 sig.in;
+#X text 64 541 sig.out;
+#X text 438 525 rejected parameter;
+#X obj 472 498 outlet;
+#X obj 691 495 outlet;
+#X text 657 522 outgoing parameters;
+#X text 412 46 incoming parameters;
+#X obj 317 66 inlet;
+#X text 316 47 fini-bang;
+#X obj 68 266 *~ 1;
+#X obj 414 127 route myGain;
+#X obj 414 152 + 100;
+#X obj 414 176 dbtorms;
+#X obj 414 200 clip 0 4;
+#X obj 215 311 metro 300;
+#X obj 193 344 snapshot~;
+#X msg 216 280 1;
+#X msg 261 280 0;
+#X obj 193 391 - 100;
+#X obj 193 368 rmstodb;
+#X msg 193 413 list myLevel \$1;
+#X text 28 11 my_process~;
+#X connect 1 0 14 0;
+#X connect 2 0 15 0;
+#X connect 3 0 21 0;
+#X connect 12 0 22 0;
+#X connect 14 0 0 0;
+#X connect 14 0 20 0;
+#X connect 15 0 16 0;
+#X connect 15 1 8 0;
+#X connect 16 0 17 0;
+#X connect 17 0 18 0;
+#X connect 18 0 14 1;
+#X connect 19 0 20 0;
+#X connect 20 0 24 0;
+#X connect 21 0 19 0;
+#X connect 22 0 19 0;
+#X connect 23 0 25 0;
+#X connect 24 0 23 0;
+#X connect 25 0 9 0;
+#X restore 82 319 pd core/my_process~__________________________;
+#X text 382 312 here should be your pd-patch (as a subpatch or as a
+abstraction like "core/my_process~");
+#X connect 1 0 17 1;
+#X connect 2 0 17 0;
+#X connect 3 0 17 2;
+#X connect 5 0 0 0;
+#X connect 5 1 4 0;
+#X connect 6 0 20 2;
+#X connect 16 0 5 1;
+#X connect 16 1 20 1;
+#X connect 17 0 5 0;
+#X connect 17 1 20 0;
+#X connect 17 2 16 0;
+#X connect 17 3 20 3;
+#X connect 20 1 5 2;
+#X connect 20 2 13 0;
+#X restore 17 138 pd prototyp_mono_processor_child_module;
+#X obj 186 197 handlers/ntg_send \$1;
+#X text 406 191 2.) in parameter: "inLevel" \, type: <float> \, unit
+[-];
+#X text 21 347 1.) initial argument: <float> unique id of the module
+;
+#X text 406 140 1.) in parameter: "active" \, type: <int> \, unit [-]
+;
+#X text 393 14 MyAnalyser: prototyp of mono analyser child module;
+#X text 393 53 0 signal out port;
+#X text 393 69 2 data in ports;
+#X text 393 84 0 data out port;
+#X connect 7 0 9 0;
+#X connect 8 0 9 1;
+#X connect 8 1 9 2;
+#X connect 8 2 9 3;
+#X connect 9 1 10 0;

@@ -1,0 +1,70 @@
+**********************************************************************
+*              How to write an INTEGRA module in Pd                  *
+**********************************************************************
+
+
+      1.) Requirements:
+----------------------------------------------
+You have to install Pd-extended version 0.41-4 or later, even though we don't use any external of Pd-extended (It is only temporary. We will change to Vanilla Pd version in future).
+The only path preferences in Pd you need are:
+"/Users/me/integra/IntegraLive.app/Contents/Resources/pd-server"
+"/Users/me/integra/IntegraLive.app/Contents/Resources/pd-server/integra".
+(The first 3 subdirectories of the path depend on your Integra Live installation, here we installed it in "/Users/me/integra/")
+Pd Vanilla you will find at: "http://crca.ucsd.edu/~msp"
+Pd-extended you will find at: "http://puredata.info/downloads"
+
+Further you have to check out the SVN repository of integralive from sourceforge:
+(In this shell log file user "me" is logged in on computer "mycomputer")
+
+mycomputer: me$ cd ~
+mycomputer: me$ mkdir integra
+mycomputer: me$ cd integra
+mycomputer: me$ mkdir SVN
+mycomputer: me$ cd SVN
+mycomputer: me$ mkdir integralive
+mycomputer: me$ cd integralive
+mycomputer: me$ svn co https://integralive.svn.sourceforge.net/svnroot/integralive/
+
+
+      2.) Some guidelines:
+----------------------------------------------
+Do not use the object "loadbang" to initialize patches, you have to use the init-bang message, which will be distributed by a certain inlet.
+There is also a fini-bang message to clean up the mess produced from the module. 
+
+There is only one initial argument ($1), that is used to identify the module (for incoming and outgoing messages). It is an unique number. All the other parameters and values will be initialised by a certain parameter inlet.
+
+The name of a module has to be written in UpperCamelCase (eg. PhaseVocoder, LowPass, PinkNoise; except abbreviations like LFO, VCF, ADSR), no dash, no underscore no dot, no colon, no comma, only alphanumeric characters (a...z, A...Z, 0...9).
+
+All parameter names have to be written in lowerCamelCase (eg. centerFrequency, mainGain, upperLimiterThreshold; except abbreviations like LFOrate, LFOenvelopeShape, VFCcenterFrequency, Q).
+
+
+      3.) Basic design of a processing module in Pd
+-------------------------------------------------------
+We will discuss the basic module design by means of the prototype module "PrototypMonoProcessorChild.pd" (/Users/me/integra/SVN/integralive/modules/trunk/implementations/pd/integra/PrototypMonoProcessorChild.pd). After opening it, you will see one signal inlet, one signal outlet, 2 abstractions and one subpatch. The abstraction "handlers/ntg_receive $1" contains the receiver of parameter messages from integra. It routes 2 messages away ("init" and "fini") and outputs them as a bang (order: init-bang, fini-bang, other input parameter messages). There will be also a ping response message after receiving an input ping message. The other abstraction named "handlers/ntg_send $1" will send back messages from the module to integra (e.g. VU-meter level messages). The center subpatch called "pd prototyp_mono_processor_child_module" contains some other handler objects and the actual Pd processing module. 
+
+Inside of this module you will see one signal inlet, one signal outlet, 3 abstractions, one "t b b", one "switch~" and the actual process module (could be an abstraction in the core folder) called "pd core/my_process~".
+In abstraction "handlers/mono_pre_processor $0" the incoming signal will be split into two ways, the left one is the dry or original signal, the second is the signal going to effect processing. This handler abstraction deals with the parameter named "inLevel" (input gain of the processing module) from the incoming message stream.
+In abstraction "handlers/mono_post_processor $0" the left input signal is the unprocessed signal coming from pre_processor, the next input signal comes from the actual processing module output, both will be mixed and sent to signal output. This module deals with the parameter named "outLevel" (output gain of the processing module), with the parameter named "mix" (mixing dry with processed signal), with the parameter named "mute" (mutes the mix) and with the parameter named "bypass" (only dry signal will be sent to output). 
+The 3rd abstraction "handlers/mono_module $0" in cooperation with "switch~" deals with the parameter named "active" (takes the whole processing module from DSP tree, that means, no CPU time will be consumed).
+
+!!!  To build a new mono sound processing module in Pd, we should have one signal inlet on the left, one init-bang inlet (loadbang), one fini-bang inlet (clean up) and one input parameter message inlet on the right. Further we need one signal outlet on the left, one rejected parameter message outlet and one outgoing message outlet on the right.  (see "pd core/my_process~" and replace it.)  !!!
+
+
+      4.) GUI design of a module
+----------------------------------------------
+There is a web application under "http://db.integralive.org/". You should have a developer account and password.
+Sign In, under menu entry "Controls" you will find a list of all GUI control objects. 
+
+Under menu entry "Modules" you will find a list of all modules.
+To create a new module GUI, click "New Definitions", enter the module name (UpperCamelCase), enter the label (appearance name), check "Instantiable", check "Core", don't check "System", enter "Description" text, choose popup "Parent" class (no alphabetical order) (e.g. Processor).
+To create a new attribute (input or output message), enter the attribute "Name" (lowerCamelCase), enter the "Description" of the attribute, choose the "Scope" (input, output, visible, hidden), choose "Type" (integer, float, string, blop, nil), check "Module attribute", enter "Minimum" value,  enter "Maximum" value, check "Undoable" (if it isn't a bang event), enter "Default" value, choose physical "Unit" (None, Hertz, MIDIcent, dBFS, degree, radian, second, metre), enter "Scale" (linear, percent, log, log10, exponential), choose the GUI "Control" object (Slider, Knob, ...), enter "Control Group", if the values are a group of discrete states, enter their values and their labels. Submit, and repeat the last instruction for creating a new attribute.
+
+
+      5.) Basic design of a generating module in Pd
+-------------------------------------------------------
+
+coming soon.
+
+
+Thomas Musil, 2010.08.28
+

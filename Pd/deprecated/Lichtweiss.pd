@@ -1,0 +1,172 @@
+#N canvas 146 99 1139 659 10;
+#X obj 18 170 outlet~;
+#X obj 77 103 handlers/ntg_receive \$1;
+#X obj 123 174 handlers/ntg_send \$1;
+#X text 20 518 1.) initial argument: <float> unique id of the module
+;
+#X text 728 325 unit [-] \, initial-value: - \, range: (0/1) \, displays
+play state: 1 .. play \, 0 ... stop;
+#X text 690 214 *********************************************************
+;
+#X text 724 31 unit [sec] \, initial-value: 600 \, range: (1..3600)
+\, maximum;
+#X text 724 44 record or play time of a table in seconds.;
+#X text 724 98 initial-value: -0 \, range: (0/1) \, starts and stops
+;
+#X text 724 111 the recording of an input signal to the table.;
+#X text 724 161 initial-value: -0 \, range: (0/1) \, starts and stops
+;
+#X text 724 174 the playing back of the table content to output.;
+#X text 283 93 1 data out ports;
+#X text 282 60 1 signal out port;
+#X text 282 44 1 signal in port;
+#X text 258 16 simple sample player: signal recording and playback
+module with one table as sample storage.;
+#X text 274 137 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 304 167 description: switches the module on and off from DSP
+tree;
+#X text 304 340 description: switches a bypass path in parallel;
+#X text 314 354 to the processor on and off;
+#X text 303 406 description: mutes the effect way of the processor
+;
+#X text 304 455 description: makes a mix of the effected signal (wet
+= 1);
+#X text 314 470 and the input signal (dry = 0);
+#X text 304 223 description: multiplies the incoming signal with this
+value;
+#X text 314 238 before it is going further to effect input;
+#X text 304 288 description: multiplies the signal from effect output
+;
+#X text 304 152 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 304 273 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 304 208 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 304 325 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 304 390 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 304 440 initial-value: 1 \, range: (0...1) \, class: processor
+;
+#X text 276 310 4.) parameter: "bypass" \, type: <bool> \, unit [-]
+;
+#X text 274 376 5.) parameter: "mute" \, type: <bool> \, unit [-];
+#X text 274 425 6.) parameter: "mix" \, type: <float> \, unit [-];
+#X text 275 258 3.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 274 193 2.) parameter: "inLevel" \, type: <float> \, unit [-]
+;
+#X text 694 16 7.) in parameter: "maxLength" \, type: <float>;
+#X text 694 83 8.) in parameter: "rec" \, type: <int> \, unit [-];
+#X text 694 146 9.) in parameter: "play" \, type: <int> \, unit [-]
+;
+#X text 283 77 9 data in ports;
+#X obj 18 72 inlet~;
+#X text 698 249 1.) out parameter: "rec" \, type: <int>;
+#X text 698 309 2.) out parameter: "play" \, type: <int>;
+#X text 312 549 Thomas Musil \, 22.09.2010;
+#X text 728 265 unit [-] \, initial-value: - \, range: (0/1) \, displays
+rec state: 1 .. rec \, 0 ... stop;
+#N canvas 39 36 672 458 lichtweiss_module______ 0;
+#X obj 20 370 outlet~;
+#X obj 109 55 inlet;
+#X obj 279 55 inlet;
+#X text 279 38 named parameter-messages;
+#X text 109 38 init-bang;
+#X obj 192 53 inlet;
+#X text 192 36 fini-bang;
+#X obj 258 367 outlet;
+#X obj 164 281 switch~;
+#X obj 20 109 handlers/mono_pre_processor \$0 __;
+#X obj 21 55 inlet~;
+#N canvas 326 22 897 668 lichtweiss_______________ 0;
+#X obj 394 30 inlet;
+#X obj 29 36 inlet~;
+#X obj 29 538 outlet~;
+#X obj 225 32 inlet;
+#X obj 565 556 outlet;
+#X text 219 16 init-bang;
+#X text 394 14 route parameters;
+#X text 561 575 rejected parameters;
+#X text 27 20 from pre-processor;
+#X text 29 587 to post-processor;
+#X obj 380 552 outlet;
+#X text 369 587 init-bang;
+#X text 220 4 from prev.;
+#X text 376 573 to next;
+#X obj 225 59 t b b;
+#X obj 729 550 outlet;
+#X text 724 574 output parameters;
+#X obj 35 286 core/lichtweiss~ \$1;
+#X obj 319 33 inlet;
+#X text 316 14 fini;
+#X obj 469 553 outlet;
+#X text 465 574 to next;
+#X text 458 588 fini-bang;
+#X obj 313 59 t b b;
+#X obj 85 538 outlet~;
+#X obj 138 538 outlet~;
+#X obj 192 538 outlet~;
+#X connect 0 0 17 3;
+#X connect 1 0 17 0;
+#X connect 3 0 14 0;
+#X connect 14 0 10 0;
+#X connect 14 1 17 1;
+#X connect 17 0 2 0;
+#X connect 17 1 24 0;
+#X connect 17 2 25 0;
+#X connect 17 3 26 0;
+#X connect 17 4 4 0;
+#X connect 17 5 15 0;
+#X connect 18 0 23 0;
+#X connect 23 0 20 0;
+#X connect 23 1 17 2;
+#X restore 85 152 pd lichtweiss_______________;
+#X obj 20 197 handlers/quad_post_processor \$0 _;
+#X obj 20 240 handlers/quad_module \$0 _________;
+#X obj 74 370 outlet~;
+#X obj 128 370 outlet~;
+#X obj 182 370 outlet~;
+#X connect 1 0 9 1;
+#X connect 2 0 9 2;
+#X connect 5 0 11 2;
+#X connect 9 0 12 0;
+#X connect 9 0 12 1;
+#X connect 9 0 12 2;
+#X connect 9 0 12 3;
+#X connect 9 1 11 0;
+#X connect 9 2 11 1;
+#X connect 9 3 11 3;
+#X connect 10 0 9 0;
+#X connect 11 0 12 4;
+#X connect 11 1 12 5;
+#X connect 11 2 12 6;
+#X connect 11 3 12 7;
+#X connect 11 4 12 8;
+#X connect 11 6 12 9;
+#X connect 11 7 7 0;
+#X connect 12 0 13 0;
+#X connect 12 1 13 1;
+#X connect 12 2 13 2;
+#X connect 12 3 13 3;
+#X connect 12 4 13 4;
+#X connect 12 5 13 5;
+#X connect 13 0 0 0;
+#X connect 13 1 14 0;
+#X connect 13 2 15 0;
+#X connect 13 3 16 0;
+#X connect 13 4 8 0;
+#X restore 17 134 pd lichtweiss_module______;
+#X obj 32 193 outlet~;
+#X obj 47 214 outlet~;
+#X obj 66 237 outlet~;
+#X connect 1 0 46 1;
+#X connect 1 1 46 2;
+#X connect 1 2 46 3;
+#X connect 41 0 46 0;
+#X connect 46 0 0 0;
+#X connect 46 1 47 0;
+#X connect 46 2 48 0;
+#X connect 46 3 49 0;
+#X connect 46 4 2 0;

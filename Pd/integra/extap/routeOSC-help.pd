@@ -1,0 +1,83 @@
+#N canvas 1 53 923 562 12;
+#X obj 81 389 cnv 15 200 40 empty empty empty 20 12 0 14 -4034 -66577
+0;
+#X obj -76 40 udpreceive 9997;
+#X floatatom 91 111 3 0 0 0 - - -;
+#X floatatom 118 111 3 0 0 0 - - -;
+#X floatatom 145 111 3 0 0 0 - - -;
+#X floatatom 172 111 3 0 0 0 - - -;
+#X text 51 110 from;
+#X obj -76 164 unpackOSC;
+#X obj 112 399 routeOSC /test /west;
+#X msg 76 343 set /left;
+#X msg 53 320 set /left /right;
+#X text 324 108 see also:;
+#X obj 396 109 packOSC;
+#X floatatom 483 184 10 0 0 1 millisecond_delay - -;
+#X obj -76 191 pipelist;
+#X text 283 398 arguments are OSC addresses to be routed;
+#X text -117 517 see:;
+#X text 30 518 for a way to send OSC over TCP or serial connections.
+;
+#X obj -82 518 unpackOSCstream;
+#X text 231 341 (but new outlets can't be created);
+#X obj -110 218 print unpacked;
+#X text 503 476 2011/01/17 Martin Peach;
+#X obj 91 87 unpack 0 0 0 0 0;
+#X floatatom 200 111 8 0 0 0 - - -;
+#X obj 26 64 route received from;
+#X floatatom 26 132 5 0 0 0 - - -;
+#X text 66 132 bytes;
+#X msg 99 366 set /test/one/two/three;
+#X msg 27 294 paths;
+#X msg 4 271 verbosity \$1;
+#X obj 4 253 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
+;
+#X text 22 249 set to 1 for debugging;
+#X text 275 365 routeOSC will match deep paths;
+#X text 245 40 [routeOSC] parses lists of floats (only integers on
+[0..255]) as OSC packets.;
+#X text 246 77 Open [packOSC-help] to send packets to this patch.;
+#X text -6 186 If the OSC packet has a timetag \, [pipelist] will delay
+it until the time occurs;
+#X obj 112 480 print match_1;
+#X obj 180 457 print match_2;
+#X obj 249 434 print no_match;
+#X text 177 319 [set( reassigns outputs from left to right;
+#X text 81 294 [paths( will print the current OSC addresses to Pd console
+;
+#N canvas 498 257 494 344 META 0;
+#X text 12 155 HELP_PATCH_AUTHORS "pd meta" information added by Jonathan
+Wilkes for Pd version 0.42.;
+#X text 12 25 LICENSE GPL v2 or later;
+#X text 12 135 AUTHOR Roman Haefeli;
+#X text 12 5 KEYWORDS control list_op;
+#X text 12 45 DESCRIPTION parses lists of floats (only integers on
+[0..255]) as OSC packets.;
+#X text 12 75 INLET_0 list verbosity paths set;
+#X text 12 95 OUTLET_N list;
+#X text 12 115 OUTLET_R list;
+#X restore 708 522 pd META;
+#X connect 1 0 7 0;
+#X connect 1 1 24 0;
+#X connect 7 0 14 0;
+#X connect 7 0 20 0;
+#X connect 7 1 13 0;
+#X connect 7 1 14 1;
+#X connect 8 0 36 0;
+#X connect 8 1 37 0;
+#X connect 8 2 38 0;
+#X connect 9 0 8 0;
+#X connect 10 0 8 0;
+#X connect 14 0 8 0;
+#X connect 22 0 2 0;
+#X connect 22 1 3 0;
+#X connect 22 2 4 0;
+#X connect 22 3 5 0;
+#X connect 22 4 23 0;
+#X connect 24 0 25 0;
+#X connect 24 1 22 0;
+#X connect 27 0 8 0;
+#X connect 28 0 8 0;
+#X connect 29 0 8 0;
+#X connect 30 0 29 0;

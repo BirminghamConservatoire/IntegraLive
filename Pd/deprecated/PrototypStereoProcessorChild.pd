@@ -1,0 +1,214 @@
+#N canvas 214 38 965 757 10;
+#X text 516 99 description: switches the module on and off from DSP
+tree;
+#X text 516 268 description: switches a bypass path in parallel;
+#X text 526 282 to the processor on and off;
+#X text 515 334 description: mutes the effect way of the processor
+;
+#X text 516 383 description: makes a mix of the effected signal (wet
+= 1);
+#X text 526 398 and the input signal (dry = 0);
+#X text 516 151 description: multiplies the incoming signal with this
+value;
+#X text 526 166 before it is going further to effect input;
+#X text 516 216 description: multiplies the signal from effect output
+;
+#X text 516 84 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 516 201 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 516 136 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 516 253 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 516 318 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 516 368 initial-value: 1 \, range: (0...1) \, class: processor
+;
+#X obj 18 141 cnv 10 135 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 17 57 inlet~;
+#X obj 17 258 outlet~;
+#X obj 166 108 handlers/ntg_receive \$1;
+#X obj 228 211 handlers/ntg_send \$1;
+#X text 511 510 unit [dB] \, initial-value: 0 dB \, range: (-100...12.0
+dB) \,;
+#X text 509 541 description: gain in dB.;
+#X text 462 563 **************************************************
+;
+#X text 517 605 initial-value: - range: (-100...12 dB) \,;
+#X text 519 636 description: outlevel in dB;
+#X text 486 121 2.) in parameter: "inLevel" \, type: <float> \, unit
+[-];
+#X text 487 186 3.) in parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 486 351 6.) in parameter: "mix" \, type: <float> \, unit [-]
+;
+#X text 21 347 1.) initial argument: <float> unique id of the module
+;
+#X text 509 525 class: MyProcess;
+#X text 348 18 MyProcess: prototyp of stereo processor child module
+;
+#X text 348 41 2 signal in port;
+#X text 348 57 2 signal out port;
+#X text 348 73 8 data in ports;
+#X text 348 88 2 data out port;
+#X obj 87 57 inlet~;
+#X obj 87 258 outlet~;
+#N canvas 131 44 798 626 prototyp_stereo_processor_child_module______________
+0;
+#X obj 17 541 outlet~;
+#X obj 163 76 inlet;
+#X obj 17 25 inlet~;
+#X obj 284 176 inlet;
+#X obj 120 453 switch~;
+#X obj 221 127 inlet;
+#X text 201 75 init-bang: it replaces the loadbang object;
+#X text 261 126 fini-bang: opposite of loadbang;
+#X text 346 428 controls the "active" state of module;
+#X text 347 382 controls "mix" "mute" "bypass" "outLevel" of processor
+module;
+#X text 307 214 controls "inLevel" of processor module;
+#X obj 312 474 outlet;
+#X text 357 474 outgoing parameter messages;
+#X text 325 176 named parameter-messages;
+#X obj 185 289 t b b;
+#X text 16 565 processed outgoing signal;
+#X text 247 11 This subpatch can be switched off from DSP-tree;
+#X obj 95 46 inlet~;
+#X obj 72 515 outlet~;
+#X text 71 533 processed outgoing signal;
+#X obj 17 215 handlers/stereo_pre_processor \$0 ____________;
+#X obj 17 383 handlers/stereo_post_processor \$0 _;
+#X obj 17 425 handlers/stereo_module \$0 _________;
+#X text 16 5 left incoming signal;
+#X text 94 26 right incoming signal;
+#N canvas 305 131 811 608 core/my_process~__________________________
+0;
+#X obj 65 515 outlet~;
+#X obj 69 58 inlet~;
+#X obj 413 69 inlet;
+#X obj 188 64 inlet;
+#X text 187 45 init-bang;
+#X text 438 525 rejected parameter;
+#X obj 472 498 outlet;
+#X obj 691 495 outlet;
+#X text 657 522 outgoing parameters;
+#X text 412 46 incoming parameters;
+#X obj 317 66 inlet;
+#X text 316 47 fini-bang;
+#X obj 68 266 *~ 1;
+#X obj 414 152 + 100;
+#X obj 414 176 dbtorms;
+#X obj 414 200 clip 0 4;
+#X obj 255 281 metro 300;
+#X obj 193 370 snapshot~;
+#X msg 256 250 1;
+#X msg 301 250 0;
+#X obj 193 417 - 100;
+#X obj 193 394 rmstodb;
+#X obj 122 58 inlet~;
+#X obj 128 515 outlet~;
+#X text 28 11 my_process~;
+#X text 61 37 sig.in.A;
+#X text 123 38 sig.in.B;
+#X text 54 541 sig.out.A;
+#X text 127 541 sig.out.B;
+#X obj 128 266 *~ 1;
+#X obj 303 370 snapshot~;
+#X obj 303 417 - 100;
+#X obj 303 394 rmstodb;
+#X msg 303 439 list myLevelB \$1;
+#X obj 255 305 t b b;
+#X msg 194 439 list myLevelA \$1;
+#X obj 414 127 route myGainA myGainB;
+#X obj 474 152 + 100;
+#X obj 474 176 dbtorms;
+#X obj 474 200 clip 0 4;
+#X connect 1 0 12 0;
+#X connect 2 0 36 0;
+#X connect 3 0 18 0;
+#X connect 10 0 19 0;
+#X connect 12 0 0 0;
+#X connect 12 0 17 0;
+#X connect 13 0 14 0;
+#X connect 14 0 15 0;
+#X connect 15 0 12 1;
+#X connect 16 0 34 0;
+#X connect 17 0 21 0;
+#X connect 18 0 16 0;
+#X connect 19 0 16 0;
+#X connect 20 0 35 0;
+#X connect 21 0 20 0;
+#X connect 22 0 29 0;
+#X connect 29 0 23 0;
+#X connect 29 0 30 0;
+#X connect 30 0 32 0;
+#X connect 31 0 33 0;
+#X connect 32 0 31 0;
+#X connect 33 0 7 0;
+#X connect 34 0 17 0;
+#X connect 34 1 30 0;
+#X connect 35 0 7 0;
+#X connect 36 0 13 0;
+#X connect 36 1 37 0;
+#X connect 36 2 6 0;
+#X connect 37 0 38 0;
+#X connect 38 0 39 0;
+#X connect 39 0 29 1;
+#X restore 82 339 pd core/my_process~__________________________;
+#X text 382 332 here should be your pd-patch (as a subpatch or as a
+abstraction like "core/my_process~");
+#X connect 1 0 20 2;
+#X connect 2 0 20 0;
+#X connect 3 0 20 3;
+#X connect 5 0 25 3;
+#X connect 14 0 21 4;
+#X connect 14 1 25 2;
+#X connect 17 0 20 1;
+#X connect 20 0 21 0;
+#X connect 20 1 21 1;
+#X connect 20 2 25 0;
+#X connect 20 3 25 1;
+#X connect 20 4 14 0;
+#X connect 20 5 25 4;
+#X connect 21 0 22 0;
+#X connect 21 1 22 1;
+#X connect 21 2 22 2;
+#X connect 21 3 22 3;
+#X connect 22 0 0 0;
+#X connect 22 1 18 0;
+#X connect 22 2 4 0;
+#X connect 25 0 21 2;
+#X connect 25 1 21 3;
+#X connect 25 2 21 5;
+#X connect 25 3 11 0;
+#X restore 16 138 pd prototyp_stereo_processor_child_module______________
+;
+#X text 511 435 unit [dB] \, initial-value: 0 dB \, range: (-100...12.0
+dB) \,;
+#X text 509 466 description: gain in dB.;
+#X text 509 450 class: MyProcess;
+#X text 486 494 8.) in parameter: "myGainB" \, type: <float> \,;
+#X text 486 419 7.) in parameter: "myGainA" \, type: <float> \,;
+#X text 517 675 initial-value: - range: (-100...12 dB) \,;
+#X text 519 706 description: outlevel in dB;
+#X text 482 658 2.) out parameter: "myLevelB" \, type: <float> \, unit
+[dB];
+#X text 482 589 1.) out parameter: "myLevelA" \, type: <float> \, unit
+[dB];
+#X text 522 619 class: MyProcess;
+#X text 522 689 class: MyProcess;
+#X text 486 69 1.) in parameter: "active" \, type: <int> \, unit [-]
+;
+#X text 488 238 4.) in parameter: "bypass" \, type: <int> \, unit [-]
+;
+#X text 486 303 5.) in parameter: "mute" \, type: <int> \, unit [-]
+;
+#X connect 16 0 37 0;
+#X connect 18 0 37 2;
+#X connect 18 1 37 3;
+#X connect 18 2 37 4;
+#X connect 35 0 37 1;
+#X connect 37 0 17 0;
+#X connect 37 1 36 0;
+#X connect 37 2 19 0;

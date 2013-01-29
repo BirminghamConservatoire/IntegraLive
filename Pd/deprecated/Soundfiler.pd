@@ -1,0 +1,156 @@
+#N canvas 492 271 1144 524 10;
+#X text 451 138 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 481 168 description: switches the module on and off from DSP
+tree;
+#X text 480 275 description: mutes the effect way of the processor
+;
+#X text 481 221 description: multiplies the signal from effect output
+;
+#X text 481 153 initial-value: 1 \, range: (0/1) \, class: module;
+#X obj 58 173 cnv 10 125 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X text 481 206 initial-value: 1 \, range: (0...4) \, class: generator
+;
+#X text 481 259 initial-value: 0 \, range: (0/1) \, class: generator
+;
+#X obj 58 210 outlet~;
+#X text 452 191 2.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 451 244 3.) parameter: "mute" \, type: <bool> \, unit [-];
+#X obj 117 143 handlers/ntg_receive \$1;
+#N canvas 444 252 480 411 soundfile_player_module______ 0;
+#X obj 21 359 outlet~;
+#X obj 22 165 cnv 10 164 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 109 55 inlet;
+#X obj 279 55 inlet;
+#X text 279 38 named parameter-messages;
+#X text 109 38 init-bang;
+#X obj 93 275 switch~;
+#X obj 21 237 handlers/mono_module \$0 __;
+#X obj 192 53 inlet;
+#X text 192 36 fini-bang;
+#X obj 251 363 outlet;
+#N canvas 369 147 736 490 soundfile_player____________________ 0;
+#X obj 280 41 inlet;
+#X obj 19 368 outlet~;
+#X obj 138 41 inlet;
+#X obj 362 367 outlet;
+#X text 132 25 init-bang;
+#X text 280 25 route parameters;
+#X text 358 386 rejected parameters;
+#X text 18 394 to post-processor;
+#X obj 226 365 outlet;
+#X text 214 402 init-bang;
+#X text 131 12 from prev;
+#X text 220 388 to next;
+#X obj 138 74 t b b;
+#X obj 537 366 outlet;
+#X text 533 385 output parameters;
+#X obj 18 43 inlet~;
+#N canvas 0 22 489 304 soundFilePlayerRecord_module 0;
+#X obj 38 238 outlet~;
+#X obj 38 30 inlet~;
+#X obj 138 31 inlet parameters;
+#X obj 375 27 inlet init;
+#X obj 138 239 outlet output_parameters;
+#X obj 313 241 outlet rejected_parameters;
+#X obj 168 200 core/monoSoundfilePlayerRecorder~ \$0 Five;
+#X obj 38 89 core/monoSoundfilePlayerRecorder~ \$0 One;
+#X obj 76 114 core/monoSoundfilePlayerRecorder~ \$0 Two;
+#X obj 114 140 core/monoSoundfilePlayerRecorder~ \$0 Three;
+#X obj 139 172 core/monoSoundfilePlayerRecorder~ \$0 Four;
+#X connect 1 0 6 0;
+#X connect 1 0 7 0;
+#X connect 1 0 8 0;
+#X connect 1 0 9 0;
+#X connect 1 0 10 0;
+#X connect 2 0 6 1;
+#X connect 2 0 7 1;
+#X connect 2 0 8 1;
+#X connect 2 0 9 1;
+#X connect 2 0 10 1;
+#X connect 3 0 6 2;
+#X connect 3 0 7 2;
+#X connect 3 0 8 2;
+#X connect 3 0 9 2;
+#X connect 3 0 10 2;
+#X connect 6 0 0 0;
+#X connect 6 1 4 0;
+#X connect 6 2 5 0;
+#X connect 7 0 0 0;
+#X connect 7 1 4 0;
+#X connect 7 2 5 0;
+#X connect 8 0 0 0;
+#X connect 8 1 4 0;
+#X connect 8 2 5 0;
+#X connect 9 0 0 0;
+#X connect 9 1 4 0;
+#X connect 9 2 5 0;
+#X connect 10 0 0 0;
+#X connect 10 1 4 0;
+#X connect 10 2 5 0;
+#X restore 64 174 pd soundFilePlayerRecord_module;
+#X connect 0 0 16 1;
+#X connect 2 0 12 0;
+#X connect 12 0 8 0;
+#X connect 12 1 16 2;
+#X connect 15 0 16 0;
+#X connect 16 0 1 0;
+#X connect 16 1 13 0;
+#X connect 16 2 3 0;
+#X restore 21 162 pd soundfile_player____________________;
+#X obj 21 55 inlet~;
+#X connect 2 0 11 1;
+#X connect 3 0 11 2;
+#X connect 7 0 0 0;
+#X connect 7 1 6 0;
+#X connect 11 0 7 0;
+#X connect 11 1 7 1;
+#X connect 11 2 7 2;
+#X connect 11 3 10 0;
+#X connect 12 0 11 0;
+#X restore 58 170 pd soundfile_player_module______;
+#X obj 290 253 handlers/ntg_send \$1;
+#X text 60 458 1.) initial argument: <float> unique id of the module
+;
+#X text 898 421 (0 .. begin of sample \, 1 .. end of sample).;
+#X text 856 377 1.) out parameter: "relPosition" \, type: <float>;
+#X text 886 392 unit [-] \, initial-value: - \, range: (0 ... 1) \,
+displays the progress of relative position in playback sample.;
+#X text 846 354 *********************************************************
+;
+#X obj 57 131 inlet~;
+#X text 450 44 soundfile-player: polyphonic playback/record of up to
+5 audio files;
+#X text 475 317 stops and starts audio recording.;
+#X text 475 360 first click starts audio playback \; secong click pauses
+audio playback.;
+#X text 877 151 stops audio playback and resets the relPosition to
+0;
+#X text 882 187 enables looping of the audio file.;
+#X text 845 213 8.) in parameter: "speed\$1" \, type: <float>;
+#X text 846 172 7.) in parameter: "loop\$1" \,;
+#X text 847 134 6.) in parameter: "stop\$1) \,;
+#X text 445 343 5.) in parameter: "play\$1" \,;
+#X text 447 300 4.) in parameter: "record\$1" \,;
+#X text 872 234 alters playback speed of the audio file;
+#X text 848 259 9.) in parameter: "relPosition\$1";
+#X text 866 273 sets the relative position of where to begin playback
+from.;
+#X text 851 292 10.) in parameter: "writeFile\$1";
+#X text 869 306 writes the recorded audio to a file;
+#X text 851 319 11.) in parameter: "loadFile\$1";
+#X text 868 333 loads an audio file into the slot;
+#X text 503 484 J.R. Dooley 2011 \, Birmingham Conservatoire;
+#X obj 247 212 route int other;
+#X obj 247 281 handlers/ntg_send_int \$1;
+#X connect 11 0 12 1;
+#X connect 11 1 12 2;
+#X connect 11 2 12 3;
+#X connect 12 0 8 0;
+#X connect 12 1 38 0;
+#X connect 19 0 12 0;
+#X connect 38 0 39 0;
+#X connect 38 1 13 0;

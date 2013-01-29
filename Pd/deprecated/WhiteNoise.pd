@@ -1,0 +1,79 @@
+#N canvas 255 119 702 357 10;
+#X text 243 45 1 signal out port;
+#X text 256 91 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 286 121 description: switches the module on and off from DSP
+tree;
+#X text 285 229 description: mutes the effect way of the processor
+;
+#X text 286 175 description: multiplies the signal from effect output
+;
+#X text 286 106 initial-value: 1 \, range: (0/1) \, class: module;
+#X obj 18 133 cnv 10 125 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X text 286 160 initial-value: 1 \, range: (0...4) \, class: generator
+;
+#X text 286 213 initial-value: 0 \, range: (0/1) \, class: generator
+;
+#X text 243 18 white-noise: iterative random algorithm;
+#X obj 18 170 outlet~;
+#X text 15 109 dummy;
+#X text 243 61 3 data in ports;
+#X text 256 198 3.) parameter: "mute" \, type: <bool> \, unit [-];
+#X text 305 252 Thomas Musil \, 11.11.2009;
+#X text 257 145 2.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#N canvas 67 156 403 419 white_noise_module____ 0;
+#X obj 21 359 outlet~;
+#X obj 22 165 cnv 10 164 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 21 55 inlet;
+#X text 24 37 dummy;
+#X obj 101 51 inlet;
+#X obj 241 57 inlet;
+#X text 241 40 named parameter-messages;
+#X text 101 34 init-bang;
+#X obj 93 275 switch~;
+#N canvas 366 293 589 458 white_noise__________________ 0;
+#X obj 280 41 inlet;
+#X obj 19 368 outlet~;
+#X obj 138 41 inlet;
+#X obj 362 367 outlet;
+#X text 132 25 init-bang;
+#X text 280 25 route parameters;
+#X text 358 386 rejected parameters;
+#X text 18 394 to post-processor;
+#X obj 226 365 outlet;
+#X text 214 402 init-bang;
+#X text 131 12 from prev;
+#X text 220 388 to next;
+#X obj 18 43 inlet;
+#X text 16 27 dummy;
+#X obj 19 333 noise~;
+#X connect 0 0 3 0;
+#X connect 2 0 8 0;
+#X connect 14 0 1 0;
+#X restore 21 162 pd white_noise__________________;
+#X obj 21 202 handlers/mono_generator \$0;
+#X obj 21 237 handlers/mono_module \$0 __;
+#X obj 174 53 inlet;
+#X text 174 36 fini-bang;
+#X connect 2 0 9 0;
+#X connect 4 0 9 1;
+#X connect 5 0 9 2;
+#X connect 9 0 10 0;
+#X connect 9 1 10 1;
+#X connect 9 2 10 2;
+#X connect 10 0 11 0;
+#X connect 10 1 11 1;
+#X connect 10 2 11 2;
+#X connect 11 0 0 0;
+#X connect 11 1 8 0;
+#X restore 18 130 pd white_noise_module____;
+#X obj 101 93 handlers/ntg_receive \$1;
+#X text 14 272 1.) initial argument: <float> unique id of the module
+;
+#X connect 16 0 10 0;
+#X connect 17 0 16 1;
+#X connect 17 1 16 2;
+#X connect 17 2 16 3;

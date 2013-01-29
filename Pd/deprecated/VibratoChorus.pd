@@ -1,0 +1,171 @@
+#N canvas 197 22 799 764 10;
+#X text 281 61 1 signal out port;
+#X text 281 45 1 signal in port;
+#X text 294 107 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 324 137 description: switches the module on and off from DSP
+tree;
+#X text 324 310 description: switches a bypass path in parallel;
+#X text 334 324 to the processor on and off;
+#X text 323 376 description: mutes the effect way of the processor
+;
+#X text 324 425 description: makes a mix of the effected signal (wet
+= 1);
+#X text 334 440 and the input signal (dry = 0);
+#X text 324 193 description: multiplies the incoming signal with this
+value;
+#X text 334 208 before it is going further to effect input;
+#X text 324 258 description: multiplies the signal from effect output
+;
+#X text 324 122 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 324 243 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 324 178 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 324 295 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 324 360 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 324 410 initial-value: 1 \, range: (0...1) \, class: processor
+;
+#X obj 19 131 cnv 10 135 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 18 91 inlet~;
+#X obj 18 170 outlet~;
+#X text 296 280 4.) parameter: "bypass" \, type: <bool> \, unit [-]
+;
+#X text 294 346 5.) parameter: "mute" \, type: <bool> \, unit [-];
+#X text 294 395 6.) parameter: "mix" \, type: <float> \, unit [-];
+#X text 295 228 3.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 294 163 2.) parameter: "inLevel" \, type: <float> \, unit [-]
+;
+#X obj 85 96 handlers/ntg_receive \$1;
+#N canvas 726 75 714 386 VibratoChorus_module___________ 0;
+#X obj 152 28 inlet;
+#X obj 17 25 inlet~;
+#X obj 17 345 outlet~;
+#X obj 108 148 cnv 10 164 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 402 26 inlet;
+#X text 402 9 named parameter-messages;
+#X text 152 11 init-bang;
+#X obj 107 274 switch~;
+#X obj 17 99 handlers/mono_pre_processor \$0 __;
+#X obj 17 187 handlers/mono_post_processor \$0 _;
+#X obj 17 230 handlers/mono_module \$0 _________;
+#X obj 244 29 inlet;
+#X text 244 12 fini-bang;
+#N canvas 270 241 644 648 VibratoChorus_____________ 0;
+#X obj 394 30 inlet;
+#X obj 29 36 inlet~;
+#X obj 29 538 outlet~;
+#X obj 225 32 inlet;
+#X obj 508 550 outlet;
+#X text 219 16 init-bang;
+#X text 394 14 route parameters;
+#X text 504 569 rejected parameters;
+#X text 27 20 from pre-processor;
+#X text 28 564 to post-processor;
+#X obj 265 549 outlet;
+#X text 254 584 init-bang;
+#X text 220 4 from prev.;
+#X text 261 570 to next;
+#X obj 225 59 t b b;
+#X obj 394 58 route intensity frequency;
+#X obj 445 187 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+-262144 -1 -1 0 256;
+#X obj 406 132 t b f;
+#X obj 406 186 /;
+#X obj 406 212 t b f;
+#X obj 394 241 *;
+#X obj 447 242 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+-262144 -1 -1 0 256;
+#X obj 29 430 +~;
+#X obj 29 400 *~;
+#X obj 29 85 delwrite~ \$0-vib 3200;
+#X obj 29 503 vd~ \$0-vib;
+#X obj 29 365 osc~ 1;
+#X obj 394 356 line~;
+#X obj 423 307 unpack 0 0;
+#X obj 402 330 f 20;
+#X obj 394 282 pack 20 20;
+#X obj 29 328 line~;
+#X obj 58 279 unpack 0 0;
+#X obj 406 158 f 160;
+#X obj 29 458 +~ 1;
+#X obj 29 254 pack 2 20;
+#X obj 37 302 f 2;
+#X connect 0 0 15 0;
+#X connect 1 0 24 0;
+#X connect 3 0 14 0;
+#X connect 14 0 10 0;
+#X connect 14 1 29 0;
+#X connect 14 1 36 0;
+#X connect 15 0 20 0;
+#X connect 15 1 17 0;
+#X connect 15 1 35 0;
+#X connect 15 2 4 0;
+#X connect 17 0 33 0;
+#X connect 17 1 18 1;
+#X connect 18 0 16 0;
+#X connect 18 0 19 0;
+#X connect 19 0 20 0;
+#X connect 19 1 20 1;
+#X connect 20 0 21 0;
+#X connect 20 0 30 0;
+#X connect 22 0 34 0;
+#X connect 23 0 22 0;
+#X connect 25 0 2 0;
+#X connect 26 0 23 0;
+#X connect 27 0 23 1;
+#X connect 27 0 22 1;
+#X connect 28 0 29 1;
+#X connect 29 0 27 0;
+#X connect 30 0 27 0;
+#X connect 30 0 28 0;
+#X connect 31 0 26 0;
+#X connect 32 0 36 1;
+#X connect 33 0 18 0;
+#X connect 34 0 25 0;
+#X connect 35 0 31 0;
+#X connect 35 0 32 0;
+#X connect 36 0 31 0;
+#X restore 82 145 pd VibratoChorus_____________;
+#X connect 0 0 8 1;
+#X connect 1 0 8 0;
+#X connect 4 0 8 2;
+#X connect 8 0 9 0;
+#X connect 8 1 13 0;
+#X connect 8 2 13 1;
+#X connect 8 3 13 2;
+#X connect 9 0 10 0;
+#X connect 9 1 10 1;
+#X connect 9 2 10 2;
+#X connect 10 0 2 0;
+#X connect 10 1 7 0;
+#X connect 13 0 9 1;
+#X connect 13 1 9 2;
+#X connect 13 2 9 3;
+#X restore 18 128 pd VibratoChorus_module___________;
+#X text 295 465 7.) parameter: "intensity" \, type: <float> \, unit
+[-];
+#X text 323 496 description: the range of the vibrato;
+#X text 324 556 description: the frequency of the vibrato;
+#X text 324 481 initial-value: 0.1 \, range: (0...1) \, class: vibrato
+;
+#X text 296 525 8.) parameter: "frequency" \, type: <float> \, unit
+[Hz];
+#X text 325 541 initial-value: 2 Hz \, range: (0.1...20 Hz) \, class:
+vibrato;
+#X text 281 77 8 data in ports;
+#X text 281 22 Vibrato/Chorus;
+#X text 382 595 Dag Henning Kalvøy \, 06.12.2010;
+#X text 381 611 (based on Thomas Musil's modules);
+#X text 14 578 1.) initial argument: <float> unique id of the module
+;
+#X connect 19 0 27 0;
+#X connect 26 0 27 1;
+#X connect 26 1 27 2;
+#X connect 26 2 27 3;
+#X connect 27 0 20 0;

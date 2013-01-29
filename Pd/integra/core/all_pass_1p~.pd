@@ -1,0 +1,27 @@
+#N canvas 66 109 585 450 10;
+#X obj 144 52 inlet;
+#X text 146 34 freq;
+#X obj 79 52 inlet~;
+#X obj 78 390 outlet~;
+#X text 344 116 l;
+#X obj 144 105 ../generics/f_transform \$1;
+#X obj 328 55 inlet;
+#X text 330 37 init-bang;
+#X obj 145 164 t f f;
+#X obj 172 192 * -1;
+#X obj 144 135 expr ($f1-1)/($f1+1);
+#X obj 146 221 pack 0 0 0 1 0;
+#X text 300 146 a0;
+#X text 26 17 all_pass_1p~ : all pass filter of first order (one pole)
+;
+#X obj 78 339 biquad~;
+#X connect 0 0 5 0;
+#X connect 2 0 14 0;
+#X connect 5 0 10 0;
+#X connect 6 0 5 1;
+#X connect 8 0 11 0;
+#X connect 8 1 9 0;
+#X connect 9 0 11 2;
+#X connect 10 0 8 0;
+#X connect 11 0 14 0;
+#X connect 14 0 3 0;

@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" label="{ _endpointName.text }" xmlns:local="*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:HBox styleName="internalPadding" horizontalGap="20">
+		<mx:VBox>
+			<mx:HBox>
+				<mx:Label text="Endpoint Name" width="{_labelColumnWidth}" textAlign="right"/>
+				<mx:TextInput id="_endpointName" 
+							  change="{interfaceChanged(); dispatchEvent( new Event( Globals.endpointRenamedEvent ) ) }"
+							  width="{Globals.propertyColumnWidth()}" 
+							  toolTip="Enter Endpoint Name" 
+							  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" 
+							  maxChars="32"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Endpoint Label" width="{_labelColumnWidth}" textAlign="right"/>
+				<mx:TextInput id="_endpointLabel"
+							  change="{interfaceChanged();}"
+							  width="{Globals.propertyColumnWidth()}" 
+							  toolTip="Easy to read version of name" 
+							  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Endpoint Description" width="{_labelColumnWidth}" textAlign="right"/>
+				<mx:TextArea id="_endpointDescription" 
+							 change="{interfaceChanged();}"
+							 width="{Globals.propertyColumnWidth()}"
+							 height="{Globals.descriptionHeight}"							
+							 toolTip="please describe the endpoint"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Endpoint Type" width="{_labelColumnWidth}" textAlign="right"/>
+				<mx:List id="_endpointType" 
+						 	change="{ onChangeEndpointType() }" 
+							toolTip="Choose Endpoint type"
+							rowCount="{ _endpointType.dataProvider.length }"
+							styleName="smallRows"
+							verticalAlign="middle"
+							width="{Globals.propertyColumnWidth()}"
+							dataProvider="{[ _controlLabel, _streamLabel ]}"/>
+			</mx:HBox>
+			<local:WidgetSelection id="_widgetSelection" visible="false" maxHeight="0"/>
+		</mx:VBox>
+		<mx:VBox verticalGap="0">
+			<local:ControlInfo id="_controlInfo" visible="false" maxHeight="0"/>
+			<local:StreamInfo id="_streamInfo" visible="false" maxHeight="0"/>
+		</mx:VBox>
+	</mx:HBox>
+	
+
+	<fx:Script>
+		<![CDATA[
+
+			import flexunit.framework.Assert;
+			
+			import mx.containers.Accordion;
+			
+	
+			public function doInitialize( widgetLayout:WidgetLayout ):void
+			{
+				_widgetLayout = widgetLayout;
+				
+				displayControlSection();
+				
+				_controlInfo.doInitialize();
+				_widgetSelection.doInitialize( widgetLayout, this );
+				_streamInfo.doInitialize();
+				
+				_controlInfo.addEventListener( Globals.modifiedEvent, onSubComponentChanged );
+				_streamInfo.addEventListener( Globals.modifiedEvent, onSubComponentChanged );
+			}
+			
+			
+			public function free():void
+			{
+				_widgetSelection.free();
+			}
+			
+
+			public function validateContent():Boolean
+			{
+				var valid:Boolean = validateName();
+				
+				if( _controlInfo.visible )
+				{
+					if( !_controlInfo.validateContent() )
+					{
+						valid = false;
+					}
+					
+					if( !_widgetSelection.validateContent() )
+					{
+						valid = false;
+					}
+				}
+				
+				if( _streamInfo.visible && !_streamInfo.validateContent() )
+				{
+					valid = false;
+				}
+
+				return valid;
+			}
+
+			
+			public function loadFromXML( xml:XML ):Boolean
+			{
+				if( xml.hasOwnProperty( "Name" ) )
+				{
+					_endpointName.text = xml.Name;
+				}
+				else
+				{
+					return false;
+				}
+
+				if( xml.hasOwnProperty( "Label" ) )
+				{
+					_endpointLabel.text = xml.Label;
+				}
+
+				if( xml.hasOwnProperty( "Description" ) )
+				{
+					_endpointDescription.text = xml.Description;
+				}
+				
+				if( xml.hasOwnProperty( "Type" ) )
+				{
+					switch( xml.Type.toString() )
+					{
+						case "control":
+							displayControlSection();
+							
+							if( !xml.hasOwnProperty( "ControlInfo" ) ) return false;
+							if( !_controlInfo.loadFromXML( xml.child( "ControlInfo" ) ) ) return false; 
+						
+							break;
+						
+						case "stream":
+							displayStreamSection();
+
+							if( !xml.hasOwnProperty( "StreamInfo" ) ) return false;
+							if( !_streamInfo.loadFromXML( xml.child( "StreamInfo" ) ) ) return false; 
+
+							break;
+						
+						default:
+							return false;
+					}
+				}
+				else
+				{
+					return false;
+				}
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<Endpoint></Endpoint>" );
+				xml.appendChild( <Name> { _endpointName.text } </Name> );
+				
+				if( _endpointLabel.text.length > 0 )
+				{
+					xml.appendChild( <Label> { _endpointLabel.text } </Label> );
+				}
+				
+				if(  _endpointDescription.text.length > 0 )
+				{
+					xml.appendChild( <Description> { _endpointDescription.text } </Description> );
+				}
+
+				switch( _endpointType.selectedItem )
+				{
+					case _controlLabel:
+						xml.appendChild( <Type>control</Type> );
+						xml.appendChild( _controlInfo.saveToXML() );
+						break;
+
+					case _streamLabel:
+						xml.appendChild( <Type>stream</Type> );
+						xml.appendChild( _streamInfo.saveToXML() );
+						break;
+				}
+				
+				return xml;
+			}
+			
+			
+			public function onEndpointNameChanged():void
+			{
+				_widgetSelection.onEndpointNameChanged();
+				
+				var widgetElement:WidgetLayoutElement = _widgetLayout.getWidget( this );
+				if( widgetElement )
+				{
+					widgetElement.updateLabel();
+				}
+			}
+			
+			
+			public function get isControl():Boolean
+			{
+				return ( _endpointType.selectedItem == _controlLabel );
+			}
+			
+			
+			public function getOrder( toCompare:Endpoint ):Number 
+			{
+				if( isControl )
+				{
+					if( toCompare.isControl )
+					{
+						var myWidget:WidgetLayoutElement = _widgetLayout.getWidget( this );
+						var otherWidget:WidgetLayoutElement = _widgetLayout.getWidget( toCompare );
+						
+						if( myWidget )
+						{
+							if( otherWidget )
+							{
+								if( myWidget.x > otherWidget.x ) return 1;
+								if( myWidget.x < otherWidget.x ) return -1;
+								
+								if( myWidget == otherWidget )
+								{
+									var myWidgetAttribute:String = myWidget.getWidgetAttribute( this );
+									var otherWidgetAttribute:String = myWidget.getWidgetAttribute( toCompare );
+								
+									if( myWidgetAttribute )
+									{
+										if( otherWidgetAttribute )
+										{
+											return myWidgetAttribute > otherWidgetAttribute ? 1 : -1;
+										}
+										else
+										{
+											return 1;
+										}
+									}
+									else
+									{
+										if( otherWidgetAttribute )
+										{
+											return -1;
+										}
+										else
+										{
+											return getNameOrder( toCompare );
+										}
+									}
+								}
+								else
+								{
+									return getNameOrder( toCompare );
+								}
+							}
+							else
+							{
+								return -1;
+							}
+						}
+						else
+						{
+							if( otherWidget )
+							{
+								return 1;
+							}
+							else
+							{
+								//neither control has a widget - compare by name
+								return getNameOrder( toCompare );
+							}
+						}
+						//get control order
+						return 1;	
+					}
+					else
+					{
+						return 1;
+					}
+				}
+				else
+				{
+					if( toCompare.isControl )
+					{
+						return -1;
+					}
+					else
+					{
+						//compare stream endpoints by name
+						return getNameOrder( toCompare );
+					}
+				}
+			}
+			
+			
+			private function getNameOrder( toCompare:Endpoint ):Number
+			{
+				var string1:String = _endpointName.text;
+				var string2:String = toCompare._endpointName.text;
+
+				var numberPrefix:String = getIdenticalStringFollowedByNumber( string1, string2 );
+				if( !numberPrefix )
+				{
+					return ( string1 > string2 ) ? 1 : -1;
+				}
+				
+				var number1:Number = Number( string1.substr( numberPrefix.length ) );
+				var number2:Number = Number( string2.substr( numberPrefix.length ) );
+				
+				return number1 > number2 ? 1 : -1;
+			}
+			
+			
+			private function getIdenticalStringFollowedByNumber( string1:String, string2:String ):String
+			{
+				for( var i:int = 0; i < Math.min( string1.length, string2.length ); i++ )
+				{
+					if( string1.substr( 0, i ) != string2.substr( 0, i ) )
+					{
+						return null;
+					}
+					
+					if( !isNaN( Number( string1.substr( i ) ) ) && !isNaN( Number( string2.substr( i ) ) ) )
+					{
+						return string1.substr( 0, i );					
+					}
+				}
+				
+				return null;				
+			}
+			
+			
+			private function validateName():Boolean
+			{
+				if( _endpointName.text.length == 0 )
+				{
+					_endpointName.errorString = "You must provide an Endpoint Name";
+					return false;
+				}
+
+				if( !Config.singleInstance.allowNonLowerCamelEndpointNames )
+				{
+					if( Globals.lowerCaseChars.indexOf( _endpointName.text.charAt( 0 ) ) < 0 )
+					{
+						_endpointName.errorString = "Endpoint Name must use lowerCamelCase";
+						return false;
+					}
+				}
+			
+				var owner:Accordion = parent as Accordion;
+				Assert.assertNotNull( owner );
+				
+				for( var i:int = 0; i < owner.getChildIndex( this ); i++ )
+				{
+					var predecessor:Endpoint = owner.getChildAt( i ) as Endpoint;
+					Assert.assertNotNull( predecessor );
+					
+					if( predecessor.label == _endpointName.text )
+					{
+						_endpointName.errorString = "Endpoint Name must be unique";
+						return false;
+					}
+				}
+						
+				if( _endpointName.text == Globals.dataDirectoryName )
+				{
+					if( !isControl || !_controlInfo.isValidDataDirectory )
+					{
+						_endpointName.errorString = "Endpoint Name \"" + Globals.dataDirectoryName + "\" is reserved.  It must be a string with IsSavedToFile=false, CanBeTarget=false and IsSentToHost=true.";
+						return false;
+					}
+				}
+				
+				//success
+				_endpointName.errorString = null;
+				return true;
+			}
+			
+			
+			private function onChangeEndpointType():void
+			{
+				switch( _endpointType.selectedItem )
+				{
+					case _controlLabel:
+						displayControlSection();
+						break;
+					
+					case _streamLabel:
+						displayStreamSection();
+						break;
+					
+					default:
+						Assert.assertTrue( false );
+						break;
+				}
+				
+				interfaceChanged();
+			}
+			
+			
+			private function displayControlSection():void
+			{
+				_endpointType.selectedItem = _controlLabel;
+				
+				_controlInfo.visible = true;
+				_controlInfo.maxHeight = NaN;
+				_widgetSelection.visible = true;
+				_widgetSelection.maxHeight = NaN;
+				
+				_streamInfo.visible = false;
+				_streamInfo.maxHeight = 0;
+			}
+			
+			
+			private function displayStreamSection():void
+			{
+				_endpointType.selectedItem = _streamLabel;
+
+				_controlInfo.visible = false;
+				_controlInfo.maxHeight = 0;
+				_widgetSelection.visible = false;
+				_widgetSelection.maxHeight = 0;
+
+				_streamInfo.visible = true;
+				_streamInfo.maxHeight = NaN;
+			}
+			
+			
+			private function onSubComponentChanged( event:Event ):void
+			{
+				interfaceChanged();
+			}
+			
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}			
+
+			
+			private var _widgetLayout:WidgetLayout;
+
+			private const _controlLabel:String = "Control";
+			private const _streamLabel:String = "Stream";
+			
+			private const _labelColumnWidth:Number = 120;
+	]]>
+	</fx:Script>			
+	
+</mx:Canvas>

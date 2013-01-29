@@ -1,0 +1,69 @@
+See below for the OSC sender/receiver names regarding the communication between the ExtAp.pd backend and the Integralive gui:
+
+IEM Graz 2012
+
+pd object or subpatch		integra OSC name
+---------------------------------------------------------
+sam_voice~ 1
+	toggle	(playstate)		s1
+	numbox 	(out-vu)		s1vu
+	numbox-string	(filename)	s1file
+(similar for 2...4)
+
+
+reso_voice~
+	numbox	(in-vu)		resin
+	toggle	(limit)		reslim
+	numbox	(out-vu)	resout
+
+
+filtre-sop2
+	numbox	(out-vu, pre)	fils2out
+
+filtre-ecriture
+	numbox	(out-vu dry)	filecdry
+	numbox	(out-vu wet)	filecwet
+
+
+reverb
+	numbox	(in-vu)		revin
+	numbox	(out-vu)	revout
+
+
+del_voice~ 1
+	numbox	(in-vu)		d1in
+	numbox	(out-vu)	d1out
+(similar for 2...4)
+
+harm_voice~ 1
+	numbox	(out-vu)	h1out
+(similar for 2+3)
+
+	toggle	(network)	network
+
+slot_scripting
+	toggle	(samples_ok?)	samplesok
+
+slave-display
+	numbox(string) (stop, +1, +10, -1, -10) slaveaction
+
+cuelist
+	trigger	(go!)		go
+	numbox	(current cue)	current
+	numbox	(next cue)	next
+	stopbtn	(stop all)	stop
+	trigger	(+10)		plus10
+	trigger	(+1)		plus1
+	trigger	(-10)		minus10
+	trigger	(-1)		minus1
+
+faders (all range from 0-127!)
+	slider	(samplers)	samplers
+	slider	(transforms)	transforms
+	slider	(delays)	delays
+	slider	(resonator)	reson
+	slider	(harmonizers)	harm
+	slider	(filter sop2)	filts2
+	slider	(filter ecrt)	filtec
+	knob	(sam1)		s1vol
+	(similar for 2...4)

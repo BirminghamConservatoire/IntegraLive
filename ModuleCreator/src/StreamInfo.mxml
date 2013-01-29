@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" borderStyle="inset">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:VBox styleName="internalPadding">
+		<mx:Label text="Stream Info"/>
+		<mx:HBox>
+			<mx:Label text="Stream Type" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
+			<mx:List id="_streamType" 
+					 change="{ onChangeStreamType() }" 
+					 toolTip="Choose Stream type"
+					 rowCount="{ _streamType.dataProvider.length }"
+					 styleName="smallRows"
+					 verticalAlign="middle"
+					 width="{Globals.propertyColumnWidth( 1 )}" 
+					 dataProvider="{[_audioLabel]}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Stream Direction" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
+			<mx:List id="_streamDirection" 
+					 change="{ onChangeStreamDirection() }" 
+					 toolTip="Choose Stream Direction"
+					 rowCount="{ _streamDirection.dataProvider.length }"
+					 styleName="smallRows"
+					 verticalAlign="middle"
+					 width="{Globals.propertyColumnWidth( 1 )}"
+					 dataProvider="{[_inputLabel, _outputLabel]}"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			
+			public function doInitialize():void
+			{
+				_streamType.selectedItem = _audioLabel;
+				_streamDirection.selectedItem = _inputLabel;
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				//no need to validate anything here
+				return true;
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				if( !xml.hasOwnProperty( "StreamType" ) ) return false;
+
+				switch( xml.StreamType.toString() )
+				{
+					case "audio":
+						_streamType.selectedItem = _audioLabel;
+						break;
+					
+					default:
+						return false;
+				}
+
+				if( !xml.hasOwnProperty( "StreamDirection" ) ) return false;
+				
+				switch( xml.StreamDirection.toString() )
+				{
+					case "input":
+						_streamDirection.selectedItem = _inputLabel;
+						break;
+					
+					case "output":
+						_streamDirection.selectedItem = _outputLabel;
+						break;
+
+					default:
+						return false;
+				}
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<StreamInfo></StreamInfo>" );
+				
+				switch( _streamType.selectedItem.toString() )
+				{
+					case _audioLabel:
+						xml.appendChild( <StreamType>audio</StreamType> );
+						break;
+				}
+
+				switch( _streamDirection.selectedItem.toString() )
+				{
+					case _inputLabel:
+						xml.appendChild( <StreamDirection>input</StreamDirection> );
+						break;
+
+					case _outputLabel:
+						xml.appendChild( <StreamDirection>output</StreamDirection> );
+						break;
+				}
+				
+				return xml;
+			}			
+						
+			
+			private function onChangeStreamType():void
+			{
+				interfaceChanged();
+			}
+
+			
+			private function onChangeStreamDirection():void
+			{
+				interfaceChanged();
+			}
+
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}			
+			
+			
+			private const _audioLabel:String = "Audio";
+			private const _inputLabel:String = "Input";
+			private const _outputLabel:String = "Output";
+			
+		]]>
+	</fx:Script>		
+</mx:Canvas>

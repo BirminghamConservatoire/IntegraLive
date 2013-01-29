@@ -1,0 +1,30 @@
+#N canvas 558 323 450 527 10;
+#X obj 89 294 inlet query;
+#X obj 96 488 outlet result;
+#X obj 89 387 s;
+#X obj 89 315 t a b;
+#X obj 89 336 list prepend \$0-queryhandler;
+#X obj 96 466 r \$0-queryhandler;
+#X obj 326 293 inlet target;
+#X obj 116 363 symbol \$1-query;
+#X obj 326 314 symbol;
+#X msg 326 335 symbol \$1-query;
+#X text 53 66 the singleton holds [queryhandler foo];
+#X text 53 48 the instances hold [query foo];
+#X text 57 21 "client" abstraction for the "query" mechanism;
+#X text 51 125 this message goes out through the 'query' outlet of
+[queryhandler foo] \, where the singleton can calculate the result
+and send it back.;
+#X text 52 176 the result will then be output at the 'result' outlet
+of the instance's [query foo] object.;
+#X text 52 95 an instance queries something from the singleton by sending
+a message to the 'query' inlet of query foo];
+#X connect 0 0 3 0;
+#X connect 3 0 4 0;
+#X connect 3 1 7 0;
+#X connect 4 0 2 0;
+#X connect 5 0 1 0;
+#X connect 6 0 8 0;
+#X connect 7 0 2 1;
+#X connect 8 0 9 0;
+#X connect 9 0 7 1;

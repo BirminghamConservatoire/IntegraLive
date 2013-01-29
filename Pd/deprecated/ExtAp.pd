@@ -1,0 +1,5428 @@
+#N canvas 242 22 1038 832 10;
+#N canvas 407 75 577 726 sampleslots 0;
+#X obj 20 0 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F002.wav;
+#X obj 20 20 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F003.wav;
+#X obj 20 70 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F004.wav;
+#X obj 20 120 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F006.wav;
+#X obj 20 170 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F007.wav;
+#X obj 20 220 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F008.wav;
+#X obj 20 270 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F009bis.wav;
+#X obj 20 320 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F009.wav;
+#X obj 20 370 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F010.wav;
+#X obj 20 420 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F011bis.wav;
+#X obj 20 470 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F011.wav;
+#X obj 20 520 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F012.wav;
+#X obj 20 570 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F013.wav;
+#X obj 20 620 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F014.wav;
+#X obj 20 670 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F015.wav;
+#X obj 20 720 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F016.wav;
+#X obj 20 770 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F017.wav;
+#X obj 20 820 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F018.wav;
+#X obj 20 870 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F019.wav;
+#X obj 20 920 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F020.wav;
+#X obj 20 970 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F021.wav;
+#X obj 20 1020 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F023.wav;
+#X obj 20 1070 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F024.wav;
+#X obj 20 1120 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F025.wav;
+#X obj 20 1170 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F026.wav;
+#X obj 20 1220 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F027bis.wav;
+#X obj 20 1270 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F027.wav;
+#X obj 20 1320 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F028.wav;
+#X obj 20 1370 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F030.wav;
+#X obj 20 1420 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F031.wav;
+#X obj 20 1470 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F032.wav;
+#X obj 20 1520 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F034bis.wav;
+#X obj 20 1570 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F034.wav;
+#X obj 20 1620 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F035.wav;
+#X obj 20 1670 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F036.wav;
+#X obj 20 1720 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F037.wav;
+#X obj 20 1770 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F038.wav;
+#X obj 20 1820 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F039.wav;
+#X obj 20 1870 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F040.wav;
+#X obj 20 1920 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F041.wav;
+#X obj 20 1970 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F042.wav;
+#X obj 20 2020 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F043.wav;
+#X obj 20 2070 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F044.wav;
+#X obj 20 2120 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F045.wav;
+#X obj 20 2170 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F048.wav;
+#X obj 20 2220 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F049.wav;
+#X obj 20 2270 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F051.wav;
+#X obj 20 2320 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F052.wav;
+#X obj 20 2370 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F053.wav;
+#X obj 20 2420 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F054.wav;
+#X obj 20 2470 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F055.wav;
+#X obj 20 2520 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F056.wav;
+#X obj 20 2570 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F057.wav;
+#X obj 20 2620 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F058.wav;
+#X obj 20 2670 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F059.wav;
+#X obj 20 2720 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F060.wav;
+#X obj 20 2770 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F061.wav;
+#X obj 20 2820 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F062.wav;
+#X obj 20 2870 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F063.wav;
+#X obj 20 2920 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F065.wav;
+#X obj 20 2970 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F066.wav;
+#X obj 20 3020 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F067.wav;
+#X obj 20 3070 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F069.wav;
+#X obj 20 3120 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F070.wav;
+#X obj 20 3170 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F072.wav;
+#X obj 20 3220 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F073.wav;
+#X obj 20 3270 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F076bis.wav;
+#X obj 20 3320 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F076.wav;
+#X obj 20 3370 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F077.wav;
+#X obj 20 3420 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F078.wav;
+#X obj 20 3470 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F081.wav;
+#X obj 20 3520 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F084.wav;
+#X obj 20 3570 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F085.wav;
+#X obj 20 3620 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F086.wav;
+#X obj 20 3670 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F087.wav;
+#X obj 20 3720 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F090.wav;
+#X obj 20 3770 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F091.wav;
+#X obj 20 3820 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F092.wav;
+#X obj 20 3870 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F093.wav;
+#X obj 20 3920 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F094.wav;
+#X obj 20 3970 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F095.wav;
+#X obj 20 4020 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F096.wav;
+#X obj 20 4070 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F097.wav;
+#X obj 20 4120 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F100.wav;
+#X obj 20 4170 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F103.wav;
+#X obj 20 4220 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F104.wav;
+#X obj 20 4270 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F105.wav;
+#X obj 20 4320 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F107.wav;
+#X obj 20 4370 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F108.wav;
+#X obj 20 4420 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F112.wav;
+#X obj 20 4470 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F113.wav;
+#X obj 20 4520 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F114.wav;
+#X obj 20 4570 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F115.wav;
+#X obj 20 4620 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F116.wav;
+#X obj 20 4670 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F117.wav;
+#X obj 20 4720 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+F118.wav;
+#X obj 20 4770 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf001.wav;
+#X obj 20 4820 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf002.wav;
+#X obj 20 4870 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf003.wav;
+#X obj 20 4920 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf004.wav;
+#X obj 20 4970 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf005.wav;
+#X obj 20 5020 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf006.wav;
+#X obj 20 5070 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf007.wav;
+#X obj 20 5120 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf008.wav;
+#X obj 20 5170 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf009.wav;
+#X obj 20 5220 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf010bis.wav;
+#X obj 20 5270 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf010.wav;
+#X obj 20 5320 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf011.wav;
+#X obj 20 5370 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf012.wav;
+#X obj 20 5420 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf013.wav;
+#X obj 20 5470 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf014.wav;
+#X obj 20 5520 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf015.wav;
+#X obj 20 5570 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf016.wav;
+#X obj 20 5620 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf017.wav;
+#X obj 20 5670 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf018.wav;
+#X obj 20 5720 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf019.wav;
+#X obj 20 5770 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf020.wav;
+#X obj 20 5820 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf021.wav;
+#X obj 20 5870 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf022.wav;
+#X obj 20 5920 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf023.wav;
+#X obj 20 5970 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf024.wav;
+#X obj 20 6020 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf025.wav;
+#X obj 20 6070 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf026.wav;
+#X obj 20 6120 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf027.wav;
+#X obj 20 6170 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf028.wav;
+#X obj 20 6220 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf029.wav;
+#X obj 20 6270 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf030.wav;
+#X obj 20 6320 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf031bis.wav;
+#X obj 20 6370 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf031.wav;
+#X obj 20 6420 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf032.wav;
+#X obj 20 6470 extap/sam_slot /Users/plessas/iem/integra/leroux/developpement_PP/extap-soundfiles
+sf033.wav;
+#X restore 733 301 pd sampleslots;
+#N canvas 654 271 471 582 slot_scripting 0;
+#X msg 277 405 bang;
+#X obj 325 452 s init_samples;
+#X obj 36 486 s pd-sampleslots;
+#X msg 36 105 clear;
+#X obj 47 330 textfile;
+#X obj 126 230 t b b;
+#X obj 117 329 t f f;
+#X msg 185 229 20;
+#X obj 117 297 i 20;
+#X text 167 177 limit to 500 interations;
+#X obj 47 366 symbol;
+#X obj 326 524 print init_samples;
+#X obj 126 203 until;
+#X msg 127 177 500;
+#X obj 277 378 t b b;
+#X obj 120 41 t b b b b;
+#X obj 120 17 inlet;
+#X obj 327 495 outlet;
+#X msg 327 475 1;
+#X msg 100 103 read extap/soundfiles.txt cr \, rewind;
+#X obj 116 372 r from-gui;
+#X obj 116 402 route sampledirectory;
+#X msg 47 457 obj 20 \$2 extap/sam_slot \$3 \$1;
+#X obj 47 428 pack s f s;
+#X obj 117 426 symbol;
+#X obj 160 296 + 50;
+#X connect 0 0 1 0;
+#X connect 0 0 11 0;
+#X connect 0 0 18 0;
+#X connect 3 0 2 0;
+#X connect 4 0 10 0;
+#X connect 4 1 14 0;
+#X connect 5 0 8 0;
+#X connect 5 1 4 0;
+#X connect 6 0 23 1;
+#X connect 6 1 25 0;
+#X connect 7 0 8 1;
+#X connect 8 0 6 0;
+#X connect 10 0 23 0;
+#X connect 12 0 5 0;
+#X connect 13 0 12 0;
+#X connect 14 0 0 0;
+#X connect 14 1 12 1;
+#X connect 15 0 13 0;
+#X connect 15 1 7 0;
+#X connect 15 2 19 0;
+#X connect 15 3 3 0;
+#X connect 16 0 15 0;
+#X connect 18 0 17 0;
+#X connect 19 0 4 0;
+#X connect 20 0 21 0;
+#X connect 21 0 24 0;
+#X connect 22 0 2 0;
+#X connect 23 0 22 0;
+#X connect 24 0 23 2;
+#X connect 25 0 8 1;
+#X restore 732 142 pd slot_scripting;
+#X obj 478 639 r sam1;
+#X floatatom 544 685 3 0 0 3 dB_out - -;
+#N canvas 143 22 530 656 cues 0;
+#X obj 26 84 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 0 104 661 607 mes5 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X text 481 199 reset;
+#X obj 34 24 sel mes5;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 34 96 t b b b;
+#X text 143 228 bary->reso;
+#X obj 68 399 extap/cuedel 3000;
+#X obj 34 491 extap/cuedel 6000;
+#X msg 466 218 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; reso /in*
+0 0 \; reso /out* 0 0;
+#X msg 101 244 \; reso /out1 100 20 \; reso /out2 100 20 \; reso /out3
+100 20 \; reso /out4 100 20 \; reso /out5 100 20 \; reso /out6 100
+20 \; reso /out7 100 20 \; reso /in4 100 6000;
+#X msg 68 423 \; reso /in3 100 6000;
+#X msg 34 514 \; reso /in1 100 6000 \; reso /in2 100 6000;
+#X msg 276 245 \; sam1 /load sf001.wav \; sam1 /play 1 \; sam1 /chn1/out1
+95 12000 \; sam1 /chn1/out6 100 12000 \; sam1 /chn1/out5 100 12000
+\; sam1 /chn2/out2 98 12000 \; sam1 /chn2/out3 100 12000 \; sam1 /chn2/out4
+100 12000 \; sam1 /chn1/out7 87 12000 \; sam1 /chn2/out7 87 12000;
+#X connect 0 0 4 0;
+#X connect 1 0 3 0;
+#X connect 3 0 4 0;
+#X connect 4 0 5 0;
+#X connect 5 0 10 0;
+#X connect 5 0 7 0;
+#X connect 5 0 8 0;
+#X connect 5 1 13 0;
+#X connect 5 2 9 0;
+#X connect 7 0 11 0;
+#X connect 8 0 12 0;
+#X restore 43 83 pd mes5;
+#X obj 25 107 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 489 371 mes8 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 111 242 and stop playback;
+#X msg 100 258 \; sam1 /play 0;
+#X obj 34 24 sel mes8;
+#X text 301 140 soundfile fadeout;
+#X obj 34 186 extap/cuedel 100;
+#X msg 286 159 \; sam1 /chn1/out* 0 100 \; sam1 /chn2/out* 0 100;
+#X msg 139 187 \; reso /in* 0 20;
+#X msg 34 318 \; reso /out* 0 1000;
+#X obj 34 209 t b b;
+#X text 164 174 stop reso inputs;
+#X text 41 302 stop reso outputs;
+#X connect 0 0 3 0;
+#X connect 1 0 6 0;
+#X connect 2 0 8 0;
+#X connect 2 0 10 0;
+#X connect 2 1 9 0;
+#X connect 3 0 2 0;
+#X connect 6 0 3 0;
+#X connect 8 0 12 0;
+#X connect 12 0 11 0;
+#X connect 12 1 5 0;
+#X restore 42 106 pd mes8;
+#X obj 25 131 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 489 371 mes17 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 34 24 sel mes17;
+#X text 81 111 reset;
+#X text 45 233 and fade in harmonizers;
+#X msg 66 130 \; harm1 /out* 0 0 \; harm2 /out* 0 0 \; harm3 /out*
+0 0 \; harm1 /transp 25 \; harm2 /transp 25 \; harm3 /transp 25;
+#X msg 34 249 \; harm1 /out1 100 20 \; harm1 /out2 100 20 \; harm2
+/out1 100 20 \; harm2 /out2 100 20 \; harm3 /out1 100 20 \; harm3 /out2
+100 20;
+#X connect 0 0 3 0;
+#X connect 1 0 4 0;
+#X connect 2 0 8 0;
+#X connect 2 1 7 0;
+#X connect 3 0 2 0;
+#X connect 4 0 3 0;
+#X restore 42 130 pd mes17;
+#X obj 25 154 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 581 584 mes18 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 44 34 sel mes18;
+#X text 59 423 fade out harmonizers;
+#X msg 44 439 \; harm1 /out* 0 200 \; harm2 /out* 0 200 \; harm3 /out*
+0 200;
+#X obj 44 397 extap/cuedel 2000;
+#X text 427 155 reset;
+#X obj 44 106 t b b b;
+#X text 117 187 sop1+2->reso;
+#X msg 412 174 \; sam2 /play 0 \; sam2 /chn*/out* 0 0 \; reso /in*
+0 0 \; reso /out* 0 0;
+#X msg 229 181 \; sam2 /load sf002.wav \; sam2 /play 1 \; sam2 /chn1/out1
+85 20 \; sam2 /chn1/out6 85 20 \; sam2 /chn1/out5 85 20 \; sam2 /chn1/out2
+85 20 \; sam2 /chn1/out3 85 20 \; sam2 /chn1/out4 85 20 \; sam2 /chn1/out7
+85 20 \; sam2 /chn2/out7 85 20;
+#X msg 75 202 \; reso /out1 96 20 \; reso /out2 96 20 \; reso /out3
+96 20 \; reso /out4 96 20 \; reso /out5 96 20 \; reso /out6 96 20 \;
+reso /out7 96 20 \; reso /in1 100 2000 \; reso /in2 100 2000;
+#X connect 0 0 2 0;
+#X connect 1 0 3 0;
+#X connect 2 0 8 0;
+#X connect 3 0 2 0;
+#X connect 6 0 5 0;
+#X connect 8 0 6 0;
+#X connect 8 0 12 0;
+#X connect 8 1 11 0;
+#X connect 8 2 10 0;
+#X restore 43 153 pd mes18;
+#X obj 379 144 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 379 164 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 399 184 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 379 204 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 25 188 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 408 22 847 600 mes21 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 44 34 sel mes21;
+#X obj 294 184 t b b;
+#X text 337 336 and stop playback;
+#X text 483 218 soundfile fadeout;
+#X obj 294 294 extap/cuedel 100;
+#X msg 468 237 \; sam2 /chn1/out* 0 100 \; sam2 /chn2/out* 0 100;
+#X msg 326 352 \; sam2 /play 0;
+#X obj 74 169 extap/cuedel 1000;
+#X text 699 175 init;
+#X obj 74 195 t b b;
+#X msg 74 296 \; sam4 /load F002.wav \; sam4 /play 1 \; sam4 /chn1/out3
+100 20;
+#X obj 64 366 extap/cuedel 2600;
+#X msg 64 390 \; sam1 /load F002.wav \; sam1 /play 1 \; sam1 /chn1/out6
+100 20;
+#X obj 44 106 t b b b;
+#X obj 44 466 extap/cuedel 3250;
+#X msg 672 195 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; sam3 /play
+0 \; sam3 /chn*/out* 0 0 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 294 317 t b b;
+#X msg 340 245 \; reso /in* 0 20;
+#X msg 44 490 \; sam2 /load F003.wav \; sam2 /play 1 \; sam2 /chn1/out3
+96 20 \; sam2 /chn2/out6 96 20;
+#X msg 294 407 \; reso /out* 0 4000;
+#X msg 106 218 \; sam3 /load sf003.wav \; sam3 /play 1 \; sam3 /chn1/out1
+90 20 \; sam3 /chn2/out2 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 3 0;
+#X connect 2 0 16 0;
+#X connect 3 0 2 0;
+#X connect 4 0 7 0;
+#X connect 4 0 20 0;
+#X connect 4 1 8 0;
+#X connect 7 0 19 0;
+#X connect 10 0 12 0;
+#X connect 12 0 13 0;
+#X connect 12 1 23 0;
+#X connect 14 0 15 0;
+#X connect 16 0 10 0;
+#X connect 16 0 14 0;
+#X connect 16 0 17 0;
+#X connect 16 1 4 0;
+#X connect 16 2 18 0;
+#X connect 17 0 21 0;
+#X connect 19 0 22 0;
+#X connect 19 1 9 0;
+#X restore 43 187 pd mes21;
+#X obj 25 211 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 297 304 mes22 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 88 125 init;
+#X obj 44 34 sel mes22;
+#X obj 44 106 t b b;
+#X msg 76 145 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X msg 44 197 \; sam3 /load F004.wav \; sam3 /play 1 \; sam3 /chn1/out5
+103 20;
+#X connect 0 0 2 0;
+#X connect 1 0 4 0;
+#X connect 2 0 5 0;
+#X connect 4 0 2 0;
+#X connect 5 0 7 0;
+#X connect 5 1 6 0;
+#X restore 43 210 pd mes22;
+#X obj 26 232 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 345 348 mes23 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 88 125 init;
+#X obj 44 106 t b b;
+#X obj 44 34 sel mes23;
+#X msg 76 145 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X msg 44 197 \; sam4 /load sf005.wav \; sam4 /play 1 \; sam4 /chn1/out1
+100 20 \; sam4 /chn2/out2 100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 5 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 6 0;
+#X connect 5 0 2 0;
+#X restore 44 231 pd mes23;
+#X obj 26 254 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 474 511 mes24 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 297 176 init;
+#X obj 44 106 t b b;
+#X obj 44 34 sel mes24;
+#X obj 44 288 extap/cuedel 2500;
+#X obj 20 403 extap/cuedel 4000;
+#X msg 285 197 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; sam2 /play
+0 \; sam2 /chn*/out* 0 0 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X msg 43 313 \; sam2 /load F007.wav \; sam2 /play 1 \; sam2 /chn1/out6
+100 20;
+#X msg 20 431 \; sam3 /load F008.wav \; sam3 /play 1 \; sam3 /chn1/out4
+100 20;
+#X msg 84 200 \; sam1 /load F006.wav \; sam1 /play 1 \; sam1 /chn1/out6
+106 20 \; sam1 /chn2/out3 106 20;
+#X connect 0 0 2 0;
+#X connect 1 0 5 0;
+#X connect 2 0 4 0;
+#X connect 4 0 11 0;
+#X connect 4 0 6 0;
+#X connect 4 0 7 0;
+#X connect 4 1 8 0;
+#X connect 5 0 2 0;
+#X connect 6 0 9 0;
+#X connect 7 0 10 0;
+#X restore 44 253 pd mes24;
+#X obj 26 275 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 574 22 681 523 mes26 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 391 130 init;
+#X obj 44 34 sel mes26;
+#X obj 44 106 t b b b b b;
+#X obj 45 455 extap/cuedel 4500;
+#X msg 45 479 \; filt_sop2 /out* 0 100;
+#X msg 380 152 \; sam4 /play 0 \; sam4 /chn*/out* 0 0 \; sam1 /play
+0 \; sam1 /chn*/out* 0 0 \; sam2 /play 0 \; sam2 /chn*/out* 0 0 \;
+filt_sop2 /hp_freq 2500 \; filt_sop2 /lp_freq 15000 \; filt_sop2 /out*
+0 0;
+#X msg 114 234 \; sam1 /load F009.wav \; sam1 /play 1 \; sam1 /chn1/out8
+100 20;
+#X msg 131 157 \; sam4 /load F009bis.wav \; sam4 /play 1 \; sam4 /chn1/out6
+93 20 \; sam4 /chn2/out3 93 20;
+#X msg 77 370 \; filt_sop2 /out3 106 20 \; filt_sop2 /out4 106 20 \;
+filt_sop2 /out5 106 20 \; filt_sop2 /out6 106 20;
+#X msg 96 303 \; sam2 /load F010.wav \; sam2 /play 1 \; sam2 /chn1/out3
+101 20;
+#X connect 0 0 2 0;
+#X connect 1 0 4 0;
+#X connect 2 0 5 0;
+#X connect 4 0 2 0;
+#X connect 5 0 11 0;
+#X connect 5 0 6 0;
+#X connect 5 1 12 0;
+#X connect 5 2 9 0;
+#X connect 5 3 10 0;
+#X connect 5 4 8 0;
+#X connect 6 0 7 0;
+#X restore 44 274 pd mes26;
+#X obj 26 22 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 344 275 mes1 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 34 24 sel mes1;
+#X msg 34 114 \; filt_ecr /freq 5000 \; filt_ecr /dry 100 20 \; filt_ecr
+/wet 0 0;
+#X connect 0 0 2 0;
+#X connect 1 0 3 0;
+#X connect 2 0 4 0;
+#X connect 3 0 2 0;
+#X restore 43 21 pd mes1;
+#X obj 26 42 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 373 22 344 275 mes2 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 34 24 sel mes2;
+#X msg 34 114 \; filt_ecr /dry 0 10000 \; filt_ecr /wet 113 9000;
+#X connect 0 0 2 0;
+#X connect 1 0 3 0;
+#X connect 2 0 4 0;
+#X connect 3 0 2 0;
+#X restore 43 41 pd mes2;
+#X obj 26 63 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 344 275 mes4 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 34 24 sel mes4;
+#X obj 34 165 extap/cuedel 1000;
+#X msg 66 112 \; filt_ecr /wet 0 8000;
+#X msg 34 195 \; filt_ecr /dry 100 7000;
+#X connect 0 0 2 0;
+#X connect 1 0 3 0;
+#X connect 2 0 5 0;
+#X connect 2 0 4 0;
+#X connect 3 0 2 0;
+#X connect 4 0 6 0;
+#X restore 43 62 pd mes4;
+#X obj 26 295 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 374 22 452 317 mes26bis 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 271 141 init;
+#X obj 44 34 sel mes26bis;
+#X msg 259 162 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 44 106 t b b;
+#X msg 44 180 \; sam3 /load F011.wav \; sam3 /play 1 \; sam3 /chn1/out5
+96 20 \; sam3 /chn2/out5 96 20;
+#X connect 0 0 2 0;
+#X connect 1 0 4 0;
+#X connect 2 0 6 0;
+#X connect 4 0 2 0;
+#X connect 6 0 7 0;
+#X connect 6 1 5 0;
+#X restore 44 294 pd mes26bis;
+#X obj 26 315 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 374 22 452 317 mes27 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 271 141 init;
+#X obj 44 106 t b b;
+#X msg 259 162 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 44 34 sel mes27;
+#X msg 44 180 \; sam4 /load F011bis.wav \; sam4 /play 1 \; sam4 /chn1/out8
+100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 44 314 pd mes27;
+#X obj 26 336 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 374 22 621 408 mes28 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 391 130 init;
+#X obj 187 146 extap/cuedel 250;
+#X obj 44 174 extap/cuedel 1000;
+#X obj 44 202 t b b;
+#X msg 187 174 \; sam1 /load F012.wav \; sam1 /play 1 \; sam1 /chn1/out6
+100 20;
+#X msg 76 237 \; sam2 /load F013.wav \; sam2 /play 1 \; sam2 /chn1/out3
+100 20;
+#X obj 44 34 sel mes28;
+#X msg 380 151 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; sam1 /play
+0 \; sam2 /chn*/out* 0 0 \; sam2 /play 0 \; sam2 /chn*/out* 0 0 \;
+filt_sop2 /hp_freq 2500 \; filt_sop2 /lp_freq 15000 \; filt_sop2 /out*
+0 0;
+#X msg 44 304 \; filt_sop2 /out3 106 20 \; filt_sop2 /out4 106 20 \;
+filt_sop2 /out5 106 20 \; filt_sop2 /out6 106 20;
+#X connect 0 0 2 0;
+#X connect 1 0 9 0;
+#X connect 2 0 10 0;
+#X connect 2 0 4 0;
+#X connect 2 0 5 0;
+#X connect 4 0 7 0;
+#X connect 5 0 6 0;
+#X connect 6 0 11 0;
+#X connect 6 1 8 0;
+#X connect 9 0 2 0;
+#X restore 44 335 pd mes28;
+#X obj 27 358 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 374 22 535 355 mes29 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 259 133 init;
+#X obj 44 34 sel mes29;
+#X msg 248 154 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; sam3 /play
+0;
+#X obj 44 101 t b b b;
+#X msg 44 279 \; filt_sop2 /out* 0 100;
+#X msg 67 170 \; sam3 /load F014.wav \; sam3 /play 1 \; sam3 /chn1/out6
+103 20 \; sam3 /chn2/out3 103 20;
+#X connect 0 0 2 0;
+#X connect 1 0 4 0;
+#X connect 2 0 6 0;
+#X connect 4 0 2 0;
+#X connect 6 0 7 0;
+#X connect 6 1 8 0;
+#X connect 6 2 5 0;
+#X restore 44 357 pd mes29;
+#X obj 27 379 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 423 307 mes30 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X text 81 111 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 66 130 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 34 24 sel mes30;
+#X msg 34 184 \; sam4 /load F015.wav \; sam4 /play 1 \; sam4 /chn1/out8
+100 20;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 44 378 pd mes30;
+#X obj 26 402 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 374 22 509 520 mes31 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 290 130 init;
+#X obj 44 34 sel mes31;
+#X obj 44 117 t b b b;
+#X obj 16 338 extap/cuedel 2500;
+#X msg 16 368 \; sam2 /load F017.wav \; sam2 /play 1 \; sam2 /chn1/out6
+100 20 \; sam2 /chn2/out3 100 20;
+#X msg 279 151 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; sam1 /play
+0 \; sam2 /play 0 \; sam2 /chn*/out* 0 0 \; sam2 /play 0 \; filt_sop2
+/hp_freq 2500 \; filt_sop2 /lp_freq 15000 \; filt_sop2 /out* 0 0;
+#X msg 44 247 \; sam1 /load F016.wav \; sam1 /play 1 \; sam1 /chn1/out6
+103 20 \; sam1 /chn2/out3 103 20;
+#X msg 68 157 \; filt_sop2 /out3 106 20 \; filt_sop2 /out4 106 20 \;
+filt_sop2 /out5 106 20 \; filt_sop2 /out6 106 20;
+#X connect 0 0 2 0;
+#X connect 1 0 4 0;
+#X connect 2 0 5 0;
+#X connect 4 0 2 0;
+#X connect 5 0 9 0;
+#X connect 5 0 6 0;
+#X connect 5 1 10 0;
+#X connect 5 2 8 0;
+#X connect 6 0 7 0;
+#X restore 44 401 pd mes31;
+#X obj 26 424 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 593 429 mes33 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 380 173 init;
+#X obj 44 106 t b b;
+#X obj 44 33 sel mes33;
+#X msg 174 205 \; sam3 /load F018.wav \; sam3 /play 1 \; sam3 /chn1/out1
+100 20 \; sam3 /chn2/out2 100 20;
+#X msg 44 311 \; sam4 /load F019.wav \; sam4 /play 1 \; sam4 /chn1/out5
+100 20 \; sam4 /chn1/out6 100 20 \; sam4 /chn2/out3 100 20 \; sam4
+/chn2/out4 100 20;
+#X obj 44 283 extap/cuedel 1000;
+#X msg 367 194 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; sam4 /play
+0 \; sam4 /chn*/out* 0 0;
+#X connect 0 0 2 0;
+#X connect 1 0 5 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 0 8 0;
+#X connect 4 1 9 0;
+#X connect 5 0 2 0;
+#X connect 8 0 7 0;
+#X restore 44 423 pd mes33;
+#X obj 26 446 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 455 421 mes35 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 299 186 init;
+#X obj 44 106 t b b;
+#X obj 44 303 extap/cuedel 1000;
+#X msg 44 331 \; filt_sop2 /out* 0 100;
+#X msg 286 207 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 44 33 sel mes35;
+#X msg 92 218 \; sam1 /load F020.wav \; sam1 /play 1 \; sam1 /chn1/out1
+99 20 \; sam1 /chn1/out2 99 20;
+#X connect 0 0 2 0;
+#X connect 1 0 8 0;
+#X connect 2 0 4 0;
+#X connect 4 0 9 0;
+#X connect 4 0 5 0;
+#X connect 4 1 7 0;
+#X connect 5 0 6 0;
+#X connect 8 0 2 0;
+#X restore 44 444 pd mes35;
+#X obj 26 467 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 374 22 319 313 mes37 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 88 126 init;
+#X obj 44 34 sel mes37;
+#X msg 76 147 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 44 106 t b b;
+#X msg 44 203 \; sam2 /load F021.wav \; sam2 /play 1 \; sam2 /chn1/out6
+103 20 \; sam2 /chn2/out3 103 20;
+#X connect 0 0 2 0;
+#X connect 1 0 4 0;
+#X connect 2 0 6 0;
+#X connect 4 0 2 0;
+#X connect 6 0 7 0;
+#X connect 6 1 5 0;
+#X restore 44 466 pd mes37;
+#X obj 26 488 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 562 434 mes38 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 380 173 init;
+#X obj 44 106 t b b;
+#X obj 44 33 sel mes38;
+#X msg 367 194 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; sam4 /play
+0 \; sam4 /chn*/out* 0 0;
+#X obj 44 293 extap/cuedel 1333;
+#X msg 44 320 \; sam4 /load F023.wav \; sam4 /play 1 \; sam4 /chn1/out6
+100 20 \; sam4 /chn2/out3 100 20;
+#X msg 174 204 \; sam3 /load sf004.wav \; sam3 /play 1 \; sam3 /chn1/out1
+80 20 \; sam3 /chn1/out5 80 20 \; sam3 /chn2/out2 80 20 \; sam3 /chn2/out4
+80 20;
+#X connect 0 0 2 0;
+#X connect 1 0 5 0;
+#X connect 2 0 4 0;
+#X connect 4 0 9 0;
+#X connect 4 0 7 0;
+#X connect 4 1 6 0;
+#X connect 5 0 2 0;
+#X connect 7 0 8 0;
+#X restore 44 487 pd mes38;
+#X obj 26 509 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 489 371 mes39 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X text 81 111 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 66 130 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 34 24 sel mes39;
+#X msg 34 180 \; sam1 /load F024.wav \; sam1 /play 1 \; sam1 /chn1/out1
+93 20 \; sam1 /chn2/out2 93 20;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 43 508 pd mes39;
+#X obj 26 531 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 499 22 319 313 mes40 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 88 126 init;
+#X msg 76 147 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 44 106 t b b;
+#X obj 44 34 sel mes40;
+#X msg 44 203 \; sam2 /load F025.wav \; sam2 /play 1 \; sam2 /chn1/out1
+95 20 \; sam2 /chn1/out5 95 20 \; sam2 /chn2/out2 95 20 \; sam2 /chn2/out4
+95 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 5 0;
+#X connect 5 0 7 0;
+#X connect 5 1 4 0;
+#X connect 6 0 2 0;
+#X restore 44 530 pd mes40;
+#X obj 26 553 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 297 304 mes40bis 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 88 125 init;
+#X obj 44 106 t b b;
+#X msg 76 145 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 44 34 sel mes40bis;
+#X msg 44 197 \; sam3 /load F026.wav \; sam3 /play 1 \; sam3 /chn1/out6
+100 20 \; sam3 /chn2/out3 100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 44 552 pd mes40bis;
+#X obj 27 574 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 444 449 mes42 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X text 81 111 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 66 130 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 34 24 sel mes42;
+#X msg 34 184 \; sam4 /load F027.wav \; sam4 /play 1 \; sam4 /chn1/out1
+93 20 \; sam4 /chn1/out2 93 20 \; sam4 /chn1/out4 93 20 \; sam4 /chn1/out5
+93 20;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 44 573 pd mes42;
+#X obj 26 596 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 518 22 489 371 mes42bis 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X text 81 111 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 66 130 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 34 24 sel mes42bis;
+#X msg 33 181 \; sam1 /load F027bis.wav \; sam1 /play 1 \; sam1 /chn1/out8
+96 20;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 43 595 pd mes42bis;
+#X obj 26 619 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 499 22 319 313 mes43 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 88 126 init;
+#X msg 76 147 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 44 106 t b b;
+#X msg 44 203 \; sam2 /load F028.wav \; sam2 /play 1 \; sam2 /chn1/out1
+96 20 \; sam2 /chn1/out6 96 20 \; sam2 /chn2/out2 96 20 \; sam2 /chn2/out3
+96 20;
+#X obj 44 34 sel mes43;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 5 0;
+#X connect 5 0 6 0;
+#X connect 5 1 4 0;
+#X connect 7 0 2 0;
+#X restore 44 618 pd mes43;
+#X text 24 4 --- INTRODUCTION ---;
+#X text 24 171 --- 1 LE LIEU DU LIEU ---;
+#X text 107 187 stop:s2 s3:sf003 s4:F002 s1:F002 s2:F003;
+#X text 364 4 --- INTERMEDE 1 ---;
+#X obj 367 25 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#N canvas 645 22 297 304 mes45 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 88 125 init;
+#X obj 44 106 t b b;
+#X msg 76 145 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 44 34 sel mes45;
+#X msg 44 196 \; sam3 /load sf006.wav \; sam3 /play 1 \; sam3 /chn1/out1
+87 20 \; sam3 /chn2/out2 87 20 \; sam3 /chn1/out7 90 20 \; sam3 /chn2/out7
+90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 385 24 pd mes45;
+#X text 448 25 s3:sf006;
+#X text 364 44 --- 2.LE CHAMP DES POSSIBILITES ---;
+#X obj 368 63 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 368 83 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 368 103 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 98 22 FILT_ECR:dry;
+#X text 98 42 FILT_ECR:dry->wet;
+#X text 98 63 FILT_ECR:wet->dry;
+#X text 105 129 HARM123;
+#X text 109 211 s3:F004;
+#X text 110 232 s4:sf005;
+#X text 110 254 s1:F006 s2:F007 s3:F008;
+#X text 130 295 s3:F011;
+#X text 110 315 s4:F011bis;
+#X text 110 337 s1:F012 s2:F013 FILT_SOP2;
+#X text 111 358 s3:F014 stop:FILT_SOP2;
+#X text 112 379 s4:F015;
+#X text 110 424 s3:F018 s4:F019;
+#X text 110 446 s1:F020 stop:FILT_SOP2;
+#X text 110 467 s2:F021;
+#X text 110 488 s3:sf004 s4:F023;
+#X text 110 509 s1:F024;
+#X text 110 531 s2:F025;
+#X text 130 553 s3:F026;
+#X text 112 574 s4:F027;
+#X text 130 596 s1:F027bis;
+#X text 110 619 s2:F028;
+#X text 453 63 s4:F030;
+#X text 453 83 s1:F031;
+#X text 453 103 s2:F032;
+#X text 364 124 --- INTERMEDE 2 ---;
+#X text 487 182 REV(cont) DEL123;
+#X text 467 162 REV(cont) DEL123;
+#X text 467 202 stop:REV stop:DEL123;
+#X text 465 143 REV DEL123 s3:sf007;
+#X obj 380 225 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 466 224 s4:sf008;
+#X obj 380 245 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 110 402 s1:F016 FILT_SOP2 s2:F017;
+#X text 488 244 stop:s4;
+#X text 342 264 --- 3.TRES PRES DU SON ---;
+#X obj 378 283 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 98 106 stop:s1 stop:RESO;
+#X text 236 201 + stop:RESO;
+#X text 107 153 s2:sf002 stop:HARM123 RESO:sop1+2;
+#X text 463 283 RESO:sop1+2+mez s1:sf009;
+#X obj 378 305 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 463 305 stop:RESO s2:F034;
+#X obj 379 326 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 326 s3:F034bis s4:F035 s1:F036;
+#X obj 379 347 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 347 s2:F037 s3:F038;
+#X obj 379 367 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 367 s4:F039;
+#X obj 379 387 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 485 387 s1:F040;
+#X obj 379 409 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 407 s2:F041 s3:F042;
+#X obj 379 430 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 429 REV:all s4:F043;
+#X text 98 84 RESO:all s1:sf001;
+#X obj 379 453 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 453 s1:F044;
+#X obj 379 475 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 475 s2:F045;
+#X obj 379 497 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 497 s3:sf010;
+#X obj 379 517 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 517 s4:sf011;
+#X obj 379 537 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 465 537 s1:sf012;
+#X obj 379 557 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 379 577 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 488 576 s3:sf014;
+#X obj 379 597 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 379 617 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 655 8 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 468 616 s1:F048;
+#X text 744 7 s2:F049 s3:sf015;
+#X obj 655 28 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 744 27 s4:F051;
+#X obj 655 48 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 744 47 s1:F052;
+#X obj 655 68 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 744 67 s2:sf016;
+#X obj 655 88 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 744 87 s3:F053;
+#X obj 655 108 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 655 128 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 744 107 s4:F054 s1:F055;
+#X text 744 127 s2:F056;
+#X obj 655 148 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 744 147 s3:F057 s4:F058;
+#X obj 655 168 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 744 167 s1:F059;
+#X obj 655 188 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 187 s2:F060;
+#X obj 655 208 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 207 s3:F061;
+#X obj 655 228 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 227 s4:F062;
+#X obj 655 248 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 247 s1:F063;
+#X obj 655 268 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 267 s2:sf017;
+#X obj 655 324 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 655 344 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 343 stop:DEL123;
+#X text 629 364 --- 4.DES JOURS DU JOUR ---;
+#X obj 655 384 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 383 s4:F065 s1:F066;
+#X obj 655 404 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 403 s2:F067;
+#X text 743 323 DEL123:sop1 s3:sf018;
+#X text 631 307 --- INTERMEDE 3 ---;
+#X text 631 423 --- INTERMEDE 4 ---;
+#X obj 655 443 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 629 464 --- 5.PERSPECTIVES DE L'INSTANT ---;
+#X obj 655 483 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 482 s4:F069;
+#X obj 655 503 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 502 s1:F070;
+#X obj 655 523 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 655 543 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 542 s3:F072;
+#X text 743 442 s3:sf019;
+#X text 743 522 s2:sf020;
+#X obj 655 563 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 562 s4:F073;
+#X obj 655 583 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 582 s1:sf021;
+#X obj 655 603 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 743 602 s2:sf022;
+#X obj 894 4 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 982 3 HARM12;
+#X obj 893 24 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 893 43 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 981 43 s4:F076bis;
+#X obj 893 63 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 981 63 s1:F077;
+#X obj 893 83 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 981 83 s2:F078;
+#X obj 893 103 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 981 103 s3:sf023;
+#X obj 893 123 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 981 123 s4:sf024;
+#X obj 893 143 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 144 stop:s4 s1:F081;
+#X obj 893 163 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 164 s2:sf025;
+#X obj 893 183 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 184 s3:sf026;
+#X obj 893 203 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 204 s4:F084;
+#X obj 893 223 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 981 23 DEL1234:all s3:F076;
+#X obj 893 243 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 244 stop:DEL123 s2:F086;
+#X text 980 224 DEL123:sop1+2+mez s1:F085;
+#X obj 893 263 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 264 DEL123:sop1+2+mez;
+#X obj 893 303 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 304 stop:DEL123 s4:sf027;
+#X obj 893 283 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 284 s3:F087;
+#X obj 893 323 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 324 s1:sf028;
+#X text 890 341 --- INTERMEDE 5 ---;
+#X obj 893 358 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 359 s2:F090;
+#X text 889 377 --- 6.MEMOIRE RETOURNEE ---;
+#X obj 893 396 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 397 s3:F091;
+#X obj 893 416 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 417 s4:F092;
+#X obj 893 436 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 437 s1:F093;
+#X obj 893 456 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 457 s2:F094;
+#X obj 893 476 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 893 496 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 497 s4:F095;
+#X obj 893 516 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 893 536 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 537 s2:F093;
+#X text 980 517 s1:F093;
+#X text 980 477 s3:F093;
+#X obj 893 556 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 557 s3:F096;
+#X obj 893 576 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 577 s4:F097;
+#X obj 893 596 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 893 616 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 980 597 s1:sf029;
+#X text 980 617 s2:F100;
+#X obj 1164 7 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 1164 27 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 8 s3:F091;
+#X obj 1164 48 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 28 s4:F092;
+#X text 1251 49 s1:F103;
+#X obj 1164 68 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 69 s2:F104;
+#X obj 1164 88 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 89 s3:F105;
+#X obj 1164 108 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 109 s4:F107;
+#X obj 1164 128 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 1164 168 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 169 REV:all;
+#X obj 1164 148 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1250 149 s2:sf030;
+#X text 1160 187 --- INTERMEDE 6 ---;
+#X obj 1164 204 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 205 s3:sf031 s4:sf031bis;
+#X text 1160 225 --- 7.GARDER LA QUESTION ---;
+#X obj 1164 244 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 245 s1:F112;
+#X obj 1164 264 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 265 s2:F113;
+#X obj 1164 284 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 285 s3:F114;
+#X obj 1164 304 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 305 s4:F115;
+#X obj 1164 324 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 325 s1:F116;
+#X obj 1164 344 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 1164 364 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 365 s3:F118;
+#X text 1251 129 s1:F108;
+#X text 1251 345 s2:F117;
+#X obj 1164 384 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 1251 384 s4:sf032;
+#X obj 1164 404 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 468 596 s4:sf010bis;
+#X text 1251 404 s1:sf032;
+#X text 110 274 FILT_SOP2 s4:F009bis s1:F009 s2:F010;
+#X text 465 557 s4:sf013;
+#X obj 655 288 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 764 287 stop:s2;
+#N canvas 643 22 297 323 mes64 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X text 81 111 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 66 130 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 34 23 sel mes64;
+#X msg 35 182 \; sam4 /load F030.wav \; sam4 /play 1 \; sam4 /chn1/out8
+93 20 \; sam4 /chn2/out8 93 20;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 385 62 pd mes64;
+#N canvas 518 22 313 345 mes65 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X text 81 111 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 66 130 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 34 24 sel mes65;
+#X msg 36 184 \; sam1 /load F031.wav \; sam1 /play 1 \; sam1 /chn1/out8
+90 20 \; sam1 /chn2/out8 90 20;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 385 82 pd mes65;
+#N canvas 518 22 326 343 mes71 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X text 81 111 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 66 130 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 34 24 sel mes71;
+#X msg 37 184 \; sam2 /load F032.wav \; sam2 /play 1 \; sam2 /chn1/out8
+88 20 \; sam2 /chn2/out8 88 20;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 385 102 pd mes71;
+#N canvas 322 22 933 574 mes209 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 892 145 init;
+#X msg 93 339 \; rev /in* 0 250;
+#X obj 93 297 extap/cuedel 3000;
+#X text 201 346 close reverb inputs;
+#X msg 595 182 \; rev /in1 100 20 \; rev /in3 100 20 \; rev /in4 100
+20;
+#X text 651 78 revtime got initialized in mes196!;
+#X msg 741 147 \; rev /in* 0 0 \; del1 /deltime 1500 \; del2 /deltime
+6000 \; del3 /deltime 10000 \; del1 /in* 0 0 \; del2 /in* 0 0 \; del3
+/in* 0 0 \; del4 /in* 0 0 \; del1 /out* 0 0 \; del2 /out* 0 0 \; del3
+/out* 0 0 \; del4 /out* 0 0;
+#X text 651 112 setting the deltime also clears buffer;
+#X obj 64 393 extap/cuedel 9000;
+#X text 184 430 close del1 outputs;
+#X msg 64 416 \; del1 /out* 0 250;
+#X obj 44 463 extap/cuedel 13000;
+#X text 178 502 close del2+3 outputs;
+#X text 558 241 open ins sop1 \, mez \, bary;
+#X text 389 357 open sop2 in \, outs3+6 for three voices;
+#X obj 44 106 t b b b b;
+#X text 651 94 rev ouputs are open since mes196!;
+#X msg 44 486 \; del2 /out* 0 1000 \; del3 /out* 0 1000;
+#X msg 386 213 \; del1 /in2 100 250 \; del2 /in2 100 250 \; del3 /in2
+100 250 \; del1 /out3 93 20 \; del1 /out6 93 20 \; del2 /out3 93 20
+\; del2 /out6 93 20 \; del3 /out3 93 20 \; del3 /out6 93 20 \;;
+#X obj 44 35 sel mes209;
+#X connect 0 0 2 0;
+#X connect 1 0 22 0;
+#X connect 2 0 18 0;
+#X connect 5 0 4 0;
+#X connect 11 0 13 0;
+#X connect 14 0 20 0;
+#X connect 18 0 5 0;
+#X connect 18 0 11 0;
+#X connect 18 0 14 0;
+#X connect 18 1 21 0;
+#X connect 18 2 7 0;
+#X connect 18 3 9 0;
+#X connect 22 0 2 0;
+#X restore 397 163 pd mes209;
+#N canvas 241 22 1012 474 mes216 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 67 241 \; rev /in* 0 250;
+#X obj 67 217 extap/cuedel 3000;
+#X text 175 248 close reverb inputs;
+#X text 969 143 init;
+#X msg 551 214 \; rev /in1 100 20 \; rev /in3 100 20 \; rev /in4 100
+20;
+#X text 728 76 revtime got initialized in mes196!;
+#X msg 818 145 \; rev /in* 0 0 \; del1 /deltime 1500 \; del2 /deltime
+6000 \; del3 /deltime 10000 \; del1 /in* 0 0 \; del2 /in* 0 0 \; del3
+/in* 0 0 \; del4 /in* 0 0 \; del1 /out* 0 0 \; del2 /out* 0 0 \; del3
+/out* 0 0 \; del4 /out* 0 0;
+#X text 728 110 setting the deltime also clears buffer;
+#X obj 44 312 extap/cuedel 9000;
+#X text 164 349 close del1 outputs;
+#X msg 44 335 \; del1 /out* 0 250;
+#X text 521 273 open ins sop1 \, mez \, bary;
+#X text 370 377 open sop2 in \, outs3+6 for three voices;
+#X text 728 92 rev ouputs are open since mes196!;
+#X obj 44 106 t b b b b;
+#X msg 367 233 \; del1 /in2 100 250 \; del2 /in2 100 250 \; del3 /in2
+100 250 \; del1 /out3 93 20 \; del1 /out6 93 20 \; del2 /out3 93 20
+\; del2 /out6 93 20 \; del3 /out3 93 20 \; del3 /out6 93 20 \;;
+#X obj 44 34 sel mes216;
+#X connect 0 0 2 0;
+#X connect 1 0 19 0;
+#X connect 2 0 17 0;
+#X connect 4 0 3 0;
+#X connect 11 0 13 0;
+#X connect 17 0 4 0;
+#X connect 17 0 11 0;
+#X connect 17 1 18 0;
+#X connect 17 2 7 0;
+#X connect 17 3 9 0;
+#X connect 19 0 2 0;
+#X restore 417 183 pd mes216;
+#N canvas 518 22 432 566 mes228 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 215 192 init;
+#X msg 84 305 \; rev /chn*/out* 0 1000;
+#X text 124 162 ouputs are open since mes196!;
+#X text 124 146 revtime got initialized in mes196!;
+#X obj 44 427 extap/cuedel 1000;
+#X msg 44 453 \; rev /revtime 0;
+#X text 154 466 clear reverb buffer;
+#X text 198 379 close del2+3 outputs;
+#X msg 64 363 \; del2 /out* 0 1000 \; del3 /out* 0 1000;
+#X obj 44 106 t b b b b;
+#X text 242 318 close rev outputs;
+#X msg 104 183 \; rev /in* 0 0 \; del1 /in* 0 0 \; del2 /in* 0 0 \;
+del3 /in* 0 0 \; del4 /in* 0 0 \; del1 /out* 0 0 \; del4 /out* 0 0
+;
+#X obj 44 34 sel mes228;
+#X connect 0 0 2 0;
+#X connect 1 0 15 0;
+#X connect 2 0 12 0;
+#X connect 7 0 8 0;
+#X connect 12 0 7 0;
+#X connect 12 1 11 0;
+#X connect 12 2 4 0;
+#X connect 12 3 14 0;
+#X connect 15 0 2 0;
+#X restore 397 204 pd mes228;
+#N canvas 785 22 276 416 mes230 0;
+#X obj 4 35 inlet;
+#X obj 54 12 r cue;
+#X obj 54 116 t b b;
+#X text 101 131 reset;
+#X obj 54 80 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 86 150 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 54 43 sel mes230;
+#X msg 53 204 \; sam4 /load sf008.wav \; sam4 /play 1 \; sam4 /chn1/out1
+90 6000 \; sam4 /chn1/out5 90 6000 \; sam4 /chn1/out6 90 6000 \; sam4
+/chn2/out2 90 6000 \; sam4 /chn2/out3 90 6000 \; sam4 /chn2/out4 90
+6000;
+#X connect 0 0 4 0;
+#X connect 1 0 6 0;
+#X connect 2 0 7 0;
+#X connect 2 1 5 0;
+#X connect 4 0 2 0;
+#X connect 6 0 4 0;
+#X restore 397 224 pd mes230;
+#N canvas 660 22 319 355 mes230bis 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X obj 34 96 t b b;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 45 218 and stop playback;
+#X text 81 111 soundfile fadeout;
+#X msg 66 130 \; sam4 /chn1/out* 0 1500 \; sam4 /chn2/out* 0 1500;
+#X obj 34 186 extap/cuedel 1500;
+#X msg 34 234 \; sam4 /play 0;
+#X obj 35 25 sel mes230bis;
+#X connect 0 0 3 0;
+#X connect 1 0 9 0;
+#X connect 2 0 7 0;
+#X connect 2 1 6 0;
+#X connect 3 0 2 0;
+#X connect 7 0 8 0;
+#X connect 9 0 3 0;
+#X restore 397 244 pd mes230bis;
+#N canvas 485 22 691 476 mes232 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X text 530 127 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 515 146 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; reso /in*
+0 0 \; reso /out* 0 0;
+#X obj 34 96 t b b b;
+#X text 56 185 sop1+sop2+mezzo;
+#X obj 34 24 sel mes232;
+#X msg 325 177 \; sam1 /load sf009.wav \; sam1 /play 1 \; sam1 /chn1/out1
+95 1000 \; sam1 /chn1/out6 95 1000 \; sam1 /chn1/out5 95 1000 \; sam1
+/chn1/out2 95 1000 \; sam1 /chn1/out3 95 1000 \; sam1 /chn1/out4 95
+1000 \; sam1 /chn1/out7 80 1000 \; sam1 /chn2/out7 80 1000;
+#X msg 34 209 \; reso /out1 96 20 \; reso /out2 96 20 \; reso /out3
+96 20 \; reso /out4 96 20 \; reso /out5 96 20 \; reso /out6 96 20 \;
+reso /out7 96 20 \; reso /in1 96 1500 \; reso /in2 96 1500 \; reso
+/in3 96 1500;
+#X connect 0 0 3 0;
+#X connect 1 0 7 0;
+#X connect 3 0 5 0;
+#X connect 5 0 9 0;
+#X connect 5 1 8 0;
+#X connect 5 2 4 0;
+#X connect 7 0 3 0;
+#X restore 395 282 pd mes232;
+#N canvas 564 22 602 397 mes234 0;
+#X obj -16 15 inlet;
+#X obj 34 -8 r cue;
+#X text 436 117 reset;
+#X obj 34 60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 34 96 t b b b;
+#X msg 421 136 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X msg 67 198 \; reso /in* 0 50;
+#X obj 34 241 extap/cuedel 50;
+#X msg 34 265 reso /out* 0 200;
+#X obj 34 24 sel mes234;
+#X msg 230 167 \; sam2 /load F034.wav \; sam2 /play 1 \; sam2 /chn1/out1
+87 20 \; sam2 /chn1/out6 87 20 \; sam2 /chn1/out5 87 20 \; sam2 /chn1/out2
+87 20 \; sam2 /chn1/out3 87 20 \; sam2 /chn1/out4 87 20 \; sam2 /chn1/out7
+87 20 \; sam2 /chn2/out7 87 20;
+#X connect 0 0 3 0;
+#X connect 1 0 9 0;
+#X connect 3 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 0 7 0;
+#X connect 4 1 10 0;
+#X connect 4 2 5 0;
+#X connect 7 0 8 0;
+#X connect 9 0 3 0;
+#X restore 395 304 pd mes234;
+#N canvas 655 22 595 432 mes235 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 450 173 init;
+#X obj 44 106 t b b;
+#X msg 437 194 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; sam4 /play
+0 \; sam4 /chn*/out* 0 0 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 61 218 extap/cuedel 2500;
+#X obj 19 321 extap/cuedel 4500;
+#X msg 61 245 \; sam4 /load F035.wav \; sam4 /play 1 \; sam4 /chn1/out6
+100 20;
+#X obj 44 33 sel mes235;
+#X msg 252 202 \; sam3 /load F034bis.wav \; sam3 /play 1 \; sam3 /chn1/out2
+103 20;
+#X msg 19 348 \; sam1 /load F036.wav \; sam1 /play 1 \; sam1 /chn1/out1
+100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 9 0;
+#X connect 2 0 4 0;
+#X connect 4 0 10 0;
+#X connect 4 0 6 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 8 0;
+#X connect 7 0 11 0;
+#X connect 9 0 2 0;
+#X restore 396 325 pd mes235;
+#N canvas 655 22 502 412 mes237 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 287 159 init;
+#X obj 64 126 t b b;
+#X msg 274 180 \; sam2 /play 0 \; sam2 /chn*/out* 0 0 \; sam3 /play
+0 \; sam3 /chn*/out* 0 0;
+#X obj 64 269 extap/cuedel 2630;
+#X msg 88 202 \; sam2 /load F037.wav \; sam2 /play 1 \; sam2 /chn1/out3
+100 20;
+#X msg 64 296 \; sam3 /load F038.wav \; sam3 /play 1 \; sam3 /chn1/out1
+103 20;
+#X obj 64 53 sel mes237;
+#X connect 0 0 2 0;
+#X connect 1 0 9 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 0 6 0;
+#X connect 4 1 5 0;
+#X connect 6 0 8 0;
+#X connect 9 0 2 0;
+#X restore 397 346 pd mes237;
+#N canvas 655 22 502 412 mes238 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 251 196 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes238;
+#X msg 64 218 \; sam4 /load F039.wav \; sam4 /play 1 \; sam4 /chn1/out3
+97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 367 pd mes238;
+#N canvas 655 22 502 412 mes238bis 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes238bis;
+#X msg 64 217 \; sam1 /load F040.wav \; sam1 /play 1 \; sam1 /chn1/out6
+103 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 387 pd mes238bis;
+#N canvas 655 22 502 412 mes239 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 304 175 init;
+#X obj 64 126 t b b;
+#X obj 64 295 extap/cuedel 2000;
+#X msg 293 195 \; sam2 /play 0 \; sam2 /chn*/out* 0 0 \; sam3 /play
+0 \; sam3 /chn*/out* 0 0;
+#X msg 64 323 \; sam3 /load F042.wav \; sam3 /play 1 \; sam3 /chn1/out6
+103 20;
+#X obj 64 53 sel mes239;
+#X msg 104 217 \; sam2 /load F041.wav \; sam2 /play 1 \; sam2 /chn1/out1
+103 20;
+#X connect 0 0 2 0;
+#X connect 1 0 8 0;
+#X connect 2 0 4 0;
+#X connect 4 0 9 0;
+#X connect 4 0 5 0;
+#X connect 4 1 6 0;
+#X connect 5 0 7 0;
+#X connect 8 0 2 0;
+#X restore 397 408 pd mes239;
+#N canvas 322 22 855 478 mes242 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 710 154 init;
+#X text 167 397 close reverb inputs;
+#X obj 44 106 t b b b b;
+#X msg 683 171 \; rev /revtime 99 \; rev /in* 0 0 \; rev /chn*/out*
+0 0 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X msg 385 177 \; rev /in1 100 20 \; rev /in2 100 20 \; rev /in3 100
+20 \; rev /in4 100 20 \; rev /chn1/out1 90 20 \; rev /chn2/out2 90
+20;
+#X text 544 248 open outputs 1+2;
+#X obj 44 366 extap/cuedel 2000;
+#X msg 44 388 \; rev /in* 0 100 \; rev /out* 0 9500;
+#X text 167 411 close reverb outputs;
+#X text 545 189 open all inputs;
+#X obj 44 34 sel mes242;
+#X msg 164 215 \; sam4 /load F043.wav \; sam4 /play 1 \; sam4 /chn1/out1
+86 20 \; sam4 /chn1/out6 86 20 \; sam4 /chn2/out2 86 20 \; sam4 /chn2/out3
+80 20 \; sam4 /chn1/out7 70 20 \; sam4 /chn2/out7 70 20;
+#X connect 0 0 2 0;
+#X connect 1 0 13 0;
+#X connect 2 0 5 0;
+#X connect 5 0 14 0;
+#X connect 5 0 9 0;
+#X connect 5 2 7 0;
+#X connect 5 3 6 0;
+#X connect 9 0 10 0;
+#X connect 13 0 2 0;
+#X restore 397 429 pd mes242;
+#N canvas 655 22 502 412 mes244 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes244;
+#X msg 63 217 \; sam1 /load F044.wav \; sam1 /play 1 \; sam1 /chn1/out6
+97 20 \; sam1 /chn2/out3 97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 452 pd mes244;
+#N canvas 655 22 502 412 mes248 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes248;
+#X msg 63 215 \; sam2 /load F045.wav \; sam2 /play 1 \; sam2 /chn1/out1
+93 20 \; sam2 /chn1/out5 93 20 \; sam2 /chn1/out6 93 20 \; sam2 /chn1/out7
+86 20 \; sam2 /chn2/out2 93 20 \; sam2 /chn2/out3 93 20 \; sam2 /chn2/out4
+93 20 \; sam2 /chn2/out7 83 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 474 pd mes248;
+#N canvas 655 22 436 359 mes249 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes249;
+#X msg 63 215 \; sam3 /load sf010.wav \; sam3 /play 1 \; sam3 /chn1/out8
+96 20 \; sam3 /chn2/out8 96 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 496 pd mes249;
+#N canvas 655 22 502 412 mes250 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes250;
+#X msg 64 216 \; sam4 /load sf011.wav \; sam4 /play 1 \; sam4 /chn1/out8
+100 20 \; sam4 /chn2/out8 100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 516 pd mes250;
+#N canvas 655 22 502 412 mes251 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes251;
+#X msg 64 216 \; sam1 /load sf012.wav \; sam1 /play 1 \; sam1 /chn1/out8
+100 20 \; sam1 /chn2/out8 100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 536 pd mes251;
+#N canvas 655 22 502 412 mes252 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes252;
+#X msg 64 216 \; sam4 /load sf013.wav \; sam4 /play 1 \; sam4 /chn1/out8
+100 20 \; sam4 /chn2/out8 100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 556 pd mes252;
+#N canvas 655 22 502 412 mes252bis 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 253 195 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 63 54 sel mes252bis;
+#X msg 64 215 \; sam3 /load sf014.wav \; sam3 /play 1 \; sam3 /chn1/out8
+97 20 \; sam3 /chn2/out8 97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 576 pd mes252bis;
+#N canvas 655 22 502 412 mes254 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 254 195 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes254;
+#X msg 64 217 \; sam4 /load sf010bis.wav \; sam4 /play 1 \; sam4 /chn1/out1
+96 20 \; sam4 /chn1/out5 96 20 \; sam4 /chn1/out6 96 20 \; sam4 /chn1/out7
+90 20 \; sam4 /chn1/out8 90 20 \; sam4 /chn2/out2 96 20 \; sam4 /chn2/out3
+96 20 \; sam4 /chn2/out4 96 20 \; sam4 /chn2/out7 90 20 \; sam4 /chn2/out8
+90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 596 pd mes254;
+#N canvas 655 22 455 386 mes256 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 254 195 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 54 sel mes256;
+#X msg 63 217 \; sam1 /load F048.wav \; sam1 /play 1 \; sam1 /chn1/out1
+97 20 \; sam1 /chn2/out2 97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 397 616 pd mes256;
+#N canvas 748 22 459 458 mes258 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 312 171 init;
+#X msg 302 191 \; sam2 /play 0 \; sam2 /chn*/out* 0 0 \; sam3 /play
+0 \; sam3 /chn*/out* 0 0;
+#X obj 64 126 t b b b;
+#X msg 64 282 \; sam3 /load sf015.wav \; sam3 /play 1 \; sam3 /chn1/out1
+100 20 \; sam3 /chn1/out3 100 20 \; sam3 /chn1/out5 100 20 \; sam3
+/chn2/out2 100 20 \; sam3 /chn2/out4 100 20 \; sam3 /chn2/out6 100
+20;
+#X msg 125 199 \; sam2 /load F049.wav \; sam2 /play 1 \; sam2 /chn1/out3
+103 20 \; sam2 /chn2/out6 103 20;
+#X obj 64 53 sel mes258;
+#X connect 0 0 2 0;
+#X connect 1 0 8 0;
+#X connect 2 0 5 0;
+#X connect 5 0 6 0;
+#X connect 5 1 7 0;
+#X connect 5 2 4 0;
+#X connect 8 0 2 0;
+#X restore 673 7 pd mes258;
+#N canvas 748 22 402 383 mes263 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 160 150 init;
+#X msg 150 170 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 126 t b b;
+#X obj 64 52 sel mes263;
+#X msg 64 228 \; sam4 /load F051.wav \; sam4 /play 1 \; sam4 /chn1/out7
+95 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 5 0;
+#X connect 5 0 7 0;
+#X connect 5 1 4 0;
+#X connect 6 0 2 0;
+#X restore 673 27 pd mes263;
+#N canvas 748 22 402 383 mes264 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 160 150 init;
+#X obj 64 126 t b b;
+#X msg 150 170 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X msg 64 228 \; sam1 /load F052.wav \; sam1 /play 1 \; sam1 /chn1/out6
+98 20 \; sam1 /chn2/out3 98 20;
+#X obj 64 53 sel mes264;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 1 5 0;
+#X connect 7 0 2 0;
+#X restore 673 47 pd mes264;
+#N canvas 748 22 402 383 mes267 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 160 150 init;
+#X obj 64 126 t b b;
+#X msg 150 170 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes267;
+#X msg 64 228 \; sam2 /load sf016.wav \; sam2 /play 1 \; sam2 /chn1/out1
+93 20 \; sam2 /chn1/out5 93 20 \; sam2 /chn1/out6 93 20 \; sam2 /chn1/out7
+80 20 \; sam2 /chn2/out2 93 20 \; sam2 /chn2/out3 93 20 \; sam2 /chn2/out4
+93 20 \; sam2 /chn2/out7 80 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 67 pd mes267;
+#N canvas 748 22 402 383 mes270 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 160 150 init;
+#X obj 64 126 t b b;
+#X msg 150 170 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X msg 64 228 \; sam3 /load F053.wav \; sam3 /play 1 \; sam3 /chn1/out1
+100 20;
+#X obj 64 53 sel mes270;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 1 5 0;
+#X connect 7 0 2 0;
+#X restore 673 87 pd mes270;
+#N canvas 748 22 448 435 mes272 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 267 183 init;
+#X obj 64 126 t b b;
+#X obj 64 306 extap/cuedel 2000;
+#X msg 257 203 \; sam4 /play 0 \; sam4 /chn*/out* 0 0 \; sam1 /play
+0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes272;
+#X msg 83 215 \; sam4 /load F054.wav \; sam4 /play 1 \; sam4 /chn1/out3
+95 20;
+#X msg 64 327 \; sam1 /load F055.wav \; sam1 /play 1 \; sam1 /chn1/out2
+95 20;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 4 0 8 0;
+#X connect 4 0 5 0;
+#X connect 4 1 6 0;
+#X connect 5 0 9 0;
+#X connect 7 0 2 0;
+#X restore 673 107 pd mes272;
+#N canvas 748 22 448 435 mes273 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 248 212 init;
+#X obj 64 126 t b b;
+#X msg 238 232 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X msg 64 244 \; sam2 /load F056.wav \; sam2 /play 1 \; sam2 /chn1/out6
+103 20;
+#X obj 64 53 sel mes273;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 1 5 0;
+#X connect 7 0 2 0;
+#X restore 673 127 pd mes273;
+#N canvas 748 22 448 435 mes274 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 305 206 init;
+#X obj 64 126 t b b;
+#X msg 107 249 \; sam3 /load F057.wav \; sam3 /play 1 \; sam3 /chn1/out3
+100 20;
+#X obj 64 327 extap/cuedel 1500;
+#X msg 64 355 \; sam4 /load F058.wav \; sam4 /play 1 \; sam4 /chn1/out1
+100 20;
+#X msg 295 226 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; sam4 /play
+0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes274;
+#X connect 0 0 2 0;
+#X connect 1 0 9 0;
+#X connect 2 0 4 0;
+#X connect 4 0 5 0;
+#X connect 4 0 6 0;
+#X connect 4 1 8 0;
+#X connect 6 0 7 0;
+#X connect 9 0 2 0;
+#X restore 673 148 pd mes274;
+#N canvas 748 22 448 435 mes277 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 262 206 init;
+#X obj 64 126 t b b;
+#X msg 252 226 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes277;
+#X msg 64 249 \; sam1 /load F059.wav \; sam1 /play 1 \; sam1 /chn1/out1
+97 20 \; sam1 /chn1/out5 97 20 \; sam1 /chn1/out7 84 20 \; sam1 /chn2/out2
+95 20 \; sam1 /chn2/out5 84 20 \; sam1 /chn2/out7 50 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 167 pd mes277;
+#N canvas 748 22 448 435 mes280 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 262 206 init;
+#X obj 64 126 t b b;
+#X msg 252 226 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes280;
+#X msg 64 249 \; sam2 /load F060.wav \; sam2 /play 1 \; sam2 /chn1/out6
+104 20 \; sam2 /chn2/out2 104 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 187 pd mes280;
+#N canvas 748 22 448 435 mes282 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 262 206 init;
+#X obj 64 126 t b b;
+#X msg 252 226 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes282;
+#X msg 63 250 \; sam3 /load F061.wav \; sam3 /play 1 \; sam3 /chn1/out1
+102 20 \; sam3 /chn2/out3 102 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 207 pd mes282;
+#N canvas 748 22 448 435 mes289 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 262 206 init;
+#X obj 64 126 t b b;
+#X msg 252 226 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X msg 66 250 \; sam4 /load F062.wav \; sam4 /play 1 \; sam4 /chn1/out1
+100 20 \; sam4 /chn1/out5 100 20 \; sam4 /chn1/out7 90 20 \; sam4 /chn2/out2
+100 20 \; sam4 /chn2/out4 100 20 \; sam4 /chn2/out7 90 20;
+#X obj 64 53 sel mes289;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 1 5 0;
+#X connect 7 0 2 0;
+#X restore 673 227 pd mes289;
+#N canvas 748 22 448 435 mes295 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 262 206 init;
+#X obj 64 126 t b b;
+#X msg 250 226 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 54 sel mes295;
+#X msg 63 252 \; sam1 /load F063.wav \; sam1 /play 1 \; sam1 /chn1/out8
+96 20 \; sam1 /chn2/out8 96 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 248 pd mes295;
+#N canvas 748 22 448 435 mes297 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 262 206 init;
+#X obj 64 126 t b b;
+#X msg 250 226 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes297;
+#X msg 64 251 \; sam2 /load sf017.wav \; sam2 /play 1 \; sam2 /chn1/out1
+90 20 \; sam2 /chn2/out2 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 267 pd mes297;
+#N canvas 791 22 448 435 mes297bis 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 64 163 t b b;
+#X text 75 285 and stop playback;
+#X text 110 178 soundfile fadeout;
+#X msg 64 301 \; sam2 /play 0;
+#X msg 95 197 \; sam2 /chn1/out* 0 1500 \; sam2 /chn2/out* 0 1500;
+#X obj 64 253 extap/cuedel 1500;
+#X obj 63 53 sel mes297bis;
+#X connect 0 0 2 0;
+#X connect 1 0 9 0;
+#X connect 2 0 3 0;
+#X connect 3 0 8 0;
+#X connect 3 1 7 0;
+#X connect 8 0 6 0;
+#X connect 9 0 2 0;
+#X restore 673 287 pd mes297bis;
+#N canvas 159 22 447 586 mes298 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 262 206 init;
+#X msg 270 236 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; del1 /deltime
+2000 \; del1 /in* 0 0 \; del1 /out* 0 0 \; del2 /deltime 6000 \; del2
+/in* 0 0 \; del2 /out* 0 0 \; del3 /deltime 10000 \; del3 /in* 0 0
+\; del3 /out* 0 0;
+#X obj 64 126 t b b b;
+#X text 208 384 sop1;
+#X msg 64 376 \; del1 /in1 100 1000 \; del1 /out7 100 20 \; del2 /in1
+100 1000 \; del2 /out7 100 20 \; del3 /in1 100 1000 \; del3 /out7 100
+20;
+#X obj 63 53 sel mes298;
+#X msg 86 245 \; sam3 /load sf018.wav \; sam3 /play 1 \; sam3 /chn1/out1
+93 20 \; sam3 /chn1/out7 80 20 \; sam3 /chn2/out2 93 20 \; sam3 /chn2/out7
+80 20;
+#X connect 0 0 2 0;
+#X connect 1 0 8 0;
+#X connect 2 0 5 0;
+#X connect 5 0 7 0;
+#X connect 5 1 9 0;
+#X connect 5 2 4 0;
+#X connect 8 0 2 0;
+#X restore 673 323 pd mes298;
+#N canvas 748 22 293 296 mes309 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 64 124 \; del1 /in* 0 1000 \; del1 /out* 0 1000 \; del2 /in*
+0 1000 \; del2 /out* 0 1000 \; del3 /in* 0 1000 \; del3 /out* 0 1000
+;
+#X obj 64 53 sel mes309;
+#X connect 0 0 2 0;
+#X connect 1 0 4 0;
+#X connect 2 0 3 0;
+#X connect 4 0 2 0;
+#X restore 673 343 pd mes309;
+#N canvas 748 22 444 404 mes335 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 275 222 init;
+#X obj 64 126 t b b b;
+#X msg 263 242 \; sam4 /play 0 \; sam4 /chn*/out* 0 0 \; sam1 /play
+0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes335;
+#X msg 65 324 \; sam1 /load F066.wav \; sam1 /play 1 \; sam1 /chn1/out6
+80 20 \; sam1 /chn2/out3 80 20;
+#X msg 85 244 \; sam4 /load F065.wav \; sam4 /play 1 \; sam4 /chn1/out6
+90 20 \; sam4 /chn2/out3 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 8 0;
+#X connect 4 2 5 0;
+#X connect 6 0 2 0;
+#X restore 673 383 pd mes335;
+#N canvas 748 22 444 404 mes340 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X msg 96 166 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 126 t b b;
+#X obj 64 53 sel mes340;
+#X msg 64 251 \; sam2 /load F067.wav \; sam2 /play 1 \; sam2 /chn1/out1
+86 20 \; sam2 /chn1/out5 86 20 \; sam2 /chn1/out6 86 20 \; sam2 /chn2/out2
+86 20 \; sam2 /chn2/out3 86 20 \; sam2 /chn2/out4 86 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 5 0;
+#X connect 5 0 7 0;
+#X connect 5 1 4 0;
+#X connect 6 0 2 0;
+#X restore 673 403 pd mes340;
+#N canvas 748 22 444 404 mes347 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X msg 63 251 \; sam3 /load sf019.wav \; sam3 /play 1 \; sam3 /chn1/out1
+100 20 \; sam3 /chn1/out7 90 20 \; sam3 /chn2/out2 100 20 \; sam3 /chn2/out7
+90 200;
+#X obj 64 53 sel mes347;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 1 5 0;
+#X connect 7 0 2 0;
+#X restore 673 442 pd mes347;
+#N canvas 748 22 358 382 mes360 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes360;
+#X msg 63 251 \; sam4 /load F069.wav \; sam4 /play 1 \; sam4 /chn1/out5
+95 20 \; sam4 /chn1/out7 85 20 \; sam4 /chn2/out4 93 20 \; sam4 /chn2/out7
+85 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 483 pd mes360;
+#N canvas 748 22 358 382 mes362 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes362;
+#X msg 64 251 \; sam1 /load F070.wav \; sam1 /play 1 \; sam1 /chn1/out4
+85 20 \; sam1 /chn1/out6 85 20 \; sam1 /chn2/out1 85 20 \; sam1 /chn2/out5
+85 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 503 pd mes362;
+#N canvas 748 22 358 382 mes363 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X msg 64 251 \; sam2 /load sf020.wav \; sam2 /play 1 \; sam2 /chn1/out1
+100 20 \; sam2 /chn1/out3 100 20 \; sam2 /chn2/out2 100 20 \; sam2
+/chn2/out6 100 20;
+#X obj 64 54 sel mes363;
+#X connect 0 0 2 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 4 0 6 0;
+#X connect 4 1 5 0;
+#X connect 7 0 2 0;
+#X restore 673 523 pd mes363;
+#N canvas 748 22 358 382 mes364 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes364;
+#X msg 64 253 \; sam3 /load F072.wav \; sam3 /play 1 \; sam3 /chn1/out5
+90 20 \; sam3 /chn1/out8 82 20 \; sam3 /chn2/out4 90 20 \; sam3 /chn2/out8
+82 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 543 pd mes364;
+#N canvas 748 22 358 382 mes365 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes365;
+#X msg 64 252 \; sam4 /load F073.wav \; sam4 /play 1 \; sam4 /chn1/out5
+84 20 \; sam4 /chn1/out8 84 20 \; sam4 /chn2/out4 84 20 \; sam4 /chn2/out8
+82 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 563 pd mes365;
+#N canvas 748 22 358 382 mes366 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 54 sel mes366;
+#X msg 64 250 \; sam1 /load sf021.wav \; sam1 /play 1 \; sam1 /chn1/out4
+92 20 \; sam1 /chn1/out6 92 20 \; sam1 /chn2/out3 92 20 \; sam1 /chn2/out5
+92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 583 pd mes366;
+#N canvas 748 22 358 382 mes368 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 108 146 init;
+#X obj 64 126 t b b;
+#X msg 96 166 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes368;
+#X msg 64 250 \; sam2 /load sf022.wav \; sam2 /play 1 \; sam2 /chn1/out1
+96 20 \; sam2 /chn1/out3 96 20 \; sam2 /chn1/out5 96 20 \; sam2 /chn2/out2
+96 20 \; sam2 /chn2/out4 96 20 \; sam2 /chn2/out6 96 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 673 603 pd mes368;
+#N canvas 748 22 373 583 mes390 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 141 147 init;
+#X obj 64 126 t b b;
+#X text 114 268 and fade in harmonizers;
+#X msg 135 165 \; harm1 /out* 0 0 \; harm2 /out* 0 0 \; harm3 /out*
+0 0 \; harm1 /transp -25 \; harm2 /transp -25;
+#X msg 103 284 \; harm1 /out1 100 20 \; harm1 /out2 100 20 \; harm2
+/out1 100 20 \; harm2 /out2 100 20;
+#X obj 64 378 extap/cuedel 5000;
+#X msg 64 409 \; harm1 /out1 0 200 \; harm1 /out2 0 200 \; harm2 /out1
+0 200 \; harm2 /out2 0 200;
+#X text 155 389 fade down harmonizers;
+#X obj 64 53 sel mes390;
+#X connect 0 0 2 0;
+#X connect 1 0 11 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 0 8 0;
+#X connect 4 1 6 0;
+#X connect 8 0 9 0;
+#X connect 11 0 2 0;
+#X restore 912 4 pd mes390;
+#N canvas 634 22 621 661 mes413 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 458 142 init;
+#X msg 441 162 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; del1 /deltime
+500 \; del1 /in* 0 0 \; del1 /out* 0 0 \; del2 /deltime 500 \; del2
+/in* 0 0 \; del2 /out* 0 0 \; del3 /deltime 500 \; del3 /in* 0 0 \;
+del3 /out* 0 0 \; del4 /deltime 500 \; del4 /in* 0 0 \; del4 /out*
+0 0;
+#X obj 64 126 t b b b;
+#X msg 100 185 \; del1 /in1 100 20 \; del1 /out1 100 20 \; del1 /out2
+100 20 \; del2 /in2 100 20 \; del2 /out1 100 20 \; del2 /out2 100 20
+\; del3 /in3 100 20 \; del3 /out1 100 20 \; del3 /out2 100 20 \; del4
+/in4 100 20 \; del4 /out1 100 20 \; del4 /out2 100 20;
+#X obj 85 376 extap/cuedel 10000;
+#X msg 85 403 \; del1 /in* 0 100 \; del1 /out* 0 100 \; del2 /in* 0
+100 \; del2 /out* 0 100 \; del3 /in* 0 100 \; del3 /out* 0 100 \; del4
+/in* 0 100 \; del4 /out* 0 100;
+#X obj 63 536 extap/cuedel 10100;
+#X msg 63 569 \; del1 /deltime 500 \; del2 /deltime 500 \; del3 /deltime
+500 \; del4 /deltime 500;
+#X text 69 553 clear buffers by resetting deltime;
+#X obj 64 52 sel mes413;
+#X msg 258 173 \; sam3 /load F076.wav \; sam3 /play 1 \; sam3 /chn1/out1
+90 20 \; sam3 /chn1/out3 90 20 \; sam3 /chn1/out6 90 20 \; sam3 /chn2/out2
+90 20 \; sam3 /chn2/out3 90 20 \; sam3 /chn2/out4 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 12 0;
+#X connect 2 0 5 0;
+#X connect 5 0 6 0;
+#X connect 5 0 7 0;
+#X connect 5 0 9 0;
+#X connect 5 1 13 0;
+#X connect 5 2 4 0;
+#X connect 7 0 8 0;
+#X connect 9 0 10 0;
+#X connect 12 0 2 0;
+#X restore 911 24 pd mes413;
+#N canvas 634 22 419 324 mes418 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X msg 247 196 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 126 t b b;
+#X obj 64 53 sel mes418;
+#X msg 63 206 \; sam4 /load F076bis.wav \; sam4 /play 1 \; sam4 /chn1/out7
+97 20 \; sam4 /chn2/out7 97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 5 0;
+#X connect 5 0 7 0;
+#X connect 5 1 4 0;
+#X connect 6 0 2 0;
+#X restore 911 43 pd mes418;
+#N canvas 634 22 436 460 mes419 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 247 196 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes419;
+#X msg 64 206 \; sam1 /load F077.wav \; sam1 /play 1 \; sam1 /chn1/out1
+85 20 \; sam1 /chn1/out5 85 20 \; sam1 /chn1/out6 85 20 \; sam1 /chn1/out8
+80 20 \; sam1 /chn2/out2 85 20 \; sam1 /chn2/out3 85 20 \; sam1 /chn2/out4
+85 20 \; sam1 /chn2/out8 80 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 63 pd mes419;
+#N canvas 634 22 436 460 mes422 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 247 196 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes422;
+#X msg 64 206 \; sam2 /load F078.wav \; sam2 /play 1 \; sam2 /chn1/out1
+85 20 \; sam2 /chn1/out5 85 20 \; sam2 /chn1/out6 85 20 \; sam2 /chn1/out8
+80 20 \; sam2 /chn2/out2 85 20 \; sam2 /chn2/out3 85 20 \; sam2 /chn2/out4
+85 20 \; sam2 /chn2/out8 80 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 83 pd mes422;
+#N canvas 634 22 436 460 mes424 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 247 196 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes424;
+#X msg 65 206 \; sam3 /load sf023.wav \; sam3 /play 1 \; sam3 /chn1/out1
+92 20 \; sam3 /chn1/out2 92 20 \; sam3 /chn2/out4 92 20 \; sam3 /chn2/out5
+92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 103 pd mes424;
+#N canvas 634 22 436 460 mes452 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 264 175 init;
+#X obj 64 126 t b b;
+#X msg 247 196 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes452;
+#X msg 64 206 \; sam4 /load sf024.wav \; sam4 /play 1 \; sam4 /chn1/out1
+94 20 \; sam4 /chn1/out5 94 20 \; sam4 /chn1/out6 94 20 \; sam4 /chn2/out2
+94 20 \; sam4 /chn2/out3 94 20 \; sam4 /chn2/out4 94 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 124 pd mes452;
+#N canvas 634 22 469 476 mes457 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 324 174 init;
+#X text 76 400 and stop playback;
+#X text 116 286 soundfile fadeout;
+#X msg 65 416 \; sam4 /play 0;
+#X obj 65 368 extap/cuedel 1250;
+#X msg 101 305 \; sam4 /chn1/out* 0 1250 \; sam4 /chn2/out* 0 1250
+;
+#X msg 307 195 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 65 126 t b b b;
+#X obj 64 53 sel mes457;
+#X msg 115 199 \; sam1 /load F081.wav \; sam1 /play 1 \; sam1 /chn1/out1
+93 20 \; sam1 /chn2/out2 93 20;
+#X connect 0 0 2 0;
+#X connect 1 0 11 0;
+#X connect 2 0 10 0;
+#X connect 7 0 6 0;
+#X connect 10 0 8 0;
+#X connect 10 0 7 0;
+#X connect 10 1 12 0;
+#X connect 10 2 9 0;
+#X connect 11 0 2 0;
+#X restore 911 143 pd mes457;
+#N canvas 634 22 356 425 mes481 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X msg 97 182 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 65 126 t b b;
+#X obj 64 53 sel mes481;
+#X msg 64 263 \; sam2 /load sf025.wav \; sam2 /play 1 \; sam2 /chn1/out1
+97 20 \; sam2 /chn1/out2 97 20 \; sam2 /chn2/out3 97 20 \; sam2 /chn2/out6
+97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 5 0;
+#X connect 5 0 7 0;
+#X connect 5 1 4 0;
+#X connect 6 0 2 0;
+#X restore 911 163 pd mes481;
+#N canvas 634 22 356 425 mes482 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 54 sel mes482;
+#X msg 64 263 \; sam3 /load sf026.wav \; sam3 /play 1 \; sam3 /chn1/out1
+97 20 \; sam3 /chn1/out2 97 20 \; sam3 /chn2/out3 97 20 \; sam3 /chn2/out6
+97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 183 pd mes482;
+#N canvas 634 22 356 425 mes483 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes483;
+#X msg 65 264 \; sam4 /load F084.wav \; sam4 /play 1 \; sam4 /chn1/out1
+92 20 \; sam4 /chn1/out2 92 20 \; sam4 /chn1/out6 92 20 \; sam4 /chn2/out3
+92 20 \; sam4 /chn2/out4 92 20 \; sam4 /chn2/out5 92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 203 pd mes483;
+#N canvas 634 22 620 471 mes484 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 461 190 init;
+#X obj 65 126 t b b b;
+#X msg 444 211 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; del1 /deltime
+1000 \; del1 /in* 0 0 \; del1 /out* 0 0 \; del2 /deltime 1500 \; del2
+/in* 0 0 \; del2 /out* 0 0 \; del3 /deltime 2000 \; del3 /in* 0 0 \;
+del3 /out* 0 0 \; del4 /in* 0 0 \; del4 /out* 0 0;
+#X text 78 266 DEL:sop1+sop2+mez;
+#X msg 65 286 \; del1 /in1 100 20 \; del1 /out1 100 20 \; del2 /in2
+100 20 \; del2 /out1 97 20 \; del2 /out2 97 20 \; del3 /in3 100 20
+\; del3 /out2 100 20;
+#X obj 64 53 sel mes484;
+#X msg 247 246 \; sam1 /load F085.wav \; sam1 /play 1 \; sam1 /chn1/out3
+93 20 \; sam1 /chn1/out6 93 20 \; sam1 /chn1/out8 90 20 \; sam1 /chn2/out4
+93 20 \; sam1 /chn2/out5 93 20;
+#X connect 0 0 2 0;
+#X connect 1 0 8 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 9 0;
+#X connect 4 2 5 0;
+#X connect 8 0 2 0;
+#X restore 911 223 pd mes484;
+#N canvas 634 22 614 568 mes487 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 461 190 init;
+#X obj 65 126 t b b b;
+#X msg 444 211 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X text 112 272 fade down DEL:sop1+sop2+mez;
+#X obj 65 430 extap/cuedel 100;
+#X msg 65 469 \; del1 /deltime 1000 \; del2 /deltime 1500 \; del3 /deltime
+2000;
+#X text 69 451 clear buffers by re-setting deltime;
+#X obj 64 53 sel mes487;
+#X msg 100 292 \; del1 /in1 0 100 \; del1 /out1 0 100 \; del2 /in2
+0 100 \; del2 /out1 0 100 \; del2 /out2 0 100 \; del3 /in3 0 100 \;
+del3 /out2 0 100;
+#X msg 349 283 \; sam2 /load F086.wav \; sam2 /play 1 \; sam2 /chn1/out1
+95 20 \; sam2 /chn2/out2 95 20;
+#X connect 0 0 2 0;
+#X connect 1 0 10 0;
+#X connect 2 0 4 0;
+#X connect 4 0 11 0;
+#X connect 4 0 7 0;
+#X connect 4 1 12 0;
+#X connect 4 2 5 0;
+#X connect 7 0 8 0;
+#X connect 10 0 2 0;
+#X restore 911 243 pd mes487;
+#N canvas 634 22 470 473 mes488 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 243 186 init;
+#X msg 226 207 \; sam1 /play 0 \; sam1 /chn*/out* 0 0 \; del1 /deltime
+1000 \; del1 /in* 0 0 \; del1 /out* 0 0 \; del2 /deltime 1500 \; del2
+/in* 0 0 \; del2 /out* 0 0 \; del3 /deltime 2000 \; del3 /in* 0 0 \;
+del3 /out* 0 0 \; del4 /in* 0 0 \; del4 /out* 0 0;
+#X text 78 266 DEL:sop1+sop2+mez;
+#X msg 65 286 \; del1 /in1 100 20 \; del1 /out1 100 20 \; del2 /in2
+100 20 \; del2 /out1 97 20 \; del2 /out2 97 20 \; del3 /in3 100 20
+\; del3 /out2 100 20;
+#X obj 65 126 t b b;
+#X obj 63 53 sel mes488;
+#X connect 0 0 2 0;
+#X connect 1 0 8 0;
+#X connect 2 0 7 0;
+#X connect 7 0 6 0;
+#X connect 7 1 4 0;
+#X connect 8 0 2 0;
+#X restore 912 263 pd mes488;
+#N canvas 634 22 356 425 mes489 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes489;
+#X msg 65 263 \; sam3 /load F087.wav \; sam3 /play 1 \; sam3 /chn1/out7
+99 20 \; sam3 /chn2/out7 99 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 283 pd mes489;
+#N canvas 634 22 620 548 mes491 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 461 190 init;
+#X obj 65 126 t b b b;
+#X text 100 250 fade down DEL:sop1+sop2+mez;
+#X msg 65 449 \; del1 /deltime 1000 \; del2 /deltime 1500 \; del3 /deltime
+2000;
+#X text 69 431 clear buffers by re-setting deltime;
+#X msg 88 269 \; del1 /in1 0 250 \; del1 /out1 0 250 \; del2 /in2 0
+250 \; del2 /out1 0 250 \; del2 /out2 0 250 \; del3 /in3 0 250 \; del3
+/out2 0 250;
+#X obj 65 410 extap/cuedel 250;
+#X msg 444 211 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 63 52 sel mes491;
+#X msg 321 262 \; sam4 /load sf027.wav \; sam4 /play 1 \; sam4 /chn1/out1
+90 20 \; sam4 /chn1/out5 90 20 \; sam4 /chn1/out6 90 20 \; sam4 /chn1/out7
+80 20 \; sam4 /chn2/out2 90 20 \; sam4 /chn2/out3 90 20 \; sam4 /out2/out4
+90 20 \; sam4 /out2/out7 80 20;
+#X connect 0 0 2 0;
+#X connect 1 0 11 0;
+#X connect 2 0 4 0;
+#X connect 4 0 8 0;
+#X connect 4 0 9 0;
+#X connect 4 1 12 0;
+#X connect 4 2 10 0;
+#X connect 9 0 6 0;
+#X connect 11 0 2 0;
+#X restore 912 303 pd mes491;
+#N canvas 634 22 356 425 mes524 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes524;
+#X msg 64 263 \; sam1 /load sf028.wav \; sam1 /play 1 \; sam1 /chn1/out6
+96 20 \; sam1 /chn2/out3 96 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 323 pd mes524;
+#N canvas 634 22 356 425 mes526 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 54 sel mes526;
+#X msg 64 261 \; sam2 /load F090.wav \; sam2 /play 1 \; sam2 /chn1/out1
+95 20 \; sam2 /chn1/out7 85 20 \; sam2 /chn2/out2 95 20 \; sam2 /chn2/out7
+85 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 358 pd mes526;
+#N canvas 634 22 356 425 mes541 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes541;
+#X msg 65 264 \; sam3 /load F091.wav \; sam3 /play 1 \; sam3 /chn1/out8
+90 20 \; sam3 /chn2/out8 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 396 pd mes541;
+#N canvas 634 22 356 425 mes542 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes542;
+#X msg 69 263 \; sam4 /load F092.wav \; sam4 /play 1 \; sam4 /chn1/out8
+90 20 \; sam4 /chn2/out8 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 416 pd mes542;
+#N canvas 634 22 356 425 mes544 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes544;
+#X msg 66 261 \; sam1 /load F093.wav \; sam1 /play 1 \; sam1 /chn1/out1
+93 20 \; sam1 /chn2/out2 93 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 436 pd mes544;
+#N canvas 634 22 356 425 mes545 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes545;
+#X msg 65 260 \; sam2 /load F094.wav \; sam2 /play 1 \; sam2 /chn1/out8
+92 20 \; sam2 /chn2/out8 92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 456 pd mes545;
+#N canvas 634 22 356 425 mes548 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 65 53 sel mes548;
+#X msg 65 260 \; sam3 /load F093.wav \; sam3 /play 1 \; sam3 /chn1/out1
+93 20 \; sam3 /chn2/out2 93 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 476 pd mes548;
+#N canvas 634 22 356 425 mes549 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes549;
+#X msg 65 259 \; sam4 /load F095.wav \; sam4 /play 1 \; sam4 /chn1/out8
+108 20 \; sam4 /chn2/out8 108 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 496 pd mes549;
+#N canvas 634 22 356 425 mes550 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 63 53 sel mes550;
+#X msg 65 261 \; sam1 /load F093.wav \; sam1 /play 1 \; sam1 /chn1/out1
+93 20 \; sam1 /chn2/out2 93 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 516 pd mes550;
+#N canvas 634 22 356 425 mes552 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes552;
+#X msg 66 261 \; sam2 /load F093.wav \; sam2 /play 1 \; sam2 /chn1/out1
+94 20 \; sam2 /chn2/out2 94 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 536 pd mes552;
+#N canvas 634 22 356 425 mes554 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes554;
+#X msg 66 259 \; sam3 /load F096.wav \; sam3 /play 1 \; sam3 /chn1/out8
+96 20 \; sam3 /chn2/out8 96 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 912 556 pd mes554;
+#N canvas 634 22 356 425 mes557 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes557;
+#X msg 65 261 \; sam4 /load F097.wav \; sam4 /play 1 \; sam4 /chn1/out1
+96 20 \; sam4 /chn2/out2 96 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 576 pd mes557;
+#N canvas 634 22 356 425 mes563 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes563;
+#X msg 65 262 \; sam1 /load sf029.wav \; sam1 /play 1 \; sam1 /chn1/out3
+92 20 \; sam1 /chn1/out6 92 20 \; sam1 /chn2/out4 92 20 \; sam1 /chn2/out5
+92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 596 pd mes563;
+#N canvas 634 22 356 425 mes565 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 63 53 sel mes565;
+#X msg 65 264 \; sam2 /load F100.wav \; sam2 /play 1 \; sam2 /chn1/out1
+97 20 \; sam2 /chn2/out2 100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 911 616 pd mes565;
+#N canvas 634 22 356 425 mes568 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes568;
+#X msg 66 260 \; sam3 /load F091.wav \; sam3 /play 1 \; sam3 /chn1/out8
+92 20 \; sam3 /chn2/out8 92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 7 pd mes568;
+#N canvas 634 22 356 425 mes569 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 63 54 sel mes569;
+#X msg 65 261 \; sam4 /load F092.wav \; sam4 /play 1 \; sam4 /chn1/out8
+90 20 \; sam4 /chn2/out8 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 27 pd mes569;
+#N canvas 634 22 356 425 mes573 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes573;
+#X msg 65 262 \; sam1 /load F103.wav \; sam1 /play 1 \; sam1 /chn1/out1
+90 20 \; sam1 /chn2/out2 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 48 pd mes573;
+#N canvas 634 22 356 425 mes584 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes584;
+#X msg 64 261 \; sam2 /load F104.wav \; sam2 /play 1 \; sam2 /chn1/out1
+97 20 \; sam2 /chn1/out2 97 20 \; sam2 /chn2/out3 97 20 \; sam2 /chn2/out6
+97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 68 pd mes584;
+#N canvas 634 22 356 425 mes588 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes588;
+#X msg 63 263 \; sam3 /load F105.wav \; sam3 /play 1 \; sam3 /chn1/out1
+100 20 \; sam3 /chn2/out2 100 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 88 pd mes588;
+#N canvas 634 22 356 425 mes590 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes590;
+#X msg 64 261 \; sam4 /load F107.wav \; sam4 /play 1 \; sam4 /chn1/out8
+87 20 \; sam4 /chn2/out8 87 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 108 pd mes590;
+#N canvas 634 22 356 425 mes596 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes596;
+#X msg 65 259 \; sam1 /load F108.wav \; sam1 /play 1 \; sam1 /chn1/out3
+97 20 \; sam1 /chn1/out6 97 20 \; sam1 /chn2/out4 97 20 \; sam1 /chn2/out5
+97 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 128 pd mes596;
+#N canvas 634 22 356 425 mes608 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 114 161 init;
+#X obj 65 126 t b b;
+#X msg 97 184 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes608;
+#X msg 64 263 \; sam2 /load sf030.wav \; sam2 /play 1 \; sam2 /chn1/out1
+92 20 \; sam2 /chn1/out2 92 20 \; sam2 /chn2/out7 92 20 \; sam2 /chn2/out8
+92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 149 pd mes608;
+#N canvas 589 22 526 465 mes609 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 699 223 init;
+#X text 187 406 close reverb inputs;
+#X text 246 317 open outputs 1+2;
+#X text 247 258 open all inputs;
+#X msg 383 241 \; rev /revtime 95 \; rev /in* 0 0 \; rev /chn*/out*
+0 0;
+#X msg 87 246 \; rev /in1 100 20 \; rev /in2 100 20 \; rev /in3 100
+20 \; rev /in4 100 20 \; rev /chn1/out1 100 20 \; rev /chn2/out2 100
+20;
+#X obj 64 375 extap/cuedel 4000;
+#X msg 64 397 \; rev /in* 0 100 \; rev /out* 0 6000;
+#X text 187 425 fade down reverb outputs;
+#X obj 64 175 t b b b;
+#X obj 64 54 sel mes609;
+#X connect 0 0 2 0;
+#X connect 1 0 13 0;
+#X connect 2 0 12 0;
+#X connect 9 0 10 0;
+#X connect 12 0 9 0;
+#X connect 12 1 8 0;
+#X connect 12 2 7 0;
+#X connect 13 0 2 0;
+#X restore 1182 168 pd mes609;
+#N canvas 634 22 412 522 mes611 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 220 146 init;
+#X obj 65 126 t b b b;
+#X msg 203 168 \; sam3 /play 0 \; sam3 /chn*/out* 0 0 \; sam4 /play
+0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes611;
+#X msg 123 257 \; sam3 /load sf031.wav \; sam3 /play 1 \; sam3 /chn1/out1
+74 20 \; sam3 /chn1/out7 56 20 \; sam3 /chn2/out2 74 20 \; sam3 /chn2/out7
+56 20;
+#X msg 65 375 \; sam4 /load sf031bis.wav \; sam4 /play 1 \; sam4 /chn1/out1
+81 20 \; sam4 /chn1/out5 81 20 \; sam4 /chn1/out6 81 20 \; sam4 /chn2/out2
+81 20 \; sam4 /chn2/out3 81 20 \; sam4 /chn2/out4 81 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 8 0;
+#X connect 4 1 7 0;
+#X connect 4 2 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 204 pd mes611;
+#N canvas 634 22 293 365 mes635 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X msg 111 180 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 65 125 t b b;
+#X obj 64 53 sel mes635;
+#X msg 65 244 \; sam1 /load F112.wav \; sam1 /play 1 \; sam1 /chn1/out1
+97 20 \; sam1 /chn1/out7 89 20 \; sam1 /chn2/out2 97 20 \; sam1 /chn2/out7
+89 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 5 0;
+#X connect 5 0 7 0;
+#X connect 5 1 4 0;
+#X connect 6 0 2 0;
+#X restore 1182 244 pd mes635;
+#N canvas 634 22 293 365 mes637 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes637;
+#X msg 65 244 \; sam2 /load F113.wav \; sam2 /play 1 \; sam2 /chn1/out1
+97 20 \; sam2 /chn1/out7 92 20 \; sam2 /chn2/out2 97 20 \; sam2 /chn2/out7
+92 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 263 pd mes637;
+#N canvas 634 22 293 365 mes640 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes640;
+#X msg 64 243 \; sam3 /load F114.wav \; sam3 /play 1 \; sam3 /chn1/out1
+102 20 \; sam3 /chn1/out7 90 20 \; sam3 /chn2/out2 102 20 \; sam3 /chn2/out7
+90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 285 pd mes640;
+#N canvas 634 22 293 365 mes643 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes643;
+#X msg 65 244 \; sam4 /load F115.wav \; sam4 /play 1 \; sam4 /chn1/out1
+102 20 \; sam4 /chn1/out7 95 20 \; sam4 /chn2/out2 102 20 \; sam4 /chn2/out7
+95 20 \; sam4 /chn1/out8 89 20 \;;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 304 pd mes643;
+#N canvas 634 22 293 365 mes647 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes647;
+#X msg 65 244 \; sam1 /load F116.wav \; sam1 /play 1 \; sam1 /chn1/out1
+100 20 \; sam1 /chn1/out7 91 20 \; sam1 /chn2/out2 100 20 \; sam1 /chn2/out7
+91 20 \; sam1 /chn2/out8 98 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 324 pd mes647;
+#N canvas 634 22 293 365 mes650 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam2 /play 0 \; sam2 /chn*/out* 0 0;
+#X obj 64 53 sel mes650;
+#X msg 65 246 \; sam2 /load F117.wav \; sam2 /play 1 \; sam2 /chn1/out8
+97 20 \; sam2 /chn1/out1 90 20 \; sam2 /chn1/out2 90 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 344 pd mes650;
+#N canvas 634 22 293 365 mes651 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X obj 64 53 sel mes651;
+#X msg 64 241 \; sam3 /load F118.wav \; sam3 /play 1 \; sam3 /chn1/out1
+102 20 \; sam3 /chn1/out7 97 20 \; sam3 /chn2/out2 102 20 \; sam3 /chn2/out7
+93 20 \; sam3 /chn2/out8 95 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 364 pd mes651;
+#N canvas 749 23 329 421 mes653 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam4 /play 0 \; sam4 /chn*/out* 0 0;
+#X obj 64 53 sel mes653;
+#X msg 66 255 \; sam4 /load sf032.wav \; sam4 /play 1 \; sam4 /chn1/out1
+86 20 \; sam4 /chn2/out2 86 20 \; sam4 /chn1/out3 89 20 \; sam4 /chn1/out4
+89 20 \; sam4 /chn2/out6 89 20 \; sam4 /chn2/out5 89 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 384 pd mes653;
+#N canvas 1105 22 309 419 mes657 0;
+#X obj 14 45 inlet;
+#X obj 64 22 r cue;
+#X obj 64 90 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 158 init;
+#X obj 65 125 t b b;
+#X msg 111 180 \; sam1 /play 0 \; sam1 /chn*/out* 0 0;
+#X obj 64 53 sel mes657;
+#X msg 64 245 \; sam1 /load sf033.wav \; sam1 /play 1 \; sam1 /chn1/out1
+86 20 \; sam1 /chn2/out2 86 20 \; sam1 /chn1/out3 89 20 \; sam1 /chn1/out4
+89 20 \; sam1 /chn2/out6 89 20 \; sam1 /chn2/out5 89 20;
+#X connect 0 0 2 0;
+#X connect 1 0 6 0;
+#X connect 2 0 4 0;
+#X connect 4 0 7 0;
+#X connect 4 1 5 0;
+#X connect 6 0 2 0;
+#X restore 1182 404 pd mes657;
+#N canvas 322 22 931 655 mes202 0;
+#X obj -6 25 inlet;
+#X obj 44 2 r cue;
+#X obj 44 70 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 785 138 init;
+#X msg 70 369 \; rev /in* 0 250;
+#X obj 70 347 extap/cuedel 3000;
+#X text 546 228 open outputs 4+5;
+#X text 178 376 close reverb inputs;
+#X text 545 189 open inputs sop1 \, mez \, bary;
+#X obj 44 106 t b b b b;
+#X text 519 298 open input sop2 for three voices;
+#X obj 64 436 extap/cuedel 9000;
+#X text 184 473 close del1 outputs;
+#X obj 44 526 extap/cuedel 13000;
+#X text 185 566 close del2+3 outputs;
+#X msg 44 549 \; del2 /out* 0 1000 \; del3 /out* 0 1000;
+#X msg 385 177 \; rev /in1 100 20 \; rev /in3 100 20 \; rev /in4 100
+20 \; rev /chn1/out4 90 20 \; rev /chn2/out5 90 20;
+#X msg 64 459 \; del1 /out* 0 500;
+#X msg 758 155 \; rev /revtime 99 \; rev /in* 0 0 \; rev /chn*/out*
+0 0 \; del1 /deltime 1500 \; del2 /deltime 6000 \; del3 /deltime 10000
+\; del1 /in* 0 0 \; del2 /in* 0 0 \; del3 /in* 0 0 \; del4 /in* 0 0
+\; del1 /out* 0 0 \; del2 /out* 0 0 \; del3 /out* 0 0 \; del4 /out*
+0 0 \; sam3 /play 0 \; sam3 /chn*/out* 0 0;
+#X msg 388 285 \; del1 /in2 100 1000 \; del2 /in2 100 1000 \; del3
+/in2 100 1000 \; del1 /out3 93 20 \; del1 /out6 93 20 \; del2 /out3
+93 20 \; del2 /out6 93 20 \; del3 /out3 93 20 \; del3 /out6 93 20 \;
+;
+#X obj 44 34 sel mes202;
+#X msg 85 243 \; sam3 /load sf007.wav \; sam3 /play 1 \; sam3 /chn1/out1
+97 20 \; sam3 /chn2/out2 97 20 \; sam3 /chn1/out7 86 20 \; sam3 /chn2/out7
+86 20;
+#X connect 0 0 2 0;
+#X connect 1 0 20 0;
+#X connect 2 0 9 0;
+#X connect 5 0 4 0;
+#X connect 9 0 5 0;
+#X connect 9 0 11 0;
+#X connect 9 0 13 0;
+#X connect 9 0 21 0;
+#X connect 9 1 19 0;
+#X connect 9 2 16 0;
+#X connect 9 3 18 0;
+#X connect 11 0 17 0;
+#X connect 13 0 15 0;
+#X connect 20 0 2 0;
+#X restore 397 143 pd mes202;
+#X connect 0 0 1 0;
+#X connect 2 0 3 0;
+#X connect 4 0 5 0;
+#X connect 6 0 7 0;
+#X connect 8 0 407 0;
+#X connect 9 0 309 0;
+#X connect 10 0 310 0;
+#X connect 11 0 311 0;
+#X connect 12 0 13 0;
+#X connect 14 0 15 0;
+#X connect 16 0 17 0;
+#X connect 18 0 19 0;
+#X connect 20 0 21 0;
+#X connect 22 0 23 0;
+#X connect 24 0 25 0;
+#X connect 26 0 27 0;
+#X connect 28 0 29 0;
+#X connect 30 0 31 0;
+#X connect 32 0 33 0;
+#X connect 34 0 35 0;
+#X connect 36 0 37 0;
+#X connect 38 0 39 0;
+#X connect 40 0 41 0;
+#X connect 42 0 43 0;
+#X connect 44 0 45 0;
+#X connect 46 0 47 0;
+#X connect 48 0 49 0;
+#X connect 50 0 51 0;
+#X connect 52 0 53 0;
+#X connect 54 0 55 0;
+#X connect 56 0 57 0;
+#X connect 58 0 59 0;
+#X connect 64 0 65 0;
+#X connect 68 0 306 0;
+#X connect 69 0 307 0;
+#X connect 70 0 308 0;
+#X connect 101 0 312 0;
+#X connect 103 0 313 0;
+#X connect 107 0 314 0;
+#X connect 112 0 315 0;
+#X connect 114 0 316 0;
+#X connect 116 0 317 0;
+#X connect 118 0 318 0;
+#X connect 120 0 319 0;
+#X connect 122 0 320 0;
+#X connect 124 0 321 0;
+#X connect 127 0 322 0;
+#X connect 129 0 323 0;
+#X connect 131 0 324 0;
+#X connect 133 0 325 0;
+#X connect 135 0 326 0;
+#X connect 137 0 327 0;
+#X connect 138 0 328 0;
+#X connect 140 0 329 0;
+#X connect 141 0 330 0;
+#X connect 142 0 331 0;
+#X connect 145 0 332 0;
+#X connect 147 0 333 0;
+#X connect 149 0 334 0;
+#X connect 151 0 335 0;
+#X connect 153 0 336 0;
+#X connect 154 0 337 0;
+#X connect 157 0 338 0;
+#X connect 159 0 339 0;
+#X connect 161 0 340 0;
+#X connect 163 0 341 0;
+#X connect 165 0 342 0;
+#X connect 167 0 343 0;
+#X connect 169 0 344 0;
+#X connect 171 0 346 0;
+#X connect 172 0 347 0;
+#X connect 175 0 348 0;
+#X connect 177 0 349 0;
+#X connect 182 0 350 0;
+#X connect 184 0 351 0;
+#X connect 186 0 352 0;
+#X connect 188 0 353 0;
+#X connect 189 0 354 0;
+#X connect 193 0 355 0;
+#X connect 195 0 356 0;
+#X connect 197 0 357 0;
+#X connect 199 0 358 0;
+#X connect 201 0 359 0;
+#X connect 202 0 360 0;
+#X connect 204 0 361 0;
+#X connect 206 0 362 0;
+#X connect 208 0 363 0;
+#X connect 210 0 364 0;
+#X connect 212 0 365 0;
+#X connect 214 0 366 0;
+#X connect 216 0 367 0;
+#X connect 218 0 368 0;
+#X connect 220 0 369 0;
+#X connect 222 0 370 0;
+#X connect 225 0 371 0;
+#X connect 227 0 373 0;
+#X connect 229 0 372 0;
+#X connect 231 0 374 0;
+#X connect 234 0 375 0;
+#X connect 237 0 376 0;
+#X connect 239 0 377 0;
+#X connect 241 0 378 0;
+#X connect 243 0 379 0;
+#X connect 245 0 380 0;
+#X connect 246 0 381 0;
+#X connect 248 0 382 0;
+#X connect 249 0 383 0;
+#X connect 253 0 384 0;
+#X connect 255 0 385 0;
+#X connect 257 0 386 0;
+#X connect 258 0 387 0;
+#X connect 261 0 388 0;
+#X connect 262 0 389 0;
+#X connect 264 0 390 0;
+#X connect 267 0 391 0;
+#X connect 269 0 392 0;
+#X connect 271 0 393 0;
+#X connect 273 0 394 0;
+#X connect 274 0 396 0;
+#X connect 276 0 395 0;
+#X connect 279 0 397 0;
+#X connect 282 0 398 0;
+#X connect 284 0 399 0;
+#X connect 286 0 400 0;
+#X connect 288 0 401 0;
+#X connect 290 0 402 0;
+#X connect 292 0 403 0;
+#X connect 293 0 404 0;
+#X connect 297 0 405 0;
+#X connect 299 0 406 0;
+#X connect 304 0 345 0;
+#X restore 872 327 pd cues;
+#X floatatom 29 525 3 0 0 1 dB_out - -;
+#X obj 76 458 r harm1;
+#X floatatom 144 526 3 0 0 1 dB_out - -;
+#X obj 193 458 r harm2;
+#X floatatom 256 526 3 0 0 1 dB_out - -;
+#X obj 308 457 r harm3;
+#X obj 10 458 r~ in_sop1;
+#X obj 126 458 r~ in_sop2;
+#X obj 245 458 r~ in_mez;
+#X obj 9 609 r rev;
+#N canvas 0 22 707 580 reverb 0;
+#X obj 244 33 inlet;
+#X floatatom 244 190 0 0 100 0 - - -;
+#X text 273 189 liveness \, 0-100;
+#X text 292 215 crossover frequency \, Hz.;
+#X text 324 241 HF damping \, percent;
+#N canvas 0 382 988 329 fx-4in1-matrix 0;
+#X obj 11 -74 inlet~;
+#X obj 695 -224 inlet;
+#X text 737 -224 OSC;
+#X obj 77 -33 *~;
+#X obj 96 -73 line~;
+#X obj 96 -135 unpack f f;
+#X obj 96 -114 dbtorms;
+#X obj 96 -93 pack f f;
+#X obj 242 -33 *~;
+#X obj 261 -73 line~;
+#X obj 261 -135 unpack f f;
+#X obj 261 -114 dbtorms;
+#X obj 261 -93 pack f f;
+#X obj 412 -33 *~;
+#X obj 431 -73 line~;
+#X obj 431 -135 unpack f f;
+#X obj 431 -114 dbtorms;
+#X obj 431 -93 pack f f;
+#X obj 592 -33 *~;
+#X obj 611 -73 line~;
+#X obj 611 -135 unpack f f;
+#X obj 611 -114 dbtorms;
+#X obj 611 -93 pack f f;
+#X obj 199 -72 inlet~;
+#X obj 375 -72 inlet~;
+#X obj 557 -72 inlet~;
+#X obj 412 51 outlet~;
+#X obj 335 -182 routeOSC /in1 /in2 /in3 /in4;
+#X connect 0 0 3 0;
+#X connect 1 0 27 0;
+#X connect 3 0 26 0;
+#X connect 4 0 3 1;
+#X connect 5 0 6 0;
+#X connect 5 1 7 1;
+#X connect 6 0 7 0;
+#X connect 7 0 4 0;
+#X connect 8 0 26 0;
+#X connect 9 0 8 1;
+#X connect 10 0 11 0;
+#X connect 10 1 12 1;
+#X connect 11 0 12 0;
+#X connect 12 0 9 0;
+#X connect 13 0 26 0;
+#X connect 14 0 13 1;
+#X connect 15 0 16 0;
+#X connect 15 1 17 1;
+#X connect 16 0 17 0;
+#X connect 17 0 14 0;
+#X connect 18 0 26 0;
+#X connect 19 0 18 1;
+#X connect 20 0 21 0;
+#X connect 20 1 22 1;
+#X connect 21 0 22 0;
+#X connect 22 0 19 0;
+#X connect 23 0 8 0;
+#X connect 24 0 13 0;
+#X connect 25 0 18 0;
+#X connect 27 0 5 0;
+#X connect 27 1 10 0;
+#X connect 27 2 15 0;
+#X connect 27 3 20 0;
+#X restore 45 194 pd fx-4in1-matrix;
+#X obj 244 60 routeOSC /revtime;
+#X obj 360 142 t a a;
+#X obj 46 64 r~ in_sop1;
+#X obj 73 89 r~ in_sop2;
+#X obj 102 114 r~ in_mez;
+#X obj 132 145 r~ in_bary;
+#N canvas 23 242 1257 485 fx-2out8-matrix2 0;
+#X obj 0 -34 inlet~;
+#X obj 137 -203 inlet;
+#X text 179 -203 OSC;
+#X obj 66 7 *~;
+#X obj 85 -33 line~;
+#X obj 85 -95 unpack f f;
+#X obj 85 -74 dbtorms;
+#X obj 85 -53 pack f f;
+#X obj 137 -178 routeOSC /chn1 /chn2;
+#X obj 216 7 *~;
+#X obj 235 -33 line~;
+#X obj 235 -95 unpack f f;
+#X obj 235 -74 dbtorms;
+#X obj 235 -53 pack f f;
+#X obj 366 7 *~;
+#X obj 385 -33 line~;
+#X obj 385 -95 unpack f f;
+#X obj 385 -74 dbtorms;
+#X obj 385 -53 pack f f;
+#X obj 516 7 *~;
+#X obj 535 -33 line~;
+#X obj 535 -95 unpack f f;
+#X obj 535 -74 dbtorms;
+#X obj 535 -53 pack f f;
+#X obj 666 7 *~;
+#X obj 685 -33 line~;
+#X obj 685 -95 unpack f f;
+#X obj 685 -74 dbtorms;
+#X obj 685 -53 pack f f;
+#X obj 816 7 *~;
+#X obj 835 -33 line~;
+#X obj 835 -95 unpack f f;
+#X obj 835 -74 dbtorms;
+#X obj 835 -53 pack f f;
+#X obj 966 7 *~;
+#X obj 985 -33 line~;
+#X obj 985 -95 unpack f f;
+#X obj 985 -74 dbtorms;
+#X obj 985 -53 pack f f;
+#X obj 1116 7 *~;
+#X obj 1135 -33 line~;
+#X obj 1135 -95 unpack f f;
+#X obj 1135 -74 dbtorms;
+#X obj 1135 -53 pack f f;
+#X obj 37 161 inlet~;
+#X obj 66 207 *~;
+#X obj 85 157 line~;
+#X obj 85 95 unpack f f;
+#X obj 85 116 dbtorms;
+#X obj 85 137 pack f f;
+#X obj 216 207 *~;
+#X obj 235 157 line~;
+#X obj 235 95 unpack f f;
+#X obj 235 116 dbtorms;
+#X obj 235 137 pack f f;
+#X obj 366 207 *~;
+#X obj 385 157 line~;
+#X obj 385 95 unpack f f;
+#X obj 385 116 dbtorms;
+#X obj 385 137 pack f f;
+#X obj 516 207 *~;
+#X obj 535 157 line~;
+#X obj 535 95 unpack f f;
+#X obj 535 116 dbtorms;
+#X obj 535 137 pack f f;
+#X obj 666 207 *~;
+#X obj 685 157 line~;
+#X obj 685 95 unpack f f;
+#X obj 685 116 dbtorms;
+#X obj 685 137 pack f f;
+#X obj 816 207 *~;
+#X obj 835 157 line~;
+#X obj 835 95 unpack f f;
+#X obj 835 116 dbtorms;
+#X obj 835 137 pack f f;
+#X obj 966 207 *~;
+#X obj 985 157 line~;
+#X obj 985 95 unpack f f;
+#X obj 985 116 dbtorms;
+#X obj 985 137 pack f f;
+#X obj 1116 207 *~;
+#X obj 1135 157 line~;
+#X obj 1135 95 unpack f f;
+#X obj 1135 116 dbtorms;
+#X obj 1135 137 pack f f;
+#X text 1 -50 in1;
+#X text 32 144 in2;
+#X obj 386 -141 routeOSC /out1 /out2 /out3 /out4 /out5 /out6 /out7
+/out8;
+#X obj 398 53 routeOSC /out1 /out2 /out3 /out4 /out5 /out6 /out7 /out8
+;
+#X obj 65 28 throw~ fx-bus1;
+#X obj 215 28 throw~ fx-bus2;
+#X obj 365 28 throw~ fx-bus3;
+#X obj 515 28 throw~ fx-bus4;
+#X obj 665 28 throw~ fx-bus5;
+#X obj 815 28 throw~ fx-bus6;
+#X obj 965 28 throw~ fx-bus7;
+#X obj 1115 28 throw~ fx-bus8;
+#X obj 65 228 throw~ fx-bus1;
+#X obj 215 228 throw~ fx-bus2;
+#X obj 365 228 throw~ fx-bus3;
+#X obj 515 228 throw~ fx-bus4;
+#X obj 665 228 throw~ fx-bus5;
+#X obj 815 228 throw~ fx-bus6;
+#X obj 965 228 throw~ fx-bus7;
+#X obj 1115 228 throw~ fx-bus8;
+#X connect 0 0 3 0;
+#X connect 0 0 9 0;
+#X connect 0 0 14 0;
+#X connect 0 0 19 0;
+#X connect 0 0 24 0;
+#X connect 0 0 29 0;
+#X connect 0 0 34 0;
+#X connect 0 0 39 0;
+#X connect 1 0 8 0;
+#X connect 3 0 89 0;
+#X connect 4 0 3 1;
+#X connect 5 0 6 0;
+#X connect 5 1 7 1;
+#X connect 6 0 7 0;
+#X connect 7 0 4 0;
+#X connect 8 0 87 0;
+#X connect 8 1 88 0;
+#X connect 9 0 90 0;
+#X connect 10 0 9 1;
+#X connect 11 0 12 0;
+#X connect 11 1 13 1;
+#X connect 12 0 13 0;
+#X connect 13 0 10 0;
+#X connect 14 0 91 0;
+#X connect 15 0 14 1;
+#X connect 16 0 17 0;
+#X connect 16 1 18 1;
+#X connect 17 0 18 0;
+#X connect 18 0 15 0;
+#X connect 19 0 92 0;
+#X connect 20 0 19 1;
+#X connect 21 0 22 0;
+#X connect 21 1 23 1;
+#X connect 22 0 23 0;
+#X connect 23 0 20 0;
+#X connect 24 0 93 0;
+#X connect 25 0 24 1;
+#X connect 26 0 27 0;
+#X connect 26 1 28 1;
+#X connect 27 0 28 0;
+#X connect 28 0 25 0;
+#X connect 29 0 94 0;
+#X connect 30 0 29 1;
+#X connect 31 0 32 0;
+#X connect 31 1 33 1;
+#X connect 32 0 33 0;
+#X connect 33 0 30 0;
+#X connect 34 0 95 0;
+#X connect 35 0 34 1;
+#X connect 36 0 37 0;
+#X connect 36 1 38 1;
+#X connect 37 0 38 0;
+#X connect 38 0 35 0;
+#X connect 39 0 96 0;
+#X connect 40 0 39 1;
+#X connect 41 0 42 0;
+#X connect 41 1 43 1;
+#X connect 42 0 43 0;
+#X connect 43 0 40 0;
+#X connect 44 0 45 0;
+#X connect 44 0 50 0;
+#X connect 44 0 55 0;
+#X connect 44 0 60 0;
+#X connect 44 0 65 0;
+#X connect 44 0 70 0;
+#X connect 44 0 75 0;
+#X connect 44 0 80 0;
+#X connect 45 0 97 0;
+#X connect 46 0 45 1;
+#X connect 47 0 48 0;
+#X connect 47 1 49 1;
+#X connect 48 0 49 0;
+#X connect 49 0 46 0;
+#X connect 50 0 98 0;
+#X connect 51 0 50 1;
+#X connect 52 0 53 0;
+#X connect 52 1 54 1;
+#X connect 53 0 54 0;
+#X connect 54 0 51 0;
+#X connect 55 0 99 0;
+#X connect 56 0 55 1;
+#X connect 57 0 58 0;
+#X connect 57 1 59 1;
+#X connect 58 0 59 0;
+#X connect 59 0 56 0;
+#X connect 60 0 100 0;
+#X connect 61 0 60 1;
+#X connect 62 0 63 0;
+#X connect 62 1 64 1;
+#X connect 63 0 64 0;
+#X connect 64 0 61 0;
+#X connect 65 0 101 0;
+#X connect 66 0 65 1;
+#X connect 67 0 68 0;
+#X connect 67 1 69 1;
+#X connect 68 0 69 0;
+#X connect 69 0 66 0;
+#X connect 70 0 102 0;
+#X connect 71 0 70 1;
+#X connect 72 0 73 0;
+#X connect 72 1 74 1;
+#X connect 73 0 74 0;
+#X connect 74 0 71 0;
+#X connect 75 0 103 0;
+#X connect 76 0 75 1;
+#X connect 77 0 78 0;
+#X connect 77 1 79 1;
+#X connect 78 0 79 0;
+#X connect 79 0 76 0;
+#X connect 80 0 104 0;
+#X connect 81 0 80 1;
+#X connect 82 0 83 0;
+#X connect 82 1 84 1;
+#X connect 83 0 84 0;
+#X connect 84 0 81 0;
+#X connect 87 0 5 0;
+#X connect 87 1 11 0;
+#X connect 87 2 16 0;
+#X connect 87 3 21 0;
+#X connect 87 4 26 0;
+#X connect 87 5 31 0;
+#X connect 87 6 36 0;
+#X connect 87 7 41 0;
+#X connect 88 0 47 0;
+#X connect 88 1 52 0;
+#X connect 88 2 57 0;
+#X connect 88 3 62 0;
+#X connect 88 4 67 0;
+#X connect 88 5 72 0;
+#X connect 88 6 77 0;
+#X connect 88 7 82 0;
+#X restore 166 524 pd fx-2out8-matrix2;
+#X obj 81 415 i;
+#X obj 81 440 outlet;
+#X obj 44 293 i;
+#X obj 44 318 outlet;
+#X obj 244 95 clip 0 100;
+#X obj 166 264 extap/rev3~ 100 0 3000 10;
+#X obj 81 391 env~ 22050;
+#X obj 43 269 env~ 22050;
+#X obj 166 485 *~;
+#X obj 470 342 line~;
+#X msg 470 320 \$1 20;
+#X obj 229 484 *~;
+#X text 468 366 master vol reverb;
+#X obj 519 151 r from-gui;
+#X obj 562 306 s to-gui;
+#X obj 449 151 r initbang;
+#X obj 449 173 del 4000;
+#X obj 519 174 route rev;
+#X obj 563 230 ctlout 4 1;
+#X obj 563 253 ctlin 4 1;
+#X obj 563 283 list prepend rev;
+#X obj 449 195 i 84;
+#X obj 469 283 extap/fadtorms;
+#X obj 165 320 *~ 1;
+#X obj 230 318 *~ 1;
+#X connect 0 0 6 0;
+#X connect 1 0 18 3;
+#X connect 5 0 18 0;
+#X connect 5 0 20 0;
+#X connect 6 0 17 0;
+#X connect 6 1 7 0;
+#X connect 7 0 5 4;
+#X connect 7 1 12 2;
+#X connect 8 0 5 0;
+#X connect 9 0 5 1;
+#X connect 10 0 5 2;
+#X connect 11 0 5 3;
+#X connect 13 0 14 0;
+#X connect 15 0 16 0;
+#X connect 17 0 1 0;
+#X connect 18 0 36 0;
+#X connect 18 1 37 0;
+#X connect 18 2 37 0;
+#X connect 18 3 36 0;
+#X connect 19 0 13 0;
+#X connect 20 0 15 0;
+#X connect 21 0 12 0;
+#X connect 22 0 21 1;
+#X connect 22 0 24 1;
+#X connect 23 0 22 0;
+#X connect 24 0 12 0;
+#X connect 26 0 30 0;
+#X connect 28 0 29 0;
+#X connect 29 0 34 0;
+#X connect 30 0 31 0;
+#X connect 30 0 35 0;
+#X connect 32 0 33 0;
+#X connect 32 0 35 0;
+#X connect 33 0 27 0;
+#X connect 34 0 31 0;
+#X connect 34 0 33 0;
+#X connect 34 0 35 0;
+#X connect 35 0 23 0;
+#X connect 36 0 19 0;
+#X connect 36 0 21 0;
+#X connect 37 0 24 0;
+#X restore 9 634 pd reverb;
+#X floatatom 39 655 3 0 0 3 out - -;
+#X floatatom 9 655 3 0 0 3 in - -;
+#X floatatom 876 473 3 0 0 3 out - -;
+#X floatatom 846 474 3 0 0 3 in - -;
+#X obj 845 422 r del4;
+#N canvas 518 22 682 566 filtre 0;
+#X obj 219 137 inlet;
+#X obj 16 159 i;
+#X obj 16 184 outlet;
+#X obj 16 135 env~ 22050;
+#X obj 99 338 *~;
+#X obj 274 285 line~;
+#X obj 274 223 unpack f f;
+#X obj 274 244 dbtorms;
+#X obj 274 265 pack f f;
+#X obj 98 459 throw~ fx-bus9;
+#X obj 191 338 *~;
+#X obj 366 285 line~;
+#X obj 366 223 unpack f f;
+#X obj 366 244 dbtorms;
+#X obj 366 265 pack f f;
+#X obj 230 433 i;
+#X obj 230 458 outlet;
+#X obj 230 409 env~ 22050;
+#X obj 312 432 i;
+#X obj 312 457 outlet;
+#X obj 312 408 env~ 22050;
+#X text 232 481 dry;
+#X text 311 480 wet;
+#X text 17 204 pre;
+#X text 289 207 dry;
+#X text 377 208 wet;
+#X obj 117 236 hip~ 5000;
+#X obj 117 261 hip~ 5000;
+#X obj 219 160 routeOSC /freq /dry /wet;
+#X obj 100 99 r~ in_ecriture;
+#X obj 476 294 line~;
+#X msg 476 272 \$1 20;
+#X obj 98 433 *~;
+#X text 406 340 master vol for filter ecriture;
+#X obj 476 60 r from-gui;
+#X obj 519 215 s to-gui;
+#X obj 406 60 r initbang;
+#X obj 406 82 del 4000;
+#X obj 476 83 route filtec;
+#X obj 520 192 list prepend filtec;
+#X obj 520 162 ctlin 1 1;
+#X obj 520 139 ctlout 1 1;
+#X obj 406 104 i 84;
+#X obj 425 193 extap/fadtorms;
+#X connect 0 0 28 0;
+#X connect 1 0 2 0;
+#X connect 3 0 1 0;
+#X connect 4 0 17 0;
+#X connect 4 0 32 0;
+#X connect 5 0 4 1;
+#X connect 6 0 7 0;
+#X connect 6 1 8 1;
+#X connect 7 0 8 0;
+#X connect 8 0 5 0;
+#X connect 10 0 20 0;
+#X connect 10 0 32 0;
+#X connect 11 0 10 1;
+#X connect 12 0 13 0;
+#X connect 12 1 14 1;
+#X connect 13 0 14 0;
+#X connect 14 0 11 0;
+#X connect 15 0 16 0;
+#X connect 17 0 15 0;
+#X connect 18 0 19 0;
+#X connect 20 0 18 0;
+#X connect 26 0 27 0;
+#X connect 27 0 10 0;
+#X connect 28 0 26 1;
+#X connect 28 0 27 1;
+#X connect 28 1 6 0;
+#X connect 28 2 12 0;
+#X connect 29 0 3 0;
+#X connect 29 0 4 0;
+#X connect 29 0 26 0;
+#X connect 30 0 32 1;
+#X connect 31 0 30 0;
+#X connect 32 0 9 0;
+#X connect 34 0 38 0;
+#X connect 36 0 37 0;
+#X connect 37 0 42 0;
+#X connect 38 0 41 0;
+#X connect 38 0 43 0;
+#X connect 39 0 35 0;
+#X connect 40 0 39 0;
+#X connect 40 0 43 0;
+#X connect 42 0 39 0;
+#X connect 42 0 41 0;
+#X connect 42 0 43 0;
+#X connect 43 0 31 0;
+#X restore 142 632 pd filtre;
+#X floatatom 172 653 3 0 0 3 dry - -;
+#X floatatom 142 653 3 0 0 3 in - -;
+#X floatatom 202 653 3 0 0 3 wet - -;
+#X obj 142 609 r filt_ecr;
+#X floatatom 311 691 3 0 0 1 out - -;
+#X obj 296 644 r filt_sop2;
+#N canvas 591 22 604 576 filtre 0;
+#X obj 146 59 inlet;
+#X obj 63 425 i;
+#X obj 63 450 outlet;
+#X obj 63 401 env~ 22050;
+#X text 64 470 pre;
+#X obj 50 19 r~ in_sop2;
+#N canvas 0 22 997 299 fx-1out8-matrix1 0;
+#X obj 10 -54 inlet~;
+#X obj 320 -190 inlet;
+#X text 362 -190 OSC;
+#X obj 76 -13 *~;
+#X obj 95 -53 line~;
+#X obj 95 -115 unpack f f;
+#X obj 95 -94 dbtorms;
+#X obj 95 -73 pack f f;
+#X obj 186 -13 *~;
+#X obj 205 -53 line~;
+#X obj 205 -115 unpack f f;
+#X obj 205 -94 dbtorms;
+#X obj 205 -73 pack f f;
+#X obj 296 -13 *~;
+#X obj 315 -53 line~;
+#X obj 315 -115 unpack f f;
+#X obj 315 -94 dbtorms;
+#X obj 315 -73 pack f f;
+#X obj 406 -13 *~;
+#X obj 425 -53 line~;
+#X obj 425 -115 unpack f f;
+#X obj 425 -94 dbtorms;
+#X obj 425 -73 pack f f;
+#X obj 516 -13 *~;
+#X obj 535 -53 line~;
+#X obj 535 -115 unpack f f;
+#X obj 535 -94 dbtorms;
+#X obj 535 -73 pack f f;
+#X obj 626 -13 *~;
+#X obj 645 -53 line~;
+#X obj 645 -115 unpack f f;
+#X obj 645 -94 dbtorms;
+#X obj 645 -73 pack f f;
+#X obj 736 -13 *~;
+#X obj 755 -53 line~;
+#X obj 755 -115 unpack f f;
+#X obj 755 -94 dbtorms;
+#X obj 755 -73 pack f f;
+#X obj 846 -13 *~;
+#X obj 865 -53 line~;
+#X obj 865 -115 unpack f f;
+#X obj 865 -94 dbtorms;
+#X obj 865 -73 pack f f;
+#X text 11 -70 in1;
+#X obj 320 -156 routeOSC /out1 /out2 /out3 /out4 /out5 /out6 /out7
+/out8;
+#X obj 75 8 throw~ fx-bus1;
+#X obj 185 8 throw~ fx-bus2;
+#X obj 295 8 throw~ fx-bus3;
+#X obj 405 8 throw~ fx-bus4;
+#X obj 515 8 throw~ fx-bus5;
+#X obj 625 8 throw~ fx-bus6;
+#X obj 735 8 throw~ fx-bus7;
+#X obj 845 8 throw~ fx-bus8;
+#X connect 0 0 3 0;
+#X connect 0 0 8 0;
+#X connect 0 0 13 0;
+#X connect 0 0 18 0;
+#X connect 0 0 23 0;
+#X connect 0 0 28 0;
+#X connect 0 0 33 0;
+#X connect 0 0 38 0;
+#X connect 1 0 44 0;
+#X connect 3 0 45 0;
+#X connect 4 0 3 1;
+#X connect 5 0 6 0;
+#X connect 5 1 7 1;
+#X connect 6 0 7 0;
+#X connect 7 0 4 0;
+#X connect 8 0 46 0;
+#X connect 9 0 8 1;
+#X connect 10 0 11 0;
+#X connect 10 1 12 1;
+#X connect 11 0 12 0;
+#X connect 12 0 9 0;
+#X connect 13 0 47 0;
+#X connect 14 0 13 1;
+#X connect 15 0 16 0;
+#X connect 15 1 17 1;
+#X connect 16 0 17 0;
+#X connect 17 0 14 0;
+#X connect 18 0 48 0;
+#X connect 19 0 18 1;
+#X connect 20 0 21 0;
+#X connect 20 1 22 1;
+#X connect 21 0 22 0;
+#X connect 22 0 19 0;
+#X connect 23 0 49 0;
+#X connect 24 0 23 1;
+#X connect 25 0 26 0;
+#X connect 25 1 27 1;
+#X connect 26 0 27 0;
+#X connect 27 0 24 0;
+#X connect 28 0 50 0;
+#X connect 29 0 28 1;
+#X connect 30 0 31 0;
+#X connect 30 1 32 1;
+#X connect 31 0 32 0;
+#X connect 32 0 29 0;
+#X connect 33 0 51 0;
+#X connect 34 0 33 1;
+#X connect 35 0 36 0;
+#X connect 35 1 37 1;
+#X connect 36 0 37 0;
+#X connect 37 0 34 0;
+#X connect 38 0 52 0;
+#X connect 39 0 38 1;
+#X connect 40 0 41 0;
+#X connect 40 1 42 1;
+#X connect 41 0 42 0;
+#X connect 42 0 39 0;
+#X connect 44 0 5 0;
+#X connect 44 1 10 0;
+#X connect 44 2 15 0;
+#X connect 44 3 20 0;
+#X connect 44 4 25 0;
+#X connect 44 5 30 0;
+#X connect 44 6 35 0;
+#X connect 44 7 40 0;
+#X restore 51 523 pd fx-1out8-matrix1;
+#X obj 49 250 lop~ 15000;
+#X obj 50 285 lop~ 15000;
+#X obj 50 313 lop~ 15000;
+#X obj 50 348 lop~ 15000;
+#X obj 146 82 routeOSC /hp_freq /lp_freq;
+#X obj 50 112 hip~ 2500;
+#X obj 50 147 hip~ 2500;
+#X obj 50 175 hip~ 2500;
+#X obj 50 210 hip~ 2500;
+#X obj 419 324 line~;
+#X msg 419 302 \$1 20;
+#X text 374 372 master vol for filter sporano2;
+#X obj 51 496 *~;
+#X obj 420 89 r from-gui;
+#X obj 463 244 s to-gui;
+#X obj 350 89 r initbang;
+#X obj 350 111 del 4000;
+#X obj 420 112 route filts2;
+#X obj 464 221 list prepend filts2;
+#X obj 464 168 ctlout 2 1;
+#X obj 464 191 ctlin 2 1;
+#X obj 350 132 i 84;
+#X obj 363 223 extap/fadtorms;
+#X obj 51 372 *~ 0.707;
+#X text 106 371 balancing by PP;
+#X connect 0 0 11 0;
+#X connect 1 0 2 0;
+#X connect 3 0 1 0;
+#X connect 5 0 12 0;
+#X connect 7 0 8 0;
+#X connect 8 0 9 0;
+#X connect 9 0 10 0;
+#X connect 10 0 30 0;
+#X connect 11 0 12 1;
+#X connect 11 0 13 1;
+#X connect 11 0 14 1;
+#X connect 11 0 15 1;
+#X connect 11 1 7 1;
+#X connect 11 1 8 1;
+#X connect 11 1 9 1;
+#X connect 11 1 10 1;
+#X connect 11 2 6 1;
+#X connect 12 0 13 0;
+#X connect 13 0 14 0;
+#X connect 14 0 15 0;
+#X connect 15 0 7 0;
+#X connect 16 0 19 1;
+#X connect 17 0 16 0;
+#X connect 19 0 6 0;
+#X connect 20 0 24 0;
+#X connect 22 0 23 0;
+#X connect 23 0 28 0;
+#X connect 24 0 26 0;
+#X connect 24 0 29 0;
+#X connect 25 0 21 0;
+#X connect 27 0 25 0;
+#X connect 27 0 29 0;
+#X connect 28 0 25 0;
+#X connect 28 0 26 0;
+#X connect 28 0 29 0;
+#X connect 29 0 17 0;
+#X connect 30 0 19 0;
+#X connect 30 0 3 0;
+#X restore 296 667 pd filtre;
+#X msg 732 95 0;
+#X obj 732 165 tgl 25 0 empty empty samples_ok? 32 7 0 12 -262144 -1
+-1 0 1;
+#X obj 13 324 r reso;
+#X obj 13 348 extap/reso_voice~;
+#X floatatom 87 371 3 0 0 3 out - -;
+#X floatatom 13 371 3 0 0 3 in - -;
+#X obj 50 371 tgl 15 0 empty empty in_limit -14 23 0 10 -262144 -1
+-1 0 1;
+#X floatatom 72 326 3 0 10 1 res_time - -;
+#X msg 72 305 10;
+#X obj 508 91 bng 15 250 50 0 empty empty stop_all_cues 19 7 0 10 -261234
+-1 -1;
+#N canvas 177 120 604 623 reset 0;
+#X msg 255 39 \; stop_delays bang;
+#X obj 83 7 inlet;
+#X msg 255 75 \; sam1 /chn*/out* 0 0 \; sam2 /chn*/out* 0 0 \; sam3
+/chn*/out* 0 0 \; sam4 /chn*/out* 0 0 \; sam1 /play 0 \; sam2 /play
+0 \; sam3 /play 0 \; sam4 /play 0;
+#X msg 255 202 \; harm1 /out* 0 0 \; harm2 /out* 0 0 \; harm3 /out*
+0 0;
+#X msg 255 264 \; rev /revtime 0 \; rev /in* 0 0 \; rev /chn*/out*
+0 0;
+#X msg 256 326 \; del1 /deltime 0 \; del2 /deltime 0 \; del3 /deltime
+0 \; del4 /deltime 0 \; del1 /in* 0 0 \; del2 /in* 0 0 \; del3 /in*
+0 0 \; del4 /in* 0 0 \; del1 /out* 0 0 \; del2 /out* 0 0 \; del3 /out*
+0 0 \; del4 /out* 0 0;
+#X msg 255 558 \; filt_sop2 /out* 0 0;
+#X msg 256 506 \; filt_ecr /dry 100 0 \; filt_ecr /wet 0 0;
+#X text 405 512 filt_ecr dry is always on!;
+#X msg 83 553 \; reso /in* 0 0 \; reso /out* 0 0;
+#X connect 1 0 0 0;
+#X connect 1 0 2 0;
+#X connect 1 0 3 0;
+#X connect 1 0 4 0;
+#X connect 1 0 5 0;
+#X connect 1 0 7 0;
+#X connect 1 0 6 0;
+#X connect 1 0 9 0;
+#X restore 535 114 pd reset;
+#X obj 586 686 tgl 15 0 empty empty play -4 22 0 10 -262144 -1 -1 0
+1;
+#X obj 478 664 extap/sam_voice~ 1;
+#X msg 732 247 bang;
+#X obj 732 270 s init_samples;
+#N canvas 990 402 429 445 cuelist 0;
+#X obj 41 6 inlet;
+#X obj 189 254 textfile;
+#X obj 242 278 bng 15 250 50 0 empty empty end 17 7 0 10 -262144 -1
+-1;
+#X obj 61 155 until;
+#X obj 41 308 list;
+#X obj 41 354 spigot;
+#X msg 140 308 0;
+#X obj 41 101 t b f f b;
+#X obj 103 156 > 0;
+#X obj 41 385 outlet;
+#X text 113 388 next cue;
+#X msg 189 222 read extap/cuelist.txt cr \, rewind;
+#X obj 189 157 r initbang;
+#X obj 68 63 + 1;
+#X text 93 63 <- das war hier eingebaut \, dadurch war mes1 nie;
+#X connect 0 0 7 0;
+#X connect 1 0 4 1;
+#X connect 1 1 2 0;
+#X connect 1 1 6 0;
+#X connect 3 0 1 0;
+#X connect 4 0 5 0;
+#X connect 5 0 9 0;
+#X connect 6 0 5 1;
+#X connect 7 0 4 0;
+#X connect 7 1 3 0;
+#X connect 7 2 8 0;
+#X connect 7 3 11 0;
+#X connect 8 0 5 1;
+#X connect 11 0 1 0;
+#X connect 12 0 11 0;
+#X restore 322 187 pd cuelist;
+#X obj 301 313 s cue;
+#X symbolatom 491 306 10 0 0 1 current - -;
+#X obj 275 71 bng 15 250 50 0 empty empty go! 0 -7 0 10 -204786 -1
+-1;
+#X obj 275 92 t b b;
+#X obj 301 255 list;
+#X symbolatom 452 213 10 0 0 1 next - -;
+#X msg 395 119 1;
+#X msg 427 119 10;
+#X msg 362 119 -1;
+#X msg 323 119 -10;
+#N canvas 532 230 656 497 counter 0;
+#X obj 75 127 i 1;
+#X obj 75 173 +;
+#X obj 75 99 t b f;
+#X obj 75 198 moses 1;
+#X obj 75 221 bang;
+#X obj 215 237 bang;
+#X obj 164 320 i;
+#X obj 75 246 i 1;
+#X obj 75 13 inlet;
+#X obj 191 369 outlet;
+#X obj 164 342 t f f;
+#X obj 271 69 inlet;
+#X text 23 13 operand;
+#X text 307 69 reset;
+#X msg 271 97 1 0;
+#X obj 358 341 outlet;
+#X text 403 341 end reached;
+#X obj 215 265 t b b;
+#X obj 111 40 r initbang;
+#X obj 111 67 del 4000;
+#X obj 164 212 moses 132;
+#X obj 215 292 i 131;
+#X connect 0 0 1 0;
+#X connect 1 0 3 0;
+#X connect 2 0 0 0;
+#X connect 2 1 1 1;
+#X connect 3 0 4 0;
+#X connect 3 1 20 0;
+#X connect 4 0 7 0;
+#X connect 5 0 17 0;
+#X connect 6 0 10 0;
+#X connect 7 0 6 0;
+#X connect 8 0 2 0;
+#X connect 10 0 0 1;
+#X connect 10 1 9 0;
+#X connect 11 0 14 0;
+#X connect 14 0 1 0;
+#X connect 17 0 15 0;
+#X connect 17 1 21 0;
+#X connect 18 0 19 0;
+#X connect 19 0 2 0;
+#X connect 20 0 6 0;
+#X connect 20 1 5 0;
+#X connect 21 0 6 0;
+#X restore 322 156 pd counter;
+#X obj 459 133 bng 15 250 50 0 empty empty goto_start 17 7 0 10 -262144
+-1 -1;
+#X msg 490 281 list ---;
+#X msg 393 187 list -end-;
+#X obj 873 139 extap/OSCclient;
+#X obj 885 165 tgl 15 0 empty empty connected 17 7 0 10 -262144 -1
+-1 0 1;
+#X obj 873 111 r to-slave;
+#X obj 873 239 s from-slave;
+#X msg 349 312 /current_cue \$1;
+#X obj 349 337 s to-slave;
+#X obj 340 256 s to-slave;
+#X msg 340 231 /next_cue \$1;
+#X obj 275 14 r from-slave;
+#X obj 275 39 routeOSC /trig /minus10 /minus1 /plus1 /plus10 /goto0
+/stop;
+#X symbolatom 479 686 10 0 0 3 file - -;
+#X obj 11 13 inlet~;
+#X obj 20 164 s initbang;
+#X obj 72 285 r initbang;
+#X obj 489 258 r initbang;
+#X obj 19 121 handlers/ntg_receive \$1;
+#X obj 16 232 handlers/ntg_send \$1;
+#X obj 51 13 inlet~;
+#X obj 91 13 inlet~;
+#X obj 131 13 inlet~;
+#X obj 171 13 inlet~;
+#X obj 91 39 s~ in_mez;
+#X obj 51 59 s~ in_sop2;
+#X obj 12 39 s~ in_sop1;
+#X obj 130 59 s~ in_bary;
+#X obj 172 39 s~ in_ecriture;
+#X obj 9 794 outlet~;
+#X obj 59 794 outlet~;
+#X obj 109 794 outlet~;
+#X obj 159 794 outlet~;
+#X obj 209 794 outlet~;
+#X obj 259 794 outlet~;
+#X obj 309 794 outlet~;
+#X obj 359 794 outlet~;
+#X obj 411 793 outlet~;
+#N canvas 0 22 1425 840 summing_mastergain_limiting 0;
+#X obj 81 352 catch~ fx-bus1;
+#X obj 84 477 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 15 454 extap/brick~;
+#X obj 14 319 catch~ sampler-bus1;
+#X obj 16 483 outlet~;
+#X obj 80 427 *~;
+#X obj 94 402 line~;
+#X msg 94 380 \$1 20;
+#X obj 15 399 *~;
+#X obj 29 374 line~;
+#X msg 29 352 \$1 20;
+#X obj 240 475 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 171 452 extap/brick~;
+#X obj 172 481 outlet~;
+#X obj 236 425 *~;
+#X obj 250 400 line~;
+#X msg 250 378 \$1 20;
+#X obj 171 397 *~;
+#X obj 185 372 line~;
+#X msg 185 350 \$1 20;
+#X obj 170 317 catch~ sampler-bus2;
+#X obj 237 350 catch~ fx-bus2;
+#X obj 395 474 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 326 451 extap/brick~;
+#X obj 327 480 outlet~;
+#X obj 391 424 *~;
+#X obj 405 399 line~;
+#X msg 405 377 \$1 20;
+#X obj 326 396 *~;
+#X obj 340 371 line~;
+#X msg 340 349 \$1 20;
+#X obj 325 316 catch~ sampler-bus3;
+#X obj 392 349 catch~ fx-bus3;
+#X obj 551 473 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 482 450 extap/brick~;
+#X obj 483 479 outlet~;
+#X obj 547 423 *~;
+#X obj 561 398 line~;
+#X msg 561 376 \$1 20;
+#X obj 482 395 *~;
+#X obj 496 370 line~;
+#X msg 496 348 \$1 20;
+#X obj 481 315 catch~ sampler-bus4;
+#X obj 548 348 catch~ fx-bus4;
+#X obj 707 471 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 638 448 extap/brick~;
+#X obj 639 477 outlet~;
+#X obj 703 421 *~;
+#X obj 717 396 line~;
+#X msg 717 374 \$1 20;
+#X obj 638 393 *~;
+#X obj 652 368 line~;
+#X msg 652 346 \$1 20;
+#X obj 863 469 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0 1
+;
+#X obj 794 446 extap/brick~;
+#X obj 795 475 outlet~;
+#X obj 859 419 *~;
+#X obj 873 394 line~;
+#X msg 873 372 \$1 20;
+#X obj 794 391 *~;
+#X obj 808 366 line~;
+#X msg 808 344 \$1 20;
+#X obj 1019 468 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 950 445 extap/brick~;
+#X obj 951 474 outlet~;
+#X obj 1015 418 *~;
+#X obj 1029 393 line~;
+#X msg 1029 371 \$1 20;
+#X obj 950 390 *~;
+#X obj 964 365 line~;
+#X msg 964 343 \$1 20;
+#X obj 1175 467 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 1106 444 extap/brick~;
+#X obj 1107 473 outlet~;
+#X obj 1171 417 *~;
+#X obj 1185 392 line~;
+#X msg 1185 370 \$1 20;
+#X obj 1106 389 *~;
+#X obj 1120 364 line~;
+#X msg 1120 342 \$1 20;
+#X obj 637 313 catch~ sampler-bus5;
+#X obj 704 346 catch~ fx-bus5;
+#X obj 793 311 catch~ sampler-bus6;
+#X obj 860 344 catch~ fx-bus6;
+#X obj 949 310 catch~ sampler-bus7;
+#X obj 1016 343 catch~ fx-bus7;
+#X obj 1105 309 catch~ sampler-bus8;
+#X obj 1172 342 catch~ fx-bus8;
+#X obj 1326 467 tgl 15 0 empty empty lim 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 1257 444 extap/brick~;
+#X obj 1258 473 outlet~;
+#X obj 1272 417 *~;
+#X obj 1286 392 line~;
+#X msg 1286 370 \$1 20;
+#X obj 1273 342 catch~ fx-bus9;
+#X obj 157 550 ||;
+#X obj 171 517 t b f;
+#X obj 470 546 ||;
+#X obj 484 513 t b f;
+#X obj 781 545 ||;
+#X obj 795 512 t b f;
+#X obj 1037 555 ||;
+#X obj 1051 522 t b f;
+#X obj 314 613 ||;
+#X obj 328 580 t b f;
+#X obj 900 624 ||;
+#X obj 914 591 t b f;
+#X obj 596 697 ||;
+#X obj 610 664 t b f;
+#X obj 1012 732 ||;
+#X obj 1026 699 t b f;
+#X obj 1012 808 s to-gui;
+#X obj 1012 781 list prepend masterlimiter;
+#X obj 983 782 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 1013 756 change;
+#X obj 315 29 r from-gui;
+#X obj 418 184 s to-gui;
+#X obj 245 29 r initbang;
+#X obj 245 51 del 4000;
+#X obj 419 108 ctlout 7 1;
+#X obj 419 131 ctlin 7 1;
+#X obj 419 161 list prepend transforms;
+#X obj 315 52 route transforms;
+#X obj 80 28 r from-gui;
+#X obj 123 183 s to-gui;
+#X obj 10 28 r initbang;
+#X obj 10 50 del 4000;
+#X obj 124 160 list prepend samplers;
+#X obj 80 51 route samplers;
+#X obj 124 107 ctlout 8 1;
+#X obj 124 130 ctlin 8 1;
+#X obj 245 73 i 0;
+#X obj 10 72 i 0;
+#X obj 316 259 f;
+#X obj 316 161 extap/fadtorms;
+#X obj 30 264 f;
+#X obj 29 159 extap/fadtorms;
+#X connect 0 0 5 0;
+#X connect 1 0 95 0;
+#X connect 2 0 4 0;
+#X connect 2 1 1 0;
+#X connect 3 0 8 0;
+#X connect 5 0 2 0;
+#X connect 6 0 5 1;
+#X connect 7 0 6 0;
+#X connect 8 0 2 0;
+#X connect 9 0 8 1;
+#X connect 10 0 9 0;
+#X connect 11 0 96 0;
+#X connect 12 0 13 0;
+#X connect 12 1 11 0;
+#X connect 14 0 12 0;
+#X connect 15 0 14 1;
+#X connect 16 0 15 0;
+#X connect 17 0 12 0;
+#X connect 18 0 17 1;
+#X connect 19 0 18 0;
+#X connect 20 0 17 0;
+#X connect 21 0 14 0;
+#X connect 22 0 97 0;
+#X connect 23 0 24 0;
+#X connect 23 1 22 0;
+#X connect 25 0 23 0;
+#X connect 26 0 25 1;
+#X connect 27 0 26 0;
+#X connect 28 0 23 0;
+#X connect 29 0 28 1;
+#X connect 30 0 29 0;
+#X connect 31 0 28 0;
+#X connect 32 0 25 0;
+#X connect 33 0 98 0;
+#X connect 34 0 35 0;
+#X connect 34 1 33 0;
+#X connect 36 0 34 0;
+#X connect 37 0 36 1;
+#X connect 38 0 37 0;
+#X connect 39 0 34 0;
+#X connect 40 0 39 1;
+#X connect 41 0 40 0;
+#X connect 42 0 39 0;
+#X connect 43 0 36 0;
+#X connect 44 0 99 0;
+#X connect 45 0 46 0;
+#X connect 45 1 44 0;
+#X connect 47 0 45 0;
+#X connect 48 0 47 1;
+#X connect 49 0 48 0;
+#X connect 50 0 45 0;
+#X connect 51 0 50 1;
+#X connect 52 0 51 0;
+#X connect 53 0 100 0;
+#X connect 54 0 55 0;
+#X connect 54 1 53 0;
+#X connect 56 0 54 0;
+#X connect 57 0 56 1;
+#X connect 58 0 57 0;
+#X connect 59 0 54 0;
+#X connect 60 0 59 1;
+#X connect 61 0 60 0;
+#X connect 62 0 101 0;
+#X connect 63 0 64 0;
+#X connect 63 1 62 0;
+#X connect 65 0 63 0;
+#X connect 66 0 65 1;
+#X connect 67 0 66 0;
+#X connect 68 0 63 0;
+#X connect 69 0 68 1;
+#X connect 70 0 69 0;
+#X connect 71 0 102 0;
+#X connect 72 0 73 0;
+#X connect 72 1 71 0;
+#X connect 74 0 72 0;
+#X connect 75 0 74 1;
+#X connect 76 0 75 0;
+#X connect 77 0 72 0;
+#X connect 78 0 77 1;
+#X connect 79 0 78 0;
+#X connect 80 0 50 0;
+#X connect 81 0 47 0;
+#X connect 82 0 59 0;
+#X connect 83 0 56 0;
+#X connect 84 0 68 0;
+#X connect 85 0 65 0;
+#X connect 86 0 77 0;
+#X connect 87 0 74 0;
+#X connect 88 0 110 0;
+#X connect 89 0 90 0;
+#X connect 89 1 88 0;
+#X connect 91 0 89 0;
+#X connect 92 0 91 1;
+#X connect 93 0 92 0;
+#X connect 94 0 91 0;
+#X connect 95 0 103 0;
+#X connect 96 0 95 0;
+#X connect 96 1 95 1;
+#X connect 97 0 104 0;
+#X connect 98 0 97 0;
+#X connect 98 1 97 1;
+#X connect 99 0 105 0;
+#X connect 100 0 99 0;
+#X connect 100 1 99 1;
+#X connect 101 0 106 0;
+#X connect 102 0 101 0;
+#X connect 102 1 101 1;
+#X connect 103 0 107 0;
+#X connect 104 0 103 0;
+#X connect 104 1 103 1;
+#X connect 105 0 108 0;
+#X connect 106 0 105 0;
+#X connect 106 1 105 1;
+#X connect 107 0 109 0;
+#X connect 108 0 107 0;
+#X connect 108 1 107 1;
+#X connect 109 0 114 0;
+#X connect 110 0 109 0;
+#X connect 110 1 109 1;
+#X connect 112 0 111 0;
+#X connect 114 0 112 0;
+#X connect 114 0 113 0;
+#X connect 115 0 122 0;
+#X connect 117 0 118 0;
+#X connect 118 0 131 0;
+#X connect 120 0 121 0;
+#X connect 120 0 134 0;
+#X connect 121 0 116 0;
+#X connect 122 0 119 0;
+#X connect 122 0 134 0;
+#X connect 123 0 128 0;
+#X connect 125 0 126 0;
+#X connect 126 0 132 0;
+#X connect 127 0 124 0;
+#X connect 128 0 129 0;
+#X connect 128 0 136 0;
+#X connect 130 0 127 0;
+#X connect 130 0 136 0;
+#X connect 131 0 119 0;
+#X connect 131 0 121 0;
+#X connect 131 0 134 0;
+#X connect 132 0 127 0;
+#X connect 132 0 129 0;
+#X connect 132 0 136 0;
+#X connect 133 0 7 0;
+#X connect 133 0 16 0;
+#X connect 133 0 27 0;
+#X connect 133 0 38 0;
+#X connect 133 0 49 0;
+#X connect 133 0 58 0;
+#X connect 133 0 67 0;
+#X connect 133 0 76 0;
+#X connect 133 0 93 0;
+#X connect 134 0 133 0;
+#X connect 135 0 10 0;
+#X connect 135 0 19 0;
+#X connect 135 0 30 0;
+#X connect 135 0 41 0;
+#X connect 135 0 52 0;
+#X connect 135 0 61 0;
+#X connect 135 0 70 0;
+#X connect 135 0 79 0;
+#X connect 136 0 135 0;
+#X restore 10 765 pd summing_mastergain_limiting _____________________________
+;
+#X obj 116 174 s from-gui;
+#X obj 26 208 r to-gui;
+#X obj 109 200 print named-params;
+#X obj 418 338 list prepend current;
+#X obj 419 362 s to-gui;
+#X obj 429 256 s to-gui;
+#X obj 428 232 list prepend next;
+#X obj 733 219 s to-gui;
+#X obj 732 195 list prepend samplesok;
+#X obj 886 211 s to-gui;
+#X obj 885 187 list prepend network;
+#X obj 479 763 list prepend s1file;
+#X obj 487 739 list prepend s1vu;
+#X obj 499 718 list prepend s1;
+#X obj 479 790 s to-gui;
+#X floatatom 681 683 3 0 0 3 dB_out - -;
+#X obj 723 684 tgl 15 0 empty empty play -4 22 0 10 -262144 -1 -1 0
+1;
+#X symbolatom 616 684 10 0 0 3 file - -;
+#X obj 616 788 s to-gui;
+#X obj 615 637 r sam2;
+#X obj 636 716 list prepend s2;
+#X obj 624 737 list prepend s2vu;
+#X obj 616 761 list prepend s2file;
+#X floatatom 815 683 3 0 0 3 dB_out - -;
+#X obj 857 684 tgl 15 0 empty empty play -4 22 0 10 -262144 -1 -1 0
+1;
+#X symbolatom 750 684 10 0 0 3 file - -;
+#X obj 750 788 s to-gui;
+#X obj 749 637 r sam3;
+#X obj 770 716 list prepend s3;
+#X obj 758 737 list prepend s3vu;
+#X obj 750 761 list prepend s3file;
+#X floatatom 948 682 3 0 0 3 dB_out - -;
+#X obj 990 683 tgl 15 0 empty empty play -4 22 0 10 -262144 -1 -1 0
+1;
+#X symbolatom 883 683 10 0 0 3 file - -;
+#X obj 883 787 s to-gui;
+#X obj 882 636 r sam4;
+#X obj 903 715 list prepend s4;
+#X obj 891 736 list prepend s4vu;
+#X obj 883 760 list prepend s4file;
+#N canvas 0 22 541 675 slaveaction 0;
+#X obj 41 56 inlet;
+#X obj 40 82 routeOSC /trig /minus10 /minus1 /plus1 /plus10 /goto0
+/stop;
+#X obj 150 434 list prepend slaveaction;
+#X obj 151 461 s to-gui;
+#X obj 122 328 t b a;
+#X msg 94 408 ___;
+#X obj 103 382 r initbang;
+#X msg 40 115 go!;
+#X msg 81 115 minus10;
+#X msg 141 115 minus1;
+#X msg 191 115 plus1;
+#X msg 239 114 plus10;
+#X msg 291 114 goto0;
+#X msg 338 113 stop;
+#X obj 95 355 del 600;
+#X text 138 23 let IL gui know what slave did;
+#X connect 0 0 1 0;
+#X connect 1 0 7 0;
+#X connect 1 1 8 0;
+#X connect 1 2 9 0;
+#X connect 1 3 10 0;
+#X connect 1 4 11 0;
+#X connect 1 5 12 0;
+#X connect 1 6 13 0;
+#X connect 2 0 3 0;
+#X connect 4 0 14 0;
+#X connect 4 1 2 0;
+#X connect 5 0 2 0;
+#X connect 6 0 5 0;
+#X connect 7 0 4 0;
+#X connect 8 0 4 0;
+#X connect 9 0 4 0;
+#X connect 10 0 4 0;
+#X connect 11 0 4 0;
+#X connect 12 0 4 0;
+#X connect 13 0 4 0;
+#X connect 14 0 5 0;
+#X restore 358 14 pd slaveaction;
+#X obj 8 544 list prepend h1out;
+#X obj 127 544 list prepend h2out;
+#X obj 9 570 s to-gui;
+#X obj 245 544 list prepend h3out;
+#X obj 9 713 list prepend revin;
+#X obj 20 689 list prepend revout;
+#X obj 10 736 s to-gui;
+#X obj 298 737 s to-gui;
+#X obj 297 714 list prepend fils2out;
+#X obj 143 736 s to-gui;
+#X obj 153 689 list prepend filecwet;
+#X obj 142 713 list prepend filecdry;
+#X obj 846 549 s to-gui;
+#X obj 852 505 list prepend d4out;
+#X obj 845 526 list prepend d4in;
+#X floatatom 753 475 3 0 0 3 out - -;
+#X floatatom 723 476 3 0 0 3 in - -;
+#X obj 723 551 s to-gui;
+#X obj 722 424 r del3;
+#X obj 731 506 list prepend d3out;
+#X obj 722 528 list prepend d3in;
+#X floatatom 629 475 3 0 0 3 out - -;
+#X floatatom 599 476 3 0 0 3 in - -;
+#X obj 599 551 s to-gui;
+#X floatatom 506 477 3 0 0 3 out - -;
+#X floatatom 476 478 3 0 0 3 in - -;
+#X obj 476 451 extap/del_voice~;
+#X obj 476 553 s to-gui;
+#X obj 598 424 r del2;
+#X obj 605 507 list prepend d2out;
+#X obj 598 529 list prepend d2in;
+#X obj 484 508 list prepend d1out;
+#X obj 475 530 list prepend d1in;
+#X obj 475 426 r del1;
+#X obj 112 415 s to-gui;
+#X obj 133 348 list prepend resout;
+#X obj 120 370 list prepend reslim;
+#X obj 111 392 list prepend resin;
+#N canvas 933 162 450 300 ignore 0;
+#X obj 36 42 inlet;
+#X obj 36 264 outlet;
+#X text 180 23 stuff we want to ignore;
+#X obj 36 67 route masterlimiter network slaveaction samplesok s1 s2
+s3 s4 s1vu s2vu s3vu s4vu s1file s2file s3file s4file;
+#X obj 36 108 route current next h1out h2out h3out fils2out filecdry
+filecwet revin revout d1in d2in d3in d4in d1out d2out d3out d4out;
+#X obj 35 165 route resin resout reslim;
+#X obj 36 201 route in1 in2 in3 in4 in5 out1 out2 out3 out4 out5 out6
+out7 out8 out9;
+#X connect 0 0 3 0;
+#X connect 3 16 4 0;
+#X connect 4 18 5 0;
+#X connect 5 3 6 0;
+#X connect 6 14 1 0;
+#X restore 103 145 pd ignore;
+#X obj 732 19 r from-gui;
+#X obj 732 41 route loadsamps;
+#X obj 732 115 t b f;
+#X obj 19 142 del 4000;
+#X obj 732 74 spigot;
+#X obj 840 41 r initbang;
+#X msg 840 63 1;
+#X msg 563 282 list -stopped-;
+#N canvas 282 331 795 405 cue-via-midi+gui 0;
+#X obj 37 31 r from-gui;
+#X obj 37 56 route go minus10 minus1 plus1 plus10 stop;
+#X obj 18 210 outlet;
+#X obj 119 213 outlet;
+#X obj 259 216 outlet;
+#X obj 392 219 outlet;
+#X obj 519 220 outlet;
+#X obj 651 219 outlet;
+#X obj 8 157 ctlin 0 1;
+#X obj 8 187 sel 127;
+#X text 19 229 go!;
+#X obj 109 157 ctlin 17 1;
+#X obj 109 190 sel 127;
+#X text 123 232 -10;
+#X obj 249 155 ctlin 18 1;
+#X text 261 233 -1;
+#X obj 381 155 ctlin 21 1;
+#X text 394 236 +1;
+#X obj 249 193 sel 127;
+#X obj 382 196 sel 127;
+#X obj 509 197 sel 127;
+#X text 523 238 +10;
+#X text 653 237 stop;
+#X obj 641 196 sel 127;
+#X obj 641 156 ctlin 19 1;
+#X obj 9 313 list prepend go;
+#X obj 9 359 s to-gui;
+#X obj 110 312 list prepend minus10;
+#X obj 249 312 list prepend minus1;
+#X obj 381 312 list prepend plus1;
+#X obj 510 312 list prepend plus10;
+#X obj 640 312 list prepend stop;
+#X text 292 56 these are all stateless attributes sending a bang;
+#X text 7 262 we are not sending midi commands through to the gui because
+the stateless gui elements in integra cannot be "flashed" and hence
+be used as indicators. Plus we avoid traffic.;
+#X obj 508 156 ctlin 22 1;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 1 1 3 0;
+#X connect 1 2 4 0;
+#X connect 1 3 5 0;
+#X connect 1 4 6 0;
+#X connect 1 5 7 0;
+#X connect 8 0 9 0;
+#X connect 9 0 2 0;
+#X connect 11 0 12 0;
+#X connect 12 0 3 0;
+#X connect 14 0 18 0;
+#X connect 16 0 19 0;
+#X connect 18 0 4 0;
+#X connect 19 0 5 0;
+#X connect 20 0 6 0;
+#X connect 23 0 7 0;
+#X connect 24 0 23 0;
+#X connect 25 0 26 0;
+#X connect 27 0 26 0;
+#X connect 28 0 26 0;
+#X connect 29 0 26 0;
+#X connect 30 0 26 0;
+#X connect 31 0 26 0;
+#X connect 34 0 20 0;
+#X restore 359 72 pd cue-via-midi+gui;
+#X obj 9 504 extap/harm_voice~;
+#N canvas 628 156 450 300 vol 0;
+#X obj 118 269 outlet;
+#X obj 117 75 r from-gui;
+#X obj 160 230 s to-gui;
+#X obj 47 75 r initbang;
+#X obj 47 97 del 4000;
+#X obj 161 207 list prepend harm;
+#X obj 117 98 route harm;
+#X obj 161 154 ctlout 3 1;
+#X obj 161 177 ctlin 3 1;
+#X text 165 270 0...1;
+#X obj 47 118 i 84;
+#X obj 67 208 extap/fadtorms;
+#X connect 1 0 6 0;
+#X connect 3 0 4 0;
+#X connect 4 0 10 0;
+#X connect 5 0 2 0;
+#X connect 6 0 7 0;
+#X connect 6 0 11 0;
+#X connect 8 0 5 0;
+#X connect 8 0 11 0;
+#X connect 10 0 5 0;
+#X connect 10 0 7 0;
+#X connect 10 0 11 0;
+#X connect 11 0 0 0;
+#X restore 345 481 pd vol;
+#N canvas 625 305 450 300 vol 0;
+#X obj 66 269 outlet;
+#X obj 117 75 r from-gui;
+#X obj 160 230 s to-gui;
+#X obj 47 75 r initbang;
+#X obj 47 97 del 4000;
+#X text 122 269 0...1;
+#X obj 117 98 route delays;
+#X obj 161 154 ctlout 6 1;
+#X obj 161 177 ctlin 6 1;
+#X obj 161 207 list prepend delays;
+#X obj 47 119 i 84;
+#X obj 66 208 extap/fadtorms;
+#X connect 1 0 6 0;
+#X connect 3 0 4 0;
+#X connect 4 0 10 0;
+#X connect 6 0 7 0;
+#X connect 6 0 11 0;
+#X connect 8 0 9 0;
+#X connect 8 0 11 0;
+#X connect 9 0 2 0;
+#X connect 10 0 7 0;
+#X connect 10 0 9 0;
+#X connect 10 0 11 0;
+#X connect 11 0 0 0;
+#X restore 939 424 pd vol;
+#N canvas 176 22 1045 451 sampler-vols 0;
+#X obj 78 268 outlet;
+#X obj 77 74 r from-gui;
+#X obj 120 229 s to-gui;
+#X obj 7 74 r initbang;
+#X obj 7 96 del 4000;
+#X text 125 269 0...1;
+#X obj 77 97 route s1vol;
+#X obj 121 206 list prepend s1vol;
+#X obj 121 153 ctlout 9 1;
+#X obj 121 176 ctlin 9 1;
+#X obj 293 266 outlet;
+#X obj 292 72 r from-gui;
+#X obj 335 227 s to-gui;
+#X obj 222 72 r initbang;
+#X obj 222 94 del 4000;
+#X text 340 267 0...1;
+#X obj 336 151 ctlout 10 1;
+#X obj 336 174 ctlin 10 1;
+#X obj 336 204 list prepend s2vol;
+#X obj 292 95 route s2vol;
+#X obj 525 261 outlet;
+#X obj 524 67 r from-gui;
+#X obj 567 222 s to-gui;
+#X obj 454 67 r initbang;
+#X obj 454 89 del 4000;
+#X text 572 262 0...1;
+#X obj 524 90 route s3vol;
+#X obj 568 199 list prepend s3vol;
+#X obj 568 146 ctlout 11 1;
+#X obj 568 169 ctlin 11 1;
+#X obj 776 261 outlet;
+#X obj 775 67 r from-gui;
+#X obj 818 222 s to-gui;
+#X obj 705 67 r initbang;
+#X obj 705 89 del 4000;
+#X text 823 262 0...1;
+#X obj 775 90 route s4vol;
+#X obj 819 199 list prepend s4vol;
+#X obj 819 169 ctlin 12 1;
+#X obj 819 146 ctlout 12 1;
+#X obj 24 208 extap/fadtorms;
+#X obj 7 120 i 84;
+#X obj 221 116 i 84;
+#X obj 454 111 i 84;
+#X obj 705 111 i 84;
+#X obj 245 205 extap/fadtorms;
+#X obj 475 199 extap/fadtorms;
+#X obj 725 200 extap/fadtorms;
+#X connect 1 0 6 0;
+#X connect 3 0 4 0;
+#X connect 4 0 41 0;
+#X connect 6 0 8 0;
+#X connect 6 0 40 0;
+#X connect 7 0 2 0;
+#X connect 9 0 7 0;
+#X connect 9 0 40 0;
+#X connect 11 0 19 0;
+#X connect 13 0 14 0;
+#X connect 14 0 42 0;
+#X connect 17 0 18 0;
+#X connect 17 0 45 0;
+#X connect 18 0 12 0;
+#X connect 19 0 16 0;
+#X connect 19 0 45 0;
+#X connect 21 0 26 0;
+#X connect 23 0 24 0;
+#X connect 24 0 43 0;
+#X connect 26 0 28 0;
+#X connect 26 0 46 0;
+#X connect 27 0 22 0;
+#X connect 29 0 27 0;
+#X connect 29 0 46 0;
+#X connect 31 0 36 0;
+#X connect 33 0 34 0;
+#X connect 34 0 44 0;
+#X connect 36 0 39 0;
+#X connect 36 0 47 0;
+#X connect 37 0 32 0;
+#X connect 38 0 37 0;
+#X connect 38 0 47 0;
+#X connect 40 0 0 0;
+#X connect 41 0 7 0;
+#X connect 41 0 8 0;
+#X connect 41 0 40 0;
+#X connect 42 0 16 0;
+#X connect 42 0 18 0;
+#X connect 42 0 45 0;
+#X connect 43 0 27 0;
+#X connect 43 0 28 0;
+#X connect 43 0 46 0;
+#X connect 44 0 37 0;
+#X connect 44 0 39 0;
+#X connect 44 0 47 0;
+#X connect 45 0 10 0;
+#X connect 46 0 20 0;
+#X connect 47 0 30 0;
+#X restore 929 636 pd sampler-vols;
+#X obj 245 504 extap/harm_voice~;
+#X obj 126 504 extap/harm_voice~;
+#X obj 615 662 extap/sam_voice~ 2;
+#X obj 749 662 extap/sam_voice~ 3;
+#X obj 882 661 extap/sam_voice~ 4;
+#X obj 846 447 extap/del_voice~;
+#X obj 723 449 extap/del_voice~;
+#X obj 599 449 extap/del_voice~;
+#X connect 1 0 30 0;
+#X connect 2 0 41 0;
+#X connect 6 0 183 1;
+#X connect 8 0 188 1;
+#X connect 10 0 187 1;
+#X connect 11 0 183 0;
+#X connect 12 0 188 0;
+#X connect 13 0 187 0;
+#X connect 14 0 15 0;
+#X connect 15 0 17 0;
+#X connect 15 0 139 0;
+#X connect 15 1 16 0;
+#X connect 15 1 140 0;
+#X connect 19 0 149 0;
+#X connect 20 0 192 0;
+#X connect 21 0 23 0;
+#X connect 21 1 22 0;
+#X connect 21 1 146 0;
+#X connect 21 2 24 0;
+#X connect 21 2 145 0;
+#X connect 25 0 21 0;
+#X connect 27 0 28 0;
+#X connect 28 0 26 0;
+#X connect 28 0 143 0;
+#X connect 29 0 176 0;
+#X connect 30 0 103 0;
+#X connect 31 0 32 0;
+#X connect 32 0 34 0;
+#X connect 32 0 172 0;
+#X connect 32 1 35 0;
+#X connect 32 1 171 0;
+#X connect 32 2 33 0;
+#X connect 32 2 170 0;
+#X connect 36 0 32 1;
+#X connect 37 0 36 0;
+#X connect 38 0 39 0;
+#X connect 38 0 181 0;
+#X connect 41 0 69 0;
+#X connect 41 0 106 0;
+#X connect 41 1 3 0;
+#X connect 41 1 107 0;
+#X connect 41 2 40 0;
+#X connect 41 2 108 0;
+#X connect 42 0 43 0;
+#X connect 44 0 49 1;
+#X connect 44 0 50 0;
+#X connect 44 0 66 0;
+#X connect 44 0 101 0;
+#X connect 47 0 48 0;
+#X connect 48 0 51 0;
+#X connect 48 1 49 0;
+#X connect 49 0 45 0;
+#X connect 49 0 46 0;
+#X connect 49 0 63 0;
+#X connect 49 0 98 0;
+#X connect 51 0 55 0;
+#X connect 52 0 55 0;
+#X connect 53 0 55 0;
+#X connect 54 0 55 0;
+#X connect 55 0 44 0;
+#X connect 55 1 58 0;
+#X connect 56 0 55 1;
+#X connect 57 0 46 0;
+#X connect 57 0 63 0;
+#X connect 57 0 98 0;
+#X connect 58 0 50 0;
+#X connect 58 0 66 0;
+#X connect 58 0 101 0;
+#X connect 59 0 62 0;
+#X connect 59 1 60 0;
+#X connect 60 0 105 0;
+#X connect 61 0 59 0;
+#X connect 63 0 64 0;
+#X connect 66 0 65 0;
+#X connect 67 0 68 0;
+#X connect 67 0 134 0;
+#X connect 68 0 47 0;
+#X connect 68 1 54 0;
+#X connect 68 2 53 0;
+#X connect 68 3 51 0;
+#X connect 68 4 52 0;
+#X connect 68 5 56 0;
+#X connect 68 6 38 0;
+#X connect 70 0 82 0;
+#X connect 72 0 37 0;
+#X connect 73 0 57 0;
+#X connect 74 0 177 0;
+#X connect 74 2 173 0;
+#X connect 76 0 81 0;
+#X connect 77 0 80 0;
+#X connect 78 0 83 0;
+#X connect 79 0 84 0;
+#X connect 94 0 85 0;
+#X connect 94 1 86 0;
+#X connect 94 2 87 0;
+#X connect 94 3 88 0;
+#X connect 94 4 89 0;
+#X connect 94 5 90 0;
+#X connect 94 6 91 0;
+#X connect 94 7 92 0;
+#X connect 94 8 93 0;
+#X connect 96 0 75 0;
+#X connect 98 0 99 0;
+#X connect 101 0 100 0;
+#X connect 103 0 102 0;
+#X connect 105 0 104 0;
+#X connect 106 0 109 0;
+#X connect 107 0 109 0;
+#X connect 108 0 109 0;
+#X connect 114 0 189 0;
+#X connect 115 0 113 0;
+#X connect 116 0 113 0;
+#X connect 117 0 113 0;
+#X connect 122 0 190 0;
+#X connect 123 0 121 0;
+#X connect 124 0 121 0;
+#X connect 125 0 121 0;
+#X connect 130 0 191 0;
+#X connect 131 0 129 0;
+#X connect 132 0 129 0;
+#X connect 133 0 129 0;
+#X connect 135 0 137 0;
+#X connect 136 0 137 0;
+#X connect 138 0 137 0;
+#X connect 139 0 141 0;
+#X connect 140 0 141 0;
+#X connect 143 0 142 0;
+#X connect 145 0 144 0;
+#X connect 146 0 144 0;
+#X connect 148 0 147 0;
+#X connect 149 0 147 0;
+#X connect 151 0 155 0;
+#X connect 153 0 193 0;
+#X connect 154 0 152 0;
+#X connect 155 0 152 0;
+#X connect 157 0 165 0;
+#X connect 160 0 167 0;
+#X connect 161 0 160 0;
+#X connect 161 1 159 0;
+#X connect 161 1 166 0;
+#X connect 163 0 194 0;
+#X connect 164 0 158 0;
+#X connect 165 0 158 0;
+#X connect 166 0 162 0;
+#X connect 167 0 162 0;
+#X connect 168 0 161 0;
+#X connect 171 0 169 0;
+#X connect 172 0 169 0;
+#X connect 173 0 95 0;
+#X connect 174 0 175 0;
+#X connect 175 0 178 0;
+#X connect 176 0 1 0;
+#X connect 176 1 30 0;
+#X connect 177 0 71 0;
+#X connect 178 0 29 0;
+#X connect 179 0 180 0;
+#X connect 180 0 178 1;
+#X connect 181 0 46 0;
+#X connect 181 0 98 0;
+#X connect 181 0 63 0;
+#X connect 182 0 47 0;
+#X connect 182 1 54 0;
+#X connect 182 2 53 0;
+#X connect 182 3 51 0;
+#X connect 182 4 52 0;
+#X connect 182 5 38 0;
+#X connect 183 0 5 0;
+#X connect 183 0 135 0;
+#X connect 184 0 183 2;
+#X connect 184 0 187 2;
+#X connect 184 0 188 2;
+#X connect 185 0 161 1;
+#X connect 185 0 192 1;
+#X connect 185 0 193 1;
+#X connect 185 0 194 1;
+#X connect 186 0 41 1;
+#X connect 186 1 189 1;
+#X connect 186 2 190 1;
+#X connect 186 3 191 1;
+#X connect 187 0 9 0;
+#X connect 187 0 138 0;
+#X connect 188 0 7 0;
+#X connect 188 0 136 0;
+#X connect 189 0 112 0;
+#X connect 189 0 117 0;
+#X connect 189 1 110 0;
+#X connect 189 1 116 0;
+#X connect 189 2 111 0;
+#X connect 189 2 115 0;
+#X connect 190 0 120 0;
+#X connect 190 0 125 0;
+#X connect 190 1 118 0;
+#X connect 190 1 124 0;
+#X connect 190 2 119 0;
+#X connect 190 2 123 0;
+#X connect 191 0 128 0;
+#X connect 191 0 133 0;
+#X connect 191 1 126 0;
+#X connect 191 1 132 0;
+#X connect 191 2 127 0;
+#X connect 191 2 131 0;
+#X connect 192 0 19 0;
+#X connect 192 1 18 0;
+#X connect 192 1 148 0;
+#X connect 193 0 151 0;
+#X connect 193 1 150 0;
+#X connect 193 1 154 0;
+#X connect 194 0 157 0;
+#X connect 194 1 156 0;
+#X connect 194 1 164 0;

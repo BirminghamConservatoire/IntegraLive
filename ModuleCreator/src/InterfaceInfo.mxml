@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<mx:VBox>
+		<mx:HBox>
+			<mx:Label text="Interface Name" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:TextInput id="_iidName" 
+						  change="{interfaceChanged()}"
+						  width="{Globals.propertyColumnWidth()}" 
+						  toolTip="Enter Interface Name" 
+						  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" 
+						  maxChars="32"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Interface Label" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:TextInput id="_iidLabel"
+						  change="{interfaceChanged();}"
+						  width="{Globals.propertyColumnWidth()}" 
+						  toolTip="Easy to read version of name" 
+						  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Interface Description" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:TextArea id="_iidDescription" 
+						  	change="{interfaceChanged();}"
+							width="{Globals.propertyColumnWidth()}"
+							height="{Globals.descriptionHeight}"							
+							toolTip="please describe the interface"/>
+		</mx:HBox>
+		<mx:HBox>
+				<mx:Label text="Tags" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:VBox verticalGap="0"> 
+				<mx:List id="_iidTags" 
+						 width="{Globals.propertyColumnWidth()}" 
+						 editable="true"
+						 editorHeightOffset="4"
+						 change="{ onTagSelected(); }"
+						 itemEditor="{ new ClassFactory( TagEditor ) }"
+						 itemEditBeginning="{ onBeginningTagEdit( event ) }"
+						 itemEditEnd="{ onEndTagEdit( event ) }"
+						 rowCount="{ Math.max( 2, _iidTags.dataProvider.length ) }"/>
+				<mx:HBox>
+					<mx:Button id="_addTag" label="add tag" width="{Globals.propertyColumnWidth() / 2 - 4}" click="{ onClickAddTag() }"/>
+					<mx:Button id="_removeTag" label="remove tag" width="{Globals.propertyColumnWidth() / 2 - 4}" click="{ onClickRemoveTag() }"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox id="_implementedInLibIntegraGroup">
+			<mx:Label text="Implemented in LibIntegra" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:CheckBox id="_iidImplementedInLibIntegra"
+						 click="{onClickImplementedInLibIntegra(); }"
+						 width="{Globals.propertyColumnWidth()}" 
+						 toolTip="module is implemented in libIntegra.  "/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Author" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:TextInput id="_iidAuthor" 
+						  click="{interfaceChanged();}"
+						  width="{Globals.propertyColumnWidth()}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Created Date" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:TextInput id="_iidCreatedDate" width="{Globals.propertyColumnWidth()}" enabled="false"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Modified Date" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:TextInput id="_iidModifiedDate" width="{Globals.propertyColumnWidth()}" enabled="false"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<fx:Script>
+		<![CDATA[
+			import flexunit.framework.Assert;
+			
+			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.ListEvent;
+			
+			
+			public function doInitialize():void
+			{
+				var hostImplementations:Array = new Array;
+				
+				_implementedInLibIntegraGroup.visible = Config.singleInstance.hasIntegraDeveloperPrivileges;
+				
+				_iidTags.dataProvider = [];
+				
+				updateTagButtonEnables();
+				
+				formatDateDisplay( _iidModifiedDate, _modifiedDate );
+				formatDateDisplay( _iidCreatedDate, _createdDate );
+			}
+			
+			
+			public function newFile():void
+			{
+				_iidName.text = "";
+				_iidLabel.text = "";
+				_iidDescription.text = "";
+				
+				_iidTags.dataProvider = [];
+				updateTagButtonEnables();
+
+				_newTagIndex = 1;
+				
+				_iidImplementedInLibIntegra.selected = false;
+				
+				_iidAuthor.text = "";				
+				
+				_createdDate = new Date;
+				formatDateDisplay( _iidCreatedDate, _createdDate );
+				updateModificationStamp();
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				var valid:Boolean = true;
+				
+				if( !validateName() ) valid = false;
+				
+				if( !validateTags() ) valid = false;
+				
+				return valid;
+			}
+			
+			
+			public function templateImported():void
+			{
+				_iidName.text = "";
+				_iidLabel.text = "";
+				_iidDescription.text = "";
+
+				_iidAuthor.text = "";
+				
+				if( !Config.singleInstance.hasIntegraDeveloperPrivileges )
+				{
+					//remove core tag if present
+					var tags:IList = _iidTags.dataProvider as IList;
+					Assert.assertNotNull( tags );
+					
+					for( var i:int = 0; i < tags.length; i++ )
+					{
+						if( tags.getItemAt( i ) == _coreTag )
+						{
+							tags.removeItemAt( i );
+						}
+					}
+				}
+				
+				_createdDate = new Date;
+				formatDateDisplay( _iidCreatedDate, _createdDate );
+
+				updateModificationStamp();
+			}
+			
+			
+			public function updateModificationStamp():void
+			{
+				_modifiedDate = new Date;
+				formatDateDisplay( _iidModifiedDate, _modifiedDate );
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				if( xml.hasOwnProperty( "Name" ) )
+				{
+					_iidName.text = xml.Name;
+				}
+				else
+				{
+					return false;
+				}
+
+				if( xml.hasOwnProperty( "Label" ) )
+				{
+					_iidLabel.text = xml.Label;
+				}
+
+				if( xml.hasOwnProperty( "Description" ) )
+				{
+					_iidDescription.text = xml.Description;
+				}
+				
+				if( xml.hasOwnProperty( "Tags" ) )
+				{
+					var tags:IList = _iidTags.dataProvider as IList;
+					Assert.assertNotNull( tags );
+					
+					for each( var tag:XML in xml.Tags.Tag )
+					{
+						tags.addItem( tag.toString() );						
+					}
+					
+					updateTagButtonEnables();
+				}
+				
+				if( xml.hasOwnProperty( "ImplementedInLibIntegra" ) )
+				{
+					_iidImplementedInLibIntegra.selected = ( xml.ImplementedInLibIntegra.toString() == "true" );
+				}
+				
+				if( xml.hasOwnProperty( "Author" ) )
+				{
+					_iidAuthor.text = xml.Author;
+				}				
+
+				if( xml.hasOwnProperty( "CreatedDate" ) )
+				{
+					_createdDate = stringToDate( xml.CreatedDate );
+					formatDateDisplay( _iidCreatedDate, _createdDate );
+				}				
+
+				if( xml.hasOwnProperty( "ModifiedDate" ) )
+				{
+					_modifiedDate = stringToDate( xml.ModifiedDate );
+					formatDateDisplay( _iidModifiedDate, _modifiedDate );
+				}				
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<InterfaceInfo></InterfaceInfo>" );
+				xml.appendChild( <Name> { _iidName.text } </Name> );
+
+				if( _iidLabel.text.length > 0 )
+				{
+					xml.appendChild( <Label> { _iidLabel.text } </Label> );
+				}
+				
+				if( _iidDescription.text.length > 0 )
+				{
+					xml.appendChild( <Description> { _iidDescription.text } </Description> );
+				}
+				
+				var tags:IList = _iidTags.dataProvider as IList;
+				Assert.assertNotNull( tags );
+				
+				if( tags.length > 0 )
+				{
+					var tagsXML:XML = new XML( "<Tags></Tags>" );
+					
+					for( var i:int = 0; i < tags.length; i++ )
+					{
+						tagsXML.appendChild( <Tag> { tags.getItemAt( i ).toString() } </Tag> );
+					}
+					
+					xml.appendChild( tagsXML );
+				}
+
+				xml.appendChild( <ImplementedInLibIntegra> { _iidImplementedInLibIntegra.selected ? "true" : "false" } </ImplementedInLibIntegra> );
+				
+				if( _iidAuthor.text.length > 0 )
+				{
+					xml.appendChild( <Author> { _iidAuthor.text } </Author> );
+				}
+				
+				xml.appendChild( <CreatedDate> { dateToString( _createdDate ) } </CreatedDate> );
+				xml.appendChild( <ModifiedDate> { dateToString( _modifiedDate ) } </ModifiedDate> );
+
+				return xml;
+			}
+
+			
+			private function validateName():Boolean
+			{
+				const upperCaseChars:String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				
+				if( _iidName.length == 0 )
+				{
+					_iidName.errorString = "You must provide an Interface Name";
+					return false;
+				}
+				
+				if( upperCaseChars.indexOf( _iidName.text.charAt( 0 ) ) < 0 )
+				{
+					_iidName.errorString = "Interface Name must use UpperCamelCase";
+					return false;
+				}
+				
+				_iidName.errorString = null;
+				return true;				
+			}
+			
+			
+			private function validateTags():Boolean
+			{
+				var tags:IList = _iidTags.dataProvider as IList;
+				Assert.assertNotNull( tags );
+				
+				var tagMap:Object = new Object;
+				for( var i:int = 0; i < tags.length; i++ )
+				{
+					var tag:String = tags.getItemAt( i ) as String;
+					
+					if( !TagEditor.isTagValid( tag ) )
+					{
+						_iidTags.errorString = "Tags may only contain letters, numbers and spaces";
+						return false;
+					}
+
+					if( tagMap.hasOwnProperty( tag ) )
+					{
+						_iidTags.errorString = "Duplicate Tags are not allowed";
+						return false;
+					}
+					
+					tagMap[ tag ] = tag;
+					
+					if( tag == _coreTag && !Config.singleInstance.hasIntegraDeveloperPrivileges )
+					{
+						_iidTags.errorString = "The tag '" + _coreTag + "' is reserved for libIntegra developers";
+						return false;
+					}
+				}
+				
+				_iidTags.errorString = null;
+				return true;
+			}
+			
+			
+			private function onHostImplementationsMouseDown( event:MouseEvent ):void
+			{
+				event.ctrlKey = true;
+			}
+		
+			
+			private function onClickAddTag():void
+			{
+				var tags:IList = _iidTags.dataProvider as IList;
+				Assert.assertNotNull( tags );
+
+				tags.addItem( "<new tag #" + _newTagIndex + ">" );
+				_newTagIndex++;
+				
+				_iidTags.selectedIndex = tags.length - 1;
+				updateTagButtonEnables();
+				interfaceChanged();
+			}
+			
+			
+			private function onClickRemoveTag():void
+			{
+				var tags:IList = _iidTags.dataProvider as IList;
+				Assert.assertNotNull( tags );
+				
+				tags.removeItemAt( _iidTags.selectedIndex );
+				updateTagButtonEnables();
+				interfaceChanged();
+			}
+			
+			
+			private function onTagSelected():void
+			{
+				_tagSelected = true;
+				callLater( function():void { _tagSelected = false; } );
+				
+				updateTagButtonEnables(); 
+			}
+
+			
+			private function onBeginningTagEdit( event:ListEvent ):void
+			{
+				if( _tagSelected )
+				{
+					event.preventDefault();
+				}
+			}
+
+			
+			private function onEndTagEdit( event:ListEvent ):void
+			{
+				var tags:IList = _iidTags.dataProvider as IList;
+				Assert.assertNotNull( tags );
+
+				Assert.assertTrue( _iidTags.selectedIndex >= 0 && _iidTags.selectedIndex < tags.length );
+				
+				tags.setItemAt( ( _iidTags.itemEditorInstance as TextInput ).text, _iidTags.selectedIndex );
+				
+				event.preventDefault();
+				_iidTags.destroyItemEditor();
+				
+				interfaceChanged();
+			}
+			
+			
+			private function updateTagButtonEnables():void
+			{
+				_addTag.enabled = ( ( _iidTags.dataProvider as IList ).length < _maxNumberOfTags );
+				_removeTag.enabled = ( _iidTags.selectedIndex >= 0 );
+			}			
+						
+			
+			private function onClickImplementedInLibIntegra():void
+			{
+				interfaceChanged();
+			}
+			
+			
+			private function stringToDate( string:String ):Date
+			{
+				if( string.length < 19 )
+				{
+					trace( "Can't interpret date string; not long enough: ", string );
+					return new Date();
+				}
+				
+				if( string.substr( 4, 1 ) != "-" || 
+					string.substr( 7, 1 ) != "-" ||
+					( string.substr( 10, 1 ) != "T" && string.substr( 10, 1 ) != " " ) ||
+					string.substr( 13, 1 ) != ":" ||
+					string.substr( 16, 1 ) != ":" )
+				{
+					trace( "Can't interpret date string; incorrectly placed separators: ", string );
+					return new Date();
+				}
+				
+				var year:uint = uint( string.substr( 0, 4 ) );
+				var month:uint = uint( string.substr( 5, 2 ) ) - 1;
+				var day:uint = uint( string.substr( 8, 2 ) );
+				var hours:uint = uint( string.substr( 11, 2 ) );
+				var minutes:uint = uint( string.substr( 14, 2 ) );
+				
+				var secondsReal:Number = Number( string.substr( 17 ) );
+				var seconds:uint = Math.floor( secondsReal );
+				
+				var milliseconds:uint = Math.floor( ( secondsReal - seconds ) * 1000 );   
+
+				return new Date( year, month, day, hours, minutes, seconds, milliseconds );
+			}
+			
+			
+			private function dateToString( date:Date ):String
+			{
+				var output:String = 
+					toFixedLengthString( date.fullYear, 4 ) + "-" + 
+					toFixedLengthString( date.month + 1, 2 ) + "-" + 
+					toFixedLengthString( date.date, 2 ) + " " + 
+					toFixedLengthString( date.hours, 2 ) + ":" + 
+					toFixedLengthString( date.minutes, 2 ) + ":" + 
+					toFixedLengthString( date.seconds, 2 ) + "." +
+					toFixedLengthString( date.milliseconds, 3 ) + "000";
+				
+				return output;
+			}
+			
+			
+			private function formatDateDisplay( display:TextInput, date:Date ):void
+			{
+				display.text = dateToString( date );
+			}
+			
+			
+			private function toFixedLengthString( uintToConvert:uint, desiredLength:uint ):String
+			{
+				var string:String = uintToConvert.toString();
+				
+				while( string.length < desiredLength )
+				{
+					string = "0" + string;
+				}
+				
+				return string; 
+			}
+			
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}
+			
+			
+			private var _createdDate:Date = new Date;
+			private var _modifiedDate:Date = new Date;
+			
+			private var _newTagIndex:int = 1;
+			private var _tagSelected:Boolean = false;
+
+			private const _coreTag:String = "core";
+			private const _maxNumberOfTags:uint = 20;
+			
+			
+		]]>
+	</fx:Script>			
+	
+</mx:Canvas>

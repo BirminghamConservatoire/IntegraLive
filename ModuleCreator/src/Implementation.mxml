@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" creationComplete="{onCreationComplete()}">
+	<mx:HBox top="0" bottom="0">
+		<mx:VBox height="100%">
+			<mx:HBox styleName="internalPadding">
+				<mx:Label text="Implementation" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:TextInput id="_implementationName"
+							  editable="false" 
+							  width="{Globals.propertyColumnWidth()}"/>
+			</mx:HBox>
+			<mx:HBox styleName="internalPadding" height="100%">
+				<mx:Label text="Dependencies" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:Tree id="_dependencyTree" height="100%" 
+						 showDataTips="true"
+						 defaultLeafIcon="{null}"
+						 width="{Globals.propertyColumnWidth()}"/>
+			</mx:HBox>
+			<mx:HBox styleName="internalPadding">
+				<mx:Label text="Missing Objects" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:Tree id="_missingObjects" 
+						 itemRenderer="MissingObjectRenderer"
+						 showDataTips="true"
+						 defaultLeafIcon="{null}"
+						 width="{Globals.propertyColumnWidth()}"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox styleName="internalPadding" verticalGap="10">
+			<mx:Button label="Import Implementation..." id="_importButton" click="{onImport();}" width="{ _buttonWidth }"/>
+			<mx:Button label="Extract Implementation..." id="_exportButton" click="{onExport();}" width="{ _buttonWidth }"/>
+			<mx:Button label="Clear Implementation" id="_clearButton" click="{onClear();}" width="{ _buttonWidth }"/>
+		</mx:VBox>
+		
+	</mx:HBox>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import deng.fzip.FZip;
+			import deng.fzip.FZipFile;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.IList;
+
+
+			
+			public function newFile():void
+			{
+				clearImplementation();
+				updateEnables();
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				if( hasMissingObjects )
+				{
+					_missingObjects.errorString = "Dependencies of the imported PD patch can't be found.  They are either unsupported externals, or missing abstractions.  Abstractions should be placed in the same directory as the imported patch, or in a sub-directory";
+					return false;
+				}
+				else
+				{
+					_missingObjects.errorString = null;
+					return true;
+				}
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				clearImplementation();
+				
+				if( xml.hasOwnProperty( "PatchName" ) )
+				{
+					_implementationName.text = xml.PatchName;
+				}
+				else
+				{
+					return false;
+				}
+				
+				updateEnables();
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<ImplementationInfo></ImplementationInfo>" );
+				xml.appendChild( <PatchName> { _implementationName.text } </PatchName> );
+				
+				return xml;
+			}
+			
+			
+			public function storeImplementation( zipFile:FZip, implementationDirectory:String ):void
+			{
+				if( _tempDirectory )
+				{
+					storeImplementationBranch( zipFile, implementationDirectory, _tempDirectory );
+				}
+			}
+			
+			
+			public function retrieveImplementation( zipFile:FZip, implementationDirectory:String ):void
+			{
+				if( !hasImplementation )
+				{
+					return;
+				}
+				
+				Assert.assertNull( _tempDirectory ); 
+				_tempDirectory = File.createTempDirectory();
+
+				implementationDirectory += "/";
+				
+				var numberOfFiles:uint = zipFile.getFileCount();
+				for( var i:int = 0; i < numberOfFiles; i++ )
+				{
+					var contentFile:FZipFile = zipFile.getFileAt( i );
+					var contentName:String = contentFile.filename;
+					if( contentName.length <= implementationDirectory.length || contentName.substr( 0, implementationDirectory.length ) != implementationDirectory )
+					{
+						//skip files which are not in the implementation directory
+						continue;	
+					}
+					
+					if( contentFile.content.length == 0 )
+					{
+						//zip files sometimes contain empty file entries for directories, this is the only way to detect them.
+						continue;
+					}
+					
+					var deployedName:String = contentName.substr( implementationDirectory.length );
+					var targetFile:File = _tempDirectory.resolvePath( deployedName );
+					
+					var targetFileStream:FileStream = new FileStream;
+					targetFileStream.open( targetFile, FileMode.WRITE );
+					targetFileStream.writeBytes( contentFile.content );
+					targetFileStream.close();					
+				}
+				
+				updateDependencies( _tempDirectory.resolvePath( _implementationName.text ) );
+				updateEnables();
+			}
+			
+			
+			public function get hasImplementation():Boolean 
+			{
+				return ( _implementationName.text.length > 0 );
+			}
+			
+			
+			public function shutdown():void
+			{
+				removeTempDirectory();
+			}
+			
+			
+			private function onCreationComplete():void
+			{
+				loadObjectSet( _pdInternalObjectsFilename, _pdInternalObjects );
+				loadObjectSet( _supportedPdAbstractionsFilename, _supportedPdAbstractions );
+				loadObjectSet( _supportedPdExternalsFilename, _supportedPdExternals );
+			}
+			
+			
+			private function onClear():void
+			{
+				clearImplementation();
+				
+				updateEnables();
+				interfaceChanged();
+			}
+			
+			
+			private function clearImplementation():void
+			{
+				_implementationName.text = "";
+				
+				_dependencyTree.dataProvider = [];
+
+				_missingObjects.dataProvider = [];
+
+				removeTempDirectory();
+			}
+			
+			
+			private function onImport():void
+			{
+				var filter:FileFilter = new FileFilter( "Pure Data Patches", "*" + _pdExtension );
+				var file:File = new File( DirectoryStore.singleInstance.importDirectory );
+				file.browseForOpen( "Import PD Implementation", [filter] );
+				
+				file.addEventListener( Event.SELECT, onSelectFileToImport );      			
+			}
+			
+			
+			private function onSelectFileToImport( event:Event ):void
+			{
+				var file:File = event.target as File;
+				if( !file ) return;
+				
+				DirectoryStore.singleInstance.importDirectory = file.parent.nativePath;
+
+				_implementationName.text = file.name;
+				
+				updateDependencies( file );
+
+				removeTempDirectory();
+				if( !hasMissingObjects )
+				{
+					makeDeployedCopy( file );
+				}
+				
+				updateEnables();
+				interfaceChanged();
+			}
+			
+			
+			private function updateDependencies( pdPatch:File ):void
+			{
+				var dependencyData:Array = new Array;
+				var missingObjectData:Array = new Array;
+				
+				loadDependencies( pdPatch, pdPatch.parent, dependencyData, missingObjectData, new Vector.<String> );
+				
+				_dependencyTree.dataProvider = dependencyData;
+				_missingObjects.dataProvider = missingObjectData;
+			}
+			
+			
+			private function loadDependencies( pdFile:File, rootDirectory:File, results:Array, missingObjectData:Array, ancestorChain:Vector.<String> ):void
+			{
+				if( !pdFile.exists )
+				{
+					trace( "can't find file: " + pdFile.nativePath );
+					return;
+				}
+				
+				var owningDirectory:File = pdFile.parent;
+				
+				var fileSize:int = pdFile.size;
+				var fileStream:FileStream = new FileStream();
+				fileStream.open( pdFile, FileMode.READ );
+				var fileContent:String = fileStream.readUTFBytes( fileSize );
+				fileStream.close();
+				
+				var fileLines:Array = fileContent.split( "\n" );
+				
+				var pdObjects:Object = new Object;
+				
+				var missingObjectParent:Object = null; 
+				
+				for each( var line:String in fileLines )
+				{
+					line = trimWhitespace( line );
+					
+					var words:Array = line.split( " " );
+					if( words.length < 5 || words[ 1 ] != "obj" )
+					{
+						continue;
+					}
+					
+					var pdObject:String = words[ 4 ];
+					pdObject = pdObject.replace( ";", "" );
+					pdObject = trimWhitespace( pdObject );
+					
+					if( _pdInternalObjects.hasOwnProperty( pdObject ) )
+					{
+						continue;
+					}
+					
+					if( isNumericalConstant( pdObject ) )
+					{
+						continue;
+					}
+					
+					if( pdObjects.hasOwnProperty( pdObject ) )
+					{
+						continue;
+					}
+					
+					pdObjects[ pdObject ] = 1;
+					
+					var abstractionFile:File = owningDirectory.resolvePath( pdObject + _pdExtension );
+					
+					if( abstractionFile.exists )
+					{
+						if( ancestorChain.indexOf( abstractionFile.nativePath ) >= 0 )
+						{ 
+							trace( "Found circular dependency.  Ancestor chain: " + ancestorChain.toString() + ", " + abstractionFile.nativePath + ".  Skipping..." );
+							continue;
+						}
+						
+						var treeNode:Object = new Object;
+						treeNode.label = getRelativePath( rootDirectory, abstractionFile );
+						
+						var children:Array = new Array;
+						loadDependencies( abstractionFile, rootDirectory, children, missingObjectData, concatString( ancestorChain, abstractionFile.nativePath ) );
+						
+						if( children.length > 0 )
+						{
+							treeNode.children = children;
+						}
+						
+						results.push( treeNode );
+					}
+					else
+					{
+						if( _supportedPdAbstractions.hasOwnProperty( pdObject ) )
+						{
+							continue;
+						}
+
+						if( _supportedPdExternals.hasOwnProperty( pdObject ) )
+						{
+							continue;
+						}
+						
+						//found unresolved object
+						if( !missingObjectParent )
+						{
+							missingObjectParent = new Object;
+							missingObjectData.push( missingObjectParent );
+							missingObjectParent.label = getRelativePath( rootDirectory, pdFile );
+							missingObjectParent.children = new Array;
+						}
+						
+						var unresolvedObjectNode:Object = new Object;
+						unresolvedObjectNode.label = pdObject;
+						missingObjectParent.children.push( unresolvedObjectNode );
+					}
+				}
+			}
+
+			
+			private function loadObjectSet( filename:String, results:Object ):void
+			{
+				var file:File = File.applicationDirectory.resolvePath( filename );
+				if( !file.exists )
+				{
+					trace( "failed to load object set: ", file.nativePath );
+					return;	
+				}		
+				
+				var fileSize:int = file.size;
+				var fileStream:FileStream = new FileStream();
+				fileStream.open( file, FileMode.READ );
+				var fileContent:String = fileStream.readUTFBytes( fileSize );
+				fileStream.close();
+				
+				var fileLines:Array = fileContent.split( "\n" );
+				
+				for each( var line:String in fileLines )
+				{
+					line = trimWhitespace( line );
+					
+					if( line.length == 0 ) 
+					{
+						continue;
+					}
+					
+					results[ line ] = 1;
+				}			
+			}			
+			
+			
+			private function makeDeployedCopy( pdPatch:File ):void
+			{
+				Assert.assertNull( _tempDirectory ); 
+				_tempDirectory = File.createTempDirectory();
+				
+				pdPatch.copyTo( _tempDirectory.resolvePath( pdPatch.name ) );
+				
+				deployDependencies( pdPatch.parent, ( _dependencyTree.dataProvider as ArrayCollection ).source );
+			}
+			
+			
+			private function deployDependencies( rootDirectory:File, dependencies:Array ):void
+			{
+				for each( var dependency:Object in dependencies )
+				{
+					if( dependency.hasOwnProperty( "children" ) )
+					{
+						deployDependencies( rootDirectory, dependency.children as Array );
+					}
+					
+					var source:File = rootDirectory.resolvePath( dependency.label );
+					if( !source.exists )
+					{
+						trace( "Can't deploy dependency " + source.nativePath + " - file doesn't exist" );
+						continue;
+					}
+					
+					var target:File = _tempDirectory.resolvePath( dependency.label );
+					if( target.exists ) 
+					{
+						//already got it
+						continue;
+					}
+					
+					source.copyTo( target );
+				}
+			}
+			
+			
+			private function onExport():void
+			{
+				var file:File = new File( DirectoryStore.singleInstance.exportDirectory );
+				file.browseForDirectory( "Export Implementation..." );
+				file.addEventListener( Event.SELECT, onSelectDirectoryToExportTo );
+			}
+			
+			
+			private function onSelectDirectoryToExportTo( event:Event ):void
+			{
+				var exportDirectory:File = event.target as File;
+				if( !exportDirectory ) return;
+				
+				DirectoryStore.singleInstance.exportDirectory = exportDirectory.parent.nativePath;
+				
+				Assert.assertTrue( exportDirectory.isDirectory );
+				Assert.assertNotNull( _tempDirectory );
+				
+				var pdPatch:File = _tempDirectory.resolvePath( _implementationName.text );
+				Assert.assertTrue( pdPatch.exists );
+				
+				pdPatch.copyTo( exportDirectory.resolvePath( pdPatch.name ) );
+				
+				exportDependencies( exportDirectory, ( _dependencyTree.dataProvider as ArrayCollection ).source );
+				
+				AlertManager.show( "Export Complete" );
+			}
+			
+			
+			private function exportDependencies( exportDirectory:File, dependencies:Array ):void
+			{
+				for each( var dependency:Object in dependencies )
+				{
+					if( dependency.hasOwnProperty( "children" ) )
+					{
+						exportDependencies( exportDirectory, dependency.children as Array );
+					}
+					
+					var source:File = _tempDirectory.resolvePath( dependency.label );
+					if( !source.exists )
+					{
+						trace( "Can't export dependency " + source.nativePath + " - file doesn't exist" );
+						continue;
+					}
+					
+					var target:File = exportDirectory.resolvePath( dependency.label );
+					if( target.exists ) 
+					{
+						//already got it
+						continue;
+					}
+					
+					source.copyTo( target );
+				}
+			}			
+			
+			
+			private function storeImplementationBranch( zipFile:FZip, outputDirectoryName:String, branch:File ):void
+			{
+				Assert.assertTrue( branch.isDirectory );
+				
+				var files:Array = branch.getDirectoryListing();
+				for each( var file:File in files )
+				{
+					var zipPath:String = outputDirectoryName + "/" + file.name;
+					
+					if( file.isDirectory )
+					{
+						storeImplementationBranch( zipFile, zipPath, file );
+					}
+					else
+					{
+						var fileSize:int = file.size;
+						var fileStream:FileStream = new FileStream();
+						fileStream.open( file, FileMode.READ );
+						var content:ByteArray = new ByteArray();
+						fileStream.readBytes( content );
+						fileStream.close();
+						
+						zipFile.addFile( zipPath, content );
+					}
+				}
+			}			
+			
+			private function concatString( vector:Vector.<String>, string:String ):Vector.<String>
+			{
+				var newVector:Vector.<String> = vector.concat();
+				newVector.push( string );
+				return newVector;
+			}
+			
+			
+			private function getRelativePath( rootDirectory:File, queryFile:File ):String
+			{
+				var rootString:String = rootDirectory.nativePath;
+				var queryString:String = queryFile.nativePath;
+				
+				if( rootString.length > queryString.length ) 
+				{
+					return windowsToUnixSlashes( queryString );
+				}
+				
+				if( queryString.substr( 0, rootString.length ) != rootString )
+				{
+					return windowsToUnixSlashes( queryString );
+				}
+				
+				return windowsToUnixSlashes( queryString.substr( rootString.length + 1 ) );
+			}
+			
+			
+			private function trimWhitespace( input:String ):String 
+			{
+				return input.replace( /^\s+|\s+$/g, "" );
+			}
+			
+			
+			private function get hasMissingObjects():Boolean
+			{
+				var missingObjects:IList = _missingObjects.dataProvider as IList;
+				return ( missingObjects.length > 0 );			
+			}
+						
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}
+			
+			
+			private function updateEnables():void
+			{
+				_implementationName.enabled = hasImplementation;
+				_dependencyTree.enabled = hasImplementation;
+				_missingObjects.enabled = hasImplementation;
+				_clearButton.enabled = hasImplementation;
+
+				_exportButton.enabled = hasImplementation && !hasMissingObjects;
+			}
+			
+			
+			private function removeTempDirectory():void
+			{
+				if( _tempDirectory )
+				{
+					_tempDirectory.deleteDirectory( true );
+					_tempDirectory = null;
+				}
+			}
+			
+			
+			private function isNumericalConstant( pdObject:String ):Boolean
+			{
+				var number:Number = Number( pdObject );
+				return !isNaN( number );
+			}
+			
+			
+			private function windowsToUnixSlashes( string:String ):String
+			{
+				return string.replace( "\\", "/" ); 
+			}
+			
+			
+			
+			private var _tempDirectory:File = null;
+
+			private var _pdInternalObjects:Object = new Object;
+			private var _supportedPdAbstractions:Object = new Object;
+			private var _supportedPdExternals:Object = new Object;
+			
+			private static const _pdInternalObjectsFilename:String = "assets/pd_internal_objects.txt"; 
+			private static const _supportedPdExternalsFilename:String = "assets/supported_pd_externals.txt";
+			private static const _supportedPdAbstractionsFilename:String = "assets/supported_pd_abstractions.txt";
+			
+			private static const _pdExtension:String = ".pd"; 
+
+			private static const _buttonWidth:Number = 180;
+			
+		]]>
+	</fx:Script>			
+	
+</mx:Canvas>

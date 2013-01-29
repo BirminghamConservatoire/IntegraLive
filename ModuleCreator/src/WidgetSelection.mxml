@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" borderStyle="inset" xmlns:local="*">
+
+	<mx:VBox styleName="internalPadding">
+		<mx:HBox>
+			<mx:Label text="Widget" width="{_labelColumnWidth}"/>
+			<local:WidgetTree id="_widgetTree"
+					 defaultLeafIcon="{null}"
+					 labelField="label"
+					 itemClick="{onWidgetTreeItemClick( event )}"
+					 itemClose="{onWidgetTreeItemClose( event )}"
+					 showDataTips="true"
+					 width="{Globals.propertyColumnWidth( 1 )}">
+			</local:WidgetTree>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Label" width="{_labelColumnWidth}" textAlign="right"/>
+			<mx:TextInput id="_widgetLabel"
+					 change="{onEditWidgetLabel()}"
+					 width="{Globals.propertyColumnWidth( 1 )}" 
+					 restrict="A-Za-z"
+					 maxChars="32"
+					 editable="false"
+					 toolTip="Choose a widget to use for the endpoint"/>
+		</mx:HBox>
+	</mx:VBox>
+		
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import flexunit.framework.Assert;
+			import mx.events.ListEvent;
+			import mx.events.TreeEvent;
+			
+			public function doInitialize( widgetLayout:WidgetLayout, endpoint:Endpoint ):void
+			{
+				_widgetLayout = widgetLayout;
+				_endpoint = endpoint;
+				_widgetLayout.addEventListener( Globals.widgetAssignmentModifiedEvent, onWidgetsChanged );
+				
+				updateWidgetTree();
+				updateWidgetLabel();
+			}
+			
+			
+			public function free():void
+			{
+				_widgetLayout.removeEventListener( Globals.modifiedEvent, onWidgetsChanged );
+			}
+
+			
+			public function validateContent():Boolean
+			{
+				if( _widgetLabel.editable )
+				{
+					if( _widgetLabel.text.length == 0 )
+					{
+						_widgetLabel.errorString = "Shared Widgets must have labels";
+						return false;
+					}
+					
+					if( Globals.lowerCaseChars.indexOf( _widgetLabel.text.charAt( 0 ) ) < 0 )
+					{
+						_widgetLabel.errorString = "Shared Widget labels must use lowerCamelCase";
+						return false;
+					}
+				}
+				
+				_widgetLabel.errorString = null;
+				return true;			
+			}
+			
+			
+			public function onEndpointNameChanged():void
+			{
+				updateWidgetTree();
+				updateWidgetLabel();
+			}
+			
+			
+			private function updateWidgetTree():void
+			{
+				var selectedWidget:WidgetLayoutElement = _widgetLayout.getWidget( _endpoint );
+				var itemToSelect:Object = null;
+				var itemsToExpand:Array = new Array;
+					
+				var treeData:Array = new Array;
+				
+				_noWidgetItem = new Object;
+				_noWidgetItem.label = "No Widget";
+				treeData.push( _noWidgetItem );
+				
+				if( !selectedWidget ) itemToSelect = _noWidgetItem;
+				
+				var chooseWidgetItem:Object = new Object;
+				chooseWidgetItem.label = "Choose A Widget...";
+				chooseWidgetItem.children = new Array;
+				treeData.push( chooseWidgetItem );
+				
+				if( selectedWidget ) itemsToExpand.push( chooseWidgetItem );
+				
+				for each( var widgetDefinition:WidgetDefinition in Config.singleInstance.widgets )
+				{
+					var widgetName:String = widgetDefinition.name;
+					
+					var widgetItem:Object = new Object;
+					widgetItem.label = widgetName;
+
+					var isSelectedWidget:Boolean = ( selectedWidget && selectedWidget.widgetDefinition == widgetDefinition );
+					
+					var attributes:Vector.<String> = widgetDefinition.attributes;
+					if( attributes.length == 1 )
+					{
+						widgetItem[ _widgetDefinitionKey ] = widgetDefinition;
+						widgetItem[ _widgetAttributeKey ] = attributes[ 0 ];
+						
+						if( isSelectedWidget )
+						{
+							itemToSelect = widgetItem;
+						}
+					}
+					else
+					{
+						if( isSelectedWidget )
+						{
+							itemsToExpand.push( widgetItem );
+						}
+
+						var attributeItems:Array = new Array;
+						for each( var attribute:String in attributes )
+						{
+							var attributeItem:Object = new Object;
+							attributeItem.label = attribute;
+							
+							var isSelectedAttribute:Boolean = ( isSelectedWidget && selectedWidget.attributeMapping[ attribute ] == _endpoint );
+							
+							var potentialSharers:Vector.<WidgetLayoutElement> = getPotentialSharers( widgetDefinition, attribute );
+							
+							if( potentialSharers.length > 0 )
+							{
+								var sharerItems:Array = new Array; 
+
+								for each( var potentialSharer:WidgetLayoutElement in potentialSharers )
+								{
+									var sharerItem:Object = new Object;	
+									sharerItem.label = getSharerLabel( potentialSharer, attribute );
+									sharerItem[ _widgetDefinitionKey ] = widgetDefinition;
+									sharerItem[ _widgetAttributeKey ] = attribute;
+									sharerItem[ _widgetToShareKey ] = potentialSharer;
+									
+									sharerItems.push( sharerItem );
+									
+									if( isSelectedAttribute && selectedWidget == potentialSharer )
+									{
+										itemToSelect = sharerItem;
+									}
+								}
+
+								var separateWidgetItem:Object = new Object;	
+								separateWidgetItem.label = _separateWidgetLabel;
+								separateWidgetItem[ _widgetDefinitionKey ] = widgetDefinition;
+								separateWidgetItem[ _widgetAttributeKey ] = attribute;
+								sharerItems.push( separateWidgetItem );
+								
+								if( isSelectedAttribute && !itemToSelect )
+								{
+									itemToSelect = separateWidgetItem;
+								}
+								
+								attributeItem.children = sharerItems;
+								
+								if( isSelectedAttribute ) 
+								{
+									itemsToExpand.push( attributeItem );
+								}
+							}
+							else
+							{
+								attributeItem[ _widgetDefinitionKey ] = widgetDefinition;
+								attributeItem[ _widgetAttributeKey ] = attribute;
+								
+								if( isSelectedAttribute ) 
+								{
+									itemToSelect = attributeItem;
+								}
+							}
+							
+							attributeItems.push( attributeItem );							
+						}
+						
+						widgetItem.children = attributeItems;
+					}
+					
+					chooseWidgetItem.children.push( widgetItem );
+				}
+				
+				var scrollPosition:Number = _widgetTree.verticalScrollPosition;
+				
+				_widgetTree.dataProvider = treeData;
+				
+				_widgetTree.validateNow();
+				
+				for each( var itemToExpand:Object in itemsToExpand )
+				{
+					_widgetTree.expandItem( itemToExpand, true );
+				}
+				
+				_widgetTree.selectedItem = itemToSelect;
+				_previousSelectedItem = itemToSelect;
+
+				_widgetTree.verticalScrollPosition = Math.min( scrollPosition, _widgetTree.maxScrollPosition );
+			}
+			
+			
+			private function updateWidgetLabel():void
+			{
+				var selectedWidget:WidgetLayoutElement = _widgetLayout.getWidget( _endpoint );
+				
+				if( !selectedWidget )
+				{
+					_widgetLabel.text = "";
+					_widgetLabel.editable = false;
+					return;
+				}
+				
+				_widgetLabel.text = selectedWidget.widgetLabel;
+				
+				_widgetLabel.editable = ( Globals.getNumberOfProperties( selectedWidget.attributeMapping ) != 1 );
+			}
+
+			
+			private function getPotentialSharers( widgetDefinition:WidgetDefinition, attribute:String ):Vector.<WidgetLayoutElement>
+			{
+				//a widget is a potential sharer if it is of same type, and has at least one attribute entry other than 'attribute', mapped to a different endpoint
+				
+				var potentialSharers:Vector.<WidgetLayoutElement> = new Vector.<WidgetLayoutElement>;
+				
+				for each( var existingWidget:WidgetLayoutElement in _widgetLayout.widgets )
+				{
+					if( existingWidget.widgetDefinition != widgetDefinition )
+					{
+						continue;
+					}
+					
+					var attributeMapping:Object = existingWidget.attributeMapping;
+					
+					for( var widgetAttribute:String in attributeMapping )
+					{
+						if( widgetAttribute == attribute ) continue;
+						
+						if( attributeMapping[ widgetAttribute ] == _endpoint ) continue;
+						
+						potentialSharers.push( existingWidget );
+						break;
+					}
+				}
+				
+				return potentialSharers;
+			}
+
+			
+			private function getSharerLabel( widgetToShare:WidgetLayoutElement, attribute:String ):String
+			{
+				var sharerLabel:String = "Share with ";
+				var first:Boolean = true;
+				
+				var attributeMapping:Object = widgetToShare.attributeMapping;
+				
+				for( var widgetAttribute:String in attributeMapping )
+				{
+					if( widgetAttribute == attribute )
+					{
+						continue;
+					}
+					
+					if( first )
+					{
+						first = false;
+					}
+					else
+					{
+						sharerLabel += ", ";
+					}
+					
+					sharerLabel += attributeMapping[ widgetAttribute ].label;				
+				}
+				
+				return sharerLabel;
+			}
+			
+			
+			private function onWidgetsChanged( event:Event ):void
+			{
+				updateWidgetTree();
+				updateWidgetLabel();
+			}
+			
+			
+			private function onWidgetTreeItemClick( event:ListEvent ):void
+			{
+				var item:Object = _widgetTree.selectedItem;
+				if( item.hasOwnProperty( _widgetDefinitionKey ) || item == _noWidgetItem )
+				{
+					_previousSelectedItem = _widgetTree.selectedItem;
+					
+					handleSelection( _widgetTree.selectedItem );
+				}
+				else
+				{
+					_widgetTree.selectedItem = _previousSelectedItem;
+				}
+			}
+			
+			
+			private function handleSelection( selectedItem:Object ):void
+			{
+				var widgetDefinition:WidgetDefinition = null;
+				var widgetAttribute:String = null;
+				var sharer:WidgetLayoutElement = null;
+				
+				if( selectedItem.hasOwnProperty( _widgetDefinitionKey ) )
+				{
+					widgetDefinition = selectedItem[ _widgetDefinitionKey ] as WidgetDefinition;
+					Assert.assertNotNull( widgetDefinition );
+	
+					widgetAttribute = selectedItem[ _widgetAttributeKey ] as String;
+					
+					if( selectedItem.hasOwnProperty( _widgetToShareKey ) )
+					{
+						sharer = selectedItem[ _widgetToShareKey ] as WidgetLayoutElement;
+						Assert.assertNotNull( sharer );
+					}
+				}
+				
+				_widgetLayout.assignEndpoint( _endpoint, widgetDefinition, widgetAttribute, sharer );
+			}
+			
+			
+			private function onWidgetTreeItemClose( event:TreeEvent ):void
+			{
+				if( isDescendant( event.itemRenderer.data, _previousSelectedItem ) )
+				{
+					_widgetTree.expandItem( event.itemRenderer.data, true );
+					_widgetTree.selectedItem = _previousSelectedItem;
+					_widgetTree.scrollToIndex( _widgetTree.selectedIndex );
+				}
+			}
+			
+			
+			private function onEditWidgetLabel():void
+			{
+				var selectedWidget:WidgetLayoutElement = _widgetLayout.getWidget( _endpoint );
+				Assert.assertNotNull( selectedWidget );
+
+				selectedWidget.widgetLabel = _widgetLabel.text;
+				
+				interfaceChanged();
+			}
+			
+			
+			private function isDescendant( ancestor:Object, descendant:Object ):Boolean
+			{
+				if( !ancestor || !descendant ) return false;
+				
+				if( !ancestor.hasOwnProperty( "children" ) || !ancestor.children is Array ) return false;
+				
+				for each( var child:Object in ancestor.children )
+				{
+					if( descendant == child ) return true;
+					
+					if( isDescendant( child, descendant ) ) return true;
+				}
+				
+				return false;
+			}
+
+			
+			private function interfaceChanged():void
+			{
+				_widgetLayout.dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}				
+			
+			
+			private var _widgetLayout:WidgetLayout;
+			private var _endpoint:Endpoint;
+			
+			private var _noWidgetItem:Object;
+			
+			private var _previousSelectedItem:Object;
+			
+			private const _labelColumnWidth:Number = 113;
+			
+			private const _widgetDefinitionKey:String = "widgetDefinition";
+			private const _widgetAttributeKey:String = "widgetAttribute";
+			private const _widgetToShareKey:String = "widgetToShare";
+			
+			private const _separateWidgetLabel:String = "Use Separate Widget";
+		]]>
+	</fx:Script>			
+			
+</mx:Canvas>

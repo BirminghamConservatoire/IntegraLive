@@ -1,0 +1,165 @@
+#N canvas 158 33 823 770 10;
+#X text 346 119 1.) parameter: "active" \, type: <bool> \, unit [-]
+;
+#X text 376 149 description: switches the module on and off from DSP
+tree;
+#X text 376 319 description: switches a bypass path in parallel;
+#X text 386 333 to the processor on and off;
+#X text 375 385 description: mutes the effect way of the processor
+;
+#X text 376 434 description: makes a mix of the effected signal (wet
+= 1);
+#X text 386 449 and the input signal (dry = 0);
+#X text 376 202 description: multiplies the incoming signal with this
+value;
+#X text 386 217 before it is going further to effect input;
+#X text 376 267 description: multiplies the signal from effect output
+;
+#X text 376 134 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 376 252 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 376 187 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 376 304 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 376 369 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 376 419 initial-value: 1 \, range: (0...1) \, class: processor
+;
+#X obj 17 199 cnv 10 135 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 78 254 outlet~;
+#X obj 15 144 inlet~;
+#X obj 16 252 outlet~;
+#X text 346 172 2.) parameter: "inLevel" \, type: <float> \, unit [-]
+;
+#X text 347 237 3.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 348 289 4.) parameter: "bypass" \, type: <bool> \, unit [-]
+;
+#X text 346 354 5.) parameter: "mute" \, type: <bool> \, unit [-];
+#X text 346 404 6.) parameter: "mix" \, type: <float> \, unit [-];
+#X obj 90 147 handlers/ntg_receive \$1;
+#X text 253 57 1 signal in ports;
+#X text 253 73 4 signal out ports;
+#X obj 200 256 outlet~;
+#X obj 138 254 outlet~;
+#X text 12 615 1.) initial argument: <float> unique id of the module
+;
+#X text 253 14 QuadAutoPanner: a 1 to 4 channel audio panner;
+#X text 374 550 unit [-] \, initial-value: 1 \, range: (0/1);
+#X text 344 536 8.) parameter: "auto" \, type: <int>;
+#X text 373 724 Thomas Musil \, 28.09.2010;
+#X text 253 89 9 data in ports;
+#X text 344 586 9.) parameter: "rate" \, type: <float>;
+#X text 374 600 unit [rev_per_sec] \, initial-value: 0.25 \, range:
+(0 ... 10);
+#N canvas 147 156 494 405 quad_auto_panner_module____ 0;
+#X obj 17 8 inlet~;
+#X obj 17 345 outlet~;
+#X obj 176 276 switch~;
+#X obj 75 344 outlet~;
+#X obj 179 16 inlet;
+#X obj 326 19 inlet;
+#X text 326 2 named parameter-messages;
+#X text 179 -1 init-bang;
+#X obj 248 17 inlet;
+#X text 248 0 fini-bang;
+#X obj 17 195 handlers/quad_post_processor \$0 _;
+#X obj 17 242 handlers/quad_module \$0 _________;
+#X obj 134 345 outlet~;
+#X obj 192 345 outlet~;
+#N canvas 72 205 715 334 quad_auto_panner_____ 0;
+#X obj 426 29 inlet;
+#X obj 18 31 inlet~;
+#X obj 18 247 outlet~;
+#X obj 248 33 inlet;
+#X obj 408 241 outlet;
+#X text 242 17 init-bang;
+#X text 426 13 route parameters;
+#X text 404 260 rejected parameters;
+#X text 41 10 from pre-processor;
+#X text 136 267 to post-processor;
+#X obj 325 243 outlet;
+#X text 314 278 init-bang;
+#X text 243 5 from prev.;
+#X text 321 264 to next;
+#X obj 80 247 outlet~;
+#X obj 248 80 t b b;
+#X obj 140 246 outlet~;
+#X obj 202 246 outlet~;
+#X obj 562 240 outlet;
+#X text 558 259 output parameters;
+#X obj 336 36 inlet;
+#X text 336 18 fini;
+#X obj 17 186 core/quad_auto_panner~ _________________________;
+#X connect 0 0 22 3;
+#X connect 1 0 22 0;
+#X connect 3 0 15 0;
+#X connect 15 0 10 0;
+#X connect 15 1 22 1;
+#X connect 20 0 22 2;
+#X connect 22 0 2 0;
+#X connect 22 1 14 0;
+#X connect 22 2 16 0;
+#X connect 22 3 17 0;
+#X connect 22 4 4 0;
+#X connect 22 5 18 0;
+#X restore 102 147 pd quad_auto_panner_____;
+#X obj 279 346 outlet;
+#X obj 17 104 handlers/mono_pre_processor \$0 ________;
+#X connect 0 0 16 0;
+#X connect 4 0 16 1;
+#X connect 5 0 16 2;
+#X connect 8 0 14 2;
+#X connect 10 0 11 0;
+#X connect 10 1 11 1;
+#X connect 10 2 11 2;
+#X connect 10 3 11 3;
+#X connect 10 4 11 4;
+#X connect 10 5 11 5;
+#X connect 11 0 1 0;
+#X connect 11 1 3 0;
+#X connect 11 2 12 0;
+#X connect 11 3 13 0;
+#X connect 11 4 2 0;
+#X connect 14 0 10 4;
+#X connect 14 1 10 5;
+#X connect 14 2 10 6;
+#X connect 14 3 10 7;
+#X connect 14 4 10 8;
+#X connect 14 5 10 9;
+#X connect 14 6 15 0;
+#X connect 16 0 10 0;
+#X connect 16 0 10 1;
+#X connect 16 0 10 2;
+#X connect 16 0 10 3;
+#X connect 16 1 14 0;
+#X connect 16 2 14 1;
+#X connect 16 3 14 3;
+#X restore 16 195 pd quad_auto_panner_module____;
+#X text 384 612 automatical panning-rotating rate.;
+#X text 384 562 toggle for automatical panning-rotating.;
+#X text 261 30 with automatically rotating of the panning position.
+;
+#X text 253 103 1 data out port;
+#X obj 200 222 handlers/ntg_send \$1;
+#X text 335 639 *******************************************************
+;
+#X text 344 473 7.) parameter: "panning" \, type: <float>;
+#X text 384 499 value of spatial position of input signal.;
+#X text 374 487 unit [degree] \, initial-value: 0 \, range: (-180...+180)
+;
+#X text 344 657 1.) parameter: "pos" \, type: <float>;
+#X text 374 671 unit [degree] \, initial-value: - \, range: (-180 ...
+180);
+#X text 384 683 shows panning-position.;
+#X connect 18 0 38 0;
+#X connect 25 0 38 1;
+#X connect 25 1 38 2;
+#X connect 25 2 38 3;
+#X connect 38 0 19 0;
+#X connect 38 1 17 0;
+#X connect 38 2 29 0;
+#X connect 38 3 28 0;
+#X connect 38 4 43 0;

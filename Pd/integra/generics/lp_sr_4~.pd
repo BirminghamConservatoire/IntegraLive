@@ -1,0 +1,21 @@
+#N canvas 444 60 544 345 10;
+#X obj 58 136 biquad~ 0.731564 -0.751116 0.254888 0.509776 0.254888
+;
+#X obj 58 163 biquad~ 0.591543 -0.415955 0.206103 0.412206 0.206103
+;
+#X obj 58 193 biquad~ 0.508718 -0.217699 0.177245 0.35449 0.177245
+;
+#X obj 58 223 biquad~ 0.461745 -0.105262 0.160879 0.321758 0.160879
+;
+#X obj 58 253 biquad~ 0.440368 -0.0540915 0.153431 0.306862 0.153431
+;
+#X obj 58 102 inlet~;
+#X obj 58 292 outlet~;
+#X text 39 26 lowpass filter 10-th order with butterworth characteristic
+@ cutoff frequency = samplerate * 80 / 441 Hz;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 4 0 6 0;
+#X connect 5 0 0 0;

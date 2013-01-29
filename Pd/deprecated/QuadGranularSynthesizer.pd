@@ -1,0 +1,318 @@
+#N canvas 46 22 1217 750 10;
+#X obj 17 179 cnv 10 135 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 85 232 outlet~;
+#X obj 16 232 outlet~;
+#X obj 191 233 outlet~;
+#X obj 138 233 outlet~;
+#N canvas 66 79 494 405 quad_granular_synthesizer_module 0;
+#X obj 17 345 outlet~;
+#X obj 272 287 switch~;
+#X obj 165 140 cnv 10 164 10 empty empty empty 20 12 0 14 -261682 -66577
+0;
+#X obj 69 346 outlet~;
+#X obj 155 33 inlet;
+#X obj 329 32 inlet;
+#X text 329 15 named parameter-messages;
+#X text 157 15 init-bang;
+#X obj 122 347 outlet~;
+#X obj 174 347 outlet~;
+#X obj 238 31 inlet;
+#X text 238 14 fini-bang;
+#X text 23 7 signal;
+#X text 23 23 inlet;
+#X obj 19 45 inlet~;
+#X obj 17 194 handlers/quad_post_processor \$0 __________________________
+;
+#N canvas 129 74 620 343 quad_granular_synthesizer______ 0;
+#X obj 451 35 inlet;
+#X obj 18 247 outlet~;
+#X obj 215 31 inlet;
+#X obj 419 246 outlet;
+#X text 209 15 init-bang;
+#X text 451 19 route parameters;
+#X text 415 265 rejected parameters;
+#X text 51 267 to post-processor;
+#X obj 245 243 outlet;
+#X text 234 278 init-bang;
+#X text 210 3 from prev.;
+#X text 241 264 to next;
+#X obj 72 247 outlet~;
+#X obj 128 247 outlet~;
+#X obj 182 247 outlet~;
+#X obj 215 63 t b b;
+#X obj 17 101 inlet~;
+#X text 18 52 signal;
+#X text 18 36 optional;
+#X text 18 68 inlet;
+#X obj 308 41 inlet;
+#X text 307 24 fini-bnag;
+#X obj 17 156 core/quad_granular_synthesizer~ 16;
+#X msg 362 142 selEditSoundIndex 1;
+#X msg 393 177 selPlaybackSoundIndex 1;
+#X connect 0 0 22 3;
+#X connect 2 0 15 0;
+#X connect 15 0 8 0;
+#X connect 15 0 23 0;
+#X connect 15 0 24 0;
+#X connect 15 1 22 1;
+#X connect 16 0 22 0;
+#X connect 20 0 22 2;
+#X connect 22 0 1 0;
+#X connect 22 1 12 0;
+#X connect 22 2 13 0;
+#X connect 22 3 14 0;
+#X connect 22 4 3 0;
+#X connect 23 0 22 3;
+#X connect 24 0 22 3;
+#X restore 162 140 pd quad_granular_synthesizer______;
+#X obj 17 242 handlers/quad_module \$0 __________________________________
+;
+#X obj 20 79 handlers/mono_pre_processor \$0 ________________________
+;
+#N canvas 0 22 613 651 join_datadir 0;
+#X obj 233 116 symbol;
+#X obj 233 386 makefilename %s%s;
+#X obj 232 340 symbol;
+#X obj 232 298 unpack s s;
+#X obj 232 270 generics/symbol_buddy;
+#X obj 347 115 symbol;
+#X msg 289 345 set \$1%s;
+#X obj 235 25 inlet;
+#X obj 234 59 route loadSound dataDirectory;
+#X obj 233 429 list prepend loadSound;
+#X obj 234 495 outlet;
+#X obj 406 472 outlet;
+#X obj 236 470 list trim;
+#X connect 0 0 4 0;
+#X connect 1 0 9 0;
+#X connect 2 0 1 0;
+#X connect 3 0 2 0;
+#X connect 3 1 6 0;
+#X connect 4 0 3 0;
+#X connect 5 0 4 1;
+#X connect 6 0 1 0;
+#X connect 7 0 8 0;
+#X connect 8 0 0 0;
+#X connect 8 1 5 0;
+#X connect 8 2 11 0;
+#X connect 9 0 12 0;
+#X connect 12 0 10 0;
+#X restore 371 57 pd join_datadir;
+#X connect 4 0 18 1;
+#X connect 5 0 19 0;
+#X connect 10 0 16 2;
+#X connect 14 0 18 0;
+#X connect 15 0 17 0;
+#X connect 15 1 17 1;
+#X connect 15 2 17 2;
+#X connect 15 3 17 3;
+#X connect 15 4 17 4;
+#X connect 15 5 17 5;
+#X connect 16 0 15 4;
+#X connect 16 1 15 5;
+#X connect 16 2 15 6;
+#X connect 16 3 15 7;
+#X connect 16 4 15 8;
+#X connect 16 5 15 9;
+#X connect 17 0 0 0;
+#X connect 17 1 3 0;
+#X connect 17 2 8 0;
+#X connect 17 3 9 0;
+#X connect 17 4 1 0;
+#X connect 18 0 15 0;
+#X connect 18 0 15 1;
+#X connect 18 0 15 2;
+#X connect 18 0 15 3;
+#X connect 18 1 16 0;
+#X connect 18 2 16 1;
+#X connect 18 3 16 3;
+#X connect 19 0 18 2;
+#X connect 19 1 18 2;
+#X restore 16 176 pd quad_granular_synthesizer_module;
+#X text 15 108 signal;
+#X text 15 124 inlet;
+#X obj 15 144 inlet~;
+#X text 242 49 2 signal out ports;
+#X text 243 34 1 signal in port;
+#X text 242 65 25 data in ports;
+#X text 194 17 quad-granular-synthesizer:;
+#X text 773 283 the soundfile storage for playing back.;
+#X text 773 147 the previously selected pd array (soundfile storage).
+;
+#X text 773 208 from signal input to the previously selected pd array
+(soundfile storage).;
+#X text 342 473 unit [-] \, initial-value: 16 \, range: (1 ... 40)
+;
+#X text 352 502 maximum number of grain generators (MAX_OL).;
+#X text 783 348 minimum number of grains you can at the same time.
+;
+#X text 773 320 unit [-] \, initial-value: 5 \, range: (0 ... MAX_OL)
+;
+#X text 783 414 maximum number of grains you can at the same time.
+;
+#X text 773 386 unit [-] \, initial-value: 8 \, range: (0 ... MAX_OL)
+;
+#X text 773 576 unit [-] \, initial-value: 0 \, range: (0 ... 999999)
+;
+#X text 783 604 number of quants between minimum and maximum value
+of cloud;
+#X text 783 616 position in sample. Zero means +infinite = no quantization.
+;
+#X text 1193 115 unit [cents] \, initial-value: 0 \, range: (-2400
+... +2400);
+#X text 1193 178 unit [cents] \, initial-value: 0 \, range: (-2400
+... +2400);
+#X text 1203 206 maximum value of pitch transposing of the sample grain.
+;
+#X text 1203 143 minimum value of pitch transposing of the sample grain.
+;
+#X text 1193 243 unit [sec] \, initial-value: 0.03 \, range: (0.001
+... 100);
+#X text 1203 271 minimum size of sample grain.;
+#X text 1203 333 maximum size of sample grain.;
+#X text 1203 396 relative attack time related to grain size. the shape
+is;
+#X text 1204 408 allways the left half of a hanning window.;
+#X text 1203 470 relative release time related to grain size. the shape
+is;
+#X text 1204 482 allways the right half of a hanning window.;
+#X text 1193 305 unit [sec] \, initial-value: 0.05 \, range: (0.001
+... 100);
+#X text 1193 368 unit [%] \, initial-value: 15 \, range: (0 ... 50)
+;
+#X text 1193 442 unit [%] \, initial-value: 15 \, range: (0 ... 50)
+;
+#X text 1203 542 minimum value of spatial position of a grain.;
+#X text 1203 615 maximum value of spatial position of a grain.;
+#X text 342 613 initial-value:- \, range:- \, class: stereo-granular-synthesizer
+;
+#X text 342 628 description: loads the soundfile content from harddisk
+into the previously selected pd array.;
+#X text 773 125 unit [sec] \, initial-value: 10 \, range: (0.1..90)
+\, class: stereo-granular-synthesizer resizes;
+#X text 342 564 selects the soundfile storage for editing like loading
+\, resizing \, recording.;
+#X text 341 487 class: stereo-granular-synthesizer \, description:
+;
+#X text 772 334 class: stereo-granular-synthesizer \, description:
+;
+#X text 772 401 class: stereo-granular-synthesizer \, description:
+;
+#X text 772 590 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 129 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 192 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 257 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 319 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 382 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 456 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 528 class: stereo-granular-synthesizer \, description:
+;
+#X text 1192 601 class: stereo-granular-synthesizer \, description:
+;
+#X text 342 132 description: switches the module on and off from DSP
+tree;
+#X text 342 305 description: switches a bypass path in parallel;
+#X text 352 319 to the processor on and off;
+#X text 341 371 description: mutes the effect way of the processor
+;
+#X text 342 420 description: makes a mix of the effected signal (wet
+= 1);
+#X text 352 435 and the input signal (dry = 0);
+#X text 342 188 description: multiplies the incoming signal with this
+value;
+#X text 352 203 before it is going further to effect input;
+#X text 342 253 description: multiplies the signal from effect output
+;
+#X text 342 117 initial-value: 1 \, range: (0/1) \, class: module;
+#X text 342 238 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 342 173 initial-value: 1 \, range: (0...4) \, class: processor
+;
+#X text 342 290 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 342 355 initial-value: 0 \, range: (0/1) \, class: processor
+;
+#X text 342 405 initial-value: 1 \, range: (0...1) \, class: processor
+;
+#X text 312 158 2.) parameter: "inLevel" \, type: <float> \, unit [-]
+;
+#X text 313 223 3.) parameter: "outLevel" \, type: <float> \, unit
+[-];
+#X text 773 258 unit [-] \, initial-value: 1 \, range: (1..5) \, class:
+stereo-granular-synthesizer \, selects;
+#X text 342 539 unit [-] \, initial-value: 1 \, range: (1..5) \, class:
+stereo-granular-synthesizer \, description:;
+#X text 1163 572 25.) parameter: "maxSpatialPosition" \, type: <float>
+;
+#X text 1163 499 24.) parameter: "minSpatialPosition" \, type: <float>
+;
+#X text 1163 427 23.) parameter: "releaseTime" \, type: <float>;
+#X text 1162 353 22.) parameter: "attackTime" \, type: <float>;
+#X text 1163 290 21.) parameter: "maxGrainSize" \, type: <float>;
+#X text 1163 228 20.) parameter: "minGrainSize" \, type: <float>;
+#X text 744 561 17.) parameter: "nrOfPositionQuants" \, type: <float>
+;
+#X text 743 372 14.) parameter: "maxCloudDensity" \, type: <float>
+;
+#X text 743 305 13.) parameter: "minCloudDensity" \, type: <float>
+;
+#X text 743 243 12.) parameter: "selPlaybackSoundIndex" \, type: <float>
+;
+#X text 312 598 9.) parameter: "loadSound" \, type: <symbol> \, unit
+[-];
+#X text 312 524 8.) parameter: "selEditSoundIndex" \, type: <float>
+;
+#X text 312 458 7.) parameter: "maxNrGrains" \, type: <float>;
+#X text 1163 163 19.) parameter: "maxPitchTransposition" \, type: <float>
+;
+#X text 1164 102 18.) parameter: "minPitchTransposition" \, type: <float>
+;
+#X text 744 500 16.) parameter: "devCloudPosition" \, type: <float>
+;
+#X text 773 515 unit [sec] \, initial-value: 0.2 \, range: (0 ... 10)
+;
+#X text 783 527 maximum of positive or negative deviation value of
+;
+#X text 783 539 cloud position in playback sample.;
+#X text 773 451 unit [-] \, initial-value: 0.1 \, range: (0 ... 1)
+;
+#X text 743 436 15.) parameter: "relMeanCloudPosition" \, type: <float>
+;
+#X text 783 463 relative mean value of cloud position in playback sample.
+;
+#X text 783 475 (0 .. begin of sample \, 1 .. end of sample).;
+#X text 1193 514 unit [-] \, initial-value: 0.3 \, range: (0 ... 4)
+;
+#X text 1193 587 unit [-] \, initial-value: 0.7 \, range: (0 ... 4)
+;
+#X text 1203 554 0 .. ch1 \, 1 .. ch2 \, 2 .. ch3 \, 3 .. ch4 \, 4
+= 0;
+#X obj 116 140 handlers/ntg_receive \$1;
+#X text 26 680 1.) initial argument: <float> unique id of the module
+;
+#X text 312 101 1.) parameter: "active" \, type: <int> \, unit [-]
+;
+#X text 314 275 4.) parameter: "bypass" \, type: <int> \, unit [-]
+;
+#X text 312 340 5.) parameter: "mute" \, type: <int> \, unit [-];
+#X text 312 390 6.) parameter: "mix" \, type: <float> \, unit [-];
+#X text 743 169 11.) parameter: "recSound" \, type: <int>;
+#X text 773 184 unit [-] \, initial-value: 0 \, range: (0/1) \, class:
+stereo-granular-synthesizer \, records sound;
+#X text 743 110 10.) parameter: "recLength" \, type: <float>;
+#X connect 5 0 2 0;
+#X connect 5 1 1 0;
+#X connect 5 2 4 0;
+#X connect 5 3 3 0;
+#X connect 8 0 5 0;
+#X connect 102 0 5 1;
+#X connect 102 1 5 2;
+#X connect 102 2 5 3;

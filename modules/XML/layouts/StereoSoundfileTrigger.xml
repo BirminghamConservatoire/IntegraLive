@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<controls>
-  <control id="outLevel" x="60" y="10" width="50" height="180"/>
-  <control id="mute" x="10" y="10" width="50" height="70"/>
-  <control id="load" x="130" y="10" width="135" height="85"/>
-  <control id="play" x="265" y="10" width="70" height="85"/>
-</controls>

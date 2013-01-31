@@ -1,5 +1,0 @@
-<?xml version="1.0" ?>
-<controls>
-  <control id="rate" x="20" y="20" width="107" height="107"/>
-  <control id="tick" x="137" y="20" width="107" height="107"/>
-</controls>

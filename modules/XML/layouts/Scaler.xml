@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<controls>
-  <control id="inValue" x="10" y="10" width="110" height="110"/>
-  <control id="inRange" x="120" y="10" width="220" height="110"/>
-  <control id="outRange" x="340" y="10" width="220" height="110"/>
-  <control id="outValue" x="560" y="10" width="110" height="110"/>
-</controls>

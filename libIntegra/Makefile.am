@@ -20,7 +20,7 @@ dist_pkgdata_DATA = $(SCHEMADIR)/$(COLLECTIONSCHEMA) $(SCHEMADIR)/$(MAPPINGFILE)
 nobase_dist_pkgdata_DATA = $(DEFSDIR)/*
 
 ACLOCAL_AMFLAGS = -I m4
-BUILT_SOURCES = collection-schema iid
+BUILT_SOURCES = iid
 
 EXTRA_DIST = \
 	autogen.sh \
@@ -34,7 +34,7 @@ EXTRA_DIST = \
 
 RUNCOMMAND=./server/.libs/integra_server -bridge=bridges/dummy/.libs/integra_dummy_bridge.so -xmlrpc_server_port=8000 -osc_server_port=8001 -osc_client_port=8002 -osc_client_url=127.0.0.1 -module_paths=interfaces -trace_progress=1
 
-IIDDIR=../../modules/trunk/
+IMDIR=../modules/
 
 run:
 	$(RUNCOMMAND)
@@ -42,22 +42,16 @@ run:
 run-debug:
 	gdb --args $(RUNCOMMAND)
 
-#all-local: iid
-
 maintainer-clean-local:
 	-rm -rf $(DEFSDIR)
-
-collection-schema:
-	-mkdir -p $(SCHEMADIR) 
-	-cp ../../modules/trunk/XML/schemas/$(COLLECTIONSCHEMA) $(SCHEMADIR) 
 
 clean-local:
 	-rm -f $(DEFSDIR)/*
 
 iid:
 	-mkdir -p $(DEFSDIR)
-	-cp $(IIDDIR)/*.im $(DEFSDIR)
-	-cp $(IIDDIR)/*.csv $(DEFSDIR)
+	-cp $(IMDIR)/*.im $(DEFSDIR)
+	-cp $(IMDIR)/*.csv $(DEFSDIR)
 
 
 dist-hook: 

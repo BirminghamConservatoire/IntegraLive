@@ -59,8 +59,19 @@
 #include "lua_functions.c"
 
 
-const static ntg_path *ntg_parent_path = NULL;
-static char *ntg_output;
+
+typedef struct ntg_script_context_stack_
+{
+	const ntg_path *parent_path;
+	char *output;
+
+	struct ntg_script_context_stack_ *next;
+
+} ntg_script_context_stack;
+
+
+
+static ntg_script_context_stack *context_stack = NULL;
 
 
 static void error_handler( const char *fmt, ...)
@@ -71,7 +82,7 @@ static void error_handler( const char *fmt, ...)
 
 	char error_string[8192];
 
-	assert( ntg_output );
+	assert( context_stack && context_stack->output );
 	assert( fmt );
 
 	{
@@ -83,11 +94,11 @@ static void error_handler( const char *fmt, ...)
 
 	NTG_TRACE_ERROR_WITH_STRING( "luascript error", error_string );
 
-	new_output = ntg_malloc( strlen( error_prompt ) + strlen( ntg_output ) + strlen( separator ) + strlen( error_string ) + 1 );
-	sprintf( new_output, "%s%s%s%s", ntg_output, separator, error_prompt, error_string );
+	new_output = ntg_malloc( strlen( error_prompt ) + strlen( context_stack->output ) + strlen( separator ) + strlen( error_string ) + 1 );
+	sprintf( new_output, "%s%s%s%s", context_stack->output, separator, error_prompt, error_string );
 
-	ntg_free( ntg_output );
-	ntg_output = new_output;
+	ntg_free( context_stack->output );
+	context_stack->output = new_output;
 }
 
 
@@ -98,7 +109,7 @@ static void progress_handler( const char *fmt, ...)
 
 	char progress_string[8192];
 
-	assert( ntg_output );
+	assert( context_stack && context_stack->output );
 	assert( fmt );
 
 	{
@@ -110,11 +121,11 @@ static void progress_handler( const char *fmt, ...)
 
 	NTG_TRACE_VERBOSE_WITH_STRING( "luascript progress", progress_string );
 
-	new_output = ntg_malloc( strlen( ntg_output ) + strlen( separator ) + strlen( progress_string ) + 1 );
-	sprintf( new_output, "%s%s%s", ntg_output, separator, progress_string );
+	new_output = ntg_malloc( strlen( context_stack->output ) + strlen( separator ) + strlen( progress_string ) + 1 );
+	sprintf( new_output, "%s%s%s", context_stack->output, separator, progress_string );
 
-	ntg_free( ntg_output );
-	ntg_output = new_output;
+	ntg_free( context_stack->output );
+	context_stack->output = new_output;
 }
 
 
@@ -185,7 +196,7 @@ static void pcall_with_error_checking( lua_State * L, int nargs, int nresults, i
 }
 
 
-static int ilua_set(lua_State * L)
+static int ilua_set( lua_State * L )
 {
     ntg_path *path = NULL;
 	ntg_path *node_path = NULL;
@@ -198,11 +209,13 @@ static int ilua_set(lua_State * L)
     float value_f;
     const char *value_s;
 
+	assert( context_stack && context_stack->parent_path );
+
 	ilua_check_num_arguments(L, 3);
 
     received_path = ntg_path_from_string( ilua_get_string( L, 1 ) );
     ntg_path_append_element( received_path, ilua_get_string( L, 2 ) );
-    path = ntg_path_join( ntg_parent_path, received_path );
+    path = ntg_path_join( context_stack->parent_path, received_path );
     ntg_path_free(received_path);
 
     switch( lua_type( L, 3 ) ) 
@@ -301,9 +314,14 @@ static int ilua_get(lua_State * L)
 	const ntg_node_attribute *attribute = NULL;
     int i;
 	int return_value = 0;
-    int num_arguments = lua_gettop(L);
+    int num_arguments = 0;
+	ntg_path *path = NULL;
 
-    ntg_path *path = ntg_path_copy( ntg_parent_path );
+	assert( context_stack && context_stack->parent_path );
+
+	num_arguments = lua_gettop( L );
+
+    path = ntg_path_copy( context_stack->parent_path );
     for(i = 1; i <= num_arguments; i++) 
 	{
         ntg_path_append_element( path, ilua_get_string( L, i ) );
@@ -436,24 +454,36 @@ bool init_luascripting(ntg_server * server)
 /** \brief Evaluate a string containing lua code
  *
  * The server must be locked before calling.
+ * This method is designed to handle re-entrance correctly, by using a 
+ * context stack.  This allows script outputs to cause other scripts to be executed.
+ *
  * returns textual output from operation, returned string should be freed by caller
  */
 char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 {
+	ntg_script_context_stack *context;
 	char *output = NULL;
 	time_t raw_time_stamp;
 	const char *timestamp_format = "_executing script at %H:%M:%S..._";
 	int timestamp_format_length = strlen( timestamp_format ) + 1;
-
-	assert( !ntg_parent_path );
-	assert( !ntg_output );
-
-	time( &raw_time_stamp );
 	
-	ntg_output = ntg_malloc( timestamp_format_length );
-	strftime( ntg_output, timestamp_format_length, timestamp_format, localtime( &raw_time_stamp ) );
+	assert( parent_path && script_string );
 
-	ntg_parent_path = parent_path;
+	/* set the context */
+	time( &raw_time_stamp );
+
+	context = ntg_malloc( sizeof( ntg_script_context_stack ) );
+
+	context->parent_path = parent_path;
+
+	context->output = ntg_malloc( timestamp_format_length );
+	strftime( context->output, timestamp_format_length, timestamp_format, localtime( &raw_time_stamp ) );
+
+	/* push the stack */
+	context->next = context_stack;
+	context_stack = context;
+
+	/* execute the script */
 
 	if( luaL_dostring( ntg_lua_state, script_string ) )
 	{
@@ -462,9 +492,13 @@ char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 
 	progress_handler( "_done_" );
 
-	ntg_parent_path = NULL;
-	output = ntg_output;
-	ntg_output = NULL;
+	/* pop the stack */
+
+	assert( context == context_stack );		/* test that re-entrances have tidied up as expected */
+	
+	output = context_stack->output;
+	context_stack = context_stack->next;
+	ntg_free( context );
 
 	return output;
 }

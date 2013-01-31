@@ -77,6 +77,8 @@ package components.views.ArrangeViewProperties
 			_darkCodeStyle.parseCSS( makeInvertedCSSString( _lightCSSString ) );
 
 			_codePrettyPrint = new CodePrettyPrint();
+			
+			restrict = "^"; //prevent funny chars appearing on ctrl+backspace
 		}
 		
 		
@@ -109,6 +111,7 @@ package components.views.ArrangeViewProperties
 		
 		private function onKeyDown( event:KeyboardEvent ):void
 		{
+			//handle tabs
 			if( event.charCode == Keyboard.TAB )
 			{
 				callLater( reclaimFocus );

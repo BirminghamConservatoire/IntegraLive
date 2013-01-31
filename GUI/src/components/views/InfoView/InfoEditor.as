@@ -73,6 +73,7 @@ package components.views.InfoView
 			_editText.setStyle( "bottom", _textMargin );
 			_editText.setStyle( "borderStyle", "none" );
 			_editText.setStyle( "focusSkin", null );
+			_editText.restrict = "^";	//prevent funny chars appearing on ctrl+backspace
 			addChild( _editText );
 			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );

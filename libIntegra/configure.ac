@@ -1,6 +1,6 @@
 AC_PREREQ(2.13)
 
-m4_define(libIntegra_version, [ m4_esyscmd([cat ../../FULLVERSION | tr -d '\n']) ]))
+m4_define(libIntegra_version, [ m4_esyscmd([cat ../FULLVERSION | tr -d '\n']) ]))
 
 PACKAGE=libintegra
 

@@ -11,4 +11,4 @@ rem %AMXMLC% %AMXMLC_FLAGS% IntegraLive.mxml
 
 rem now to create the debug file in META-INF/AIR
 
-copy NUL %1\META-INF\AIR\debug
+rem copy NUL %1\META-INF\AIR\debug

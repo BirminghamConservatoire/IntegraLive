@@ -37,9 +37,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\..\..\build\$(Configuration)\server\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\..\build\$(Configuration)\server\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(TargetName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\..\..\build\$(Configuration)\server\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\..\build\$(Configuration)\server\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(TargetName)\</IntDir>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
@@ -71,8 +71,8 @@
       </ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>call versioning/StampVer.bat ../../../build/Debug/Server/libIntegra.dll
-call gui_autobuild\buildgui.bat ..\..\..\build\Debug\gui
+      <Command>call versioning/StampVer.bat ../../build/Debug/Server/libIntegra.dll
+call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -105,8 +105,8 @@ call gui_autobuild\buildgui.bat ..\..\..\build\Debug\gui
       </ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>call versioning/StampVer.bat ../../../build/Release/Server/libIntegra.dll
-call gui_autobuild\buildgui.bat ..\..\..\build\Release\gui
+      <Command>call versioning/StampVer.bat ../../build/Release/Server/libIntegra.dll
+call gui_autobuild\buildgui.bat ..\..\build\Release\gui
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>

@@ -41,12 +41,12 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>false</GenerateManifest>
     <IntDir>$(Configuration)\$(TargetName)\</IntDir>
-    <OutDir>$(SolutionDir)\..\..\..\build\$(Configuration)\server\</OutDir>
+    <OutDir>$(SolutionDir)\..\..\build\$(Configuration)\server\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(Configuration)\$(TargetName)\</IntDir>
-    <OutDir>$(SolutionDir)\..\..\..\build\$(Configuration)\server\</OutDir>
+    <OutDir>$(SolutionDir)\..\..\build\$(Configuration)\server\</OutDir>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -64,7 +64,7 @@
       <ImportLibrary>$(Configuration)\$(TargetName)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>call versioning/StampVer.bat ../../../build/Debug/Server/DummyBridge.dll</Command>
+      <Command>call versioning/StampVer.bat ../../build/Debug/Server/DummyBridge.dll</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>stamping version number</Message>
@@ -89,7 +89,7 @@
       <ImportLibrary>$(Configuration)\$(TargetName)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>call versioning/StampVer.bat ../../../build/Release/Server/DummyBridge.dll</Command>
+      <Command>call versioning/StampVer.bat ../../build/Release/Server/DummyBridge.dll</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>stamping version number</Message>

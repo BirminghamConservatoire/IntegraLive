@@ -1,6 +1,14 @@
+# libIntegra's own generated files
+src/lua_functions.c
+src/lua_init.c
+interfaces
+server/integra_server
+
 # http://www.gnu.org/software/automake
 
 Makefile.in
+Makefile
+doc/documentation.doxygen
 
 # http://www.gnu.org/software/autoconf
 
@@ -11,6 +19,10 @@ Makefile.in
 /depcomp
 /install-sh
 /missing
+config.h
+config.log
+config.status
+stamp-h1
 
 config.guess
 config.h.in
@@ -23,9 +35,23 @@ m4/ltversion.m4
 m4/lt~obsolete.m4
 
 
-
 # Object files
 *.o
+
+# pkg-config files
+*.pc
+
+# Libtool
+libtool
+
+# Libtool objects
+*.lo
+
+# Libtool archives
+*.la
+
+# Libtool directories
+.libs
 
 # Libraries
 *.lib
@@ -41,3 +67,4 @@ m4/lt~obsolete.m4
 *.exe
 *.out
 *.app
+

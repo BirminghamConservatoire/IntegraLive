@@ -294,7 +294,7 @@ AC_CHECK_LIB(lo, main, [ac_liblo="yes"], [ac_liblo="no"])
 AC_SUBST(OSC_LIBS)
 
 CFLAGS_TEMP="$CFLAGS"
-CFLAGS=""
+CFLAGS="-I$liblo_include_dir"
 AC_CHECK_HEADER(lo/lo.h, [ac_lo_h="yes"], [ac_lo_h="no"])
 if test "x$ac_lo_h" = "xno"; then
 	AC_MSG_ERROR([lo.h header file not found.])
@@ -303,7 +303,6 @@ CFLAGS="$CFLAGS_TEMP"
 
 AC_ARG_VAR([OSC_CFLAGS], [$OSC_CFLAGS], [C compiler flags for liblo])
 AC_ARG_VAR([OSC_LIBS], [$OSC_LIBS], [C linker flags for liblo])
-CFLAGS="$CFLAGS -I$liblo_include_dir"
 
 dnl are we building the dummy_bridge 
 if [[ "$dummy_bridge" = "true" ]] ; then

@@ -1,6 +1,6 @@
 /** libIntegra lua scripting interface
  *  
- * Copyright (C) 2009 Kjetil Matheussen
+ * Copyright (C) 2013 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,9 @@
 #define LUA_COMPAT_MODULE
 
 #include <lua.h>
-#include <lualib.h>
 #include <lauxlib.h>
-
+#include <lualib.h>
+	 
 #include "attribute.h"
 #include "node.h"
 #include "lua.h"

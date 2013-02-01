@@ -8,20 +8,21 @@
 # the variables you most likely will want to adjust are
 # FLEX_SDK_PATH and AIR_SDK_PATH
 
+-include Make.config
+
 PRODUCT="Integra Live"
 CONFIG=app-config.xml
 DESCRIPTOR=IntegraLive-app.xml
 ARGS=
-SVNROOT=../../..
+#SVNROOT=../../..
 
 MODULES=$(SVNROOT)/modules/trunk
-BLOCKDIR=$(MODULES)/XML/collections/blocks
-LAYOUTDIR=$(MODULES)/XML/layouts
+BLOCKDIR=$(SVNROOT)/blocks
 
 CERTIFICATE=integraCert.pfx
 
-FLEX_SDK_PATH=
-AIR_SDK_PATH=
+#FLEX_SDK_PATH=
+#AIR_SDK_PATH=
 
 ADL_FLAGS=-profile extendedDesktop #-nodebug
 AMXMLC_DEBUG= -compiler.verbose-stacktraces
@@ -30,7 +31,6 @@ AMXMLC_FLAGS=$(AMXMLC_DEBUG) -load-config $(CONFIG)
 # do not edit below this line
 #####################################
 
--include Make.config
 
 ADL=$(AIR_SDK_PATH)/bin/adl
 ADT=$(AIR_SDK_PATH)/bin/adt
@@ -58,7 +58,8 @@ IntegraLive.swf: $(CONFIG) BlockLibrary
 	$(AMXMLC) $(AMXMLC_FLAGS) IntegraLive.mxml
 
 BlockLibrary:
-	ln -s $(BLOCKDIR) BlockLibrary
+	-mkdir BlockLibrary
+	cp $(SVNROOT)/blocks/* BlockLibrary/
 
 key:
 	if [ ! -e $(CERTIFICATE) ]; then \
@@ -77,7 +78,8 @@ clean:
 	-@rm -f app-config.xml
 	-@rm -f $(CERTIFICATE)
 	-@rm -rf $(PRODUCT).app
-	-@rm BlockLibrary
+	-@rm -rf BlockLibrary
+ 
 
 $(CONFIG): $(CONFIG).in
 	$(SED) -e "s|@ENVIRONMENT_PATH@|$(shell pwd)/..|g" -e "s|@ADOBE_FLEX_PATH@|$(FLEX_SDK_PATH)|g" $< > $@

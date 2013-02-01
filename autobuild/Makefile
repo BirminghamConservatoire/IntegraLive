@@ -3,12 +3,12 @@ APPNAME=$(PRODUCT).app
 RESDIR=$(APPNAME)/Contents/Resources
 NAMESPACE=integra
 PDPATH=
-SVNROOT=../..
-MODULES=$(SVNROOT)/modules/trunk
+SVNROOT=..
+MODULES=$(SVNROOT)/modules
 SCHEMADIR=$(MODULES)/XML/schemas
-GUIDIR=$(SVNROOT)/gui/trunk/src
-DOCDIR=$(SVNROOT)/documentation/trunk
-LIBINTEGRAPATH=$(SVNROOT)/library/trunk
+GUIDIR=$(SVNROOT)/GUI/src
+DOCDIR=$(SVNROOT)/documentation
+LIBINTEGRAPATH=$(SVNROOT)/libIntegra
 DEFAULTBUILD=release
 INTEGRA_BASE_URL=http://www.integralive.org/incoming
 LIBINTEGRADEPS_DIR=libIntegra-dependencies-OSX
@@ -20,7 +20,7 @@ SERVERDIR=server
 SERVERBIN=$(SERVERDIR)/bin
 SERVERLIB=$(SERVERDIR)/lib
 SERVERMAKESUFFIX=CC='gcc -mmacosx-version-min=10.6 -arch i386 -arch x86_64' CXX='g++ -mmacosx-version-min=10.6 -arch i386 -arch x86_64' CPP='gcc -E -mmacosx-version-min=10.6 -arch i386' CXXCPP='g++ -E -mmacosx-version-min=10.6 -arch i386'
-SERVERCONFIGBASE=--disable-dependency-tracking --enable-luascripting --enable-server --enable-dummy_bridge --enable-osc_bridge --prefix=$(PWD)/$(SERVERDIR) --with-lua=$(PWD)/$(LIBINTEGRADEPS_DIR)
+SERVERCONFIGBASE=--disable-dependency-tracking --enable-luascripting --enable-server --enable-dummy_bridge --enable-osc_bridge --prefix=$(PWD)/$(SERVERDIR) --with-lua=$(PWD)/$(LIBINTEGRADEPS_DIR) --with-liblo-include-dir=$(PWD)/$(LIBINTEGRADEPS_DIR)/include
 SERVERCONFIGDEBUG=$(SERVERCONFIGBASE) --enable-debug=yes LDFLAGS="-L$(DEPENDENCIESDIR)"
 SERVERCONFIGRELEASE=$(SERVERCONFIGBASE) --enable-debug=no LDFLAGS="-L$(DEPENDENCIESDIR)"
 
@@ -30,7 +30,7 @@ PD_DMG_NAME=$(PD_VERSION_NAME).dmg
 PD_APP_NAME=$(PD_VERSION_NAME).app
 PD_MOUNT_NAME=Pd-extended
 PD_MOUNT_POINT=/Volumes/$(PD_MOUNT_NAME)
-PD_OSC_HOST=$(SVNROOT)/host/trunk/Pd/Integra_Host.pd
+PD_OSC_HOST=$(SVNROOT)/host/Pd/Integra_Host.pd
 
 GDB=gdb --args
 

@@ -7,7 +7,7 @@ endif
 SUBDIRS = src Integra
 SUBDIRS += $(DOCUMENTATION_DIR)
 SUBDIRS += bridges server
-SUBDIRS += examples testing
+SUBDIRS += testing
 DEFSDIR = interfaces
 SCHEMADIR = data
 COLLECTIONSCHEMA = CollectionSchema.xsd
@@ -55,8 +55,6 @@ iid:
 
 
 dist-hook: 
-#	cp -r examples/PD $(distdir)/examples
-#	rm -rf `find $(distdir)/examples -name .svn`
 #	find -E ./ -iregex '(.*DS_Store$|.*svn$)' | xargs rm -rf
 
 AUTOMAKE_OPTIONS = foreign

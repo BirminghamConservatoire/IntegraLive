@@ -383,8 +383,6 @@ AC_OUTPUT([Makefile
 	bridges/OSC/Makefile
 	bridges/dummy/Makefile
 	testing/check/Makefile
-	examples/Makefile
-	examples/CLI/Makefile
 	server/Makefile
         ])
 

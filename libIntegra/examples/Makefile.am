@@ -1,9 +1,0 @@
-MAINTAINERCLEANFILES = Makefile.in
-
-if BUILD_CLI_EXAMPLE
-CLI_DIR = CLI
-endif
-
-SUBDIRS = $(CLI_DIR)
-
-

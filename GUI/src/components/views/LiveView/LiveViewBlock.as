@@ -29,6 +29,7 @@ package components.views.LiveView
 	import components.controller.userDataCommands.SetLiveViewControls;
 	import components.controller.userDataCommands.ToggleLiveViewControl;
 	import components.model.Block;
+	import components.model.Info;
 	import components.model.ModuleInstance;
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.LiveViewControl;
@@ -38,8 +39,8 @@ package components.views.LiveView
 	import components.utils.FontSize;
 	import components.utils.RepositionType;
 	import components.utils.StartControlRepositionEvent;
-	import components.utils.Utilities;
 	import components.utils.Trace;
+	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	
@@ -85,6 +86,18 @@ package components.views.LiveView
 		
 		public function get blockID():int { return _blockID; }
 
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			var control:ControlContainer = Utilities.getAncestorByType( event.target, ControlContainer ) as ControlContainer;
+			if( control ) 
+			{
+				return control.getInfoToDisplay( event );
+			}
+			
+			return null;
+		}
+		
 
 		override public function free():void
 		{

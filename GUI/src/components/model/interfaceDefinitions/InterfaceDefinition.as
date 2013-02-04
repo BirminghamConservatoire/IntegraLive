@@ -28,7 +28,7 @@ package components.model.interfaceDefinitions
 		}
 
 		public function get guid():String { return _guid; }
-		public function get info():InterfaceInfo { return _info; }
+		public function get interfaceInfo():InterfaceInfo { return _interfaceInfo; }
 		public function get endpoints():Vector.<EndpointDefinition> { return _endpoints; }
 		public function get widgets():Vector.<WidgetDefinition> { return _widgets; }
 
@@ -88,7 +88,7 @@ package components.model.interfaceDefinitions
 		
 		public function get isCore():Boolean
 		{
-			for each( var tag:String in info.tags )
+			for each( var tag:String in interfaceInfo.tags )
 			{
 				if( tag == "core" )
 				{
@@ -107,7 +107,7 @@ package components.model.interfaceDefinitions
 		
 		
 		private var _guid:String;
-		private var _info:InterfaceInfo = new InterfaceInfo;
+		private var _interfaceInfo:InterfaceInfo = new InterfaceInfo;
 		private var _endpoints:Vector.<EndpointDefinition> = new Vector.<EndpointDefinition>;
 		private var _widgets:Vector.<WidgetDefinition> = new Vector.<WidgetDefinition>;
 	}

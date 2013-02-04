@@ -21,6 +21,9 @@
 
 package components.model.interfaceDefinitions
 {
+	import components.model.Info;
+	import components.utils.Utilities;
+	
 	import flash.geom.Rectangle;
 	
 	import flexunit.framework.Assert;
@@ -39,7 +42,6 @@ package components.model.interfaceDefinitions
 		public function set type( type:String ):void { _type = type; }
 		public function set label( label:String ):void { _label = label; }
 		public function set position( position:Rectangle ):void { _position = position; }
-		
 		
 		
 		private var _type:String;

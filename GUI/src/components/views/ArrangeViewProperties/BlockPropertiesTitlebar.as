@@ -111,7 +111,14 @@ package components.views.ArrangeViewProperties
 		
 		override public function getInfoToDisplay( event:MouseEvent ):Info
 		{
-			return InfoMarkupForViews.instance.getInfoForView( "BlockPropertiesTitlebar" );
+			if( event.target == _deleteEnvelopeButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "DeleteEnvelopeButton" );	
+			}
+			else
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "EnvelopeSelection" );	
+			}
 		}
 
 

@@ -22,17 +22,18 @@
 package components.views.Preferences
 {
 	import components.controller.ServerCommand;
+	import components.controller.serverCommands.ResetAudioAndMidiSettings;
 	import components.controller.serverCommands.SetAudioDevices;
 	import components.controller.serverCommands.SetAudioDriver;
 	import components.controller.serverCommands.SetAudioSettings;
-	import components.controller.serverCommands.SetAvailableAudioDrivers;
-	import components.controller.serverCommands.SetAvailableMidiDrivers;
 	import components.controller.serverCommands.SetAvailableAudioDevices;
+	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
+	import components.controller.serverCommands.SetAvailableMidiDrivers;
 	import components.controller.serverCommands.SetMidiDevices;
 	import components.controller.serverCommands.SetMidiDriver;
-	import components.controller.serverCommands.ResetAudioAndMidiSettings;
 	import components.controller.userDataCommands.SetViewMode;
+	import components.model.Info;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.preferences.AudioSettings;
@@ -40,6 +41,7 @@ package components.views.Preferences
 	import components.model.userData.ColorScheme;
 	import components.model.userData.ViewMode;
 	import components.utils.FontSize;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.Skins.CloseButtonSkin;
 	import components.views.Skins.NumberEditSkin;
@@ -111,6 +113,12 @@ package components.views.Preferences
 			_resetButton.setStyle( "skin", TextButtonSkin );
 			_resetButton.addEventListener( MouseEvent.CLICK, onClickResetButton );
 			addElement( _resetButton );
+		}
+
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		{
+			return InfoMarkupForViews.instance.getInfoForView( "Preferences" );
 		}
 		
 		

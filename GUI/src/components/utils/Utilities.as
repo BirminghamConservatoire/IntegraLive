@@ -394,5 +394,19 @@ package components.utils
 			
 			return false;
 		}
+		
+		
+		public static function getAncestorByType( descendant:Object, ancestorType:Class ):DisplayObject
+		{
+			for( var iterator:DisplayObject = descendant as DisplayObject; iterator; iterator = iterator.parent )
+			{
+				if( iterator is ancestorType )
+				{
+					return iterator;
+				}
+			}
+			
+			return null;
+		}
 	}
 }

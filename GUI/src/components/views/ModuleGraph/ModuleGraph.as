@@ -38,6 +38,7 @@ package components.views.ModuleGraph
 	import components.controller.userDataCommands.ToggleLiveViewControl;
 	import components.model.Block;
 	import components.model.Connection;
+	import components.model.Info;
 	import components.model.IntegraDataObject;
 	import components.model.ModuleInstance;
 	import components.model.Track;
@@ -50,6 +51,7 @@ package components.views.ModuleGraph
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.ArrangeView.TrackColorPicker;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	
@@ -135,6 +137,38 @@ package components.views.ModuleGraph
 			}
 		}	
 
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		{
+			if( getLinkUnderMouse() )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleGraphLink" );
+			}
+			
+			var connectionPin:ConnectionPin = Utilities.getAncestorByType( event.target, ConnectionPin ) as ConnectionPin;
+			if( connectionPin )
+			{
+				if( connectionPin.isInput )
+				{
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleInputPin" );
+				}
+				else
+				{
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleOutputPin" );
+				}
+			}
+			
+			var element:ModuleGraphElement = Utilities.getAncestorByType( event.target, ModuleGraphElement ) as ModuleGraphElement;
+			if( element )
+			{
+				return element.getInfoToDisplay( event );
+			}
+			else
+			{
+				return model.primarySelectedBlock.info;
+			}
+		}
+		
 
 		override public function styleChanged( style:String ):void
 		{
@@ -492,7 +526,7 @@ package components.views.ModuleGraph
 				return;
 			}
 
-			var clickElement:ModuleGraphElement = getModuleUnderMouse();
+			var clickElement:ModuleGraphElement = Utilities.getAncestorByType( event.target, ModuleGraphElement ) as ModuleGraphElement;
 			if( clickElement )
 			{
 				return;		
@@ -1327,22 +1361,6 @@ package components.views.ModuleGraph
 			for each( var element:ModuleGraphElement in _elements )
 			{
 				if( element.isMouseInRepositionArea() )
-				{
-					return element;
-				}
-			}
-			
-			return null;
-		}
-
-
-		private function getModuleUnderMouse():ModuleGraphElement
-		{
-			var globalMouse:Point = localToGlobal( new Point( mouseX, mouseY ) );
-			
-			for each( var element:ModuleGraphElement in _elements )
-			{
-				if( element.hitTestPoint( globalMouse.x, globalMouse.y ) )
 				{
 					return element;
 				}

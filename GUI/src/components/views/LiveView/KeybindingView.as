@@ -28,11 +28,13 @@ package components.views.LiveView
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.userDataCommands.SetColorScheme;
 	import components.controller.userDataCommands.SetSceneKeybinding;
+	import components.model.Info;
 	import components.model.Scene;
 	import components.model.userData.ColorScheme;
 	import components.model.userData.SceneUserData;
 	import components.model.userData.ViewMode;
 	import components.utils.Utilities;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	
@@ -102,7 +104,24 @@ package components.views.LiveView
 		
 		override public function get isSidebarColours():Boolean { return true; }
 
-
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			var keyIcon:KeyIcon = Utilities.getAncestorByType( event.target, KeyIcon ) as KeyIcon;
+			if( keyIcon )
+			{
+				if( _mapKeyToSceneID.hasOwnProperty( keyIcon.keyLabel ) )
+				{
+					var sceneID:int = _mapKeyToSceneID[ keyIcon.keyLabel ];
+					
+					return model.getScene( sceneID ).info;					
+				}
+			}
+			
+			return InfoMarkupForViews.instance.getInfoForView( "SceneShortcuts" );
+		}
+		
+		
 		override protected function onAllDataChanged():void
 		{
 			updateAll();

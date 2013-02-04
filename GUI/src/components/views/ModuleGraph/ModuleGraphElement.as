@@ -23,14 +23,14 @@ package components.views.ModuleGraph
 	import components.controller.IntegraController;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.userDataCommands.SetModuleInstanceLiveViewControls;
+	import components.model.Info;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
 	import components.model.userData.ColorScheme;
-	import components.views.Skins.TickButtonSkin;
 	import components.utils.FontSize;
-	
-	import flexunit.framework.Assert;
+	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.TickButtonSkin;
 	
 	import flash.display.DisplayObject;
 	import flash.display.GradientType;
@@ -43,6 +43,8 @@ package components.views.ModuleGraph
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
+	
+	import flexunit.framework.Assert;
 	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
@@ -224,6 +226,22 @@ package components.views.ModuleGraph
 			return _outputPins[ 0 ].linkPoint;
 		}
 		
+		
+		public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			if( event.target == _liveButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleLiveViewButton" );
+			}
+			else
+			{
+				var moduleInstance:ModuleInstance = _model.getModuleInstance( _moduleID );
+				Assert.assertNotNull( moduleInstance );
+			
+				return moduleInstance.interfaceDefinition.interfaceInfo.info;
+			}
+		}
+
 		
 		override public function styleChanged( style:String ):void
 		{

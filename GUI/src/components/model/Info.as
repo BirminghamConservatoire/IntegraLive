@@ -95,15 +95,25 @@ package components.model
 		
 		private function addSpacingParagraphs( html:String ):String
 		{
-			//add an extra paragraph with class='space' to each paragraph and list, 
+			//add an extra paragraph with class='space' to each paragraph, list, and heading 
 			//because as3 doesn't allow vertical paragraph margins.  This allows us to style our own
-			var replaceAllCloseP:RegExp = /<\/p>/gi;
-			var replaceAllCloseUL:RegExp = /<\/ul>/gi;
-			var replaceAllCloseOL:RegExp = /<\/ol>/gi;
+			const replaceAllCloseP:RegExp = /<\/p>/gi;
+			const replaceAllCloseUL:RegExp = /<\/ul>/gi;
+			const replaceAllCloseOL:RegExp = /<\/ol>/gi;
 			
-			html = html.replace( replaceAllCloseP, "</p><p class='space'></p>" );
-			html = html.replace( replaceAllCloseUL, "</ul><p class='space'></p>" );
-			html = html.replace( replaceAllCloseOL, "</ol><p class='space'></p>" );
+			const spacerParagraph:String = "<p class='space'></p>";			
+			
+			html = html.replace( replaceAllCloseP, "</p>" + spacerParagraph );
+			html = html.replace( replaceAllCloseUL, "</ul>" + spacerParagraph );
+			html = html.replace( replaceAllCloseOL, "</ol>" + spacerParagraph );
+
+			for( var headingLevel:int = 1; headingLevel <= 6; headingLevel++ )
+			{
+				var closeHeadingTag:String = "</h" + String( headingLevel ) + ">";
+				
+				var replaceAllCloseHeading:RegExp = new RegExp( closeHeadingTag, "gi" ); 
+				html = html.replace( replaceAllCloseHeading, closeHeadingTag + spacerParagraph );
+			}
 			
 			return html;
 		}

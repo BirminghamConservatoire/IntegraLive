@@ -21,8 +21,9 @@
 
 package components.model.interfaceDefinitions
 {
-	import flexunit.framework.Assert;
 	import components.model.Info;
+	
+	import flexunit.framework.Assert;
 	
 	
 	public class EndpointDefinition
@@ -63,18 +64,8 @@ package components.model.interfaceDefinitions
 		
 		
 		public function set name( name:String ):void				{ _name = name; }
-		public function set label( label:String	):void				
-		{
-			_label = label; 
-			_info.title = label;
-		}
-		
-		
-		public function set description( description:String	):void	
-		{ 
-			_description = description; 
-			_info.markdown = description;
-		}
+		public function set label( label:String	):void				{ _label = label; } 
+		public function set description( description:String	):void	{ _description = description; }
 		
 		
 		public function set controlInfo( controlInfo:ControlInfo ):void		
@@ -99,8 +90,6 @@ package components.model.interfaceDefinitions
 		private var _type:String;
 		private var _controlInfo:ControlInfo = null;
 		private var _streamInfo:StreamInfo = null;
-		
-		private var _info:Info = new Info;
 		
 		public static const CONTROL:String = "control";
 		public static const STREAM:String = "stream";

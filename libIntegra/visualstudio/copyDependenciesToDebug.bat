@@ -22,10 +22,10 @@ copy "..\..\host\Pd\Integra_Host.pd" "..\..\build\Debug\host\extra"
 
 rd /s /q ..\..\build\Debug\gui\BlockLibrary
 mkdir ..\..\build\Debug\gui\BlockLibrary
-xcopy "..\..\modules\XML\collections\blocks" "..\..\build\Debug\gui\BlockLibrary" /E /Y /Q
+xcopy "..\..\blocks" "..\..\build\Debug\gui\BlockLibrary" /E /Y /Q
 
 rd /s /q ..\..\build\Debug\gui-debug\BlockLibrary
 mkdir ..\..\build\Debug\gui-debug\BlockLibrary
-xcopy "..\..\modules\XML\collections\blocks" "..\..\build\Debug\gui-debug\BlockLibrary" /E /Y /Q
+xcopy "..\..\blocks" "..\..\build\Debug\gui-debug\BlockLibrary" /E /Y /Q
 
 CALL documentation_deployment\compileAllDocumentation.bat ..\..\build\Debug\

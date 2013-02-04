@@ -290,6 +290,11 @@ package components.views.InfoView
 			{
 				setFocus();
 			}
+			
+			if( _gotFocus && event.keyCode == _unfocusKey )
+			{
+				loseFocus();
+			}
 		}		
 		
 		
@@ -519,6 +524,7 @@ package components.views.InfoView
 		
 		private static const _focusPromptText:String = "Press F2 for focus";
 		private static const _focusKey:uint = Keyboard.F2;
+		private static const _unfocusKey:uint = Keyboard.ESCAPE;
 		
 		private static const _editButtonText:String = "Edit";
 	}

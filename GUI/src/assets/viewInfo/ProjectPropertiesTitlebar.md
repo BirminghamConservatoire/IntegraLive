@@ -1,5 +1,4 @@
-# Arrange View Properties
-## Selection: Project
+# Project Properties
 
 The controls on this title bar allow you to control the use of MIDI input for moving through your Project's Scenes.
 

@@ -31,6 +31,7 @@ package components.utils
 	import components.controller.userDataCommands.ToggleLiveViewControl;
 	import components.model.Connection;
 	import components.model.Envelope;
+	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
@@ -43,6 +44,7 @@ package components.utils
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.ColorScheme;
 	import components.model.userData.LiveViewControl;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.MouseCapture;
 	import components.views.Skins.TickButtonSkin;
 	
@@ -128,13 +130,15 @@ package components.utils
 			addEventListener( Event.RESIZE, onResize );
 			
 			updateBevelFilter();
+			
+			buildInfo();
 		}
 
-		public function get module():ModuleInstance { return _module; }
-		public function get widget():WidgetDefinition { return _widget; }
+		public function get module():ModuleInstance 				{ return _module; }
+		public function get widget():WidgetDefinition				{ return _widget; }
 		
-		public static function get marginSizeWithoutLabel():Point { return new Point( sidePadding * 2, topPadding + bottomPadding ); }
-		public static function get marginSizeWithLabel():Point { return marginSizeWithoutLabel.add( new Point( 0, controlLabelHeight ) ); }
+		public static function get marginSizeWithoutLabel():Point 	{ return new Point( sidePadding * 2, topPadding + bottomPadding ); }
+		public static function get marginSizeWithLabel():Point 		{ return marginSizeWithoutLabel.add( new Point( 0, controlLabelHeight ) ); }
 
 		
 		public function updateOnModuleAttributeChanged( controllerCommandID:int ):void
@@ -349,6 +353,19 @@ package components.utils
 			updatePadlockImage();
         }
 
+		
+		public function getInfoToDisplay( event:MouseEvent ):Info 						
+		{
+			if( event.target == _includeInLiveViewButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ControlLiveViewButton" );
+			}
+			else
+			{
+				return _info;
+			}
+		}
+		
 
         private function updatePadlockImage():void
         {
@@ -1520,6 +1537,25 @@ package components.utils
 		} 
 		
 		
+		private function buildInfo():void
+		{
+			_info = new Info();
+			_info.title = _module.interfaceDefinition.interfaceInfo.label;
+
+			var markdown:String = "";
+			
+			for( var widgetAttributeName:String in _widget.attributeToEndpointMap )
+			{
+				var endpointDefinition:EndpointDefinition = getEndpointDefinitionFromWidgetAttribute( widgetAttributeName );
+				
+				markdown += ( "## " + endpointDefinition.label + "\n" );
+				markdown += ( endpointDefinition.description + "\n\n" );
+			}
+			
+			_info.markdown = markdown;
+		}
+		
+		
 		private var _module:ModuleInstance;
 		private var _widget:WidgetDefinition;
 		private var _model:IntegraModel;
@@ -1552,6 +1588,8 @@ package components.utils
 
 		private var _bottomBackgroundColor:uint = 0;
 		private var _topBackgroundColor:uint = 0;
+		
+		private var _info:Info = null;
 
 		private static const topPadding:Number = 14;
 		private static const sidePadding:Number = 8;

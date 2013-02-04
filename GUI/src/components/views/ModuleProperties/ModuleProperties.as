@@ -33,21 +33,24 @@ package components.views.ModuleProperties
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.controller.userDataCommands.SetTrackColor;
 	import components.controller.userDataCommands.ToggleLiveViewControl;
-	import components.model.interfaceDefinitions.InterfaceDefinition;
-	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.Block;
-	import components.model.interfaceDefinitions.EndpointDefinition;
-	import components.model.interfaceDefinitions.WidgetDefinition;
-	import components.model.interfaceDefinitions.StateInfo;
+	import components.model.Info;
 	import components.model.ModuleInstance;
 	import components.model.Track;
+	import components.model.interfaceDefinitions.EndpointDefinition;
+	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.interfaceDefinitions.StateInfo;
+	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.ColorScheme;
 	import components.model.userData.LiveViewControl;
 	import components.utils.ControlContainer;
 	import components.utils.ControlMeasurer;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	
+	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -127,6 +130,23 @@ package components.views.ModuleProperties
 				case ColorScheme.DARK:
 					return 0x8c8c8c;
 			}
+		}
+		
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			if( !_module )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleProperties" );
+			}
+			
+			var control:ControlContainer = Utilities.getAncestorByType( event.target, ControlContainer ) as ControlContainer;
+			if( !control ) 
+			{
+				return _module.interfaceDefinition.interfaceInfo.info;
+			}
+			
+			return control.getInfoToDisplay( event );
 		}
 	
 	

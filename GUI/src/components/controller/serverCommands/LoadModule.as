@@ -72,7 +72,7 @@ package components.controller.serverCommands
 			
 			if( !_moduleName )
 			{
-				_moduleName = model.getBlock( blockID ).getNewChildName( interfaceDefinition.info.name, _interfaceGuid ); 
+				_moduleName = model.getBlock( blockID ).getNewChildName( interfaceDefinition.interfaceInfo.name, _interfaceGuid ); 
 			}	
 			
 			return true;				

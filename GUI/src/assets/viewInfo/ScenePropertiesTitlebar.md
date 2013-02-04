@@ -1,5 +1,4 @@
-# Arrange View Properties
-## Selection: Scene
+# Scene Properties
 The controls on this title bar allow you to configure Scenes.
 
 ### State

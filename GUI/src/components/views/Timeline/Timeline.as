@@ -164,16 +164,10 @@ package components.views.Timeline
 			
 			if( mouseY < _markingBottom )
 			{
-				for( var iterator:DisplayObject = event.target as DisplayObject; iterator && iterator != this; iterator = iterator.parent )
+				var sceneBar:SceneBar = Utilities.getAncestorByType( event.target, SceneBar ) as SceneBar;
+				if( sceneBar && sceneBar.hasOwnProperty( "id" ) && int( sceneBar.id ) >= 0 )
 				{
-					if( iterator is SceneBar )
-					{
-						var sceneBar:SceneBar = iterator as SceneBar;
-						if( sceneBar.hasOwnProperty( "id" ) && int( sceneBar.id ) >= 0 ) 
-						{
-							return model.getScene( int( ( iterator as SceneBar ).id ) ).info;
-						}
-					}
+					return model.getScene( int( sceneBar.id ) ).info;
 				}
 				
 				if( _editable )

@@ -958,9 +958,9 @@ package components.model
 			
 			if( interfaceDefinition.isCore )
 			{
-				Assert.assertFalse( _coreInterfaceDefinitionsByName.hasOwnProperty( interfaceDefinition.info.name ) );
+				Assert.assertFalse( _coreInterfaceDefinitionsByName.hasOwnProperty( interfaceDefinition.interfaceInfo.name ) );
 				
-				_coreInterfaceDefinitionsByName[ interfaceDefinition.info.name ] = interfaceDefinition;
+				_coreInterfaceDefinitionsByName[ interfaceDefinition.interfaceInfo.name ] = interfaceDefinition;
 			}
 		}
 		

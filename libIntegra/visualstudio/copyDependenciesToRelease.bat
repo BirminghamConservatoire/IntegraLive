@@ -22,6 +22,6 @@ copy "..\..\host\Pd\Integra_Host.pd" "..\..\build\Release\host\extra"
 
 rd /s /q ..\..\build\Release\gui\BlockLibrary
 mkdir ..\..\build\Release\gui\BlockLibrary
-xcopy "..\..\modules\XML\collections\blocks" "..\..\build\Release\gui\BlockLibrary" /E /Y /Q
+xcopy "..\..\blocks" "..\..\build\Release\gui\BlockLibrary" /E /Y /Q
 
 CALL documentation_deployment\compileAllDocumentation.bat ..\..\build\Release\

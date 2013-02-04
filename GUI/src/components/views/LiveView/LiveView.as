@@ -28,9 +28,13 @@ package components.views.LiveView
 	import components.controller.serverCommands.SetTrackOrder;
 	import components.controller.userDataCommands.SetTrackExpanded;
 	import components.model.Block;
+	import components.model.Info;
 	import components.model.Track;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.viewContainers.ViewTree;
+	
+	import flash.events.MouseEvent;
 	
 	import flexunit.framework.Assert;
 	
@@ -78,6 +82,12 @@ package components.views.LiveView
 			super.styleChanged( style );
 		} 
 
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			return InfoMarkupForViews.instance.getInfoForView( "LiveView" );
+		}
+		
 
 		override protected function onAllDataChanged():void
 		{

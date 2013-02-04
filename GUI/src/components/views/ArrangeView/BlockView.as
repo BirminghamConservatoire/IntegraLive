@@ -41,12 +41,12 @@ package components.views.ArrangeView
 	import components.utils.CursorSetter;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	import components.views.Skins.AddButtonSkin;
 	import components.views.Skins.CurveButtonSkin;
 	import components.views.Skins.LockButtonSkin;
-	import components.views.InfoView.InfoMarkupForViews;
 	
 	import flash.display.GradientType;
 	import flash.display.Stage;
@@ -159,6 +159,33 @@ package components.views.ArrangeView
 		
 		override public function getInfoToDisplay( event:MouseEvent ):Info 
 		{
+			if( getEnvelopeViewForClick() != null )
+			{
+				if( _curvatureModeButton.selected )
+				{
+					return InfoMarkupForViews.instance.getInfoForView( "EnvelopeInCurvatureMode" );
+				}
+				else				
+				{
+					return InfoMarkupForViews.instance.getInfoForView( "Envelope" );
+				}
+			}
+			
+			if( event.target == _openButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "OpenBlockButton" );				
+			}
+
+			if( event.target == _envelopeLockButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "EnvelopeLockButton" );				
+			}
+
+			if( event.target == _curvatureModeButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "CurvatureModeButton" );				
+			}
+			
 			return model.getBlock( _blockID ).info; 
 		}
 		

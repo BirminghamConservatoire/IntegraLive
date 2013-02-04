@@ -90,6 +90,7 @@
 			import mx.events.CloseEvent;
 			import mx.managers.FocusManager;
 			import mx.managers.PopUpManager;
+			import mx.managers.SystemManager;
 			import mx.managers.ToolTipManager;
 
 			
@@ -1042,8 +1043,20 @@
 			private function onStageMouseMove( event:MouseEvent ):void
 			{
 				var displayedInfo:Info = null;
+
+				function effectiveParent( child:DisplayObject ):DisplayObject 
+				{
+					if( child is UIComponent && child.parent is SystemManager  )
+					{
+						return ( child as UIComponent ).automationOwner;
+					}
+					else
+					{
+						return child.parent;
+					}
+				}
 				
-				for( var ancestorWalker:DisplayObject = event.target as DisplayObject; ancestorWalker && ancestorWalker != this; ancestorWalker = ancestorWalker.parent )
+				for( var ancestorWalker:DisplayObject = event.target as DisplayObject; ancestorWalker && ancestorWalker != this; ancestorWalker = effectiveParent( ancestorWalker ) )
 				{
 					if( ancestorWalker is IntegraView )
 					{
@@ -1061,7 +1074,6 @@
 						{
 							break;
 						}
-						break;
 					}
 				}
 				

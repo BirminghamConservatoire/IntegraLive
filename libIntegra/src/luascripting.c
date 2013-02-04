@@ -211,7 +211,12 @@ static int ilua_set( lua_State * L )
 
 	assert( context_stack && context_stack->parent_path );
 
-	ilua_check_num_arguments(L, 3);
+	ilua_check_num_arguments(L, 2);//
+	{
+		char *path = ilua_get_string( L, 1 );//
+
+		return 0;//
+	}
 
     received_path = ntg_path_from_string( ilua_get_string( L, 1 ) );
     ntg_path_append_element( received_path, ilua_get_string( L, 2 ) );
@@ -324,7 +329,10 @@ static int ilua_get(lua_State * L)
     path = ntg_path_copy( context_stack->parent_path );
     for(i = 1; i <= num_arguments; i++) 
 	{
-        ntg_path_append_element( path, ilua_get_string( L, i ) );
+		const char *path = ilua_get_string( L, i );//
+		return 1;
+
+		//ntg_path_append_element( path, ilua_get_string( L, i ) );
     }
 
 	node_path = ntg_path_copy( path );

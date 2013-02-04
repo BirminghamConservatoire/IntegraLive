@@ -405,25 +405,25 @@ package components.model.modelLoader
 			var interfaceDefinition:InterfaceDefinition = new InterfaceDefinition;
 			interfaceDefinition.guid = interfaceGuid;
 			
-			interfaceDefinition.info.name = info.name;
-			interfaceDefinition.info.label = info.label;
-			interfaceDefinition.info.description = info.description;
+			interfaceDefinition.interfaceInfo.name = info.name;
+			interfaceDefinition.interfaceInfo.label = info.label;
+			interfaceDefinition.interfaceInfo.description = info.description;
 			
 			for each( var tag:String in info.tags )
 			{
-				interfaceDefinition.info.tags.push( tag );
+				interfaceDefinition.interfaceInfo.tags.push( tag );
 			}
 			
-			interfaceDefinition.info.implementedInLibintegra = ( info.implementedinlibintegra > 0 );
+			interfaceDefinition.interfaceInfo.implementedInLibintegra = ( info.implementedinlibintegra > 0 );
 
 			for each( var implementation:String in info.implementations )
 			{
-				interfaceDefinition.info.implementationList.push( implementation );
+				interfaceDefinition.interfaceInfo.implementationList.push( implementation );
 			}
 			
-			interfaceDefinition.info.author = info.author;
-			interfaceDefinition.info.createdDate = parseDateTime( info.createddate );
-			interfaceDefinition.info.modifiedDate = parseDateTime( info.modifieddate );
+			interfaceDefinition.interfaceInfo.author = info.author;
+			interfaceDefinition.interfaceInfo.createdDate = parseDateTime( info.createddate );
+			interfaceDefinition.interfaceInfo.modifiedDate = parseDateTime( info.modifieddate );
 			
 			_model.addInterfaceDefinition( interfaceDefinition );
 		}
@@ -652,7 +652,7 @@ package components.model.modelLoader
 					continue;
 				}
 				
-				var interfaceName:String = interfaceDefinition.info.name;
+				var interfaceName:String = interfaceDefinition.interfaceInfo.name;
 
 				var path:Array = node.path;
 				var hierarchyLevel:uint = path.length;
@@ -1080,7 +1080,7 @@ package components.model.modelLoader
 		
 		private function foundExtraneousNode( path:Array, interfaceDefinition:InterfaceDefinition, comment:String ):void
 		{
-			Trace.error( "Found extraneous node.  Path = " + path.join( "." ) + ", classname = " + interfaceDefinition.info.name + ", comment = " + comment );			
+			Trace.error( "Found extraneous node.  Path = " + path.join( "." ) + ", classname = " + interfaceDefinition.interfaceInfo.name + ", comment = " + comment );			
 		}
 		
 		

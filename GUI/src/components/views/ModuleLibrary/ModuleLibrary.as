@@ -21,23 +21,32 @@
 
 package components.views.ModuleLibrary
 {
+	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.InterfaceInfo;
 	import components.model.interfaceDefinitions.StreamInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.LibraryRenderer;
+	import components.utils.Trace;
 	import components.utils.Utilities;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
+	
+	import flash.display.DisplayObject;
+	import flash.events.MouseEvent;
 	
 	import flexunit.framework.Assert;
 	
+	import mx.collections.IList;
 	import mx.controls.List;
+	import mx.controls.listClasses.IListItemRenderer;
 	import mx.core.ClassFactory;
 	import mx.core.DragSource;
 	import mx.core.IFlexDisplayObject;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
+	import mx.events.ListEvent;
 	import mx.managers.DragManager;
 	import mx.utils.ObjectProxy;
 
@@ -71,6 +80,40 @@ package components.views.ModuleLibrary
 
 		override public function get isSidebarColours():Boolean { return true; }
 
+
+		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		{
+			var items:IList = _moduleList.dataProvider as IList;
+			Assert.assertNotNull( items );
+			
+			var numberOfItems:int = items.length;
+			if( numberOfItems == 0 )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary" );
+			}
+			
+			var lastRenderer:IListItemRenderer = _moduleList.indexToItemRenderer( numberOfItems - 1 );
+			if( lastRenderer && mouseY >= lastRenderer.getRect( this ).bottom )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary" );
+			}
+
+			var libraryRenderer:LibraryRenderer = Utilities.getAncestorByType( event.target as DisplayObject, LibraryRenderer ) as LibraryRenderer;
+			if( libraryRenderer )
+			{
+				var index:int = _moduleList.itemRendererToIndex( libraryRenderer );
+				Assert.assertTrue( index >= 0 );
+				
+				var interfaceDefinition:InterfaceDefinition = getInterfaceFromListItem( items.getItemAt( index ) ); 
+				Assert.assertNotNull( interfaceDefinition );
+				
+				_hoverInfo = interfaceDefinition.interfaceInfo.info;
+			}
+
+			return _hoverInfo;
+		}		
+		
+		
 		override public function styleChanged( style:String ):void
 		{
 			if( !style || style == ColorScheme.STYLENAME )
@@ -105,7 +148,7 @@ package components.views.ModuleLibrary
 
 				if( interfaceDefinition.hasAudioEndpoints )
 				{
-					listData.push( new ObjectProxy( new ModuleLibraryListEntry( interfaceDefinition.info.label, guid ) ) );
+					listData.push( new ObjectProxy( new ModuleLibraryListEntry( interfaceDefinition.interfaceInfo.label, guid ) ) );
 				}
 			}
 			
@@ -116,13 +159,7 @@ package components.views.ModuleLibrary
 		
 		private function onDragStart( event:DragEvent ):void
 		{
-			var objectProxy:ObjectProxy = _moduleList.selectedItem as ObjectProxy;
-			Assert.assertNotNull( objectProxy );
-			
-			var item:ModuleLibraryListEntry = objectProxy.valueOf() as ModuleLibraryListEntry;
-			Assert.assertNotNull( item );
-			
-			var draggedInterfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByGuid( item.guid );
+			var draggedInterfaceDefinition:InterfaceDefinition = getInterfaceFromListItem( _moduleList.selectedItem );
 			Assert.assertNotNull( draggedInterfaceDefinition );
 			
 			var dragSource:DragSource = new DragSource();
@@ -139,8 +176,27 @@ package components.views.ModuleLibrary
 
 			return dragImage;
 		}
+		
+
+		private function getInterfaceFromListItem( listItem:Object ):InterfaceDefinition 
+		{
+			if( !listItem ) return null;
+			
+			var objectProxy:ObjectProxy = listItem as ObjectProxy;
+			Assert.assertNotNull( objectProxy );
+			
+			var item:ModuleLibraryListEntry = objectProxy.valueOf() as ModuleLibraryListEntry;
+			Assert.assertNotNull( item );
+			
+			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByGuid( item.guid );
+			Assert.assertNotNull( interfaceDefinition );
+			
+			return interfaceDefinition;
+		}
 
 				
 		private var _moduleList:List;
+		
+		private var _hoverInfo:Info = null;
 	}
 }

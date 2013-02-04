@@ -38,6 +38,7 @@ package components.model.interfaceDefinitions
 		public function get author():String							{ return _author; }
 		public function get createdDate():Date						{ return _createdDate; }
 		public function get modifiedDate():Date 					{ return _modifiedDate; }
+		public function get info():Info								{ return _info; }
 		
 		public function set name( name:String ):void 				{ _name = name; }
 		public function set label( label:String ):void 				

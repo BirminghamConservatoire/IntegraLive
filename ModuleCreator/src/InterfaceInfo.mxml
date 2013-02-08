@@ -27,9 +27,10 @@
 			<mx:Label text="Interface Description" width="{Globals.labelColumnWidth()}" textAlign="right"/>
 			<mx:TextArea id="_iidDescription" 
 						  	change="{interfaceChanged();}"
+							focusIn="{onFocusInDescription();}"
 							width="{Globals.propertyColumnWidth()}"
 							height="{Globals.descriptionHeight}"							
-							toolTip="please describe the interface"/>
+							toolTip="Describe the interface, in plain text or 'markdown'.  The popup-panel displays a preview of how the rendered markdown will look"/>
 		</mx:HBox>
 		<mx:HBox>
 				<mx:Label text="Tags" width="{Globals.labelColumnWidth()}" textAlign="right"/>
@@ -80,6 +81,7 @@
 			import mx.controls.Alert;
 			import mx.core.UIComponent;
 			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
 			
 			
 			public function doInitialize():void
@@ -478,6 +480,27 @@
 				dispatchEvent( new Event( Globals.modifiedEvent ) );
 				validateContent();
 			}
+
+			
+			private function onFocusInDescription():void
+			{
+				if( !_markdownPreview )
+				{
+					_markdownPreview = new MarkdownPreviewPanel;
+					_markdownPreview.show( _iidDescription, _iidLabel.text.length > 0 ? _iidLabel.text : _iidName.text );
+					_markdownPreview.addEventListener( MarkdownPreviewPanel.FINISHED_EVENT, onMarkdownPreviewFinished );
+
+				}
+			}
+			
+			
+			private function onMarkdownPreviewFinished( event:Event ):void
+			{
+				Assert.assertNotNull( _markdownPreview );
+
+				_markdownPreview.removeEventListener( MarkdownPreviewPanel.FINISHED_EVENT, onMarkdownPreviewFinished );
+				_markdownPreview = null;
+			}
 			
 			
 			private var _createdDate:Date = new Date;
@@ -486,10 +509,10 @@
 			private var _newTagIndex:int = 1;
 			private var _tagSelected:Boolean = false;
 
+			private var _markdownPreview:MarkdownPreviewPanel = null;
+			
 			private const _coreTag:String = "core";
 			private const _maxNumberOfTags:uint = 20;
-			
-			
 		]]>
 	</fx:Script>			
 	

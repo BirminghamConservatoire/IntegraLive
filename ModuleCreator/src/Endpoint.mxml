@@ -27,9 +27,10 @@
 				<mx:Label text="Endpoint Description" width="{_labelColumnWidth}" textAlign="right"/>
 				<mx:TextArea id="_endpointDescription" 
 							 change="{interfaceChanged();}"
+							 focusIn="{onFocusInDescription();}"
 							 width="{Globals.propertyColumnWidth()}"
 							 height="{Globals.descriptionHeight}"							
-							 toolTip="please describe the endpoint"/>
+							 toolTip="Describe the interface, in plain text or 'markdown'.  The popup-panel displays a preview of how the rendered markdown will look"/>
 			</mx:HBox>
 			<mx:HBox>
 				<mx:Label text="Endpoint Type" width="{_labelColumnWidth}" textAlign="right"/>
@@ -445,7 +446,30 @@
 			}			
 
 			
+			private function onFocusInDescription():void
+			{
+				if( !_markdownPreview )
+				{
+					_markdownPreview = new MarkdownPreviewPanel;
+					_markdownPreview.show( _endpointDescription, _endpointLabel.text.length > 0 ? _endpointLabel.text : _endpointName.text );
+					_markdownPreview.addEventListener( MarkdownPreviewPanel.FINISHED_EVENT, onMarkdownPreviewFinished );
+					
+				}
+			}
+			
+			
+			private function onMarkdownPreviewFinished( event:Event ):void
+			{
+				Assert.assertNotNull( _markdownPreview );
+				
+				_markdownPreview.removeEventListener( MarkdownPreviewPanel.FINISHED_EVENT, onMarkdownPreviewFinished );
+				_markdownPreview = null;
+			}
+			
+			
 			private var _widgetLayout:WidgetLayout;
+			
+			private var _markdownPreview:MarkdownPreviewPanel = null;
 
 			private const _controlLabel:String = "Control";
 			private const _streamLabel:String = "Stream";

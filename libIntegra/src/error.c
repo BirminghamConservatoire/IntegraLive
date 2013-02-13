@@ -32,7 +32,7 @@
 #endif
 
 
-char *ntg_error_text( ntg_error_code error_code )
+const char *ntg_error_text( ntg_error_code error_code )
 {
     switch( error_code ) 
 	{

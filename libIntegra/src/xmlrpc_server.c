@@ -118,7 +118,7 @@ static xmlrpc_value *ntg_xmlrpc_error(xmlrpc_env * env,
 {
 
     xmlrpc_value *struct_, *xmlrpc_temp;
-    char *error_text;
+    const char *error_text;
 
     struct_ = xmlrpc_struct_new(env);
     error_text = ntg_error_text(error_code);

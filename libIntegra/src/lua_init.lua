@@ -35,25 +35,65 @@ global_get = get
 -- get = integra.get
 
 
+
 -- Makes it possible to use integra node names as normal variables. (at least as long as
 -- there isn't a lua variable with the same name but with a different value.)
 -- Example:
---   new("Delay")
---   new("Flanger")
 --   Delay1.in1=Flanger3.out1
+
+
+Track1 = {}
+Track1[ "Block1" ] = {}
+Track1[ "Block1" ][ "AudioIn1" ] = {}
+
+
+setmetatable( Track1[ "Block1" ][ "AudioIn1" ],
+{
+	__index = function( _, attribute )
+		return integra.get( "Track1", "Block1", "AudioIn1", attribute )
+	end,
+
+	__newindex = function( _, attribute, value )
+		integra.set( "Track1", "Block1", "AudioIn1", attribute, value )
+	end
+})
+
+setmetatable( Track1[ "Block1" ],
+{
+	__index = function( _, attribute )
+		return integra.get( "Track1", "Block1", attribute )
+	end,
+
+	__newindex = function( _, attribute, value )
+		integra.set( "Track1", "Block1", attribute, value )
+	end
+})
+
+setmetatable( Track1,
+{
+	__index = function( _, attribute )
+		return integra.get( "Track1", attribute )
+	end,
+
+	__newindex = function( _, attribute, value )
+		integra.set( "Track1", attribute, value )
+	end
+})
+
+
+
+
+--[[
+
 setmetatable(_G,
 {
-    __index    = function(_,node_name)
-        local ret = {};
-        setmetatable(ret,
-        {
-            __newindex    = function(node,attribute_name,value)
-                integra.set(node_name,attribute_name,value)
-            end,
-            __index    = function(node,attribute_name)
-                return integra.get(node_name,attribute_name)
-            end
-        })
-        return ret;
-    end
-})
+	__index = function( _, attribute )
+		return integra.get( attribute )
+	end,
+
+	__newindex = function( _, attribute, value )
+		integra.set( attribute, value )
+	end
+}) 
+
+]]

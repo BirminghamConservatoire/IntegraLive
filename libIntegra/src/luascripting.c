@@ -162,83 +162,50 @@ static float ilua_get_double(lua_State * L, int argnum)
 }
 
 
-static void pcall_with_error_checking( lua_State * L, int nargs, int nresults, int errfunc )
-{
-	const char* error_message = NULL;
-	int error_value = lua_pcall( L, nargs, nresults, errfunc );
-
-	switch( error_value )
-	{
-		case 0:
-			//success
-			break;
-
-		case LUA_ERRRUN:
-			error_message = lua_tostring(L, -1);
-			error_handler( "lua runtime error: %s", error_message );
-			break;
-
-		case LUA_ERRMEM:
-			error_message = lua_tostring(L, -1);
-			error_handler( "lua memory allocation error: %s", error_message );
-			break;
-
-		case LUA_ERRERR:
-			error_message = lua_tostring(L, -1);
-			error_handler( "lua error running error handler: %s", error_message );
-			break;
-
-		default:
-			//unrecognised error
-			error_handler( "unrecognised error" );
-			break;
-	}
-}
-
-
 static int ilua_set( lua_State * L )
 {
     ntg_path *path = NULL;
 	ntg_path *node_path = NULL;
-	ntg_path *received_path = NULL;
     ntg_value *value = NULL;
 	char *attribute_name = NULL;
 	const ntg_node *node = NULL;
 	const ntg_node_attribute *attribute = NULL;
 	ntg_value *converted_value = NULL;
+	ntg_command_status set_result;
+	int num_arguments;
+	int i;
     float value_f;
     const char *value_s;
 
 	assert( context_stack && context_stack->parent_path );
 
-	ilua_check_num_arguments(L, 3);
+	num_arguments = lua_gettop( L );
+	if( num_arguments < 2 )
+	{
+		error_handler( "Insufficient arguments passed to ilua_set" );
+		goto CLEANUP;
+	}
 
-    received_path = ntg_path_from_string( ilua_get_string( L, 1 ) );
-    ntg_path_append_element( received_path, ilua_get_string( L, 2 ) );
-    path = ntg_path_join( context_stack->parent_path, received_path );
-    ntg_path_free(received_path);
-
-    switch( lua_type( L, 3 ) ) 
+    path = ntg_path_copy( context_stack->parent_path );
+    for( i = 1; i <= num_arguments - 1; i++) 
+	{
+        ntg_path_append_element( path, ilua_get_string( L, i ) );
+    }
+	
+    switch( lua_type( L, num_arguments ) ) 
 	{
         case LUA_TNUMBER:
-            value_f = ilua_get_float(L, 3);
+            value_f = ilua_get_float(L, num_arguments);
             value = ntg_value_new(NTG_FLOAT, &value_f);
             break;
         case LUA_TSTRING:
-            value_s = ilua_get_string(L, 3);
+            value_s = ilua_get_string(L, num_arguments);
             value = ntg_value_new(NTG_STRING, value_s);
             break;
         default:
-             error_handler( "Illegal value sent to integra.set. (\"%s\")\n",
-                    lua_typename(L, lua_type(L, 3)));
-            break;
+			error_handler( "Set %s received illegal value (\"%s\")\n", path->string, lua_typename( L, lua_type( L, num_arguments ) ) );
+			goto CLEANUP;
     }
-
-	if( !value )
-	{
-		error_handler( "No value provided" );
-		goto CLEANUP;
-	}
 
 	node_path = ntg_path_copy( path );
 	attribute_name = ntg_path_pop_element( node_path );
@@ -278,10 +245,10 @@ static int ilua_set( lua_State * L )
 
 		converted_value = ntg_value_change_type( value, attribute->value->type );
 
-		ntg_set_( server_, NTG_SOURCE_SCRIPT, path, converted_value );
-
 		ntg_value_sprintf( value_string, converted_value );
-		progress_handler( "Set endpoint %s to %s", path->string, value_string );
+		progress_handler( "Setting endpoint %s to %s...", path->string, value_string );
+
+		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, converted_value );
 
 		ntg_value_free(converted_value);
 	}
@@ -289,9 +256,13 @@ static int ilua_set( lua_State * L )
 	{
 		assert( attribute->endpoint->control_info->type == NTG_BANG );
 
-		ntg_set_( server_, NTG_SOURCE_SCRIPT, path, NULL );
+		progress_handler( "Sending bang to endpoint %s...", path->string );
+		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, NULL );
+	}
 
-		progress_handler( "Sent bang to endpoint %s", path->string );
+	if( set_result.error_code != NTG_NO_ERROR )
+	{
+		error_handler( "failed: %s", ntg_error_text( set_result.error_code ) );
 	}
 
 	CLEANUP:
@@ -407,48 +378,210 @@ static const luaL_Reg ilua_funcreg[] =
 };
 
 
-lua_State *ntg_lua_state = NULL; /* Secret global variable. Set this one before calling ntg_server_run to avoid creating a new state. */
-
-
-bool init_luascripting(ntg_server * server)
+char *get_lua_object_name( const ntg_path *child_path, const ntg_path *parent_path )
 {
-	char *ilua_startup = NULL;
+	int i;
+	const char *path_element;
+	char *object_name = NULL;
+	char *new_object_name;
 
-    const char *ilua_init_traceeval =
-        "ilua_init_traceeval = function(code)\n"
-        "     local func,message=loadstring(code)\n"
-        "     if func==nil then\n"
-        "        print(message)\n"
-        "        os.exit(-2)\n"
-        "     end\n"
-        "     local status,message = xpcall(func,debug.traceback)\n"
-        "     if status==false then\n"
-        "        print(message)\n"
-        "        os.exit(-1)\n" "     end\n" "     return status\n" "  end\n";
+	assert( child_path && parent_path && child_path->n_elems > parent_path->n_elems );
 
-	ilua_startup = ntg_string_join(ilua_functionscode, ilua_initcode);
-
-    if( !ntg_lua_state )
+	for( i = parent_path->n_elems; i < child_path->n_elems; i++ )
 	{
-		ntg_lua_state = luaL_newstate();
+		path_element = child_path->elems[ i ];
+		if( !object_name )
+		{
+			object_name = ntg_strdup( path_element );
+		}
+		else
+		{
+			new_object_name = ntg_malloc( strlen( object_name ) + strlen( path_element ) + 5 );
+			sprintf( new_object_name, "%s[\"%s\"]", object_name, path_element );
+			ntg_free( object_name );
+			object_name = new_object_name;
+		}
 	}
-
-    luaL_openlibs( ntg_lua_state );
-    luaL_register( ntg_lua_state, "integra", ilua_funcreg );
-
-    luaL_loadbuffer( ntg_lua_state, ilua_init_traceeval, strlen( ilua_init_traceeval ), "ilua_init_traceeval" );
-    pcall_with_error_checking( ntg_lua_state , 0, 0, 0);
-
-    lua_getglobal( ntg_lua_state, "ilua_init_traceeval");
-    lua_pushstring( ntg_lua_state, ilua_startup );
-    pcall_with_error_checking( ntg_lua_state, 1, 1, 0);
-
-    ntg_free(ilua_startup);
-
-    return true;
+	
+	return object_name;
 }
 
 
+char *get_lua_parameter_string( const ntg_path *child_path, const ntg_path *parent_path )
+{
+	int i;
+	const char *path_element;
+	char *parameter_string;
+	char *new_parameter_string;
+
+	assert( child_path && parent_path && child_path->n_elems > parent_path->n_elems );
+
+	parameter_string = ntg_strdup( "" );
+
+	for( i = parent_path->n_elems; i < child_path->n_elems; i++ )
+	{
+		path_element = child_path->elems[ i ];
+
+		new_parameter_string = ntg_malloc( strlen( parameter_string ) + strlen( path_element ) + 5 );
+		sprintf( new_parameter_string, "%s\"%s\", ", parameter_string, path_element );
+		ntg_free( parameter_string );
+		parameter_string = new_parameter_string;
+	}
+	
+	return parameter_string;
+}
+
+
+char *declare_child_objects( char *init_script, const ntg_node *node, const ntg_path *parent_path )
+{
+	const ntg_node *child_iterator;
+	char *child_declaration;
+	const char *child_initializer = "={}\n";
+
+	assert( node && parent_path && parent_path->n_elems <= node->path->n_elems );
+
+	child_iterator = node->nodes;
+	if( child_iterator )
+	{
+		do 
+		{
+			//declare child object
+			child_declaration = get_lua_object_name( child_iterator->path, parent_path );
+			assert( child_declaration );
+
+			child_declaration = ntg_string_append( child_declaration, child_initializer );
+
+			init_script = ntg_string_append( init_script, child_declaration );
+			ntg_free( child_declaration );
+
+			init_script = declare_child_objects( init_script, child_iterator, parent_path );
+
+			child_iterator = child_iterator->next;
+
+		} 
+		while (child_iterator != node->nodes);
+	}
+
+	return init_script;
+}
+
+
+char *get_child_metatable( const ntg_node *node, const ntg_path *parent_path )
+{
+	char *object_name;
+	char *parameter_string;
+	char *metatable;
+	const char *metatable_template = 
+		"setmetatable(%s,\n"
+		"{\n"
+		"	__index=function(_,attribute)\n"
+		"		return integra.get(%sattribute )\n"
+		"	end,\n"
+		"	__newindex = function( _, attribute, value )\n"
+		"		integra.set( %sattribute, value )\n"
+		"	end\n"
+		"})\n";
+
+	assert( node && parent_path && parent_path->n_elems < node->path->n_elems );
+
+	object_name = get_lua_object_name( node->path, parent_path );
+	parameter_string = get_lua_parameter_string( node->path, parent_path );
+	assert( object_name && parameter_string );
+
+	metatable = ntg_malloc( strlen( metatable_template ) + strlen( object_name ) + strlen( parameter_string ) * 2 + 1 );
+	sprintf( metatable, metatable_template, object_name, parameter_string, parameter_string );
+
+	return metatable;
+}
+
+
+char *declare_child_metatables( char *init_script, const ntg_node *node, const ntg_path *parent_path )
+{
+	const ntg_node *child_iterator;
+	char *child_metatable;
+
+	assert( node && parent_path && parent_path->n_elems <= node->path->n_elems );
+
+	child_iterator = node->nodes;
+	if( child_iterator )
+	{
+		do 
+		{
+			child_metatable = get_child_metatable( child_iterator, parent_path );
+			assert( child_metatable );
+
+			init_script = ntg_string_append( init_script, child_metatable );
+			ntg_free( child_metatable );
+
+			init_script = declare_child_metatables( init_script, child_iterator, parent_path );
+
+			child_iterator = child_iterator->next;
+
+		} 
+		while (child_iterator != node->nodes);
+	}
+
+	return init_script;
+}
+
+
+char *build_init_script( const ntg_path *parent_path )
+{
+	char *init_script = NULL;
+	ntg_node *parent_node;
+
+	const char *global_metatable = 
+		"setmetatable(_G,\n"
+		"{\n"
+		"	__index = function( _, attribute )\n"
+		"		return integra.get( attribute )\n"
+		"	end,\n"
+		"	__newindex = function( _, attribute, value )\n"
+		"		integra.set( attribute, value )\n"
+		"	end\n"
+		"})\n";
+
+	assert( parent_path );
+
+	parent_node = ntg_node_find_by_path( parent_path, ntg_server_get_root( server_ ) );
+	if( !parent_node )
+	{
+		NTG_TRACE_ERROR_WITH_STRING( "Can't find node", parent_path->string );
+		return NULL;
+	}
+
+	init_script = declare_child_objects( NULL, parent_node, parent_path );
+	init_script = declare_child_metatables( init_script, parent_node, parent_path );
+	init_script = ntg_string_append( init_script, global_metatable );
+
+	return init_script;
+}
+
+
+lua_State *create_state( const ntg_path *parent_path )
+{
+	lua_State *state;
+	char *init_script = NULL;
+
+	assert( parent_path );
+
+	init_script = build_init_script( parent_path );
+	if( !init_script ) return NULL;
+
+	state = luaL_newstate();
+
+    luaL_openlibs( state );
+    luaL_register( state, "integra", ilua_funcreg );
+
+	if( luaL_dostring( state, init_script ) )
+	{
+		NTG_TRACE_ERROR_WITH_STRING( "Failed to initialize lua state", lua_tostring( state, -1 ) );
+	}
+
+	ntg_free( init_script );
+
+	return state;
+}
 
 
 /** \brief Evaluate a string containing lua code
@@ -461,6 +594,7 @@ bool init_luascripting(ntg_server * server)
  */
 char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 {
+	lua_State *state;
 	ntg_script_context_stack *context;
 	char *output = NULL;
 	time_t raw_time_stamp;
@@ -468,6 +602,11 @@ char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 	int timestamp_format_length = strlen( timestamp_format ) + 1;
 	
 	assert( parent_path && script_string );
+
+	/* initialize the state */
+
+	state = create_state( parent_path );
+	if( !state ) return "Error creating Lua State";
 
 	/* set the context */
 	time( &raw_time_stamp );
@@ -485,9 +624,9 @@ char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 
 	/* execute the script */
 
-	if( luaL_dostring( ntg_lua_state, script_string ) )
+	if( luaL_dostring( state, script_string ) )
 	{
-		error_handler( lua_tostring( ntg_lua_state, -1 ) );
+		error_handler( lua_tostring( state, -1 ) );
 	}
 
 	progress_handler( "_done_" );
@@ -499,6 +638,9 @@ char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 	output = context_stack->output;
 	context_stack = context_stack->next;
 	ntg_free( context );
+
+	/* free the state */
+	lua_close( state );
 
 	return output;
 }

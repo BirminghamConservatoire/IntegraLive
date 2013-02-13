@@ -390,10 +390,6 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 
     command_queue_ = ntg_queue_new(NTG_COMMAND_QUEUE_ELEMENTS);
 	
-#if BUILD_LUASCRIPTING
-    init_luascripting(server);
-#endif
-
     return server_;
 
 }

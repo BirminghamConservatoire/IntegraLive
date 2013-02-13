@@ -65,7 +65,7 @@ typedef enum ntg_error_code_ {
 } ntg_error_code;
 
 /** \brief returns a textual description of a given error code */
-LIBINTEGRA_API char *ntg_error_text(ntg_error_code error_code);
+LIBINTEGRA_API const char *ntg_error_text(ntg_error_code error_code);
 
 /*
  * Tracing System

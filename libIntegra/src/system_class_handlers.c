@@ -898,11 +898,6 @@ void ntg_script_trigger_handler( ntg_server *server, const ntg_node_attribute *a
 	char *script_output = NULL;
 	ntg_value *info_value;
 
-	if( !ntg_node_is_active( attribute->node ) )
-	{
-		return;
-	}
-
 #if BUILD_LUASCRIPTING
 
     text_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_TEXT );

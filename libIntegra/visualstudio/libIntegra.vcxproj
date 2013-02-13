@@ -84,7 +84,8 @@ call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
       </Command>
     </PreLinkEvent>
     <PreBuildEvent>
-      <Command>call autogenerateLuaFiles.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

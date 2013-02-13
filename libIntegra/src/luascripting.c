@@ -55,9 +55,6 @@
 #include "interface.h"
 #include "helper.h"
 
-#include "lua_init.c"
-#include "lua_functions.c"
-
 
 
 typedef struct ntg_script_context_stack_
@@ -192,21 +189,6 @@ static int ilua_set( lua_State * L )
         ntg_path_append_element( path, ilua_get_string( L, i ) );
     }
 	
-    switch( lua_type( L, num_arguments ) ) 
-	{
-        case LUA_TNUMBER:
-            value_f = ilua_get_float(L, num_arguments);
-            value = ntg_value_new(NTG_FLOAT, &value_f);
-            break;
-        case LUA_TSTRING:
-            value_s = ilua_get_string(L, num_arguments);
-            value = ntg_value_new(NTG_STRING, value_s);
-            break;
-        default:
-			error_handler( "Set %s received illegal value (\"%s\")\n", path->string, lua_typename( L, lua_type( L, num_arguments ) ) );
-			goto CLEANUP;
-    }
-
 	node_path = ntg_path_copy( path );
 	attribute_name = ntg_path_pop_element( node_path );
 	assert( attribute_name );
@@ -239,14 +221,31 @@ static int ilua_set( lua_State * L )
 
 	if( attribute->value )
 	{	
-		static char value_string[ NTG_LONG_STRLEN ];
-	
+		char value_string[ NTG_LONG_STRLEN ];
+
 		assert( attribute->endpoint->control_info->type == NTG_STATE );
+
+		switch( lua_type( L, num_arguments ) ) 
+		{
+			case LUA_TNUMBER:
+				value_f = ilua_get_float(L, num_arguments);
+				value = ntg_value_new( NTG_FLOAT, &value_f );
+				break;
+
+			case LUA_TSTRING:
+				value_s = ilua_get_string(L, num_arguments);
+				value = ntg_value_new(NTG_STRING, value_s);
+				break;
+
+			default:
+				error_handler( "%s received illegal value (\"%s\")\n", path->string, lua_typename( L, lua_type( L, num_arguments ) ) );
+				goto CLEANUP;
+		}
 
 		converted_value = ntg_value_change_type( value, attribute->value->type );
 
 		ntg_value_sprintf( value_string, converted_value );
-		progress_handler( "Setting endpoint %s to %s...", path->string, value_string );
+		progress_handler( "Setting %s to %s...", path->string, value_string );
 
 		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, converted_value );
 
@@ -256,7 +255,7 @@ static int ilua_set( lua_State * L )
 	{
 		assert( attribute->endpoint->control_info->type == NTG_BANG );
 
-		progress_handler( "Sending bang to endpoint %s...", path->string );
+		progress_handler( "Sending bang to %s...", path->string );
 		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, NULL );
 	}
 
@@ -287,6 +286,7 @@ static int ilua_get(lua_State * L)
 	int return_value = 0;
     int num_arguments = 0;
 	ntg_path *path = NULL;
+	char value_string[ NTG_LONG_STRLEN ];
 
 	assert( context_stack && context_stack->parent_path );
 
@@ -341,18 +341,21 @@ static int ilua_get(lua_State * L)
 		goto CLEANUP;
 	}
 
+	ntg_value_sprintf( value_string, value );
+	progress_handler( "Queried %s, value = %s", path->string, value_string );
+
 	switch (ntg_value_get_type(value)) 
 	{
         case NTG_INTEGER:
-            lua_pushnumber(L, (lua_Number) ntg_value_get_int(value));
+            lua_pushnumber(L, (lua_Number) ntg_value_get_int( value ) );
 			return_value = 1;
             break;
         case NTG_FLOAT:
-            lua_pushnumber(L, (lua_Number) ntg_value_get_float(value));
+            lua_pushnumber(L, (lua_Number) ntg_value_get_float( value ) );
 			return_value = 1;
             break;
         case NTG_STRING:
-            lua_pushstring(L, ntg_value_get_string(value));
+            lua_pushstring(L, ntg_value_get_string( value ) );
 			return_value = 1;
             break;
         default:
@@ -370,10 +373,49 @@ static int ilua_get(lua_State * L)
 }
 
 
+static int ilua_print( lua_State * L )
+{
+    int num_arguments = 0;
+	int i;
+	char *print = NULL;
+
+	num_arguments = lua_gettop( L );
+
+	for( i = 1; i <= num_arguments; i++ )
+	{
+		switch( lua_type( L, i ) ) 
+		{
+			case LUA_TNUMBER:
+			case LUA_TSTRING:
+				if( print ) 
+				{
+					print = ntg_string_append( print, ", " );
+				}
+
+				print = ntg_string_append( print, ilua_get_string( L, i ) );
+				break;
+
+			default:
+				/* we don't yet support printing other types */
+				break;
+		}
+	}
+
+	if( print )
+	{
+		progress_handler( print );
+		ntg_free( print );
+	}
+
+	return 1;
+}
+
+
 static const luaL_Reg ilua_funcreg[] = 
 {
     {"set", ilua_set},
     {"get", ilua_get},
+	{"print", ilua_print},
     { NULL, NULL }
 };
 
@@ -527,8 +569,31 @@ char *declare_child_metatables( char *init_script, const ntg_node *node, const n
 
 char *build_init_script( const ntg_path *parent_path )
 {
-	char *init_script = NULL;
-	ntg_node *parent_node;
+	const char *helper_functions[] = 
+	{
+		/*
+		Minimal MIDI to frequency conversion with argument checking
+		usage: mtof(midi-value)
+		*/
+		"function mtof(value)"
+		"   local input = value>0 and value or 0"
+		"   input = input<128 and input or 128"
+		"   local freq = 440 * (2^((input - 69) / 12 ))"
+		"   return freq"
+		"	end",
+
+		/*
+		Minimal frequency to MIDI conversion with argument checking 
+		usage: lua_ftom(frequency-in-hertz)
+		*/
+		"function ftom(freq)"
+		"  local  input = freq>0 and freq or 0"
+		"   return 69 + math.log(freq/440) * 17.31234"
+		"	end",
+
+		/* end of helper functions */
+		"\0"
+	};
 
 	const char *global_metatable = 
 		"setmetatable(_G,\n"
@@ -541,7 +606,17 @@ char *build_init_script( const ntg_path *parent_path )
 		"	end\n"
 		"})\n";
 
+	char *init_script = NULL;
+	ntg_node *parent_node;
+	int i;
+
 	assert( parent_path );
+
+	for( i = 0; *helper_functions[ i ] != 0; i++ )
+	{
+		init_script = ntg_string_append( init_script, helper_functions[ i ] );
+		init_script = ntg_string_append( init_script, "\n" );
+	}
 
 	parent_node = ntg_node_find_by_path( parent_path, ntg_server_get_root( server_ ) );
 	if( !parent_node )
@@ -550,7 +625,7 @@ char *build_init_script( const ntg_path *parent_path )
 		return NULL;
 	}
 
-	init_script = declare_child_objects( NULL, parent_node, parent_path );
+	init_script = declare_child_objects( init_script, parent_node, parent_path );
 	init_script = declare_child_metatables( init_script, parent_node, parent_path );
 	init_script = ntg_string_append( init_script, global_metatable );
 

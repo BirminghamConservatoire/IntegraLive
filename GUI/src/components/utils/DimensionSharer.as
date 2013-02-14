@@ -102,19 +102,19 @@ package components.utils
 		
 		private function onExpandCollapseView1( event:IntegraViewEvent ):void
 		{
-			/*if( _dimension == HEIGHT )
+			if( _dimension == HEIGHT )
 			{
 				_view2.collapsed = _view1.collapsed;
-			}*/
+			}
 		}
 
 		
 		private function onExpandCollapseView2( event:IntegraViewEvent ):void
 		{
-			/*if( _dimension == HEIGHT )
+			if( _dimension == HEIGHT )
 			{
 				_view1.collapsed = _view2.collapsed;
-			}*/
+			}
 		}
 		
 		

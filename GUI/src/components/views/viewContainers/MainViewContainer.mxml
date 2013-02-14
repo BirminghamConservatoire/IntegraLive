@@ -31,44 +31,47 @@
 
 	<states>
 		<s:State name="ArrangeState"/>
+		<s:State name="ArrangeStateWithInfo"/>
 		<s:State name="ModuleGraphState"/>
+		<s:State name="ModuleGraphStateWithInfo"/>
 		<s:State name="LiveState"/>
+		<s:State name="LiveStateWithInfo"/>
 	</states> 
 	
-	<mx:HBox width="100%" height="100%" paddingLeft="5" paddingRight="5" horizontalGap="2" includeIn="ArrangeState">
-		<mx:VBox width="100%" height="100%" verticalGap="2">
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="ArrangeState,ArrangeStateWithInfo">
+		<mx:HBox width="100%" height="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_arrangeView}" timelineMode="{TimelineMode.EDITABLE}"/>
-			<viewContainers:ViewHolder view="{_arrangeViewProperties}" canCollapse="true" changeHeightFromTop="true"/> 
-		</mx:VBox>
-		<mx:VBox height="100%" verticalGap="2">
 			<viewContainers:ViewHolder view="{_blockLibrary}" changeWidthFromLeft="true"/>
-			<viewContainers:ViewHolder view="{_arrangeInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true"/>
-		</mx:VBox>
-	</mx:HBox> 
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalGap="2">
+			<viewContainers:ViewHolder view="{_arrangeViewProperties}" canCollapse="true" changeHeightFromTop="true"/> 
+			<viewContainers:ViewHolder view="{_arrangeInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true" includeIn="ArrangeStateWithInfo"/>  
+		</mx:HBox>
+	</mx:VBox> 
 	
-	<mx:HBox width="100%" height="100%" paddingLeft="5" paddingRight="5" horizontalGap="2" includeIn="ModuleGraphState">
-		<mx:VBox width="100%" height="100%" verticalGap="2">
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="ModuleGraphState,ModuleGraphStateWithInfo">
+		<mx:HBox width="100%" height="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_moduleGraph}"/>
-			<viewContainers:ViewHolder view="{_moduleProperties}" canCollapse="true" changeHeightFromTop="true"/>
-		</mx:VBox>
-		<mx:VBox height="100%" verticalGap="2">
 			<viewContainers:ViewHolder view="{_moduleLibrary}" changeWidthFromLeft="true"/>
-			<viewContainers:ViewHolder view="{_moduleGraphInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true"/>
-		</mx:VBox>
-	</mx:HBox>
-	<mx:HBox width="100%" height="100%" paddingLeft="5" paddingRight="5" horizontalGap="2" includeIn="LiveState">
-		<mx:VBox width="100%" height="100%" verticalGap="2">
-			<viewContainers:ViewHolder view="{_liveView}" timelineMode="{TimelineMode.READONLY}"/>
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalGap="2">
+			<viewContainers:ViewHolder view="{_moduleProperties}" canCollapse="true" changeHeightFromTop="true"/>
+			<viewContainers:ViewHolder view="{_moduleGraphInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true" includeIn="ModuleGraphStateWithInfo"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="LiveState,LiveStateWithInfo">
+		<viewContainers:ViewHolder view="{_liveView}" height="100%" timelineMode="{TimelineMode.READONLY}"/>
+		<mx:HBox width="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_keybindingView}" canCollapse="true" changeHeightFromTop="true"/> 
-		</mx:VBox>
-		<viewContainers:ViewHolder view="{_liveInfoView}" height="100%" changeWidthFromLeft="true"/>
-	</mx:HBox>
+			<viewContainers:ViewHolder view="{_liveInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true" includeIn="LiveStateWithInfo"/>
+		</mx:HBox>
+	</mx:VBox>
 
 	<fx:Declarations>
-		<utils:DimensionSharer view1="{_blockLibrary}" view2="{_arrangeInfoView}" dimension="WIDTH"/>
 		<utils:DimensionSharer view1="{_arrangeViewProperties}" view2="{_arrangeInfoView}" dimension="HEIGHT"/>
-		<utils:DimensionSharer view1="{_moduleLibrary}" view2="{_moduleGraphInfoView}" dimension="WIDTH"/>
 		<utils:DimensionSharer view1="{_moduleProperties}" view2="{_moduleGraphInfoView}" dimension="HEIGHT"/>
+		<utils:DimensionSharer view1="{_keybindingView}" view2="{_liveInfoView}" dimension="HEIGHT"/>
 	</fx:Declarations>
 	
 	<fx:Script>
@@ -78,6 +81,7 @@
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetContrast;
 			import components.controller.userDataCommands.SetViewMode;
+			import components.controller.userDataCommands.ShowInfoView;
 			import components.model.IntegraModel;
 			import components.model.Project;
 			import components.model.userData.ColorScheme;
@@ -86,6 +90,7 @@
 			import components.views.ArrangeView.ArrangeView;
 			import components.views.ArrangeViewProperties.ArrangeViewProperties;
 			import components.views.BlockLibrary.BlockLibrary;
+			import components.views.InfoView.InfoView;
 			import components.views.LiveView.KeybindingView;
 			import components.views.LiveView.LiveView;
 			import components.views.ModuleGraph.ModuleGraph;
@@ -93,7 +98,6 @@
 			import components.views.ModuleProperties.ModuleProperties;
 			import components.views.Preferences.Preferences;
 			import components.views.Timeline.TimelineMode;
-			import components.views.InfoView.InfoView;
 			import components.views.viewContainers.ViewTree;
 			
 			import flash.filters.ColorMatrixFilter;
@@ -121,8 +125,13 @@
 				loadHeight( xml, _keybindingView, "keybindingViewHeight" );
 				loadCollapsed( xml, _keybindingView, "keybindingViewCollapsed" );
 				loadWidth( xml, _liveInfoView, "liveInfoViewWidth" );
+				loadHeight( xml, _liveInfoView, "liveInfoViewHeight" );
 
-
+				if( xml.hasOwnProperty( "infoViewShowing" ) )
+				{
+					model.showInfoView = ( xml.child( "infoViewShowing" ).toString() == "true" );
+				}
+				
 				if( xml.hasOwnProperty( "arrangeViewPropertiesTab" ) )
 				{
 					_arrangeViewProperties.selectedTab = xml.child( "arrangeViewPropertiesTab" ).toString();
@@ -162,7 +171,9 @@
 				xml.appendChild( <keybindingViewHeight>{ _keybindingView.height }</keybindingViewHeight> );
 				xml.appendChild( <keybindingViewCollapsed>{ _keybindingView.collapsed }</keybindingViewCollapsed> );
 				xml.appendChild( <liveInfoViewWidth>{ _liveInfoView.width }</liveInfoViewWidth> );
+				xml.appendChild( <liveInfoViewHeight>{ _liveInfoView.height }</liveInfoViewHeight> );
 
+				xml.appendChild( <infoViewShowing>{ model.showInfoView }</infoViewShowing> );
 				
 				xml.appendChild( <arrangeViewPropertiesTab>{ _arrangeViewProperties.selectedTab }</arrangeViewPropertiesTab> );
 				
@@ -250,6 +261,7 @@
 				addUpdateMethod( SetColorScheme, onColorSchemeChanged );
 				addUpdateMethod( SetContrast, onContrastChanged );
 				addUpdateMethod( SetViewMode, onViewModeChanged ); 
+				addUpdateMethod( ShowInfoView, onInfoViewShow );
 				
 				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER, onModuleGraphTransitionTimer );
 				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onModuleGraphTransitionComplete );
@@ -277,14 +289,14 @@
 				var viewMode:ViewMode = model.project.userData.viewMode;
 				if( viewMode.mode == ViewMode.ARRANGE )
 				{
-					if( viewMode.blockPropertiesOpen && currentState == "ArrangeState" )
+					if( viewMode.blockPropertiesOpen && currentState.indexOf( "ArrangeState" ) == 0 )
 					{
 						startModuleGraphTransition();
 						return;
 					}
 					else
 					{
-						if( !viewMode.blockPropertiesOpen && currentState == "ModuleGraphState" )
+						if( !viewMode.blockPropertiesOpen && currentState.indexOf( "ModuleGraphState" ) == 0 )
 						{
 							updateState();
 							startModuleGraphTransition();
@@ -309,31 +321,46 @@
 			}
 			
 			
+			private function onInfoViewShow( command:ShowInfoView ):void
+			{
+				updateState();
+			}
+			
+			
 			private function updateState():void
 			{
 				var viewMode:ViewMode = model.project.userData.viewMode;
+				
+				var newStateString:String;
 				
 				switch( viewMode.mode )
 				{
 					case ViewMode.ARRANGE:
 						if( viewMode.blockPropertiesOpen )
 						{
-							currentState = "ModuleGraphState";
+							newStateString = "ModuleGraphState";
 						}
 						else
 						{	
-							currentState = "ArrangeState";
+							newStateString = "ArrangeState";
 						}
 						break;
 	
 					case ViewMode.LIVE:
-						currentState = "LiveState";
+						newStateString = "LiveState";
 						break;
 						
 					default:
 						Assert.assertTrue( false );
 						break;
 				}
+				
+				if( model.showInfoView )
+				{
+					newStateString += "WithInfo";
+				}
+				
+				currentState = newStateString;
 			}
 			
 			
@@ -539,7 +566,7 @@
 			[Bindable] private var _preferences:Preferences = new Preferences;
 			[Bindable] private var _arrangeInfoView:InfoView = new InfoView( true );
 			[Bindable] private var _moduleGraphInfoView:InfoView = new InfoView( true );
-			[Bindable] private var _liveInfoView:InfoView = new InfoView( false );
+			[Bindable] private var _liveInfoView:InfoView = new InfoView( true );
             private var _isDisplayingPreferences:Boolean = false;
 
 			private var _moduleGraphTransitionTimer:Timer = new Timer( _moduleGraphTransitionDelay, _moduleGraphTransitionDuration / _moduleGraphTransitionDelay );

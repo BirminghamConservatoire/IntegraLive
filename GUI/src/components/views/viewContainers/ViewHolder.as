@@ -29,6 +29,7 @@ package components.views.viewContainers
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
+	import components.views.Skins.CloseButtonSkin;
 	import components.views.Skins.CollapseButtonSkin;
 	import components.views.Timeline.Timeline;
 	import components.views.Timeline.TimelineMode;
@@ -181,6 +182,33 @@ package components.views.viewContainers
 		}
 
 
+		public function set hasCloseButton( hasCloseButton:Boolean ):void
+		{
+			if( hasCloseButton == _hasCloseButton ) return;
+			
+			_hasCloseButton = hasCloseButton;
+			
+			if( hasCloseButton )
+			{
+				_closeButton = new Button;
+				_closeButton.setStyle( "skin", CloseButtonSkin );
+				_closeButton.setStyle( "fillAlpha", 1 );
+				updateCloseButtonColors();				
+				addElement( _closeButton );
+				
+				_closeButton.addEventListener( MouseEvent.CLICK, onClickCloseButton );
+			}
+			else
+			{
+				_closeButton.removeEventListener( MouseEvent.CLICK, onClickCloseButton );
+				removeElement( _closeButton );
+				_closeButton = null;
+			}
+			
+			positionChildren();
+		}
+
+		
 		public function set changeHeightFromBottom( changeHeightFromBottom:Boolean ):void
 		{
 			if( changeHeightFromBottom == _changeHeightFromBottom ) return;
@@ -357,6 +385,8 @@ package components.views.viewContainers
 			if( !style || style == ColorScheme.STYLENAME )
 			{
 				updateVuMeterBackgroundColors();
+
+				updateCloseButtonColors();
 			}
 			
 			if( !style || style == FontSize.STYLENAME )
@@ -464,6 +494,12 @@ package components.views.viewContainers
 		}
 		
 		
+		private function onClickCloseButton( event:MouseEvent ):void
+		{
+			_view.closeButtonClicked();
+		}
+
+		
 		private function onResize( event:Event ):void
 		{
 			positionChildren();
@@ -502,6 +538,11 @@ package components.views.viewContainers
        		{
        			_collapseButton.setStyle( "color", color );
        		}
+			
+			if( _closeButton )
+			{
+				_closeButton.setStyle( "color", color );
+			}
         }
         
         
@@ -513,9 +554,10 @@ package components.views.viewContainers
         
         private function onCollapseChanged( event:IntegraViewEvent ):void
         {
-			Assert.assertNotNull( _collapseButton );
-			
-			_collapseButton.selected = collapsed;
+			if( _collapseButton )
+			{
+				_collapseButton.selected = collapsed;
+			}
 			
 			positionChildren();
         }
@@ -634,6 +676,27 @@ package components.views.viewContainers
         	}	
         }
         
+		
+		private function updateCloseButtonColors():void
+		{
+			if( _closeButton )
+			{
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						_closeButton.setStyle( "color", 0xcfcfcf );
+						_closeButton.setStyle( "fillColor", 0x747474 );
+						break;
+					
+					case ColorScheme.DARK:
+						_closeButton.setStyle( "color", 0x313131 );
+						_closeButton.setStyle( "fillColor", 0x8c8c8c );
+						break;
+				}
+			}
+		}
+		
 
 		public function positionChildren():void
 		{
@@ -734,6 +797,14 @@ package components.views.viewContainers
 				_vuMeter.height = _titleHeight - _titleControlOffset * 2;
 				_vuMeter.width = _vuMeterWidth;
 				updateVuMeterBackgroundColors();
+			}
+			
+			if( _closeButton )
+			{
+				_closeButton.y = _titleControlOffset;
+				_closeButton.setStyle( "right", _titleControlOffset );
+				_closeButton.height = FontSize.getButtonSize( this );
+				_closeButton.width = FontSize.getButtonSize( this );
 			}
 		}
 		
@@ -968,6 +1039,9 @@ package components.views.viewContainers
 		
 		private var _canCollapse:Boolean = false;
 		private var _collapseButton:Button = null;
+
+		private var _hasCloseButton:Boolean = false;
+		private var _closeButton:Button = null;
 		
 		private var _changeHeightFromBottom:Boolean = false;
 		private var _changeHeightFromTop:Boolean = false;

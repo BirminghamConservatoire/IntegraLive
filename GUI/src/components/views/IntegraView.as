@@ -107,10 +107,12 @@ package components.views
 		public function get expanded():Boolean { return !collapsed; }
 		public function get expandCollapseEnabled():Boolean { return _expandCollapseEnabled; }
 		
-
+		
 		public function resizeFinished():void {}
 		
 		public function titleClicked():void {}
+
+		public function closeButtonClicked():void {}
 		
 		
 		public function free():void

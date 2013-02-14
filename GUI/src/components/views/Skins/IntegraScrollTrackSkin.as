@@ -54,7 +54,9 @@ package components.views.Skins
 			graphics.clear();
 			var hasBothSliders:Boolean = decorateWhiteBox();
 	
-			var fillColor:uint;
+			//removed scroll track drawing.  This makes them look better, especially against non-standard background colors
+			
+			/*var fillColor:uint;
 			var backgroundColor:uint;
 			
 			switch( getStyle( ColorScheme.STYLENAME ) )
@@ -78,7 +80,7 @@ package components.views.Skins
 			var cornerRadius:Number = width / 2;
 			graphics.beginFill( fillColor );
 			graphics.drawRoundRectComplex( 0, 0, width, height, 0, cornerRadius, 0, hasBothSliders ? 0 : cornerRadius );
-			graphics.endFill();			
+			graphics.endFill();*/			
 		}
 		
 		

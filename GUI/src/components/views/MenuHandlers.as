@@ -28,6 +28,7 @@ package components.views
 	import components.controller.userDataCommands.SetColorScheme;
 	import components.controller.userDataCommands.SetContrast;
 	import components.controller.userDataCommands.SetViewMode;
+	import components.controller.userDataCommands.ShowInfoView;
 	import components.model.IntegraModel;
 	import components.model.userData.ColorScheme;
 	import components.model.userData.ViewMode;
@@ -162,13 +163,22 @@ package components.views
 			arrangeViewItem.addEventListener( Event.SELECT, switchToArrangeView ); 
 			arrangeViewItem.addEventListener( Event.PREPARING, onUpdateArrangeViewMenuItem ); 
 			arrangeViewItem.keyEquivalent = "1";
-			viewMenu.submenu.addItem(arrangeViewItem);
+			viewMenu.submenu.addItem( arrangeViewItem );
 			
 			var liveViewItem:NativeMenuItem = new NativeMenuItem( "Live View" ); 
-			liveViewItem.addEventListener(Event.SELECT, switchToLiveView); 
-			liveViewItem.addEventListener(Event.PREPARING, onUpdateLiveViewMenuItem); 
+			liveViewItem.addEventListener( Event.SELECT, switchToLiveView ); 
+			liveViewItem.addEventListener( Event.PREPARING, onUpdateLiveViewMenuItem ); 
 			liveViewItem.keyEquivalent = "2";
-			viewMenu.submenu.addItem(liveViewItem);
+			viewMenu.submenu.addItem( liveViewItem);
+			
+			//separator 
+			viewMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+
+			var infoViewItem:NativeMenuItem = new NativeMenuItem( "Info View" ); 
+			infoViewItem.addEventListener(Event.SELECT, showInfoView ); 
+			infoViewItem.addEventListener(Event.PREPARING, onUpdateInfoViewMenuItem ); 
+			infoViewItem.keyEquivalent = "3";
+			viewMenu.submenu.addItem( infoViewItem );
 			
 			//separator 
 			viewMenu.submenu.addItem( new NativeMenuItem( "", true ) );
@@ -386,6 +396,12 @@ package components.views
 		}
 		
 		
+		private function showInfoView( event:Event ):void
+		{
+			_controller.processCommand( new ShowInfoView( !_model.showInfoView ) );	
+		}
+		
+		
 		private function toggleLighting( event:Event ):void
 		{
 			switch( _model.project.userData.colorScheme )
@@ -489,8 +505,15 @@ package components.views
 		{
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
 			menuItem.checked = ( _model.project.userData.viewMode.mode == ViewMode.LIVE );
-		}     		
+		}
 		
+		
+		private function onUpdateInfoViewMenuItem( event:Event ):void
+		{
+			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
+			menuItem.checked = ( _model.showInfoView );
+		}
+				
 		
 		private function onUpdateLightingToggle( event:Event ):void
 		{

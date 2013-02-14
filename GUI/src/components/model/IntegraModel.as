@@ -66,6 +66,7 @@ package components.model
 
 		
 		public function get currentInfo():Info { return _currentInfo; }
+		public function get showInfoView():Boolean { return _showInfoView; }
 		public function get projectLength():int { return _projectLength; }
 		
 		
@@ -1257,6 +1258,7 @@ package components.model
 		
 
 		public function set currentInfo( currentInfo:Info ):void { _currentInfo = currentInfo; }
+		public function set showInfoView( showInfoView:Boolean ):void { _showInfoView = showInfoView; }
 		
 		//private helper methods
 
@@ -1456,6 +1458,7 @@ package components.model
 		
 		private var _projectLength:int = 0;
 		private var _currentInfo:Info = null;
+		private var _showInfoView:Boolean = true;
 		
 		private var _audioSettings:AudioSettings;
 		private var _midiSettings:MidiSettings;

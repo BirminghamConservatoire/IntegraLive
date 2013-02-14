@@ -22,6 +22,7 @@ package components.views.InfoView
 {
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.userDataCommands.SetDisplayedInfo;
+	import components.controller.userDataCommands.ShowInfoView;
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
@@ -128,6 +129,12 @@ package components.views.InfoView
 		
 		
 		override public function get isSidebarColours():Boolean { return true; } 
+
+		
+		override public function closeButtonClicked():void 
+		{
+			controller.processCommand( new ShowInfoView( false ) );
+		}
 
 		
 		override public function getInfoToDisplay( event:MouseEvent ):Info

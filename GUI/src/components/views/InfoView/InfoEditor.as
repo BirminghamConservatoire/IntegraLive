@@ -26,6 +26,7 @@ package components.views.InfoView
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.LazyChangeReporter;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.Skins.CloseButtonSkin;
@@ -35,7 +36,10 @@ package components.views.InfoView
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
 	import flash.ui.Keyboard;
+	import flash.utils.Timer;
+	import flash.utils.getTimer;
 	
 	import flexunit.framework.Assert;
 	
@@ -76,6 +80,8 @@ package components.views.InfoView
 			_editText.restrict = "^";	//prevent funny chars appearing on ctrl+backspace
 			addChild( _editText );
 			
+			_lazyChangeReporter = new LazyChangeReporter( _editText, commitEditText );
+			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			addEventListener( FocusEvent.FOCUS_OUT, onFocusOut );
 			_editText.addEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
@@ -86,8 +92,8 @@ package components.views.InfoView
 		{
 			if( markdown != _editText.text )
 			{
+				_lazyChangeReporter.reset();
 				_editText.text = markdown;
-				_anythingToCommit = false;
 			}
 		}
 		
@@ -153,18 +159,6 @@ package components.views.InfoView
 						return;
 					}
 					break;
-			}
-
-			if( _commitKeys.indexOf( event.charCode ) >= 0 )
-			{
-				if( _anythingToCommit )
-				{
-					commitEditText();
-				}
-			}
-			else
-			{
-				_anythingToCommit = true;
 			}
 		}
 		
@@ -235,13 +229,12 @@ package components.views.InfoView
 		private function commitEditText():void
 		{
 			IntegraController.singleInstance.processCommand( new SetObjectInfo( _objectID, _editText.text ) );
-			_anythingToCommit = false;
 		}
 		
 		
 		private function closeEditor():void
 		{
-			commitEditText();
+			_lazyChangeReporter.close();
 			
 			dispatchEvent( new Event( CLOSE_INFO_EDITOR ) );
 		}
@@ -252,24 +245,22 @@ package components.views.InfoView
 			return FontSize.getTextRowHeight( this );
 		}
 		
-
+		
 		private var _objectID:int;
 
 		private var _titleLabel:Label = new Label;
 		private var _titleCloseButton:Button = new Button;
 		
 		private var _editText:TextArea = new TextArea;
+		private var _lazyChangeReporter:LazyChangeReporter = null;
 		
 		private var _backgroundColor:uint = 0;
 		
-		private var _anythingToCommit:Boolean = false;
-
 		private const _textMargin:Number = 5;
 		private const _borderColor:uint = 0xe95d0f;
 		private const _borderThickness:Number = 4;
 		private const _cornerRadius:Number = 15;
-		
-		private static const _commitKeys:Array = [ Keyboard.SPACE, Keyboard.ENTER, Keyboard.BACKSPACE, Keyboard.DELETE ];
+
 		
 		public static const CLOSE_INFO_EDITOR:String = "CLOSE_INFO_EDITOR";
 	}

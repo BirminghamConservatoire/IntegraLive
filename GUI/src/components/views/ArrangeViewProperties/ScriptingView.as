@@ -34,6 +34,7 @@ package components.views.ArrangeViewProperties
 	import components.model.Track;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.LazyChangeReporter;
 	import components.utils.Utilities;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
@@ -86,9 +87,9 @@ package components.views.ArrangeViewProperties
 			_scriptArea.wordWrap = false;
 			_scriptArea.verticalScrollPolicy = ScrollPolicy.AUTO;
 			_scriptArea.horizontalScrollPolicy = ScrollPolicy.AUTO;
-			_scriptArea.addEventListener( FocusEvent.FOCUS_OUT, onScriptAreaFocusOut );
-			_scriptArea.addEventListener( KeyboardEvent.KEY_UP, onScriptAreaKeyUp );
 			_hBox.addChild( _scriptArea );
+			
+			_lazyChangeReporter = new LazyChangeReporter( _scriptArea, commitScript );
 			
 			addChild( _hBox );
 			
@@ -219,6 +220,8 @@ package components.views.ArrangeViewProperties
 		
 		private function updateTextArea():void
 		{
+			_lazyChangeReporter.reset();
+			
 			var script:Script = model.selectedScript;
 			if( script )
 			{
@@ -325,27 +328,6 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function onScriptAreaFocusOut( event:FocusEvent ):void
-		{
-			commitScript();
-		}
-
-
-		private function onScriptAreaKeyUp( event:KeyboardEvent ):void
-		{
-			//only commit script on script area lose focus or on enter, to minimise big xmlrpc calls
-			switch( event.charCode )
-			{
-				case Keyboard.ENTER:
-					commitScript();
-					break;
-					
-				default:
-					break;
-			}
-		}
-		
-		
 		private function commitScript():void
 		{
 			if( _selectedScriptID >= 0 )
@@ -393,7 +375,8 @@ package components.views.ArrangeViewProperties
 		private var _hBox:HBox = new HBox;
 		private var _scriptList:VBox = new VBox;
 		private var _newScriptButton:Button = new Button;
-		private var _scriptArea:ScriptingViewTextArea = new ScriptingViewTextArea;		
+		private var _scriptArea:ScriptingViewTextArea = new ScriptingViewTextArea;
+		private var _lazyChangeReporter:LazyChangeReporter = null;
 
 		[Bindable] 
         private var contextMenuData:Array = 

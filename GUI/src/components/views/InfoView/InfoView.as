@@ -53,6 +53,7 @@ package components.views.InfoView
 	import mx.core.UIComponent;
 	import mx.core.UITextField;
 	import mx.managers.PopUpManager;
+	import mx.styles.CSSStyleDeclaration;
 	import mx.utils.object_proxy;
 	
 	import spark.components.Application;
@@ -83,6 +84,7 @@ package components.views.InfoView
 			_htmlText.setStyle( "top", _topMargin );
 			_htmlText.setStyle( "bottom", _bottomMargin );
 			_htmlText.setStyle( "borderStyle", "none" );
+			_htmlText.setStyle( "backgroundAlpha", 0 );
 			_htmlText.editable = false;
 			_htmlText.condenseWhite = true;
 			
@@ -93,6 +95,7 @@ package components.views.InfoView
 			_focusPrompt.setStyle( "left", 0 );
 			_focusPrompt.setStyle( "right", 0 );
 			_focusPrompt.setStyle( "bottom", 0 );
+			_focusPrompt.setStyle( "textAlign", "center" );
 			_focusPrompt.text = _focusPromptText;
 			addChild( _focusPrompt );
 			
@@ -209,6 +212,13 @@ package components.views.InfoView
 
 			if( _focusPrompt.visible )
 			{
+				var tooltipStyle:CSSStyleDeclaration = styleManager.getStyleDeclaration( "mx.controls.ToolTip" );
+				var tooltipBackgroundColor:uint = tooltipStyle.getStyle( "backgroundColor" );
+				
+				graphics.beginFill( tooltipBackgroundColor );
+				graphics.drawRoundRectComplex( 0, height - _bottomMargin, width, _bottomMargin, 0, 0, _bottomCornerRadius, _bottomCornerRadius );
+				graphics.endFill();
+				
 				graphics.lineStyle( 0, _focusPrompt.getStyle( "color" ) );
 				graphics.moveTo( 0, height - _bottomMargin );
 				graphics.lineTo( width - 1, height - _bottomMargin );
@@ -360,9 +370,7 @@ package components.views.InfoView
 		{
 			Assert.assertNotNull( _displayedInfo );
 			
-			_htmlText.setStyle( "backgroundAlpha", 1 );
-			_htmlText.horizontalScrollPolicy = ScrollPolicy.AUTO;
-			_htmlText.verticalScrollPolicy = ScrollPolicy.AUTO;
+			_htmlText.verticalScrollPolicy = ScrollPolicy.ON;
 			
 			_focusPrompt.visible = false;
 			
@@ -376,8 +384,6 @@ package components.views.InfoView
 		
 		private function loseFocus():void
 		{
-			_htmlText.setStyle( "backgroundAlpha", 0 );
-			_htmlText.horizontalScrollPolicy = ScrollPolicy.OFF;
 			_htmlText.verticalScrollPolicy = ScrollPolicy.OFF;
 
 			_gotFocus = false;
@@ -544,8 +550,10 @@ package components.views.InfoView
 		private static const _rightMargin:Number = 4;
 		private static const _topMargin:Number = 4;
 		private static const _bottomMargin:Number = 16;
+		private static const _bottomCornerRadius:Number = 8;
+
 		
-		private static const _focusPromptText:String = "Press F2 for focus";
+		private static const _focusPromptText:String = "Press F2 to lock / scroll";
 		private static const _focusKey:uint = Keyboard.F2;
 		private static const _unfocusKey:uint = Keyboard.ESCAPE;
 		

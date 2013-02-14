@@ -31,6 +31,8 @@ package components.views.InfoView
 	import components.views.MouseCapture;
 	import components.views.Skins.TextButtonSkin;
 	
+	import flash.desktop.Clipboard;
+	import flash.desktop.ClipboardFormats;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
@@ -295,6 +297,20 @@ package components.views.InfoView
 			{
 				loseFocus();
 			}
+			
+			
+			//easter eggs for testing
+			if( _displayedInfo && event.keyCode == Keyboard.F3 )
+			{
+				Clipboard.generalClipboard.clear();
+				Clipboard.generalClipboard.setData( ClipboardFormats.TEXT_FORMAT, _displayedInfo.markdown );
+			}
+
+			if( _displayedInfo && event.keyCode == Keyboard.F4 )
+			{
+				Clipboard.generalClipboard.clear();
+				Clipboard.generalClipboard.setData( ClipboardFormats.TEXT_FORMAT, _displayedInfo.html );
+			}
 		}		
 		
 		
@@ -478,8 +494,8 @@ package components.views.InfoView
 			myStyles.setStyle( "a:link", {textDecoration:'none', color:_linkColor } );
 			myStyles.setStyle( "a:hover", {textDecoration:'underline', color:_linkColor } );
 			
-			myStyles.setStyle( "strong", { fontWeight:'bold' } );
-			myStyles.setStyle("em", { fontStyle:'italic' } );	
+			myStyles.setStyle( "strong", { fontWeight:'bold', display:'inline' } );
+			myStyles.setStyle( "em", { fontStyle:'italic', display:'inline' } );	
 
 			myStyles.setStyle( ".space", { leading:String( -fontSize / 2 ) } );
 			

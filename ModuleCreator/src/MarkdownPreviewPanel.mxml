@@ -35,6 +35,8 @@
 				_input = input;
 				_title = title;
 				
+				_lazyChangeReporter = new LazyChangeReporter( input, updatePreview );
+				
 				for( var ancestor:DisplayObject = input.parent; ancestor; ancestor = ancestor.parent )
 				{
 					if( ancestor is Application )
@@ -50,7 +52,6 @@
 			
 				reposition();
 				
-				_input.addEventListener( KeyboardEvent.KEY_DOWN, onInput );
 				_input.addEventListener( FocusEvent.FOCUS_OUT, onFocusOutInput );
 				
 				_application.addEventListener( Event.RESIZE, onResizeApplication );
@@ -69,8 +70,9 @@
 			
 			private function hide():void
 			{
-				_input.removeEventListener( KeyboardEvent.KEY_DOWN, onInput );
 				_input.removeEventListener( FocusEvent.FOCUS_OUT, onFocusOutInput );
+				_lazyChangeReporter.close();
+				_lazyChangeReporter = null;
 
 				_application.removeEventListener( Event.RESIZE, onResizeApplication );
 				
@@ -79,12 +81,6 @@
 				removeEventListener( FocusEvent.FOCUS_OUT, onFocusOutPreview );
 				
 				dispatchEvent( new Event( FINISHED_EVENT ) );
-			}
-			
-			
-			private function onInput( event:KeyboardEvent ):void
-			{
-				callLater( updatePreview );
 			}
 			
 			
@@ -220,6 +216,8 @@
 			private var _input:TextArea = null;
 			private var _application:Application;
 			private var _title:String = null;
+			
+			private var _lazyChangeReporter:LazyChangeReporter = null;
 			
 			private var _fadingIn:Boolean = true;
 			

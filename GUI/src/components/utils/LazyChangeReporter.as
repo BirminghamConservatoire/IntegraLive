@@ -31,7 +31,7 @@ package components.utils
 	
 	import flexunit.framework.Assert;
 	
-	public class LazyChangeReporter extends EventDispatcher
+	public class LazyChangeReporter
 	{
 		public function LazyChangeReporter( target:DisplayObject, callback:Function )
 		{

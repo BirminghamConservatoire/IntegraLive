@@ -509,6 +509,9 @@ package components.views.InfoView
 			
 			myStyles.setStyle( "strong", { fontWeight:'bold', display:'inline' } );
 			myStyles.setStyle( "em", { fontStyle:'italic', display:'inline' } );	
+			
+			myStyles.setStyle( "pre", { display:'block' } );
+			myStyles.setStyle( "code", { fontFamily:'courier', color:_textColor } );
 
 			myStyles.setStyle( ".space", { leading:String( -fontSize / 2 ) } );
 			

@@ -26,6 +26,8 @@ package components.model
 	import flash.xml.XMLNode;
 	import flash.xml.XMLNodeType;
 	
+	import flexunit.framework.Assert;
+	
 	public class Info
 	{
 		public function Info()
@@ -39,13 +41,26 @@ package components.model
 
 		public function get html():String  
 		{
-			if( !_html ) 
+			if( !_generatedContent ) 
 			{
-				regenerateHtml();
+				generateContent();
 			}
 			
 			return _html;
 		}		
+		
+		
+		public function get tooltip():String
+		{
+			if( !_generatedContent ) 
+			{
+				generateContent();
+			}
+			
+			return _tooltip;
+		}		
+		
+		
 		
 		
 		public function get ownerID():int { return _ownerID; }
@@ -55,13 +70,14 @@ package components.model
 		public function set title( title:String ):void
 		{
 			_title = title;
-			_html = null;
+			clearContent();
 		}
 		
 		
 		public function set markdown( markdown:String ):void
 		{
 			_markdown = markdown;
+			clearContent();
 			_html = null;
 		}
 		
@@ -70,20 +86,58 @@ package components.model
 		public function set canEdit( canEdit:Boolean ):void { _canEdit = canEdit; }
 		
 		
-		private function regenerateHtml():void
+		private function clearContent():void
 		{
+			_html = null;
+			_tooltip = null;
+			_generatedContent = false;
+			
+		}
+		
+
+		private function generateContent():void
+		{
+			generateHtml();
+			generateTooltip();
+			
+			_generatedContent = true;			
+		}
+		
+		
+		private function generateHtml( isInvalid:Boolean = false ):void
+		{
+			_html = "<html>";
+
+			if( isInvalid )
+			{
+				_html += _invalidHtmlWarning; 
+			}
+			
 			if( _title && _title.length > 0 )
 			{
-				_html = "<h1>" + htmlEscape( _title ) + "</h1>";
+				_html += "<h1>" + htmlEscape( _title ) + "</h1>";
+			}
+
+			var preprocessedMarkdown:String = isInvalid ? htmlEscape( _markdown ) : _markdown;
+			
+			_html += Showdown.makeHtml( preprocessedMarkdown );
+
+			_html = addSpacingParagraphs( _html );
+
+			_html += "</html>";
+			
+			if( isInvalid )
+			{
+				//we expect it to always be valid when we've escaped the input
+				Assert.assertTrue( validateHtml( _html ) );
 			}
 			else
 			{
-				_html = "";
+				if( !validateHtml( _html ) )
+				{
+					generateHtml( true );
+				}
 			}
-			
-			_html += Showdown.makeHtml( htmlEscape( _markdown ) );
-
-			_html = addSpacingParagraphs( _html );
 		}
 		
 		
@@ -117,13 +171,58 @@ package components.model
 			
 			return html;
 		}
+
+		
+		private function validateHtml( html:String ):Boolean
+		{
+			try 
+			{
+				var xml:XML = XML( html );
+			}
+			catch (e:Error) 
+			{
+				return false;
+			}
+			
+			return true;
+		}
+		
+		
+		private function generateTooltip():void
+		{
+			const startToken:String = "<!--";
+			const endToken:String = "-->";
+			
+			var tooltipStart:int = _markdown.indexOf( startToken );
+			if( tooltipStart < 0 )
+			{
+				return;
+			}
+			
+			tooltipStart += startToken.length;
+			
+			var tooltipEnd:int = _markdown.indexOf( endToken, tooltipStart );
+			var tooltipLength:int = tooltipEnd - tooltipStart;
+			if( tooltipLength <= 0 )
+			{
+				return;
+			}
+			
+			_tooltip = _markdown.substr( tooltipStart, tooltipLength );	
+		}
 		
 		
 		private var _title:String = "";
 		private var _markdown:String = "";
+
+		private var _generatedContent:Boolean = false;
+		
 		private var _html:String = null;
+		private var _tooltip:String = null;
 		
 		private var _ownerID:int = -1;
 		private var _canEdit:Boolean = false;
+		
+		private static const _invalidHtmlWarning:String = "<p align='right'><font color='#ff0000'>Invalid HTML!</font></p>"  
 	}
 }

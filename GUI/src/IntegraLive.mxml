@@ -257,8 +257,9 @@
 				stage.addEventListener( Event.REMOVED, onStageRemoved );
 				stage.quality = StageQuality.BEST;
 
-				ToolTipManager.showDelay = 1000;
-				ToolTipManager.scrubDelay = 200;
+				//ToolTipManager.showDelay = 1000;
+				//ToolTipManager.scrubDelay = -1;
+				_tooltipTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onTooltipTimer );
 				
 				_oscServer = new OSCServer( config.guiUrl + ":" + config.oscClientPort, RemoteCommandHandler.singleInstance );
 				
@@ -1040,9 +1041,8 @@
 			}
 			
 			
-			private function onStageMouseMove( event:MouseEvent ):void
+			private function getInfoToDisplay( event:MouseEvent ):Info
 			{
-				var displayedInfo:Info = null;
 
 				function effectiveParent( child:DisplayObject ):DisplayObject 
 				{
@@ -1060,27 +1060,80 @@
 				{
 					if( ancestorWalker is IntegraView )
 					{
-						displayedInfo = ( ancestorWalker as IntegraView ).getInfoToDisplay( event );
-						if( displayedInfo )
+						var info:Info = ( ancestorWalker as IntegraView ).getInfoToDisplay( event );
+						if( info )
 						{
-							break;
+							return info;
 						}
 					}
 					
 					if( ancestorWalker is ViewHolder )
 					{
-						displayedInfo = ( ancestorWalker as ViewHolder ).view.getInfoToDisplay( event );
-						if( displayedInfo )
+						info = ( ancestorWalker as ViewHolder ).view.getInfoToDisplay( event );
+						if( info )
 						{
-							break;
+							return info;
 						}
 					}
 				}
 				
-				if( displayedInfo != _model.currentInfo )
+				return null;
+			}
+			
+			
+			private function onStageMouseMove( event:MouseEvent ):void
+			{
+				var displayedInfo:Info = getInfoToDisplay( event );
+				if( displayedInfo == _model.currentInfo )
 				{
-					_controller.processCommand( new SetDisplayedInfo( displayedInfo ) );
+					return;	
 				}
+
+				_controller.processCommand( new SetDisplayedInfo( displayedInfo ) );
+
+				if( !_model.showInfoView )
+				{
+					updateTooltip();
+				}
+			}
+
+			
+			private function updateTooltip():void
+			{
+				_tooltipTimer.reset();
+
+				if( _tooltipSet )
+				{
+					_lastTooltipHideTime = getTimer();
+				}
+				
+				mainVBox.toolTip = null;
+				_tooltipSet = false;
+				
+				if( _model.currentInfo )
+				{
+					_tooltipString = _model.currentInfo.tooltip;
+					
+					if( _tooltipString )
+					{
+						if( getTimer() - _lastTooltipHideTime < _scrubDelay )
+						{
+							mainVBox.toolTip = _tooltipString;
+							_tooltipSet = true;
+						}
+						else
+						{
+							_tooltipTimer.start();
+						}
+					}
+				}
+			}
+			
+			
+			private function onTooltipTimer( event:Event ):void
+			{
+				mainVBox.toolTip = _tooltipString;
+				_tooltipSet = true;
 			}
 			
 			
@@ -1199,9 +1252,17 @@
 		private var _doneInitialize:Boolean = false;
 		private var _inShutdown:Boolean = false;
 			
+		private var _tooltipString:String = null;
+		private var _tooltipSet:Boolean = false;
+		private var _lastTooltipHideTime:int = 0;
+		private var _tooltipTimer:Timer = new Timer( _tooltipDelay, 1 );
+			
 	    private static const _persistantStateFileName:String = "IntegraLiveGUIApplicationState.xml";
 		private static const _inactiveGuiMilliseconds:int = 10000;
 
+		private static const _tooltipDelay:int = 1000;
+		private static const _scrubDelay:int = 400;
+			
 		]]>
 	</fx:Script>					
 

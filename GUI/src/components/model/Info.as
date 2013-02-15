@@ -223,6 +223,6 @@ package components.model
 		private var _ownerID:int = -1;
 		private var _canEdit:Boolean = false;
 		
-		private static const _invalidHtmlWarning:String = "<p align='right'><font color='#ff0000'>Invalid HTML!</font></p>"  
+		private static const _invalidHtmlWarning:String = "<p align='right'><font color='#ff4040'>Invalid HTML!</font></p>"  
 	}
 }

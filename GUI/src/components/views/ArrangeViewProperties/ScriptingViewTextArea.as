@@ -78,7 +78,7 @@ package components.views.ArrangeViewProperties
 
 			_codePrettyPrint = new CodePrettyPrint();
 			
-			restrict = "^"; //prevent funny chars appearing on ctrl+backspace
+			restrict="A-Z a-z 0-9 !\"£$%^&*()-=_+[]{};'#:@~,./<>?\\|";
 		}
 		
 		

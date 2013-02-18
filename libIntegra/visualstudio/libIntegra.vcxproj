@@ -119,7 +119,8 @@ call gui_autobuild\buildgui.bat ..\..\build\Release\gui
       </Command>
     </PreLinkEvent>
     <PreBuildEvent>
-      <Command>call autogenerateLuaFiles.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

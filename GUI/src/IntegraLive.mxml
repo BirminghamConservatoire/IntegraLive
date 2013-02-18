@@ -1008,6 +1008,16 @@
 						break;
 
 					default:
+						/*
+						we handle function keys as menu shortcuts explicitly - 
+						due to bug in air runtime they are not andled automatically
+						*/
+						
+						if( event.keyCode >= Keyboard.F1 && event.keyCode <= Keyboard.F12 )
+						{
+							_menuHandlers.handleFunctionKey( event );
+						}
+						
 						//see if it's a view-specific context menu accelerator
 						var handledAccelerator:Boolean = false;
 		  				for( var iterator:DisplayObject = event.target as DisplayObject; iterator; iterator = iterator.parent )

@@ -43,9 +43,11 @@ package components.views
 	import flash.display.NativeMenu;
 	import flash.display.NativeMenuItem;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.filesystem.File;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+	import flash.ui.Keyboard;
 	
 	import flexunit.framework.Assert;
 	
@@ -65,6 +67,66 @@ package components.views
 		public function enableMenus( enable:Boolean ):void
 		{
 			enableMenuItems( _menu.items, enable );
+		}
+		
+		
+		public function handleFunctionKey( event:KeyboardEvent, menu:NativeMenu = null ):void
+		{
+			//works around bug in air - function keys not automatically handled as menu shortcuts
+			
+			if( !menu ) menu = _menu;
+			
+			for each( var item:NativeMenuItem in menu.items )
+			{
+				if( item.submenu )
+				{
+					handleFunctionKey( event, item.submenu );
+				}
+				else
+				{
+					if( !item.keyEquivalent )
+					{
+						continue;
+					}
+					
+					if( item.keyEquivalent.length != 2 )
+					{
+						continue;
+					}
+					
+					var firstChar:String = item.keyEquivalent.charAt( 0 );
+					var secondChar:String = item.keyEquivalent.charAt( 1 );
+					
+					if( firstChar.toLowerCase() != 'f' )
+					{
+						continue;
+					}
+					
+					if( int( secondChar ) - 1 != event.keyCode - Keyboard.F1 )
+					{
+						continue;
+					}
+					
+					var wantAlt:Boolean = false;
+					var wantCommand:Boolean = Utilities.isMac;
+					var wantCtrl:Boolean = Utilities.isWindows;
+					var wantShift:Boolean = ( firstChar == firstChar.toUpperCase() );
+
+					if( item.keyEquivalentModifiers )
+					{
+						wantCommand = ( item.keyEquivalentModifiers.indexOf( Keyboard.COMMAND ) >= 0 ); 
+						wantAlt = ( item.keyEquivalentModifiers.indexOf( Keyboard.ALTERNATE ) >= 0 ); 
+						wantCtrl = ( item.keyEquivalentModifiers.indexOf( Keyboard.CONTROL ) >= 0 ); 
+					}
+
+					if( wantAlt != event.altKey ) continue;
+					if( wantCommand != event.commandKey ) continue;
+					if( wantCtrl != event.ctrlKey ) continue;
+					if( wantShift != event.shiftKey ) continue;
+					
+					item.dispatchEvent( new Event( Event.SELECT ) );					
+				}
+			}
 		}
 			
 		
@@ -254,9 +316,21 @@ package components.views
 			
 			var config:Config = Config.singleInstance;
 			var helpLinks:Vector.<String> = config.helpLinks;
+
+			var first:Boolean = true;
+			
 			for each( var helpLink:String in helpLinks )
 			{
-				addHelpLink( helpMenu.submenu, helpLink );
+				if( first && Utilities.isWindows )
+				{
+					addHelpLink( helpMenu.submenu, helpLink, "f1", [] );
+				}
+				else
+				{
+					addHelpLink( helpMenu.submenu, helpLink );
+				}
+
+				first = false;
 			}
 				
 			if( Utilities.isWindows )
@@ -292,7 +366,7 @@ package components.views
 		}
 
 		
-		private function addHelpLink( menu:NativeMenu, helpLink:String ):void
+		private function addHelpLink( menu:NativeMenu, helpLink:String, keyboardEquivalent:String = null, keyboardModifiers:Array = null ):void
 		{
 			var separator:int = helpLink.indexOf( ";" );
 			if( separator < 0 ) 
@@ -312,7 +386,9 @@ package components.views
 			
 			var menuitem:NativeMenuItem = new NativeMenuItem( name );
 			menuitem.data = link;
-			menuitem.addEventListener( Event.SELECT, onHelpLink ); 
+			menuitem.addEventListener( Event.SELECT, onHelpLink );
+			menuitem.keyEquivalent = keyboardEquivalent;
+			menuitem.keyEquivalentModifiers = keyboardModifiers;
 			menu.addItem( menuitem );			
 		}
 

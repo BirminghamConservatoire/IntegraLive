@@ -96,7 +96,7 @@ package components.views.InfoView
 			_focusPrompt.setStyle( "right", 0 );
 			_focusPrompt.setStyle( "bottom", 0 );
 			_focusPrompt.setStyle( "textAlign", "center" );
-			_focusPrompt.text = _focusPromptText;
+			
 			addChild( _focusPrompt );
 			
 			_editButton.setStyle( "right", 21 );
@@ -271,6 +271,7 @@ package components.views.InfoView
 				_htmlText.htmlText = _displayedInfo.html;
 				
 				_focusPrompt.visible = !_gotFocus;
+				updateFocusPrompt();
 				
 				if( _infoEditor )
 				{
@@ -305,30 +306,76 @@ package components.views.InfoView
 		{
 			if( !stage ) return;
 			
-			if( !_gotFocus && event.keyCode == _focusKey )
+			if( _gotFocus )
 			{
-				setFocus();
+				if( event.keyCode == Keyboard.ESCAPE )
+				{
+					loseFocus();
+				}
 			}
-			
-			if( _gotFocus && event.keyCode == _unfocusKey )
+			else
 			{
-				loseFocus();
+				if( Utilities.isWindows )
+				{
+					if( event.keyCode == Keyboard.F2 )
+					{
+						setFocus();
+					}
+				}
+				
+				if( Utilities.isMac )
+				{
+					if( event.keyCode == Keyboard.NUMBER_3 && event.altKey )
+					{
+						setFocus();
+					}
+				}
 			}
 			
 			
 			//easter eggs for testing
-			if( _displayedInfo && event.keyCode == Keyboard.F3 )
+			if( Utilities.isDebugging )
 			{
-				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData( ClipboardFormats.TEXT_FORMAT, _displayedInfo.markdown );
+				if( _displayedInfo && event.keyCode == Keyboard.F3 )
+				{
+					Clipboard.generalClipboard.clear();
+					Clipboard.generalClipboard.setData( ClipboardFormats.TEXT_FORMAT, _displayedInfo.markdown );
+				}
+	
+				if( _displayedInfo && event.keyCode == Keyboard.F4 )
+				{
+					Clipboard.generalClipboard.clear();
+					Clipboard.generalClipboard.setData( ClipboardFormats.TEXT_FORMAT, _displayedInfo.html );
+				}
 			}
-
-			if( _displayedInfo && event.keyCode == Keyboard.F4 )
+		}	
+		
+		
+		private function updateFocusPrompt():void
+		{
+			var verb:String = " to lock";
+			
+			_htmlText.validateNow();
+			if( _htmlText.textHeight > _htmlText.height )
 			{
-				Clipboard.generalClipboard.clear();
-				Clipboard.generalClipboard.setData( ClipboardFormats.TEXT_FORMAT, _displayedInfo.html );
+				verb += "/scroll";
 			}
-		}		
+			
+			if( _displayedInfo && _displayedInfo.canEdit )
+			{
+				verb += "/edit";	
+			}
+			
+			if( Utilities.isWindows )
+			{
+				_focusPrompt.text = "Press F2" + verb;	
+			}
+			
+			if( Utilities.isMac )
+			{
+				_focusPrompt.text = "Press Alt+3" + verb;	
+			}
+		}
 		
 		
 		private function onFocusIn( event:FocusEvent ):void
@@ -555,10 +602,6 @@ package components.views.InfoView
 		private static const _bottomMargin:Number = 16;
 		private static const _bottomCornerRadius:Number = 8;
 
-		
-		private static const _focusPromptText:String = "Press F2 to lock / scroll";
-		private static const _focusKey:uint = Keyboard.F2;
-		private static const _unfocusKey:uint = Keyboard.ESCAPE;
 		
 		private static const _editButtonText:String = "Edit";
 	}

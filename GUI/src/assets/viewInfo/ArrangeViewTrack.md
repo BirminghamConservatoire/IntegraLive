@@ -1,7 +1,3 @@
-_Note: This info is editable.  You can use it to document your Tracks._
-
-##Tracks
-
 Tracks enable multiple Blocks to be active at the same time.
 
 * To add a Track, double-click in the empty space under an existing Track

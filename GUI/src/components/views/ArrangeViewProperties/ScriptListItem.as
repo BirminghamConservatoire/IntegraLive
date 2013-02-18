@@ -26,11 +26,13 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.RemoveScript;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
+	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.Script;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.Skins.CloseButtonSkin;
 	
@@ -80,7 +82,6 @@ package components.views.ArrangeViewProperties
 			_deleteButton.setStyle( "fillAlpha", 1 );
 			_deleteButton.setStyle( "right", 5 );
 			_deleteButton.setStyle( "verticalCenter", 0 );
-			_deleteButton.toolTip = "Delete Script";
 			addChild( _deleteButton );
 		
 			addUpdateMethod( RenameObject, onObjectRenamed );
@@ -125,6 +126,16 @@ package components.views.ArrangeViewProperties
 			}
 		}
 
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			if( event.target == _deleteButton )
+			{
+				 return InfoMarkupForViews.instance.getInfoForView( "DeleteScriptButton" );
+			}
+
+			return null;
+		}
 
 		override protected function onAllDataChanged():void
 		{

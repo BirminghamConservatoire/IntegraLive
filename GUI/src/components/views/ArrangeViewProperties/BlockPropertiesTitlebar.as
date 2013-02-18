@@ -69,7 +69,6 @@ package components.views.ArrangeViewProperties
 
 			_deleteEnvelopeButton.setStyle( "skin", CloseButtonSkin );
 			_deleteEnvelopeButton.setStyle( "fillAlpha", 1 );
-			_deleteEnvelopeButton.toolTip = "Delete Envelope";
 			
 			_hbox.setStyle( "horizontalGap", 10 );
 			_hbox.setStyle( "verticalAlign", "middle" );

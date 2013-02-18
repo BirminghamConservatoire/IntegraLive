@@ -193,22 +193,41 @@ package components.model
 			const startToken:String = "<!--";
 			const endToken:String = "-->";
 			
-			var tooltipStart:int = _markdown.indexOf( startToken );
-			if( tooltipStart < 0 )
+			_tooltip = null;
+			
+			var tooltipStart:int = 0;
+			var tooltipEnd:int = 0;
+			
+			while( true )
 			{
-				return;
+				tooltipStart = _markdown.indexOf( startToken, tooltipEnd );
+				if( tooltipStart < 0 )
+				{
+					return;
+				}
+				
+				tooltipStart += startToken.length;
+				
+				tooltipEnd = _markdown.indexOf( endToken, tooltipStart );
+				var tooltipLength:int = tooltipEnd - tooltipStart;
+				if( tooltipLength < 0 )
+				{
+					return;
+				}
+				
+				var tooltipLine:String = _markdown.substr( tooltipStart, tooltipLength );
+
+				if( _tooltip )
+				{
+					_tooltip += ( "\n" + tooltipLine );
+				}
+				else
+				{
+					_tooltip = tooltipLine;
+				}
+				
+				tooltipEnd += endToken.length;
 			}
-			
-			tooltipStart += startToken.length;
-			
-			var tooltipEnd:int = _markdown.indexOf( endToken, tooltipStart );
-			var tooltipLength:int = tooltipEnd - tooltipStart;
-			if( tooltipLength <= 0 )
-			{
-				return;
-			}
-			
-			_tooltip = _markdown.substr( tooltipStart, tooltipLength );	
 		}
 		
 		

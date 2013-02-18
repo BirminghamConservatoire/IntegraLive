@@ -27,6 +27,7 @@ package components.utils
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.userDataCommands.SetTrackColor;
 	import components.model.Block;
+	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.ModuleInstance;
@@ -37,8 +38,10 @@ package components.utils
 	import components.model.interfaceDefinitions.StreamInfo;
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.ColorScheme;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	
+	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
@@ -91,7 +94,20 @@ package components.utils
 			addUpdateMethod( SetModuleAttribute, onModuleAttributeChanged );
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( SetBlockTrack, onBlockChangedTrack );
-			addUpdateMethod( RenameObject, onObjectRenamed );
+		}
+		
+		
+		override public function getInfoToDisplay(event:MouseEvent):Info
+		{
+			var container:IntegraContainer = model.getContainer( _containerID );
+			Assert.assertNotNull( container );
+			
+			if( container is Project ) return InfoMarkupForViews.instance.getInfoForView( "ProjectVU" );
+			if( container is Track ) return InfoMarkupForViews.instance.getInfoForView( "TrackVU" );
+			if( container is Block ) return InfoMarkupForViews.instance.getInfoForView( "BlockVU" );
+			
+			Assert.assertTrue( false );
+			return null;
 		}
 		
 		
@@ -99,7 +115,6 @@ package components.utils
 		{
 			 _containerID = containerID;
 		 	setControlForegroundColor();
-			updateTooltip();
 		}
 		
 		
@@ -347,24 +362,6 @@ package components.utils
 			{
 				setControlForegroundColor();
 			}			
-		}
-		
-		
-		private function onObjectRenamed( command:RenameObject ):void
-		{
-			if( command.objectID == _containerID )
-			{
-				updateTooltip();
-			}
-		}
-		
-		
-		private function updateTooltip():void
-		{
-			var container:IntegraContainer = model.getContainer( _containerID );
-			Assert.assertNotNull( container );
-
-			toolTip = Utilities.getClassNameFromObject( container ) + " VU";
 		}
 		
 		

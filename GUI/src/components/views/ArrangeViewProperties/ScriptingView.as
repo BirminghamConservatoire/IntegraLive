@@ -77,7 +77,6 @@ package components.views.ArrangeViewProperties
 		
 			_newScriptButton.setStyle( "skin", AddButtonSkin );
 			_newScriptButton.setStyle( "fillAlpha", 1 );
-			_newScriptButton.toolTip = "Add Script";
 			_newScriptButton.addEventListener( MouseEvent.CLICK, onClickNewScriptButton );
 		
 			_scriptArea.percentWidth = 100;
@@ -105,16 +104,19 @@ package components.views.ArrangeViewProperties
 
 		
 		override public function getInfoToDisplay( event:MouseEvent ):Info
-		{
+		{			
+			if( event.target == _newScriptButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "CreateScriptButton" );
+			}
+			
 			if( _selectedScriptID >= 0 )
 			{
 				var script:Script = model.getScript( _selectedScriptID );
 				return script.info;
 			}
-			else
-			{
-				return InfoMarkupForViews.instance.getInfoForView( "ScriptingView" );
-			}
+
+			return InfoMarkupForViews.instance.getInfoForView( "ScriptingView" );
 		}	
 		
 

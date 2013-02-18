@@ -49,7 +49,6 @@ package components.views.RibbonBar
 			
 			_label.setStyle( "horizontalCenter", 0 );
 			_label.setStyle( "verticalCenter", 0 );
-			// _label.truncateToFit = false;  // FL4U
 			addElement( _label );
 			
 			horizontalScrollPolicy = ScrollPolicy.OFF;

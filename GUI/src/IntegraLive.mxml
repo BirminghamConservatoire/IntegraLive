@@ -1261,7 +1261,7 @@
 		private static const _inactiveGuiMilliseconds:int = 10000;
 
 		private static const _tooltipDelay:int = 1000;
-		private static const _scrubDelay:int = 400;
+		private static const _scrubDelay:int = 100;
 			
 		]]>
 	</fx:Script>					

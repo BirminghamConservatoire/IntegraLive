@@ -61,7 +61,6 @@ package components.views.ArrangeViewProperties
 			
 			_newItemButton.setStyle( "skin", AddButtonSkin );
 			_newItemButton.setStyle( "fillAlpha", 1 );
-			_newItemButton.toolTip = "Add Routing";
 			_newItemButton.addEventListener( MouseEvent.CLICK, onClickNewItemButton );
 			
 			addUpdateMethod( SetPrimarySelectedChild, onPrimarySelectionChanged );
@@ -101,6 +100,11 @@ package components.views.ArrangeViewProperties
 		
 		override public function getInfoToDisplay( event:MouseEvent ):Info
 		{
+			if( event.target == _newItemButton ) 
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "CreateRoutingButton" );
+			}
+
 			return InfoMarkupForViews.instance.getInfoForView( "RoutingView" );
 		}		
 		

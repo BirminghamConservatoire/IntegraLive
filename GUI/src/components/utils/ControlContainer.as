@@ -131,7 +131,7 @@ package components.utils
 			
 			updateBevelFilter();
 			
-			buildInfo();
+			buildControlInfo();
 		}
 
 		public function get module():ModuleInstance 				{ return _module; }
@@ -360,10 +360,13 @@ package components.utils
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ControlLiveViewButton" );
 			}
-			else
+			
+			if( event.target == _padlockImage )
 			{
-				return _info;
+				return _padlockInfo;
 			}
+
+			return _controlInfo;
 		}
 		
 
@@ -381,8 +384,10 @@ package components.utils
 				}
 
 				Assert.assertNotNull( _padlockExplanation );				
-				_padlockImage.toolTip = _padlockExplanation;
+				
 				_padlockImage.alpha = _padlockAlpha;
+				
+				buildPadlockInfo();
 			}
 			else
 			{
@@ -391,6 +396,8 @@ package components.utils
 					removeElement( _padlockImage );
 					_padlockImage = null;
 				}
+				
+				_padlockInfo = null;
 			}
         }
 
@@ -835,24 +842,12 @@ package components.utils
 				_controlLabel.visible = true;
 				
 				_control.bottomPadding = bottomPadding + controlLabelHeight;
-				
-				_controlLabel.validateNow();
-				_controlLabel.validateSize();
-				if( _controlLabel.textWidth > width - resizeAreaWidth * 2 )
-				{
-					toolTip = controlLabelText;
-				}
-				else
-				{
-					toolTip = null;
-				}
 			} 
 			else
 			{
 				_controlLabel.visible = false;
 
 				_control.bottomPadding = bottomPadding;
-				toolTip = controlLabelText;
 			}
 
 			if( _bottomMoveArea ) 
@@ -1477,7 +1472,7 @@ package components.utils
 					var connectionSource:IntegraDataObject = _model.getDataObjectByID( connection.sourceObjectID );
 					if( connectionSource is Envelope )
 					{
-						explanationForNonWritability.value += "an Envelope"; 
+						explanationForNonWritability.value += "an envelope"; 
 					}
 					else
 					{
@@ -1490,7 +1485,7 @@ package components.utils
 							{
 								continue;
 							}
-							
+						
 							explanationForNonWritability.value += ( getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName );
 						}
 						else
@@ -1537,10 +1532,10 @@ package components.utils
 		} 
 		
 		
-		private function buildInfo():void
+		private function buildControlInfo():void
 		{
-			_info = new Info();
-			_info.title = _module.interfaceDefinition.interfaceInfo.label;
+			_controlInfo = new Info();
+			_controlInfo.title = _module.interfaceDefinition.interfaceInfo.label;
 
 			var markdown:String = "";
 			
@@ -1551,8 +1546,19 @@ package components.utils
 				markdown += ( "## " + endpointDefinition.label + "\n" );
 				markdown += ( endpointDefinition.description + "\n\n" );
 			}
+
+			_controlInfo.markdown = markdown;
+		}
+		
+		
+		private function buildPadlockInfo():void
+		{
+			Assert.assertNotNull( _padlockExplanation );
 			
-			_info.markdown = markdown;
+			_padlockInfo = new Info;
+			
+			_padlockInfo.title = "This control is locked";
+			_padlockInfo.markdown = "<!--" + _padlockExplanation + "-->" + _padlockExplanation;			
 		}
 		
 		
@@ -1589,7 +1595,8 @@ package components.utils
 		private var _bottomBackgroundColor:uint = 0;
 		private var _topBackgroundColor:uint = 0;
 		
-		private var _info:Info = null;
+		private var _controlInfo:Info = null;
+		private var _padlockInfo:Info = null;
 
 		private static const topPadding:Number = 14;
 		private static const sidePadding:Number = 8;

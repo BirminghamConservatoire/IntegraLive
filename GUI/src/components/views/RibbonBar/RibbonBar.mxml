@@ -30,18 +30,21 @@
 
 	<fx:Script>
 		<![CDATA[
-		import components.controller.serverCommands.SetPlaying;
-		import components.controller.IntegraController;
-		import components.controller.userDataCommands.SetViewMode;
-		import components.controller.userDataCommands.SetColorScheme;
-		
-		import components.model.IntegraModel;
-		import components.model.userData.ViewMode;
-		import components.model.userData.ColorScheme;
-		import components.utils.FontSize;
-
-		import flexunit.framework.Assert;
-		import mx.core.ScrollPolicy;
+			import components.controller.IntegraController;
+			import components.controller.serverCommands.SetPlaying;
+			import components.controller.userDataCommands.SetColorScheme;
+			import components.controller.userDataCommands.SetViewMode;
+			import components.model.Info;
+			import components.model.IntegraModel;
+			import components.model.userData.ColorScheme;
+			import components.model.userData.ViewMode;
+			import components.utils.FontSize;
+			import components.utils.Utilities;
+			import components.views.InfoView.InfoMarkupForViews;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.core.ScrollPolicy;
 		
 
 		override public function styleChanged( style:String ):void
@@ -68,6 +71,22 @@
 			}
 		}
 
+			
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			var infos:InfoMarkupForViews = InfoMarkupForViews.instance;
+			
+			var button:RibbonButton = Utilities.getAncestorByType( event.target, RibbonButton ) as RibbonButton;
+			
+			if( button == _playButton ) return infos.getInfoForView( "PlayButton" );
+			if( button == _pauseButton ) return infos.getInfoForView( "PauseButton" );
+			if( button == _arrangeButton ) return infos.getInfoForView( "ArrangeViewButton" );			
+			if( button == _liveButton ) return infos.getInfoForView( "LiveViewButton" );
+			if( button == _lightButton ) return infos.getInfoForView( "LightingButton" );
+				
+			return null;
+		}
+			
 
 		override protected function onAllDataChanged():void 
 		{
@@ -170,30 +189,24 @@
 		<mx:HBox horizontalGap="5">
 			<RibbonBar:RibbonButton id="_playButton" 
 									ribbonButtonIcon="{RibbonButton.RIBBONICON_PLAY}" 
-									click="{play()}" 
-									toolTip="Start playhead"/>
+									click="{play()}" />
 			<RibbonBar:RibbonButton id="_pauseButton" 
 									ribbonButtonIcon="{RibbonButton.RIBBONICON_PAUSE}" 
-									click="{pause()}"
-									toolTip="Pause playhead"/>
+									click="{pause()}"/>
 		</mx:HBox>
 		<mx:HBox horizontalGap="5">
 			<RibbonBar:RibbonButton id="_arrangeButton" 
 									ribbonButtonLabel="Arrange" 
-									click="{switchToArrangeView()}"
-									toolTip="Switch to Arrange View"/>
+									click="{switchToArrangeView()}"/>
 			<RibbonBar:RibbonButton id="_liveButton" 
 									ribbonButtonLabel="Live" 
-									click="{switchToLiveView()}"
-									toolTip="Switch to Live View"/>
+									click="{switchToLiveView()}"/>
 		</mx:HBox>
 	</mx:HBox>
 	<RibbonBar:RibbonButton id="_lightButton" 
 							right="20" 
 							verticalCenter="0" 
 							ribbonButtonIcon="{RibbonButton.RIBBONICON_LIGHT}" 
-							click="{toggleLighting()}"
-							toolTip="Toggle light / dark mode"/>
-	
+							click="{toggleLighting()}"/>
 
 </IntegraView>

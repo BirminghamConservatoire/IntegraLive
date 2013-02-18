@@ -24,21 +24,22 @@
 package components.views.ArrangeViewProperties
 {
 	import components.controller.ServerCommand;
+	import components.controller.serverCommands.AddBlock;
+	import components.controller.serverCommands.AddScript;
+	import components.controller.serverCommands.AddTrack;
+	import components.controller.serverCommands.ImportBlock;
+	import components.controller.serverCommands.RemoveBlock;
+	import components.controller.serverCommands.RemoveBlockImport;
 	import components.controller.serverCommands.RemoveScaledConnection;
+	import components.controller.serverCommands.RemoveScript;
+	import components.controller.serverCommands.RemoveTrack;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
-	import components.controller.serverCommands.AddBlock;
-	import components.controller.serverCommands.RemoveBlock;
-	import components.controller.serverCommands.ImportBlock;
-	import components.controller.serverCommands.RemoveBlockImport;
-	import components.controller.serverCommands.AddTrack;
-	import components.controller.serverCommands.RemoveTrack;
-	import components.controller.serverCommands.AddScript;
-	import components.controller.serverCommands.RemoveScript;
 	import components.model.Connection;
 	import components.model.Envelope;
+	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.Scaler;
@@ -46,6 +47,7 @@ package components.views.ArrangeViewProperties
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.Skins.CloseButtonSkin;
 	
@@ -98,7 +100,6 @@ package components.views.ArrangeViewProperties
 			_deleteButton.setStyle( "skin", CloseButtonSkin );
 			_deleteButton.setStyle( "fillAlpha", 1 );
 			_deleteButton.addEventListener( MouseEvent.CLICK, onDelete );
-			_deleteButton.toolTip = "Delete Routing";
 			_hbox.addChild( _deleteButton );
 			
 			addChild( _hbox );
@@ -177,6 +178,16 @@ package components.views.ArrangeViewProperties
 			}
 		}
 
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			if( event.target == _deleteButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "DeleteRoutingButton" );
+			}
+
+			return null;
+		}
 
 		override protected function onAllDataChanged():void
 		{

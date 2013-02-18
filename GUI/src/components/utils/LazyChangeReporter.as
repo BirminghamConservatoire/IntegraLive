@@ -26,6 +26,7 @@ package components.utils
 	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
+	import flash.ui.Keyboard;
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
 	
@@ -65,6 +66,11 @@ package components.utils
 		
 		private function onTargetKeyUp( event:KeyboardEvent ):void
 		{
+			if( _nonEditKeys.indexOf( event.keyCode ) >= 0 ) 
+			{
+				return;
+			}
+			
 			var ticksSinceReport:int = getTimer() - _lastReportTicks;
 			if( ticksSinceReport >= _reportInterval )
 			{
@@ -81,7 +87,7 @@ package components.utils
 			}
 			
 		}
-
+		
 		
 		private function onTimer( event:TimerEvent ):void
 		{
@@ -114,6 +120,13 @@ package components.utils
 		
 		private var _lastReportTicks:int = 0;
 		private var _timer:Timer = null;
+		
+		private var _nonEditKeys:Array = 
+			[ 
+				Keyboard.UP, Keyboard.DOWN, Keyboard.LEFT, Keyboard.RIGHT,
+				Keyboard.PAGE_UP, Keyboard.PAGE_DOWN, Keyboard.HOME, Keyboard.END, Keyboard.INSERT,
+				Keyboard.SHIFT, Keyboard.CONTROL, Keyboard.COMMAND, Keyboard.ALTERNATE
+			];
 		
 		private static const _reportInterval:int = 500;
 	}

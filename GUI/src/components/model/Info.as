@@ -123,13 +123,16 @@ package components.model
 			_html += Showdown.makeHtml( preprocessedMarkdown );
 
 			_html = addSpacingParagraphs( _html );
+			
+			_html = decorateBlockQuotes( _html );
 
+			_html = decorateCode( _html );
+			
 			_html += "</html>";
 			
 			if( isInvalid )
 			{
-				//we expect it to always be valid when we've escaped the input
-				Assert.assertTrue( validateHtml( _html ) );
+				_html = _invalidHtmlWarning;
 			}
 			else
 			{
@@ -154,12 +157,15 @@ package components.model
 			const replaceAllCloseP:RegExp = /<\/p>/gi;
 			const replaceAllCloseUL:RegExp = /<\/ul>/gi;
 			const replaceAllCloseOL:RegExp = /<\/ol>/gi;
+			const replaceAllClosePreTags:RegExp = /<\/pre>/gi;
 			
-			const spacerParagraph:String = "<p class='space'></p>";			
+			const spacerParagraph:String = "<p class='space'></p>";
+			
 			
 			html = html.replace( replaceAllCloseP, "</p>" + spacerParagraph );
 			html = html.replace( replaceAllCloseUL, "</ul>" + spacerParagraph );
 			html = html.replace( replaceAllCloseOL, "</ol>" + spacerParagraph );
+			html = html.replace( replaceAllClosePreTags, "</pre>" + spacerParagraph );
 
 			for( var headingLevel:int = 1; headingLevel <= 6; headingLevel++ )
 			{
@@ -171,7 +177,68 @@ package components.model
 			
 			return html;
 		}
+		
+		
+		private function decorateBlockQuotes( html:String ):String
+		{
+			//add textformat tags to blockquote tags, so that they show up with some blockindent
+			const replaceAllOpenBlockquote:RegExp = /<blockquote>/gi;
+			const replaceAllCloseBlockquote:RegExp = /<\/blockquote>/gi;
+			
+			html = html.replace( replaceAllOpenBlockquote, "<blockquote><textformat blockindent=\"" + _blockindent + "\">" );
+			html = html.replace( replaceAllCloseBlockquote, "</textformat></blockquote>" );
+			
+			return html;
+		}
 
+		
+		private function decorateCode( html:String ):String
+		{
+			//create start and end paragraphs within pre tags
+			
+			const openCode:String = "<pre><code>";
+			const closeCode:String = "</code></pre>";
+			
+			var preformattedEnd:int = 0;
+			while( true )
+			{
+				var preformattedStart:int = html.indexOf( openCode, preformattedEnd );
+				if( preformattedStart < 0 ) break;
+				
+				preformattedStart += openCode.length;
+				
+				preformattedEnd = html.indexOf( closeCode, preformattedStart );
+				if( preformattedEnd < 0 ) break;
+				
+				var paragraphStart:int = preformattedStart;
+				while( true )
+				{
+					var paragraphEnd:int = html.indexOf( "\n", paragraphStart );
+					if( paragraphEnd < 0 || paragraphEnd >= preformattedEnd ) break;
+					
+					var indent:int = _codeindent;
+					for( var i:int = paragraphStart; i < html.length && html.charAt( i ) == " "; i++ )
+					{
+						indent += _characterIndent;
+					}
+					
+					var openParagraphTag:String = "<p><textformat blockindent=\"" + indent + "\">";
+					var closeParagraphTag:String = "</textformat></p>";
+					
+					html = html.substr( 0, paragraphStart ) + openParagraphTag + html.substr( paragraphStart, paragraphEnd - paragraphStart ) + closeParagraphTag + html.substr( paragraphEnd );
+					var insertedLength:int = openParagraphTag.length + closeParagraphTag.length;
+					
+					paragraphStart = paragraphEnd + insertedLength + 1;
+					preformattedEnd += insertedLength;
+				}
+				
+				
+				preformattedEnd += closeCode.length;
+			}
+			
+			return html;
+		}
+		
 		
 		private function validateHtml( html:String ):Boolean
 		{
@@ -242,6 +309,10 @@ package components.model
 		private var _ownerID:int = -1;
 		private var _canEdit:Boolean = false;
 		
-		private static const _invalidHtmlWarning:String = "<p align='right'><font color='#ff4040'>Invalid HTML!</font></p>"  
+		private static const _blockindent:int = 20;
+		private static const _codeindent:int = 20;
+		private static const _characterIndent:int = 8;
+
+		private static const _invalidHtmlWarning:String = "<p align='right'><font color='#ff4040'>Invalid HTML!</font></p>"
 	}
 }

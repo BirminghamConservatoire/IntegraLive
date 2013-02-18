@@ -162,7 +162,7 @@ package components.views.InfoView
 			}
 		}
 		
-		
+	
 		private function updateSize():void
 		{
 			Assert.assertNotNull( parentDocument );
@@ -251,7 +251,7 @@ package components.views.InfoView
 		private var _titleLabel:Label = new Label;
 		private var _titleCloseButton:Button = new Button;
 		
-		private var _editText:TextArea = new TextArea;
+		private var _editText:TabbableTextArea = new TabbableTextArea;
 		private var _lazyChangeReporter:LazyChangeReporter = null;
 		
 		private var _backgroundColor:uint = 0;

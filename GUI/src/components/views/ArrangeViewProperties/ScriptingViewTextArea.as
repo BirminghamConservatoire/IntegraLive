@@ -78,7 +78,7 @@ package components.views.ArrangeViewProperties
 
 			_codePrettyPrint = new CodePrettyPrint();
 			
-			restrict="A-Z a-z 0-9 !\"£$%^&*()-=_+[]{};'#:@~,./<>?\\|";
+			restrict = "A-Z a-z 0-9 !\"£$%\\^&*()\\-=_+[]{};'#:@~,./<>?\\\\|";
 		}
 		
 		

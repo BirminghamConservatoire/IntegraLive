@@ -130,13 +130,13 @@ package components.model
 			
 			_html += "</html>";
 			
-			if( isInvalid )
+			if( !validateHtml( _html ) )
 			{
-				_html = _invalidHtmlWarning;
-			}
-			else
-			{
-				if( !validateHtml( _html ) )
+				if( isInvalid )
+				{				
+					_html = _invalidHtmlWarning;
+				}
+				else
 				{
 					generateHtml( true );
 				}

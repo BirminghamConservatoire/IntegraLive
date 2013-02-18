@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		   xmlns:mx="library://ns.adobe.com/flex/mx">
+		   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -25,7 +25,7 @@
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label text="Interface Description" width="{Globals.labelColumnWidth()}" textAlign="right"/>
-			<mx:TextArea id="_iidDescription" 
+			<local:TabbableTextArea id="_iidDescription" 
 						  	change="{interfaceChanged();}"
 							focusIn="{onFocusInDescription();}"
 							width="{Globals.propertyColumnWidth()}"

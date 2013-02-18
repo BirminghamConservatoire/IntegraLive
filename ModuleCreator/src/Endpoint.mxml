@@ -25,7 +25,7 @@
 			</mx:HBox>
 			<mx:HBox>
 				<mx:Label text="Endpoint Description" width="{_labelColumnWidth}" textAlign="right"/>
-				<mx:TextArea id="_endpointDescription" 
+				<local:TabbableTextArea id="_endpointDescription" 
 							 change="{interfaceChanged();}"
 							 focusIn="{onFocusInDescription();}"
 							 width="{Globals.propertyColumnWidth()}"

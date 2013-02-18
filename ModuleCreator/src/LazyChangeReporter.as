@@ -94,7 +94,10 @@ package
 			stopTimer();
 			_lastReportTicks = getTimer();
 
-			_callback();
+			if( _callback != null )
+			{
+				_callback();
+			}
 		}
 		
 		

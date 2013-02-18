@@ -89,13 +89,13 @@ package components.views
 						continue;
 					}
 					
-					if( item.keyEquivalent.length != 2 )
+					if( item.keyEquivalent.length != 3 )
 					{
 						continue;
 					}
 					
-					var firstChar:String = item.keyEquivalent.charAt( 0 );
-					var secondChar:String = item.keyEquivalent.charAt( 1 );
+					var firstChar:String = item.keyEquivalent.charAt( 1 );
+					var secondChar:String = item.keyEquivalent.charAt( 2 );
 					
 					if( firstChar.toLowerCase() != 'f' )
 					{
@@ -323,7 +323,7 @@ package components.views
 			{
 				if( first && Utilities.isWindows )
 				{
-					addHelpLink( helpMenu.submenu, helpLink, "f1", [] );
+					addHelpLink( helpMenu.submenu, helpLink, "\nf1", [] );
 				}
 				else
 				{

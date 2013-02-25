@@ -546,23 +546,26 @@ void ntg_unload_module( ntg_module_manager *module_manager, ntg_interface *inter
 	ids = ( GUID * ) module_id_list->elems;
 	found = false;
 
-	for( i = 0; i < module_id_list->n_elems - 1; i++ )
+	for( i = 0; i < module_id_list->n_elems; i++ )
 	{
-		if( !found )
+		if( found )
+		{
+			ids[ i - 1 ] = ids[ i ];
+		}
+		else
 		{
 			if( ntg_guids_are_equal( &ids[ i ], &interface->module_guid ) )
 			{
 				found = true;
 			}
 		}
-
-		if( found )
-		{
-			ids[ i ] = ids[ i + 1 ];
-		}
 	}
 
-	if( !found )
+	if( found )
+	{
+		module_id_list->n_elems--;
+	}
+	else
 	{
 		NTG_TRACE_ERROR( "Failed to find guid in id list" );
 	}
@@ -920,4 +923,66 @@ void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, cons
 
 		ntg_unload_module( module_manager, interface );
 	}
+}
+
+
+ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node *root_node )
+{
+	NTG_HASHTABLE *embedded_modules;
+	const ntg_interface *interface;
+	int number_of_module_ids;
+	const GUID *module_ids;
+	ntg_list *orphaned_embedded_modules;
+	GUID *orphaned_guids;
+	int i;
+
+	assert( module_manager && root_node );
+
+	embedded_modules = ntg_hashtable_new();
+
+	number_of_module_ids = module_manager->module_id_list->n_elems;
+	module_ids = ( const GUID * ) module_manager->module_id_list->elems;
+
+	/* first pass - collect ids of all embedded modules */
+	for( i = 0; i < number_of_module_ids; i++ )
+	{
+		interface = ntg_get_interface_by_module_id( module_manager, &module_ids[ i ] );
+		if( !interface )
+		{
+			NTG_TRACE_ERROR( "Failed to lookup module" );
+			continue;
+		}
+
+		if( interface->module_source == NTG_MODULE_EMBEDDED )
+		{
+			ntg_hashtable_add_guid_key( embedded_modules, &interface->module_guid, ( const void * ) 1 );
+		}
+	}
+
+	/* second pass - walk node tree pruning any modules still in use */
+	ntg_node_remove_in_use_module_ids_from_hashtable( root_node, embedded_modules );
+
+	/* third pass - build list of orphaned embedded module ids */
+	orphaned_embedded_modules = ntg_list_new( NTG_LIST_GUIDS );
+
+	for( i = 0; i < number_of_module_ids; i++ )
+	{
+		if( ntg_hashtable_lookup_guid( embedded_modules, &module_ids[ i ] ) )
+		{
+			orphaned_embedded_modules->elems = ntg_realloc( orphaned_embedded_modules->elems, ( orphaned_embedded_modules->n_elems + 1 ) * sizeof( GUID ) );
+			orphaned_guids = ( GUID * ) orphaned_embedded_modules->elems;
+			orphaned_guids[ orphaned_embedded_modules->n_elems ] = module_ids[ i ];
+			orphaned_embedded_modules->n_elems++;
+		}
+	}
+
+	ntg_hashtable_free( embedded_modules );
+
+	if( orphaned_embedded_modules->n_elems == 0 )
+	{
+		ntg_list_free( orphaned_embedded_modules );
+		orphaned_embedded_modules = NULL;
+	}
+
+	return orphaned_embedded_modules;
 }

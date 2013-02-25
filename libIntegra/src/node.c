@@ -1122,7 +1122,34 @@ void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *state
 		}
 		while( child_node != node->nodes );
 	}
+}
 
 
+void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable )
+{
+	const ntg_node *child_node;
 
+	assert( node && hashtable );
+
+	if( node->interface )
+	{
+		if( ntg_hashtable_lookup_guid( hashtable, &node->interface->module_guid ) )
+		{
+			ntg_hashtable_remove_guid_key( hashtable, &node->interface->module_guid );
+		}
+	}
+
+	/* recurse child nodes */
+
+	child_node = node->nodes;
+	if( child_node )
+	{
+		do
+		{
+			ntg_node_remove_in_use_module_ids_from_hashtable( child_node, hashtable );
+
+			child_node = child_node->next;
+		}
+		while( child_node != node->nodes );
+	}
 }

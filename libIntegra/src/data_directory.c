@@ -340,7 +340,7 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 		}
 
 		relative_node_path = ntg_path_from_string( relative_node_path_string );
-		node = ntg_node_find_by_path( relative_node_path, parent_node );
+		node = ntg_node_find_by_path( relative_node_path, ( ntg_node * ) parent_node );
 		ntg_path_free( relative_node_path );
 
 		if( !node )

@@ -278,6 +278,16 @@ void ntg_node_add_to_statetable( const ntg_node *node, NTG_HASHTABLE *statetable
 void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *statetable );
 
 
+/** \brief recursively removes ids of modules that are still in use
+ *  \param node node to search from
+ *  \param hashtable a map of module id => NULL.  This map is updated by the method, 
+ *  removing any module ids which are still in use
+ *
+ * */
+
+void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable );
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -27,6 +27,7 @@ extern "C" {
 
 #include "Integra/integra.h"
 #include "hashtable.h"
+#include "node.h"
 #include "../externals/guiddef.h"
 
 #ifdef _WINDOWS
@@ -76,7 +77,7 @@ char *ntg_module_manager_get_unique_interface_name( const ntg_interface *interfa
 char *ntg_module_manager_get_module_path( const ntg_module_manager *module_manager, const ntg_interface *interface );
 char *ntg_module_manager_get_patch_path( const ntg_module_manager *module_manager, const ntg_interface *interface );
 
-
+ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node *root_node );
 
 ntg_error_code ntg_interpret_legacy_module_id( const ntg_module_manager *module_manager, ntg_id old_id, GUID *output );
 

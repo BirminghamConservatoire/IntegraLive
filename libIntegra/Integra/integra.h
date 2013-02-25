@@ -406,12 +406,18 @@ LIBINTEGRA_API const ntg_value *ntg_get(const ntg_path *path);
 LIBINTEGRA_API const ntg_list *ntg_nodelist(const ntg_path *path);
 
 
+/** \brief Unloads embedded modules that are not in use
+ */
+LIBINTEGRA_API ntg_command_status ntg_unload_orphaned_embedded_modules(void);
+
+
 /** \brief Terminate the server and cleanup */
 LIBINTEGRA_API void ntg_terminate(void);
 
 /** \brief Print out info about the state of the server to stdout.
  */
 LIBINTEGRA_API void ntg_print_state(void);
+
 
 /** \brief Create a new Integra server 
  *

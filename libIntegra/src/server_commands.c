@@ -427,6 +427,29 @@ ntg_command_status  ntg_delete_(ntg_server *server,
     NTG_RETURN_COMMAND_STATUS;
 }
 
+
+ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, ntg_command_source cmd_source )
+{
+	ntg_list *orphaned_embedded_modules;
+	ntg_command_status command_status;
+	ntg_error_code error_code = NTG_NO_ERROR;
+
+	assert( server );
+
+	NTG_COMMAND_STATUS_INIT;
+
+	orphaned_embedded_modules = ntg_module_manager_get_orphaned_embedded_modules( server->module_manager, server->root );
+
+	if( orphaned_embedded_modules )
+	{
+		ntg_module_manager_unload_modules( server->module_manager, orphaned_embedded_modules );
+		ntg_list_free( orphaned_embedded_modules );
+	}
+
+	NTG_RETURN_COMMAND_STATUS;
+}
+
+
 ntg_command_status ntg_rename_(ntg_server *server,
         ntg_command_source cmd_source,
         const ntg_path *path,

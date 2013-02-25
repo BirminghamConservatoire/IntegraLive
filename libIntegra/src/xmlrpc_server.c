@@ -86,6 +86,8 @@
 
 #define HELPSTR_MOVE "Move a node on the server\n\\param <array node path>\n\\param <array new node parent path>\n\\return {'response':'command.move', 'instancepath':<array path>, 'parentpath':<array path>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
+#define HELPSTR_UNLOAD_ORPHANED_EMBEDDED "Remove orphaned embedded modules\n\\return {'response':'module.unloadorphanedembedded'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+
 #define RESPONSE_LABEL      "response"
 #define NTG_NULL_STRING     "None"
 
@@ -1154,6 +1156,34 @@ static void *ntg_xmlrpc_move_callback(ntg_server * server, const int argc,
 
 }
 
+
+static void *ntg_xmlrpc_unload_orphaned_embedded_callback( ntg_server * server, const int argc,
+        va_list argv)
+{
+    xmlrpc_env *env;
+    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
+    ntg_error_code error_code;
+    ntg_command_status command_status;
+
+    env = va_arg(argv, xmlrpc_env *);
+
+    struct_ = xmlrpc_struct_new(env);
+
+	command_status = ntg_unload_orphaned_embedded_modules_(server, NTG_SOURCE_XMLRPC_API);
+    error_code = command_status.error_code;
+
+    if (error_code != NTG_NO_ERROR) {
+        return ntg_xmlrpc_error(env, error_code);
+    }
+
+    xmlrpc_temp = xmlrpc_string_new(env, "module.unloadorphanedembedded");
+    xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+
+    return struct_;
+}
+
+
 static void *ntg_xmlrpc_new_callback(ntg_server * server, const int argc,
         va_list argv)
 {
@@ -1536,6 +1566,18 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
 
 }
 
+static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded(xmlrpc_env * const env,
+        xmlrpc_value * const paramArrayP,
+        void *const userData)
+{
+    NTG_TRACE_VERBOSE("");
+
+    if (env->fault_occurred)
+        return NULL;
+
+    return ntg_server_do_va(&ntg_xmlrpc_unload_orphaned_embedded_callback, 1, (void *)env);
+}
+
 
 static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
@@ -1704,6 +1746,10 @@ void *ntg_xmlrpc_server_run(void *portv)
     xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.move",
             &ntg_xmlrpc_move, NULL, "S:AA",
             HELPSTR_MOVE);
+    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.unloadorphanedembedded",
+            &ntg_xmlrpc_unload_orphaned_embedded, NULL, "S:",
+            HELPSTR_UNLOAD_ORPHANED_EMBEDDED);
+	
 
     xmlrpc_registry_set_shutdown(registryP, ntg_xmlrpc_shutdown, NULL );
 

@@ -49,10 +49,6 @@ endif
 
 if BUILD_LUASCRIPTING
 luascripting_SOURCES = luascripting.c
-luascripting.c: lua_init.c lua_init.lua gen_lua_init.py
-lua_init.c: lua_init.lua gen_lua_init.py
-	python gen_lua_init.py lua_init.lua >lua_init.c
-	python gen_lua_init.py lua_functions.lua >lua_functions.c
 else
 luascripting_SOURCES = 
 endif

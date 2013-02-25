@@ -159,13 +159,18 @@ static bool osc_get_stream_connection_name( char *dest, const ntg_endpoint *endp
 	int index = 1;
 	const ntg_endpoint *endpoint_iterator;
 
-	assert( dest && endpoint && interface );
+	assert( dest && endpoint && endpoint->stream_info && interface );
 
 	for( endpoint_iterator = interface->endpoint_list; endpoint_iterator; endpoint_iterator = endpoint_iterator->next )
 	{
 		if( endpoint_iterator == endpoint )
 		{
 			break;
+		}
+
+		if( !endpoint_iterator->stream_info ) 
+		{
+			continue;
 		}
 
 		if( endpoint_iterator->stream_info->type == endpoint->stream_info->type && endpoint_iterator->stream_info->direction == endpoint->stream_info->direction )

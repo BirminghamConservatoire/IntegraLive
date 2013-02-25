@@ -788,9 +788,9 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 }
 
 
-ntg_error_code ntg_node_load(ntg_node * node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes)
+ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes )
 {
-    ntg_node           *parent;
+    const ntg_node     *parent;
     ntg_path           *path;
     ntg_value          *attribute_value;
     ntg_node_attribute *store;
@@ -880,7 +880,7 @@ ntg_error_code ntg_node_load(ntg_node * node, xmlTextReaderPtr reader, ntg_node_
 
 					/* add the new node */
 					node = (ntg_node *)
-						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, (char *)name, path).data;
+						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, name, path).data;
 					ntg_path_free(path);
 					xmlFree(name);
 					path = NULL;

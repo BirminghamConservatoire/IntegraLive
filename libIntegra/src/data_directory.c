@@ -49,7 +49,6 @@
 
 #define NTG_NODE_DIRECTORY "node_data"
 
-#define NTG_DATA_COPY_BUFFER_SIZE 16384
 
 
 char *ntg_make_up_node_data_directory_name( const ntg_node *node, const ntg_server *server )
@@ -172,97 +171,6 @@ void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *no
 }
 
 
-ntg_error_code ntg_load_ixd_buffer_directly( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length )
-{
-	FILE *file;
-	size_t bytes_loaded;
-
-	assert( file_path && ixd_buffer && ixd_buffer_length );
-	
-	file = fopen( file_path, "rb" );
-	if( !file )
-	{
-		NTG_TRACE_ERROR_WITH_STRING( "Couldn't open file", file_path );
-		return NTG_FAILED;
-	}
-
-	/* find size of the file */
-	fseek( file, 0, SEEK_END );
-	*ixd_buffer_length = ftell( file );
-	fseek( file, 0, SEEK_SET );
-
-	*ixd_buffer = ntg_malloc( *ixd_buffer_length );
-	bytes_loaded = fread( *ixd_buffer, 1, *ixd_buffer_length, file );
-	fclose( file );
-
-	if( bytes_loaded != *ixd_buffer_length )
-	{
-		NTG_TRACE_ERROR_WITH_STRING( "Error reading from file", file_path );
-		return NTG_FAILED;
-	}
-
-	return NTG_NO_ERROR;
-}
-
-
-ntg_error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length, bool *is_zip_file )
-{
-	unzFile unzip_file;
-	unz_file_info file_info;
-
-	assert( file_path && ixd_buffer && ixd_buffer_length );
-
-	unzip_file = unzOpen( file_path );
-	if( !unzip_file )
-	{
-		/* maybe file_path itself is an xml file saved before introduction of data directories */
-
-		*is_zip_file = false;
-		return ntg_load_ixd_buffer_directly( file_path, ixd_buffer, ixd_buffer_length );
-	}
-	else
-	{
-		*is_zip_file = true;
-	}	
-
-	if( unzLocateFile( unzip_file, NTG_INTERNAL_IXD_FILE_NAME, 0 ) != UNZ_OK )
-	{
-		NTG_TRACE_ERROR_WITH_STRING( "Unable to locate " NTG_INTERNAL_IXD_FILE_NAME, file_path );
-		unzClose( unzip_file );
-		return NTG_FAILED;
-	}
-
-	if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
-	{
-		NTG_TRACE_ERROR_WITH_STRING( "Couldn't get info for " NTG_INTERNAL_IXD_FILE_NAME, file_path );
-		unzClose( unzip_file );
-		return NTG_FAILED;
-	}
-
-	if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
-	{
-		NTG_TRACE_ERROR_WITH_STRING( "Unable to open " NTG_INTERNAL_IXD_FILE_NAME, file_path );
-		unzClose( unzip_file );
-		return NTG_FAILED;
-	}
-
-	*ixd_buffer_length = file_info.uncompressed_size;
-	*ixd_buffer = ntg_malloc( *ixd_buffer_length );
-
-	if( unzReadCurrentFile( unzip_file, *ixd_buffer, *ixd_buffer_length ) != *ixd_buffer_length )
-	{
-		NTG_TRACE_ERROR_WITH_STRING( "Unable to read " NTG_INTERNAL_IXD_FILE_NAME, file_path );
-		unzClose( unzip_file );
-		ntg_free( *ixd_buffer );
-		return NTG_FAILED;
-	}
-
-	unzClose( unzip_file );
-
-	return NTG_NO_ERROR;
-}
-
-
 void ntg_extract_to_data_directory( unzFile unzip_file, unz_file_info *file_info, const ntg_node *node, const char *relative_file_path )
 {
 	const char *data_directory;
@@ -378,7 +286,7 @@ const char *ntg_get_node_directory_path( unzFile unzip_file )
 }
 
 
-ntg_error_code ntg_load_data_directories( const char *file_path, ntg_node *parent_node )
+ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node *parent_node )
 {
 	unzFile unzip_file;
 	unz_file_info file_info;
@@ -387,7 +295,7 @@ ntg_error_code ntg_load_data_directories( const char *file_path, ntg_node *paren
 	char *relative_node_path_string;
 	ntg_path *relative_node_path;
 	const char *relative_file_path;
-	ntg_node *node;
+	const ntg_node *node;
 	int node_directory_length;
 
 	assert( file_path && parent_node );

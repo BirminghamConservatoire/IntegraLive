@@ -58,6 +58,8 @@ const char *ntg_error_text( ntg_error_code error_code )
             return "File validation error";
 		case NTG_FILE_MORE_RECENT_ERROR:
             return "File was saved in a more recent version of Integra, and cannot be loaded in this version.\n\nPlease upgrade to the latest version of Integra.";
+		case NTG_MODULE_ALREADY_LOADED:
+			return "Module already loaded";
 
         default:
             return "Unknown error";

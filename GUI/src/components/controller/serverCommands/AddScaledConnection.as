@@ -67,7 +67,7 @@ package components.controller.serverCommands
 				
 				var scalerInterface:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( Scaler._serverInterfaceName );
 				Assert.assertNotNull( scalerInterface );
-				_scalerName = container.getNewChildName( Scaler._serverInterfaceName, scalerInterface.guid ); 				
+				_scalerName = container.getNewChildName( Scaler._serverInterfaceName, scalerInterface.moduleGuid ); 				
 			}
 			
 			return true;

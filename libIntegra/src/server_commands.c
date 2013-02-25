@@ -24,21 +24,17 @@
 #include <string.h>
 #include <assert.h>
 
-#include <libxml/xmlreader.h>
-
 #include "helper.h"
 #include "globals.h"
 #include "command.h"
 #include "server.h"
 #include "path.h"
 #include "memory.h"
-#include "validate.h"
 #include "list.h"
 #include "osc_client.h"
 #include "system_class_handlers.h"
 #include "reentrance_checker.h"
 #include "data_directory.h"
-#include "node_list.h"
 #include "module_manager.h"
 #include "file_io.h"
 #include "interface.h"
@@ -82,7 +78,7 @@ bool ntg_should_send_set_to_host( const ntg_server *server, const ntg_node_attri
 }
 
 
-bool ntg_should_send_set_to_client( ntg_command_source cmd_source ) 
+bool ntg_should_send_to_client( ntg_command_source cmd_source ) 
 {
 	switch( cmd_source )
 	{
@@ -261,7 +257,7 @@ ntg_command_status ntg_set_(ntg_server *server,
         NTG_RETURN_COMMAND_STATUS;
     }
 
-    if( ntg_should_send_set_to_client( cmd_source ) ) 
+    if( ntg_should_send_to_client( cmd_source ) ) 
 	{
 		ntg_osc_client_send_set(server->osc_client, cmd_source, path, attribute->value );
     }
@@ -387,7 +383,10 @@ ntg_command_status ntg_new_(ntg_server *server,
 
 	command_status.data = node;
 
-    ntg_osc_client_send_new(server->osc_client, cmd_source, module_id, my_node_name, parent->path);
+    if( ntg_should_send_to_client( cmd_source ) ) 
+	{
+	    ntg_osc_client_send_new(server->osc_client, cmd_source, module_id, my_node_name, parent->path);
+	}
 
     ntg_free(my_node_name);
 
@@ -420,7 +419,10 @@ ntg_command_status  ntg_delete_(ntg_server *server,
 
     error_code = ntg_server_node_delete(server, node);
 
-	ntg_osc_client_send_delete(server->osc_client, cmd_source, path);
+    if( ntg_should_send_to_client( cmd_source ) ) 
+	{
+		ntg_osc_client_send_delete(server->osc_client, cmd_source, path);
+	}
 
     NTG_RETURN_COMMAND_STATUS;
 }
@@ -462,7 +464,10 @@ ntg_command_status ntg_rename_(ntg_server *server,
 
 	ntg_free( previous_name );
 
-	ntg_osc_client_send_rename(server->osc_client, cmd_source, path, name);
+    if( ntg_should_send_to_client( cmd_source ) ) 
+	{
+		ntg_osc_client_send_rename(server->osc_client, cmd_source, path, name);
+	}
 
     NTG_RETURN_COMMAND_STATUS;
 }
@@ -530,7 +535,10 @@ ntg_command_status ntg_move_(ntg_server *server,
 
 	ntg_system_class_handle_move( server, node, node_path, cmd_source );
 
-	ntg_osc_client_send_move(server->osc_client, cmd_source, node_path, parent_path);
+    if( ntg_should_send_to_client( cmd_source ) ) 
+	{
+		ntg_osc_client_send_move(server->osc_client, cmd_source, node_path, parent_path);
+	}
 
     NTG_RETURN_COMMAND_STATUS;
 }
@@ -541,116 +549,26 @@ ntg_command_status ntg_load_(ntg_server * server,
         const char *file_path,
         const ntg_path * path)
 {
-    ntg_error_code error_code;
-    ntg_command_status command_status;
     ntg_node *node, *root;
-	unsigned char *ixd_buffer = NULL;
-	bool is_zip_file;
-	unsigned int ixd_buffer_length;
-    xmlTextReaderPtr reader = NULL;
-	ntg_node_list *new_nodes_list = NULL;
-	ntg_node_list *new_node_iterator = NULL;
+	ntg_command_status command_status;
 
     assert(server != NULL);
     assert(file_path != NULL);
     assert(path != NULL);
 
-    NTG_COMMAND_STATUS_INIT;
-    LIBXML_TEST_VERSION;
-    
+	NTG_COMMAND_STATUS_INIT
+
     root = ntg_server_get_root(server);
     node = ntg_node_find_by_path( path, root);
 
-    if(node == NULL) 
+    if( !node ) 
 	{
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-    server->loading = true;
+	command_status = ntg_file_load( file_path, node, server->module_manager );
 
-	/* pull ixd data out of file */
-	error_code = ntg_load_ixd_buffer( file_path, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
-	if( error_code != NTG_NO_ERROR ) 
-	{
-		NTG_TRACE_ERROR_WITH_STRING("couldn't load ixd", file_path);
-		goto CLEANUP;
-	}
-
-	xmlInitParser();
-
-    /* validate candidate IXD file against schema */
-    error_code = ntg_xml_validate( (char *)ixd_buffer, ixd_buffer_length );
-    if(error_code != NTG_NO_ERROR) 
-	{
-		NTG_TRACE_ERROR_WITH_STRING("ixd validation failed", file_path);
-		goto CLEANUP;
-    }
-
-	/* create ixd reader */
-	reader = xmlReaderForMemory( (char *)ixd_buffer, ixd_buffer_length, NULL, NULL, 0 );
-    if( reader == NULL )
-	{
-		NTG_TRACE_ERROR_WITH_STRING("unable to read ixd", file_path);
-		error_code = NTG_FAILED;
-		goto CLEANUP;
-	}
-
-    /* stop DSP in the host */
-    ntg_server_set_host_dsp(server, 0);
-
-    /* stop pushing updates */
-    server->updates_disabled = true;
-
-    /* actually load the data */
-    error_code = ntg_node_load( node, reader, &new_nodes_list );
-	if( error_code != NTG_NO_ERROR )
-	{
-		NTG_TRACE_ERROR_WITH_STRING("failed to load nodes", file_path);
-		goto CLEANUP;
-	}
-
-	/* load the data directories */
-	if( is_zip_file )
-	{
-		if( ntg_load_data_directories( file_path, node ) != NTG_NO_ERROR )
-		{
-			NTG_TRACE_ERROR_WITH_STRING( "failed to load data directories", file_path );
-		}
-	}
-
-	/* send the loaded attributes to the host */
-	for( new_node_iterator = new_nodes_list; new_node_iterator; new_node_iterator = new_node_iterator->next )
-	{
-		if( ntg_node_send_loaded_attributes_to_host( new_node_iterator->node, server->bridge ) != NTG_NO_ERROR)
-		{
-			NTG_TRACE_ERROR_WITH_STRING( "failed to send loaded attributes to host", file_path );
-			continue;
-		}
-	}
-
-	ntg_osc_client_send_load(server->osc_client, cmd_source, file_path, path);
-
-CLEANUP:
-
-	if( reader )
-	{
-		xmlFreeTextReader( reader );
-	}
-
-	if( ixd_buffer )
-	{
-		ntg_free( ixd_buffer );
-	}
-
-	ntg_node_list_free( new_nodes_list );
-
-	/* restart DSP in the host */
-    ntg_server_set_host_dsp(server, 1);
-
-	server->updates_disabled = false;
-    server->loading = false;
-
-    NTG_RETURN_COMMAND_STATUS;
+	return command_status;
 }
 
 

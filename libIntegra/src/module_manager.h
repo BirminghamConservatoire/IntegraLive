@@ -60,7 +60,11 @@ struct ntg_module_manager_
 ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_root );
 void ntg_module_manager_free( ntg_module_manager *module_manager );
 
-void ntg_module_manager_load_modules( ntg_module_manager *module_manager, const char *module_directories );
+void ntg_module_manager_load_from_directories( ntg_module_manager *module_manager, const char *module_directories );
+ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_manager, const char *integra_file );
+
+void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, const ntg_list *module_ids );
+
 
 const ntg_list *ntg_module_id_list( const ntg_module_manager *module_manager );
 

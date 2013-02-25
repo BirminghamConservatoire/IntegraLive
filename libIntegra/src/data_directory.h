@@ -39,9 +39,7 @@ void ntg_node_data_directory_change( const char *previous_directory_name, const 
 void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *node, const ntg_node *path_root );
 
 
-ntg_error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length, bool *is_zip_file );
-
-ntg_error_code ntg_load_data_directories( const char *file_path, ntg_node *parent_node );
+ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node *parent_node );
 
 const char *ntg_copy_file_to_data_directory( const ntg_node_attribute *attribute );
 

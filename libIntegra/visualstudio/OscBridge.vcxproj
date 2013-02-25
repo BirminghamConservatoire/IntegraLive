@@ -56,14 +56,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;INTEGRA_BRIDGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../../../libIntegra_dependencies/liblo-master;../../../../libIntegra_dependencies/include;../../../../libIntegra_dependencies/pthreads-win32/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/liblo-master;../../libIntegra_dependencies/include;../../libIntegra_dependencies/pthreads-win32/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>liblo_d.lib;Ws2_32.lib;pthreadVC2.lib;libintegra.lib;%(AdditionalDependencies);Iphlpapi.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>../../build/Debug/server;/;../../../../libIntegra_dependencies/pthreads-win32/lib;../../../../libIntegra_dependencies/liblo-master/lib/debuglib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../build/Debug/server;/;../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/liblo-master/lib/debuglib</AdditionalLibraryDirectories>
       <ImportLibrary>$(Configuration)\$(TargetName)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
@@ -79,7 +79,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;INTEGRA_BRIDGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../../../libIntegra_dependencies/liblo-master;../../../../libIntegra_dependencies/pthreads-win32/include;../../../../libIntegra_dependencies/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/liblo-master;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -87,7 +87,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>liblo.lib;Ws2_32.lib;pthreadVC2.lib;libintegra.lib;%(AdditionalDependencies);Iphlpapi.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../build/Release/server;../../../../libIntegra_dependencies/pthreads-win32/lib;../../../../libIntegra_dependencies/liblo-master/lib/releaselib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../build/Release/server;../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/liblo-master/lib/releaselib</AdditionalLibraryDirectories>
       <ImportLibrary>$(Configuration)\$(TargetName)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>

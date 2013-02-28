@@ -418,7 +418,7 @@ package components.model
 		{
 			if( _coreInterfaceDefinitionsByName.hasOwnProperty( name ) )
 			{
-				return _coreInterfaceDefinitionsByName[ name ].guid;
+				return _coreInterfaceDefinitionsByName[ name ].moduleGuid;
 			}
 			
 			//not found
@@ -953,9 +953,9 @@ package components.model
 		
 		public function addInterfaceDefinition( interfaceDefinition:InterfaceDefinition ):void
 		{
-			Assert.assertFalse( _allInterfaceDefinitionsByGuid.hasOwnProperty( interfaceDefinition.guid ) );
+			Assert.assertFalse( _allInterfaceDefinitionsByGuid.hasOwnProperty( interfaceDefinition.moduleGuid ) );
 			
-			_allInterfaceDefinitionsByGuid[ interfaceDefinition.guid ] = interfaceDefinition;
+			_allInterfaceDefinitionsByGuid[ interfaceDefinition.moduleGuid ] = interfaceDefinition;
 			
 			if( interfaceDefinition.isCore )
 			{

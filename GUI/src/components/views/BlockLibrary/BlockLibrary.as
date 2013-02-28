@@ -22,16 +22,23 @@
 package components.views.BlockLibrary
 {
 	import components.model.Block;
+	import components.model.Info;
 	import components.model.userData.ColorScheme;
-	import components.utils.Utilities;
 	import components.utils.LibraryRenderer;
+	import components.utils.Utilities;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	
+	import flash.display.DisplayObject;
+	import flash.events.MouseEvent;
 	import flash.filesystem.File;
+	import flash.geom.Rectangle;
 	
 	import flexunit.framework.Assert;
 	
+	import mx.collections.IList;
 	import mx.controls.List;
+	import mx.controls.listClasses.IListItemRenderer;
 	import mx.core.ClassFactory;
 	import mx.core.DragSource;
 	import mx.core.IFlexDisplayObject;
@@ -74,6 +81,47 @@ package components.views.BlockLibrary
 
 		override public function get isSidebarColours():Boolean { return true; }
 
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		{
+			var items:IList = _blockList.dataProvider as IList;
+			Assert.assertNotNull( items );
+			
+			var numberOfItems:int = items.length;
+			if( numberOfItems == 0 )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "BlockLibrary" );
+			}
+			
+			var lastRenderer:IListItemRenderer = _blockList.indexToItemRenderer( numberOfItems - 1 );
+			if( lastRenderer && mouseY >= lastRenderer.getRect( this ).bottom )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "BlockLibrary" );
+			}
+			
+			
+			var libraryRenderer:LibraryRenderer = Utilities.getAncestorByType( event.target as DisplayObject, LibraryRenderer ) as LibraryRenderer;
+			if( libraryRenderer )
+			{
+				var index:int = _blockList.itemRendererToIndex( libraryRenderer );
+				Assert.assertTrue( index >= 0 );
+	
+				var listItem:Object = items.getItemAt( index ); 
+				Assert.assertNotNull( listItem );
+				
+				var objectProxy:ObjectProxy = listItem as ObjectProxy;
+				Assert.assertNotNull( objectProxy );
+				
+				var blockLibraryListEntry:BlockLibraryListEntry = objectProxy.valueOf() as BlockLibraryListEntry;
+				Assert.assertNotNull( blockLibraryListEntry );
+				
+				_focusInfo = blockLibraryListEntry.info;
+			}
+			
+			return _focusInfo;
+		}		
+		
+		
 		override public function styleChanged( style:String ):void
 		{
 			if( !style || style == ColorScheme.STYLENAME )
@@ -126,7 +174,19 @@ package components.views.BlockLibrary
 					continue;
 				}
 				
-				listData.push( new ObjectProxy( new BlockLibraryListEntry( file, isUserDirectory ) ) );
+				var listEntry:BlockLibraryListEntry = null;
+				if( _mapFileNameToListEntry.hasOwnProperty( file.nativePath ) )
+				{
+					listEntry = _mapFileNameToListEntry[ file.nativePath ];
+				}
+
+				if( !listEntry || !listEntry.isCurrent( file ) )
+				{
+					listEntry = new BlockLibraryListEntry( file, isUserDirectory );
+					_mapFileNameToListEntry[ file.nativePath ] = listEntry;
+				}
+				
+				listData.push( new ObjectProxy( listEntry ) );
 			}
 		}
 
@@ -139,7 +199,7 @@ package components.views.BlockLibrary
 			var item:BlockLibraryListEntry = objectProxy.valueOf() as BlockLibraryListEntry;
 			Assert.assertNotNull( item );
 			 
-			var draggedFile:File = item.file;
+			var draggedFile:File = new File( item.filepath );
 			Assert.assertTrue( draggedFile.exists );
 			
 			var dragSource:DragSource = new DragSource();
@@ -191,7 +251,7 @@ package components.views.BlockLibrary
 			Assert.assertNotNull( item );
 			Assert.assertTrue( item.isUserItem );
 			
-			var file:File = item.file;
+			var file:File = new File( item.filepath );
 			Assert.assertNotNull( file );
 			Assert.assertTrue( file.exists );
 			
@@ -213,6 +273,10 @@ package components.views.BlockLibrary
 				
 		private var _blockList:List;
 
+		private var _mapFileNameToListEntry:Object = new Object;
+
+		private var _focusInfo:Info = null;
+		
 		[Bindable] 
         private var contextMenuData:Array = 
         [

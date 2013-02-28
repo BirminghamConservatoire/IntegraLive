@@ -22,9 +22,17 @@
 package components.views.BlockLibrary
 {
 	import components.model.Block;
+	import components.model.Info;
+	import components.utils.Trace;
+	
+	import deng.fzip.FZip;
+	import deng.fzip.FZipFile;
 	
 	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
 	
 	import flexunit.framework.Assert;
 	
@@ -34,56 +42,88 @@ package components.views.BlockLibrary
 		{
 			super();
 			
-			_file = file;
+			_filepath = file.nativePath;
+			_modificationDate = file.modificationDate;
 			_isUserBlock = isUserBlock;
 			
-			var filename:String = file.name;
-			
-			//strip extension
-			var indexOfLastDot:int = filename.lastIndexOf( "." );
-			if( indexOfLastDot >= 0 )
-			{
-				_name = filename.substr( 0, indexOfLastDot );
-			}
-			else
-			{
-				_name = filename;
-			}
-			
-			//strip leading number, if not user block
-			if( !isUserBlock )
-			{
-				_name = stripLeadingNumber( _name );
-			}
+			loadInfo( file );
 		}
 		
 		
-		public function get isValid():Boolean { return _name != null; }		
-		public function get file():File { return _file; }
+		public function get isValid():Boolean 		{ return _info != null; }		
+		public function get filepath():String 		{ return _filepath; }
+		public function get isUserItem():Boolean 	{ return _isUserBlock; }
+		public function get info():Info 			{ return _info; }
 		
-		public function get isUserItem():Boolean { return _isUserBlock; }
-		
-		public function toString():String { return _name; }
-
-
-		private function stripLeadingNumber( string:String ):String
+		public function isCurrent( file:File ):Boolean
 		{
-			const leadingCharactersToStrip:String = "0123456789 ";
+			if( !_modificationDate ) return false;
 			
-			for( var stripIndex:int = 0; stripIndex < string.length; stripIndex++ )
+			return ( file.modificationDate.toUTCString() == _modificationDate.toUTCString() );
+		}		
+		
+		public function toString():String { return _info ? _info.title : ""; }
+		
+		
+		private function loadInfo( file:File ):void
+		{
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( file, FileMode.READ );
+			var rawBytes:ByteArray = new ByteArray();
+			fileStream.readBytes( rawBytes );
+			fileStream.close();			
+			
+			var zipFile:FZip = new FZip();
+			zipFile.loadBytes( rawBytes );
+			
+			var ixdFile:FZipFile = zipFile.getFileByName( _ixdFileName );
+			if( !ixdFile )
 			{
-				if( leadingCharactersToStrip.indexOf( string.charAt( stripIndex ) ) < 0 )
+				Trace.error( "Can't extract ixd from block library item " + file.nativePath );
+				return;
+			}
+			
+			XML.ignoreWhitespace = true;
+			var ixdXML:XML = new XML( ixdFile.content ); 
+			
+			var topLevelObjectXML:XML = ixdXML.children()[ 0 ];
+
+			if( !topLevelObjectXML.hasOwnProperty( "@name" ) )
+			{
+				Trace.error( "Can't find name attribute" );
+				return;
+			}
+
+			_info = new Info;
+			
+			_info.title = topLevelObjectXML.@name;
+			var foundInfo:Boolean = false;
+			
+			for each( var child:XML in topLevelObjectXML.child( "attribute" ) )
+			{
+				if( child.hasOwnProperty( "@name" ) && child.@name == "info" )
 				{
+					_info.markdown = child.toString();
+					foundInfo = true;
 					break;
 				}
 			}
 			
-			return string.substr( stripIndex );
+			if( !foundInfo )
+			{
+				_info.markdown = "No Info Available";
+			}
 		}
+		
 
 		
-		private var _file:File = null;
-		private var _name:String = null;
+		private var _filepath:String = null;
+		private var _modificationDate:Date = null;
+		
+		private var _info:Info = null;
+		
 		private var _isUserBlock:Boolean = false;
+		
+		private static const _ixdFileName:String = "integra_data/nodes.ixd";
 	}
 }

@@ -306,20 +306,13 @@ package components.views.InfoView
 		{
 			if( !stage ) return;
 			
-			if( _gotFocus )
-			{
-				if( event.keyCode == Keyboard.ESCAPE )
-				{
-					loseFocus();
-				}
-			}
-			else
+			if( _displayedInfo )
 			{
 				if( Utilities.isWindows )
 				{
 					if( event.keyCode == Keyboard.F2 )
 					{
-						setFocus();
+						toggleFocus();
 					}
 				}
 				
@@ -327,12 +320,12 @@ package components.views.InfoView
 				{
 					if( event.keyCode == Keyboard.NUMBER_3 && event.altKey )
 					{
-						setFocus();
+						toggleFocus();
 					}
 				}
 			}
-			
-			
+
+		
 			//easter eggs for testing
 			if( Utilities.isDebugging )
 			{
@@ -349,6 +342,29 @@ package components.views.InfoView
 				}
 			}
 		}	
+		
+		
+		private function toggleFocus():void
+		{
+			if( _gotFocus )
+			{
+				loseFocus();
+				
+				if( _previousFocus && _previousFocus.stage )
+				{
+					stage.focus = _previousFocus;
+				}
+				else
+				{
+					stage.focus = stage;
+				}
+			}
+			else
+			{
+				_previousFocus = stage.focus as UIComponent;
+				setFocus();
+			}			
+		}
 		
 		
 		private function updateFocusPrompt():void
@@ -588,6 +604,7 @@ package components.views.InfoView
 		private var _addedToStage:Boolean = false;
 		
 		private var _gotFocus:Boolean = false;
+		private var _previousFocus:UIComponent = null;
 		
 		private var _textColor:String;
 		private var _linkColor:String;

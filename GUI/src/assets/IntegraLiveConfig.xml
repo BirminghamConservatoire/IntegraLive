@@ -57,13 +57,13 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<guiurl>127.0.0.1</guiurl>
 
 		<!-- 		port on which libIntegra's xmlrpc interface listens for connections 			-->
-		<xmlrpcserverport>8000</xmlrpcserverport>
+		<xmlrpcserverport>8003</xmlrpcserverport>
 
 		<!-- 		port on which libIntegra's osc interface listens for connections	 			-->
-		<oscserverport>8001</oscserverport>
+		<oscserverport>8004</oscserverport>
 		
 		<!-- 		port on which libIntegra sends osc feedback about executed server commands		-->
-		<oscclientport>8002</oscclientport>
+		<oscclientport>8005</oscclientport>
 	</connections>
 
 	<!--        configuration of documentation file locations										-->

@@ -375,13 +375,12 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 	ntg_scratch_directory_initialize(server);
 
 	server->module_manager = ntg_module_manager_create( server->scratch_directory_root );
-	ntg_module_manager_load_modules( server->module_manager, module_directories );
+	ntg_module_manager_load_from_directories( server->module_manager, module_directories );
 
     server->state_table				= ntg_hashtable_new();
     server->osc_client				= ntg_osc_client_new(osc_client_url, osc_client_port);
     server->terminate				= false;
     server->loading					= false;
-    server->updates_disabled		= false;
     server->root					= NULL;
 
 	ntg_system_class_handlers_initialize( server );

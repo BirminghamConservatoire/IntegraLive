@@ -66,7 +66,7 @@ package components.controller.serverCommands
 			if( !_trackName )
 			{
 				var definition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( IntegraContainer._serverInterfaceName );
-				_trackName = model.project.getNewChildName( "Track", definition.guid );
+				_trackName = model.project.getNewChildName( "Track", definition.moduleGuid );
 			}
 
 			if( _color < 0 )

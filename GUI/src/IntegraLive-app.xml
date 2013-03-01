@@ -25,8 +25,8 @@
         <description>Live electronics app</description>
 
 	<!-- An application version designator (such as "v1", "2.5", or "Alpha 1"). Required. -->
-        <versionNumber>1.5.0</versionNumber>
-        <versionLabel>Version 1.5.1.3272</versionLabel>
+        <versionNumber>1.5.2</versionNumber>
+        <versionLabel>Version 1.5.2.0</versionLabel>
 
         <supportedProfiles>extendedDesktop</supportedProfiles>
 	<!-- Description, displayed in the AIR application installer.

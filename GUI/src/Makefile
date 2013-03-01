@@ -14,7 +14,6 @@ PRODUCT="Integra Live"
 CONFIG=app-config.xml
 DESCRIPTOR=IntegraLive-app.xml
 ARGS=
-#SVNROOT=../../..
 
 MODULES=$(SVNROOT)/modules/trunk
 BLOCKDIR=$(SVNROOT)/blocks

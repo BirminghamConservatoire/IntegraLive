@@ -56,6 +56,19 @@ ntg_command_status ntg_delete(const ntg_path * path)
 }
 
 
+ntg_command_status ntg_unload_orphaned_embedded_modules(void)
+{
+    ntg_command_status status;
+
+    ntg_lock_server();
+    status = ntg_unload_orphaned_embedded_modules_(server_, NTG_SOURCE_C_API);
+    ntg_unlock_server();
+
+    return status;
+}
+
+
+
 ntg_command_status ntg_rename(const ntg_path * path,
         const char *name)
 {

@@ -61,7 +61,8 @@ typedef enum ntg_error_code_ {
 	NTG_CONSTRAINT_ERROR = 6,
 	NTG_REENTRANCE_ERROR = 7,
 	NTG_FILE_VALIDATION_ERROR = 8,
-	NTG_FILE_MORE_RECENT_ERROR = 9
+	NTG_FILE_MORE_RECENT_ERROR = 9,
+	NTG_MODULE_ALREADY_LOADED = 10
 } ntg_error_code;
 
 /** \brief returns a textual description of a given error code */
@@ -337,7 +338,9 @@ LIBINTEGRA_API ntg_command_status ntg_save(const ntg_path *path,
  ['Project1']. A NULL value indicates that the new node will be loaded
  under the server root node
  * \return a struct of type ntg_command_status. If the function succeeded,
- * this will contain the error_code NTG_NO_ERROR
+ * this will contain the error_code NTG_NO_ERROR, and ntg_command_status.data 
+ * will contain an ntg_list of all embedded modules ids that were loaded.  This 
+ * list is allocated on the heap, and the caller should free it with ntg_list_free
  * \error possible return values for error status are given in integra_error.h
  * */
 LIBINTEGRA_API ntg_command_status ntg_load(const char *file_path,
@@ -403,12 +406,18 @@ LIBINTEGRA_API const ntg_value *ntg_get(const ntg_path *path);
 LIBINTEGRA_API const ntg_list *ntg_nodelist(const ntg_path *path);
 
 
+/** \brief Unloads embedded modules that are not in use
+ */
+LIBINTEGRA_API ntg_command_status ntg_unload_orphaned_embedded_modules(void);
+
+
 /** \brief Terminate the server and cleanup */
 LIBINTEGRA_API void ntg_terminate(void);
 
 /** \brief Print out info about the state of the server to stdout.
  */
 LIBINTEGRA_API void ntg_print_state(void);
+
 
 /** \brief Create a new Integra server 
  *

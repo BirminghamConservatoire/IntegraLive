@@ -788,9 +788,9 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 }
 
 
-ntg_error_code ntg_node_load(ntg_node * node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes)
+ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes )
 {
-    ntg_node           *parent;
+    const ntg_node     *parent;
     ntg_path           *path;
     ntg_value          *attribute_value;
     ntg_node_attribute *store;
@@ -880,7 +880,7 @@ ntg_error_code ntg_node_load(ntg_node * node, xmlTextReaderPtr reader, ntg_node_
 
 					/* add the new node */
 					node = (ntg_node *)
-						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, (char *)name, path).data;
+						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, name, path).data;
 					ntg_path_free(path);
 					xmlFree(name);
 					path = NULL;
@@ -1122,7 +1122,34 @@ void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *state
 		}
 		while( child_node != node->nodes );
 	}
+}
 
 
+void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable )
+{
+	const ntg_node *child_node;
 
+	assert( node && hashtable );
+
+	if( node->interface )
+	{
+		if( ntg_hashtable_lookup_guid( hashtable, &node->interface->module_guid ) )
+		{
+			ntg_hashtable_remove_guid_key( hashtable, &node->interface->module_guid );
+		}
+	}
+
+	/* recurse child nodes */
+
+	child_node = node->nodes;
+	if( child_node )
+	{
+		do
+		{
+			ntg_node_remove_in_use_module_ids_from_hashtable( child_node, hashtable );
+
+			child_node = child_node->next;
+		}
+		while( child_node != node->nodes );
+	}
 }

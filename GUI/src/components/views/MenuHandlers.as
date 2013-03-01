@@ -34,17 +34,14 @@ package components.views
 	import components.model.userData.ViewMode;
 	import components.utils.Config;
 	import components.utils.FontSize;
-	import components.utils.ModalState;
 	import components.utils.Trace;
 	import components.utils.Utilities;
-	import components.views.AboutBox.AboutBox;
 	
 	import flash.desktop.NativeApplication;
 	import flash.display.NativeMenu;
 	import flash.display.NativeMenuItem;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
-	import flash.filesystem.File;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.ui.Keyboard;
@@ -158,7 +155,7 @@ package components.views
 			var editMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Edit" );
 			var fileMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "File" );
 			
-			var helpMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), _menu.numItems, "Help" );
+			var helpMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), _menu.numItems, "PlaceholderForHelp" );
 			
 			// Populate menus
 			
@@ -314,6 +311,7 @@ package components.views
 				integraMenuItem.submenu.addItemAt( new NativeMenuItem( "", true ), 3 );
 			}
 			
+			// Help Menu
 			var config:Config = Config.singleInstance;
 			var helpLinks:Vector.<String> = config.helpLinks;
 
@@ -343,6 +341,7 @@ package components.views
 				aboutMenuItem.addEventListener(Event.PREPARING, onUpdateAbout );
 				helpMenu.submenu.addItem( aboutMenuItem );
 			}
+			helpMenu.label = "Help";
 			
 			
 			if( showDebugMenu )

@@ -24,8 +24,6 @@ package components.utils
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.net.dns.AAAARecord;
-	import flash.system.Capabilities;
 	
 	import flexunit.framework.Assert;
 	

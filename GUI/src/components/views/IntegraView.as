@@ -237,6 +237,8 @@ package components.views
 		
 		private function onIntegraCommandEvent( event:IntegraCommandEvent ):void
 		{
+			if( _freed ) return;
+			
 			var command:Command = event.command;
 			Assert.assertNotNull( command );
 

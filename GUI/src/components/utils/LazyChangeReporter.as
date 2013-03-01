@@ -66,7 +66,7 @@ package components.utils
 		
 		private function onTargetKeyUp( event:KeyboardEvent ):void
 		{
-			if( _nonEditKeys.indexOf( event.keyCode ) >= 0 ) 
+			if( _nonEditKeys.indexOf( event.keyCode ) >= 0 || event.ctrlKey || event.commandKey || event.altKey ) 
 			{
 				return;
 			}

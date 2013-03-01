@@ -117,6 +117,8 @@ package components.views
 		
 		public function free():void
 		{
+			Assert.assertFalse( _freed );
+
 			controller.removeEventListener( AllDataChangedEvent.EVENT_NAME, onAllDataChangedEvent ); 
 			controller.removeEventListener( IntegraCommandEvent.EVENT_NAME, onIntegraCommandEvent );
 			
@@ -124,7 +126,12 @@ package components.views
 			
 			allDecorationMightHaveChanged();
 
-			Assert.assertFalse( _freed );
+			_updateMethods = null;
+			_titleInvalidatingCommands = null;
+			_titlebarInvalidatingCommands = null;
+			_vuMeterChangingCommands = null;
+			_colorChangingCommands = null;
+			
 			_freed = true;
 		}
 		

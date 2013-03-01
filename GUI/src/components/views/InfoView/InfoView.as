@@ -20,18 +20,6 @@
 
 package components.views.InfoView
 {
-	import components.controller.serverCommands.SetObjectInfo;
-	import components.controller.userDataCommands.SetDisplayedInfo;
-	import components.controller.userDataCommands.ShowInfoView;
-	import components.model.Info;
-	import components.model.userData.ColorScheme;
-	import components.utils.FontSize;
-	import components.utils.Trace;
-	import components.utils.Utilities;
-	import components.views.IntegraView;
-	import components.views.MouseCapture;
-	import components.views.Skins.TextButtonSkin;
-	
 	import flash.desktop.Clipboard;
 	import flash.desktop.ClipboardFormats;
 	import flash.display.DisplayObjectContainer;
@@ -40,10 +28,9 @@ package components.views.InfoView
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	import flash.text.StyleSheet;
 	import flash.ui.Keyboard;
-	
-	import flexunit.framework.Assert;
 	
 	import mx.controls.Button;
 	import mx.controls.Label;
@@ -57,6 +44,21 @@ package components.views.InfoView
 	import mx.utils.object_proxy;
 	
 	import spark.components.Application;
+	
+	import components.controller.serverCommands.SetObjectInfo;
+	import components.controller.userDataCommands.SetDisplayedInfo;
+	import components.controller.userDataCommands.ShowInfoView;
+	import components.model.Info;
+	import components.model.userData.ColorScheme;
+	import components.utils.FontSize;
+	import components.utils.Trace;
+	import components.utils.Utilities;
+	import components.views.IntegraView;
+	import components.views.MouseCapture;
+	import components.views.Skins.TextButtonSkin;
+	import components.views.viewContainers.IntegraViewEvent;
+	
+	import flexunit.framework.Assert;
 		
 
 	public class InfoView extends IntegraView
@@ -99,16 +101,7 @@ package components.views.InfoView
 			
 			addChild( _focusPrompt );
 			
-			_editButton.setStyle( "right", 21 );
-			_editButton.setStyle( "top", 5 );
-			_editButton.label = _editButtonText;
-			_editButton.visible = false;
-			_editButton.setStyle( "skin", TextButtonSkin );
-			_editButton.addEventListener( MouseEvent.CLICK, onClickEditButton );
-			addChild( _editButton );
-			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
-			addEventListener( FocusEvent.FOCUS_IN, onFocusIn );
 			addEventListener( FocusEvent.FOCUS_OUT, onFocusOut );
 			addEventListener( MouseEvent.DOUBLE_CLICK, onDoubleClick );
 			
@@ -132,6 +125,7 @@ package components.views.InfoView
 		
 		
 		override public function get isSidebarColours():Boolean { return true; } 
+		override public function get titlebarView():IntegraView { return _editInfoButton; }
 
 		
 		override public function closeButtonClicked():void 
@@ -143,7 +137,7 @@ package components.views.InfoView
 		override public function getInfoToDisplay( event:MouseEvent ):Info
 		{
 			return InfoMarkupForViews.instance.getInfoForView( "Info" );
-		}		
+		}
 		
 		
 		override public function styleChanged( style:String ):void
@@ -160,7 +154,6 @@ package components.views.InfoView
 						_focusPrompt.setStyle( "color", 0x6D6D6D );
 						_textColor ='#6D6D6D';
 						_linkColor = '#0000C0';
-						setButtonTextColor( _editButton, 0x6D6D6D );
 						break;
 					
 					case ColorScheme.DARK:
@@ -168,7 +161,6 @@ package components.views.InfoView
 						_focusPrompt.setStyle( "color", 0x939393 );
 						_textColor = '#939393';
 						_linkColor = '#4080FF';
-						setButtonTextColor( _editButton, 0x939393 );
 						break;
 				}
 				
@@ -183,11 +175,6 @@ package components.views.InfoView
 				
 				updateTextCSS();	
 			}		
-			
-			if( _infoEditor ) 
-			{
-				_infoEditor.onStyleChanged( style );
-			}
 		}
 		
 		
@@ -272,15 +259,10 @@ package components.views.InfoView
 				
 				_focusPrompt.visible = !_gotFocus;
 				updateFocusPrompt();
-				
-				if( _infoEditor )
-				{
-					_infoEditor.markdown = _displayedInfo.markdown;
-				}
 			}
 			else
 			{
-				Assert.assertFalse( isEditing );
+				Assert.assertNull( _editInfoButton );
 				Assert.assertFalse( _gotFocus );
 
 				_htmlText.htmlText = "";
@@ -306,20 +288,13 @@ package components.views.InfoView
 		{
 			if( !stage ) return;
 			
-			if( _gotFocus )
-			{
-				if( event.keyCode == Keyboard.ESCAPE )
-				{
-					loseFocus();
-				}
-			}
-			else
+			if( _displayedInfo )
 			{
 				if( Utilities.isWindows )
 				{
 					if( event.keyCode == Keyboard.F2 )
 					{
-						setFocus();
+						toggleFocus();
 					}
 				}
 				
@@ -327,12 +302,12 @@ package components.views.InfoView
 				{
 					if( event.keyCode == Keyboard.NUMBER_3 && event.altKey )
 					{
-						setFocus();
+						toggleFocus();
 					}
 				}
 			}
-			
-			
+
+		
 			//easter eggs for testing
 			if( Utilities.isDebugging )
 			{
@@ -349,6 +324,30 @@ package components.views.InfoView
 				}
 			}
 		}	
+		
+		
+		private function toggleFocus():void
+		{
+			if( _gotFocus )
+			{
+				loseFocus();
+				
+				if( _previousFocus && _previousFocus.stage )
+				{
+					stage.focus = _previousFocus;
+				}
+				else
+				{
+					stage.focus = stage;
+				}
+			}
+			else
+			{
+				_previousFocus = stage.focus as UIComponent;
+				setFocus();
+				gainFocus();
+			}			
+		}
 		
 		
 		private function updateFocusPrompt():void
@@ -378,15 +377,6 @@ package components.views.InfoView
 		}
 		
 		
-		private function onFocusIn( event:FocusEvent ):void
-		{
-			if( !_gotFocus && _displayedInfo != null )
-			{
-				gainFocus();
-			}
-		}
-		
-		
 		private function onFocusOut( event:FocusEvent ):void
 		{
 			var focusObject:InteractiveObject = getFocus();
@@ -395,16 +385,20 @@ package components.views.InfoView
 				return;		//app losing focus
 			}
 			
-			if( Utilities.isDescendant( focusObject, this ) )
+			if( focusObject == this || Utilities.isDescendant( focusObject, this ) )
 			{					
 				return;		//subcomponent of info view gaining focus
 			}
-			
-			if( isEditing )
-			{
-				return;
+
+			if( Utilities.getAncestorByType( focusObject, EditInfoButton ) )
+			{					
+				return;		//edit button click
 			}
-			
+
+			if( Utilities.getAncestorByType( focusObject, InfoEditor ) )
+			{					
+				return;		//editor click
+			}
 			
 			if( _gotFocus )
 			{
@@ -422,8 +416,12 @@ package components.views.InfoView
 			_focusPrompt.visible = false;
 			
 			_gotFocus = true;
-			
-			_editButton.visible = _displayedInfo.canEdit;
+
+			if( _displayedInfo.canEdit )
+			{
+				_editInfoButton = new EditInfoButton( _displayedInfo, this );
+				dispatchEvent( new IntegraViewEvent( IntegraViewEvent.TITLEBAR_CHANGED ) );
+			}
 			
 			invalidateDisplayList();
 		}
@@ -434,8 +432,13 @@ package components.views.InfoView
 			_htmlText.verticalScrollPolicy = ScrollPolicy.OFF;
 
 			_gotFocus = false;
-			
-			_editButton.visible = false;
+
+			if( _editInfoButton )
+			{
+				_editInfoButton.free();
+				_editInfoButton = null;
+				dispatchEvent( new IntegraViewEvent( IntegraViewEvent.TITLEBAR_CHANGED ) );
+			}
 
 			if( _displayedInfo != model.currentInfo )
 			{
@@ -458,64 +461,9 @@ package components.views.InfoView
 				return;
 			}
 			
-			if( !isEditing )
+			if( !_editInfoButton )
 			{
-				showEditor();
-			}
-		}
-		
-		
-		private function onClickEditButton( event:MouseEvent ):void
-		{
-			Assert.assertTrue( _gotFocus && _displayedInfo && _displayedInfo.canEdit );
-			if( !isEditing )
-			{
-				showEditor();
-			}
-		}
-		
-		
-		private function get isEditing():Boolean
-		{
-			return ( _infoEditor != null );
-		}
-		
-		
-		private function showEditor():void
-		{
-			Assert.assertTrue( _displayedInfo || _displayedInfo.canEdit );
-			Assert.assertNull( _infoEditor );
-
-			_infoEditor = new InfoEditor( "Edit Info for " + _displayedInfo.title, _displayedInfo.ownerID );
-			_infoEditor.addEventListener( InfoEditor.CLOSE_INFO_EDITOR, onCloseInfoEditor );
-			_infoEditor.markdown = _displayedInfo.markdown;
-			
-			PopUpManager.addPopUp( _infoEditor, application );
-			PopUpManager.centerPopUp( _infoEditor );
-			PopUpManager.bringToFront( _infoEditor );
-			
-			_editButton.visible = false;
-		}
-		
-		
-		private function hideEditor():void
-		{
-			Assert.assertNotNull( _infoEditor );
-
-			var toRemove:InfoEditor = _infoEditor;
-			_infoEditor = null;
-			
-			PopUpManager.removePopUp( toRemove );
-			
-			_editButton.visible = true;
-		}
-		
-		
-		private function onCloseInfoEditor( event:Event ):void
-		{
-			if( _infoEditor )
-			{
-				hideEditor();
+				_editInfoButton.showEditor();
 			}
 		}
 		
@@ -583,26 +531,23 @@ package components.views.InfoView
 		
 		private var _htmlText:TextArea = new TextArea;
 		private var _focusPrompt:Label = new Label;
-		private var _editButton:Button = new Button;
 
 		private var _addedToStage:Boolean = false;
 		
 		private var _gotFocus:Boolean = false;
+		private var _previousFocus:UIComponent = null;
 		
 		private var _textColor:String;
 		private var _linkColor:String;
 		
 		private var _infoChangedDuringCapture:Boolean;
-		
-		private var _infoEditor:InfoEditor = null;
+
+		private var _editInfoButton:EditInfoButton = null;
 		
 		private static const _leftMargin:Number = 4;
 		private static const _rightMargin:Number = 4;
 		private static const _topMargin:Number = 4;
 		private static const _bottomMargin:Number = 16;
 		private static const _bottomCornerRadius:Number = 8;
-
-		
-		private static const _editButtonText:String = "Edit";
 	}
 }

@@ -150,6 +150,7 @@
          <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air/servicemonitor.swc</path-element>
          <path-element>@ADOBE_FLEX_PATH@/frameworks/locale/{locale}</path-element>
          <path-element>@ENVIRONMENT_PATH@/libs/FlexUnit.swc</path-element>
+         <path-element>@ENVIRONMENT_PATH@/libs/fzip.swc</path-element>
       </library-path>
       <!-- compiler.locale: specifies the locale for internationalization-->
       <locale>

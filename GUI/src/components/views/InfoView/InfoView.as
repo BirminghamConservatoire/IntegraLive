@@ -28,20 +28,15 @@ package components.views.InfoView
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
-	import flash.geom.Rectangle;
 	import flash.text.StyleSheet;
 	import flash.ui.Keyboard;
 	
 	import mx.controls.Button;
 	import mx.controls.Label;
-	import mx.controls.Text;
 	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
-	import mx.core.UITextField;
-	import mx.managers.PopUpManager;
 	import mx.styles.CSSStyleDeclaration;
-	import mx.utils.object_proxy;
 	
 	import spark.components.Application;
 	
@@ -51,11 +46,9 @@ package components.views.InfoView
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.Trace;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
-	import components.views.Skins.TextButtonSkin;
 	import components.views.viewContainers.IntegraViewEvent;
 	
 	import flexunit.framework.Assert;

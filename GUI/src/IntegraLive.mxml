@@ -1279,7 +1279,7 @@
 	<fx:Style>
 		@namespace mx "library://ns.adobe.com/flex/mx";
 		{
-			font-family: "Lucida Grande", Verdana, Helvetica, "_sans";
+			font-family: Verdana, Helvetica, "_sans";
 		}
 		mx|ScrollBar
 		{

@@ -9,7 +9,6 @@
 
 #include <assert.h>
 
-
 static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
     "initialization",
 	"load",
@@ -21,13 +20,15 @@ static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
     "osc_api",
     "c_api" };
 
-
-
 /* sure there must be a more elegant way to do this, but lo_message_add_varargs
  * doesn't seem to work, and this does */
 ntg_error_code ntg_osc_send_ssss(lo_address targ, const char *path, 
         const char *s1, const char *s2, const char *s3, const char *s4)
 {
+    if (((ntg_server *)server_)->updates_disabled) {
+        return NTG_ERROR;
+    }
+
     lo_send(targ, path, "ssss", s1, s2, s3, s4);
 
 	return NTG_NO_ERROR;
@@ -36,6 +37,10 @@ ntg_error_code ntg_osc_send_ssss(lo_address targ, const char *path,
 ntg_error_code ntg_osc_send_sss(lo_address targ, const char *path, 
         const char *s1, const char *s2, const char *s3)
 {
+    if (((ntg_server *)server_)->updates_disabled) {
+        return NTG_ERROR;
+    }
+
     lo_send(targ, path, "sss", s1, s2, s3);
 
 	return NTG_NO_ERROR;
@@ -44,6 +49,10 @@ ntg_error_code ntg_osc_send_sss(lo_address targ, const char *path,
 ntg_error_code ntg_osc_send_ssi(lo_address targ, const char *path, 
         const char *s1, const char *s2, int i)
 {
+    if (((ntg_server *)server_)->updates_disabled) {
+        return NTG_ERROR;
+    }
+
     lo_send(targ, path, "ssi", s1, s2, i);
 
 	return NTG_NO_ERROR;
@@ -52,6 +61,10 @@ ntg_error_code ntg_osc_send_ssi(lo_address targ, const char *path,
 ntg_error_code ntg_osc_send_ssf(lo_address targ, const char *path, 
         const char *s1, const char *s2, float f)
 {
+    if (((ntg_server *)server_)->updates_disabled) {
+        return NTG_ERROR;
+    }
+
     lo_send(targ, path, "ssf", s1, s2, f);
 
 	return NTG_NO_ERROR;
@@ -60,6 +73,10 @@ ntg_error_code ntg_osc_send_ssf(lo_address targ, const char *path,
 ntg_error_code ntg_osc_send_ssN(lo_address targ, const char *path, 
         const char *s1, const char *s2)
 {
+    if (((ntg_server *)server_)->updates_disabled) {
+        return NTG_ERROR;
+    }
+
     lo_send(targ, path, "ssN", s1, s2);
 
 	return NTG_NO_ERROR;
@@ -68,12 +85,46 @@ ntg_error_code ntg_osc_send_ssN(lo_address targ, const char *path,
 ntg_error_code ntg_osc_send_ss(lo_address targ, const char *path, 
         const char *s1, const char *s2)
 {
+    if (((ntg_server *)server_)->updates_disabled) {
+        return NTG_ERROR;
+    }
+
     lo_send(targ, path, "ss", s1, s2);
 
 	return NTG_NO_ERROR;
 }
 
+/* couldn't get this to work, so using the explicit functions above
+ * maybe sth. to do with the version of liblo used? */
+#if 0
+int ntg_osc_send(lo_address targ, const char *path, const char *types, ...)
+{
+    va_list args;
+    int rv;
 
+    if (((ntg_server *)server_)->updates_disabled) {
+        return -1;
+    }
+
+    lo_message msg = lo_message_new();
+
+    va_start(args, types);
+    if((rv = lo_message_add_varargs(msg, types, args)) == 0){
+        lo_send_message(targ, path, msg);
+    } else {
+        /* error occurred */
+    }
+    lo_message_free(msg);
+
+    return rv;
+}
+#endif
+
+/*
+static void handler_osc_error(int num, const char *msg, const char *path){
+    NTG_TRACE_ERROR_WITH_STRING("liblo server error ", path);
+}
+*/
 ntg_osc_client *ntg_osc_client_new(const char *url, unsigned short port)
 {
     char port_string[6];

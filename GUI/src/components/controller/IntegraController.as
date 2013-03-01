@@ -202,32 +202,21 @@ package components.controller
 
 		public function newProject():void
 		{
-			//wipe the existing project
 			var newProjectCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			newProjectCall.addEventListener( Event.COMPLETE, newProjectHandler );
 			newProjectCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
 			newProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
 			newProjectCall.callQueued( "command.delete" );
-			
-			//unload orphaned embedded modules
-			var unloadOrphanedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( Event.COMPLETE, newProjectHandler );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			unloadOrphanedEmbeddedModulesCall.callQueued( "module.unloadorphanedembedded" );
 		}
 
 
 		public function loadProject( filename:String ):void
 		{
-			//wipe the existing project
+			//delete the existing project
 			var newProjectCall:IntegraConnection = new IntegraConnection( _serverUrl );
 			newProjectCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
 			newProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
 			newProjectCall.callQueued( "command.delete" );
-
-			//unload orphaned embedded modules
-			var unloadOrphanedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			unloadOrphanedEmbeddedModulesCall.callQueued( "module.unloadorphanedembedded" );
 			
 			//load the new project
 			var loadProjectCall:IntegraConnection = new IntegraConnection( _serverUrl );
@@ -358,8 +347,8 @@ package components.controller
 		{
 			_undoManager.startInactivityTimer();
 		}
-		
-		
+
+
 		private function innerProcessMethod( command:Command ):void
 		{
 			if( command is ServerCommand )
@@ -476,6 +465,9 @@ package components.controller
 
 		private function newProjectHandler( newProjectEvent:Event ):void
 		{
+			var response:Object = newProjectEvent.target.getResponse();
+			Assert.assertEquals( response.response, "command.delete" );
+			
 			loadModel();			
 		}
 

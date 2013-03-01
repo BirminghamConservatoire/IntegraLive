@@ -27,7 +27,6 @@ extern "C" {
 
 #include "Integra/integra.h"
 #include "hashtable.h"
-#include "node.h"
 #include "../externals/guiddef.h"
 
 #ifdef _WINDOWS
@@ -61,11 +60,7 @@ struct ntg_module_manager_
 ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_root );
 void ntg_module_manager_free( ntg_module_manager *module_manager );
 
-void ntg_module_manager_load_from_directories( ntg_module_manager *module_manager, const char *module_directories );
-ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_manager, const char *integra_file );
-
-void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, const ntg_list *module_ids );
-
+void ntg_module_manager_load_modules( ntg_module_manager *module_manager, const char *module_directories );
 
 const ntg_list *ntg_module_id_list( const ntg_module_manager *module_manager );
 
@@ -77,7 +72,7 @@ char *ntg_module_manager_get_unique_interface_name( const ntg_interface *interfa
 char *ntg_module_manager_get_module_path( const ntg_module_manager *module_manager, const ntg_interface *interface );
 char *ntg_module_manager_get_patch_path( const ntg_module_manager *module_manager, const ntg_interface *interface );
 
-ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node *root_node );
+
 
 ntg_error_code ntg_interpret_legacy_module_id( const ntg_module_manager *module_manager, ntg_id old_id, GUID *output );
 

@@ -73,7 +73,7 @@ package components.controller.serverCommands
 			_blockID = model.generateNewID();
 			
 			var definition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( Envelope._serverInterfaceName );
-			_blockEnvelopeName = track.getNewChildName( "BlockEnvelope", definition.moduleGuid );
+			_blockEnvelopeName = track.getNewChildName( "BlockEnvelope", definition.guid );
 
 			_end = _start + Block.newBlockSeconds * model.project.player.rate;
 

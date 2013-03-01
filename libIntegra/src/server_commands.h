@@ -64,8 +64,6 @@ ntg_command_status ntg_load_(ntg_server * server,
         const char *file_path,
         const ntg_path * path);
 
-ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, ntg_command_source cmd_source );
-
 ntg_list *ntg_nodelist_(ntg_server *server, const ntg_path * path);
 
 

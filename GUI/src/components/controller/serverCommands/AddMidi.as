@@ -62,7 +62,7 @@ package components.controller.serverCommands
 				Assert.assertNotNull( container );
 				
 				var definition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( Midi._serverInterfaceName );
-				_midiName = container.getNewChildName( Midi._serverInterfaceName, definition.moduleGuid ); 				
+				_midiName = container.getNewChildName( Midi._serverInterfaceName, definition.guid ); 				
 			}
 			
 			return true;

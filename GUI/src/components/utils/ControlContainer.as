@@ -45,7 +45,6 @@ package components.utils
 	import components.model.userData.ColorScheme;
 	import components.model.userData.LiveViewControl;
 	import components.views.InfoView.InfoMarkupForViews;
-	import components.views.MouseCapture;
 	import components.views.Skins.TickButtonSkin;
 	
 	import flash.display.GradientType;
@@ -1535,15 +1534,13 @@ package components.utils
 		private function buildControlInfo():void
 		{
 			_controlInfo = new Info();
-			_controlInfo.title = _module.interfaceDefinition.interfaceInfo.label;
-
 			var markdown:String = "";
 			
 			for( var widgetAttributeName:String in _widget.attributeToEndpointMap )
 			{
 				var endpointDefinition:EndpointDefinition = getEndpointDefinitionFromWidgetAttribute( widgetAttributeName );
 				
-				markdown += ( "## " + endpointDefinition.label + "\n" );
+				markdown += ( "# " + endpointDefinition.label + "\n" );
 				markdown += ( endpointDefinition.description + "\n\n" );
 			}
 

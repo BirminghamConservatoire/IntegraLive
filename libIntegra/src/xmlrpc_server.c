@@ -307,8 +307,49 @@ static void *ntg_xmlrpc_interfaceinfo_callback(ntg_server * server,
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
+<<<<<<< Updated upstream
     xmlrpc_temp = xmlrpc_string_new(env, guid_string);
     xmlrpc_struct_set_value(env, struct_, "interfaceid", xmlrpc_temp);
+=======
+    xmlrpc_temp = xmlrpc_string_new(env, module_id_string);
+    xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
+<<<<<<< HEAD
+    xmlrpc_DECREF(xmlrpc_temp);
+
+	origin_id_string = ntg_guid_to_string( &interface->origin_guid );
+    xmlrpc_temp = xmlrpc_string_new(env, origin_id_string);
+    xmlrpc_struct_set_value(env, struct_, "originid", xmlrpc_temp);
+=======
+>>>>>>> 0497a64... first part of making libintegra load embedded modules
+    xmlrpc_DECREF(xmlrpc_temp);
+	ntg_free( origin_id_string );
+
+	switch( interface->module_source )
+	{
+		case NTG_MODULE_SHIPPED_WITH_INTEGRA:
+			xmlrpc_temp = xmlrpc_string_new(env, "shippedwithintegra" );
+			break;
+
+		case NTG_MODULE_3RD_PARTY:
+			xmlrpc_temp = xmlrpc_string_new(env, "thirdparty" );
+			break;
+
+		case NTG_MODULE_EMBEDDED:
+			xmlrpc_temp = xmlrpc_string_new(env, "embedded" );
+			break;
+
+		default:
+			assert( false );
+			break;
+	}
+
+	xmlrpc_struct_set_value(env, struct_, "modulesource", xmlrpc_temp);
+	xmlrpc_DECREF(xmlrpc_temp);
+
+	origin_id_string = ntg_guid_to_string( &interface->origin_guid );
+    xmlrpc_temp = xmlrpc_string_new(env, origin_id_string);
+    xmlrpc_struct_set_value(env, struct_, "originid", xmlrpc_temp);
+>>>>>>> Stashed changes
     xmlrpc_DECREF(xmlrpc_temp);
 
     xmlrpc_struct_set_value(env, struct_, "interfaceinfo", info_struct);

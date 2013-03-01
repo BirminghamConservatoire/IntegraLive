@@ -71,7 +71,7 @@ package components.controller.serverCommands
 			
 			if( !_scriptName )
 			{
-				_scriptName = parent.getNewChildName( Script._serverInterfaceName, definition.moduleGuid ); 				
+				_scriptName = parent.getNewChildName( Script._serverInterfaceName, definition.guid ); 				
 			}
 			
 			return true;

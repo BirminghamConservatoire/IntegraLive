@@ -362,9 +362,9 @@ package components.model.modelLoader
 			Assert.assertNotNull( _interfaceListCall );
 			_interfaceListCall = null;
 			
-			for each( var moduleId:String in interfaceListArray )
+			for each( var interfaceId:String in interfaceListArray )
 			{
-				_model.interfaceList.push( moduleId );
+				_model.interfaceList.push( interfaceId );
 			}
 		}
 		
@@ -376,22 +376,20 @@ package components.model.modelLoader
 			for each( var response:Object in multiResponse )
 			{
 				var methodName:String = response[ 0 ].response;
-				var moduleGuid:String = response[ 0 ].moduleid;
-				var originGuid:String = response[ 0 ].originid;
-				var moduleSource:String = response[ 0 ].modulesource;
+				var interfaceGuid:String = response[ 0 ].interfaceid;
 				
 				switch( methodName )
 				{
 					case "query.interfaceinfo":
-						handleInterfaceInfo( moduleGuid, originGuid, moduleSource, response[ 0 ].interfaceinfo );
+						handleInterfaceInfo( interfaceGuid, response[ 0 ].interfaceinfo );
 						break;
 
 					case "query.endpoints":
-						handleEndpoints( moduleGuid, response[ 0 ].endpoints );
+						handleEndpoints( interfaceGuid, response[ 0 ].endpoints );
 						break;
 
 					case "query.widgets":
-						handleWidgets( moduleGuid, response[ 0 ].widgets );
+						handleWidgets( interfaceGuid, response[ 0 ].widgets );
 						break;
 					
 					default:
@@ -402,12 +400,10 @@ package components.model.modelLoader
 		}
 		
 		
-		private function handleInterfaceInfo( moduleGuid:String, originGuid:String, moduleSource:String, info:Object ):void
+		private function handleInterfaceInfo( interfaceGuid:String, info:Object ):void
 		{
 			var interfaceDefinition:InterfaceDefinition = new InterfaceDefinition;
-			interfaceDefinition.moduleGuid = moduleGuid;
-			interfaceDefinition.originGuid = originGuid;
-			interfaceDefinition.moduleSource = moduleSource;
+			interfaceDefinition.guid = interfaceGuid;
 			
 			interfaceDefinition.interfaceInfo.name = info.name;
 			interfaceDefinition.interfaceInfo.label = info.label;

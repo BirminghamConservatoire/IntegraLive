@@ -40,39 +40,39 @@ package components.controller.serverCommands
 
 	public class LoadModule extends ServerCommand
 	{
-		public function LoadModule( moduleGuid:String, blockID:int, position:Rectangle, objectID:int = -1, name:String = null )
+		public function LoadModule( interfaceGuid:String, blockID:int, position:Rectangle, moduleID:int = -1, moduleName:String = null )
 		{
 			super();
 	
-			_objectID = objectID;
-			_name = name;		
-			_moduleGuid = moduleGuid;
+			_moduleID = moduleID;
+			_moduleName = moduleName;		
+			_interfaceGuid = interfaceGuid;
 			_blockID = blockID;
 			_position = position;
 		}
 		
-		public function get objectID():int { return _objectID; }
-		public function get name():String { return _name; }
-		public function get moduleGuid():String { return _moduleGuid; }
+		public function get moduleID():int { return _moduleID; }
+		public function get moduleName():String { return _moduleName; }
+		public function get interfaceGuid():String { return _interfaceGuid; }
 		public function get blockID():int { return _blockID; }
 		public function get position():Rectangle { return _position; }
 		
 		override public function initialize( model:IntegraModel ):Boolean
 		{
-			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByGuid( _moduleGuid );
+			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByGuid( _interfaceGuid );
 			if( !interfaceDefinition )
 			{
 				return false;
 			}
 
-			if( _objectID < 0 )
+			if( _moduleID < 0 )
 			{
-				_objectID = model.generateNewID();
+				_moduleID = model.generateNewID();
 			}
 			
-			if( !_name )
+			if( !_moduleName )
 			{
-				_name = model.getBlock( blockID ).getNewChildName( interfaceDefinition.interfaceInfo.name, _moduleGuid ); 
+				_moduleName = model.getBlock( blockID ).getNewChildName( interfaceDefinition.interfaceInfo.name, _interfaceGuid ); 
 			}	
 			
 			return true;				
@@ -81,16 +81,16 @@ package components.controller.serverCommands
 		
 		override public function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new UnloadModule( _objectID ) );
+			pushInverseCommand( new UnloadModule( _moduleID ) );
 		}
 		
 		
 		override public function execute( model:IntegraModel ):void
 		{
 			var module:ModuleInstance = new ModuleInstance;
-			module.id = _objectID;
-			module.name = _name;
-			module.interfaceDefinition = model.getInterfaceDefinitionByGuid( _moduleGuid );
+			module.id = _moduleID;
+			module.name = _moduleName;
+			module.interfaceDefinition = model.getInterfaceDefinitionByGuid( _interfaceGuid );
 			Assert.assertNotNull( module.interfaceDefinition );
 			
 			module.attributes = new Object;
@@ -111,18 +111,18 @@ package components.controller.serverCommands
 		override public function postChain( model:IntegraModel, controller:IntegraController ):void
 		{
 			//set the initial position
-			controller.processCommand( new SetModulePosition( objectID, _position ) );
+			controller.processCommand( new SetModulePosition( moduleID, _position ) );
 			
 			//set the initial selection
-			controller.processCommand( new SetPrimarySelectedChild(  _blockID, _objectID ) );
-			controller.processCommand( new SetObjectSelection( _objectID, true ) );
+			controller.processCommand( new SetPrimarySelectedChild(  _blockID, _moduleID ) );
+			controller.processCommand( new SetObjectSelection( _moduleID, true ) );
 		}
 		
 		
 		override public function executeServerCommand( model:IntegraModel ):void
 		{
-			connection.addParam( _moduleGuid, XMLRPCDataTypes.STRING );
-			connection.addParam( _name, XMLRPCDataTypes.STRING );
+			connection.addParam( _interfaceGuid, XMLRPCDataTypes.STRING );
+			connection.addParam( _moduleName, XMLRPCDataTypes.STRING );
 			connection.addArrayParam( model.getPathArrayFromID( _blockID ) );
 			connection.callQueued( "command.new" );	
 		}
@@ -130,18 +130,18 @@ package components.controller.serverCommands
 
 		override protected function testServerResponse( response:Object ):Boolean
 		{
-			if( response.moduleid != _moduleGuid ) return false;
-			if( response.instancename != _name ) return false;
+			if( response.interfaceid != _interfaceGuid ) return false;
+			if( response.instancename != _moduleName ) return false;
 			if( response.response != "command.new" ) return false;
 			
 			return true;
 		}
 		
 		
-		private var _objectID:int;
-		private var _name:String;		
+		private var _moduleID:int;
+		private var _moduleName:String;		
 		private var _blockID:int;		
-		private var _moduleGuid:String;
+		private var _interfaceGuid:String;
 		private var _position:Rectangle; 
 	}
 }

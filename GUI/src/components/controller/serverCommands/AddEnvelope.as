@@ -108,7 +108,7 @@ package components.controller.serverCommands
 			if( !_envelopeName )
 			{
 				var envelopeInterface:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( Envelope._serverInterfaceName );
-				_envelopeName = block.getNewChildName( Envelope._serverInterfaceName, envelopeInterface.moduleGuid );
+				_envelopeName = block.getNewChildName( Envelope._serverInterfaceName, envelopeInterface.guid );
 			}
 
 			return true;

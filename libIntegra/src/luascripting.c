@@ -80,10 +80,7 @@ static ntg_lua_context_stack *context_stack = NULL;
 static void ntg_lua_output_handler( int color, const char *fmt, ...)
 {
 	char *new_output;
-	int progress_string_length;
-	int i;
 	const char *progress_template = "%s\n\n<font color='#%x'>%s</font>";
-	const char *illegal_characters = "<>";
 
 	char progress_string[8192];
 
@@ -98,16 +95,6 @@ static void ntg_lua_output_handler( int color, const char *fmt, ...)
     }
 
 	NTG_TRACE_VERBOSE_WITH_STRING( "luascript output", progress_string );
-
-	/* replace illegal characters with space, to prevent invalid html */
-	progress_string_length = strlen( progress_string );
-	for( i = 0; i < progress_string_length; i++ )
-	{
-		if( strchr( illegal_characters, progress_string[ i ] ) != NULL )
-		{
-			progress_string[ i ] = ' ';
-		}
-	}
 
 	color = max( 0, min( 0xffffff, color ) );
 

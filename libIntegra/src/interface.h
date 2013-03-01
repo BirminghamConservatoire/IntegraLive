@@ -104,27 +104,16 @@ typedef enum ntg_stream_direction_
 } ntg_stream_direction;
 
 
-typedef enum ntg_module_source_
-{
-	NTG_MODULE_SHIPPED_WITH_INTEGRA = 1,	
-	NTG_MODULE_3RD_PARTY = 2,
-	NTG_MODULE_EMBEDDED = 3
-
-} ntg_module_source;
-
-
 
 struct ntg_interface_ 
 {
 	GUID module_guid;
 	GUID origin_guid;
-	ntg_module_source module_source;
 	ntg_interface_info *info;
 	ntg_endpoint *endpoint_list;
 	ntg_widget *widget_list;
 	ntg_implementation_info *implementation;
 };
-
 
 struct ntg_interface_info_
 {

@@ -62,7 +62,7 @@ package components.controller.serverCommands
 				Assert.assertNotNull( container );
 				
 				var connectionDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( Connection._serverInterfaceName );
-				_connectionName = container.getNewChildName( Connection._serverInterfaceName, connectionDefinition.moduleGuid ); 				
+				_connectionName = container.getNewChildName( Connection._serverInterfaceName, connectionDefinition.guid ); 				
 			}
 			
 			return true;

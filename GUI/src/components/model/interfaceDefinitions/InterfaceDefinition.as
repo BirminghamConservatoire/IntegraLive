@@ -27,19 +27,13 @@ package components.model.interfaceDefinitions
 		{
 		}
 
-		public function get moduleGuid():String { return _moduleGuid; }
-		public function get originGuid():String { return _originGuid; }
-		public function get moduleSource():String { return _moduleSource; }
-		
+		public function get guid():String { return _guid; }
 		public function get interfaceInfo():InterfaceInfo { return _interfaceInfo; }
 		public function get endpoints():Vector.<EndpointDefinition> { return _endpoints; }
 		public function get widgets():Vector.<WidgetDefinition> { return _widgets; }
 
 		
-		public function set moduleGuid( moduleGuid:String ):void { _moduleGuid = moduleGuid; }
-		public function set originGuid( originGuid:String ):void { _originGuid = originGuid; }
-		public function set moduleSource( moduleSource:String ):void { _moduleSource = moduleSource; }
-		
+		public function set guid( guid:String ):void { _guid = guid; }
 		
 		public function getEndpointDefinition( endpointName:String ):EndpointDefinition
 		{
@@ -112,10 +106,7 @@ package components.model.interfaceDefinitions
 		}
 		
 		
-		private var _moduleGuid:String;
-		private var _originGuid:String;
-		private var _moduleSource:String;
-		
+		private var _guid:String;
 		private var _interfaceInfo:InterfaceInfo = new InterfaceInfo;
 		private var _endpoints:Vector.<EndpointDefinition> = new Vector.<EndpointDefinition>;
 		private var _widgets:Vector.<WidgetDefinition> = new Vector.<WidgetDefinition>;

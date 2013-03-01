@@ -74,7 +74,7 @@ package components.model
 		}
 		
 		
-		public function getNewChildName( prefix:String, moduleGuid:String ):String
+		public function getNewChildName( prefix:String, interface_guid:String ):String
 		{
 			var existingNameMap:Object = new Object;
 			var existingChildrenOfSameType:int = 0;
@@ -83,7 +83,7 @@ package components.model
 			{
 				existingNameMap[ child.name ] = 1;
 				
-				if( child.interfaceDefinition.moduleGuid == moduleGuid )
+				if( child.interfaceDefinition.guid == interface_guid )
 				{
 					existingChildrenOfSameType++;
 				}

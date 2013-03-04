@@ -1307,7 +1307,7 @@
 		
 		.alertButtonStyle
 		{
-			cornerRadius: 12;
+			cornerRadius: 4;
 			fontSize: 10;
 		}		
 

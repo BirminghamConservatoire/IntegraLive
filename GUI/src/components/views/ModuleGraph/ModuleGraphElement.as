@@ -20,18 +20,6 @@
 
 package components.views.ModuleGraph
 {
-	import components.controller.IntegraController;
-	import components.controller.serverCommands.RenameObject;
-	import components.controller.userDataCommands.SetModuleInstanceLiveViewControls;
-	import components.model.Info;
-	import components.model.IntegraDataObject;
-	import components.model.IntegraModel;
-	import components.model.ModuleInstance;
-	import components.model.userData.ColorScheme;
-	import components.utils.FontSize;
-	import components.views.InfoView.InfoMarkupForViews;
-	import components.views.Skins.TickButtonSkin;
-	
 	import flash.display.DisplayObject;
 	import flash.display.GradientType;
 	import flash.events.Event;
@@ -44,11 +32,23 @@ package components.views.ModuleGraph
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 	
-	import flexunit.framework.Assert;
-	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
 	import mx.controls.TextInput;
+	
+	import components.controller.IntegraController;
+	import components.controller.serverCommands.RenameObject;
+	import components.controller.userDataCommands.SetModuleInstanceLiveViewControls;
+	import components.model.Info;
+	import components.model.IntegraDataObject;
+	import components.model.IntegraModel;
+	import components.model.ModuleInstance;
+	import components.model.userData.ColorScheme;
+	import components.utils.FontSize;
+	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.TickButtonSkin;
+	
+	import flexunit.framework.Assert;
 
 
 	public class ModuleGraphElement extends Canvas
@@ -191,13 +191,15 @@ package components.views.ModuleGraph
 		}
 		
 		
-		public function getLinkPoint( attributeName:String ):Point
+		public function getLinkPoint( attributeName:String, trackPoint:Point, offset:Point ):void
 		{
 			for each( var pin:ConnectionPin in _inputPins )
 			{
 				if( pin.attributeName == attributeName )
 				{
-					return pin.linkPoint;
+					trackPoint.copyFrom( getTrackPoint( _inputPins ) );
+					offset.copyFrom( pin.linkPoint.subtract( trackPoint ) );
+					return;
 				}
 			}
 			
@@ -205,25 +207,29 @@ package components.views.ModuleGraph
 			{
 				if( pin.attributeName == attributeName )
 				{
-					return pin.linkPoint;
+					trackPoint.copyFrom( getTrackPoint( _outputPins ) );
+					offset.copyFrom( pin.linkPoint.subtract( trackPoint ) );
+					return;
 				}
 			}
-			
-			return null;
 		}
 		
 		
-		public function getFirstInputPoint():Point
+		public function getFirstInputPoint( trackPoint:Point, offset:Point ):void
 		{
 			Assert.assertTrue( _inputPins.length > 0 );
-			return _inputPins[ 0 ].linkPoint;
+
+			trackPoint.copyFrom( getTrackPoint( _inputPins ) );
+			offset.copyFrom( _inputPins[ 0 ].linkPoint.subtract( trackPoint ) );
 		}
 
 
-		public function getFirstOutputPoint():Point
+		public function getFirstOutputPoint( trackPoint:Point, offset:Point ):void
 		{
 			Assert.assertTrue( _outputPins.length > 0 );
-			return _outputPins[ 0 ].linkPoint;
+
+			trackPoint.copyFrom( getTrackPoint( _outputPins ) );
+			offset.copyFrom( _outputPins[ 0 ].linkPoint.subtract( trackPoint ) );
 		}
 		
 		
@@ -422,6 +428,17 @@ package components.views.ModuleGraph
 			}
 			
 			element.parent.setChildIndex( element, element.parent.numChildren - 1 );
+		}
+		
+		
+		private function getTrackPoint( pins:Vector.<ConnectionPin> ):Point 
+		{
+			Assert.assertTrue( pins && pins.length > 0 );
+			
+			var firstPin:Point = pins[ 0 ].linkPoint;
+			var lastPin:Point = pins[ pins.length - 1 ].linkPoint;
+			
+			return Point.interpolate( firstPin, lastPin, 0.5 );
 		}
 		
 		

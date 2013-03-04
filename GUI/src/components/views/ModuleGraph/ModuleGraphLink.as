@@ -23,6 +23,7 @@ package components.views.ModuleGraph
 	import flash.geom.Point;
 	
 	import mx.containers.Canvas;
+	import mx.utils.ObjectUtil;
 	
 	import components.utils.FontSize;
 	
@@ -39,29 +40,24 @@ package components.views.ModuleGraph
 
 		public function get connectionID():int 	{ return _connectionID; }
 		
-		public function get start():Point { return _startTrack.add( _startTrackOffset ); }
-		public function get end():Point { return _endTrack.add( _endTrackOffset ); }
+		public function get start():Point { return _start; }
+		public function get end():Point { return _end; }
 
-		public function get startTrack():Point { return _startTrack; }
-		public function get endTrack():Point { return _endTrack; }
+		public function get trackOffset():Point { return _trackOffset; }
 
-		public function get startOffset():Point { return _startTrackOffset; }
-		public function get endOffset():Point { return _endTrackOffset; }
-		
-	
-		public function setState( startTrack:Point, endTrack:Point, startTrackOffset:Point, endTrackOffset:Point, lineWidth:Number, lineColor:int ):void
+		public function setState( start:Point, end:Point, trackOffset:Point, lineWidth:Number, lineColor:int ):void
 		{
-			if( _startTrack == startTrack && _endTrack == endTrack 
-				&& startTrackOffset == _startTrackOffset && endTrackOffset == _endTrackOffset 
-					&& _lineWidth == lineWidth && _lineColor == lineColor )
+			if( ObjectUtil.compare( _start, start ) == 0 && 
+				ObjectUtil.compare( _end, end ) == 0 &&
+				ObjectUtil.compare( _trackOffset, trackOffset ) == 0 &&
+				_lineWidth == lineWidth && _lineColor == lineColor )
 			{
 				return;	//don't bother redrawing if nothing changed
 			}			
 			
-			_startTrack = startTrack;
-			_endTrack = endTrack;
-			_startTrackOffset = startTrackOffset;
-			_endTrackOffset = endTrackOffset;
+			_start = start;
+			_end = end;
+			_trackOffset = trackOffset;
 			_lineWidth = lineWidth;
 			_lineColor = lineColor;
 			
@@ -77,19 +73,20 @@ package components.views.ModuleGraph
 			var arrowheadLength:Number = _arrowheadLength * gridSize;
 			var arrowheadWidth:Number = _arrowheadWidth * gridSize;
 
+			var start:Point = _start.clone();
+			start.x += _margin;
+			
+			var end:Point = _end.clone();
+			end.x -= ( arrowheadLength + _margin );
+			
 			var startTangent:Point = new Point( 1, 0 );
 			var endTangent:Point = new Point( -1, 0 );
 			
-			var start:Point = _startTrack.add( _startTrackOffset );
-			start.x += _margin;
+			var trackStart:Point = _start.add( _trackOffset );
+			var trackEnd:Point = _end.add( _trackOffset );
+			var center:Point = Point.interpolate( trackStart, trackEnd, 0.5 );
 			
-			var end:Point = _endTrack.add( _endTrackOffset );
-			end.x -= ( arrowheadLength + _margin );
-			
-			var center:Point = Point.interpolate( _startTrack, _endTrack, 0.5 );
-			var centerOffset:Point = Point.interpolate( _startTrackOffset, _endTrackOffset, 0.5 );
-			
-			var track:Point = _endTrack.subtract( _startTrack );
+			var track:Point = trackEnd.subtract( trackStart );
 			var centerTangentAngle:Number = Math.atan2( track.y, track.x );
 			centerTangentAngle *= _curvatureScale;
 			centerTangentAngle = Math.max( -_maxTangentAngle, Math.min( _maxTangentAngle, centerTangentAngle ) );  
@@ -98,15 +95,15 @@ package components.views.ModuleGraph
 			var centerTangentBackwards:Point = new Point( -centerTangent.x, -centerTangent.y );
 			
 			var centerNormal:Point = perpendicular( centerTangent );
-			centerOffset.setTo( dotProduct( centerOffset, centerTangent ), dotProduct( centerOffset, centerNormal ) ); 
+			var centerOffset:Point = new Point( dotProduct( _trackOffset, centerTangent ), dotProduct( _trackOffset, centerNormal ) ); 
 				
-			center = center.subtract( centerOffset ); 
+			center = center.add( centerOffset ); 
 			
 			//curvy line
 			graphics.lineStyle( _lineWidth, _lineColor ); 
 			drawCurve( start, center, startTangent, centerTangentBackwards );
 			drawCurve( center, end, centerTangent, endTangent );
-			
+
 			//draw arrowhead
 			
 			graphics.beginFill( _lineColor );
@@ -255,20 +252,17 @@ package components.views.ModuleGraph
 			}
 		}
 		
-		
-		
 
 		private var _connectionID:int;
 
-		private var _startTrack:Point;
-		private var _endTrack:Point;
-		private var _startTrackOffset:Point;
-		private var _endTrackOffset:Point;
+		private var _start:Point;
+		private var _end:Point;
+		private var _trackOffset:Point;
 		private var _lineWidth:Number;
 		private var _lineColor:int;
 
 		private static const _curvatureScale:Number = 2;
-		private static const _maxTangentAngle:Number = Math.PI * 0.95;
+		private static const _maxTangentAngle:Number = Math.PI * 0.99;
 		
 		private static const _margin:Number = 2;
 		private static const _arrowheadLength:Number = 0.3;

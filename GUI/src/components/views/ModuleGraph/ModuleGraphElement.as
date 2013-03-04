@@ -191,14 +191,14 @@ package components.views.ModuleGraph
 		}
 		
 		
-		public function getLinkPoint( attributeName:String, trackPoint:Point, offset:Point ):void
+		public function getLinkPoint( attributeName:String, linkPoint:Point, trackOffset:Point ):void
 		{
 			for each( var pin:ConnectionPin in _inputPins )
 			{
 				if( pin.attributeName == attributeName )
 				{
-					trackPoint.copyFrom( getTrackPoint( _inputPins ) );
-					offset.copyFrom( pin.linkPoint.subtract( trackPoint ) );
+					linkPoint.copyFrom( pin.linkPoint );
+					trackOffset.copyFrom( getTrackPoint( _inputPins ).subtract( linkPoint ) );
 					return;
 				}
 			}
@@ -207,29 +207,29 @@ package components.views.ModuleGraph
 			{
 				if( pin.attributeName == attributeName )
 				{
-					trackPoint.copyFrom( getTrackPoint( _outputPins ) );
-					offset.copyFrom( pin.linkPoint.subtract( trackPoint ) );
+					linkPoint.copyFrom( pin.linkPoint );
+					trackOffset.copyFrom( getTrackPoint( _outputPins ).subtract( linkPoint ) );
 					return;
 				}
 			}
 		}
 		
 		
-		public function getFirstInputPoint( trackPoint:Point, offset:Point ):void
+		public function getFirstInputPoint( linkPoint:Point, trackOffset:Point ):void
 		{
 			Assert.assertTrue( _inputPins.length > 0 );
 
-			trackPoint.copyFrom( getTrackPoint( _inputPins ) );
-			offset.copyFrom( _inputPins[ 0 ].linkPoint.subtract( trackPoint ) );
+			linkPoint.copyFrom( _inputPins[ 0 ].linkPoint );
+			trackOffset.copyFrom( getTrackPoint( _inputPins ).subtract( linkPoint ) );
 		}
 
 
-		public function getFirstOutputPoint( trackPoint:Point, offset:Point ):void
+		public function getFirstOutputPoint( linkPoint:Point, trackOffset:Point ):void
 		{
 			Assert.assertTrue( _outputPins.length > 0 );
 
-			trackPoint.copyFrom( getTrackPoint( _outputPins ) );
-			offset.copyFrom( _outputPins[ 0 ].linkPoint.subtract( trackPoint ) );
+			linkPoint.copyFrom( _outputPins[ 0 ].linkPoint );
+			trackOffset.copyFrom( getTrackPoint( _outputPins ).subtract( linkPoint ) );
 		}
 		
 		

@@ -762,10 +762,12 @@ package components.views.ModuleGraph
 					_elementBeingCreated.x = Math.max( elementBeingCreatedMinX, _elementBeingCreated.x );   
 					_elementBeingCreated.updateIOPins();
 					
-					var endTrack:Point = new Point;
+					var endPoint:Point = new Point;
 					var endOffset:Point = new Point;
-					_elementBeingCreated.getFirstInputPoint( endTrack, endOffset );
-					_inputReplacementLink.setState( _contentCanvas.contentToLocal( _linkBeingCreatedOver.startTrack ), endTrack, _linkBeingCreatedOver.startOffset, endOffset, normalLinkWidth, _normalLinkColor );
+					_elementBeingCreated.getFirstInputPoint( endPoint, endOffset );
+					var trackOffset:Point = Point.interpolate( endOffset, _linkBeingCreatedOver.trackOffset, 0.5 );
+					
+					_inputReplacementLink.setState( _contentCanvas.contentToLocal( _linkBeingCreatedOver.start ), endPoint, trackOffset, normalLinkWidth, _normalLinkColor );
 				}
 
 				if( interfaceDefinition.countAudioEndpointsByDirection( StreamInfo.DIRECTION_OUTPUT ) > 0 )
@@ -778,11 +780,12 @@ package components.views.ModuleGraph
 					
 					positionElementsDownstreamOfElementBeingCreated();
 
-					var startTrack:Point = new Point;
+					var startPoint:Point = new Point;
 					var startOffset:Point = new Point;
-					_elementBeingCreated.getFirstOutputPoint( startTrack, startOffset );
+					_elementBeingCreated.getFirstOutputPoint( startPoint, startOffset );
+					trackOffset = Point.interpolate( startOffset, _linkBeingCreatedOver.trackOffset, 0.5 );
 					
-					_outputReplacementLink.setState( startTrack, _contentCanvas.contentToLocal( _linkBeingCreatedOver.endTrack ), startOffset, _linkBeingCreatedOver.endOffset, normalLinkWidth, _normalLinkColor );
+					_outputReplacementLink.setState( startPoint, _contentCanvas.contentToLocal( _linkBeingCreatedOver.end ), trackOffset, normalLinkWidth, _normalLinkColor );
 				}
 			}
 			else
@@ -1547,26 +1550,34 @@ package components.views.ModuleGraph
 			var newLinkAnchorPoint:Point = new Point();
 			var newLinkAnchorOffset:Point = new Point();
 			getLinkPoint( _newLinkAnchor.moduleID, _newLinkAnchor.attributeName, newLinkAnchorPoint, newLinkAnchorOffset );
+			var trackOffset:Point = Point.interpolate( newLinkAnchorOffset, destinationOffset, 0.5 );
+
+			if( newLinkDestination == _newLinkAnchor )
+			{
+				var mouseOnAnchorOffset:Number = FontSize.getTextRowHeight( this ) * 0.8;
+				destination.copyFrom( newLinkAnchorPoint );
+				destination.x += ( _newLinkAnchor.isInput ? -mouseOnAnchorOffset : mouseOnAnchorOffset );
+			}
 			
 			if( _newLinkAnchor.isInput )
 			{
-				_newLink.setState( destination, newLinkAnchorPoint, destinationOffset, newLinkAnchorOffset, newLinkWidth, _newLinkColor );
+				_newLink.setState( destination, newLinkAnchorPoint, trackOffset, newLinkWidth, _newLinkColor );
 			}
 			else
 			{
-				_newLink.setState( newLinkAnchorPoint, destination, newLinkAnchorOffset, destinationOffset, newLinkWidth, _newLinkColor );
+				_newLink.setState( newLinkAnchorPoint, destination, trackOffset, newLinkWidth, _newLinkColor );
 			}
 		}
 
 		
-		private function getLinkPoint( moduleID:int, attributeName:String, trackPoint:Point, offset:Point ):void
+		private function getLinkPoint( moduleID:int, attributeName:String, linkPoint:Point, trackOffset:Point ):void
 		{
 			if( _elements.hasOwnProperty( moduleID ) )
 			{
 				var element:ModuleGraphElement = _elements[ moduleID ] as ModuleGraphElement;
 				Assert.assertNotNull( element );
 				
-				element.getLinkPoint( attributeName, trackPoint, offset );
+				element.getLinkPoint( attributeName, linkPoint, trackOffset );
 				return;
 			}
 			
@@ -1580,19 +1591,20 @@ package components.views.ModuleGraph
 			var connection:Connection = model.getConnection( link.connectionID );
 			Assert.assertNotNull( connection );
 					
-			var startTrack:Point = new Point;
-			var startOffset:Point = new Point;
-			var endTrack:Point = new Point;
-			var endOffset:Point = new Point;
+			var start:Point = new Point;
+			var end:Point = new Point;
+			var startTrackOffset:Point = new Point;
+			var endTrackOffset:Point = new Point;
 			
-			getLinkPoint( connection.sourceObjectID, connection.sourceAttributeName, startTrack, startOffset );
-			getLinkPoint( connection.targetObjectID, connection.targetAttributeName, endTrack, endOffset );
+			getLinkPoint( connection.sourceObjectID, connection.sourceAttributeName, start, startTrackOffset );
+			getLinkPoint( connection.targetObjectID, connection.targetAttributeName, end, endTrackOffset );
+			var trackOffset:Point = Point.interpolate( startTrackOffset, endTrackOffset, 0.5 );
 			
 			var isSelected:Boolean = model.isConnectionSelected( connection.id );
 			var linkWidth:int = isSelected ? selectedLinkWidth : normalLinkWidth;
 			var linkColor:int = isSelected ? _selectedLinkColor : _normalLinkColor;
 			
-			link.setState( startTrack, endTrack, startOffset, endOffset, linkWidth, linkColor );
+			link.setState( start, end, trackOffset, linkWidth, linkColor );
 		}
 
 

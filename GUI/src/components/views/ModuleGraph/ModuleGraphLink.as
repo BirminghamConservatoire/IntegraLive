@@ -20,7 +20,11 @@
 
 package components.views.ModuleGraph
 {
+	import flash.display.BitmapData;
+	import flash.display.IGraphicsData;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	import mx.containers.Canvas;
 	import mx.utils.ObjectUtil;
@@ -62,6 +66,33 @@ package components.views.ModuleGraph
 			_lineColor = lineColor;
 			
 			redraw();
+			
+			_bitmapData = null;
+			_bounds = null;
+		}
+		
+		
+		public function hitTestRectangle( rectangle:Rectangle, horizontalScroll:Number, verticalScroll:Number ):Boolean
+		{
+			if( !_bounds ) 
+			{
+				_bounds = getBounds( parent );
+				_bounds.offset( horizontalScroll, verticalScroll );
+			}
+			
+			if( !_bounds.intersects( rectangle ) ) 
+			{
+				return false;
+			}
+			
+			if( !_bitmapData )
+			{
+				_bitmapData = new BitmapData( _bounds.width, _bounds.height, true, 0 );
+				var translate:Matrix = new Matrix( 1, 0, 0, 1, -_bounds.x, -_bounds.y );
+				_bitmapData.draw( this, translate );
+			}
+			
+			return _bitmapData.hitTest( _bounds.topLeft, 1, rectangle );
 		}
 		
 		
@@ -133,7 +164,6 @@ package components.views.ModuleGraph
 				//both ends point away from other end
 				
 				//this is an unexpected and unhandled case
-//				Assert.assertTrue( false );
 				return;
 			}
 
@@ -260,6 +290,9 @@ package components.views.ModuleGraph
 		private var _trackOffset:Point;
 		private var _lineWidth:Number;
 		private var _lineColor:int;
+		
+		private var _bitmapData:BitmapData = null;
+		private var _bounds:Rectangle = null;
 
 		private static const _curvatureScale:Number = 2;
 		private static const _maxTangentAngle:Number = Math.PI * 0.99;

@@ -20,6 +20,20 @@
 
 package components.views.ModuleGraph
 {
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.filesystem.File;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.net.FileFilter;
+	import flash.ui.Keyboard;
+	
+	import mx.containers.Canvas;
+	import mx.core.ScrollPolicy;
+	import mx.events.DragEvent;
+	import mx.events.FlexEvent;
+	import mx.managers.DragManager;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.controller.serverCommands.AddConnection;
@@ -50,26 +64,12 @@ package components.views.ModuleGraph
 	import components.model.userData.ViewMode;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
-	import components.views.ArrangeView.TrackColorPicker;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
-	
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.filesystem.File;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.net.FileFilter;
-	import flash.ui.Keyboard;
+	import components.views.ArrangeView.TrackColorPicker;
+	import components.views.InfoView.InfoMarkupForViews;
 	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.core.ScrollPolicy;
-	import mx.events.DragEvent;
-	import mx.events.FlexEvent;
-	import mx.managers.DragManager;
 
 
 	public class ModuleGraph extends IntegraView
@@ -496,6 +496,7 @@ package components.views.ModuleGraph
 				_contentCanvas.removeChild( _newLink );
 				_newLink = null;
 				_newLinkAnchor = null;
+				_newLinkDestination = null;
 			}
 		}
 
@@ -532,12 +533,12 @@ package components.views.ModuleGraph
 				return;		
 			}			
 			
-			_newLinkAnchor = getConnectionPinUnderMouse();
+			_newLinkAnchor = getConnectionPinUnderMouse( event );
 			if( _newLinkAnchor )
 			{
 				_newLink = new ModuleGraphLink;
 				_contentCanvas.addElement( _newLink );
-				updateNewLink();
+				updateNewLink( event );
 				return;
 			}
 			
@@ -557,23 +558,26 @@ package components.views.ModuleGraph
 			endRepositioning();
 			endAreaSelection();
 
-			if( _newLinkAnchor )
+			if( _newLinkAnchor && _newLinkDestination )
 			{
-				var newLinkDestination:ConnectionPin = getConnectionPinUnderMouse();
-				if( newLinkDestination && newLinkDestination.isInput != _newLinkAnchor.isInput )
-				{
-					var sourceModuleID:int = _newLinkAnchor.isInput ? newLinkDestination.moduleID : _newLinkAnchor.moduleID;
-					var sourceAttributeName:String = _newLinkAnchor.isInput ? newLinkDestination.attributeName : _newLinkAnchor.attributeName
-					
-					var targetModuleID:int = _newLinkAnchor.isInput ? _newLinkAnchor.moduleID : newLinkDestination.moduleID;
-					var targetAttributeName:String = _newLinkAnchor.isInput ? _newLinkAnchor.attributeName : newLinkDestination.attributeName;
+				Assert.assertTrue( _newLinkDestination.isInput != _newLinkAnchor.isInput )
 
+				var sourceModuleID:int = _newLinkAnchor.isInput ? _newLinkDestination.moduleID : _newLinkAnchor.moduleID;
+				var sourceAttributeName:String = _newLinkAnchor.isInput ? _newLinkDestination.attributeName : _newLinkAnchor.attributeName
+				
+				var targetModuleID:int = _newLinkAnchor.isInput ? _newLinkAnchor.moduleID : _newLinkDestination.moduleID;
+				var targetAttributeName:String = _newLinkAnchor.isInput ? _newLinkAnchor.attributeName : _newLinkDestination.attributeName;
+
+				if( model.canSetAudioLink( sourceModuleID, sourceAttributeName, targetModuleID, targetAttributeName ) )
+				{
 					var addConnection:AddConnection = new AddConnection( model.primarySelectedBlock.id );
 					
 					controller.processCommand( addConnection );					
 					controller.processCommand( new SetConnectionRouting( addConnection.connectionID, sourceModuleID, sourceAttributeName, targetModuleID, targetAttributeName ) );
-					_newLinkAnchor = null;
 				}
+				
+				_newLinkAnchor = null;
+				_newLinkDestination = null;
 			}
 
 			removeNewLink();
@@ -596,7 +600,7 @@ package components.views.ModuleGraph
 			
 			if( _newLink && _newLinkAnchor )
 			{
-				updateNewLink();
+				updateNewLink( event );
 				return;
 			}
 		}
@@ -730,7 +734,7 @@ package components.views.ModuleGraph
 			positionElementBeingCreated( event.localX, event.localY, interfaceDefinition );
 
 			var previousLinkBeingCreatedOver:ModuleGraphLink = _linkBeingCreatedOver; 
-			_linkBeingCreatedOver = getLinkUnderRect( _elementBeingCreated.getRect( root ) );
+			_linkBeingCreatedOver = getLinkUnderRect( _elementBeingCreated.getRect( _contentCanvas ) );
 			
 			if( previousLinkBeingCreatedOver )
 			{
@@ -759,9 +763,12 @@ package components.views.ModuleGraph
 					_elementBeingCreated.x = Math.max( elementBeingCreatedMinX, _elementBeingCreated.x );   
 					_elementBeingCreated.updateIOPins();
 					
-					var start:Point = _contentCanvas.contentToLocal( _linkBeingCreatedOver.start );
-					var end:Point = _elementBeingCreated.getFirstInputPoint();
-					_inputReplacementLink.setState( start, end, normalLinkWidth, _normalLinkColor );
+					var endPoint:Point = new Point;
+					var endOffset:Point = new Point;
+					_elementBeingCreated.getFirstInputPoint( endPoint, endOffset );
+					var trackOffset:Point = Point.interpolate( endOffset, _linkBeingCreatedOver.trackOffset, 0.5 );
+
+					_inputReplacementLink.setState( _contentCanvas.contentToLocal( _linkBeingCreatedOver.start ), endPoint, trackOffset, normalLinkWidth, _normalLinkColor );
 				}
 
 				if( interfaceDefinition.countAudioEndpointsByDirection( StreamInfo.DIRECTION_OUTPUT ) > 0 )
@@ -774,10 +781,19 @@ package components.views.ModuleGraph
 					
 					positionElementsDownstreamOfElementBeingCreated();
 
-					start = _elementBeingCreated.getFirstOutputPoint();
-					end = _contentCanvas.contentToLocal( _linkBeingCreatedOver.end );
+					var startPoint:Point = new Point;
+					var startOffset:Point = new Point;
+					_elementBeingCreated.getFirstOutputPoint( startPoint, startOffset );
+
+					var connectionBeingReplaced:Connection = model.getConnection( _linkBeingCreatedOver.connectionID );
+					Assert.assertNotNull( connectionBeingReplaced );
+
+					endPoint = new Point;
+					endOffset = new Point;
+					getLinkPoint( connectionBeingReplaced.targetObjectID, connectionBeingReplaced.targetAttributeName, endPoint, endOffset ); 
+					trackOffset = Point.interpolate( startOffset, endOffset, 0.5 );
 					
-					_outputReplacementLink.setState( start, end, normalLinkWidth, _normalLinkColor );
+					_outputReplacementLink.setState( startPoint, _contentCanvas.contentToLocal( endPoint ), trackOffset, normalLinkWidth, _normalLinkColor );
 				}
 			}
 			else
@@ -1308,9 +1324,11 @@ package components.views.ModuleGraph
 			
 			for each( var link:ModuleGraphLink in _links )
 			{
-				setLinkState( link );
+				if( link.visible )
+				{
+					setLinkState( link );
+				}
 			}
-			
 		}
 		
 		
@@ -1370,26 +1388,16 @@ package components.views.ModuleGraph
 		}
 
 
-		private function getConnectionPinUnderMouse():ConnectionPin
+		private function getConnectionPinUnderMouse( event:MouseEvent ):ConnectionPin
 		{
-			var globalMouse:Point = localToGlobal( new Point( mouseX, mouseY ) );
-			
-			for each( var pin:ConnectionPin in _connectionPins )
-			{
-				if( pin.hitTestPoint( globalMouse.x, globalMouse.y ) )
-				{
-					return pin;
-				}
-			}
-			
-			return null;
+			return Utilities.getAncestorByType( event.target, ConnectionPin ) as ConnectionPin;
 		}
 		
 		
 		private function getLinkUnderMouse():ModuleGraphLink
 		{
 			var globalMouse:Point = localToGlobal( new Point( mouseX, mouseY ) );
-			var proximityMargin:int = 8;
+			var proximityMargin:int = 6;
 			for each( var link:ModuleGraphLink in _links )
 			{
 				for( var proximity:int = - proximityMargin; proximity <= proximityMargin; proximity++ )
@@ -1412,37 +1420,14 @@ package components.views.ModuleGraph
 
 		private function getLinkUnderRect( rect:Rectangle ):ModuleGraphLink
 		{
+			var scrolledRect:Rectangle = rect.clone();
+			scrolledRect.offset( _contentCanvas.horizontalScrollPosition, _contentCanvas.verticalScrollPosition );
+			
 			for each( var link:ModuleGraphLink in _links )
 			{
-				if( rect.containsPoint( _contentCanvas.contentToGlobal( link.start ) ) )
+				if( link.hitTestRectangle( scrolledRect, _contentCanvas.horizontalScrollPosition, _contentCanvas.verticalScrollPosition )  )
 				{
 					return link;
-				}
-				 
-				for( var x:int = rect.left; x < rect.right; x++ )
-				{ 
-					if( link.hitTestPoint( x, rect.top, true ) )
-					{
-						return link;
-					}
-
-					if( link.hitTestPoint( x, rect.bottom, true ) )
-					{
-						return link;
-					}
-				}
-
-				for( var y:int = rect.top; y < rect.bottom; y++ )
-				{ 
-					if( link.hitTestPoint( rect.left, y, true ) )
-					{
-						return link;
-					}
-
-					if( link.hitTestPoint( rect.right, y, true ) )
-					{
-						return link;
-					}
 				}
 			}
 			
@@ -1516,44 +1501,69 @@ package components.views.ModuleGraph
 		}
 
 		
-		private function updateNewLink():void
+		private function updateNewLink( event:MouseEvent ):void
 		{
-			var newLinkDestination:ConnectionPin = getConnectionPinUnderMouse();
+			Assert.assertNotNull( _newLinkAnchor );
 			
+			var destinationPin:ConnectionPin = getConnectionPinUnderMouse( event );
+			var destinationPinIsValid:Boolean = false;
+
 			var destination:Point = _contentCanvas.localToContent( new Point( mouseX, mouseY ) );
+			var destinationOffset:Point = new Point();
 			
-			if( newLinkDestination && newLinkDestination.isInput != _newLinkAnchor.isInput )
+			if( destinationPin && destinationPin.isInput != _newLinkAnchor.isInput )
 			{
-				var sourceModuleID:int = _newLinkAnchor.isInput ? newLinkDestination.moduleID : _newLinkAnchor.moduleID;
-				var sourceAttributeName:String = _newLinkAnchor.isInput ? newLinkDestination.attributeName : _newLinkAnchor.attributeName
+				var sourceModuleID:int = _newLinkAnchor.isInput ? destinationPin.moduleID : _newLinkAnchor.moduleID;
+				var sourceAttributeName:String = _newLinkAnchor.isInput ? destinationPin.attributeName : _newLinkAnchor.attributeName
 					
-				var targetModuleID:int = _newLinkAnchor.isInput ? _newLinkAnchor.moduleID : newLinkDestination.moduleID;
-				var targetAttributeName:String = _newLinkAnchor.isInput ? _newLinkAnchor.attributeName : newLinkDestination.attributeName;
+				var targetModuleID:int = _newLinkAnchor.isInput ? _newLinkAnchor.moduleID : destinationPin.moduleID;
+				var targetAttributeName:String = _newLinkAnchor.isInput ? _newLinkAnchor.attributeName : destinationPin.attributeName;
 				
 				if( model.canSetAudioLink( sourceModuleID, sourceAttributeName, targetModuleID, targetAttributeName ) )
 				{
-					destination = newLinkDestination.linkPoint;
+					getLinkPoint( destinationPin.moduleID, destinationPin.attributeName, destination, destinationOffset );
+					destinationPinIsValid = true;
 				}
 			}
 			
-			var start:Point = _newLinkAnchor.isInput ? destination : _newLinkAnchor.linkPoint;
-			var end:Point = _newLinkAnchor.isInput ? _newLinkAnchor.linkPoint : destination;
-			_newLink.setState( start, end, newLinkWidth, _newLinkColor );
+			_newLinkDestination = destinationPinIsValid ? destinationPin : null;
+			
+			var newLinkAnchorPoint:Point = new Point();
+			var newLinkAnchorOffset:Point = new Point();
+			getLinkPoint( _newLinkAnchor.moduleID, _newLinkAnchor.attributeName, newLinkAnchorPoint, newLinkAnchorOffset );
+			var trackOffset:Point = Point.interpolate( newLinkAnchorOffset, destinationOffset, 0.5 );
+
+			if( destinationPin == _newLinkAnchor )
+			{
+				var mouseOnAnchorOffset:Number = FontSize.getTextRowHeight( this ) * 0.8;
+				destination.copyFrom( newLinkAnchorPoint );
+				destination.x += ( _newLinkAnchor.isInput ? -mouseOnAnchorOffset : mouseOnAnchorOffset );
+			}
+			
+			if( _newLinkAnchor.isInput )
+			{
+				_newLink.setState( destination, newLinkAnchorPoint, trackOffset, newLinkWidth, _newLinkColor );
+			}
+			else
+			{
+				_newLink.setState( newLinkAnchorPoint, destination, trackOffset, newLinkWidth, _newLinkColor );
+			}
 		}
 
 		
-		private function getLinkPoint( moduleID:int, attributeName:String ):Point
+		private function getLinkPoint( moduleID:int, attributeName:String, linkPoint:Point, trackOffset:Point ):void
 		{
 			if( _elements.hasOwnProperty( moduleID ) )
 			{
 				var element:ModuleGraphElement = _elements[ moduleID ] as ModuleGraphElement;
 				Assert.assertNotNull( element );
 				
-				return element.getLinkPoint( attributeName );
+				element.getLinkPoint( attributeName, linkPoint, trackOffset );
+				return;
 			}
 			
 			Assert.assertTrue( false );
-			return null;
+			return;
 		}
 		
 		
@@ -1561,21 +1571,21 @@ package components.views.ModuleGraph
 		{
 			var connection:Connection = model.getConnection( link.connectionID );
 			Assert.assertNotNull( connection );
-						
-			var start:Point = getLinkPoint( connection.sourceObjectID, connection.sourceAttributeName );
-			var end:Point = getLinkPoint( connection.targetObjectID, connection.targetAttributeName );
+					
+			var start:Point = new Point;
+			var end:Point = new Point;
+			var startTrackOffset:Point = new Point;
+			var endTrackOffset:Point = new Point;
 			
-			if( !start || !end )
-			{
-				Assert.assertTrue( false );
-				return;
-			}
-
+			getLinkPoint( connection.sourceObjectID, connection.sourceAttributeName, start, startTrackOffset );
+			getLinkPoint( connection.targetObjectID, connection.targetAttributeName, end, endTrackOffset );
+			var trackOffset:Point = Point.interpolate( startTrackOffset, endTrackOffset, 0.5 );
+			
 			var isSelected:Boolean = model.isConnectionSelected( connection.id );
 			var linkWidth:int = isSelected ? selectedLinkWidth : normalLinkWidth;
 			var linkColor:int = isSelected ? _selectedLinkColor : _normalLinkColor;
 			
-			link.setState( start, end, linkWidth, linkColor );
+			link.setState( start, end, trackOffset, linkWidth, linkColor );
 		}
 
 
@@ -1841,6 +1851,8 @@ package components.views.ModuleGraph
 		
 		private var _newLink:ModuleGraphLink = null;
 		private var _newLinkAnchor:ConnectionPin = null;
+		private var _newLinkDestination:ConnectionPin = null;
+		
 		
 		private var _elementBeingCreated:ModuleGraphElement = null;
 		private var _connectionPinsBeingCreated:Vector.<ConnectionPin> = new Vector.<ConnectionPin>;
@@ -1871,7 +1883,7 @@ package components.views.ModuleGraph
 		private var _moduleImportPoint:Point = null;
 		
 		private static const newLinkWidth:Number = 2;
-		private static const normalLinkWidth:Number = 1;
+		private static const normalLinkWidth:Number = 2;
 		private static const selectedLinkWidth:Number = 2;
 		private static const areaSelectionAlpha:Number = 0.1;
 		private static const areaSelectionBorderWidth:Number = 1;

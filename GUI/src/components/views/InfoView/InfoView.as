@@ -28,7 +28,6 @@ package components.views.InfoView
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
-	import flash.filters.BevelFilter;
 	import flash.text.StyleSheet;
 	import flash.ui.Keyboard;
 	
@@ -120,7 +119,7 @@ package components.views.InfoView
 		
 		override public function get isSidebarColours():Boolean { return true; } 
 		override public function get titlebarView():IntegraView { return _editInfoButton; }
-
+		override public function get rightAlignTitlebarView():Boolean { return true; }
 		
 		override public function closeButtonClicked():void 
 		{
@@ -380,24 +379,22 @@ package components.views.InfoView
 		private function onFocusOut( event:FocusEvent ):void
 		{
 			var focusObject:InteractiveObject = getFocus();
-			if( !focusObject ) 
+			if( focusObject ) 
 			{
-				return;		//app losing focus
-			}
-			
-			if( focusObject == this || Utilities.isDescendant( focusObject, this ) )
-			{					
-				return;		//subcomponent of info view gaining focus
-			}
-
-			if( Utilities.getAncestorByType( focusObject, EditInfoButton ) )
-			{					
-				return;		//edit button click
-			}
-
-			if( Utilities.getAncestorByType( focusObject, InfoEditor ) )
-			{					
-				return;		//editor click
+				if( focusObject == this || Utilities.isDescendant( focusObject, this ) )
+				{					
+					return;		//subcomponent of info view gaining focus
+				}
+				
+				if( Utilities.getAncestorByType( focusObject, EditInfoButton ) )
+				{					
+					return;		//edit button click
+				}
+				
+				if( Utilities.getAncestorByType( focusObject, InfoEditor ) )
+				{					
+					return;		//editor click
+				}
 			}
 			
 			if( _gotFocus )
@@ -440,15 +437,9 @@ package components.views.InfoView
 				dispatchEvent( new IntegraViewEvent( IntegraViewEvent.TITLEBAR_CHANGED ) );
 			}
 
-			if( _displayedInfo != model.currentInfo )
-			{
-				_displayedInfo = model.currentInfo;
-				updateContent();
-			}
-			else
-			{
-				_focusPrompt.visible = ( _displayedInfo != null );
-			}
+			_displayedInfo = model.currentInfo;
+			
+			updateContent();
 			
 			invalidateDisplayList();
 		}

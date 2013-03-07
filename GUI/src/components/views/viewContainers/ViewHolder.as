@@ -21,6 +21,24 @@
 
 package components.views.viewContainers
 {
+	import flash.display.DisplayObjectContainer;
+	import flash.display.GradientType;
+	import flash.events.Event;
+	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.geom.Matrix;
+	import flash.geom.Rectangle;
+	import flash.ui.Keyboard;
+	
+	import mx.containers.Canvas;
+	import mx.containers.HBox;
+	import mx.controls.Button;
+	import mx.controls.TextInput;
+	import mx.core.ScrollPolicy;
+	import mx.core.UIComponent;
+	import mx.core.UITextField;
+	
 	import components.model.IntegraDataObject;
 	import components.model.userData.ColorScheme;
 	import components.utils.AggregateVUContainer;
@@ -34,24 +52,7 @@ package components.views.viewContainers
 	import components.views.Timeline.Timeline;
 	import components.views.Timeline.TimelineMode;
 	
-	import flash.display.GradientType;
-	import flash.events.Event;
-	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.geom.Matrix;
-	import flash.geom.Rectangle;
-	import flash.ui.Keyboard;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.containers.HBox;
-	import mx.controls.Button;
-	import mx.controls.TextInput;
-	import mx.core.ScrollPolicy;
-	import mx.core.UIComponent;
-	import mx.core.UITextField;
 	
 	public class ViewHolder extends Canvas
 	{
@@ -589,9 +590,9 @@ package components.views.viewContainers
         	
 			if( _titlebarView )
 			{
-				if( _titlebarView.parent == _titleHBox )
+				if( _titlebarView.parent is DisplayObjectContainer )
 				{
-					_titleHBox.removeElement( _titlebarView );
+					( _titlebarView.parent as DisplayObjectContainer ).removeChild( _titlebarView );
 				}
 			}
 			
@@ -599,8 +600,18 @@ package components.views.viewContainers
 			if( _titlebarView )
 			{
 				_titlebarView.horizontalScrollPolicy = ScrollPolicy.OFF;
-				_titlebarView.verticalScrollPolicy = ScrollPolicy.OFF;  
-				_titleHBox.addElementAt( _titlebarView, _titleHBox.numChildren );
+				_titlebarView.verticalScrollPolicy = ScrollPolicy.OFF;
+				
+				if( _view.rightAlignTitlebarView )
+				{
+					addElement( _titlebarView );
+					positionChildren();
+				}
+				else
+				{
+					_titleHBox.addElementAt( _titlebarView, _titleHBox.numChildren );
+				}
+
 			}
         }
         
@@ -785,6 +796,12 @@ package components.views.viewContainers
 			if( _titlebarView )
 			{
 				_titlebarView.height = _titleHeight * _titlebarHeightProportion;
+				if( _view.rightAlignTitlebarView )
+				{
+					//_titlebarView.y = _titleControlOffset;
+					_titlebarView.percentWidth = NaN;
+					_titlebarView.setStyle( "right", _titleControlOffset * 2 + FontSize.getButtonSize( this ) );
+				}
 			}
 			
 			_titleEdit.width = getTitleEditWidth();

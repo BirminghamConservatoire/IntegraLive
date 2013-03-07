@@ -538,6 +538,7 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
     ntg_node_attribute *attribute;
     ntg_node *child_iterator;
     xmlChar *tmp;
+	int valuestr_size;
     char *valuestr;
     ntg_value_type type;
 
@@ -596,18 +597,20 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
         /* write attribute->value */
         if (type == NTG_STRING) 
 		{
-			valuestr = ntg_malloc((strlen(attribute->value->ctype.s) + 1) * sizeof(char)); 
+			valuestr_size = ( strlen(attribute->value->ctype.s) + 1 );
         } 
 		else 
 		{
             /* allocate enough memory for a very long number */
-            valuestr = ntg_malloc(1024 * sizeof(char));
+			valuestr_size = 1024;
         }
-        ntg_value_sprintf(valuestr, attribute->value);
-        tmp = ConvertInput(valuestr, XML_ENCODING);
-        ntg_free(valuestr);
-        xmlTextWriterWriteString(writer, BAD_CAST tmp);
-        xmlTextWriterEndElement(writer);
+
+		valuestr = ntg_malloc( valuestr_size ); 
+        ntg_value_sprintf( valuestr, valuestr_size, attribute->value );
+        tmp = ConvertInput( valuestr, XML_ENCODING );
+        ntg_free( valuestr );
+        xmlTextWriterWriteString( writer, BAD_CAST tmp );
+        xmlTextWriterEndElement( writer );
 		ntg_free( tmp );
 
         attribute = attribute->next;

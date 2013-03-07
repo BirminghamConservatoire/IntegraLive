@@ -85,15 +85,15 @@ static void ntg_lua_output_handler( int color, const char *fmt, ...)
 	const char *progress_template = "%s\n\n<font color='#%x'>%s</font>";
 	const char *illegal_characters = "<>";
 
-	char progress_string[8192];
+	char progress_string[ NTG_LONG_STRLEN ];
 
 	assert( context_stack && context_stack->output );
 	assert( fmt );
 
 	{
         va_list argp;
-        va_start(argp, fmt);
-        vsprintf(progress_string, fmt, argp);
+        va_start( argp, fmt );
+		vsprintf_s( progress_string, NTG_LONG_STRLEN, fmt, argp );
         va_end(argp);
     }
 
@@ -121,15 +121,15 @@ static void ntg_lua_output_handler( int color, const char *fmt, ...)
 
 static void ntg_lua_error_handler( const char *fmt, ...)
 {
-	char error_string[8192];
+	char error_string[ NTG_LONG_STRLEN ];
 
 	assert( context_stack && context_stack->output );
 	assert( fmt );
 
 	{
         va_list argp;
-        va_start(argp, fmt);
-        vsprintf(error_string, fmt, argp);
+        va_start( argp, fmt );
+        vsprintf_s( error_string, NTG_LONG_STRLEN, fmt, argp);
         va_end(argp);
     }
 
@@ -246,7 +246,7 @@ static int ntg_lua_set( lua_State * L )
 
 		converted_value = ntg_value_change_type( value, attribute->value->type );
 
-		ntg_value_sprintf( value_string, converted_value );
+		ntg_value_sprintf( value_string, NTG_LONG_STRLEN, converted_value );
 		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path->string, value_string );
 
 		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, converted_value );
@@ -343,7 +343,7 @@ static int ntg_lua_get(lua_State * L)
 		goto CLEANUP;
 	}
 
-	ntg_value_sprintf( value_string, value );
+	ntg_value_sprintf( value_string, NTG_LONG_STRLEN, value );
 	ntg_lua_output_handler( NTG_GET_COLOR, "Queried %s, value = %s", path->string, value_string );
 
 	switch (ntg_value_get_type(value)) 

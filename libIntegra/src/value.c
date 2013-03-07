@@ -43,44 +43,52 @@ static const char *ntg_type_as_string[NTG_n_types] = {
     "string"
 };
 
-ntg_error_code ntg_value_sprintf(char *s, const ntg_value * value)
+ntg_error_code ntg_value_sprintf( char *output, int chars_available, const ntg_value * value )
 {
     unsigned int n;
     int rv = 0;
     size_t len_float;
     ntg_error_code error_code = NTG_NO_ERROR;
 
-    if(value == NULL){
+    if(value == NULL)
+	{
         NTG_TRACE_ERROR("value was NULL");
+        return NTG_ERROR;
+    }
+
+    if( chars_available < 0 )
+	{
+        NTG_TRACE_ERROR( "chars_available less than 1" );
         return NTG_ERROR;
     }
 
     switch (value->type) 
 	{
         case NTG_FLOAT:
-            rv = sprintf(s, "%.6f", value->ctype.f);
-            len_float = strlen(s);
-            for(n = len_float - 1; n >= 0; n--) 
+            rv = sprintf_s( output, chars_available, "%.6f", value->ctype.f);
+            len_float = strlen( output );
+            for( n = len_float - 1; n >= 0; n-- ) 
 			{
-                if (s[n] != '0') 
+                if( output[ n ] != '0') 
 				{
                     break;
                 }
             }
-            s[n + 1] = '\0';
+            output[ n + 1 ] = '\0';
             break;
         case NTG_STRING:
-            rv = sprintf(s, "%s", value->ctype.s);
+            rv = sprintf_s( output, chars_available, "%s", value->ctype.s);
             break;
         case NTG_INTEGER:
-            rv = sprintf(s, "%d", value->ctype.i);
+            rv = sprintf_s( output, chars_available, "%d", value->ctype.i);
             break;
         default:
-            NTG_TRACE_ERROR_WITH_INT("invalid value type", value->type);
+            NTG_TRACE_ERROR_WITH_INT( "invalid value type", value->type );
             break;
     }
 
-    if(rv == -1){
+    if(rv == -1)
+	{
         error_code = NTG_ERROR;
     }
 
@@ -154,8 +162,8 @@ void ntg_value_copy(ntg_value * target, const ntg_value * source)
 			{
 				case NTG_STRING:
 					if (target->ctype.s) ntg_free(target->ctype.s);
-			        target->ctype.s = ntg_malloc(NTG_LONG_STRLEN * sizeof(char));
-					ntg_value_sprintf(target->ctype.s, source);
+			        target->ctype.s = ntg_malloc( NTG_LONG_STRLEN );
+					ntg_value_sprintf( target->ctype.s, NTG_LONG_STRLEN, source );
 					return;
 
 				case NTG_INTEGER:
@@ -176,8 +184,8 @@ void ntg_value_copy(ntg_value * target, const ntg_value * source)
 			{
 				case NTG_STRING:
 					if (target->ctype.s) ntg_free(target->ctype.s);
-			        target->ctype.s = ntg_malloc(NTG_LONG_STRLEN * sizeof(char));
-					ntg_value_sprintf(target->ctype.s, source);
+			        target->ctype.s = ntg_malloc( NTG_LONG_STRLEN );
+					ntg_value_sprintf( target->ctype.s, NTG_LONG_STRLEN, source );
 					return;
 
 				case NTG_INTEGER:

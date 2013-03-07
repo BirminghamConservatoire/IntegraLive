@@ -68,7 +68,7 @@ package components.views.InfoView
 			_editText.setStyle( "bottom", _textMargin );
 			_editText.setStyle( "borderStyle", "none" );
 			_editText.setStyle( "focusSkin", null );
-			_editText.restrict = "A-Z a-z 0-9 !\"£$%\\^&*()\\-=_+[]{};'#:@~,./<>?\\\\|";
+			_editText.restrict = Utilities.printableCharacterRestrict;
 			addChild( _editText );
 			
 			_lazyChangeReporter = new LazyChangeReporter( _editText, commitEditText );

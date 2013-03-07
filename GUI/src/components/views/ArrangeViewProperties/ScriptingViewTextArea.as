@@ -43,8 +43,6 @@ package components.views.ArrangeViewProperties
 	import com.anirudh.as3syntaxhighlight.CodePrettyPrint;
 	import com.anirudh.as3syntaxhighlight.PseudoThread;
 	
-	import components.model.userData.ColorScheme;
-	
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
@@ -52,10 +50,13 @@ package components.views.ArrangeViewProperties
 	import flash.ui.Keyboard;
 	import flash.utils.Timer;
 	
-	import flexunit.framework.Assert;
-	
 	import mx.controls.TextArea;
 	import mx.controls.textClasses.TextRange;
+	
+	import components.model.userData.ColorScheme;
+	import components.utils.Utilities;
+	
+	import flexunit.framework.Assert;
 
 	public class ScriptingViewTextArea extends TextArea
 	{
@@ -78,7 +79,7 @@ package components.views.ArrangeViewProperties
 
 			_codePrettyPrint = new CodePrettyPrint();
 			
-			restrict = "A-Z a-z 0-9 !\"£$%\\^&*()\\-=_+[]{};'#:@~,./<>?\\\\|";
+			restrict = Utilities.printableCharacterRestrict;
 		}
 		
 		

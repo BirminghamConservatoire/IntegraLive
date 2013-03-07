@@ -404,7 +404,7 @@ package components.views.InfoView
 		{
 			Assert.assertNotNull( _displayedInfo );
 			
-			_htmlText.verticalScrollPolicy = ScrollPolicy.ON;
+			_htmlText.verticalScrollPolicy = ScrollPolicy.AUTO;
 			
 			_focusPrompt.visible = false;
 			

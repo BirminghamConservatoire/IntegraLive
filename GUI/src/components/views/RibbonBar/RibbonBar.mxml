@@ -30,12 +30,10 @@
 
 	<fx:Script>
 		<![CDATA[
-			import components.controller.IntegraController;
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetViewMode;
 			import components.model.Info;
-			import components.model.IntegraModel;
 			import components.model.userData.ColorScheme;
 			import components.model.userData.ViewMode;
 			import components.utils.FontSize;

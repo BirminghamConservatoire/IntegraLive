@@ -61,7 +61,6 @@ package components.views.Preferences
 	import mx.controls.TextInput;
 	import mx.core.ScrollPolicy;
 	import mx.events.ListEvent;
-	import mx.managers.PopUpManager;
 	
 	public class Preferences extends IntegraView
 	{

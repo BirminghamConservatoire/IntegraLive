@@ -47,13 +47,13 @@ package components.views.Skins
 				{
 					default:
 					case ColorScheme.LIGHT:
-						_normalBackgroundColor = 0xC2C2C2;
-						_selectedBackgroundColor = 0xA0A0A0;
+						_normalBackgroundColor = 0xD2D2D2;
+						_selectedBackgroundColor = 0xB0B0B0;
 						break;
 						
 					case ColorScheme.DARK:
-						_normalBackgroundColor = 0x3E3E3E;
-						_selectedBackgroundColor = 0x606060;
+						_normalBackgroundColor = 0x2E2E2E;
+						_selectedBackgroundColor = 0x505050;
 						break;
 				}
 				
@@ -82,6 +82,19 @@ package components.views.Skins
 					break;
 				
 				case "downSkin":
+					down = true;
+					break;
+				
+				case "selectedUpSkin":
+					down = true;
+					break;
+
+				case "selectedOverSkin":
+					over = true;
+					down = true;
+					break;
+
+				case "selectedDownSkin":
 					down = true;
 					break;
 				

@@ -25,6 +25,7 @@ package components.views.InfoView
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	
+	import mx.controls.Button;
 	import mx.managers.PopUpManager;
 	
 	import spark.components.Application;
@@ -32,9 +33,8 @@ package components.views.InfoView
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
-	import components.utils.FontSize;
 	import components.views.IntegraView;
-	import components.views.RibbonBar.RibbonButton;
+	import components.views.Skins.TextButtonSkin;
 	
 	import flexunit.framework.Assert;
 
@@ -49,7 +49,8 @@ package components.views.InfoView
 			_info = info;
 			_infoView = infoView;
 			
-			_editButton.ribbonButtonLabel = "Edit";
+			_editButton.label = "Edit";
+			_editButton.setStyle( "skin", TextButtonSkin );
 			_editButton.selected = false;
 			addChild( _editButton );
 			addEventListener( MouseEvent.CLICK, onClickEditButton );
@@ -69,7 +70,7 @@ package components.views.InfoView
 			_infoEditor.width = 350;
 			_infoEditor.height = 250;
 			_infoEditor.x = myRect.right - _infoEditor.width;
-			_infoEditor.y = myRect.y - _infoEditor.height - 4;
+			_infoEditor.y = myRect.y - _infoEditor.height - 2;
 			
 			_infoEditor.addEventListener( InfoEditor.CLOSE_INFO_EDITOR, onCloseInfoEditor );
 			_infoEditor.markdown = _info.markdown;
@@ -88,6 +89,25 @@ package components.views.InfoView
 			if( _infoEditor ) 
 			{
 				_infoEditor.onStyleChanged( style );
+			}
+			
+			if( !style || style == ColorScheme.STYLENAME )
+			{
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						setButtonTextColor( _editButton, 0x6D6D6D );
+						
+						break;
+					
+					case ColorScheme.DARK:
+						setButtonTextColor( _editButton, 0x939393 );
+						
+						break;
+				}
+				
+				invalidateDisplayList();
 			}
 		}
 		
@@ -117,6 +137,14 @@ package components.views.InfoView
 			{
 				showEditor();
 			}
+		}
+		
+		
+		private function setButtonTextColor( button:Button, color:uint ):void
+		{
+			button.setStyle( "color", color );
+			button.setStyle( "textRollOverColor", color );
+			button.setStyle( "textSelectedColor", color );
 		}
 		
 		
@@ -163,7 +191,7 @@ package components.views.InfoView
 		
 		
 
-		private var _editButton:RibbonButton = new RibbonButton;
+		private var _editButton:Button = new Button;
 
 		private var _infoEditor:InfoEditor = null;
 		

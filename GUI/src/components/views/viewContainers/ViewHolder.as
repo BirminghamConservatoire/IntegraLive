@@ -798,9 +798,13 @@ package components.views.viewContainers
 				_titlebarView.height = _titleHeight * _titlebarHeightProportion;
 				if( _view.rightAlignTitlebarView )
 				{
-					//_titlebarView.y = _titleControlOffset;
 					_titlebarView.percentWidth = NaN;
+					_titlebarView.height = _titleHeight;
 					_titlebarView.setStyle( "right", _titleControlOffset * 2 + FontSize.getButtonSize( this ) );
+				}
+				else
+				{
+					_titlebarView.height = _titleHeight * _titlebarHeightProportion;
 				}
 			}
 			

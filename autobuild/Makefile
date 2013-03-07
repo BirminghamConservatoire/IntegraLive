@@ -21,7 +21,7 @@ SERVERBIN=$(SERVERDIR)/bin
 SERVERLIB=$(SERVERDIR)/lib
 SERVERMAKESUFFIX=CC='gcc -mmacosx-version-min=10.6 -arch i386 -arch x86_64' CXX='g++ -mmacosx-version-min=10.6 -arch i386 -arch x86_64' CPP='gcc -E -mmacosx-version-min=10.6 -arch i386' CXXCPP='g++ -E -mmacosx-version-min=10.6 -arch i386'
 SERVERCONFIGBASE=--disable-dependency-tracking --enable-luascripting --enable-server --enable-dummy_bridge --enable-osc_bridge --prefix=$(PWD)/$(SERVERDIR) --with-lua=$(PWD)/$(LIBINTEGRADEPS_DIR) --with-liblo-include-dir=$(PWD)/$(LIBINTEGRADEPS_DIR)/include
-SERVERCONFIGDEBUG=$(SERVERCONFIGBASE) --enable-debug=yes LDFLAGS="-L$(DEPENDENCIESDIR)"
+SERVERCONFIGDEBUG=$(SERVERCONFIGBASE) --enable-debug=yes --enable-Werror LDFLAGS="-L$(DEPENDENCIESDIR)"
 SERVERCONFIGRELEASE=$(SERVERCONFIGBASE) --enable-debug=no LDFLAGS="-L$(DEPENDENCIESDIR)"
 
 -include Make.config

@@ -28,6 +28,7 @@ package components.views.InfoView
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.filters.BevelFilter;
 	import flash.text.StyleSheet;
 	import flash.ui.Keyboard;
 	
@@ -202,6 +203,12 @@ package components.views.InfoView
 				graphics.lineStyle( 0, _focusPrompt.getStyle( "color" ) );
 				graphics.moveTo( 0, height - _bottomMargin );
 				graphics.lineTo( width - 1, height - _bottomMargin );
+			}
+			
+			if( _gotFocus )
+			{
+				graphics.lineStyle( 1, 0x808080, 0.5 );
+				graphics.drawRect( _leftMargin / 2, _topMargin / 2, width - ( _leftMargin + _rightMargin ) / 2, height - ( _topMargin + _bottomMargin ) / 2 );			
 			}
 		}
 		
@@ -442,7 +449,7 @@ package components.views.InfoView
 			{
 				_focusPrompt.visible = ( _displayedInfo != null );
 			}
-
+			
 			invalidateDisplayList();
 		}
 		

@@ -165,20 +165,24 @@ package components.views.InfoView
 		
 		private function onFocusOut( event:FocusEvent ):void
 		{
+			callLater( handleFocusOut );
+		}
+		
+		
+		private function handleFocusOut():void
+		{
 			var focusObject:InteractiveObject = getFocus();
-			if( !focusObject ) 
+			if( focusObject ) 
 			{
-				return;		//app losing focus
-			}
-			
-			if( Utilities.isDescendant( focusObject, this ) )
-			{					
-				return;		//subcomponent of info view gaining focus
-			}
-
-			if( Utilities.getAncestorByType( focusObject, EditInfoButton ) )
-			{					
-				return;		
+				if( Utilities.isDescendant( focusObject, this ) )
+				{					
+					return;		//subcomponent of info view gaining focus
+				}
+				
+				if( Utilities.getAncestorByType( focusObject, EditInfoButton ) )
+				{					
+					return;		
+				}
 			}
 			
 			closeEditor();

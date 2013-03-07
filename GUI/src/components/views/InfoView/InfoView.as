@@ -28,11 +28,13 @@ package components.views.InfoView
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.events.TextEvent;
 	import flash.text.StyleSheet;
 	import flash.ui.Keyboard;
 	
 	import mx.controls.Button;
 	import mx.controls.Label;
+	import mx.controls.Text;
 	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
@@ -80,6 +82,7 @@ package components.views.InfoView
 			_htmlText.setStyle( "bottom", _bottomMargin );
 			_htmlText.setStyle( "borderStyle", "none" );
 			_htmlText.setStyle( "backgroundAlpha", 0 );
+			_htmlText.addEventListener( TextEvent.LINK, onHyperlink );
 			_htmlText.editable = false;
 			_htmlText.condenseWhite = true;
 			
@@ -471,6 +474,12 @@ package components.views.InfoView
 		}
 		
 		
+		private function onHyperlink( event:TextEvent ):void
+		{
+			
+		}
+		
+		
 		private function updateTextCSS():void
 		{
 			Assert.assertNotNull( _textColor );
@@ -509,13 +518,6 @@ package components.views.InfoView
 			}
 		}
 		
-		
-		private function setButtonTextColor( button:Button, color:uint ):void
-		{
-			button.setStyle( "color", color );
-			button.setStyle( "textRollOverColor", color );
-			button.setStyle( "textSelectedColor", color );
-		}
 		
 		
 		private var _displayedInfo:Info = null;

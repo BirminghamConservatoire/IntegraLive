@@ -68,3 +68,5 @@ libtool
 *.out
 *.app
 
+# ctags file
+tags

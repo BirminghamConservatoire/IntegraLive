@@ -109,7 +109,7 @@ static void ntg_lua_output_handler( int color, const char *fmt, ...)
 		}
 	}
 
-	color = max( 0, min( 0xffffff, color ) );
+	color = MAX( 0, MIN( 0xffffff, color ) );
 
 	new_output = ntg_malloc( strlen( context_stack->output ) + strlen( progress_template ) + strlen( progress_string ) + 7 );
 	sprintf( new_output, progress_template, context_stack->output, color, progress_string );

@@ -133,7 +133,7 @@ static void ntg_lua_error_handler( const char *fmt, ...)
         va_end(argp);
     }
 
-	ntg_lua_output_handler( NTG_ERROR_COLOR, "__error:__%s", error_string );
+	ntg_lua_output_handler( NTG_ERROR_COLOR, "__error:__ %s", error_string );
 }
 
 
@@ -263,7 +263,7 @@ static int ntg_lua_set( lua_State * L )
 
 	if( set_result.error_code != NTG_NO_ERROR )
 	{
-		ntg_lua_error_handler( "failed: %s", ntg_error_text( set_result.error_code ) );
+		ntg_lua_error_handler( "%s", ntg_error_text( set_result.error_code ) );
 	}
 
 	CLEANUP:

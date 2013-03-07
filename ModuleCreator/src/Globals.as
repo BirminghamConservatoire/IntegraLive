@@ -32,6 +32,8 @@ package
 		
 		static public const lowerCaseChars:String = "abcdefghijklmnopqrstuvwxyz";
 		
+		static public const printableCharacterRestrict:String = "A-Za-z0-9 !\"£$%\\^&*()\\-=_+[]{};'#:@~,./<>?\\\\|°±¹²³¼½¾";
+		
 		static public const imFileExtension:String = "im";
 		static public const imToplevelDirectoryName:String = "integra_module_data";
 		static public const imImplementationDirectoryName:String = imToplevelDirectoryName + "/implementation";

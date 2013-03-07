@@ -9,7 +9,7 @@ package
 			super();
 			
 			maxChars = 60;
-			restrict = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ";
+			restrict = "A-Za-z0-9 ";
 		}
 		
 		

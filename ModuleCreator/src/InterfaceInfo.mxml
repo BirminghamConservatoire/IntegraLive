@@ -12,7 +12,7 @@
 						  change="{interfaceChanged()}"
 						  width="{Globals.propertyColumnWidth()}" 
 						  toolTip="Enter Interface Name" 
-						  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" 
+						  restrict="a-zA-Z" 
 						  maxChars="32"/>
 		</mx:HBox>
 		<mx:HBox>
@@ -21,7 +21,7 @@
 						  change="{interfaceChanged();}"
 						  width="{Globals.propertyColumnWidth()}" 
 						  toolTip="Easy to read version of name" 
-						  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "/>
+						  restrict="{Globals.printableCharacterRestrict}"/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label text="Interface Description" width="{Globals.labelColumnWidth()}" textAlign="right"/>
@@ -29,7 +29,8 @@
 						  	change="{interfaceChanged();}"
 							focusIn="{onFocusInDescription();}"
 							width="{Globals.propertyColumnWidth()}"
-							height="{Globals.descriptionHeight}"							
+							height="{Globals.descriptionHeight}"
+							restrict="{Globals.printableCharacterRestrict}"
 							toolTip="Describe the interface, in plain text or 'markdown'.  The popup-panel displays a preview of how the rendered markdown will look"/>
 		</mx:HBox>
 		<mx:HBox>

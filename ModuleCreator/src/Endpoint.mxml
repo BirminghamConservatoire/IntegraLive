@@ -12,7 +12,7 @@
 							  change="{interfaceChanged(); dispatchEvent( new Event( Globals.endpointRenamedEvent ) ) }"
 							  width="{Globals.propertyColumnWidth()}" 
 							  toolTip="Enter Endpoint Name" 
-							  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" 
+							  restrict="a-zA-Z0-9" 
 							  maxChars="32"/>
 			</mx:HBox>
 			<mx:HBox>
@@ -21,7 +21,7 @@
 							  change="{interfaceChanged();}"
 							  width="{Globals.propertyColumnWidth()}" 
 							  toolTip="Easy to read version of name" 
-							  restrict="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "/>
+							  restrict="{Globals.printableCharacterRestrict}"/>
 			</mx:HBox>
 			<mx:HBox>
 				<mx:Label text="Endpoint Description" width="{_labelColumnWidth}" textAlign="right"/>
@@ -30,7 +30,8 @@
 							 focusIn="{onFocusInDescription();}"
 							 width="{Globals.propertyColumnWidth()}"
 							 height="{Globals.descriptionHeight}"							
-							 toolTip="Describe the interface, in plain text or 'markdown'.  The popup-panel displays a preview of how the rendered markdown will look"/>
+							 toolTip="Describe the interface, in plain text or 'markdown'.  The popup-panel displays a preview of how the rendered markdown will look"
+							 restrict="{Globals.printableCharacterRestrict}"/>
 			</mx:HBox>
 			<mx:HBox>
 				<mx:Label text="Endpoint Type" width="{_labelColumnWidth}" textAlign="right"/>

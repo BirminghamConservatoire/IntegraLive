@@ -35,6 +35,7 @@
 			<mx:Label text="Default Value" width="{Globals.labelColumnWidth( 2 )}" textAlign="right"/>
 			<mx:TextArea id="_default" 
 						  change="{ interfaceChanged(); }" 
+						  restrict="{Globals.printableCharacterRestrict}"
 						  toolTip="Specify a default value"
 						  width="{Globals.propertyColumnWidth( 2 )}"
 						  styleName="smallRows"/>

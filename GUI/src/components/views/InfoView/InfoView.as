@@ -503,6 +503,17 @@ package components.views.InfoView
 
 			myStyles.setStyle( ".space", { leading:String( -fontSize / 2 ) } );
 			
+			if( !Utilities.isWindows )
+			{
+				myStyles.setStyle( ".windows-only", { display:'none' } );
+			}
+
+			if( !Utilities.isMac )
+			{
+				myStyles.setStyle( ".mac-only", { display:'none' } );
+			}
+			
+			
 			_htmlText.styleSheet = myStyles;
 
 			if( _displayedInfo )

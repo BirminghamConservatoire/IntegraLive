@@ -245,11 +245,10 @@
 				stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );
 				stage.addEventListener( KeyboardEvent.KEY_UP, onStageKeyUp );
 				stage.addEventListener( MouseEvent.MOUSE_MOVE, onStageMouseMove );
+				stage.addEventListener( MouseEvent.MOUSE_OUT, onStageMouseOut );
 				stage.addEventListener( Event.REMOVED, onStageRemoved );
 				stage.quality = StageQuality.BEST;
 
-				//ToolTipManager.showDelay = 1000;
-				//ToolTipManager.scrubDelay = -1;
 				_tooltipTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onTooltipTimer );
 				
 				_oscServer = new OSCServer( config.guiUrl + ":" + config.oscClientPort, RemoteCommandHandler.singleInstance );
@@ -1081,7 +1080,7 @@
 				
 				return null;
 			}
-			
+
 			
 			private function onStageMouseMove( event:MouseEvent ):void
 			{
@@ -1096,6 +1095,15 @@
 				if( !_model.showInfoView )
 				{
 					updateTooltip();
+				}
+			}
+
+			
+			private function onStageMouseOut( event:MouseEvent ):void
+			{
+				if( _model.currentInfo )
+				{
+					_controller.processCommand( new SetDisplayedInfo( null ) );
 				}
 			}
 

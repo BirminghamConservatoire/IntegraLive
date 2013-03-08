@@ -24,14 +24,12 @@ package components.controller.serverCommands
 	import components.controller.ServerCommand;
 	import components.model.IntegraModel;
 	import components.utils.Utilities;
-	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
 	
 	public class PreviousScene extends ServerCommand
 	{
 		public function PreviousScene()
 		{
 			super();
-			isNewUndoStep = false;
 		}
 
 		
@@ -40,6 +38,20 @@ package components.controller.serverCommands
 			return( !Utilities.isObjectEmpty( model.project.player.scenes ) );
 		}
 
+		
+		public override function generateInverse( model:IntegraModel ):void
+		{
+			if( model.selectedScene ) 	
+			{
+				pushInverseCommand( new NextScene() );
+			}
+			else
+			{
+				pushInverseCommand( new SelectScene( -1 ) );
+				pushInverseCommand( new SetPlayPosition( model.project.player.playPosition ) );
+			}
+		}
+		
 		
 		public override function executeServerCommand( model:IntegraModel ):void
 		{

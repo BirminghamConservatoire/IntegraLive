@@ -411,6 +411,7 @@
 			private function onLoadFailed( event:LoadFailedEvent ):void
 			{
 				Alert.show( event.errorString, "Error loading file", Alert.OK, this );
+				_lastFilename = null;
 			}
 
 			

@@ -55,6 +55,7 @@ package components.views.InfoView
 			addChild( _editButton );
 			addEventListener( MouseEvent.CLICK, onClickEditButton );
 			addEventListener( MouseEvent.DOUBLE_CLICK, onClickEditButton );
+			addEventListener( Event.REMOVED_FROM_STAGE, closeInfoEditor );
 			
 			addUpdateMethod( SetObjectInfo, onSetObjectInfo );
 		}
@@ -72,7 +73,7 @@ package components.views.InfoView
 			_infoEditor.x = myRect.right - _infoEditor.width;
 			_infoEditor.y = myRect.y - _infoEditor.height - 2;
 			
-			_infoEditor.addEventListener( InfoEditor.CLOSE_INFO_EDITOR, onCloseInfoEditor );
+			_infoEditor.addEventListener( InfoEditor.CLOSE_INFO_EDITOR, closeInfoEditor );
 			_infoEditor.markdown = _info.markdown;
 			
 			PopUpManager.addPopUp( _infoEditor, application );
@@ -169,7 +170,7 @@ package components.views.InfoView
 		}
 		
 		
-		private function onCloseInfoEditor( event:Event ):void
+		private function closeInfoEditor( event:Event ):void
 		{
 			if( _infoEditor )
 			{

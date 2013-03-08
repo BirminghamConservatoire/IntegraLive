@@ -82,7 +82,6 @@ package components.views.InfoView
 			_htmlText.setStyle( "bottom", _bottomMargin );
 			_htmlText.setStyle( "borderStyle", "none" );
 			_htmlText.setStyle( "backgroundAlpha", 0 );
-			_htmlText.addEventListener( TextEvent.LINK, onHyperlink );
 			_htmlText.editable = false;
 			_htmlText.condenseWhite = true;
 			
@@ -471,12 +470,6 @@ package components.views.InfoView
 			
 			Assert.assertTrue( false );
 			return null;
-		}
-		
-		
-		private function onHyperlink( event:TextEvent ):void
-		{
-			
 		}
 		
 		

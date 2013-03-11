@@ -261,6 +261,7 @@ package components.views.InfoView
 				{
 					_focusPrompt.visible = (!_gotFocus) && _stageActive;
 				}
+				
 				if( _focusPrompt.visible )
 				{
 					updateFocusPrompt();
@@ -286,9 +287,9 @@ package components.views.InfoView
 			if( _addedToStage )	return;
 			_addedToStage = true;
 			
-			systemManager.stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );  			
-			systemManager.stage.addEventListener( Event.ACTIVATE, onStageActivate );
-			systemManager.stage.addEventListener( Event.DEACTIVATE, onStageDeactivate );
+			stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );  			
+			stage.addEventListener( Event.ACTIVATE, onStageActivate );
+			stage.addEventListener( Event.DEACTIVATE, onStageDeactivate );
 			
 			_stageActive = ( stage.focus != null );
 		}

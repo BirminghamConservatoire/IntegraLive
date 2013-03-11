@@ -163,10 +163,13 @@ package components.views.ModuleGraph
 			{
 				return element.getInfoToDisplay( event );
 			}
-			else
+
+			if( model.primarySelectedBlock )
 			{
 				return model.primarySelectedBlock.info;
 			}
+
+			return null;
 		}
 		
 

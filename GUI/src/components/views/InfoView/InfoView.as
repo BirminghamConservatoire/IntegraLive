@@ -45,6 +45,7 @@ package components.views.InfoView
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.Trace;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
@@ -285,6 +286,9 @@ package components.views.InfoView
 		private function onStageKeyDown( event:KeyboardEvent ):void
 		{
 			if( !stage ) return;
+
+			//analysis of #697
+			Trace.progress( "stage keydown", event.keyCode, event.altKey, event.commandKey, event.shiftKey );
 			
 			if( _displayedInfo )
 			{

@@ -4,4 +4,4 @@
 
 Click here to show Live View
 
-Shortcut: <span class="mac-only">cmd</span><span class="windows-only">ctrl</span>-2
+Shortcut: <span class="mac-only">Command</span><span class="windows-only">ctrl</span>-2

@@ -4,5 +4,5 @@
 
 Click here to show Arrange View
 
-Shortcut: <span class="mac-only">cmd</span><span class="windows-only">ctrl</span>-1
+Shortcut: <span class="mac-only">Command</span><span class="windows-only">ctrl</span>-1
 

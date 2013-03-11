@@ -1,5 +1,7 @@
-<!--Switch to Live view-->
+<!--Live View Button-->
 
-# Switch to _live_ view
+# Live View Button
 
-Click here to switch to _live_ view
+Click here to show Live View
+
+Shortcut: <span class="mac-only">Command</span><span class="windows-only">ctrl</span>-2

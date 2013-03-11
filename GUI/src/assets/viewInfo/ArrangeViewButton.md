@@ -1,5 +1,8 @@
-<!--Switch to Arrange view-->
+<!--Arrange View Button-->
 
-# Switch to _arrange_ view
+# Arrange View Button
 
-Click here to switch to _arrange_ view
+Click here to show Arrange View
+
+Shortcut: <span class="mac-only">Command</span><span class="windows-only">ctrl</span>-1
+

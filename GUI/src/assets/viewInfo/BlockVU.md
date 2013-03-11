@@ -1,5 +1,5 @@
-<!--Block VU-->
+<!--Block VU meter-->
 
-# Block VU
+# Block VU meter
 
-Indicates the _block_'s output level.
+Indicates the *block*'s output volume level

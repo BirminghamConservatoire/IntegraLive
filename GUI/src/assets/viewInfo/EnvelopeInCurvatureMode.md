@@ -1,9 +1,9 @@
 # Envelope
 
-__You are editing this Envelope in curvature mode!__
+**This Envelope is in curve mode**
 
-* Drag line segments to apply curvature to Envelope transitions.
+Drag lines to adjust envelope curvature
 
-* Double click line segments to revert to a straight line.
+Double-click line segments to revert to a straight line
 
-* Click the 'curvature mode' button (bottom-right of Block) to revert to normal Envelope editing mode.
+Click the curve mode button to turn off curve mode

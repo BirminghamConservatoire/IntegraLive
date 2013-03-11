@@ -1,6 +1,4 @@
 # Audio Output Pin
 
-This pin represents an audio output.
-
-Create an audio connection by dragging an arrow from this output pin onto a different Module's input pin.
+Create audio connections by dragging between *module* output and input pins
 

@@ -1,3 +1,3 @@
 # Envelope Selection
 
-These controls allow creation, selection and deletion of Envelopes within the selected Block.
+Use these controls to create, select and delete envelopes within the selected *block*

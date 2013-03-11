@@ -2,4 +2,4 @@
 
 # Project VU
 
-Indicates the _project_'s output level.
+Show the *project* audio output level

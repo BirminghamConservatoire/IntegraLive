@@ -1,4 +1,4 @@
-# Timeline
-## Playhead area
+<!-- Playhead Area -->
+# Playhead Area
 
-Click here to reposition the playhead.  
+Click here to reposition the playhead

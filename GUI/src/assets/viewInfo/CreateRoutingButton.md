@@ -1,5 +1,6 @@
-<!--Add Routing-->
+<!--Add Route-->
 
-# Add _routing_
+# Add Route
 
-Click here to add a new _routing_.
+Click here to add a new route
+

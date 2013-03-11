@@ -366,6 +366,8 @@ package components.views.InfoView
 				verb += "/edit";	
 			}
 			
+			verb += " info";
+			
 			if( Utilities.isWindows )
 			{
 				_focusPrompt.text = "Press F2" + verb;	

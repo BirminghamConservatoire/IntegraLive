@@ -76,13 +76,10 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import components.controller.IntegraController;
-			import components.controller.serverCommands.RenameObject;
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetContrast;
 			import components.controller.userDataCommands.SetViewMode;
 			import components.controller.userDataCommands.ShowInfoView;
-			import components.model.IntegraModel;
 			import components.model.Project;
 			import components.model.userData.ColorScheme;
 			import components.model.userData.ViewMode;

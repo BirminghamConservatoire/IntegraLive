@@ -285,6 +285,8 @@ package components.views.InfoView
 			systemManager.stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );  			
 			systemManager.stage.addEventListener( Event.ACTIVATE, onStageActivate );
 			systemManager.stage.addEventListener( Event.DEACTIVATE, onStageDeactivate );
+			
+			_stageActive = ( stage.focus != null );
 		}
 
 		
@@ -292,9 +294,6 @@ package components.views.InfoView
 		{
 			if( !stage ) return;
 
-			//analysis of #697
-			Trace.progress( "stage keydown", event.keyCode, event.altKey, event.commandKey, event.shiftKey );
-			
 			if( _displayedInfo )
 			{
 				if( Utilities.isWindows )
@@ -307,7 +306,7 @@ package components.views.InfoView
 				
 				if( Utilities.isMac )
 				{
-					if( event.keyCode == Keyboard.NUMBER_3 && event.altKey )
+					if( event.keyCode == Keyboard.NUMBER_3 && event.ctrlKey && !event.commandKey )
 					{
 						toggleFocus();
 					}
@@ -381,7 +380,7 @@ package components.views.InfoView
 			
 			if( Utilities.isMac )
 			{
-				_focusPrompt.text = "Press Alt+3" + verb;	
+				_focusPrompt.text = "Press Ctrl+3" + verb;	
 			}
 		}
 		

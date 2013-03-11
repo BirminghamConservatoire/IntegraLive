@@ -28,13 +28,10 @@ package components.views.InfoView
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
-	import flash.events.TextEvent;
 	import flash.text.StyleSheet;
 	import flash.ui.Keyboard;
 	
-	import mx.controls.Button;
 	import mx.controls.Label;
-	import mx.controls.Text;
 	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
@@ -63,7 +60,7 @@ package components.views.InfoView
 			super();
 			
 			width = 200;
-			minWidth = 100;
+			minWidth = 200;
 			maxWidth = 400;
 			
 			if( defineOwnHeight )

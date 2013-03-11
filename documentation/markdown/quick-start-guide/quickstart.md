@@ -202,10 +202,10 @@ You can use the Info View to add documentation to your own projects. Documentati
 To add documentation to an element:
 
 - Hover the mouse over the element you want to add documentation to
-- Press **Option-3** (**F2 on Windows**) to lock the Info View
+- Press **Control-3** (**F2 on Windows**) to lock the Info View
 - Click the 'edit' button on the Info View title bar
 - Type your documentation into the documentation panel
-- Press **Option-3** (**F2 on Windows**) to release the Info View
+- Press **Control-3** (**F2 on Windows**) to release the Info View
 
 You can now view your documentation by hovering over your documented element.
 

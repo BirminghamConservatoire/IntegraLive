@@ -256,8 +256,11 @@ package components.views.InfoView
 			{
 				_htmlText.htmlText = _displayedInfo.html;
 				
-				_focusPrompt.visible = !_gotFocus;
-				updateFocusPrompt();
+				_focusPrompt.visible = (!_gotFocus) && _stageActive;
+				if( _focusPrompt.visible )
+				{
+					updateFocusPrompt();
+				}
 			}
 			else
 			{
@@ -280,6 +283,8 @@ package components.views.InfoView
 			_addedToStage = true;
 			
 			systemManager.stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );  			
+			systemManager.stage.addEventListener( Event.ACTIVATE, onStageActivate );
+			systemManager.stage.addEventListener( Event.DEACTIVATE, onStageDeactivate );
 		}
 
 		
@@ -462,19 +467,21 @@ package components.views.InfoView
 				_editInfoButton.showEditor();
 			}
 		}
+
 		
-		
-		private function get application():Application
+		private function onStageActivate( event:Event ):void
 		{
-			for( var iterator:DisplayObjectContainer = this; iterator; iterator = iterator.parent )
-			{
-				if( iterator is Application ) return iterator as Application;
-			}
-			
-			Assert.assertTrue( false );
-			return null;
+			_stageActive = true;
+			updateContent();
 		}
+
 		
+		private function onStageDeactivate( event:Event ):void
+		{
+			_stageActive = false;
+			updateContent();
+		}
+
 		
 		private function updateTextCSS():void
 		{
@@ -533,6 +540,7 @@ package components.views.InfoView
 		private var _focusPrompt:Label = new Label;
 
 		private var _addedToStage:Boolean = false;
+		private var _stageActive:Boolean = false;
 		
 		private var _gotFocus:Boolean = false;
 		private var _previousFocus:UIComponent = null;

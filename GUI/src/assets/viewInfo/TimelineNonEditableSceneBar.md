@@ -1,5 +1,7 @@
-# Timeline
-## Scene Bar
+<!-- Scene Bar -->
 
-This part of the Timeline contains your project's Scenes.  You can select scenes by clicking on them.
+# Scene Bar
 
+Click-drag in the Scene Bar to add a *scene*
+
+Click a *scene* to select it

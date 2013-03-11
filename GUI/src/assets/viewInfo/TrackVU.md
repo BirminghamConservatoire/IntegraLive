@@ -2,4 +2,4 @@
 
 # Track VU
 
-Indicates the _track_'s output level.
+Show the *track* audio output level

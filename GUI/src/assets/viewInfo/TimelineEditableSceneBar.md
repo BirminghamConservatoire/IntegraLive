@@ -1,10 +1,7 @@
-# Timeline
-## Scene Bar
+# Scene Bar
 
-Click and drag this part of the Timeline to create Scenes.  
+Click-drag in the Scene Bar to create *scenes*
 
-Click on Scenes to select them.  Selected Scenes' properties are displayed below the Arrange view.
+Drag *scenes* to reposition or resize them
 
-Drag Scenes to reposition or resize them.
-
-Press BACKSPACE to remove selected Scenes.
+Press BACKSPACE to remove selected *scene*

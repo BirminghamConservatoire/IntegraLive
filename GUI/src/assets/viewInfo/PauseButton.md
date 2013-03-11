@@ -1,5 +1,5 @@
-<!--Stop Playhead-->
+<!--Pause Button-->
 
-# Stop Button
+# Pause Button
 
-Click here to stop the playhead.
+Click here to pause the playhead

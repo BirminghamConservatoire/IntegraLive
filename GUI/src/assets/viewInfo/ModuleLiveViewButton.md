@@ -1,6 +1,6 @@
 # Live View Button
 
-* Tick this button to add all of the Module's controls to the Live view.
+Tick to add all of the *module* controls to Live View
 
-* Remove this tick to remove all of the Module's controls from the Live view.
+Untick to remove the *module* controls from Live View
 

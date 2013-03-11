@@ -1,5 +1,6 @@
-<!--Switch to Scripting view-->
+<!--Scripting Tab-->
 
-# _Scripting_ view
+# Scripting Tab
 
-Click here to switch to _scripting_ view
+Click here to show Scripting View
+

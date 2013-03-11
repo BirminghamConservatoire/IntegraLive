@@ -1,4 +1,3 @@
-Tracks enable multiple Blocks to be active at the same time.
+This text is a placeholder for your *track* documentation
 
-* To add a Track, double-click in the empty space under an existing Track
-* To vertically re-size a Track click-drag the tab in the bottom-right corner
+Use the Info View 'edit' mode to add documentation to this *track*

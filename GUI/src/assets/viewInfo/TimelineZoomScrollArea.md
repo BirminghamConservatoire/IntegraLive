@@ -1,7 +1,6 @@
-# Timeline
-## Zoom/Scroll Area
-Drag horizonally to scroll the Timeline from left to right.
+# Zoom/Scroll Area
+Drag horizonally to scroll
 
-Drag vertically to zoom in or out.
+Drag vertically to zoom in or out
 
-Hold down the SHIFT key to lock axes (prevent simultaneous scrolling and zooming).
+Hold down the SHIFT key for axis lock

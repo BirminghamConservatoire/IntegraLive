@@ -37,15 +37,12 @@ package components.views.InfoView
 	import mx.core.UIComponent;
 	import mx.styles.CSSStyleDeclaration;
 	
-	import spark.components.Application;
-	
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.userDataCommands.SetDisplayedInfo;
 	import components.controller.userDataCommands.ShowInfoView;
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.Trace;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
@@ -256,7 +253,14 @@ package components.views.InfoView
 			{
 				_htmlText.htmlText = _displayedInfo.html;
 				
-				_focusPrompt.visible = (!_gotFocus) && _stageActive;
+				if( Utilities.isMac )
+				{
+					_focusPrompt.visible = (!_gotFocus);
+				}
+				else
+				{
+					_focusPrompt.visible = (!_gotFocus) && _stageActive;
+				}
 				if( _focusPrompt.visible )
 				{
 					updateFocusPrompt();

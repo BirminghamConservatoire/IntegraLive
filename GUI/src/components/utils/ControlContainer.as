@@ -21,6 +21,21 @@
 
 package components.utils
 {
+	import flash.display.GradientType;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.filters.BevelFilter;
+	import flash.geom.Matrix;
+	import flash.geom.Point;
+	import flash.utils.ByteArray;
+	
+	import mx.containers.Canvas;
+	import mx.controls.Button;
+	import mx.controls.Image;
+	import mx.controls.Label;
+	import mx.core.ScrollPolicy;
+	import mx.core.UIComponent;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.controlSDK.core.ControlAttributeType;
@@ -47,22 +62,7 @@ package components.utils
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.TickButtonSkin;
 	
-	import flash.display.GradientType;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.filters.BevelFilter;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
-	import flash.utils.ByteArray;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.controls.Button;
-	import mx.controls.Image;
-	import mx.controls.Label;
-	import mx.core.ScrollPolicy;
-	import mx.core.UIComponent;
 	
 
 	public class ControlContainer extends Canvas implements ControlNotificationSink
@@ -1557,6 +1557,7 @@ package components.utils
 			_padlockInfo.title = "This control is locked";
 			_padlockInfo.markdown = "<!--" + _padlockExplanation + "-->" + _padlockExplanation;			
 		}
+		
 		
 		
 		private var _module:ModuleInstance;

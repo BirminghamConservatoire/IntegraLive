@@ -9,5 +9,5 @@ Some info is user-editable allowing you to add your own documentation to *projec
 
 The info panel can be locked for editing by pressing <span class="mac-only">alt-3</span><span class="windows-only">F2</span>
 
-The info panel supports [markdown]](http://en.wikipedia.org/wiki/Markdown) syntax
+The info panel supports [markdown](http://en.wikipedia.org/wiki/Markdown) syntax
 

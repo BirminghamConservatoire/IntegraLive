@@ -14,17 +14,13 @@ copy "..\..\libIntegra_dependencies\lua-5.2.0\lua52.dll" "..\..\build\Debug\serv
 copy "..\data\CollectionSchema.xsd" "..\..\build\Debug\server\"
 copy "..\data\id2guid.csv" "..\..\build\Debug\server"
 
-rd /s /q ..\..\build\Debug\modules
+if exist ..\..\build\Debug\modules rd /s /q ..\..\build\Debug\modules
 mkdir ..\..\build\Debug\modules
 xcopy "..\..\modules" "..\..\build\Debug\modules" /Y /Q
 
 copy "..\..\host\Pd\Integra_Host.pd" "..\..\build\Debug\host\extra"
 
-rd /s /q ..\..\build\Debug\gui\BlockLibrary
-mkdir ..\..\build\Debug\gui\BlockLibrary
-xcopy "..\..\blocks" "..\..\build\Debug\gui\BlockLibrary" /E /Y /Q
-
-rd /s /q ..\..\build\Debug\gui-debug\BlockLibrary
+if exist ..\..\build\Debug\gui-debug\BlockLibrary rd /s /q ..\..\build\Debug\gui-debug\BlockLibrary
 mkdir ..\..\build\Debug\gui-debug\BlockLibrary
 xcopy "..\..\blocks" "..\..\build\Debug\gui-debug\BlockLibrary" /E /Y /Q
 

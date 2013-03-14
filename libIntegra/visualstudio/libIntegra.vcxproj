@@ -72,7 +72,7 @@
     </Link>
     <PostBuildEvent>
       <Command>call versioning/StampVer.bat ../../build/Debug/Server/libIntegra.dll
-call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
+
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -107,7 +107,7 @@ call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
     </Link>
     <PostBuildEvent>
       <Command>call versioning/StampVer.bat ../../build/Release/Server/libIntegra.dll
-call gui_autobuild\buildgui.bat ..\..\build\Release\gui
+
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>

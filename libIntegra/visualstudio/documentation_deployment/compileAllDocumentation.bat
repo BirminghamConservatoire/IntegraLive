@@ -1,6 +1,9 @@
 echo off
 
-rd /s /q %1\documentation
+if exist %1\documentation goto SKIPDOCUMENTATION
+
+rem rd /s /q %1\documentation
+
 mkdir %1\documentation
 mkdir %1\documentation\html
 
@@ -24,3 +27,5 @@ xcopy "..\..\documentation\page-images" "%1\documentation\page-images\" /E /Y /Q
 
 
 cd %olddirectory%
+
+:SKIPDOCUMENTATION

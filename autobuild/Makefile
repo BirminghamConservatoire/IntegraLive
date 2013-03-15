@@ -67,7 +67,7 @@ run:
 	open $(APPNAME)
 
 run-server-debug:
-	cd $(APPNAME)/Contents/Resources/server/bin && gdb --args ./integra_server -bridge=../lib/integra/integra_osc_bridge.so -xmlrpc_server_port=8000 -osc_server_port=8001 -osc_client_port=8002 -osc_client_url=127.0.0.1 -module_paths=../share/libintegra/interfaces/ -trace_progress=1 -host=../../host/bin/pd_integra -hostargs=../../host/extra/Integra_Host.pd
+	cd $(APPNAME)/Contents/Resources/server/bin && gdb --args ./integra_server -bridge=../lib/integra/integra_osc_bridge.so -xmlrpc_server_port=8003 -osc_server_port=8004 -osc_client_port=8005 -osc_client_url=127.0.0.1 -module_paths=../share/libintegra/interfaces/ -trace_progress=1 -host=../../host/bin/pd_integra -hostargs=../../host/extra/Integra_Host.pd
 	
 
 run-gui:

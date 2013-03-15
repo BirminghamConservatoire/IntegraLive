@@ -25,12 +25,17 @@ package components.utils
 	import flash.display.DisplayObjectContainer;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
-	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.Capabilities;
 	import flash.ui.Keyboard;
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
+	import flash.xml.XMLDocument;
+	import flash.xml.XMLNode;
+	import flash.xml.XMLNodeType;
+	
+	import flexunit.framework.Assert;
+	
 	
 	public class Utilities
 	{
@@ -408,15 +413,6 @@ package components.utils
 			}
 			
 			return null;
-		}
-		
-		
-		public static function deepCopyPoint( toPoint:Point, fromPoint:Point ):void
-		{
-			//this function exists because Point.copyFrom doesn't seem to work on OSX
-			
-			toPoint.x = fromPoint.x;
-			toPoint.y = fromPoint.y;
 		}
 	}
 }

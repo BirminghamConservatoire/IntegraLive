@@ -45,7 +45,6 @@ package components.views.ModuleGraph
 	import components.model.ModuleInstance;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.Utilities;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.TickButtonSkin;
 	
@@ -198,8 +197,8 @@ package components.views.ModuleGraph
 			{
 				if( pin.attributeName == attributeName )
 				{
-					Utilities.deepCopyPoint( linkPoint, pin.linkPoint );
-					Utilities.deepCopyPoint( trackOffset, getTrackPoint( _inputPins ).subtract( linkPoint ) );
+					linkPoint.copyFrom( pin.linkPoint );
+					trackOffset.copyFrom( getTrackPoint( _inputPins ).subtract( linkPoint ) );
 					return;
 				}
 			}
@@ -208,8 +207,8 @@ package components.views.ModuleGraph
 			{
 				if( pin.attributeName == attributeName )
 				{
-					Utilities.deepCopyPoint( linkPoint, pin.linkPoint );
-					Utilities.deepCopyPoint( trackOffset, getTrackPoint( _outputPins ).subtract( linkPoint ) );
+					linkPoint.copyFrom( pin.linkPoint );
+					trackOffset.copyFrom( getTrackPoint( _outputPins ).subtract( linkPoint ) );
 					return;
 				}
 			}
@@ -220,8 +219,8 @@ package components.views.ModuleGraph
 		{
 			Assert.assertTrue( _inputPins.length > 0 );
 
-			Utilities.deepCopyPoint( linkPoint, _inputPins[ 0 ].linkPoint );
-			Utilities.deepCopyPoint( trackOffset, getTrackPoint( _inputPins ).subtract( linkPoint ) );
+			linkPoint.copyFrom( _inputPins[ 0 ].linkPoint );
+			trackOffset.copyFrom( getTrackPoint( _inputPins ).subtract( linkPoint ) );
 		}
 
 
@@ -229,8 +228,8 @@ package components.views.ModuleGraph
 		{
 			Assert.assertTrue( _outputPins.length > 0 );
 
-			Utilities.deepCopyPoint( linkPoint, _outputPins[ 0 ].linkPoint );
-			Utilities.deepCopyPoint( trackOffset, getTrackPoint( _outputPins ).subtract( linkPoint ) );
+			linkPoint.copyFrom( _outputPins[ 0 ].linkPoint );
+			trackOffset.copyFrom( getTrackPoint( _outputPins ).subtract( linkPoint ) );
 		}
 		
 		

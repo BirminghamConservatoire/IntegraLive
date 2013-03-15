@@ -1539,7 +1539,7 @@ package components.views.ModuleGraph
 			if( destinationPin == _newLinkAnchor )
 			{
 				var mouseOnAnchorOffset:Number = FontSize.getTextRowHeight( this ) * 0.8;
-				Utilities.deepCopyPoint( destination, newLinkAnchorPoint );
+				destination.copyFrom( newLinkAnchorPoint );
 				destination.x += ( _newLinkAnchor.isInput ? -mouseOnAnchorOffset : mouseOnAnchorOffset );
 			}
 			

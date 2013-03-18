@@ -155,7 +155,7 @@ package components.utils
 					continue;
 				}
 				
-				var guid:String = interfaceDefinition.guid;
+				var guid:String = interfaceDefinition.moduleGuid;
 				
 				for each( var widget:WidgetDefinition in interfaceDefinition.widgets )
 				{
@@ -297,12 +297,12 @@ package components.utils
 			var interfaceDefinition:InterfaceDefinition = module.interfaceDefinition;
 			Assert.assertNotNull( interfaceDefinition );
 			
-			if( !_mapTrackedInterfaceGuidsToEndpoints.hasOwnProperty( interfaceDefinition.guid ) ) 
+			if( !_mapTrackedInterfaceGuidsToEndpoints.hasOwnProperty( interfaceDefinition.moduleGuid ) ) 
 			{
 				return;
 			}
 
-			var endpointsToTrack:Object = _mapTrackedInterfaceGuidsToEndpoints[ interfaceDefinition.guid ];
+			var endpointsToTrack:Object = _mapTrackedInterfaceGuidsToEndpoints[ interfaceDefinition.moduleGuid ];
 			if( !endpointsToTrack.hasOwnProperty( command.endpointName ) )
 			{
 				return;

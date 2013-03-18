@@ -89,13 +89,13 @@ package components.controller.serverCommands
 			if( !_blockName )			
 			{
 				var blockDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( IntegraContainer._serverInterfaceName );
-				_blockName = track.getNewChildName( "Block", blockDefinition.guid );
+				_blockName = track.getNewChildName( "Block", blockDefinition.moduleGuid );
 			}
 
 			if( !_blockEnvelopeName )	
 			{
 				var envelopeDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( Envelope._serverInterfaceName );
-				_blockEnvelopeName = track.getNewChildName( "BlockEnvelope", envelopeDefinition.guid );
+				_blockEnvelopeName = track.getNewChildName( "BlockEnvelope", envelopeDefinition.moduleGuid );
 			}
 
 			return true;
@@ -328,8 +328,8 @@ package components.controller.serverCommands
 			var inputPosition:Rectangle = new Rectangle( horizontalMargin, verticalMargin, moduleWidth, inputModuleHeight );  
 			var outputPosition:Rectangle = new Rectangle( moduleWidth * 4 + horizontalMargin, verticalMargin, moduleWidth, inputModuleHeight );
 			
-			var addInput:LoadModule = new LoadModule( inputInterfaceDefinition.guid, _blockID, inputPosition );
-			var addOutput:LoadModule = new LoadModule( outputInterfaceDefinition.guid, _blockID, outputPosition );
+			var addInput:LoadModule = new LoadModule( inputInterfaceDefinition.moduleGuid, _blockID, inputPosition );
+			var addOutput:LoadModule = new LoadModule( outputInterfaceDefinition.moduleGuid, _blockID, outputPosition );
 			var addMIDI:AddMidi = new AddMidi( _blockID );
 			
 			controller.processCommand( addMIDI );

@@ -86,6 +86,8 @@
 
 #define HELPSTR_MOVE "Move a node on the server\n\\param <array node path>\n\\param <array new node parent path>\n\\return {'response':'command.move', 'instancepath':<array path>, 'parentpath':<array path>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
+#define HELPSTR_UNLOAD_ORPHANED_EMBEDDED "Remove orphaned embedded modules\n\\return {'response':'module.unloadorphanedembedded'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+
 #define RESPONSE_LABEL      "response"
 #define NTG_NULL_STRING     "None"
 
@@ -183,7 +185,7 @@ static void *ntg_xmlrpc_interfacelist_callback(ntg_server * server,
     const ntg_list *module_id_list;
 	int number_of_modules, i;
 	GUID *module_ids;
-	char *guid_string;
+	char *module_id_string;
     xmlrpc_value *array_ = NULL,
                  *array_item = NULL, *xmlrpc_name = NULL, *struct_ = NULL;
     xmlrpc_env *env;
@@ -197,11 +199,11 @@ static void *ntg_xmlrpc_interfacelist_callback(ntg_server * server,
     array_ = xmlrpc_array_new(env);
     for( i = 0; i < number_of_modules; i++ ) 
 	{
-		guid_string = ntg_guid_to_string( &module_ids[ i ] );
-        array_item = xmlrpc_string_new( env, guid_string );
+		module_id_string = ntg_guid_to_string( &module_ids[ i ] );
+        array_item = xmlrpc_string_new( env, module_id_string );
         xmlrpc_array_append_item(env, array_, array_item);
         xmlrpc_DECREF(array_item);
-		ntg_free( guid_string );
+		ntg_free( module_id_string );
     }
 
     if (env->fault_occurred)
@@ -226,7 +228,8 @@ static void *ntg_xmlrpc_interfaceinfo_callback(ntg_server * server,
 {
 	xmlrpc_value *info_struct = NULL, *xmlrpc_temp = NULL, *xmlrpc_array = NULL, *struct_ = NULL;
     xmlrpc_env *env;
-    char *guid_string;
+    char *module_id_string;
+	char *origin_id_string;
 	char *date_string;
     const ntg_interface *interface;
 	const ntg_interface_info *info;
@@ -234,23 +237,23 @@ static void *ntg_xmlrpc_interfaceinfo_callback(ntg_server * server,
 	GUID guid;
 
     env = va_arg(argv, xmlrpc_env *);
-    guid_string = va_arg(argv, char *);
+    module_id_string = va_arg(argv, char *);
 
     if (env->fault_occurred)
 	{
         return NULL;
 	}
 
-	if( ntg_string_to_guid( guid_string, &guid ) != NTG_NO_ERROR ) 
+	if( ntg_string_to_guid( module_id_string, &guid ) != NTG_NO_ERROR ) 
 	{
-	    free(guid_string);
+	    free(module_id_string);
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
 	interface = ntg_get_interface_by_module_id( server->module_manager, &guid );
     if( !interface )	
 	{
-	    free(guid_string);
+	    free(module_id_string);
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
@@ -307,15 +310,43 @@ static void *ntg_xmlrpc_interfaceinfo_callback(ntg_server * server,
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_temp = xmlrpc_string_new(env, guid_string);
-    xmlrpc_struct_set_value(env, struct_, "interfaceid", xmlrpc_temp);
+    xmlrpc_temp = xmlrpc_string_new(env, module_id_string);
+    xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
+
+	origin_id_string = ntg_guid_to_string( &interface->origin_guid );
+    xmlrpc_temp = xmlrpc_string_new(env, origin_id_string);
+    xmlrpc_struct_set_value(env, struct_, "originid", xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+	ntg_free( origin_id_string );
+
+	switch( interface->module_source )
+	{
+		case NTG_MODULE_SHIPPED_WITH_INTEGRA:
+			xmlrpc_temp = xmlrpc_string_new(env, "shippedwithintegra" );
+			break;
+
+		case NTG_MODULE_3RD_PARTY:
+			xmlrpc_temp = xmlrpc_string_new(env, "thirdparty" );
+			break;
+
+		case NTG_MODULE_EMBEDDED:
+			xmlrpc_temp = xmlrpc_string_new(env, "embedded" );
+			break;
+
+		default:
+			assert( false );
+			break;
+	}
+
+	xmlrpc_struct_set_value(env, struct_, "modulesource", xmlrpc_temp);
+	xmlrpc_DECREF(xmlrpc_temp);
 
     xmlrpc_struct_set_value(env, struct_, "interfaceinfo", info_struct);
     xmlrpc_DECREF(info_struct);
 
     /* free out-of-place memory */
-    free(guid_string);
+    free(module_id_string);
 
     return struct_;
 }
@@ -328,7 +359,7 @@ static void *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 	xmlrpc_value *xmlrpc_control_info = NULL, *xmlrpc_state_info = NULL, *xmlrpc_stream_info = NULL;
 	xmlrpc_value *xmlrpc_constraint, *xmlrpc_range, *xmlrpc_scale, *xmlrpc_scale_exponent_root, *xmlrpc_allowed_states, *xmlrpc_state_labels = NULL, *xmlrpc_state_label = NULL;
     xmlrpc_env *env;
-    char *guid_string;
+    char *module_id_string;
 	GUID guid;
     const ntg_interface *interface;
 	const ntg_endpoint *endpoint;
@@ -339,23 +370,23 @@ static void *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 	const ntg_stream_info *stream_info;
 
     env = va_arg(argv, xmlrpc_env *);
-    guid_string = va_arg(argv, char *);
+    module_id_string = va_arg(argv, char *);
 
     if (env->fault_occurred)
 	{
         return NULL;
 	}
 
-	if( ntg_string_to_guid( guid_string, &guid ) != NTG_NO_ERROR ) 
+	if( ntg_string_to_guid( module_id_string, &guid ) != NTG_NO_ERROR ) 
 	{
-	    free(guid_string);
+	    free(module_id_string);
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
 	interface = ntg_get_interface_by_module_id( server->module_manager, &guid );
     if( !interface )	
 	{
-	    free(guid_string);
+	    free(module_id_string);
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
@@ -637,15 +668,15 @@ static void *ntg_xmlrpc_endpoints_callback(ntg_server * server,
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_temp = xmlrpc_string_new(env, guid_string);
-    xmlrpc_struct_set_value(env, struct_, "interfaceid", xmlrpc_temp);
+    xmlrpc_temp = xmlrpc_string_new(env, module_id_string);
+    xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
     xmlrpc_struct_set_value(env, struct_, "endpoints", endpoints_array);
     xmlrpc_DECREF(endpoints_array);
 
     /* free out-of-place memory */
-    free(guid_string);
+    free(module_id_string);
 
 	return struct_;
 }
@@ -657,30 +688,30 @@ static void *ntg_xmlrpc_widgets_callback(ntg_server * server,
 	xmlrpc_value *xmlrpc_temp = NULL, *widgets_array = NULL, *xmlrpc_widget, *xmlrpc_position, *struct_ = NULL;
 	xmlrpc_value *xmlrpc_mapping_list, *xmlrpc_mapping;
     xmlrpc_env *env;
-    char *guid_string;
+    char *module_id_string;
     const ntg_interface *interface;
 	const ntg_widget *widget;
 	const ntg_widget_attribute_mapping *attribute_mapping;
 	GUID guid;
 
     env = va_arg(argv, xmlrpc_env *);
-    guid_string = va_arg(argv, char *);
+    module_id_string = va_arg(argv, char *);
 
     if (env->fault_occurred)
 	{
         return NULL;
 	}
 
-	if( ntg_string_to_guid( guid_string, &guid ) != NTG_NO_ERROR ) 
+	if( ntg_string_to_guid( module_id_string, &guid ) != NTG_NO_ERROR ) 
 	{
-	    free(guid_string);
+	    free(module_id_string);
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
 	interface = ntg_get_interface_by_module_id( server->module_manager, &guid );
     if( !interface )	
 	{
-	    free(guid_string);
+	    free(module_id_string);
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
@@ -751,15 +782,15 @@ static void *ntg_xmlrpc_widgets_callback(ntg_server * server,
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_temp = xmlrpc_string_new(env, guid_string);
-    xmlrpc_struct_set_value(env, struct_, "interfaceid", xmlrpc_temp);
+    xmlrpc_temp = xmlrpc_string_new(env, module_id_string);
+    xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
     xmlrpc_struct_set_value(env, struct_, "widgets", widgets_array);
     xmlrpc_DECREF(widgets_array);
 
     /* free out-of-place memory */
-    free(guid_string);
+    free(module_id_string);
 
     return struct_;
 }
@@ -780,7 +811,7 @@ static void *ntg_xmlrpc_nodelist_callback(ntg_server * server,
     ntg_node *node = NULL;
     ntg_node *root = NULL;
     int n, m;
-    char *guid_string = NULL;
+    char *module_id_string = NULL;
 
     env = va_arg(argv, xmlrpc_env *);
     path = va_arg(argv, ntg_path *);
@@ -826,11 +857,11 @@ static void *ntg_xmlrpc_nodelist_callback(ntg_server * server,
             return ntg_xmlrpc_error(env, NTG_FAILED);
         }
 
-		guid_string = ntg_guid_to_string( &node->interface->module_guid );
+		module_id_string = ntg_guid_to_string( &node->interface->module_guid );
 
         /* construct the node struct and append to nodes array */
         node_struct = xmlrpc_struct_new(env);
-        xmlrpc_guid = xmlrpc_string_new(env, guid_string);
+        xmlrpc_guid = xmlrpc_string_new(env, module_id_string);
         xmlrpc_struct_set_value(env, node_struct, "guid", xmlrpc_guid);
         xmlrpc_DECREF(xmlrpc_guid);
         xmlrpc_struct_set_value(env, node_struct, "path", xmlrpc_path);
@@ -839,7 +870,7 @@ static void *ntg_xmlrpc_nodelist_callback(ntg_server * server,
         xmlrpc_DECREF(node_struct);
 
         /* free out-of-place memory */
-		ntg_free(guid_string);
+		ntg_free(module_id_string);
 
     }
 
@@ -1021,13 +1052,16 @@ static void *ntg_xmlrpc_save_callback(ntg_server * server, const int argc,
 static void *ntg_xmlrpc_load_callback(ntg_server * server, const int argc,
         va_list argv)
 {
-
     xmlrpc_env *env;
-    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
+    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL, *xmlrpc_array = NULL;
     ntg_error_code error_code;
     ntg_command_status command_status;
     ntg_path *path;
     char *file_path;
+	ntg_list *embedded_module_ids;
+	GUID *guids;
+	int i;
+	char *module_id_string;
 
     env = va_arg(argv, xmlrpc_env *);
 
@@ -1054,6 +1088,26 @@ static void *ntg_xmlrpc_load_callback(ntg_server * server, const int argc,
     xmlrpc_path = ntg_xmlrpc_value_from_path(path, env);
     xmlrpc_struct_set_value(env, struct_, "parentpath", xmlrpc_path);
     xmlrpc_DECREF(xmlrpc_path);
+
+
+	embedded_module_ids = ( ntg_list * ) command_status.data;
+    guids = ( GUID * ) embedded_module_ids->elems;
+
+	xmlrpc_array = xmlrpc_array_new( env );
+	for( i = 0; i < embedded_module_ids->n_elems; i++ ) 
+	{
+		module_id_string = ntg_guid_to_string( &guids[ i ] );
+        xmlrpc_temp = xmlrpc_string_new( env, module_id_string );
+        xmlrpc_array_append_item( env, xmlrpc_array, xmlrpc_temp);
+        xmlrpc_DECREF( xmlrpc_temp );
+		ntg_free( module_id_string );
+    }
+
+    xmlrpc_struct_set_value(env, struct_, "embeddedmodules", xmlrpc_array );
+
+    xmlrpc_DECREF(xmlrpc_array);
+
+	ntg_free( embedded_module_ids );
 
     return struct_;
 }
@@ -1102,11 +1156,39 @@ static void *ntg_xmlrpc_move_callback(ntg_server * server, const int argc,
 
 }
 
+
+static void *ntg_xmlrpc_unload_orphaned_embedded_callback( ntg_server * server, const int argc,
+        va_list argv)
+{
+    xmlrpc_env *env;
+    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
+    ntg_error_code error_code;
+    ntg_command_status command_status;
+
+    env = va_arg(argv, xmlrpc_env *);
+
+    struct_ = xmlrpc_struct_new(env);
+
+	command_status = ntg_unload_orphaned_embedded_modules_(server, NTG_SOURCE_XMLRPC_API);
+    error_code = command_status.error_code;
+
+    if (error_code != NTG_NO_ERROR) {
+        return ntg_xmlrpc_error(env, error_code);
+    }
+
+    xmlrpc_temp = xmlrpc_string_new(env, "module.unloadorphanedembedded");
+    xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+
+    return struct_;
+}
+
+
 static void *ntg_xmlrpc_new_callback(ntg_server * server, const int argc,
         va_list argv)
 {
 
-    char *guid_string, *node_name;
+    char *module_id_string, *node_name;
 	GUID module_id;
     ntg_path *path;
     ntg_command_status command_status;
@@ -1115,13 +1197,13 @@ static void *ntg_xmlrpc_new_callback(ntg_server * server, const int argc,
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
 
     env = va_arg(argv, xmlrpc_env *);
-    guid_string = va_arg(argv, char *);
+    module_id_string = va_arg(argv, char *);
     node_name = va_arg(argv, char *);
     path = va_arg(argv, ntg_path *);
 
     assert(path->string != NULL);
 
-	ntg_string_to_guid( guid_string, &module_id );
+	ntg_string_to_guid( module_id_string, &module_id );
 
     struct_ = xmlrpc_struct_new(env);
     command_status = ntg_new_(server, NTG_SOURCE_XMLRPC_API, &module_id, node_name, path);
@@ -1131,7 +1213,7 @@ static void *ntg_xmlrpc_new_callback(ntg_server * server, const int argc,
     if (node == NULL) {
         /* free out-of-place memory */
         ntg_path_free(path);
-        free(guid_string);
+        free(module_id_string);
         free(node_name);
         return ntg_xmlrpc_error(env, NTG_ERROR);
     }
@@ -1140,8 +1222,8 @@ static void *ntg_xmlrpc_new_callback(ntg_server * server, const int argc,
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_temp = xmlrpc_string_new(env, guid_string);
-    xmlrpc_struct_set_value(env, struct_, "interfaceid", xmlrpc_temp);
+    xmlrpc_temp = xmlrpc_string_new(env, module_id_string);
+    xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
     xmlrpc_temp = xmlrpc_string_new(env, node->name);
@@ -1155,7 +1237,7 @@ static void *ntg_xmlrpc_new_callback(ntg_server * server, const int argc,
 
     /* free out-of-place memory */
     ntg_path_free(path);
-    free(guid_string);
+    free(module_id_string);
     free(node_name);
 
 
@@ -1484,6 +1566,18 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
 
 }
 
+static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded(xmlrpc_env * const env,
+        xmlrpc_value * const paramArrayP,
+        void *const userData)
+{
+    NTG_TRACE_VERBOSE("");
+
+    if (env->fault_occurred)
+        return NULL;
+
+    return ntg_server_do_va(&ntg_xmlrpc_unload_orphaned_embedded_callback, 1, (void *)env);
+}
+
 
 static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
@@ -1652,6 +1746,10 @@ void *ntg_xmlrpc_server_run(void *portv)
     xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.move",
             &ntg_xmlrpc_move, NULL, "S:AA",
             HELPSTR_MOVE);
+    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.unloadorphanedembedded",
+            &ntg_xmlrpc_unload_orphaned_embedded, NULL, "S:",
+            HELPSTR_UNLOAD_ORPHANED_EMBEDDED);
+	
 
     xmlrpc_registry_set_shutdown(registryP, ntg_xmlrpc_shutdown, NULL );
 

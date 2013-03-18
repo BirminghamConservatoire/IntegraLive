@@ -247,7 +247,7 @@ ntg_error_code ntg_node_free(ntg_node *node);
 ntg_error_code ntg_node_save( const ntg_node *node, unsigned char **buffer, unsigned int *buffer_length );
 
 /** \brief load from XML under a given node */
-ntg_error_code ntg_node_load(ntg_node *node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes);
+ntg_error_code ntg_node_load( const ntg_node *node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes);
 
 /** \brief send node's newly-loaded attributes to host */
 ntg_error_code ntg_node_send_loaded_attributes_to_host( const ntg_node *node, ntg_bridge_interface *bridge ); 
@@ -276,6 +276,16 @@ const ntg_node *ntg_node_get_root(const ntg_node *node);
 
 void ntg_node_add_to_statetable( const ntg_node *node, NTG_HASHTABLE *statetable );
 void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *statetable );
+
+
+/** \brief recursively removes ids of modules that are still in use
+ *  \param node node to search from
+ *  \param hashtable a map of module id => NULL.  This map is updated by the method, 
+ *  removing any module ids which are still in use
+ *
+ * */
+
+void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable );
 
 
 #ifdef __cplusplus

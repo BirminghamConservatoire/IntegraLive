@@ -36,6 +36,9 @@ extern "C" {
 #endif
 
 
+
+ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, ntg_module_manager *module_manager );
+
 ntg_error_code ntg_file_save( const char *filename, const ntg_node *node, const ntg_module_manager *module_manager );
 
 

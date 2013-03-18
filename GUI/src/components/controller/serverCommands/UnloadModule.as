@@ -75,7 +75,7 @@ package components.controller.serverCommands
 			
 			pushInstanceAttributeInverses( module );
 			
-			pushInverseCommand( new LoadModule( module.interfaceDefinition.guid, model.getBlockFromModuleInstance( _moduleID ).id, model.getModulePosition( _moduleID ), _moduleID, module.name ) );
+			pushInverseCommand( new LoadModule( module.interfaceDefinition.moduleGuid, model.getBlockFromModuleInstance( _moduleID ).id, model.getModulePosition( _moduleID ), _moduleID, module.name ) );
 		}
 		
 		

@@ -57,7 +57,6 @@ typedef struct ntg_server_ {
     struct ntg_system_class_data_ *system_class_data;
     char *scratch_directory_root;
 	struct ntg_module_manager_ *module_manager;
-    bool updates_disabled;
     bool terminate;
     bool loading;
 } ntg_server;

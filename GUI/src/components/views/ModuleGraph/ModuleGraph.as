@@ -338,7 +338,7 @@ package components.views.ModuleGraph
 
 		private function onModuleLoaded( command:LoadModule ):void
 		{
-			addModule( model.getModuleInstance( command.moduleID ) );
+			addModule( model.getModuleInstance( command.objectID ) );
 		}
 		
 		
@@ -631,7 +631,7 @@ package components.views.ModuleGraph
 
 			var linkToReplaceID:int = _linkBeingCreatedOver ? _linkBeingCreatedOver.connectionID : -1;
 
-			var newModuleCommand:LoadModule = new LoadModule( interfaceDefinition.guid, block.id, new Rectangle( position.x, position.y, ModuleInstance.getModuleWidth(), ModuleInstance.getModuleHeight( interfaceDefinition ) ) ); 
+			var newModuleCommand:LoadModule = new LoadModule( interfaceDefinition.moduleGuid, block.id, new Rectangle( position.x, position.y, ModuleInstance.getModuleWidth(), ModuleInstance.getModuleHeight( interfaceDefinition ) ) ); 
 			controller.processCommand( newModuleCommand );
 			
 			endNewModuleDrag();
@@ -643,7 +643,7 @@ package components.views.ModuleGraph
 				var previousConnection:Connection = model.getConnection( linkToReplaceID );
 				Assert.assertNotNull( previousConnection );
 				
-				var newModuleID:int = newModuleCommand.moduleID;
+				var newModuleID:int = newModuleCommand.objectID;
 				if( interfaceDefinition.countAudioEndpointsByDirection( StreamInfo.DIRECTION_INPUT ) > 0 )
 				{
 					var newConnection1:AddConnection = new AddConnection( block.id );

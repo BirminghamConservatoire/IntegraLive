@@ -72,6 +72,12 @@ package components.utils
 		}
 		
 		
+		static public function get printableCharacterRestrict():String 
+		{
+			return "A-Za-z0-9 !\"£$%\\^&*()\\-=_+[]{};'#:@~,./<>?\\\\|°±¹²³¼½¾";
+		}
+		
+		
 		public static function handlePlatformIndependantMenuModifiers( menuItem:Object ):Array
 		{
 			var result:Array = new Array;

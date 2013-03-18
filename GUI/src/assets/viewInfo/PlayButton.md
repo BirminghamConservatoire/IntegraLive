@@ -1,5 +1,5 @@
-<!--Start Playhead-->
+<!--Play Button-->
 
 # Play Button
 
-Click here to start the playhead.
+Click here to start the playhead

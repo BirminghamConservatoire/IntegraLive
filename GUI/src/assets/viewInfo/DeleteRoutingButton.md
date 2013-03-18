@@ -1,5 +1,5 @@
-<!--Delete Routing-->
+<!--Delete Route-->
 
-# Delete _routing_
+# Delete Route
 
-Click here to delete the _routing_.
+Click here to delete this route

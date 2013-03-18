@@ -1,21 +1,21 @@
 # Scene Properties
-The controls on this title bar allow you to configure Scenes.
+Use the controls on this title bar to configure the currently selected *scene*
 
 ### State
-The following Scene states are available:
+Choose from the folling scene states:
 
 #### Hold
-On Scene activation, playhead moves to start of Scene and stays there.  
+On *scene* activation, playhead moves to start of *scene* and stays there  
 #### Play
-On Scene activation, playhead moves to start of Scene, and then plays through the Scene until it reaches the end, at which point it stops.
+On *scene* activation, playhead moves to start of *scene*, and then plays through the *scene* until it reaches the end, at which point it stops  
 ####Loop
-On Scene activation, playhead moves to start of Scene, and then plays through the Scene repeatedly for as long as the Scene remains active.
+On *scene* activation, playhead moves to start of *scene*, and then plays through the *scene* repeatedly for as long as the *scene* remains active  
 
 ### Key
-Specify a keyboard shortcut to activate the Scene in the Live View
+Specify a keyboard shortcut to activate the *scene* in the Live View
 
 ### MIDI Note
-Specify a MIDI note-on pitch to activate the Scene 
+Specify a MIDI note-on pitch to activate the *scene*
 
 ### MIDI CC Number
-Specify a MIDI CC number to activate the Scene
+Specify a MIDI CC number to activate the *scene*

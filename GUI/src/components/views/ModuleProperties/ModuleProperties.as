@@ -45,13 +45,11 @@ package components.views.ModuleProperties
 	import components.model.userData.LiveViewControl;
 	import components.utils.ControlContainer;
 	import components.utils.ControlMeasurer;
-	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	
 	import flash.events.MouseEvent;
-	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import flexunit.framework.Assert;

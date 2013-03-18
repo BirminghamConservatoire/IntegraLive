@@ -5,7 +5,7 @@
    -->
    <compiler>
       <!-- compiler.accessible: generate an accessible SWF-->
-      <accessible>false</accessible>
+      <accessible>true</accessible>
       <!-- compiler.actionscript-file-encoding: specifies actionscript file encoding. If there is no BOM in the AS3 source files, the compiler will use this file encoding.-->
       <!-- compiler.actionscript-file-encoding usage:
       <actionscript-file-encoding>string</actionscript-file-encoding>
@@ -22,7 +22,7 @@
       <context-root>context-path</context-root>
       -->
       <!-- compiler.debug: generates a movie that is suitable for debugging-->
-      <debug>true</debug>
+      <debug>false</debug>
       <!-- compiler.defaults-css-files usage:
       <defaults-css-files>
          <filename>string</filename>
@@ -129,27 +129,12 @@
       <keep-generated-actionscript>false</keep-generated-actionscript>
       <!-- compiler.library-path: list of SWC files or directories that contain SWC files-->
       <library-path>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/framework.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/textLayout.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/spark.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/sparkskins.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/rpc.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/charts.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/spark_dmv.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/osmf.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/mx/mx.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/advancedgrids.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/authoringsupport.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/core.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/flash-integration.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air/aircore.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air/airframework.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air/airspark.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air/applicationupdater.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air/applicationupdater_ui.swc</path-element>
-         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air/servicemonitor.swc</path-element>
+          <path-element>@ADOBE_FLEX_PATH@/frameworks/libs</path-element>
+          <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/mx</path-element>
+         <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/air</path-element>
          <path-element>@ADOBE_FLEX_PATH@/frameworks/locale/{locale}</path-element>
          <path-element>@ENVIRONMENT_PATH@/libs/FlexUnit.swc</path-element>
+         <path-element>@ENVIRONMENT_PATH@/libs/fzip.swc</path-element>
       </library-path>
       <!-- compiler.locale: specifies the locale for internationalization-->
       <locale>
@@ -220,23 +205,26 @@
       <show-invalid-css-property-warnings>boolean</show-invalid-css-property-warnings>
       -->
       <!-- compiler.show-shadowed-device-font-warnings: toggles whether warnings are displayed when an embedded font name shadows a device font name-->
-      <show-shadowed-device-font-warnings>false</show-shadowed-device-font-warnings>
+      <show-shadowed-device-font-warnings>true</show-shadowed-device-font-warnings>
       <!-- compiler.show-unused-type-selector-warnings: toggle whether warnings generated from unused CSS type selectors are displayed-->
       <show-unused-type-selector-warnings>true</show-unused-type-selector-warnings>
       <!-- compiler.source-path: list of path elements that form the roots of ActionScript class hierarchies-->
+      <!-- compiler.source-path usage:
       <source-path>
-         <path-element>@ENVIRONMENT_PATH@/src</path-element>
+         <path-element>string</path-element>
+         <path-element>string</path-element>
       </source-path>
+      -->
       <!-- compiler.strict: runs the AS3 compiler in strict error checking mode.-->
       <strict>true</strict>
       <!-- compiler.theme: list of CSS or SWC files to apply as a theme-->
       <theme>
-         <filename>@ADOBE_FLEX_PATH@/frameworks/themes/Halo/halo.swc</filename>
+         <filename>${flexlib}/themes/Halo/halo.swc</filename>
       </theme>
       <!-- compiler.use-resource-bundle-metadata: determines whether resources bundles are included in the application.-->
       <use-resource-bundle-metadata>true</use-resource-bundle-metadata>
       <!-- compiler.verbose-stacktraces: save callstack information to the SWF for debugging-->
-      <verbose-stacktraces>false</verbose-stacktraces>
+      <verbose-stacktraces>true</verbose-stacktraces>
       <!-- compiler.warn-array-tostring-changes: Array.toString() format has changed.-->
       <warn-array-tostring-changes>false</warn-array-tostring-changes>
       <!-- compiler.warn-assignment-within-conditional: Assignment within conditional.-->
@@ -311,9 +299,7 @@
       <warn-xml-class-has-changed>false</warn-xml-class-has-changed>
    </compiler>
    <!-- debug-password: the password to include in debuggable SWFs-->
-   <!-- debug-password usage:
-   <debug-password>string</debug-password>
-   -->
+   <debug-password></debug-password>
    <!-- default-background-color: default background color (may be overridden by the application code)-->
    <default-background-color>0xFFFFFF</default-background-color>
    <!-- default-frame-rate: default frame rate to be used in the SWF.-->
@@ -409,6 +395,10 @@
       <!-- metadata.title: The default title to store in the SWF metadata-->
       <title>Adobe Flex 4 Application</title>
    </metadata>
+   <!-- output: the filename of the SWF movie to create-->
+   <!-- output usage:
+   <output>filename</output>
+   -->
    <!-- raw-metadata: XML text to store in the SWF metadata (overrides metadata.* configuration)-->
    <!-- raw-metadata usage:
    <raw-metadata>text</raw-metadata>
@@ -427,13 +417,76 @@
    </runtime-shared-libraries>
    -->
    <!-- runtime-shared-library-path: specifies a SWC to link against, an RSL URL to load, with an optional policy file URL and optional failover URLs -->
-   <!-- runtime-shared-library-path usage:
    <runtime-shared-library-path>
-      <path-element>string</path-element>
-      <rsl-url>string</rsl-url>
-      <policy-file-url>string</policy-file-url>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/framework.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/framework_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>framework_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
    </runtime-shared-library-path>
-   -->
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/textLayout.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/tlf/2.0.0.232/textLayout_2.0.0.232.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>textLayout_2.0.0.232.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/spark.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/spark_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>spark_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/sparkskins.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/sparkskins_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>sparkskins_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/rpc.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/rpc_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>rpc_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/charts.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/charts_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>charts_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/spark_dmv.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/spark_dmv_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>spark_dmv_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/osmf.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/osmf_1.0.0.16316.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>osmf_1.0.0.16316.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/mx/mx.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/mx_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>mx_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>@ADOBE_FLEX_PATH@/frameworks/libs/advancedgrids.swc</path-element>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.6.0.23201/advancedgrids_4.6.0.23201.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>advancedgrids_4.6.0.23201.swz</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
    <runtime-shared-library-settings>
       <!-- runtime-shared-library-settings.application-domain: override the application domain an RSL is loaded into. The supported values are 'current', 'default', 'parent', or 'top-level'.-->
       <!-- runtime-shared-library-settings.application-domain usage:
@@ -457,9 +510,9 @@
    <!-- static-link-runtime-shared-libraries: statically link the libraries specified by the -runtime-shared-libraries-path option.-->
    <static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
    <!-- swf-version: specifies the version of the compiled SWF file.-->
-   <swf-version>11</swf-version>
+   <swf-version>14</swf-version>
    <!-- target-player: specifies the version of the player the application is targeting. Features requiring a later version will not be compiled into the application. The minimum value supported is "9.0.0".-->
-   <target-player>10.2.0</target-player>
+   <target-player>11.1</target-player>
    <!-- tools-locale: specifies the locale used by the compiler when reporting errors and warnings.-->
    <!-- tools-locale usage:
    <tools-locale>string</tools-locale>
@@ -475,7 +528,13 @@
    <!-- use-network: toggle whether the SWF is flagged for access to network resources-->
    <use-network>true</use-network>
    <!-- verify-digests: verifies the libraries loaded at runtime are the correct ones.-->
-   <verify-digests>true</verify-digests>
+   <!-- verify-digests usage:
+   <verify-digests>boolean</verify-digests>
+   -->
+   <!-- version: display the build version of the program-->
+   <!-- version usage:
+   <version>boolean</version>
+   -->
    <!-- warnings: toggle the display of warnings-->
    <!-- warnings usage:
    <warnings>boolean</warnings>

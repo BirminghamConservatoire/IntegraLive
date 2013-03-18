@@ -21,13 +21,16 @@
 
 package components.views.Skins
 {
-	import components.model.userData.ColorScheme;
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
-	import flexunit.framework.Assert;
+	
 	import mx.core.Container;
 	import mx.core.IChildList;
 	import mx.skins.halo.ScrollTrackSkin;
+	
+	import components.model.userData.ColorScheme;
+	
+	import flexunit.framework.Assert;
 
 	
 	public class IntegraScrollTrackSkin extends ScrollTrackSkin
@@ -54,9 +57,7 @@ package components.views.Skins
 			graphics.clear();
 			var hasBothSliders:Boolean = decorateWhiteBox();
 	
-			//removed scroll track drawing.  This makes them look better, especially against non-standard background colors
-			
-			/*var fillColor:uint;
+			var fillColor:uint;
 			var backgroundColor:uint;
 			
 			switch( getStyle( ColorScheme.STYLENAME ) )
@@ -73,14 +74,14 @@ package components.views.Skins
 					break;
 			}	
 
-			graphics.beginFill( backgroundColor );
+			graphics.beginFill( backgroundColor, backgroundAlpha );
 			graphics.drawRect( 0, 0, width, height );
 			graphics.endFill();			
 						
 			var cornerRadius:Number = width / 2;
-			graphics.beginFill( fillColor );
+			graphics.beginFill( fillColor, backgroundAlpha );
 			graphics.drawRoundRectComplex( 0, 0, width, height, 0, cornerRadius, 0, hasBothSliders ? 0 : cornerRadius );
-			graphics.endFill();*/			
+			graphics.endFill();		
 		}
 		
 		
@@ -124,11 +125,11 @@ package components.views.Skins
 				}	
 
 				whiteBoxShape.graphics.clear();
-				whiteBoxShape.graphics.beginFill( backgroundColor );
+				whiteBoxShape.graphics.beginFill( backgroundColor, backgroundAlpha );
 				whiteBoxShape.graphics.drawRect( 0, 0, whiteBoxWidth, whiteBoxHeight );
 				whiteBoxShape.graphics.endFill();
 						
-				whiteBoxShape.graphics.beginFill( curveColor );
+				whiteBoxShape.graphics.beginFill( curveColor, backgroundAlpha );
 				whiteBoxShape.graphics.drawRoundRectComplex( 0, 0, whiteBoxWidth, whiteBoxHeight, 0, 0, 0, Math.min( whiteBoxWidth, whiteBoxHeight ) );
 				whiteBoxShape.graphics.endFill();
 
@@ -137,5 +138,7 @@ package components.views.Skins
 			
 			return false; 	
 		}
+		
+		private const backgroundAlpha:Number = 0.1;
 	}
 }

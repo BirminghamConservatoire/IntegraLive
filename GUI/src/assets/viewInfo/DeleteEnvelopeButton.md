@@ -1,5 +1,5 @@
 <!--Delete Envelope-->
 
-# Delete _envelope_
+# Delete Envelope
 
-Click here to delete the selected _envelope_.
+Click here to delete the selected *envelope*

@@ -1,5 +1,5 @@
-# Live View Button
+<!--Add to Live View-->
+# Add to Live View
 
-* Tick this button to add this control to the Live view.
+Tick checkbox to add this control to Live View
 
-* Remove this tick to remove this control from the Live view.

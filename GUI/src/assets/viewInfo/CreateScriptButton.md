@@ -1,5 +1,5 @@
 <!--Add Script-->
 
-# Add _script_
+# Add Script
 
-Click here to add a new _script_.
+Click here to add a new script

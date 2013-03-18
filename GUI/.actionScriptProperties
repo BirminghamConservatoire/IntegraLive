@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties analytics="false" mainApplicationPath="IntegraLive.mxml" projectUUID="9e46b7d3-a55e-4fc8-8bf1-70a79b23be67" version="10">
-  <compiler additionalCompilerArguments="-locale en_US -dump-config integralive-config -compiler.verbose-stacktraces" autoRSLOrdering="true" copyDependentFiles="true" flex3CompatMode="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderLocation="C:/integraLive.git/trunk/build/Debug/gui-debug" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="false" verifyDigests="true" warn="true">
+<actionScriptProperties analytics="false" mainApplicationPath="IntegraLive.mxml" projectUUID="9e46b7d3-a55e-4fc8-8bf1-70a79b23be67" version="11">
+  <compiler additionalCompilerArguments="-locale en_US -dump-config integralive-config -compiler.verbose-stacktraces" autoRSLOrdering="true" copyDependentFiles="true" flex3CompatMode="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderLocation="C:/IntegraLive.git/build/Debug/gui-debug" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="false" useFlashSDK="false" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path=""/>
@@ -16,19 +16,24 @@
     </application>
   </applications>
   <modules/>
+  <workers/>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
-    <buildTarget buildTargetName="default">
-      <airSettings airCertificatePath="C:/Users/integra PC/Documents/gui certificate.p12" airTimestamp="false" anePathSet="true" version="1">
+    <buildTarget buildTargetName="default" platformId="default">
+      <airSettings airCertificatePath="C:/IntegraLive.git/GUI/src/gui_certificate.p12" airTimestamp="false" anePathSet="true" version="1">
         <airExcludes>
-          <pathEntry path="Makefile"/>
-          <pathEntry path="README"/>
           <pathEntry path="org"/>
+          <pathEntry path="README"/>
           <pathEntry path="app-config.xml.in"/>
           <pathEntry path="com"/>
+          <pathEntry path="Makefile"/>
         </airExcludes>
         <anePaths/>
+        <newLaunchParams/>
+        <modifiedLaunchParams/>
+        <newPackagingParams/>
+        <modifiedPackagingParams/>
       </airSettings>
       <actionScriptSettings version="1"/>
     </buildTarget>

@@ -1,5 +1,7 @@
-<!--Toggle light / dark mode-->
+<!--Lighting Mode Button-->
 
-# Lighting mode
+# Lighting Mode Button
 
-Click here to switch between light and dark mode
+Click here to toggle light and dark mode
+
+Shortcut: <span class="mac-only">Command</span><span class="windows-only">ctrl</span>-3

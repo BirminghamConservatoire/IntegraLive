@@ -21,7 +21,6 @@
 
 package components.controller.userDataCommands
 {
-	import components.controller.Command;
 	import components.controller.UserDataCommand;
 	import components.model.IntegraModel;
 	
@@ -32,8 +31,6 @@ package components.controller.userDataCommands
 		{
 			super();
 			
-			isNewUndoStep = false;
-			
 			_show = show;
 		}
 		
@@ -43,6 +40,12 @@ package components.controller.userDataCommands
 		public override function initialize( model:IntegraModel ):Boolean
 		{
 			return true;	
+		}
+		
+		
+		public override function generateInverse( model:IntegraModel ):void
+		{
+			pushInverseCommand( new ShowInfoView( !_show ) );
 		}
 		
 		

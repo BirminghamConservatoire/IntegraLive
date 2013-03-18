@@ -62,22 +62,13 @@ package components.views.InfoView
 			horizontalScrollPolicy = ScrollPolicy.OFF; 
 			verticalScrollPolicy = ScrollPolicy.OFF;   
 			
-			_titleLabel.text = title;
-			_titleLabel.setStyle( "verticalAlign", "center" );
-			addChild( _titleLabel );
-			
-			_titleCloseButton.setStyle( "skin", CloseButtonSkin );
-			_titleCloseButton.setStyle( "fillAlpha", 1 );
-			_titleCloseButton.setStyle( "color", _borderColor );
-			_titleCloseButton.addEventListener( MouseEvent.CLICK, onClickTitleCloseButton );
-			addChild( _titleCloseButton );
-			
+			_editText.setStyle( "top", _textMargin );
 			_editText.setStyle( "left", _textMargin );
 			_editText.setStyle( "right", _textMargin );
 			_editText.setStyle( "bottom", _textMargin );
 			_editText.setStyle( "borderStyle", "none" );
 			_editText.setStyle( "focusSkin", null );
-			_editText.restrict = "A-Z a-z 0-9 !\"£$%\\^&*()\\-=_+[]{};'#:@~,./<>?\\\\|";
+			_editText.restrict = Utilities.printableCharacterRestrict;
 			addChild( _editText );
 			
 			_lazyChangeReporter = new LazyChangeReporter( _editText, commitEditText );
@@ -106,23 +97,20 @@ package components.views.InfoView
 				{
 					default:
 					case ColorScheme.LIGHT:
-						_backgroundColor = 0xffffff;
-						_titleCloseButton.setStyle( "fillColor", 0x000000 );
-						_titleLabel.setStyle( "color", 0x000000 );
-						_editText.setStyle( "backgroundColor", 0xffffff );
+						_borderColor = 0xBEBEBE;
+						_backgroundColor = 0xdfdfdf;
 						_editText.setStyle( "color", 0x6D6D6D );
 						
 						break;
 					
 					case ColorScheme.DARK:
-						_backgroundColor = 0x000000;
-						_titleCloseButton.setStyle( "fillColor", 0xffffff );
-						_titleLabel.setStyle( "color", 0xffffff );
-						_editText.setStyle( "backgroundColor", 0x000000 );
+						_borderColor = 0x424242;
+						_backgroundColor = 0x202020;
 						_editText.setStyle( "color", 0x939393 );
 						break;
 				}
-				
+
+				_editText.setStyle( "backgroundColor", _backgroundColor );
 				invalidateDisplayList();
 			}
 			
@@ -130,7 +118,6 @@ package components.views.InfoView
 			{
 				Assert.assertNotNull( parentDocument );
 				setStyle( FontSize.STYLENAME, parentDocument.getStyle( FontSize.STYLENAME ) );
-				updateSize();
 				invalidateDisplayList();
 			}
 		}
@@ -163,29 +150,6 @@ package components.views.InfoView
 		}
 		
 	
-		private function updateSize():void
-		{
-			Assert.assertNotNull( parentDocument );
-			
-			//calculate window size
-			var rowHeight:Number = FontSize.getTextRowHeight( this );
-			width = Math.min( rowHeight * 20, parentDocument.width );
-			height = Math.min( rowHeight * 18, parentDocument.height );
-			
-			//position title controls
-			_titleCloseButton.width = FontSize.getButtonSize( this ) * 1.1;
-			_titleCloseButton.height = FontSize.getButtonSize( this ) * 1.1;
-			_titleCloseButton.x = ( titleHeight - _titleCloseButton.width ) / 2;
-			_titleCloseButton.y = ( titleHeight - _titleCloseButton.width ) / 2;
-			
-			_titleLabel.x = titleHeight;
-			_titleLabel.y = titleHeight / 6;
-			_titleLabel.height = rowHeight;
-			
-			_editText.setStyle( "top", _textMargin + titleHeight );
-		}
-		
-		
 		protected override function updateDisplayList( width:Number, height:Number ):void
 		{
 			super.updateDisplayList( width, height );
@@ -196,32 +160,31 @@ package components.views.InfoView
 			graphics.beginFill( _backgroundColor );
 			graphics.drawRoundRect( 0, 0, width, height, _cornerRadius, _cornerRadius );
 			graphics.endFill();
-			
-			graphics.beginFill( _borderColor );
-			graphics.drawRoundRectComplex( 0, 0, width, titleHeight, _cornerRadius, _cornerRadius, 0, 0 );
-			graphics.endFill();
-		}
-		
-		
-		private function onClickTitleCloseButton( event:MouseEvent ):void
-		{
-			closeEditor();
 		}
 		
 		
 		private function onFocusOut( event:FocusEvent ):void
 		{
+			callLater( handleFocusOut );
+		}
+		
+		
+		private function handleFocusOut():void
+		{
 			var focusObject:InteractiveObject = getFocus();
-			if( !focusObject ) 
+			if( focusObject ) 
 			{
-				return;		//app losing focus
+				if( Utilities.isDescendant( focusObject, this ) )
+				{					
+					return;		//subcomponent of info view gaining focus
+				}
+				
+				if( Utilities.getAncestorByType( focusObject, EditInfoButton ) )
+				{					
+					return;		
+				}
 			}
 			
-			if( Utilities.isDescendant( focusObject, this ) )
-			{					
-				return;		//subcomponent of info view gaining focus
-			}
-
 			closeEditor();
 		}
 		
@@ -240,24 +203,15 @@ package components.views.InfoView
 		}
 		
 		
-		private function get titleHeight():Number
-		{
-			return FontSize.getTextRowHeight( this );
-		}
-		
-		
 		private var _objectID:int;
 
-		private var _titleLabel:Label = new Label;
-		private var _titleCloseButton:Button = new Button;
-		
 		private var _editText:TabbableTextArea = new TabbableTextArea;
 		private var _lazyChangeReporter:LazyChangeReporter = null;
 		
 		private var _backgroundColor:uint = 0;
+		private var _borderColor:uint = 0;
 		
 		private const _textMargin:Number = 5;
-		private const _borderColor:uint = 0xe95d0f;
 		private const _borderThickness:Number = 4;
 		private const _cornerRadius:Number = 15;
 

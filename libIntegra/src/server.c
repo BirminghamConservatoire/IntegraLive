@@ -178,7 +178,7 @@ void print_node_state(ntg_server *server, ntg_node *first,int indentation)
 
 				printf( has_children ? "  |" : "   ");
 
-				ntg_value_sprintf( value_buffer, attribute->value );
+				ntg_value_sprintf( value_buffer, NTG_LONG_STRLEN, attribute->value );
 
 				printf("   -Attribute:  %s = %s\n", attribute->endpoint->name, value_buffer );
 			}

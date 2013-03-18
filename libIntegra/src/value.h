@@ -70,7 +70,7 @@ ntg_value *ntg_value_duplicate(const ntg_value *value);
 void ntg_value_set(ntg_value *value, const void *v, ...);
 
 /** \brief Prints a ntg_value to a C string */
-ntg_error_code ntg_value_sprintf(char *s, const ntg_value *value);
+ntg_error_code ntg_value_sprintf(char *output, int chars_available, const ntg_value *value);
 
 /**\brief Compares two values for equality 
   * Currently only compares values of same type otherwise returns error */

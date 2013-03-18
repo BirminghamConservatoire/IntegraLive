@@ -21,24 +21,25 @@
 
 package components.controlSDK.HelperClasses
 {
-    import __AS3__.vec.Vector;
-    
-    import components.controlSDK.core.IntegraControl;
-    import components.controlSDK.core.IntegraControlEvent;
-    
     import flash.display.DisplayObjectContainer;
     import flash.events.Event;
     import flash.events.KeyboardEvent;
     import flash.events.MouseEvent;
     import flash.ui.Keyboard;
     
-    import flexunit.framework.Assert;
-    
     import mx.containers.Canvas;
     import mx.controls.Label;
     import mx.controls.TextInput;
     import mx.core.ScrollPolicy;
     import mx.events.MoveEvent;
+    
+    import __AS3__.vec.Vector;
+    
+    import components.controlSDK.core.IntegraControl;
+    import components.controlSDK.core.IntegraControlEvent;
+    import components.utils.Utilities;
+    
+    import flexunit.framework.Assert;
 	
     public class AttributeLabel extends Canvas
     {
@@ -64,7 +65,7 @@ package components.controlSDK.HelperClasses
             _textInput.setStyle( "color", 0x000000 );
             _textInput.setStyle( "disabledColor", 0x888888 );
             _textInput.setStyle( "textAlign", "center" );
-            //_textInput.restrict = "\\-.0123456789";
+            _textInput.restrict = Utilities.printableCharacterRestrict;
             _textInput.addEventListener( MouseEvent.MOUSE_DOWN, onMouseDown );
             _textInput.addEventListener( MouseEvent.DOUBLE_CLICK, onDoubleClick );
             addChild( _textInput );

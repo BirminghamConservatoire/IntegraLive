@@ -1,5 +1,4 @@
-The arrange view is the main view of the application. 
+This text is a placeholder for your *project* documentation
 
-It allows audio processing blocks to be arranged spatially in a manner that makes sense for the music being created. 
+Use the Info view 'edit' mode to add documentation to this *project*
 
-It also allows interactive elements to be added by routing external controllers or automated envelopes to a range of control parameters.

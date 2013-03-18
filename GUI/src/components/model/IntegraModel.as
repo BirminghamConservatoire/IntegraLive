@@ -513,7 +513,6 @@ package components.model
 				return object as Envelope;
 			} 
 			
-			Assert.assertTrue( false );		//not found, or wrong type
 			return null;
 		}
 		

@@ -99,16 +99,6 @@ package components.views.RibbonBar
 			{
 				height = FontSize.getTextRowHeight( this );
 
-				_label.setStyle( FontSize.STYLENAME, getStyle( FontSize.STYLENAME ) );
-				
-				//trick the label into remeasuring its length
-				var prevLabel:String = _label.text;
-				_label.text = null;
-				_label.validateNow();
-				_label.text = prevLabel;
-				_label.validateNow();
-				
-				//width = height + _label.textWidth;  // FL4U
 				width = height + _label.text.length * 8;
 			}			
 		}

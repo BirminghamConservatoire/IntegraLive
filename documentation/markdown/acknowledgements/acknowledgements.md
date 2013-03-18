@@ -21,6 +21,7 @@ Other contributors include:
 - **Dag Henning Kalv&oslash;y** - Tester and Module Developer
 - **James Dooley** - Tester and Module Developer
 - **Tychonas Michailidis** - Tester
+- **Stefano Tofani** - Tester
 
 ----
 

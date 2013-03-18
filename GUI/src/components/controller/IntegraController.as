@@ -21,9 +21,16 @@
 
 package components.controller
 {
-	import __AS3__.vec.Vector;
-	
 	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
+	
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.utils.describeType;
+	
+	import mx.controls.Alert;
+	
+	import __AS3__.vec.Vector;
 	
 	import components.controller.events.AllDataChangedEvent;
 	import components.controller.events.IntegraCommandEvent;
@@ -39,6 +46,7 @@ package components.controller
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.StoreUserData;
 	import components.controller.undostack.UndoManager;
+	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.controller.userDataCommands.SetProjectModified;
 	import components.model.Block;
 	import components.model.IntegraDataObject;
@@ -53,14 +61,7 @@ package components.controller
 	import components.utils.Utilities;
 	import components.views.InfoView.InfoMarkupForViews;
 	
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.utils.describeType;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.controls.Alert;
 
 	
 	public class IntegraController extends EventDispatcher
@@ -134,8 +135,10 @@ package components.controller
 				}
 			}
 
-			if( !( command is SetProjectModified ) && _activeUndoStack )
+			if( _activeUndoStack && command.isNewUndoStep )
 			{
+				Assert.assertFalse( command is SetProjectModified );
+				
 				processCommand( new SetProjectModified( true ) );
 			}
 			

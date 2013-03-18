@@ -1,6 +1,6 @@
 # Scene Shortcuts
 
-* Scenes can be activated from live view by pressing the key associated with each scene.
+Activate *scenes* from Live View by pressing the key assigned to the *scene*
 
-* Scene key bindings can be reassigned by dragging the scene names on the live view keyboard map.
+Reassign key assignments by dragging the *scene* names on the Live View keyboard map
 

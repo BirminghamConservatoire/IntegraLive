@@ -21,7 +21,7 @@ SERVERBIN=$(SERVERDIR)/bin
 SERVERLIB=$(SERVERDIR)/lib
 SERVERMAKESUFFIX=CC='gcc -mmacosx-version-min=10.6 -arch i386 -arch x86_64' CXX='g++ -mmacosx-version-min=10.6 -arch i386 -arch x86_64' CPP='gcc -E -mmacosx-version-min=10.6 -arch i386' CXXCPP='g++ -E -mmacosx-version-min=10.6 -arch i386'
 SERVERCONFIGBASE=--disable-dependency-tracking --enable-luascripting --enable-server --enable-dummy_bridge --enable-osc_bridge --prefix=$(PWD)/$(SERVERDIR) --with-lua=$(PWD)/$(LIBINTEGRADEPS_DIR) --with-liblo-include-dir=$(PWD)/$(LIBINTEGRADEPS_DIR)/include
-SERVERCONFIGDEBUG=$(SERVERCONFIGBASE) --enable-debug=yes LDFLAGS="-L$(DEPENDENCIESDIR)"
+SERVERCONFIGDEBUG=$(SERVERCONFIGBASE) --enable-debug=yes --enable-Werror LDFLAGS="-L$(DEPENDENCIESDIR)"
 SERVERCONFIGRELEASE=$(SERVERCONFIGBASE) --enable-debug=no LDFLAGS="-L$(DEPENDENCIESDIR)"
 
 -include Make.config
@@ -67,7 +67,7 @@ run:
 	open $(APPNAME)
 
 run-server-debug:
-	cd $(APPNAME)/Contents/Resources/server/bin && gdb --args ./integra_server -bridge=../lib/integra/integra_osc_bridge.so -xmlrpc_server_port=8000 -osc_server_port=8001 -osc_client_port=8002 -osc_client_url=127.0.0.1 -module_paths=../share/libintegra/interfaces/ -trace_progress=1 -host=../../host/bin/pd_integra -hostargs=../../host/extra/Integra_Host.pd
+	cd $(APPNAME)/Contents/Resources/server/bin && gdb --args ./integra_server -bridge=../lib/integra/integra_osc_bridge.so -xmlrpc_server_port=8003 -osc_server_port=8004 -osc_client_port=8005 -osc_client_url=127.0.0.1 -module_paths=../share/libintegra/interfaces/ -trace_progress=1 -host=../../host/bin/pd_integra -hostargs=../../host/extra/Integra_Host.pd
 	
 
 run-gui:

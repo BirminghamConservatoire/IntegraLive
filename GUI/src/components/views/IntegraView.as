@@ -21,33 +21,27 @@
 
 package components.views
 {
+	import flash.display.InteractiveObject;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.events.NativeDragEvent;
+	import flash.ui.Keyboard;
+	
+	import mx.containers.Canvas;
+	import mx.controls.FlexNativeMenu;
+	import mx.events.FlexNativeMenuEvent;
+	
 	import components.controller.Command;
 	import components.controller.IntegraController;
 	import components.controller.events.AllDataChangedEvent;
 	import components.controller.events.IntegraCommandEvent;
 	import components.model.Info;
 	import components.model.IntegraModel;
-	import components.model.userData.ColorScheme;
-	import components.utils.Trace;
 	import components.utils.Utilities;
 	import components.views.viewContainers.IntegraViewEvent;
 	
-	import flash.display.InteractiveObject;
-	import flash.events.Event;
-	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.events.NativeDragEvent;
-	import flash.text.TextField;
-	import flash.ui.Keyboard;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.controls.FlexNativeMenu;
-	import mx.controls.TextArea;
-	import mx.core.ScrollPolicy;
-	import mx.events.FlexNativeMenuEvent;
 	
 	public class IntegraView extends Canvas
 	{
@@ -75,6 +69,8 @@ package components.views
 		public function get isTitleEditable():Boolean { return false; }
 		
 		public function get titlebarView():IntegraView { return null; }
+		public function get rightAlignTitlebarView():Boolean { return false; }
+		
 		public function get breadcrumbsView():IntegraView { return null; }
 		public function get vuMeterContainerID():int { return -1; }
 		public function get color():uint { return 0; }
@@ -117,6 +113,8 @@ package components.views
 		
 		public function free():void
 		{
+			Assert.assertFalse( _freed );
+
 			controller.removeEventListener( AllDataChangedEvent.EVENT_NAME, onAllDataChangedEvent ); 
 			controller.removeEventListener( IntegraCommandEvent.EVENT_NAME, onIntegraCommandEvent );
 			
@@ -124,7 +122,12 @@ package components.views
 			
 			allDecorationMightHaveChanged();
 
-			Assert.assertFalse( _freed );
+			_updateMethods = null;
+			_titleInvalidatingCommands = null;
+			_titlebarInvalidatingCommands = null;
+			_vuMeterChangingCommands = null;
+			_colorChangingCommands = null;
+			
 			_freed = true;
 		}
 		
@@ -230,6 +233,8 @@ package components.views
 		
 		private function onIntegraCommandEvent( event:IntegraCommandEvent ):void
 		{
+			if( _freed ) return;
+			
 			var command:Command = event.command;
 			Assert.assertNotNull( command );
 

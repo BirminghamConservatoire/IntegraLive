@@ -21,11 +21,23 @@
 
 package components.model.modelLoader
 {
-	import __AS3__.vec.Vector;
-	
 	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
 	
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.TimerEvent;
+	import flash.filesystem.File;
+	import flash.geom.Rectangle;
+	import flash.utils.Timer;
+	
+	import mx.controls.Alert;
+	
+	import __AS3__.vec.Vector;
+	
+	import components.controller.IntegraController;
 	import components.controller.events.LoadCompleteEvent;
+	import components.controller.events.LoadFailedEvent;
 	import components.model.Block;
 	import components.model.Connection;
 	import components.model.ControlPoint;
@@ -40,7 +52,6 @@ package components.model.modelLoader
 	import components.model.Scene;
 	import components.model.Script;
 	import components.model.Track;
-	import components.model.interfaceDefinitions.Constraint;
 	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
@@ -54,18 +65,7 @@ package components.model.modelLoader
 	import components.utils.IntegraConnection;
 	import components.utils.Trace;
 	
-	import flash.events.ErrorEvent;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.TimerEvent;
-	import flash.geom.Rectangle;
-	import flash.filesystem.File;
-	import flash.utils.ByteArray;
-	import flash.utils.Timer;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.controls.Alert;
 	
 	public class ModelLoader
 	{
@@ -95,6 +95,9 @@ package components.model.modelLoader
 			_mode = LOADING_ALL;
 			_loadPhase = ModelLoadPhase.INTERFACE_LIST;
 			_shouldAddDefaultNewProjectObjects = false;
+			_error = null;
+			_topLevelLoadedObjectPaths = new Vector.<Array>;
+			_loadHierarchyLevel = 1;
 			
 			_timeoutTimer.start();
 			
@@ -113,6 +116,9 @@ package components.model.modelLoader
 			_mode = mode;
 			_loadPhase = ModelLoadPhase.INSTANCES;
 			_presuppliedID = presuppliedID;
+			_error = null;
+			_topLevelLoadedObjectPaths = new Vector.<Array>;
+			_loadHierarchyLevel = branchPath.length + 1;
 
 			var instancesCall:IntegraConnection = new IntegraConnection( _serverUrl );
 			instancesCall.addEventListener( Event.COMPLETE, instancesHandler, false, 1 );
@@ -310,6 +316,12 @@ package components.model.modelLoader
 		{
 			Trace.progress( "call Result Handler phase ", _loadPhase );
 			
+			if( _error )
+			{
+				handleLoadError();
+				return;
+			}
+			
  			if( _timeoutTimer.running )
 			{
 				_timeoutTimer.stop();
@@ -333,6 +345,7 @@ package components.model.modelLoader
 				case ModelLoadPhase.STATES:
 					resolveBlockEnvelopes();
 					resolveScalerConnections( _model.project );
+						
 					loadComplete();
 					break;
 					
@@ -341,15 +354,18 @@ package components.model.modelLoader
 					Assert.assertTrue( false );
 					break;
 			}
+			
+			if( _error )
+			{
+				handleLoadError();
+			}
 		}
 
 
 		private function rpcErrorHandler( event:ErrorEvent ):void
 		{
-			Trace.error( "xml error:" + event.text );
-
-			//todo - better implementation?			
-
+			_error = "Something went wrong in the communication with the server!\n\nPlease try again";
+			
 			callResultHandler( event );
 		}
 		
@@ -663,9 +679,15 @@ package components.model.modelLoader
 				
 				Assert.assertTrue( hierarchyLevel >= 1 );
 
-				if( _mode != LOADING_ALL && _model.getIDFromPathArray( path ) >= 0 )
+				if( ( _mode != LOADING_ALL ) && _model.getIDFromPathArray( path ) >= 0 )
 				{
 					continue;	//we already have this node!
+				}
+				
+				if( hierarchyLevel <= _loadHierarchyLevel )
+				{
+					Assert.assertTrue( hierarchyLevel == _loadHierarchyLevel );
+					_topLevelLoadedObjectPaths.push( path );	
 				}
 				
 				var parentID:int = -1;
@@ -979,6 +1001,11 @@ package components.model.modelLoader
 				}
 			}
 
+			if( _error ) 
+			{
+				 return;
+			}
+			
 			if( _mode != LOADING_ALL )
 			{
 				return;
@@ -1084,7 +1111,30 @@ package components.model.modelLoader
 		
 		private function foundExtraneousNode( path:Array, interfaceDefinition:InterfaceDefinition, comment:String ):void
 		{
-			Trace.error( "Found extraneous node.  Path = " + path.join( "." ) + ", classname = " + interfaceDefinition.interfaceInfo.name + ", comment = " + comment );			
+			Trace.error( "Found extraneous node.  Path = " + path.join( "." ) + ", classname = " + interfaceDefinition.interfaceInfo.name + ", comment = " + comment );
+			
+			switch( _mode )
+			{
+				case LOADING_ALL:
+					_error = "This file cannot be opened as a project.\n\nTry importing it as a track, block or module";
+					break;
+				
+				case IMPORTING_TRACK:
+					_error = "This file cannot be imported as a track.\n\nTry opening it as a project, or importing it as a block or module";
+					break;
+				
+				case IMPORTING_BLOCK:
+					_error = "This file cannot be imported as a block.\n\nTry opening it as a project, or importing it as a track or module";
+					break;
+				
+				case IMPORTING_MODULE:
+					_error = "This file cannot be imported as a module.\n\nTry opening it as a project, or importing it as a track or block";
+					break;
+				
+				default:
+					Assert.assertFalse( true );
+					break;
+			}
 		}
 		
 		
@@ -1360,6 +1410,38 @@ package components.model.modelLoader
 			object.id = _model.generateNewID();
 		} 
 		
+		
+		private function handleLoadError():void
+		{
+			Assert.assertNotNull( _error );
+			
+			IntegraController.singleInstance.dispatchEvent( new LoadFailedEvent( _error ) );
+			
+			var multiCall:Array = new Array;
+			
+			for each( var loadedObjectPath:Array in _topLevelLoadedObjectPaths )
+			{
+				var deleteCall:Object = new Object;
+				deleteCall.methodName = "command.delete";
+				deleteCall.params = [ loadedObjectPath ];
+				multiCall.push( deleteCall );
+			}
+
+			var deleteObjectsCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			deleteObjectsCall.addArrayParam( multiCall );
+			deleteObjectsCall.addEventListener( Event.COMPLETE, onFailedLoadDeleted );
+			deleteObjectsCall.callQueued( "system.multicall" );
+		}
+		
+		
+		private function onFailedLoadDeleted( event:Event ):void
+		{
+			var response:Object = event.target.getResponse();
+			
+			IntegraController.singleInstance.loadModel();			
+		}
+
+		
 		public static const LOADING_ALL:String = "loadingAll";
 		public static const IMPORTING_TRACK:String = "importingTrack";
 		public static const IMPORTING_BLOCK:String = "importingBlock";
@@ -1378,6 +1460,11 @@ package components.model.modelLoader
 		private var _presuppliedID:int = -1;
 		private var _shouldAddDefaultNewProjectObjects:Boolean = false;
 		private var _mode:String = LOADING_ALL;
+		private var _topLevelLoadedObjectPaths:Vector.<Array> = null;
+		private var _loadHierarchyLevel:int = -1;
+		
+		private var _error:String = null;
+
 		
 		private var _timeoutTimer:Timer = new Timer( _timeoutMilliseconds, 1 );
 		

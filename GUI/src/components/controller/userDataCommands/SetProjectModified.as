@@ -21,7 +21,6 @@
 
 package components.controller.userDataCommands
 {
-	import components.controller.Command;
 	import components.controller.UserDataCommand;
 	import components.model.IntegraModel;
 	

@@ -54,17 +54,13 @@
 			import components.controller.serverCommands.PreviousScene;
 			import components.controller.serverCommands.ResetAllBlocks;
 			import components.controller.serverCommands.SetPlaying;
-			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetDisplayedInfo;
 			import components.controller.userDataCommands.SetProjectModified;
 			import components.model.Info;
 			import components.model.IntegraModel;
 			import components.model.userData.ColorScheme;
 			import components.utils.Config;
-			import components.utils.ControlContainer;
-			import components.utils.ControlMeasurer;
 			import components.utils.FontSize;
-			import components.utils.IntegraAlert;
 			import components.utils.LoggingSystem;
 			import components.utils.MessagePopup;
 			import components.utils.ModalState;
@@ -80,18 +76,13 @@
 			import components.views.Upgrades.UpgradeWarning;
 			import components.views.viewContainers.ViewHolder;
 			
-			import flash.system.Capabilities;
-			
 			import flexunit.framework.Assert;
 			
 			import mx.controls.Alert;
-			import mx.core.Container;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
-			import mx.managers.FocusManager;
 			import mx.managers.PopUpManager;
 			import mx.managers.SystemManager;
-			import mx.managers.ToolTipManager;
 
 			
 			public function reloadAndUpdate( event:Event = null ):void
@@ -254,11 +245,10 @@
 				stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );
 				stage.addEventListener( KeyboardEvent.KEY_UP, onStageKeyUp );
 				stage.addEventListener( MouseEvent.MOUSE_MOVE, onStageMouseMove );
+				stage.addEventListener( MouseEvent.MOUSE_OUT, onStageMouseOut );
 				stage.addEventListener( Event.REMOVED, onStageRemoved );
 				stage.quality = StageQuality.BEST;
 
-				//ToolTipManager.showDelay = 1000;
-				//ToolTipManager.scrubDelay = -1;
 				_tooltipTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onTooltipTimer );
 				
 				_oscServer = new OSCServer( config.guiUrl + ":" + config.oscClientPort, RemoteCommandHandler.singleInstance );
@@ -419,13 +409,14 @@
 			
 			private function onLoadFailed( event:LoadFailedEvent ):void
 			{
-				IntegraAlert.show( event.errorString, "Error loading file", Alert.OK, this );
+				Alert.show( event.errorString, "Error loading file", Alert.OK, this );
+				_lastFilename = null;
 			}
 
 			
 			private function onSaveFailed( event:SaveFailedEvent ):void
 			{
-				IntegraAlert.show( event.errorString, "Error saving file", Alert.OK, this );
+				Alert.show( event.errorString, "Error saving file", Alert.OK, this );
 			}
 			
 
@@ -586,7 +577,7 @@
 						restore();
 					}
 					
-					IntegraAlert.show( "The project \"" + _model.project.name + "\" has changed.\nWould you like to save your changes?", caption, Alert.YES | Alert.NO | Alert.CANCEL, this, saveModifiedHandler );
+					Alert.show( "The project \"" + _model.project.name + "\" has changed.\nWould you like to save your changes?", caption, Alert.YES | Alert.NO | Alert.CANCEL, this, saveModifiedHandler );
 					enterModalState();
 				}
 				else
@@ -1089,7 +1080,7 @@
 				
 				return null;
 			}
-			
+
 			
 			private function onStageMouseMove( event:MouseEvent ):void
 			{
@@ -1104,6 +1095,15 @@
 				if( !_model.showInfoView )
 				{
 					updateTooltip();
+				}
+			}
+
+			
+			private function onStageMouseOut( event:MouseEvent ):void
+			{
+				if( _model.currentInfo )
+				{
+					_controller.processCommand( new SetDisplayedInfo( null ) );
 				}
 			}
 
@@ -1279,7 +1279,7 @@
 	<fx:Style>
 		@namespace mx "library://ns.adobe.com/flex/mx";
 		{
-			font-family: "Lucida Grande", Verdana, Helvetica, "_sans";
+			font-family: Verdana, Helvetica, "_sans";
 		}
 		mx|ScrollBar
 		{
@@ -1301,6 +1301,24 @@
 			modalTransparencyColor: black;
 			modalTransparencyDuration: 500;
 		}
+		
+		mx|Alert
+		{
+			fontFamily: Verdana;
+			fontSize: 12;
+			color: #DBD3D0; 
+			backgroundColor: #503426;
+			borderColor: #E65D0D;
+			backgroundAlpha: 1;
+			borderAlpha: 1;			
+			buttonStyleName: alertButtonStyle;
+		}
+		
+		.alertButtonStyle
+		{
+			cornerRadius: 4;
+			fontSize: 10;
+		}		
 
 	</fx:Style>
 

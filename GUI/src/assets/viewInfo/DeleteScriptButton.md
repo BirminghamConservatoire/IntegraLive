@@ -1,5 +1,5 @@
 <!--Delete Script-->
 
-# Delete _script_
+# Delete Script
 
-Click here to delete the _script_.
+Click here to delete this script

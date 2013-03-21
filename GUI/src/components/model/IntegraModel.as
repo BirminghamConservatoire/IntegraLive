@@ -21,6 +21,8 @@
 
 package components.model
 {
+	import flash.geom.Rectangle;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.model.interfaceDefinitions.EndpointDefinition;
@@ -32,8 +34,6 @@ package components.model
 	import components.model.userData.LiveViewControl;
 	import components.utils.Trace;
 	import components.utils.Utilities;
-	
-	import flash.geom.Rectangle;
 	
 	import flexunit.framework.Assert;
 
@@ -402,15 +402,27 @@ package components.model
 		}
 
 		
-		public function getInterfaceDefinitionByGuid( guid:String ):InterfaceDefinition
+		public function getInterfaceDefinitionByModuleGuid( moduleGuid:String ):InterfaceDefinition
 		{
-			if( _allInterfaceDefinitionsByGuid.hasOwnProperty( guid ) )
+			if( _interfaceDefinitionsByModuleGuid.hasOwnProperty( moduleGuid ) )
 			{
-				return _allInterfaceDefinitionsByGuid[ guid ] as InterfaceDefinition;
+				return _interfaceDefinitionsByModuleGuid[ moduleGuid ] as InterfaceDefinition;
 			}
 
 			//not found
 			return null;
+		}
+		
+		
+		public function getInterfaceDefinitionsByOriginGuid( originGuid:String ):Vector.<InterfaceDefinition>
+		{
+			if( _interfaceDefinitionsByOriginGuid.hasOwnProperty( originGuid ) )
+			{
+				return _interfaceDefinitionsByOriginGuid[ originGuid ] as Vector.<InterfaceDefinition>;
+			}
+			
+			//not found
+			return null;			
 		}
 
 		
@@ -895,7 +907,8 @@ package components.model
 		{
 			_interfaceList = new Vector.<String>;
 			_coreInterfaceDefinitionsByName = new Object;
-			_allInterfaceDefinitionsByGuid = new Object;
+			_interfaceDefinitionsByModuleGuid = new Object;
+			_interfaceDefinitionsByOriginGuid = new Object;
 			
 			clearInstances();
 		}
@@ -952,13 +965,34 @@ package components.model
 		
 		public function addInterfaceDefinition( interfaceDefinition:InterfaceDefinition ):void
 		{
-			Assert.assertFalse( _allInterfaceDefinitionsByGuid.hasOwnProperty( interfaceDefinition.moduleGuid ) );
+			Assert.assertFalse( _interfaceDefinitionsByModuleGuid.hasOwnProperty( interfaceDefinition.moduleGuid ) );
 			
-			_allInterfaceDefinitionsByGuid[ interfaceDefinition.moduleGuid ] = interfaceDefinition;
+			_interfaceDefinitionsByModuleGuid[ interfaceDefinition.moduleGuid ] = interfaceDefinition;
+
+			if( _interfaceDefinitionsByOriginGuid.hasOwnProperty( interfaceDefinition.originGuid ) )
+			{
+				var sameOriginList:Vector.<InterfaceDefinition> = _interfaceDefinitionsByOriginGuid[ interfaceDefinition.originGuid ] as Vector.<InterfaceDefinition>;
+				Assert.assertNotNull( sameOriginList );
+				
+				sameOriginList.push( interfaceDefinition );
+				sameOriginList.sort( originListCompareFunction );
+			}
+			else
+			{
+				sameOriginList = new Vector.<InterfaceDefinition>;
+				sameOriginList.push( interfaceDefinition );
+				
+				_interfaceDefinitionsByOriginGuid[ interfaceDefinition.originGuid ] = sameOriginList;
+			}
+			
 			
 			if( interfaceDefinition.isCore )
 			{
-				Assert.assertFalse( _coreInterfaceDefinitionsByName.hasOwnProperty( interfaceDefinition.interfaceInfo.name ) );
+				if( _coreInterfaceDefinitionsByName.hasOwnProperty( interfaceDefinition.interfaceInfo.name ) )
+				{
+					Assert.assertTrue( interfaceDefinition.moduleSource != InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA );
+					return;
+				}
 				
 				_coreInterfaceDefinitionsByName[ interfaceDefinition.interfaceInfo.name ] = interfaceDefinition;
 			}
@@ -1447,10 +1481,30 @@ package components.model
 			return results;
 		}
 
+		
+		private function originListCompareFunction( a:InterfaceDefinition, b:InterfaceDefinition ):Number
+		{
+			Assert.assertEquals( a.originGuid, b.originGuid );
+
+			var sourcePriority:Object = new Object;
+			sourcePriority[ InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA ] = 2;
+			sourcePriority[ InterfaceDefinition.MODULE_THIRD_PARTY ] = 1;
+			sourcePriority[ InterfaceDefinition.MODULE_EMBEDDED ] = 0;
+			
+			var sourcePriorityA:Number = sourcePriority[ a.moduleSource ];
+			var sourcePriorityB:Number = sourcePriority[ b.moduleSource ];
+			
+			if( sourcePriorityA > sourcePriorityB ) return -1;
+			if( sourcePriorityB > sourcePriorityA ) return 1;
+
+			return ( a.interfaceInfo.modifiedDate.getTime() > b.interfaceInfo.modifiedDate.getTime() ) ? -1 : 1;
+		}
+		
 
 		private var _interfaceList:Vector.<String>;
+		private var _interfaceDefinitionsByModuleGuid:Object;
+		private var _interfaceDefinitionsByOriginGuid:Object;
 		private var _coreInterfaceDefinitionsByName:Object;
-		private var _allInterfaceDefinitionsByGuid:Object;
 		
 		private var _project:Project;
 		private var _isProjectModified:Boolean;

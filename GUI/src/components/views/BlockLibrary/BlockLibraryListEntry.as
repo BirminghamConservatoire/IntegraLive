@@ -21,21 +21,18 @@
 
 package components.views.BlockLibrary
 {
-	import components.model.Block;
 	import components.model.Info;
 	import components.utils.Trace;
 	
 	import deng.fzip.FZip;
 	import deng.fzip.FZipFile;
 	
-	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
 	
-	import flexunit.framework.Assert;
-	
+
 	public class BlockLibraryListEntry extends Object
 	{
 		public function BlockLibraryListEntry( file:File, isUserBlock:Boolean )

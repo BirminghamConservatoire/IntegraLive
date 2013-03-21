@@ -449,9 +449,9 @@ package components.model.modelLoader
 		}
 
 		
-		private function handleEndpoints( interfaceGuid:String, info:Object ):void
+		private function handleEndpoints( moduleGuid:String, info:Object ):void
 		{
-			var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByGuid( interfaceGuid );
+			var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( moduleGuid );
 			Assert.assertNotNull( interfaceDefinition );
 
 			for each( var endpointInfo:Object in info )
@@ -601,9 +601,9 @@ package components.model.modelLoader
 		}
 
 		
-		private function handleWidgets( interfaceGuid:String, info:Object ):void
+		private function handleWidgets( moduleGuid:String, info:Object ):void
 		{
-			var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByGuid( interfaceGuid );
+			var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( moduleGuid );
 			Assert.assertNotNull( interfaceDefinition );
 			
 			for each( var widgetInfo:Object in info )
@@ -664,11 +664,11 @@ package components.model.modelLoader
 			//parse nodelist
 			for each( var node:Object in nodeList )
 			{
-				var interfaceGuid:String = node.guid;
-				var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByGuid( interfaceGuid );
+				var moduleGuid:String = node.guid;
+				var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( moduleGuid );
 				if( !interfaceDefinition )
 				{
-					Trace.error( "Can't resolve class guid", interfaceGuid );
+					Trace.error( "Can't resolve class guid", moduleGuid );
 					continue;
 				}
 				

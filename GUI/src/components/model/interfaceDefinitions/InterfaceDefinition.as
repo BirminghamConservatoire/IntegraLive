@@ -119,5 +119,9 @@ package components.model.interfaceDefinitions
 		private var _interfaceInfo:InterfaceInfo = new InterfaceInfo;
 		private var _endpoints:Vector.<EndpointDefinition> = new Vector.<EndpointDefinition>;
 		private var _widgets:Vector.<WidgetDefinition> = new Vector.<WidgetDefinition>;
+		
+		public static const MODULE_SHIPPED_WITH_INTEGRA:String = "shippedwithintegra";
+		public static const MODULE_THIRD_PARTY:String = "thirdparty";
+		public static const MODULE_EMBEDDED:String = "embedded";
 	}
 }

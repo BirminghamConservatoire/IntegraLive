@@ -21,13 +21,6 @@
 
 package components.views.ModuleLibrary
 {
-	import components.model.Block;
-	
-	import flash.events.EventDispatcher;
-	import flash.filesystem.File;
-	
-	import flexunit.framework.Assert;
-	
 	public class ModuleLibraryListEntry extends Object
 	{
 		public function ModuleLibraryListEntry( label:String, guid:String )
@@ -37,13 +30,20 @@ package components.views.ModuleLibrary
 			_label = label;
 			_guid = guid;
 		}
+
+		public function set childData( childData:Array ):void { _childData = childData; }
+		public function set expanded( expanded:Boolean ):void { _expanded = expanded; }
 		
 		public function get label():String { return _label; }
 		public function get guid():String { return _guid; }
-		
+		public function get childData():Array { return _childData; }
+		public function get expanded():Boolean { return _expanded; }
+
 		public function toString():String { return _label; }
 		
 		private var _label:String = null;
 		private var _guid:String = null;
+		private var _childData:Array = null;
+		private var _expanded:Boolean = false;
 	}
 }

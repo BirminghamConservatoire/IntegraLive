@@ -21,21 +21,8 @@
 
 package components.views.ModuleLibrary
 {
-	import components.model.Info;
-	import components.model.interfaceDefinitions.InterfaceDefinition;
-	import components.model.interfaceDefinitions.InterfaceInfo;
-	import components.model.interfaceDefinitions.StreamInfo;
-	import components.model.userData.ColorScheme;
-	import components.utils.LibraryRenderer;
-	import components.utils.Trace;
-	import components.utils.Utilities;
-	import components.views.InfoView.InfoMarkupForViews;
-	import components.views.IntegraView;
-	
 	import flash.display.DisplayObject;
 	import flash.events.MouseEvent;
-	
-	import flexunit.framework.Assert;
 	
 	import mx.collections.IList;
 	import mx.controls.List;
@@ -46,9 +33,18 @@ package components.views.ModuleLibrary
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
-	import mx.events.ListEvent;
 	import mx.managers.DragManager;
 	import mx.utils.ObjectProxy;
+	
+	import components.model.Info;
+	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.userData.ColorScheme;
+	import components.utils.LibraryRenderer;
+	import components.utils.Utilities;
+	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
+	
+	import flexunit.framework.Assert;
 
 	public class ModuleLibrary extends IntegraView
 	{
@@ -67,6 +63,7 @@ package components.views.ModuleLibrary
 			_moduleList.percentHeight = 100;
 			_moduleList.dragEnabled = true;
 			_moduleList.dragMoveEnabled = false;
+			_moduleList.variableRowHeight = true; 
 			_moduleList.setStyle( "backgroundAlpha", 0 );
 			_moduleList.setStyle( "borderStyle", "none" );			
 			_moduleList.itemRenderer = new ClassFactory( LibraryRenderer );
@@ -139,21 +136,65 @@ package components.views.ModuleLibrary
 
 		override protected function onAllDataChanged():void
 		{
-			var listData:Array = new Array;
-
+			//first pass - build map of origin guid -> vector of interfaces
+			var originGuidSet:Object = new Object;
 			for each( var guid:String in model.interfaceList )
 			{
-				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByGuid( guid );
+				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( guid );
 				Assert.assertNotNull( interfaceDefinition );
 
-				if( interfaceDefinition.hasAudioEndpoints )
+				if( !interfaceDefinition.hasAudioEndpoints )
 				{
-					listData.push( new ObjectProxy( new ModuleLibraryListEntry( interfaceDefinition.interfaceInfo.label, guid ) ) );
+					//don't display modules with no endpoints
+					continue;
 				}
+				
+				if( originGuidSet.hasOwnProperty( interfaceDefinition.originGuid ) )
+				{
+					//already have this one
+					continue;
+				}
+				
+				var interfaces:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
+				Assert.assertNotNull( interfaces );
+				
+				originGuidSet[ interfaceDefinition.originGuid ] = interfaces;
+					
 			}
+
+			//second pass - build list data
+			var listData:Array = new Array;
+			for( var originGuid:String in originGuidSet )
+			{
+				var group:Vector.<InterfaceDefinition> = originGuidSet[ originGuid ];
+				Assert.assertTrue( group.length > 0 );
+				
+				var defaultInterface:InterfaceDefinition = group[ 0 ];
+
+				var originItem:ModuleLibraryListEntry = createListEntry( defaultInterface );
+				
+				if( group.length > 1 )
+				{
+					var childItems:Array = new Array;
+					for each( var childInterface:InterfaceDefinition in group )
+					{
+						childItems.push( new ObjectProxy( createListEntry( childInterface ) ) );				
+					}
+					originItem.childData = childItems;
+				}
+				
+				listData.push( new ObjectProxy( originItem ) );
+			}
+			
 			
 			listData.sortOn( "label", Array.CASEINSENSITIVE );
 			_moduleList.dataProvider = listData;
+		}
+		
+		
+		private function createListEntry( interfaceDefinition:InterfaceDefinition ):ModuleLibraryListEntry
+		{
+			return new ModuleLibraryListEntry( interfaceDefinition.interfaceInfo.label, interfaceDefinition.moduleGuid );			
 		}
 
 		
@@ -188,7 +229,7 @@ package components.views.ModuleLibrary
 			var item:ModuleLibraryListEntry = objectProxy.valueOf() as ModuleLibraryListEntry;
 			Assert.assertNotNull( item );
 			
-			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByGuid( item.guid );
+			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( item.guid );
 			Assert.assertNotNull( interfaceDefinition );
 			
 			return interfaceDefinition;

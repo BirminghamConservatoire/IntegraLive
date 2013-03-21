@@ -23,10 +23,8 @@
 package components.views.Skins
 {
 	import components.model.userData.ColorScheme;
-	import components.utils.Utilities;
 	import flash.filters.GlowFilter;
 	import flexunit.framework.Assert;
-	import mx.styles.StyleManager;
 	import mx.skins.halo.ButtonSkin;
 
 	
@@ -126,10 +124,24 @@ package components.views.Skins
 			graphics.beginFill( arrowColor );
 			if( collapsed )
 			{
-				graphics.moveTo( radius * 0.8, radius * 0.5 );
-				graphics.lineTo( radius * 0.8, radius * 1.5 );
-				graphics.lineTo( radius * 1.3, radius );
-				graphics.lineTo( radius * 0.8, radius * 0.5 );
+				var collapseDirection:String = getStyle( COLLAPSE_DIRECTION_STYLENAME );
+				if( !collapseDirection ) collapseDirection = RIGHT;
+
+				switch( collapseDirection )
+				{
+					case RIGHT:
+						graphics.moveTo( radius * 0.8, radius * 0.5 );
+						graphics.lineTo( radius * 0.8, radius * 1.5 );
+						graphics.lineTo( radius * 1.3, radius );
+						graphics.lineTo( radius * 0.8, radius * 0.5 );
+						break;
+					case LEFT:
+						graphics.moveTo( radius * 1.2, radius * 0.5 );
+						graphics.lineTo( radius * 1.2, radius * 1.5 );
+						graphics.lineTo( radius * 0.7, radius );
+						graphics.lineTo( radius * 1.2, radius * 0.5 );
+						break;
+				}
 			}
 			else
 			{
@@ -146,5 +158,10 @@ package components.views.Skins
 			filterArray.push( new GlowFilter( color, 0.6, 10, 10, glowStrength ) );
 			filters = filterArray;
 		}
+		
+		public static const COLLAPSE_DIRECTION_STYLENAME:String = "collapseDirection";
+		public static const RIGHT:String = "right";
+		public static const LEFT:String = "left";
+		
 	}
 }

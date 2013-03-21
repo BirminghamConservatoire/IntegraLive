@@ -19,20 +19,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
  * USA.
  -->
- <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
-			xmlns:s="library://ns.adobe.com/flex/spark" 
+ <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
 			xmlns:mx="library://ns.adobe.com/flex/mx"
 			creationComplete="{onCreationComplete()}"
+			dataChange="{onDataChange()}"
+			clipContent="true"
 			horizontalScrollPolicy="off" verticalScrollPolicy="off">
 
-	<s:Label text="{data.toString()}" 
-				paddingLeft="6" paddingRight="6" paddingTop="6" paddingBottom="6"/>
+	<mx:Label text="{data.toString()}" 
+				paddingLeft="6" paddingRight="6" paddingTop="3" paddingBottom="3"/>
 
+	 <mx:Button id="_test" 
+				left="50"
+				label="{data.toString()}"/>
+	 
+	<mx:Button id="_collapseButton" 
+			   toggle="true" 
+			   click="onClickCollapseButton()"
+			   skin="components.views.Skins.CollapseButtonSkin"
+			   visible="false"/>
+	 
 	<fx:Script>
     	<![CDATA[
-    		import components.model.userData.ColorScheme;
+			import mx.skins.halo.ButtonSkin;
+			
 			import spark.filters.BevelFilter;
 			import spark.filters.GlowFilter;
+			
+			import components.model.userData.ColorScheme;
+			import components.views.Skins.CollapseButtonSkin;
     		
 			override public function styleChanged( style:String ):void
 			{
@@ -40,6 +55,14 @@
 				{
 					invalidateDisplayList();
 					updateFilters();
+				}
+				
+				if( !style || style == FontSize.STYLENAME )
+				{
+					if( _creationComplete )
+					{
+						updateContent();
+					}
 				}
 			}
 
@@ -82,14 +105,81 @@
 			}
 			
 			
+			private function get childData():Array
+			{
+				if( !data ) return null;
+				if( !data.hasOwnProperty( "childData" ) ) return null;
+				
+				return data[ "childData" ] as Array;
+			}
+
+			
+			private function get expanded():Boolean
+			{
+				if( !data ) return false;
+				if( !data.hasOwnProperty( "expanded" ) ) return false;
+				
+				return data[ "expanded" ] as Boolean;
+			}
+			
+			
 			private function onCreationComplete():void
 			{
+				_collapseButton.setStyle( CollapseButtonSkin.COLLAPSE_DIRECTION_STYLENAME, CollapseButtonSkin.LEFT );
+				
 				addEventListener( MouseEvent.ROLL_OVER, onRollOver );
 				addEventListener( MouseEvent.ROLL_OUT, onRollOut ); 
 
+				updateContent();
+				
 				updateFilters();
+
+				_creationComplete = true;
+			}
+			
+			
+			private function updateContent():void
+			{
+				var titleHeight:Number = FontSize.getTextRowHeight( this );
+				
+				var buttonSize:Number = FontSize.getButtonSize( this );
+				var buttonMargin:Number = ( titleHeight - buttonSize ) / 2;
+				_collapseButton.setStyle( "right", buttonMargin );
+				_collapseButton.setStyle( "top", buttonMargin );
+
+				_collapseButton.width = buttonSize;
+				_collapseButton.height = buttonSize;
+				
+				_collapseButton.selected = !_expanded;
+
+				var totalHeight:Number = titleHeight;
+				if( _expanded ) totalHeight += 100;
+				
+				height = totalHeight;
 			}
 
+			
+			private function onDataChange():void
+			{
+				var childData:Array = childData;
+				_collapseButton.visible = childData && ( childData.length > 0 );
+				Trace.progress( _collapseButton.visible );
+				
+				var expanded:Boolean = this.expanded;
+				if( expanded != _expanded )
+				{
+					_expanded = expanded;
+					
+					updateContent();
+				}
+			}
+			
+			
+			private function onClickCollapseButton():void
+			{
+				data.expanded = !_collapseButton.selected;
+			}
+			
 
 			private function onRollOver( event:MouseEvent ):void
 			{
@@ -137,7 +227,11 @@
 				filters = filterArray;
 			}				
 
+			private var _creationComplete:Boolean = false;
+			
 			private var _over:Boolean = false;
+			
+			private var _expanded:Boolean = false;
 			
 			private static const _cornerWidth:Number = 18;
 			private static const _cornerHeight:Number = 12;

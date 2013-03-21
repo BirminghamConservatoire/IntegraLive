@@ -59,7 +59,7 @@ package components.controller.serverCommands
 		
 		override public function initialize( model:IntegraModel ):Boolean
 		{
-			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByGuid( _moduleGuid );
+			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _moduleGuid );
 			if( !interfaceDefinition )
 			{
 				return false;
@@ -90,7 +90,7 @@ package components.controller.serverCommands
 			var module:ModuleInstance = new ModuleInstance;
 			module.id = _objectID;
 			module.name = _name;
-			module.interfaceDefinition = model.getInterfaceDefinitionByGuid( _moduleGuid );
+			module.interfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _moduleGuid );
 			Assert.assertNotNull( module.interfaceDefinition );
 			
 			module.attributes = new Object;

@@ -105,20 +105,20 @@ package components.views.BlockLibrary
 			var systemBlockLibraryDirectory:File = new File( Utilities.getSystemBlockLibraryDirectory() );
 			if( systemBlockLibraryDirectory.exists )
 			{
-				addBlockLibraryDirectory( listData, systemBlockLibraryDirectory.getDirectoryListing(), false );
+				addBlockLibraryDirectory( listData, systemBlockLibraryDirectory.getDirectoryListing(), _systemBlockTint );
 			}
 
 			var userBlockLibraryDirectory:File = new File( Utilities.getUserBlockLibraryDirectory() );
 			if( userBlockLibraryDirectory.exists )
 			{
-				addBlockLibraryDirectory( listData, userBlockLibraryDirectory.getDirectoryListing(), true );
+				addBlockLibraryDirectory( listData, userBlockLibraryDirectory.getDirectoryListing(), _userBlockTint );
 			}
 			
 			_library.data = listData;
 		}
 		
 		
-		private function addBlockLibraryDirectory( listData:Array, directoryListing:Array, isUserDirectory:Boolean ):void
+		private function addBlockLibraryDirectory( listData:Array, directoryListing:Array, tint:uint ):void
 		{
 			for each( var file:File in directoryListing )
 			{
@@ -135,7 +135,7 @@ package components.views.BlockLibrary
 
 				if( !listEntry || !listEntry.isCurrent( file ) )
 				{
-					listEntry = new BlockLibraryListEntry( file, isUserDirectory );
+					listEntry = new BlockLibraryListEntry( file, tint );
 					_mapFileNameToListEntry[ file.nativePath ] = listEntry;
 				}
 				
@@ -259,6 +259,10 @@ package components.views.BlockLibrary
         [
             { label: "Remove from Block Library", handler: remove, updater: onUpdateRemove } 
         ];
+		
+		
+		private static const _systemBlockTint:uint = 0x000000;
+		private static const _userBlockTint:uint = 0x000008;
 	}
 }
 

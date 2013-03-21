@@ -23,12 +23,13 @@ package components.views.ModuleLibrary
 {
 	public class ModuleLibraryListEntry extends Object
 	{
-		public function ModuleLibraryListEntry( label:String, guid:String )
+		public function ModuleLibraryListEntry( label:String, guid:String, tint:uint = 0 )
 		{
 			super();
 			
 			_label = label;
 			_guid = guid;
+			_tint = tint;
 		}
 
 		public function set childData( childData:Array ):void { _childData = childData; }
@@ -38,6 +39,7 @@ package components.views.ModuleLibrary
 		public function get guid():String { return _guid; }
 		public function get childData():Array { return _childData; }
 		public function get expanded():Boolean { return _expanded; }
+		public function get tint():uint { return _tint; }
 
 		public function toString():String { return _label; }
 		
@@ -45,5 +47,6 @@ package components.views.ModuleLibrary
 		private var _guid:String = null;
 		private var _childData:Array = null;
 		private var _expanded:Boolean = false;
+		private var _tint:uint = 0;
 	}
 }

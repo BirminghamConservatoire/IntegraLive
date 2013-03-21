@@ -21,27 +21,27 @@
 
 package components.views.BlockLibrary
 {
+	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
+	
 	import components.model.Info;
 	import components.utils.Trace;
 	
 	import deng.fzip.FZip;
 	import deng.fzip.FZipFile;
 	
-	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
-	import flash.utils.ByteArray;
-	
 
 	public class BlockLibraryListEntry extends Object
 	{
-		public function BlockLibraryListEntry( file:File, isUserBlock:Boolean )
+		public function BlockLibraryListEntry( file:File, tint:uint = 0 )
 		{
 			super();
 			
 			_filepath = file.nativePath;
 			_modificationDate = file.modificationDate;
-			_isUserBlock = isUserBlock;
+			_tint = tint;
 			
 			loadInfo( file );
 		}
@@ -49,8 +49,8 @@ package components.views.BlockLibrary
 		
 		public function get isValid():Boolean 		{ return _info != null; }		
 		public function get filepath():String 		{ return _filepath; }
-		public function get isUserItem():Boolean 	{ return _isUserBlock; }
 		public function get info():Info 			{ return _info; }
+		public function get tint():uint 			{ return _tint; }
 		
 		public function isCurrent( file:File ):Boolean
 		{
@@ -119,7 +119,7 @@ package components.views.BlockLibrary
 		
 		private var _info:Info = null;
 		
-		private var _isUserBlock:Boolean = false;
+		private var _tint:uint = 0;
 		
 		private static const _ixdFileName:String = "integra_data/nodes.ixd";
 	}

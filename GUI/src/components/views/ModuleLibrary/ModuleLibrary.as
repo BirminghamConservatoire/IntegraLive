@@ -172,7 +172,7 @@ package components.views.ModuleLibrary
 				label += ")";
 			}
 			
-			return new ModuleLibraryListEntry( label, interfaceDefinition.moduleGuid );			
+			return new ModuleLibraryListEntry( label, interfaceDefinition.moduleGuid, getTint( interfaceDefinition.moduleSource ) );			
 		}
 
 		
@@ -221,9 +221,29 @@ package components.views.ModuleLibrary
 			_library.height = height;
 		}
 		
+		
+		private function getTint( moduleSource:String ):uint
+		{
+			switch( moduleSource )
+			{
+				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return _shippedWithIntegraTint;
+				case InterfaceDefinition.MODULE_THIRD_PARTY:			return _thirdPartyTint;
+				case InterfaceDefinition.MODULE_EMBEDDED:				return _embeddedTint;
+				
+				default:
+					Assert.assertTrue( false );
+					return 0;
+			}		
+		}
+		
 				
 		private var _library:Library = new Library;
 		
 		private var _hoverInfo:Info = null;
+		
+		private static const _shippedWithIntegraTint:uint = 0x000000;
+		private static const _thirdPartyTint:uint = 0x000008;
+		private static const _embeddedTint:uint = 0x040004;
+		
 	}
 }

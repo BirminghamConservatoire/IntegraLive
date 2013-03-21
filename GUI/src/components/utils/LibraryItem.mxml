@@ -47,12 +47,10 @@
 	 
 	<fx:Script>
     	<![CDATA[
+			import flash.filters.ColorMatrixFilter;
 			import flash.filters.DropShadowFilter;
 			
 			import mx.events.DragEvent;
-			
-			import spark.filters.BevelFilter;
-			import spark.filters.GlowFilter;
 			
 			import components.model.userData.ColorScheme;
 			import components.views.MouseCapture;
@@ -100,23 +98,17 @@
 	
 	            graphics.clear();
 
-				var isUserItem:Boolean = false;
-				if( data && data.hasOwnProperty( "isUserItem" ) )
-				{
-					isUserItem = data.isUserItem;			
-				}
-
 				var colors:Array;
 				
 				switch( getStyle( ColorScheme.STYLENAME ) )
 				{
 					default:
 					case ColorScheme.LIGHT:
-						colors = isUserItem ? [ 0xc8c8c8, 0xdfdfdf ] : [ 0xd8d8d8, 0xefefef ];
+						colors = [ 0xd8d8d8, 0xefefef ];
 						break;
 						
 					case ColorScheme.DARK:
-						colors = isUserItem ? [ 0x383838, 0x202020 ] : [ 0x282828, 0x101010 ];
+						colors = [ 0x282828, 0x101010 ];
 						break;
 				}
 	
@@ -179,6 +171,29 @@
 				if( !data.hasOwnProperty( "expanded" ) ) return false;
 				
 				return data[ "expanded" ] as Boolean;
+			}
+
+			
+			private function get tint():ColorMatrixFilter
+			{
+				if( !data ) return null;
+				if( !data.hasOwnProperty( "tint" ) ) return null;
+				
+				var tint:uint = data[ "tint" ] as uint;
+				
+				var tintRed:Number = ( ( tint >> 16 ) & 0xff );
+				var tintGreen:Number = ( ( tint >> 8 ) & 0xff );
+				var tintBlue:Number = ( tint & 0xff );
+				
+				var tintTotal:Number = ( tintRed + tintGreen + tintBlue ) / ( 3 * 0xff );
+				
+				return new ColorMatrixFilter
+					(
+						[ 1 - tintTotal, 0, 0, 0, tintRed,
+							0, 1 - tintTotal, 0, 0, tintGreen,
+							0, 0, 1 - tintTotal, 0, tintBlue,
+							0, 0, 0, 1, 0 ]					
+					);
 			}
 			
 			
@@ -297,7 +312,6 @@
 			{
 				_over = true;
 				invalidateDisplayList();
-				//updateFilters();
 			}
 
 
@@ -305,7 +319,6 @@
 			{
 				_over = false;
 				invalidateDisplayList();
-				//updateFilters();
 			}
 			
 			
@@ -348,6 +361,12 @@
 			{
 				var filterArray:Array = new Array;
 				
+				var tint:ColorMatrixFilter = tint;
+				if( tint )
+				{
+					filterArray.push( tint );
+				}
+
 				if( _picked )
 				{
 					filterArray.push( new DropShadowFilter( _pickOffset, 45, getStyle( "color" ) ) );

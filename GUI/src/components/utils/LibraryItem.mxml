@@ -27,7 +27,8 @@
 			horizontalScrollPolicy="off" verticalScrollPolicy="off">
 
 	<mx:Label id="_itemLabel" 
-			  	text="{data.toString()}"/>
+			  truncateToFit="true"
+			  text="{data.toString()}"/>
 
 	<mx:Button id="_collapseButton" 
 			   toggle="true" 
@@ -208,23 +209,27 @@
 			{
 				var fontSize:Number = getStyle( FontSize.STYLENAME );
 				_itemLabel.setStyle( "left", titleHeight ); 
-				_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 ); 
+				_itemLabel.setStyle( "right", _collapseButton.visible ? titleHeight : 0 );
+				_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 );
 					
-				var buttonSize:Number = FontSize.getButtonSize( this );
-				var buttonMargin:Number = ( titleHeight - buttonSize ) / 2;
-				_collapseButton.setStyle( "right", buttonMargin );
-				_collapseButton.setStyle( "top", buttonMargin );
+				if( _collapseButton.visible )
+				{
+					var buttonSize:Number = FontSize.getButtonSize( this );
+					var buttonMargin:Number = ( titleHeight - buttonSize ) / 2;
+					_collapseButton.setStyle( "right", buttonMargin );
+					_collapseButton.setStyle( "top", buttonMargin );
+	
+					_collapseButton.width = buttonSize;
+					_collapseButton.height = buttonSize;
 
-				_collapseButton.width = buttonSize;
-				_collapseButton.height = buttonSize;
-
-				_alternativesLabel.setStyle( "top", titleHeight );
-				_alternativesLabel.setStyle( "left", buttonSize );
-				
-				_childLibrary.setStyle( "top", titleHeight + buttonSize );
-				_childLibrary.setStyle( "right", 0 );
-				_childLibrary.setStyle( "left", buttonSize );
-				_childLibrary.setStyle( "bottom", 0 );
+					_alternativesLabel.setStyle( "top", titleHeight );
+					_alternativesLabel.setStyle( "left", buttonSize );
+					
+					_childLibrary.setStyle( "top", titleHeight + buttonSize );
+					_childLibrary.setStyle( "right", 0 );
+					_childLibrary.setStyle( "left", buttonSize );
+					_childLibrary.setStyle( "bottom", 0 );
+				}
 				
 				updateHeight();
 			}
@@ -232,8 +237,34 @@
 			
 			private function onClickCollapseButton():void
 			{
-				data.expanded = !expanded;
-				_collapseButton.selected = !expanded;
+				doExpand( !expanded );
+				
+				if( expanded )
+				{
+					//collapse siblings
+					var library:Library = parent as Library;
+					if( library )
+					{
+						var numberOfSiblings:int = library.numChildren;
+						for( var i:int = 0; i < numberOfSiblings; i++ )
+						{
+							var sibling:LibraryItem = library.getLibraryItemAt( i );
+							if( sibling == this ) continue;
+							
+							if( sibling.expanded )
+							{
+								sibling.doExpand( false );
+							}
+						}
+					}
+				}
+			}
+			
+			
+			private function doExpand( expand:Boolean ):void
+			{
+				data.expanded = expand;
+				_collapseButton.selected = !expand;
 				
 				if( !_isAnimating )
 				{

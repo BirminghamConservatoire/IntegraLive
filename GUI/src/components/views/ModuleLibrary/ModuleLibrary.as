@@ -135,14 +135,14 @@ package components.views.ModuleLibrary
 				
 				var defaultInterface:InterfaceDefinition = group[ 0 ];
 
-				var originItem:ModuleLibraryListEntry = createListEntry( defaultInterface );
+				var originItem:ModuleLibraryListEntry = createListEntry( defaultInterface, true );
 				
 				if( group.length > 1 )
 				{
 					var childItems:Array = new Array;
 					for each( var childInterface:InterfaceDefinition in group )
 					{
-						childItems.push( createListEntry( childInterface ) );
+						childItems.push( createListEntry( childInterface, false ) );
 					}
 					originItem.childData = childItems;
 				}
@@ -156,9 +156,23 @@ package components.views.ModuleLibrary
 		}
 		
 		
-		private function createListEntry( interfaceDefinition:InterfaceDefinition ):ModuleLibraryListEntry
+		private function createListEntry( interfaceDefinition:InterfaceDefinition, isDefaultEntry:Boolean ):ModuleLibraryListEntry
 		{
-			return new ModuleLibraryListEntry( interfaceDefinition.interfaceInfo.label, interfaceDefinition.moduleGuid );			
+			var label:String = interfaceDefinition.interfaceInfo.label;
+			if( !isDefaultEntry )
+			{
+				label += " (";
+				switch( interfaceDefinition.moduleSource )
+				{
+					case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	label += "system";			break;
+					case InterfaceDefinition.MODULE_THIRD_PARTY:			label += "3rd party";		break;
+					case InterfaceDefinition.MODULE_EMBEDDED:				label += "embedded";		break;
+					default:												label += "unknown source";	break;
+				}
+				label += ")";
+			}
+			
+			return new ModuleLibraryListEntry( label, interfaceDefinition.moduleGuid );			
 		}
 
 		

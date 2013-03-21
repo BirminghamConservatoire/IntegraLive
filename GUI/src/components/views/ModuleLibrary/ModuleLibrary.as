@@ -22,24 +22,19 @@
 package components.views.ModuleLibrary
 {
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
-	import mx.collections.IList;
-	import mx.controls.List;
-	import mx.controls.listClasses.IListItemRenderer;
-	import mx.core.ClassFactory;
-	import mx.core.DragSource;
 	import mx.core.IFlexDisplayObject;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
-	import mx.managers.DragManager;
 	import mx.utils.ObjectProxy;
 	
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
-	import components.model.userData.ColorScheme;
-	import components.utils.LibraryRenderer;
+	import components.utils.Library;
+	import components.utils.LibraryItem;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
@@ -57,19 +52,23 @@ package components.views.ModuleLibrary
 			minWidth = 100;
 			maxWidth = 400;
 			 
-			_moduleList = new List;
-			_moduleList.opaqueBackground = null;
-			_moduleList.percentWidth = 100;
-			_moduleList.percentHeight = 100;
-			_moduleList.dragEnabled = true;
-			_moduleList.dragMoveEnabled = false;
-			_moduleList.variableRowHeight = true; 
-			_moduleList.setStyle( "backgroundAlpha", 0 );
-			_moduleList.setStyle( "borderStyle", "none" );			
-			_moduleList.itemRenderer = new ClassFactory( LibraryRenderer );
-			addElement( _moduleList );
+			//_moduleList.opaqueBackground = null;
+			//_moduleList.percentWidth = 100;
+			//_moduleList.percentHeight = 100;
+			//_moduleList.dragEnabled = true;
+			//_moduleList.dragMoveEnabled = false;
+			//_moduleList.variableRowHeight = true; 
+			//_moduleList.setStyle( "backgroundAlpha", 0 );
+			//_moduleList.setStyle( "borderStyle", "none" );			
+			//_moduleList.itemRenderer = new ClassFactory( LibraryItem );
+			//_library.height = 200;
+			_library.setStyle( "left", 0 );
+			_library.setStyle( "right", 0 );
+			addChild( _library );
 			
-			_moduleList.addEventListener( DragEvent.DRAG_START, onDragStart );
+			_library.addEventListener( DragEvent.DRAG_START, onDragStart );
+			
+			addEventListener( Event.RESIZE, onResize );
 		}
 
 
@@ -80,59 +79,32 @@ package components.views.ModuleLibrary
 
 		override public function getInfoToDisplay( event:MouseEvent ):Info 
 		{
-			var items:IList = _moduleList.dataProvider as IList;
-			Assert.assertNotNull( items );
-			
-			var numberOfItems:int = items.length;
-			if( numberOfItems == 0 )
+			if( _library.numChildren == 0 )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary" );
 			}
 			
-			var lastRenderer:IListItemRenderer = _moduleList.indexToItemRenderer( numberOfItems - 1 );
-			if( lastRenderer && mouseY >= lastRenderer.getRect( this ).bottom )
+			var lastItem:LibraryItem = _library.getLibraryItemAt( _library.numChildren - 1 );
+			if( mouseY >= lastItem.getRect( this ).bottom )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary" );
 			}
 
-			var libraryRenderer:LibraryRenderer = Utilities.getAncestorByType( event.target as DisplayObject, LibraryRenderer ) as LibraryRenderer;
-			if( libraryRenderer )
+			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
+			if( item )
 			{
-				var index:int = _moduleList.itemRendererToIndex( libraryRenderer );
-				Assert.assertTrue( index >= 0 );
+				var entry:ModuleLibraryListEntry = getListEntryFromLibraryItem( item );
+				Assert.assertNotNull( entry );
 				
-				var interfaceDefinition:InterfaceDefinition = getInterfaceFromListItem( items.getItemAt( index ) ); 
+				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( entry.guid );
 				Assert.assertNotNull( interfaceDefinition );
 				
 				_hoverInfo = interfaceDefinition.interfaceInfo.info;
 			}
 
 			return _hoverInfo;
-		}		
+		}	
 		
-		
-		override public function styleChanged( style:String ):void
-		{
-			if( !style || style == ColorScheme.STYLENAME )
-			{
-				switch( getStyle( ColorScheme.STYLENAME ) )
-				{
-					default:
-					case ColorScheme.LIGHT:
-						_moduleList.setStyle( "rollOverColor", 0xd0d0d0 );
-						_moduleList.setStyle( "selectionColor", 0xd0d0d0 );
-						_moduleList.setStyle( "color", 0x808080 );
-						break;
-						
-					case ColorScheme.DARK:
-						_moduleList.setStyle( "rollOverColor", 0x303030 );
-						_moduleList.setStyle( "selectionColor", 0x303030 );
-						_moduleList.setStyle( "color", 0x808080 );
-						break;
-				}
-			}			
-		}
-
 
 		override protected function onAllDataChanged():void
 		{
@@ -188,7 +160,7 @@ package components.views.ModuleLibrary
 			
 			
 			listData.sortOn( "label", Array.CASEINSENSITIVE );
-			_moduleList.dataProvider = listData;
+			_library.data = listData;
 		}
 		
 		
@@ -200,13 +172,14 @@ package components.views.ModuleLibrary
 		
 		private function onDragStart( event:DragEvent ):void
 		{
-			var draggedInterfaceDefinition:InterfaceDefinition = getInterfaceFromListItem( _moduleList.selectedItem );
+			/*var draggedInterfaceDefinition:InterfaceDefinition = getInterfaceFromListItem( _moduleList.selectedItem );
 			Assert.assertNotNull( draggedInterfaceDefinition );
 			
 			var dragSource:DragSource = new DragSource();
 			dragSource.addData( draggedInterfaceDefinition, Utilities.getClassNameFromClass( InterfaceDefinition ) );
 			
 			DragManager.doDrag( _moduleList, dragSource, event, getDragImage(), 0, ( _moduleList.selectedIndex - _moduleList.verticalScrollPosition ) * _moduleList.rowHeight );
+			*/
 		}
 		
 		
@@ -219,24 +192,27 @@ package components.views.ModuleLibrary
 		}
 		
 
-		private function getInterfaceFromListItem( listItem:Object ):InterfaceDefinition 
+		private function getListEntryFromLibraryItem( libraryItem:LibraryItem ):ModuleLibraryListEntry
 		{
-			if( !listItem ) return null;
+			Assert.assertNotNull( libraryItem );
 			
-			var objectProxy:ObjectProxy = listItem as ObjectProxy;
+			var objectProxy:ObjectProxy = libraryItem.data as ObjectProxy;
 			Assert.assertNotNull( objectProxy );
 			
-			var item:ModuleLibraryListEntry = objectProxy.valueOf() as ModuleLibraryListEntry;
-			Assert.assertNotNull( item );
+			var entry:ModuleLibraryListEntry = objectProxy.valueOf() as ModuleLibraryListEntry;
+			Assert.assertNotNull( entry );
 			
-			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( item.guid );
-			Assert.assertNotNull( interfaceDefinition );
-			
-			return interfaceDefinition;
+			return entry;
 		}
 
+		
+		private function onResize( event:Event ):void
+		{
+			_library.height = height;
+		}
+		
 				
-		private var _moduleList:List;
+		private var _library:Library = new Library;
 		
 		private var _hoverInfo:Info = null;
 	}

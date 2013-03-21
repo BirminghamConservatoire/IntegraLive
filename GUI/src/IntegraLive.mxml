@@ -245,7 +245,7 @@
 				stage.addEventListener( KeyboardEvent.KEY_DOWN, onStageKeyDown );
 				stage.addEventListener( KeyboardEvent.KEY_UP, onStageKeyUp );
 				stage.addEventListener( MouseEvent.MOUSE_MOVE, onStageMouseMove );
-				stage.addEventListener( MouseEvent.MOUSE_OUT, onStageMouseOut );
+				stage.addEventListener( MouseEvent.ROLL_OUT, onStageRollOut );
 				stage.addEventListener( Event.REMOVED, onStageRemoved );
 				stage.quality = StageQuality.BEST;
 
@@ -1099,7 +1099,7 @@
 			}
 
 			
-			private function onStageMouseOut( event:MouseEvent ):void
+			private function onStageRollOut( event:MouseEvent ):void
 			{
 				if( _model.currentInfo )
 				{

@@ -25,7 +25,6 @@ package components.views
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
-	import flash.ui.Mouse;
 	
 	import flexunit.framework.Assert;
 	

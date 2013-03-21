@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ -->
+ <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
+			xmlns:mx="library://ns.adobe.com/flex/mx"
+			xmlns:utils="components.utils.*"
+			creationComplete="{onCreationComplete()}"
+			clipContent="true"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+	<mx:Label id="_itemLabel" 
+			  	text="{data.toString()}"/>
+
+	<mx:Button id="_collapseButton" 
+			   toggle="true" 
+			   click="onClickCollapseButton()"
+			   doubleClick="onClickCollapseButton()"
+			   skin="components.views.Skins.CollapseButtonSkin"
+			   visible="false"/>
+	
+	<mx:Label id="_alternativesLabel"
+			  visible="false"
+			  text="Alternate versions..."/>
+	 
+	 
+	<utils:Library id="_childLibrary"
+			    verticalGap="0"
+				visible="false"/>
+	 
+	<fx:Script>
+    	<![CDATA[
+			import mx.utils.ObjectProxy;
+			
+			import spark.filters.BevelFilter;
+			import spark.filters.GlowFilter;
+			
+			import components.model.userData.ColorScheme;
+			import components.views.Skins.CollapseButtonSkin;
+			
+			import flexunit.framework.Assert;
+    		
+			override public function styleChanged( style:String ):void
+			{
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					switch( getStyle( ColorScheme.STYLENAME ) )
+					{
+						default:
+						case ColorScheme.LIGHT:
+							setStyle( "rollOverColor", 0xd0d0d0 );
+							setStyle( "selectionColor", 0xd0d0d0 );
+							setStyle( "color", 0x808080 );
+							break;
+						
+						case ColorScheme.DARK:
+							setStyle( "rollOverColor", 0x303030 );
+							setStyle( "selectionColor", 0x303030 );
+							setStyle( "color", 0x808080 );
+							break;
+					}
+					
+					invalidateDisplayList();
+					updateFilters();
+				}
+				
+				if( !style || style == FontSize.STYLENAME )
+				{
+					if( _creationComplete )
+					{
+						positionContent();
+					}
+				}
+			}
+
+
+			override protected function updateDisplayList( width:Number, height:Number):void
+			{
+				super.updateDisplayList( width, height );
+	
+	            graphics.clear();
+
+				var isUserItem:Boolean = false;
+				if( data && data.hasOwnProperty( "isUserItem" ) )
+				{
+					isUserItem = data.isUserItem;			
+				}
+
+				var colors:Array;
+				
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						colors = isUserItem ? [ 0xc8c8c8, 0xdfdfdf ] : [ 0xd8d8d8, 0xefefef ];
+						break;
+						
+					case ColorScheme.DARK:
+						colors = isUserItem ? [ 0x383838, 0x202020 ] : [ 0x282828, 0x101010 ];
+						break;
+				}
+	
+				var alphas:Array =  [ 1, 1 ];
+				var ratios:Array = [0x00, 0xFF];
+	
+				var matrix:Matrix = new Matrix();
+	  			matrix.createGradientBox( width, height, Math.PI / 2 );
+	
+				graphics.beginGradientFill( GradientType.LINEAR, colors, alphas, ratios, matrix );
+	        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
+	        	graphics.endFill();
+			}
+			
+			
+			private function get childData():Array
+			{
+				if( !data ) return null;
+				if( !data.hasOwnProperty( "childData" ) ) return null;
+				
+				return data[ "childData" ] as Array;
+			}
+
+			
+			private function get expanded():Boolean
+			{
+				if( !data ) return false;
+				if( !data.hasOwnProperty( "expanded" ) ) return false;
+				
+				return data[ "expanded" ] as Boolean;
+			}
+			
+			
+			private function get titleHeight():Number
+			{
+				return FontSize.getTextRowHeight( this );
+			}
+			
+			
+			private function get expansionHeight():Number
+			{
+				return _childLibrary.numChildren * FontSize.getTextRowHeight( this ) + FontSize.getButtonSize( this ); 
+			}
+			
+			
+			private function onCreationComplete():void
+			{
+				_creationComplete = true;
+
+				var childData:Array = childData;
+				if( childData && childData.length > 0 )
+				{
+					_collapseButton.visible = true;
+					_alternativesLabel.visible = true;
+					_childLibrary.visible = true;
+					_collapseButton.selected = !expanded;
+					_collapseButton.setStyle( CollapseButtonSkin.COLLAPSE_DIRECTION_STYLENAME, CollapseButtonSkin.LEFT );
+
+					_childLibrary.data = childData;
+				}
+				
+				addEventListener( MouseEvent.ROLL_OVER, onRollOver );
+				addEventListener( MouseEvent.ROLL_OUT, onRollOut ); 
+				
+				styleChanged( null );
+				
+			}
+			
+			
+			private function positionContent():void
+			{
+				var fontSize:Number = getStyle( FontSize.STYLENAME );
+				_itemLabel.setStyle( "left", ( titleHeight - fontSize ) / 2 ); 
+				_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 ); 
+					
+				var buttonSize:Number = FontSize.getButtonSize( this );
+				var buttonMargin:Number = ( titleHeight - buttonSize ) / 2;
+				_collapseButton.setStyle( "right", buttonMargin );
+				_collapseButton.setStyle( "top", buttonMargin );
+
+				_collapseButton.width = buttonSize;
+				_collapseButton.height = buttonSize;
+
+				_alternativesLabel.setStyle( "top", titleHeight );
+				_alternativesLabel.setStyle( "left", buttonSize );
+				
+				_childLibrary.setStyle( "top", titleHeight + buttonSize );
+				_childLibrary.setStyle( "right", 0 );
+				_childLibrary.setStyle( "left", buttonSize );
+				_childLibrary.setStyle( "bottom", 0 );
+				
+				updateHeight();
+			}
+
+			
+			private function onClickCollapseButton():void
+			{
+				var objectProxy:ObjectProxy = data as ObjectProxy;
+				Assert.assertNotNull( objectProxy );
+				
+				var dataValue:Object = objectProxy.valueOf();
+				Assert.assertNotNull( dataValue );
+
+				dataValue.expanded = !expanded;
+				_collapseButton.selected = !expanded;
+				
+				if( !_isAnimating )
+				{
+					_isAnimating = true;
+					addEventListener( Event.ENTER_FRAME, onAnimateExpand );
+				}
+			}
+			
+			
+			private function updateHeight():void
+			{
+				height = _expandInterpolation * expansionHeight + titleHeight;				
+			}
+			
+
+			private function onRollOver( event:MouseEvent ):void
+			{
+				_over = true;
+				updateFilters();
+			}
+
+
+			private function onRollOut( event:MouseEvent ):void
+			{
+				_over = false;
+				updateFilters();
+			}
+			
+			
+			private function updateFilters():void
+			{
+				var highlightColor:uint;
+				var shadowColor:uint;
+	
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						highlightColor = 0xd0d0d0;
+						shadowColor = 0xb0b0b0;
+						break;
+						
+					case ColorScheme.DARK:
+						highlightColor = 0x707070;
+						shadowColor = 0x101010;
+						break;
+				}		
+				
+				var filterArray:Array = new Array;
+				var filter:BevelFilter = new BevelFilter( 3, 45, highlightColor, 0.5, shadowColor, 0.5 );
+				filterArray.push( filter );
+				
+				if( _over )
+				{
+					var glow:GlowFilter = new GlowFilter( 0x808080, 0.6, 10, 10, 2 );
+					filterArray.push( glow );
+				}				
+				
+				filters = filterArray;
+			}				
+			
+			
+			private function onAnimateExpand( event:Event ):void
+			{
+				Assert.assertTrue( _isAnimating );
+				if( expanded )
+				{
+					_expandInterpolation += _expandAnimationStep;
+					if( _expandInterpolation >= 1 )
+					{
+						_expandInterpolation = 1;
+						removeEventListener( Event.ENTER_FRAME, onAnimateExpand );
+						_isAnimating = false;
+					}
+				}
+				else
+				{
+					_expandInterpolation -= _expandAnimationStep;
+					if( _expandInterpolation <= 0 )
+					{
+						_expandInterpolation = 0;
+						removeEventListener( Event.ENTER_FRAME, onAnimateExpand );
+						_isAnimating = false;
+					}
+				}
+				
+				updateHeight();
+			}
+			
+
+			private var _creationComplete:Boolean = false;
+			
+			private var _isAnimating:Boolean = false;
+			private var _expandInterpolation:Number = 0;
+			
+			private var _over:Boolean = false;
+			
+			private static const _cornerWidth:Number = 18;
+			private static const _cornerHeight:Number = 12;
+			
+			private static const _expandAnimationStep:Number = 0.2;
+		]]>
+	</fx:Script>
+</mx:Canvas> 

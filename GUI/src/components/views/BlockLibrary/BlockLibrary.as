@@ -24,7 +24,7 @@ package components.views.BlockLibrary
 	import components.model.Block;
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
-	import components.utils.LibraryRenderer;
+	import components.utils.LibraryItem;
 	import components.utils.Utilities;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
@@ -68,7 +68,7 @@ package components.views.BlockLibrary
 			_blockList.dragMoveEnabled = false;
 			_blockList.setStyle( "backgroundAlpha", 0 );
 			_blockList.setStyle( "borderStyle", "none" );			
-			_blockList.itemRenderer = new ClassFactory( LibraryRenderer );
+			_blockList.itemRenderer = new ClassFactory( LibraryItem );
 			_blockList.addEventListener( DragEvent.DRAG_START, onDragStart );
 
 			addElement( _blockList );
@@ -100,7 +100,7 @@ package components.views.BlockLibrary
 			}
 			
 			
-			var libraryRenderer:LibraryRenderer = Utilities.getAncestorByType( event.target as DisplayObject, LibraryRenderer ) as LibraryRenderer;
+			var libraryRenderer:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
 			if( libraryRenderer )
 			{
 				var index:int = _blockList.itemRendererToIndex( libraryRenderer );

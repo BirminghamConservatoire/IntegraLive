@@ -29,7 +29,6 @@ package components.views.ModuleGraph
 	import flash.filters.BevelFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 	
 	import mx.containers.Canvas;

@@ -21,57 +21,47 @@
 
 package components.views.BlockLibrary
 {
-	import components.model.Block;
-	import components.model.Info;
-	import components.model.userData.ColorScheme;
-	import components.utils.LibraryItem;
-	import components.utils.Utilities;
-	import components.views.InfoView.InfoMarkupForViews;
-	import components.views.IntegraView;
-	
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
 	import flash.geom.Rectangle;
 	
-	import flexunit.framework.Assert;
-	
-	import mx.collections.IList;
-	import mx.controls.List;
-	import mx.controls.listClasses.IListItemRenderer;
-	import mx.core.ClassFactory;
 	import mx.core.DragSource;
 	import mx.core.IFlexDisplayObject;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
 	import mx.managers.DragManager;
-	import mx.utils.ObjectProxy;
+	
+	import components.model.Info;
+	import components.utils.Library;
+	import components.utils.LibraryItem;
+	import components.utils.Utilities;
+	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
+	
+	import flexunit.framework.Assert;
 
 
 	public class BlockLibrary extends IntegraView
 	{
 		public function BlockLibrary()
 		{
-			horizontalScrollPolicy = ScrollPolicy.OFF;
-			verticalScrollPolicy = ScrollPolicy.OFF;
+			horizontalScrollPolicy = ScrollPolicy.OFF;  
+			verticalScrollPolicy = ScrollPolicy.OFF;    
 			
 			width = 200;
 			minWidth = 100;
 			maxWidth = 400;
-			 
-			_blockList = new List;
-			_blockList.opaqueBackground = null;
-			_blockList.percentWidth = 100;
-			_blockList.percentHeight = 100;
-			_blockList.dragEnabled = true;
-			_blockList.dragMoveEnabled = false;
-			_blockList.setStyle( "backgroundAlpha", 0 );
-			_blockList.setStyle( "borderStyle", "none" );			
-			_blockList.itemRenderer = new ClassFactory( LibraryItem );
-			_blockList.addEventListener( DragEvent.DRAG_START, onDragStart );
-
-			addElement( _blockList );
+			
+			_library.setStyle( "left", 0 );
+			_library.setStyle( "right", 0 );
+			addChild( _library );
+			
+			_library.addEventListener( DragEvent.DRAG_START, onDragStart );
+			
+			addEventListener( Event.RESIZE, onResize );
 			
 			contextMenuDataProvider = contextMenuData;
 		}
@@ -84,66 +74,29 @@ package components.views.BlockLibrary
 		
 		override public function getInfoToDisplay( event:MouseEvent ):Info 
 		{
-			var items:IList = _blockList.dataProvider as IList;
-			Assert.assertNotNull( items );
-			
-			var numberOfItems:int = items.length;
-			if( numberOfItems == 0 )
+			if( _library.numChildren == 0 )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "BlockLibrary" );
 			}
 			
-			var lastRenderer:IListItemRenderer = _blockList.indexToItemRenderer( numberOfItems - 1 );
-			if( lastRenderer && mouseY >= lastRenderer.getRect( this ).bottom )
+			var lastItem:LibraryItem = _library.getLibraryItemAt( _library.numChildren - 1 );
+			if( mouseY >= lastItem.getRect( this ).bottom )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "BlockLibrary" );
 			}
 			
-			
-			var libraryRenderer:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
-			if( libraryRenderer )
+			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
+			if( item )
 			{
-				var index:int = _blockList.itemRendererToIndex( libraryRenderer );
-				Assert.assertTrue( index >= 0 );
-	
-				var listItem:Object = items.getItemAt( index ); 
-				Assert.assertNotNull( listItem );
+				var entry:BlockLibraryListEntry = getListEntryFromLibraryItem( item );
+				Assert.assertNotNull( entry );
 				
-				var objectProxy:ObjectProxy = listItem as ObjectProxy;
-				Assert.assertNotNull( objectProxy );
-				
-				var blockLibraryListEntry:BlockLibraryListEntry = objectProxy.valueOf() as BlockLibraryListEntry;
-				Assert.assertNotNull( blockLibraryListEntry );
-				
-				_focusInfo = blockLibraryListEntry.info;
+				_hoverInfo = entry.info;
 			}
 			
-			return _focusInfo;
+			return _hoverInfo;
 		}		
 		
-		
-		override public function styleChanged( style:String ):void
-		{
-			if( !style || style == ColorScheme.STYLENAME )
-			{
-				switch( getStyle( ColorScheme.STYLENAME ) )
-				{
-					default:
-					case ColorScheme.LIGHT:
-						_blockList.setStyle( "rollOverColor", 0xd0d0d0 );
-						_blockList.setStyle( "selectionColor", 0xb0b0b0 );
-						_blockList.setStyle( "color", 0x808080 );
-						break;
-						
-					case ColorScheme.DARK:
-						_blockList.setStyle( "rollOverColor", 0x303030 );
-						_blockList.setStyle( "selectionColor", 0x505050 );
-						_blockList.setStyle( "color", 0x808080 );
-						break;
-				}
-			}			
-		}
-
 
 		override protected function onAllDataChanged():void
 		{
@@ -161,7 +114,7 @@ package components.views.BlockLibrary
 				addBlockLibraryDirectory( listData, userBlockLibraryDirectory.getDirectoryListing(), true );
 			}
 			
-			_blockList.dataProvider = listData;
+			_library.data = listData;
 		}
 		
 		
@@ -186,26 +139,28 @@ package components.views.BlockLibrary
 					_mapFileNameToListEntry[ file.nativePath ] = listEntry;
 				}
 				
-				listData.push( new ObjectProxy( listEntry ) );
+				listData.push( listEntry );
 			}
 		}
 
 		
 		private function onDragStart( event:DragEvent ):void
 		{
-			var objectProxy:ObjectProxy = _blockList.selectedItem as ObjectProxy;
-			Assert.assertNotNull( objectProxy );
+			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
+			if( !item ) return;
 			
-			var item:BlockLibraryListEntry = objectProxy.valueOf() as BlockLibraryListEntry;
-			Assert.assertNotNull( item );
-			 
-			var draggedFile:File = new File( item.filepath );
+			var listEntry:BlockLibraryListEntry = getListEntryFromLibraryItem( item );
+			Assert.assertNotNull( listEntry );
+			
+			var draggedFile:File = new File( listEntry.filepath );
 			Assert.assertTrue( draggedFile.exists );
 			
 			var dragSource:DragSource = new DragSource();
 			dragSource.addData( draggedFile, Utilities.getClassNameFromClass( File ) );
 			
-			DragManager.doDrag( _blockList, dragSource, event, getDragImage(), 0, ( _blockList.selectedIndex - _blockList.verticalScrollPosition ) * _blockList.rowHeight );
+			var itemRect:Rectangle = item.getRect( this );
+			
+			DragManager.doDrag( _library, dragSource, event, getDragImage(), itemRect.x, itemRect.y );
 		}
 		
 		
@@ -224,6 +179,7 @@ package components.views.BlockLibrary
 		
 		private function onUpdateRemove( menuItem:Object ):void
 		{
+			/*
 			selectItemUnderMouse();
 			
 			if( !_blockList.selectedItem )
@@ -239,12 +195,13 @@ package components.views.BlockLibrary
 			Assert.assertNotNull( item );
 			
 			menuItem.enabled = item.isUserItem;
+			*/
 		}
 		
 		
 		private function remove():void
 		{
-			var objectProxy:ObjectProxy = _blockList.selectedItem as ObjectProxy;
+			/*var objectProxy:ObjectProxy = _blockList.selectedItem as ObjectProxy;
 			Assert.assertNotNull( objectProxy );
 			
 			var item:BlockLibraryListEntry = objectProxy.valueOf() as BlockLibraryListEntry;
@@ -258,24 +215,44 @@ package components.views.BlockLibrary
 			file.deleteFile();
 			
 			onAllDataChanged();
+			*/
 		}
 		
 		
 		private function selectItemUnderMouse():void
 		{
+			/*
 			var index:int = ( _blockList.mouseY + _blockList.verticalScrollPosition ) / _blockList.rowHeight;
 			if( index < _blockList.dataProvider.length )
 			{
 				_blockList.selectedIndex = index;
 			} 
+			*/
 		}
 
+		
+		private function onResize( event:Event ):void
+		{
+			_library.height = height;
+		}
+		
+		
+		private function getListEntryFromLibraryItem( libraryItem:LibraryItem ):BlockLibraryListEntry
+		{
+			Assert.assertNotNull( libraryItem );
+			
+			var entry:BlockLibraryListEntry = libraryItem.data as BlockLibraryListEntry;
+			Assert.assertNotNull( entry );
+			
+			return entry;
+		}		
+		
 				
-		private var _blockList:List;
+		private var _library:Library = new Library;
 
 		private var _mapFileNameToListEntry:Object = new Object;
 
-		private var _focusInfo:Info = null;
+		private var _hoverInfo:Info = null;
 		
 		[Bindable] 
         private var contextMenuData:Array = 

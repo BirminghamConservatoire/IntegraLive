@@ -48,7 +48,6 @@
 	<fx:Script>
     	<![CDATA[
 			import mx.events.DragEvent;
-			import mx.utils.ObjectProxy;
 			
 			import spark.filters.BevelFilter;
 			import spark.filters.GlowFilter;
@@ -233,13 +232,7 @@
 			
 			private function onClickCollapseButton():void
 			{
-				var objectProxy:ObjectProxy = data as ObjectProxy;
-				Assert.assertNotNull( objectProxy );
-				
-				var dataValue:Object = objectProxy.valueOf();
-				Assert.assertNotNull( dataValue );
-
-				dataValue.expanded = !expanded;
+				data.expanded = !expanded;
 				_collapseButton.selected = !expanded;
 				
 				if( !_isAnimating )
@@ -247,8 +240,6 @@
 					_isAnimating = true;
 					addEventListener( Event.ENTER_FRAME, onAnimateExpand );
 				}
-				
-				invalidateDisplayList();
 			}
 			
 			

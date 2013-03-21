@@ -32,7 +32,6 @@ package components.views.ModuleLibrary
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
 	import mx.managers.DragManager;
-	import mx.utils.ObjectProxy;
 	
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
@@ -143,12 +142,12 @@ package components.views.ModuleLibrary
 					var childItems:Array = new Array;
 					for each( var childInterface:InterfaceDefinition in group )
 					{
-						childItems.push( new ObjectProxy( createListEntry( childInterface ) ) );				
+						childItems.push( createListEntry( childInterface ) );
 					}
 					originItem.childData = childItems;
 				}
 				
-				listData.push( new ObjectProxy( originItem ) );
+				listData.push( originItem );
 			}
 			
 			
@@ -195,11 +194,8 @@ package components.views.ModuleLibrary
 		private function getListEntryFromLibraryItem( libraryItem:LibraryItem ):ModuleLibraryListEntry
 		{
 			Assert.assertNotNull( libraryItem );
-			
-			var objectProxy:ObjectProxy = libraryItem.data as ObjectProxy;
-			Assert.assertNotNull( objectProxy );
-			
-			var entry:ModuleLibraryListEntry = objectProxy.valueOf() as ModuleLibraryListEntry;
+
+			var entry:ModuleLibraryListEntry = libraryItem.data as ModuleLibraryListEntry;
 			Assert.assertNotNull( entry );
 			
 			return entry;

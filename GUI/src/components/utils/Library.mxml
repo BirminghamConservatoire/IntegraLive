@@ -22,7 +22,9 @@
 <mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 verticalScrollPolicy="auto"
-		 verticalGap="4">
+		 paddingLeft="3"
+		 paddingRight="3"
+		 verticalGap="3">
 	<fx:Declarations>
 	</fx:Declarations>
 

@@ -27,7 +27,6 @@
 			horizontalScrollPolicy="off" verticalScrollPolicy="off">
 
 	<mx:Label id="_itemLabel" 
-			  truncateToFit="true"
 			  text="{data.toString()}"/>
 
 	<mx:Button id="_collapseButton" 
@@ -48,6 +47,8 @@
 	 
 	<fx:Script>
     	<![CDATA[
+			import flash.filters.DropShadowFilter;
+			
 			import mx.events.DragEvent;
 			
 			import spark.filters.BevelFilter;
@@ -125,6 +126,18 @@
 				var matrix:Matrix = new Matrix();
 	  			matrix.createGradientBox( width, height, Math.PI / 2 );
 	
+				if( _selected )
+				{
+					graphics.lineStyle( 2, getStyle( "color" ), 0.5 );
+				}
+				else
+				{
+					if( _over )
+					{
+						graphics.lineStyle( 1, getStyle( "color" ), 0.5 );
+					}
+				}
+				
 				graphics.beginGradientFill( GradientType.LINEAR, colors, alphas, ratios, matrix );
 	        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
 	        	graphics.endFill();
@@ -283,14 +296,16 @@
 			private function onRollOver( event:MouseEvent ):void
 			{
 				_over = true;
-				updateFilters();
+				invalidateDisplayList();
+				//updateFilters();
 			}
 
 
 			private function onRollOut( event:MouseEvent ):void
 			{
 				_over = false;
-				updateFilters();
+				invalidateDisplayList();
+				//updateFilters();
 			}
 			
 			
@@ -303,7 +318,11 @@
 				if( event.target == _collapseButton ) return;
 				
 				_clickPoint = new Point( mouseX, mouseY );
-				mouseCapture.setCapture( this, onCapturedDrag );
+				mouseCapture.setCapture( this, onCapturedDrag, onCaptureFinished );
+				
+				move( x - _pickOffset, y - _pickOffset );
+				_picked = true;
+				updateFilters();
 			}
 			
 			
@@ -311,43 +330,31 @@
 			{
 				if( new Point( mouseX, mouseY ).subtract( _clickPoint ).length >= _dragThreshold )
 				{
-					MouseCapture.instance.relinquishCapture();
 					dispatchEvent( new DragEvent( DragEvent.DRAG_START, true ) );					
 				}
 			}
 			
 			
+			private function onCaptureFinished():void
+			{
+				move( x + _pickOffset, y + _pickOffset );
+				_picked = false;
+
+				updateFilters();
+			}
+			
+			
 			private function updateFilters():void
 			{
-				var highlightColor:uint;
-				var shadowColor:uint;
-	
-				switch( getStyle( ColorScheme.STYLENAME ) )
-				{
-					default:
-					case ColorScheme.LIGHT:
-						highlightColor = 0xd0d0d0;
-						shadowColor = 0xb0b0b0;
-						break;
-						
-					case ColorScheme.DARK:
-						highlightColor = 0x707070;
-						shadowColor = 0x101010;
-						break;
-				}		
-				
 				var filterArray:Array = new Array;
-				var filter:BevelFilter = new BevelFilter( 3, 45, highlightColor, 0.5, shadowColor, 0.5 );
-				filterArray.push( filter );
 				
-				if( _over )
+				if( _picked )
 				{
-					var glow:GlowFilter = new GlowFilter( 0x808080, 0.6, 10, 10, 2 );
-					filterArray.push( glow );
-				}				
+					filterArray.push( new DropShadowFilter( _pickOffset, 45, getStyle( "color" ) ) );
+				}
 				
 				filters = filterArray;
-			}				
+			}	
 			
 			
 			private function onAnimateExpand( event:Event ):void
@@ -403,14 +410,17 @@
 			private var _expandInterpolation:Number = 0;
 			
 			private var _over:Boolean = false;
+			private var _picked:Boolean = false;
+			private var _selected:Boolean = false;
 			private var _clickPoint:Point = null;
 			
-			private static const _cornerWidth:Number = 18;
-			private static const _cornerHeight:Number = 12;
+			private static const _cornerWidth:Number = 4;
+			private static const _cornerHeight:Number = 4;
 			
 			private static const _expandAnimationStep:Number = 0.2;
 			
 			private static const _dragThreshold:Number = 3;
+			private static const _pickOffset:Number = 3;
 		]]>
 	</fx:Script>
 </mx:Canvas> 

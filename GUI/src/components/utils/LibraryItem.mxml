@@ -47,7 +47,6 @@
 	 
 	<fx:Script>
     	<![CDATA[
-			import flash.filters.ColorMatrixFilter;
 			import flash.filters.DropShadowFilter;
 			
 			import mx.events.DragEvent;
@@ -62,20 +61,29 @@
 			{
 				if( !style || style == ColorScheme.STYLENAME )
 				{
+					var color:uint;
+					var collapseButtonColor:uint;
 					switch( getStyle( ColorScheme.STYLENAME ) )
 					{
 						default:
 						case ColorScheme.LIGHT:
-							setStyle( "rollOverColor", 0xd0d0d0 );
-							setStyle( "selectionColor", 0xd0d0d0 );
-							setStyle( "color", 0x808080 );
+							color = applyTint( 0x808080 );
+							collapseButtonColor = applyTint( 0xc0c0c0 );
+							_backgroundColors = [ applyTint( 0xd8d8d8 ), applyTint( 0xefefef ) ]; 
 							break;
 						
 						case ColorScheme.DARK:
-							setStyle( "rollOverColor", 0x303030 );
-							setStyle( "selectionColor", 0x303030 );
-							setStyle( "color", 0x808080 );
+							color = applyTint( 0x808080 );
+							collapseButtonColor = applyTint( 0x808080 );
+							_backgroundColors = [ applyTint( 0x282828 ), applyTint( 0x101010 ) ]; 
 							break;
+					}
+
+					setStyle( "color", color );
+					
+					if( _collapseButton )
+					{
+						_collapseButton.setStyle( "color", collapseButtonColor );
 					}
 					
 					invalidateDisplayList();
@@ -98,46 +106,38 @@
 	
 	            graphics.clear();
 
-				var colors:Array;
-				
-				switch( getStyle( ColorScheme.STYLENAME ) )
-				{
-					default:
-					case ColorScheme.LIGHT:
-						colors = [ 0xd8d8d8, 0xefefef ];
-						break;
-						
-					case ColorScheme.DARK:
-						colors = [ 0x282828, 0x101010 ];
-						break;
-				}
-	
 				var alphas:Array =  [ 1, 1 ];
 				var ratios:Array = [0x00, 0xFF];
 	
 				var matrix:Matrix = new Matrix();
 	  			matrix.createGradientBox( width, height, Math.PI / 2 );
 	
-				if( _selected )
+				if( !expanded )
 				{
-					graphics.lineStyle( 2, getStyle( "color" ), 0.5 );
-				}
-				else
-				{
-					if( _over )
+					if( _selected )
 					{
-						graphics.lineStyle( 1, getStyle( "color" ), 0.5 );
+						graphics.lineStyle( 2, getStyle( "color" ), 0.5 );
+					}
+					else
+					{
+						if( _over )
+						{
+							graphics.lineStyle( 1, getStyle( "color" ), 0.5 );
+						}
 					}
 				}
 				
-				graphics.beginGradientFill( GradientType.LINEAR, colors, alphas, ratios, matrix );
+				graphics.beginGradientFill( GradientType.LINEAR, _backgroundColors, alphas, ratios, matrix );
 	        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
 	        	graphics.endFill();
 				
-				var titleHeight:Number = this.titleHeight;
-				var grabHandleSize:Number = titleHeight * 0.3;
-				var grabHandleOffset:Number = ( titleHeight - grabHandleSize ) * 0.5;
-				drawGrabHandle( grabHandleOffset, grabHandleOffset, grabHandleSize, grabHandleSize ); 
+				if( !expanded )
+				{
+					var titleHeight:Number = this.titleHeight;
+					var grabHandleSize:Number = titleHeight * 0.3;
+					var grabHandleOffset:Number = ( titleHeight - grabHandleSize ) * 0.5;
+					drawGrabHandle( grabHandleOffset, grabHandleOffset, grabHandleSize, grabHandleSize ); 
+				}
 			}
 			
 			
@@ -174,26 +174,12 @@
 			}
 
 			
-			private function get tint():ColorMatrixFilter
+			private function get tint():uint
 			{
 				if( !data ) return null;
 				if( !data.hasOwnProperty( "tint" ) ) return null;
 				
-				var tint:uint = data[ "tint" ] as uint;
-				
-				var tintRed:Number = ( ( tint >> 16 ) & 0xff );
-				var tintGreen:Number = ( ( tint >> 8 ) & 0xff );
-				var tintBlue:Number = ( tint & 0xff );
-				
-				var tintTotal:Number = ( tintRed + tintGreen + tintBlue ) / ( 3 * 0xff );
-				
-				return new ColorMatrixFilter
-					(
-						[ 1 - tintTotal, 0, 0, 0, tintRed,
-							0, 1 - tintTotal, 0, 0, tintGreen,
-							0, 0, 1 - tintTotal, 0, tintBlue,
-							0, 0, 0, 1, 0 ]					
-					);
+				return data[ "tint" ] as uint;
 			}
 			
 			
@@ -229,7 +215,27 @@
 				addEventListener( MouseEvent.ROLL_OUT, onRollOut ); 
 				
 				styleChanged( null );
+			}
+			
+			
+			private function applyTint( color:uint ):uint
+			{
+				var tint:uint = this.tint;
+				var tintRed:Number = ( ( tint >> 16 ) & 0xff ) / 0xff;
+				var tintGreen:Number = ( ( tint >> 8 ) & 0xff ) / 0xff;
+				var tintBlue:Number = ( tint & 0xff ) / 0xff;
+
+				var tintAverage:Number = ( tintRed + tintGreen + tintBlue ) / 3;
 				
+				var colorRed:Number = ( ( color >> 16 ) & 0xff ) / 0xff;
+				var colorGreen:Number = ( ( color >> 8 ) & 0xff ) / 0xff;
+				var colorBlue:Number = ( color & 0xff ) / 0xff;
+
+				var outputRed:Number = Math.max( 0, Math.min( 1, colorRed * ( 1 - tintAverage ) + tintRed ) );
+				var outputGreen:Number = Math.max( 0, Math.min( 1, colorGreen * ( 1 - tintAverage ) + tintGreen ) );
+				var outputBlue:Number = Math.max( 0, Math.min( 1, colorBlue * ( 1 - tintAverage ) + tintBlue ) );
+				
+				return ( uint( outputRed * 0xff ) << 16 ) + ( uint( outputGreen * 0xff ) << 8 ) + uint( outputBlue * 0xff );
 			}
 			
 			
@@ -252,6 +258,7 @@
 
 					_alternativesLabel.setStyle( "top", titleHeight );
 					_alternativesLabel.setStyle( "left", buttonSize );
+					_alternativesLabel.setStyle( "fontSize", getStyle( FontSize.STYLENAME ) * 0.8 );
 					
 					_childLibrary.setStyle( "top", titleHeight + buttonSize );
 					_childLibrary.setStyle( "right", 0 );
@@ -294,6 +301,8 @@
 				data.expanded = expand;
 				_collapseButton.selected = !expand;
 				
+				invalidateDisplayList();
+				
 				if( !_isAnimating )
 				{
 					_isAnimating = true;
@@ -330,6 +339,8 @@
 				
 				if( event.target == _collapseButton ) return;
 				
+				if( expanded ) return;
+				
 				_clickPoint = new Point( mouseX, mouseY );
 				mouseCapture.setCapture( this, onCapturedDrag, onCaptureFinished );
 				
@@ -361,12 +372,6 @@
 			{
 				var filterArray:Array = new Array;
 				
-				var tint:ColorMatrixFilter = tint;
-				if( tint )
-				{
-					filterArray.push( tint );
-				}
-
 				if( _picked )
 				{
 					filterArray.push( new DropShadowFilter( _pickOffset, 45, getStyle( "color" ) ) );
@@ -432,6 +437,9 @@
 			private var _picked:Boolean = false;
 			private var _selected:Boolean = false;
 			private var _clickPoint:Point = null;
+			
+			private var _backgroundColors:Array;
+			
 			
 			private static const _cornerWidth:Number = 4;
 			private static const _cornerHeight:Number = 4;

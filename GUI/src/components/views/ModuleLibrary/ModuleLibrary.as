@@ -135,14 +135,14 @@ package components.views.ModuleLibrary
 				
 				var defaultInterface:InterfaceDefinition = group[ 0 ];
 
-				var originItem:ModuleLibraryListEntry = createListEntry( defaultInterface, true );
+				var originItem:ModuleLibraryListEntry = new ModuleLibraryListEntry( defaultInterface, true );
 				
 				if( group.length > 1 )
 				{
 					var childItems:Array = new Array;
 					for each( var childInterface:InterfaceDefinition in group )
 					{
-						childItems.push( createListEntry( childInterface, false ) );
+						childItems.push( new ModuleLibraryListEntry( childInterface, false ) );
 					}
 					originItem.childData = childItems;
 				}
@@ -151,28 +151,14 @@ package components.views.ModuleLibrary
 			}
 			
 			
-			listData.sortOn( "label", Array.CASEINSENSITIVE );
+			listData.sort( moduleCompareFunction );
 			_library.data = listData;
 		}
 		
 		
-		private function createListEntry( interfaceDefinition:InterfaceDefinition, isDefaultEntry:Boolean ):ModuleLibraryListEntry
+		private function moduleCompareFunction( a:ModuleLibraryListEntry, b:ModuleLibraryListEntry ):Number
 		{
-			var label:String = interfaceDefinition.interfaceInfo.label;
-			if( !isDefaultEntry )
-			{
-				label += " (";
-				switch( interfaceDefinition.moduleSource )
-				{
-					case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	label += "system";			break;
-					case InterfaceDefinition.MODULE_THIRD_PARTY:			label += "3rd party";		break;
-					case InterfaceDefinition.MODULE_EMBEDDED:				label += "embedded";		break;
-					default:												label += "unknown source";	break;
-				}
-				label += ")";
-			}
-			
-			return new ModuleLibraryListEntry( label, interfaceDefinition.moduleGuid, getTint( interfaceDefinition.moduleSource ) );			
+			return a.compare( b );
 		}
 
 		
@@ -222,28 +208,8 @@ package components.views.ModuleLibrary
 		}
 		
 		
-		private function getTint( moduleSource:String ):uint
-		{
-			switch( moduleSource )
-			{
-				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return _shippedWithIntegraTint;
-				case InterfaceDefinition.MODULE_THIRD_PARTY:			return _thirdPartyTint;
-				case InterfaceDefinition.MODULE_EMBEDDED:				return _embeddedTint;
-				
-				default:
-					Assert.assertTrue( false );
-					return 0;
-			}		
-		}
-		
-				
 		private var _library:Library = new Library;
 		
 		private var _hoverInfo:Info = null;
-		
-		private static const _shippedWithIntegraTint:uint = 0x000000;
-		private static const _thirdPartyTint:uint = 0x000008;
-		private static const _embeddedTint:uint = 0x040004;
-		
 	}
 }

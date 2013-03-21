@@ -262,7 +262,7 @@ package components.views.BlockLibrary
 		
 		
 		private static const _systemBlockTint:uint = 0x000000;
-		private static const _userBlockTint:uint = 0x000008;
+		private static const _userBlockTint:uint = 0x000020;
 	}
 }
 

@@ -24,11 +24,14 @@ package components.views.ModuleLibrary
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	
+	import mx.core.DragSource;
 	import mx.core.IFlexDisplayObject;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
+	import mx.managers.DragManager;
 	import mx.utils.ObjectProxy;
 	
 	import components.model.Info;
@@ -52,16 +55,6 @@ package components.views.ModuleLibrary
 			minWidth = 100;
 			maxWidth = 400;
 			 
-			//_moduleList.opaqueBackground = null;
-			//_moduleList.percentWidth = 100;
-			//_moduleList.percentHeight = 100;
-			//_moduleList.dragEnabled = true;
-			//_moduleList.dragMoveEnabled = false;
-			//_moduleList.variableRowHeight = true; 
-			//_moduleList.setStyle( "backgroundAlpha", 0 );
-			//_moduleList.setStyle( "borderStyle", "none" );			
-			//_moduleList.itemRenderer = new ClassFactory( LibraryItem );
-			//_library.height = 200;
 			_library.setStyle( "left", 0 );
 			_library.setStyle( "right", 0 );
 			addChild( _library );
@@ -172,14 +165,21 @@ package components.views.ModuleLibrary
 		
 		private function onDragStart( event:DragEvent ):void
 		{
-			/*var draggedInterfaceDefinition:InterfaceDefinition = getInterfaceFromListItem( _moduleList.selectedItem );
-			Assert.assertNotNull( draggedInterfaceDefinition );
-			
+			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
+			if( !item ) return;
+
+			var listEntry:ModuleLibraryListEntry = getListEntryFromLibraryItem( item );
+			Assert.assertNotNull( listEntry );
+
+			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( listEntry.guid );
+			Assert.assertNotNull( interfaceDefinition );
+
 			var dragSource:DragSource = new DragSource();
-			dragSource.addData( draggedInterfaceDefinition, Utilities.getClassNameFromClass( InterfaceDefinition ) );
+			dragSource.addData( interfaceDefinition, Utilities.getClassNameFromClass( InterfaceDefinition ) );
 			
-			DragManager.doDrag( _moduleList, dragSource, event, getDragImage(), 0, ( _moduleList.selectedIndex - _moduleList.verticalScrollPosition ) * _moduleList.rowHeight );
-			*/
+			var itemRect:Rectangle = item.getRect( this );
+			
+			DragManager.doDrag( _library, dragSource, event, getDragImage(), itemRect.x, itemRect.y );
 		}
 		
 		

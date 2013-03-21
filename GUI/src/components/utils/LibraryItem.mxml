@@ -22,8 +22,8 @@
  <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
 			xmlns:mx="library://ns.adobe.com/flex/mx"
 			xmlns:utils="components.utils.*"
-			creationComplete="{onCreationComplete()}"
-			clipContent="true"
+			initialize="{onInitialize()}"
+			mouseDown="{onMouseDown( event )}"
 			horizontalScrollPolicy="off" verticalScrollPolicy="off">
 
 	<mx:Label id="_itemLabel" 
@@ -38,7 +38,7 @@
 	
 	<mx:Label id="_alternativesLabel"
 			  visible="false"
-			  text="Alternate versions..."/>
+			  text="Alternative versions"/>
 	 
 	 
 	<utils:Library id="_childLibrary"
@@ -47,12 +47,14 @@
 	 
 	<fx:Script>
     	<![CDATA[
+			import mx.events.DragEvent;
 			import mx.utils.ObjectProxy;
 			
 			import spark.filters.BevelFilter;
 			import spark.filters.GlowFilter;
 			
 			import components.model.userData.ColorScheme;
+			import components.views.MouseCapture;
 			import components.views.Skins.CollapseButtonSkin;
 			
 			import flexunit.framework.Assert;
@@ -83,7 +85,7 @@
 				
 				if( !style || style == FontSize.STYLENAME )
 				{
-					if( _creationComplete )
+					if( _initialized )
 					{
 						positionContent();
 					}
@@ -126,6 +128,26 @@
 				graphics.beginGradientFill( GradientType.LINEAR, colors, alphas, ratios, matrix );
 	        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
 	        	graphics.endFill();
+				
+				var titleHeight:Number = this.titleHeight;
+				var grabHandleSize:Number = titleHeight * 0.3;
+				var grabHandleOffset:Number = ( titleHeight - grabHandleSize ) * 0.5;
+				drawGrabHandle( grabHandleOffset, grabHandleOffset, grabHandleSize, grabHandleSize ); 
+			}
+			
+			
+			private function drawGrabHandle( x:Number, y:Number, width:Number, height:Number ):void
+			{
+				const lines:int = 3;
+				
+				graphics.lineStyle( 1, getStyle( "color" ), 0.5 );
+				
+				for( var i:int = 0; i < lines; i++ )
+				{
+					graphics.moveTo( x, y );
+					graphics.lineTo( x, y + height );
+					x += Math.ceil( width / lines );
+				}
 			}
 			
 			
@@ -159,9 +181,9 @@
 			}
 			
 			
-			private function onCreationComplete():void
+			private function onInitialize():void
 			{
-				_creationComplete = true;
+				_initialized = true;
 
 				var childData:Array = childData;
 				if( childData && childData.length > 0 )
@@ -186,7 +208,7 @@
 			private function positionContent():void
 			{
 				var fontSize:Number = getStyle( FontSize.STYLENAME );
-				_itemLabel.setStyle( "left", ( titleHeight - fontSize ) / 2 ); 
+				_itemLabel.setStyle( "left", titleHeight ); 
 				_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 ); 
 					
 				var buttonSize:Number = FontSize.getButtonSize( this );
@@ -225,6 +247,8 @@
 					_isAnimating = true;
 					addEventListener( Event.ENTER_FRAME, onAnimateExpand );
 				}
+				
+				invalidateDisplayList();
 			}
 			
 			
@@ -245,6 +269,29 @@
 			{
 				_over = false;
 				updateFilters();
+			}
+			
+			
+			private function onMouseDown( event:MouseEvent ):void
+			{
+				var mouseCapture:MouseCapture = MouseCapture.instance;
+				
+				if( mouseCapture.hasCapture ) return;
+				
+				if( event.target == _collapseButton ) return;
+				
+				_clickPoint = new Point( mouseX, mouseY );
+				mouseCapture.setCapture( this, onCapturedDrag );
+			}
+			
+			
+			private function onCapturedDrag( event:MouseEvent ):void
+			{
+				if( new Point( mouseX, mouseY ).subtract( _clickPoint ).length >= _dragThreshold )
+				{
+					MouseCapture.instance.relinquishCapture();
+					dispatchEvent( new DragEvent( DragEvent.DRAG_START, true ) );					
+				}
 			}
 			
 			
@@ -293,6 +340,10 @@
 						removeEventListener( Event.ENTER_FRAME, onAnimateExpand );
 						_isAnimating = false;
 					}
+
+					updateHeight();
+					
+					callLater( scrollParentIfNecessary );
 				}
 				else
 				{
@@ -303,23 +354,41 @@
 						removeEventListener( Event.ENTER_FRAME, onAnimateExpand );
 						_isAnimating = false;
 					}
+					
+					updateHeight();
 				}
+			}
+			
+			
+			private function scrollParentIfNecessary():void
+			{
+				var library:Library = parent as Library;
+				if( !library ) return;
 				
-				updateHeight();
+				var myRect:Rectangle = this.getRect( library );
+				var libraryRect:Rectangle = library.getRect( library );
+				
+				if( myRect.top + height > libraryRect.bottom )
+				{
+					library.verticalScrollPosition += ( myRect.top + height - libraryRect.bottom );
+				}
 			}
 			
 
-			private var _creationComplete:Boolean = false;
+			private var _initialized:Boolean = false;
 			
 			private var _isAnimating:Boolean = false;
 			private var _expandInterpolation:Number = 0;
 			
 			private var _over:Boolean = false;
+			private var _clickPoint:Point = null;
 			
 			private static const _cornerWidth:Number = 18;
 			private static const _cornerHeight:Number = 12;
 			
 			private static const _expandAnimationStep:Number = 0.2;
+			
+			private static const _dragThreshold:Number = 3;
 		]]>
 	</fx:Script>
 </mx:Canvas> 

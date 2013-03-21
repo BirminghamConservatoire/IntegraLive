@@ -34,6 +34,8 @@
 			{
 				super.data = value;
 				
+				visible = false;
+				
 				removeAllChildren();
 
 				var data:Array = value as Array;
@@ -48,6 +50,8 @@
 						addChild( libraryItem );
 					}
 				}
+				
+				visible = true;
 			}
 			
 			public function getLibraryItemAt( index:int ):LibraryItem

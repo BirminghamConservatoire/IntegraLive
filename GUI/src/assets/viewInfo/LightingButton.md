@@ -4,4 +4,4 @@
 
 Click here to toggle light and dark mode
 
-Shortcut: <span class="mac-only">Command</span><span class="windows-only">ctrl</span>-3
+Shortcut: <span class="mac-only">Command</span><span class="windows-only">ctrl</span>-L

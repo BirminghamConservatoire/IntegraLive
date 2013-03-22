@@ -21,7 +21,9 @@
 
 package components.views.ModuleLibrary
 {
+	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.interfaceDefinitions.InterfaceInfo;
 	
 	import flexunit.framework.Assert;
 
@@ -76,6 +78,17 @@ package components.views.ModuleLibrary
 		}
 		
 		
+		public function get info():Info
+		{
+			if( !_info )
+			{
+				_info = makeInfo();				
+			}
+			
+			return _info;
+		}
+		
+		
 		public function compare( other:ModuleLibraryListEntry ):int
 		{
 			//first compare source
@@ -107,6 +120,55 @@ package components.views.ModuleLibrary
 			//then give up
 			return 0;
 		}
+		
+		
+		private function makeInfo():Info
+		{
+			var interfaceInfo:InterfaceInfo = _interfaceDefinition.interfaceInfo;
+
+			if( _isDefaultEntry && _interfaceDefinition.moduleSource == InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA )
+			{
+				//use standard info when it's a default AND system module
+				return interfaceInfo.info;
+			}
+			
+			var info:Info = new Info;
+			info.title = interfaceInfo.label;
+			
+			var markdown:String = "##";
+			
+			switch( _interfaceDefinition.moduleSource )
+			{
+				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:
+					markdown += "System Module";
+					break;
+				case InterfaceDefinition.MODULE_THIRD_PARTY:
+					markdown += "Third Party Module";
+					break;
+				case InterfaceDefinition.MODULE_EMBEDDED:
+					markdown += "Embedded in Project";
+					break;
+			}
+			markdown += "\n\n";
+			
+			if( !_isDefaultEntry )
+			{
+				markdown += "**Last modified:** " + interfaceInfo.modifiedDate.toLocaleDateString() + "\n\n";
+				
+				var author:String = interfaceInfo.author;
+				if( author.length == 0 )
+				{
+					author = "&lt;unknown&gt;";
+				}
+				
+				markdown += "**Author:** " + author + "\n\n";
+			}
+			
+			markdown += interfaceInfo.description;
+			
+			info.markdown = markdown;
+			return info;
+		}
 
 
 		public function toString():String { return label; }
@@ -115,6 +177,8 @@ package components.views.ModuleLibrary
 		private var _isDefaultEntry:Boolean = false;
 		private var _childData:Array = null;
 		private var _expanded:Boolean = false;
+		
+		private var _info:Info;
 
 	
 		private static const _shippedWithIntegraTint:uint = 0x000000;

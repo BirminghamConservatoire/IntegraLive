@@ -88,10 +88,7 @@ package components.views.ModuleLibrary
 				var entry:ModuleLibraryListEntry = getListEntryFromLibraryItem( item );
 				Assert.assertNotNull( entry );
 				
-				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( entry.guid );
-				Assert.assertNotNull( interfaceDefinition );
-				
-				_hoverInfo = interfaceDefinition.interfaceInfo.info;
+				_hoverInfo = entry.info;
 			}
 
 			return _hoverInfo;

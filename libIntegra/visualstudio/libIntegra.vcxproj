@@ -170,6 +170,7 @@
     <ClCompile Include="..\src\osc.c" />
     <ClCompile Include="..\src\osc_client.c" />
     <ClCompile Include="..\src\path.c" />
+    <ClCompile Include="..\src\platform_specifics.c" />
     <ClCompile Include="..\src\player_handler.c" />
     <ClCompile Include="..\src\queue.c" />
     <ClCompile Include="..\src\reentrance_checker.c" />

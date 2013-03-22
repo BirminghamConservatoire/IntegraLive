@@ -26,7 +26,7 @@
 
 	<!-- An application version designator (such as "v1", "2.5", or "Alpha 1"). Required. -->
         <versionNumber>1.5.2</versionNumber>
-        <versionLabel>Version 1.5.2.3275</versionLabel>
+        <versionLabel>Version 1.5.2.3276</versionLabel>
 
         <supportedProfiles>extendedDesktop</supportedProfiles>
 	<!-- Description, displayed in the AIR application installer.

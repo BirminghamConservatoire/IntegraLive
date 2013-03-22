@@ -56,7 +56,20 @@
 			import components.views.Skins.CollapseButtonSkin;
 			
 			import flexunit.framework.Assert;
-    		
+
+			
+			public function get selected():Boolean { return _selected; }
+			
+			public function set selected( selected:Boolean ):void 
+			{
+				if( selected != _selected )
+				{
+					_selected = selected;
+					invalidateDisplayList();
+				}
+			}
+			
+			
 			override public function styleChanged( style:String ):void
 			{
 				if( !style || style == ColorScheme.STYLENAME )
@@ -98,7 +111,7 @@
 					}
 				}
 			}
-
+			
 
 			override protected function updateDisplayList( width:Number, height:Number):void
 			{

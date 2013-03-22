@@ -22,6 +22,9 @@
 <mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 verticalScrollPolicy="auto"
+		 initialize="{onInitialize()}"
+		 mouseDown="{onMouseDown( event )}"
+		 keyDown="{onKeyDown( event )}"
 		 paddingLeft="3"
 		 paddingRight="3"
 		 verticalGap="3">
@@ -30,6 +33,8 @@
 
 	<fx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
+			
 			import flexunit.framework.Assert;
 	
 			override public function set data( value:Object ):void
@@ -39,6 +44,8 @@
 				visible = false;
 				
 				removeAllChildren();
+				
+				_selectedIndex = -1;
 
 				var data:Array = value as Array;
 				if( data )
@@ -66,6 +73,108 @@
 				
 				return item; 
 			}
+			
+			
+			private function onInitialize():void
+			{
+				addEventListener( FocusEvent.FOCUS_OUT, onFocusOut );
+			}
+			
+			
+			private function onMouseDown( event:MouseEvent ):void
+			{
+				setFocus();
+				
+				var clickItem:LibraryItem = Utilities.getAncestorByType( event.target, LibraryItem ) as LibraryItem;
+				if( !clickItem ) return;
+				
+				var clickIndex:int = getChildIndex( clickItem );
+				Assert.assertTrue( clickIndex >= 0 && clickIndex < numChildren );
+
+				select( clickIndex );
+			}
+			
+			
+			private function onKeyDown( event:KeyboardEvent ):void
+			{
+				if( _selectedIndex < 0 ) return;
+				
+				Assert.assertTrue( numChildren > 0 );
+				
+				switch( event.keyCode )
+				{
+					case Keyboard.UP:
+						if( _selectedIndex > 0 ) 
+						{
+							select( _selectedIndex - 1 );
+						}
+						else
+						{
+							select( numChildren - 1 );
+						}
+						break;
+					
+					case Keyboard.DOWN:
+						if( _selectedIndex < numChildren - 1) 
+						{
+							select( _selectedIndex + 1 );
+						}
+						else
+						{
+							select( 0 );
+						}
+						break;
+					
+					case Keyboard.HOME:
+						select( 0 );
+						break;
+					
+					case Keyboard.END:
+						select( numChildren - 1 );
+						break;
+					
+					case Keyboard.ENTER:
+						instantiateSelection();
+						break;
+					
+				}
+			}
+			
+			
+			private function onFocusOut( event:FocusEvent ):void
+			{
+				select( -1 );
+			}
+			
+			
+			private function select( index:int ):void
+			{
+				if( index == _selectedIndex ) 
+				{
+					return;
+				}
+				
+				if( _selectedIndex >= 0 )
+				{
+					getLibraryItemAt( _selectedIndex ).selected = false;
+				}
+					
+				_selectedIndex = index;
+				
+				if( _selectedIndex >= 0 )
+				{
+					getLibraryItemAt( _selectedIndex ).selected = true;
+				}
+			}
+			
+			
+			private function instantiateSelection():void
+			{
+				Alert.show( "todo - instantiate" );				
+			}
+			
+			
+			private var _selectedIndex:int = -1;
 			
 			
 		]]>

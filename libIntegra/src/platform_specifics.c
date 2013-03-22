@@ -23,11 +23,10 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
-int sprintf_s_alt (char *str, size_t size, const char *format, ...)
+
+int vsprintf_s_alt (char *str, size_t size, const char *format, va_list ap)
 {
-    va_list args;
-    va_start(args, format);
-    int rv = vsnprintf(str, size, format, args);
+    int rv = vsnprintf(str, size, format, ap);
 
     if(rv == -1 || rv > size)
     {
@@ -38,5 +37,15 @@ int sprintf_s_alt (char *str, size_t size, const char *format, ...)
         return rv;
     }
 }
+
+int sprintf_s_alt (char *str, size_t size, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    int rv = vsprintf_s_alt(str, size, format, args);
+
+    return rv;
+}
+
 #endif
 

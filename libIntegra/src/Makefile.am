@@ -33,6 +33,7 @@ common_SOURCES =  id.c \
 		data_directory.c \
 		file_io.c \
 		scratch_directory.c \
+		platform_specifics.c \
 		node_list.c 
 
 MINIZIP_DIR=../externals/minizip

@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *  
+/** libIntegra multimedia module interface
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,42 +18,25 @@
  * USA.
  */
 
-#ifndef INTEGRA_PLATFORM_SPECIFICS_PRIVATE_H
-#define INTEGRA_PLATFORM_SPECIFICS_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef _WINDOWS
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
+int sprintf_s_alt (char *str, size_t size, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    int rv = vsnprintf(str, size, format, args);
 
-#ifdef _WINDOWS
-#include "windows_build_stuff.h"
-#define MIN min
-#define MAX max
-#endif
-
-#ifdef __APPLE__
-#if !defined MAX
-#define MAX(a,b) \
-    ({ __typeof__ (a) __a = (a); \
-     __typeof__ (b) __b = (b); \
-     __a > __b ? __a : __b; })
-#endif
-
-#if !defined MIN
-#define MIN(a,b) \
-    ({ __typeof__ (a) __a = (a); \
-     __typeof__ (b) __b = (b); \
-     __a < __b ? __a : __b; })
-#endif
-
-#if !defined sprintf_s
-#define sprintf_s sprintf_s_alt
-#endif
-
-#endif /* __APPLE__ */
-
-#ifdef __cplusplus
+    if(rv == -1 || rv > size)
+    {
+        return -1;
+    }
+    else
+    {
+        return rv;
+    }
 }
 #endif
 
-#endif

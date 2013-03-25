@@ -24,6 +24,7 @@
 		 verticalScrollPolicy="auto"
 		 initialize="{onInitialize()}"
 		 mouseDown="{onMouseDown( event )}"
+		 doubleClick="{onDoubleClick( event )}"
 		 keyDown="{onKeyDown( event )}"
 		 paddingLeft="3"
 		 paddingRight="3"
@@ -75,6 +76,18 @@
 			}
 			
 			
+			public function selectFirstLine():void
+			{
+				select( 0 );
+			}
+			
+			
+			public function selectLastLine():void
+			{
+				select( numChildren - 1 );
+			}
+			
+			
 			private function onInitialize():void
 			{
 				addEventListener( FocusEvent.FOCUS_OUT, onFocusOut );
@@ -92,6 +105,18 @@
 				Assert.assertTrue( clickIndex >= 0 && clickIndex < numChildren );
 
 				select( clickIndex );
+				
+				event.stopPropagation();
+			}
+			
+			
+			private function onDoubleClick( event:MouseEvent ):void
+			{
+				if( _selectedIndex > 0 ) 
+				{
+					instantiateSelection();
+					event.stopPropagation();
+				}
 			}
 			
 			
@@ -104,33 +129,27 @@
 				switch( event.keyCode )
 				{
 					case Keyboard.UP:
-						if( _selectedIndex > 0 ) 
-						{
-							select( _selectedIndex - 1 );
-						}
-						else
-						{
-							select( numChildren - 1 );
-						}
+						selectPrevLine();
 						break;
 					
 					case Keyboard.DOWN:
-						if( _selectedIndex < numChildren - 1) 
-						{
-							select( _selectedIndex + 1 );
-						}
-						else
-						{
-							select( 0 );
-						}
+						selectNextLine();
 						break;
 					
+					case Keyboard.PAGE_UP:
+						pageUp();
+						break;
+					
+					case Keyboard.PAGE_DOWN:
+						pageDown();
+						break;
+
 					case Keyboard.HOME:
-						select( 0 );
+						selectFirstLine();
 						break;
 					
 					case Keyboard.END:
-						select( numChildren - 1 );
+						selectLastLine();
 						break;
 					
 					case Keyboard.ENTER:
@@ -138,8 +157,86 @@
 						break;
 					
 				}
+				
+				event.stopImmediatePropagation();
 			}
 			
+			
+			private function selectPrevLine():void
+			{
+				if( _selectedIndex > 0 ) 
+				{
+					select( _selectedIndex - 1, -1 );
+				}
+			}
+
+			
+			private function selectNextLine():void
+			{
+				if( _selectedIndex < numChildren - 1) 
+				{
+					select( _selectedIndex + 1, 1 );
+				}
+			}
+
+			
+			private function pageUp():void
+			{
+				var firstVisibleItem:LibraryItem = this.firstVisibleItem;
+				if( !firstVisibleItem ) return;
+				
+				if( firstVisibleItem.selected )
+				{
+					var verticalGap:Number = getStyle( "verticalGap" );
+					
+					var scrollAmount:Number = firstVisibleItem.height;
+					for( var i:int = getChildIndex( firstVisibleItem ) - 1; i >= 0; i-- )
+					{
+						scrollAmount += ( getLibraryItemAt( i ).height + verticalGap );
+						if( scrollAmount >= height )
+						{
+							select( i + 1, -1 );
+							return;
+						}
+					}
+					
+					selectFirstLine();
+				}
+				else
+				{
+					select( getChildIndex( firstVisibleItem ), -1 );
+				}
+			}
+			
+			
+			private function pageDown():void
+			{
+				var lastVisibleItem:LibraryItem = this.lastVisibleItem;
+				if( !lastVisibleItem ) return;
+				
+				if( lastVisibleItem.selected )
+				{
+					var verticalGap:Number = getStyle( "verticalGap" );
+					
+					var scrollAmount:Number = lastVisibleItem.height;
+					for( var i:int = getChildIndex( lastVisibleItem ) + 1; i < numChildren; i++ )
+					{
+						scrollAmount += ( getLibraryItemAt( i ).height + verticalGap );
+						if( scrollAmount >= height )
+						{
+							select( i - 1, 1 );
+							return;
+						}
+					}
+					
+					selectLastLine();
+				}
+				else
+				{
+					select( getChildIndex( lastVisibleItem ), 1 );
+				}				
+			}
+
 			
 			private function onFocusOut( event:FocusEvent ):void
 			{
@@ -147,7 +244,7 @@
 			}
 			
 			
-			private function select( index:int ):void
+			private function select( index:int, direction:int = 0 ):void
 			{
 				if( index == _selectedIndex ) 
 				{
@@ -163,8 +260,68 @@
 				
 				if( _selectedIndex >= 0 )
 				{
-					getLibraryItemAt( _selectedIndex ).selected = true;
+					var newItem:LibraryItem = getLibraryItemAt( _selectedIndex );
+					newItem.selected = true;
+					
+					scrollToSelection();
+					
+					newItem.selectChildList( direction );
 				}
+			}
+			
+			
+			private function scrollToSelection():void
+			{
+				Assert.assertTrue( _selectedIndex >= 0 );
+				var item:LibraryItem = getLibraryItemAt( _selectedIndex );
+				Assert.assertNotNull( LibraryItem );
+				
+				var itemRect:Rectangle = item.getRect( this );
+				var libraryRect:Rectangle = this.getRect( this );
+
+				if( itemRect.top < 0 )
+				{
+					verticalScrollPosition += itemRect.top;
+				}
+
+				if( itemRect.bottom > libraryRect.bottom )
+				{
+					verticalScrollPosition += ( itemRect.bottom - libraryRect.bottom );
+				}
+			}
+			
+			
+			private function get firstVisibleItem():LibraryItem
+			{
+				const margin:Number = 4;
+				
+				for( var i:int = 0; i < numChildren; i++ )
+				{
+					var item:LibraryItem = getLibraryItemAt( i ); 
+					if( item.getRect( this ).top > -margin )
+					{
+						return item;
+					}
+				}
+				
+				return null;
+			}
+			
+			
+			private function get lastVisibleItem():LibraryItem
+			{
+				const margin:Number = 4;
+				
+				for( var i:int = numChildren - 1; i >= 0; i-- )
+				{
+					var item:LibraryItem = getLibraryItemAt( i ); 
+					if( item.getRect( this ).bottom < height + margin )
+					{
+						return item;
+					}
+				}
+				
+				return null;
 			}
 			
 			

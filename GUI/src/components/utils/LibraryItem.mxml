@@ -70,6 +70,24 @@
 			}
 			
 			
+			public function selectChildList( direction:int ):void
+			{
+				if( expanded )
+				{
+					if( direction < 0 )
+					{
+						_childLibrary.selectLastLine();
+					}
+					else
+					{
+						_childLibrary.selectFirstLine();
+					}
+					
+					_childLibrary.setFocus();					
+				}
+			}
+			
+			
 			override public function styleChanged( style:String ):void
 			{
 				if( !style || style == ColorScheme.STYLENAME )
@@ -434,9 +452,9 @@
 				var myRect:Rectangle = this.getRect( library );
 				var libraryRect:Rectangle = library.getRect( library );
 				
-				if( myRect.top + height > libraryRect.bottom )
+				if( myRect.bottom > libraryRect.bottom )
 				{
-					library.verticalScrollPosition += ( myRect.top + height - libraryRect.bottom );
+					library.verticalScrollPosition += ( myRect.bottom - libraryRect.bottom );
 				}
 			}
 			

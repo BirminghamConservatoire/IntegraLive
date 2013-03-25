@@ -38,9 +38,8 @@ AMXMLC=$(FLEX_SDK_PATH)/bin/amxmlc
 SED = sed
 CURL = curl
 
-VERSION = $(shell cat $(SVNROOT)/VERSION)
-REVISION = $(shell svn info | grep Revision | cut -d\  -f2)
-VERSION_STRING = Version\ $(VERSION)\ svn:$(REVISION)
+BASEVERSION = $(shell cat $(SVNROOT)/BASEVERSION)
+FULLVERSION = $(shell cat $(SVNROOT)/FULLVERSION)
 
 .PHONY: $(DESCRIPTOR) clean
 
@@ -49,11 +48,10 @@ all:  IntegraLive.swf
 run:
 	$(ADL) $(ADL_FLAGS) $(DESCRIPTOR) -- $(ARGS)
 
-$(DESCRIPTOR):
-	$(SED)  -i .bak 's_<versionNumber>\(.*\)</versionNumber>_<versionNumber>$(VERSION)</versionNumber>_g' $(DESCRIPTOR)
-	$(SED)  -i .bak 's_<versionLabel>\(.*\)</versionLabel>_<versionLabel>$(VERSION_STRING)</versionLabel>_g' $(DESCRIPTOR)
+$(DESCRIPTOR): $(DESCRIPTOR).in
+	$(SED)  -e 's|x.x.x.xxxx|$(FULLVERSION)|g' -e 's|x.x.x|$(BASEVERSION)|g' $< > $@
 
-IntegraLive.swf: $(CONFIG) BlockLibrary
+IntegraLive.swf: $(CONFIG) $(DESCRIPTOR) BlockLibrary
 	$(AMXMLC) $(AMXMLC_FLAGS) IntegraLive.mxml
 
 BlockLibrary:
@@ -74,8 +72,9 @@ app: IntegraLive.swf key
 clean:
 	-@rm -f IntegraLive.swf
 	-@rm -f *.bak
-	-@rm -f app-config.xml
+	-@rm -f $(CONFIG)
 	-@rm -f $(CERTIFICATE)
+	-@rm -f $(DESCRIPTOR)
 	-@rm -rf $(PRODUCT).app
 	-@rm -rf BlockLibrary
  

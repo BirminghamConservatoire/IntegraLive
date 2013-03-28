@@ -37,7 +37,6 @@ package components.views.viewContainers
 	import mx.controls.TextInput;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
-	import mx.core.UITextField;
 	
 	import components.model.IntegraDataObject;
 	import components.model.userData.ColorScheme;

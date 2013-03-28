@@ -3,13 +3,14 @@ package components.utils
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
+	import flash.display.Stage;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
 	import mx.controls.Image;
 	import mx.core.UIComponent;
 	import mx.events.DragEvent;
-	import mx.managers.DragManager;
+	import mx.managers.ISystemManager;
 	
 	import flexunit.framework.Assert;
 
@@ -19,7 +20,9 @@ package components.utils
 		{
 			Assert.assertNull( _dragImage );
 			
-			_dragObject = dragObject;
+			_stage = dragObject.stage;
+			_systemManager = dragObject.systemManager;
+
 			_dragImage = getDragImage( dragObject );
 			_dragOffset = new Point( dragObject.mouseX, dragObject.mouseY );
 			dragObject.systemManager.popUpChildren.addChild( _dragImage );
@@ -32,8 +35,8 @@ package components.utils
 		{
 			Assert.assertNotNull( _dragImage );
 			
-			_dragObject.systemManager.popUpChildren.removeChild( _dragImage );
-			_dragObject.stage.removeEventListener( DragEvent.DRAG_OVER, onDragOver );
+			_systemManager.popUpChildren.removeChild( _dragImage );
+			_stage.removeEventListener( DragEvent.DRAG_OVER, onDragOver );
 			_dragImage = null;
 		}
 		
@@ -55,16 +58,17 @@ package components.utils
 			}
 			else
 			{
-				_dragImage.x = _dragObject.stage.mouseX - _dragOffset.x;
-				_dragImage.y = _dragObject.stage.mouseY - _dragOffset.y;
-				_dragImage.visible = true;
+				_dragImage.x = _stage.mouseX - _dragOffset.x;
+				_dragImage.y = _stage.mouseY - _dragOffset.y;
+				
+				if( !_dragImage.visible ) _dragImage.visible = true;
 			}
 		}
 		
 		
 		static private function getDragImage( dragObject:DisplayObject ):DisplayObject
 		{
-			var bitmapData:BitmapData = new BitmapData( dragObject.width, dragObject.height );
+			var bitmapData:BitmapData = new BitmapData( dragObject.width, dragObject.height, true, 0 );
 			var m:Matrix = new Matrix();
 			bitmapData.draw( dragObject, m );
 			
@@ -75,12 +79,12 @@ package components.utils
 		}
 		
 		
-		
-		
-		static private var _dragObject:UIComponent = null;
 		static private var _dragImage:DisplayObject = null;
 		static private var _dragOffset:Point = null;
 		
 		static private var _dragImageSupressed:Boolean = false;
+
+		static private var _stage:Stage = null;
+		static private var _systemManager:ISystemManager = null;
 	}
 }

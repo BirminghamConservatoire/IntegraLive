@@ -21,27 +21,27 @@
 
 package components.views.viewContainers
 {
-	import components.controller.events.ScrollbarShowHideEvent;
-	import components.utils.Utilities;
-	import components.views.IntegraView;
-	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
-	import flashx.textLayout.container.ScrollPolicy;
-	
-	import flexunit.framework.Assert;
 	
 	import mx.containers.Canvas;
 	import mx.containers.VBox;
 	import mx.core.DragSource;
-	import mx.core.IFlexDisplayObject;
-	import mx.core.UIComponent;
 	import mx.events.DragEvent;
-	import mx.events.ScrollEvent;
 	import mx.managers.DragManager;
+	
+	import components.controller.events.ScrollbarShowHideEvent;
+	import components.utils.DragImage;
+	import components.utils.Utilities;
+	import components.views.IntegraView;
+	import components.views.MouseCapture;
+	
+	import flashx.textLayout.container.ScrollPolicy;
+	
+	import flexunit.framework.Assert;
 	
 	public class ViewTree extends Canvas
 	{
@@ -105,8 +105,8 @@ package components.views.viewContainers
 
 			_itemsHolder.addElementAt( viewHolder, index );
 			
+			viewHolder.addEventListener( DragEvent.DRAG_OVER, onDragOver );
 			viewHolder.addEventListener( DragEvent.DRAG_DROP, onDragDrop );
-			viewHolder.addEventListener( DragEvent.DRAG_ENTER, onDragEnter );
 		}
 		
 		
@@ -119,8 +119,8 @@ package components.views.viewContainers
 			}			
 			
 			var viewHolder:ViewHolder = _items[ index ];
+			viewHolder.removeEventListener( DragEvent.DRAG_OVER, onDragOver );
 			viewHolder.removeEventListener( DragEvent.DRAG_DROP, onDragDrop );
-			viewHolder.removeEventListener( DragEvent.DRAG_ENTER, onDragEnter );
 			
 			_items.splice( index, 1 );
 
@@ -154,8 +154,8 @@ package components.views.viewContainers
 
 			for each( var viewHolder:ViewHolder in _items )
 			{
+				viewHolder.removeEventListener( DragEvent.DRAG_OVER, onDragOver );
 				viewHolder.removeEventListener( DragEvent.DRAG_DROP, onDragDrop );
-				viewHolder.removeEventListener( DragEvent.DRAG_ENTER, onDragEnter );
 				
 				viewHolder.view.free();
 
@@ -322,75 +322,104 @@ package components.views.viewContainers
 					continue;
 				}
 				
-				var dragSource:DragSource = new DragSource;
-				dragSource.addData( item, Utilities.getClassNameFromObject( item ) );
-			
-				DragManager.doDrag( item, dragSource, event, getDragImage( item ) );
+				_reorderView = item;
+				_clickPoint = new Point( mouseX, mouseY );
+				MouseCapture.instance.setCapture( this, onCapturedDrag, onCaptureFinished );
 				return;
 			}
 		}
 
-
-		private function getDragImage( dragView:ViewHolder ):IFlexDisplayObject
+		
+		private function onCapturedDrag( event:MouseEvent ):void
 		{
-			var dragImage:UIComponent = new UIComponent;
-			dragImage.width = dragView.width;
-			dragImage.height = dragView.height;
-			dragImage.graphics.beginFill( 0x808080, 0.2 );
-			dragImage.graphics.drawRoundRect( 0, 0, dragImage.width, dragImage.height, 24, 18 );
-			dragImage.graphics.endFill();
+			if( _reordering ) return;
 			
-			return dragImage;
+			if( new Point( mouseX, mouseY ).subtract( _clickPoint ).length >= _dragThreshold )
+			{
+				var dragSource:DragSource = new DragSource;
+				dragSource.addData( _reorderView, Utilities.getClassNameFromObject( _reorderView ) );
+				DragManager.doDrag( _reorderView, dragSource, event );
+				DragImage.addDragImage( _reorderView );
+				_reorderView.alpha = 0;
+				_itemsHolder.addEventListener( DragEvent.DRAG_EXIT, onDragExit );
+				
+				_reordering = true;
+			}
+		}
+		
+		
+		private function onCaptureFinished():void
+		{
+			if( _reordering )
+			{
+				DragImage.removeDragImage();
+				_reorderView.alpha = 1;
+				
+				_itemsHolder.setElementIndex( _reorderView, getItemIndex( _reorderView.view ) );
+				_itemsHolder.removeEventListener( DragEvent.DRAG_EXIT, onDragExit );
+				
+				_reordering = false;
+			}
 		}		
+
+		
+		private function onDragOver( event:DragEvent ):void
+		{
+			var formatName:String = "ViewHolder";//Utilities.getClassNameFromClass( ViewHolder );
+			if( !_reordering || !event.dragSource.hasFormat( formatName ) )
+			{
+				return;
+			}
+
+			var target:ViewHolder = event.target as ViewHolder;
+			DragManager.acceptDragDrop( target );
+			
+			if( target != _reorderView )
+			{
+				var reorderIndex:int = _itemsHolder.getElementIndex( _reorderView );
+				var targetIndex:int = _itemsHolder.getElementIndex( target );
+				Assert.assertTrue( reorderIndex != targetIndex );
+				
+				if( _reorderView.height < target.height )
+				{
+					if( targetIndex < reorderIndex )
+					{
+						if( _itemsHolder.mouseY > target.y + _reorderView.height ) return;
+					}
+					else
+					{
+						if( _itemsHolder.mouseY < target.y + target.height - _reorderView.height ) return;
+					}
+				}
+				
+				_itemsHolder.setElementIndex( _reorderView, targetIndex );
+			}
+		}				
+
 		
 		
 		private function onDragDrop( event:DragEvent ):void
 		{
-			var formatName:String = Utilities.getClassNameFromClass( ViewHolder );
-			var draggedView:ViewHolder = event.dragSource.dataForFormat( formatName ) as ViewHolder;
 			var droppedView:ViewHolder = event.target as ViewHolder;
-
-			Assert.assertNotNull( draggedView );
-			Assert.assertNotNull( droppedView );
-			Assert.assertTrue( draggedView != droppedView );
-			Assert.assertTrue( draggedView.parent == _itemsHolder );
-			Assert.assertTrue( droppedView.parent == _itemsHolder );
 			
-			var draggedIndex:int = getItemIndex( draggedView.view ); 
-			var droppedIndex:int = getItemIndex( droppedView.view );
+			var draggedIndex:int = getItemIndex( _reorderView.view ); 
+			var droppedIndex:int = _itemsHolder.getElementIndex( droppedView );
 			
 			setItemIndex( draggedIndex, droppedIndex );
 			
 			dispatchEvent( new Event( TREE_REORDERED ) ); 
 		}
-
-
-		private function onDragEnter( event:DragEvent ):void
+		
+		
+		private function onDragExit( event:DragEvent ):void
 		{
-			var formatName:String = Utilities.getClassNameFromClass( ViewHolder );
-			if( !event.dragSource.hasFormat( formatName ) )
+			var itemsHolderRect:Rectangle = _itemsHolder.getRect( stage );
+			if( !itemsHolderRect.contains( stage.mouseX, stage.mouseY ) )
 			{
-				return;
+				_itemsHolder.setElementIndex( _reorderView, getItemIndex( _reorderView.view ) );
 			}
 			
-			var draggedView:ViewHolder = event.dragSource.dataForFormat( formatName ) as ViewHolder;
-			Assert.assertNotNull( draggedView );
-
-			var target:ViewHolder = event.target as ViewHolder;
-			Assert.assertNotNull( target );
-			
-			if( draggedView.parent != _itemsHolder )
-			{
-				return;
-			}
-			
-			if( draggedView == target )
-			{
-				return;
-			}
-			
-			DragManager.acceptDragDrop( target );
-		}				
+		}
 
 
 		private var _itemsHolder:VBox = new VBox;
@@ -398,8 +427,13 @@ package components.views.viewContainers
 		private var _items:Vector.<ViewHolder> = new Vector.<ViewHolder>;	
 
 		private var _canReorder:Boolean = false;
+		private var _reordering:Boolean = false;
+		private var _reorderView:ViewHolder = null;
+		private var _clickPoint:Point = null;
 		
 		private var _hasVerticalScrollbar:Boolean = false;
+
+		private static const _dragThreshold:Number = 3;
 		
 		public static const TREE_REORDERED:String = "treeReordered";		
 	}

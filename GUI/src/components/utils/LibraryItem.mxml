@@ -49,10 +49,7 @@
     	<![CDATA[
 			import flash.filters.DropShadowFilter;
 			
-			import mx.controls.Image;
 			import mx.core.DragSource;
-			import mx.core.IFlexDisplayObject;
-			import mx.events.DragEvent;
 			import mx.managers.DragManager;
 			
 			import components.model.userData.ColorScheme;

@@ -70,17 +70,51 @@
 			}
 			
 			
-			public function selectChildList( direction:int ):void
+			public function toggleExpanded():void
+			{
+				if( !_collapseButton.visible ) return;
+				
+				doExpand( !expanded );
+				
+				if( expanded )
+				{
+					//collapse siblings
+					var library:Library = parent as Library;
+					if( library )
+					{
+						var numberOfSiblings:int = library.numChildren;
+						for( var i:int = 0; i < numberOfSiblings; i++ )
+						{
+							var sibling:LibraryItem = library.getLibraryItemAt( i );
+							if( sibling == this ) continue;
+							
+							if( sibling.expanded )
+							{
+								sibling.doExpand( false );
+							}
+						}
+					}
+				}
+			}
+			
+			
+			public function selectChildList( childToSelect:String ):void
 			{
 				if( expanded )
 				{
-					if( direction < 0 )
+					switch( childToSelect )
 					{
-						_childLibrary.selectLastLine();
-					}
-					else
-					{
-						_childLibrary.selectFirstLine();
+						case FIRST_CHILD:
+							_childLibrary.selectFirstLine();
+							break;
+						
+						case LAST_CHILD:
+							_childLibrary.selectLastLine();
+							break;
+						
+						default:
+							Assert.assertTrue( false );
+							break;
 					}
 					
 					_childLibrary.setFocus();					
@@ -303,27 +337,7 @@
 			
 			private function onClickCollapseButton():void
 			{
-				doExpand( !expanded );
-				
-				if( expanded )
-				{
-					//collapse siblings
-					var library:Library = parent as Library;
-					if( library )
-					{
-						var numberOfSiblings:int = library.numChildren;
-						for( var i:int = 0; i < numberOfSiblings; i++ )
-						{
-							var sibling:LibraryItem = library.getLibraryItemAt( i );
-							if( sibling == this ) continue;
-							
-							if( sibling.expanded )
-							{
-								sibling.doExpand( false );
-							}
-						}
-					}
-				}
+				toggleExpanded();
 			}
 			
 			
@@ -338,6 +352,11 @@
 				{
 					_isAnimating = true;
 					addEventListener( Event.ENTER_FRAME, onAnimateExpand );
+				}
+				
+				if( expand && selected )
+				{
+					selectChildList( FIRST_CHILD );
 				}
 			}
 			
@@ -385,7 +404,7 @@
 			{
 				if( new Point( mouseX, mouseY ).subtract( _clickPoint ).length >= _dragThreshold )
 				{
-					dispatchEvent( new DragEvent( DragEvent.DRAG_START, true ) );					
+					dispatchEvent( new DragEvent( DragEvent.DRAG_START, true ) );
 				}
 			}
 			
@@ -479,6 +498,10 @@
 			
 			private static const _dragThreshold:Number = 3;
 			private static const _pickOffset:Number = 3;
+			
+			public static const FIRST_CHILD:String = "firstChild";
+			public static const LAST_CHILD:String = "lastChild";
+			
 		]]>
 	</fx:Script>
 </mx:Canvas> 

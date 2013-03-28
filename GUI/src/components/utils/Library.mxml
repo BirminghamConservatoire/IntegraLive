@@ -26,8 +26,7 @@
 		 mouseDown="{onMouseDown( event )}"
 		 doubleClick="{onDoubleClick( event )}"
 		 keyDown="{onKeyDown( event )}"
-		 paddingLeft="3"
-		 paddingRight="3"
+		 paddingTop="3" paddingBottom="3" paddingLeft="3" paddingRight="3"
 		 verticalGap="3">
 	<fx:Declarations>
 	</fx:Declarations>
@@ -78,13 +77,13 @@
 			
 			public function selectFirstLine():void
 			{
-				select( 0 );
+				select( 0, LibraryItem.FIRST_CHILD );
 			}
 			
 			
 			public function selectLastLine():void
 			{
-				select( numChildren - 1 );
+				select( numChildren - 1, LibraryItem.LAST_CHILD );
 			}
 			
 			
@@ -104,7 +103,7 @@
 				var clickIndex:int = getChildIndex( clickItem );
 				Assert.assertTrue( clickIndex >= 0 && clickIndex < numChildren );
 
-				select( clickIndex );
+				select( clickIndex, LibraryItem.FIRST_CHILD );
 				
 				event.stopPropagation();
 			}
@@ -126,14 +125,16 @@
 				
 				Assert.assertTrue( numChildren > 0 );
 				
+				var usedEvent:Boolean = false;
+				
 				switch( event.keyCode )
 				{
 					case Keyboard.UP:
-						selectPrevLine();
+						usedEvent = selectPrevLine();
 						break;
 					
 					case Keyboard.DOWN:
-						selectNextLine();
+						usedEvent = selectNextLine();
 						break;
 					
 					case Keyboard.PAGE_UP:
@@ -151,31 +152,66 @@
 					case Keyboard.END:
 						selectLastLine();
 						break;
+
+					case Keyboard.LEFT:
+					case Keyboard.RIGHT:
+						expandSelectedItem();
+						break;
 					
 					case Keyboard.ENTER:
 						instantiateSelection();
+						usedEvent = true;
 						break;
 					
 				}
 				
 				event.stopImmediatePropagation();
+
+				if( usedEvent )
+				{
+					event.preventDefault();
+				}
+				else
+				{
+					var ancestorLibrary:Library = Utilities.getAncestorByType( parent, Library ) as Library;
+					if( ancestorLibrary )
+					{
+						var ancestorEvent:KeyboardEvent = event.clone() as KeyboardEvent;
+						ancestorLibrary.dispatchEvent( ancestorEvent );
+						
+						if( ancestorEvent.isDefaultPrevented() )
+						{
+							ancestorLibrary.setFocus();
+						}
+					}
+				}
 			}
 			
 			
-			private function selectPrevLine():void
+			private function selectPrevLine():Boolean
 			{
 				if( _selectedIndex > 0 ) 
 				{
-					select( _selectedIndex - 1, -1 );
+					select( _selectedIndex - 1, LibraryItem.LAST_CHILD );
+					return true;
+				}
+				else
+				{
+					return false;
 				}
 			}
 
 			
-			private function selectNextLine():void
+			private function selectNextLine():Boolean
 			{
 				if( _selectedIndex < numChildren - 1) 
 				{
-					select( _selectedIndex + 1, 1 );
+					select( _selectedIndex + 1, LibraryItem.FIRST_CHILD );
+					return true;
+				}
+				else
+				{
+					return false;
 				}
 			}
 
@@ -195,7 +231,7 @@
 						scrollAmount += ( getLibraryItemAt( i ).height + verticalGap );
 						if( scrollAmount >= height )
 						{
-							select( i + 1, -1 );
+							select( i + 1, LibraryItem.FIRST_CHILD );
 							return;
 						}
 					}
@@ -204,7 +240,7 @@
 				}
 				else
 				{
-					select( getChildIndex( firstVisibleItem ), -1 );
+					select( getChildIndex( firstVisibleItem ), LibraryItem.FIRST_CHILD );
 				}
 			}
 			
@@ -224,7 +260,7 @@
 						scrollAmount += ( getLibraryItemAt( i ).height + verticalGap );
 						if( scrollAmount >= height )
 						{
-							select( i - 1, 1 );
+							select( i - 1, LibraryItem.LAST_CHILD );
 							return;
 						}
 					}
@@ -233,18 +269,35 @@
 				}
 				else
 				{
-					select( getChildIndex( lastVisibleItem ), 1 );
+					select( getChildIndex( lastVisibleItem ), LibraryItem.LAST_CHILD );
 				}				
 			}
 
 			
-			private function onFocusOut( event:FocusEvent ):void
+			private function expandSelectedItem():void
 			{
-				select( -1 );
+				Assert.assertTrue( _selectedIndex >= 0 );
+				
+				getLibraryItemAt( _selectedIndex ).toggleExpanded();
 			}
 			
 			
-			private function select( index:int, direction:int = 0 ):void
+			private function onFocusOut( event:FocusEvent ):void
+			{
+				var newFocus:InteractiveObject = event.relatedObject;
+				if( newFocus )
+				{
+					if( Utilities.isDescendant( newFocus, this ) || ( this == newFocus ) )
+					{
+						return;
+					}
+				}
+
+				select( -1, null );	
+			}
+			
+			
+			private function select( index:int, childToSelect:String ):void
 			{
 				if( index == _selectedIndex ) 
 				{
@@ -265,7 +318,7 @@
 					
 					scrollToSelection();
 					
-					newItem.selectChildList( direction );
+					newItem.selectChildList( childToSelect );
 				}
 			}
 			

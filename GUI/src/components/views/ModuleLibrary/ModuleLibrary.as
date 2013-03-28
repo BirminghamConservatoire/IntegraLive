@@ -33,12 +33,17 @@ package components.views.ModuleLibrary
 	import mx.events.DragEvent;
 	import mx.managers.DragManager;
 	
+	import components.controller.serverCommands.ImportBlock;
+	import components.controller.serverCommands.LoadModule;
+	import components.model.Block;
 	import components.model.Info;
+	import components.model.Track;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.utils.Library;
 	import components.utils.LibraryItem;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
+	import components.views.BlockLibrary.BlockLibraryListEntry;
 	import components.views.InfoView.InfoMarkupForViews;
 	
 	import flexunit.framework.Assert;
@@ -59,6 +64,7 @@ package components.views.ModuleLibrary
 			addChild( _library );
 			
 			_library.addEventListener( DragEvent.DRAG_START, onDragStart );
+			_library.addEventListener( LibraryItem.INSTANTIATE_EVENT, onInstantiate );
 			
 			addEventListener( Event.RESIZE, onResize );
 		}
@@ -156,6 +162,21 @@ package components.views.ModuleLibrary
 		private function moduleCompareFunction( a:ModuleLibraryListEntry, b:ModuleLibraryListEntry ):Number
 		{
 			return a.compare( b );
+		}
+
+		
+		private function onInstantiate( event:Event ):void
+		{
+			var item:LibraryItem = event.target as LibraryItem;
+			Assert.assertNotNull( item );
+			
+			var listEntry:ModuleLibraryListEntry = getListEntryFromLibraryItem( item );
+			Assert.assertNotNull( listEntry );
+			
+			var selectedBlock:Block = model.primarySelectedBlock;
+			if( !selectedBlock ) return;
+			
+			controller.processCommand( new LoadModule( listEntry.guid, selectedBlock.id ) );
 		}
 
 		

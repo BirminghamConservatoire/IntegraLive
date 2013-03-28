@@ -48,7 +48,7 @@ package components.model
 		
 		public static function getModuleHeight( interfaceDefinition:InterfaceDefinition ):Number 
 		{ 
-			Assert.assertNotNull( interfaceDefinition );
+			if( !interfaceDefinition ) return _minimumModuleHeight;
 			
 			var numberOfInputPins:uint = interfaceDefinition.countAudioEndpointsByDirection( StreamInfo.DIRECTION_INPUT );
 			var numberOfOutputPins:uint = interfaceDefinition.countAudioEndpointsByDirection( StreamInfo.DIRECTION_OUTPUT );

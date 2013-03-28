@@ -21,15 +21,16 @@
 
 package components.model.userData
 {
-	import components.model.IntegraModel;
-	import components.model.ModuleInstance;
-	import components.utils.Trace;
-	
 	import flash.geom.Rectangle;
 	
-	import flexunit.framework.Assert;
-	
 	import mx.collections.XMLListCollection;
+	
+	import components.model.IntegraModel;
+	import components.model.ModuleInstance;
+	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.utils.Trace;
+	
+	import flexunit.framework.Assert;
 	
 	
 	public class BlockUserData extends UserData
@@ -51,18 +52,49 @@ package components.model.userData
 		public function set curvatureMode( curvatureMode:Boolean ):void { _curvatureMode = curvatureMode; }
 
 
-		public function getUnusedModulePosition( moduleWidth:Number, moduleHeight:Number ):Rectangle
+		public function getUnusedModulePosition( interfaceDefinition:InterfaceDefinition ):Rectangle
 		{
-			var unusedPosition:Rectangle = new Rectangle( 1, 1, moduleWidth, moduleHeight );
+			const moduleWidthInflation:Number = 1.8;
+			const moduleHeightInflation:Number = 1.6;
+			const gridColumns:int = 3;
 			
-			for each( var existingPosition:Rectangle in _modulePositions )
+			var moduleWidth:Number = ModuleInstance.getModuleWidth();
+			var thisModuleHeight:Number = ModuleInstance.getModuleHeight( interfaceDefinition );
+			var standardModuleHeight:Number = ModuleInstance.getModuleHeight( null );
+			
+			for( var yGrid:int = 0; ; yGrid++ )
 			{
-				unusedPosition.x = Math.max( unusedPosition.x, existingPosition.right );
-				unusedPosition.y = Math.max( unusedPosition.y, existingPosition.bottom );
+				for( var xGrid:int = 0; xGrid < gridColumns; xGrid++ )
+				{
+					var x:Number = ( xGrid + 0.5 ) * moduleWidth * moduleWidthInflation;
+					var y:Number = ( yGrid + 0.5 ) * standardModuleHeight * moduleHeightInflation;
+					
+					var candidatePosition:Rectangle = new Rectangle( x, y, moduleWidth, thisModuleHeight );
+					var testRectangle:Rectangle = candidatePosition.clone();
+					testRectangle.inflate( ( moduleWidthInflation - 1 ) * moduleWidth * 0.999, 0 );
+
+					var positionIsOK:Boolean = true;
+					
+					for each( var existingPosition:Rectangle in _modulePositions )
+					{
+						if( existingPosition.intersects( testRectangle ) )
+						{
+							positionIsOK = false;
+							break;
+						}
+					}
+					
+					if( positionIsOK )
+					{
+						return candidatePosition;
+					}
+				}
 			}
 			
-			return unusedPosition;
+			Assert.assertTrue( false );
+			return null;
 		}
+		
 
 		protected override function writeToXML( xml:XML, model:IntegraModel ):void
 		{

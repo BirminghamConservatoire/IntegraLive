@@ -24,6 +24,7 @@
 		 verticalScrollPolicy="auto"
 		 initialize="{onInitialize()}"
 		 mouseDown="{onMouseDown( event )}"
+		 rightMouseDown="{onMouseDown( event )}"
 		 doubleClick="{onDoubleClick( event )}"
 		 keyDown="{onKeyDown( event )}"
 		 paddingTop="3" paddingBottom="3" paddingLeft="3" paddingRight="3"
@@ -33,8 +34,6 @@
 
 	<fx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
-			
 			import flexunit.framework.Assert;
 	
 			override public function set data( value:Object ):void
@@ -75,6 +74,14 @@
 			}
 			
 			
+			public function get selectedItem():LibraryItem 
+			{
+				if( _selectedIndex < 0 ) return null;
+				
+				return getLibraryItemAt( _selectedIndex );
+			}
+			
+			
 			public function selectFirstLine():void
 			{
 				select( 0, LibraryItem.FIRST_CHILD );
@@ -111,7 +118,7 @@
 			
 			private function onDoubleClick( event:MouseEvent ):void
 			{
-				if( _selectedIndex > 0 ) 
+				if( _selectedIndex >= 0 ) 
 				{
 					instantiateSelection();
 					event.stopPropagation();
@@ -380,7 +387,9 @@
 			
 			private function instantiateSelection():void
 			{
-				Alert.show( "todo - instantiate" );				
+				Assert.assertTrue( _selectedIndex >= 0 );
+				
+				getLibraryItemAt( _selectedIndex ).dispatchEvent( new Event( LibraryItem.INSTANTIATE_EVENT, true ) );
 			}
 			
 			

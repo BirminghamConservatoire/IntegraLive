@@ -47,8 +47,15 @@ package components.controller.userDataCommands
 		
 		override public function initialize( model:IntegraModel ):Boolean
 		{
-			var previousPosition:Rectangle = model.getModulePosition( _instanceID );
-			return( _position != previousPosition );
+			var previousPosition:Rectangle = model.getModulePosition( _instanceID, false );
+			if( position && previousPosition )
+			{
+				return !_position.equals( previousPosition );
+			}
+			else
+			{
+				return ( position || previousPosition );
+			}
 		}
 		
 		

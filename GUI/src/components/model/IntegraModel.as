@@ -585,7 +585,7 @@ package components.model
 		}
 		
 		
-		public function getModulePosition( moduleInstanceID:int ):Rectangle
+		public function getModulePosition( moduleInstanceID:int, inventIfUnknown:Boolean = true ):Rectangle
 		{
 			var block:Block = getBlockFromModuleInstance( moduleInstanceID );
 			Assert.assertNotNull( block );
@@ -596,10 +596,17 @@ package components.model
 			}
 			else
 			{
-				var moduleInstance:ModuleInstance = getModuleInstance( moduleInstanceID );
-				Assert.assertNotNull( moduleInstance );
-				
-				return block.userData.getUnusedModulePosition( ModuleInstance.getModuleWidth(), ModuleInstance.getModuleHeight( moduleInstance.interfaceDefinition ) );
+				if( inventIfUnknown )
+				{
+					var moduleInstance:ModuleInstance = getModuleInstance( moduleInstanceID );
+					Assert.assertNotNull( moduleInstance );
+					
+					return block.userData.getUnusedModulePosition( moduleInstance.interfaceDefinition );
+				}
+				else
+				{
+					return null;
+				}
 			}
 		}
 

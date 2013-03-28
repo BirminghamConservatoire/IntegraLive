@@ -35,13 +35,13 @@ package components.views.BlockLibrary
 
 	public class BlockLibraryListEntry extends Object
 	{
-		public function BlockLibraryListEntry( file:File, tint:uint = 0 )
+		public function BlockLibraryListEntry( file:File, isUserBlock:Boolean )
 		{
 			super();
 			
 			_filepath = file.nativePath;
 			_modificationDate = file.modificationDate;
-			_tint = tint;
+			_isUserBlock = isUserBlock;
 			
 			loadInfo( file );
 		}
@@ -50,7 +50,9 @@ package components.views.BlockLibrary
 		public function get isValid():Boolean 		{ return _info != null; }		
 		public function get filepath():String 		{ return _filepath; }
 		public function get info():Info 			{ return _info; }
-		public function get tint():uint 			{ return _tint; }
+		public function get isUserBlock():Boolean 	{ return _isUserBlock; }
+		public function get tint():uint 			{ return _isUserBlock ? _userBlockTint : _systemBlockTint; } 
+
 		
 		public function isCurrent( file:File ):Boolean
 		{
@@ -119,7 +121,10 @@ package components.views.BlockLibrary
 		
 		private var _info:Info = null;
 		
-		private var _tint:uint = 0;
+		private var _isUserBlock:Boolean = false;
+
+		private static const _systemBlockTint:uint = 0x000000;
+		private static const _userBlockTint:uint = 0x000020;
 		
 		private static const _ixdFileName:String = "integra_data/nodes.ixd";
 	}

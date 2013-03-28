@@ -40,7 +40,7 @@ package components.controller.serverCommands
 
 	public class LoadModule extends ServerCommand
 	{
-		public function LoadModule( moduleGuid:String, blockID:int, position:Rectangle, objectID:int = -1, name:String = null )
+		public function LoadModule( moduleGuid:String, blockID:int, position:Rectangle = null, objectID:int = -1, name:String = null )
 		{
 			super();
 	
@@ -74,6 +74,11 @@ package components.controller.serverCommands
 			{
 				_name = model.getBlock( blockID ).getNewChildName( interfaceDefinition.interfaceInfo.name, _moduleGuid ); 
 			}	
+
+			if( !_position )
+			{
+				_position = model.getBlock( blockID ).userData.getUnusedModulePosition( interfaceDefinition );
+			}
 			
 			return true;				
 		}
@@ -136,6 +141,7 @@ package components.controller.serverCommands
 			
 			return true;
 		}
+		
 		
 		
 		private var _objectID:int;

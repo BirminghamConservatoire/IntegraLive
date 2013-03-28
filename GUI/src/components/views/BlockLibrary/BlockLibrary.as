@@ -34,7 +34,9 @@ package components.views.BlockLibrary
 	import mx.events.DragEvent;
 	import mx.managers.DragManager;
 	
+	import components.controller.serverCommands.ImportBlock;
 	import components.model.Info;
+	import components.model.Track;
 	import components.utils.Library;
 	import components.utils.LibraryItem;
 	import components.utils.Utilities;
@@ -60,6 +62,7 @@ package components.views.BlockLibrary
 			addChild( _library );
 			
 			_library.addEventListener( DragEvent.DRAG_START, onDragStart );
+			_library.addEventListener( LibraryItem.INSTANTIATE_EVENT, onInstantiate );
 			
 			addEventListener( Event.RESIZE, onResize );
 			
@@ -105,20 +108,20 @@ package components.views.BlockLibrary
 			var systemBlockLibraryDirectory:File = new File( Utilities.getSystemBlockLibraryDirectory() );
 			if( systemBlockLibraryDirectory.exists )
 			{
-				addBlockLibraryDirectory( listData, systemBlockLibraryDirectory.getDirectoryListing(), _systemBlockTint );
+				addBlockLibraryDirectory( listData, systemBlockLibraryDirectory.getDirectoryListing(), false );
 			}
 
 			var userBlockLibraryDirectory:File = new File( Utilities.getUserBlockLibraryDirectory() );
 			if( userBlockLibraryDirectory.exists )
 			{
-				addBlockLibraryDirectory( listData, userBlockLibraryDirectory.getDirectoryListing(), _userBlockTint );
+				addBlockLibraryDirectory( listData, userBlockLibraryDirectory.getDirectoryListing(), true );
 			}
 			
 			_library.data = listData;
 		}
 		
 		
-		private function addBlockLibraryDirectory( listData:Array, directoryListing:Array, tint:uint ):void
+		private function addBlockLibraryDirectory( listData:Array, directoryListing:Array, isUserBlock:Boolean ):void
 		{
 			for each( var file:File in directoryListing )
 			{
@@ -135,7 +138,7 @@ package components.views.BlockLibrary
 
 				if( !listEntry || !listEntry.isCurrent( file ) )
 				{
-					listEntry = new BlockLibraryListEntry( file, tint );
+					listEntry = new BlockLibraryListEntry( file, isUserBlock );
 					_mapFileNameToListEntry[ file.nativePath ] = listEntry;
 				}
 				
@@ -143,6 +146,21 @@ package components.views.BlockLibrary
 			}
 		}
 
+		
+		private function onInstantiate( event:Event ):void
+		{
+			var item:LibraryItem = event.target as LibraryItem;
+			Assert.assertNotNull( item );
+
+			var listEntry:BlockLibraryListEntry = getListEntryFromLibraryItem( item );
+			Assert.assertNotNull( listEntry );
+
+			var selectedTrack:Track = model.selectedTrack;
+			if( !selectedTrack ) return;
+			
+			controller.processCommand( new ImportBlock( listEntry.filepath, selectedTrack.id, model.project.player.playPosition ) );
+		}
+		
 		
 		private function onDragStart( event:DragEvent ):void
 		{
@@ -179,43 +197,39 @@ package components.views.BlockLibrary
 		
 		private function onUpdateRemove( menuItem:Object ):void
 		{
-			/*
-			selectItemUnderMouse();
 			
-			if( !_blockList.selectedItem )
+			//selectItemUnderMouse();
+			
+			var selectedItem:LibraryItem = _library.selectedItem;
+			if( !selectedItem )
 			{
 				menuItem.enabled = false;
 				return;
 			}
 
-			var objectProxy:ObjectProxy = _blockList.selectedItem as ObjectProxy;
-			Assert.assertNotNull( objectProxy );
+			var listEntry:BlockLibraryListEntry = getListEntryFromLibraryItem( selectedItem );
+			Assert.assertNotNull( listEntry );
 			
-			var item:BlockLibraryListEntry = objectProxy.valueOf() as BlockLibraryListEntry;
-			Assert.assertNotNull( item );
-			
-			menuItem.enabled = item.isUserItem;
-			*/
+			menuItem.enabled = listEntry.isUserBlock;
 		}
 		
 		
 		private function remove():void
 		{
-			/*var objectProxy:ObjectProxy = _blockList.selectedItem as ObjectProxy;
-			Assert.assertNotNull( objectProxy );
+			var selectedItem:LibraryItem = _library.selectedItem;
+			if( !selectedItem )	return;
 			
-			var item:BlockLibraryListEntry = objectProxy.valueOf() as BlockLibraryListEntry;
-			Assert.assertNotNull( item );
-			Assert.assertTrue( item.isUserItem );
+			var listEntry:BlockLibraryListEntry = getListEntryFromLibraryItem( selectedItem );
+			Assert.assertNotNull( listEntry );
+			Assert.assertTrue( listEntry.isUserBlock );
 			
-			var file:File = new File( item.filepath );
+			var file:File = new File( listEntry.filepath );
 			Assert.assertNotNull( file );
 			Assert.assertTrue( file.exists );
 			
 			file.deleteFile();
 			
 			onAllDataChanged();
-			*/
 		}
 		
 		
@@ -259,10 +273,6 @@ package components.views.BlockLibrary
         [
             { label: "Remove from Block Library", handler: remove, updater: onUpdateRemove } 
         ];
-		
-		
-		private static const _systemBlockTint:uint = 0x000000;
-		private static const _userBlockTint:uint = 0x000020;
 	}
 }
 

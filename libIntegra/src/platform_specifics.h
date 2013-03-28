@@ -45,6 +45,16 @@ extern "C" {
      __typeof__ (b) __b = (b); \
      __a < __b ? __a : __b; })
 #endif
+
+#if !defined sprintf_s
+#define sprintf_s sprintf_s_alt
+#define vsprintf_s vsprintf_s_alt
+#include <string.h>
+#include <stdarg.h>
+int sprintf_s_alt (char *str, size_t size, const char *format, ...);
+int vsprintf_s_alt (char *str, size_t size, const char *format, va_list ap);
+#endif
+
 #endif /* __APPLE__ */
 
 #ifdef __cplusplus

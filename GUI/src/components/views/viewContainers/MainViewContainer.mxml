@@ -76,6 +76,13 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import flash.filters.ColorMatrixFilter;
+			
+			import mx.containers.Canvas;
+			import mx.core.Container;
+			import mx.core.FlexGlobals;
+			import mx.managers.PopUpManager;
+			
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetContrast;
 			import components.controller.userDataCommands.SetViewMode;
@@ -97,14 +104,7 @@
 			import components.views.Timeline.TimelineMode;
 			import components.views.viewContainers.ViewTree;
 			
-			import flash.filters.ColorMatrixFilter;
-			
 			import flexunit.framework.Assert;
-			
-			import mx.containers.Canvas;
-			import mx.core.Container;
-			import mx.core.FlexGlobals;
-			import mx.managers.PopUpManager;
 			
 			
 			public function loadPersistantState( xml:XML ):void
@@ -113,12 +113,12 @@
 				loadCollapsed( xml, _arrangeViewProperties, "arrangeViewPropertiesCollapsed" );
 				loadWidth( xml, _blockLibrary, "blockLibraryWidth" );
 				loadHeight( xml, _arrangeInfoView, "arrangeInfoViewHeight" );
-				loadWidth( xml, _arrangeInfoView, "arrangeInfoViewWidth" );
+				loadWidth( xml, _arrangeInfoView, "arrangeInfoViewWidth", _blockLibrary.width );
 				loadHeight( xml, _moduleProperties, "modulePropertiesHeight" );
 				loadCollapsed( xml, _moduleProperties, "modulePropertiesCollapsed" );
 				loadWidth( xml, _moduleLibrary, "moduleLibraryWidth" );
 				loadHeight( xml, _moduleGraphInfoView, "moduleGraphInfoViewHeight" );
-				loadWidth( xml, _moduleGraphInfoView, "moduleGraphInfoViewWidth" );
+				loadWidth( xml, _moduleGraphInfoView, "moduleGraphInfoViewWidth", _moduleLibrary.width );
 				loadHeight( xml, _keybindingView, "keybindingViewHeight" );
 				loadCollapsed( xml, _keybindingView, "keybindingViewCollapsed" );
 				loadWidth( xml, _liveInfoView, "liveInfoViewWidth" );
@@ -524,20 +524,34 @@
 			}
 			
 			
-			private function loadHeight( xml:XML, view:IntegraView, key:String ):void
+			private function loadHeight( xml:XML, view:IntegraView, key:String, defaultHeight:Number = -1 ):void
 			{
 				if( xml.hasOwnProperty( key ) )
 				{
 					view.height = Number( xml.child( key ).toString() );
 				}
+				else
+				{
+					if( defaultHeight >= 0 ) 
+					{
+						view.height = Math.max( view.minHeight, Math.min( view.maxHeight, defaultHeight ) );;
+					}
+				}
 			}
 
 			
-			private function loadWidth( xml:XML, view:IntegraView, key:String ):void
+			private function loadWidth( xml:XML, view:IntegraView, key:String, defaultWidth:Number = -1 ):void
 			{
 				if( xml.hasOwnProperty( key ) )
 				{
 					view.width = Number( xml.child( key ).toString() );
+				}
+				else
+				{
+					if( defaultWidth >= 0 ) 
+					{
+						view.width = Math.max( view.minWidth, Math.min( view.maxWidth, defaultWidth ) );
+					}
 				}
 			}
 

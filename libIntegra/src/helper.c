@@ -856,7 +856,7 @@ int ntg_levenshtein_distance( const char *string1, const char *string2 )
 		cost = 1;
 	}
 
-	return min( min(
+	return MIN( MIN(
 		ntg_levenshtein_distance( string1 + 1, string2 ) + 1,
 		ntg_levenshtein_distance( string1, string2 + 1 ) + 1 ), 
 		ntg_levenshtein_distance( string1 + 1, string2 + 1 ) + cost );

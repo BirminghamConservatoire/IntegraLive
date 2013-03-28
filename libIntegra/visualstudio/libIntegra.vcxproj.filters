@@ -141,6 +141,9 @@
     <ClCompile Include="..\src\file_io.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\platform_specifics.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\attribute.h">

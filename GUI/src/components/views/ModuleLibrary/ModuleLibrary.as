@@ -63,7 +63,6 @@ package components.views.ModuleLibrary
 			_library.setStyle( "right", 0 );
 			addChild( _library );
 			
-			_library.addEventListener( DragEvent.DRAG_START, onDragStart );
 			_library.addEventListener( LibraryItem.INSTANTIATE_EVENT, onInstantiate );
 			
 			addEventListener( Event.RESIZE, onResize );
@@ -180,35 +179,6 @@ package components.views.ModuleLibrary
 		}
 
 		
-		private function onDragStart( event:DragEvent ):void
-		{
-			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
-			if( !item ) return;
-
-			var listEntry:ModuleLibraryListEntry = getListEntryFromLibraryItem( item );
-			Assert.assertNotNull( listEntry );
-
-			var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( listEntry.guid );
-			Assert.assertNotNull( interfaceDefinition );
-
-			var dragSource:DragSource = new DragSource();
-			dragSource.addData( interfaceDefinition, Utilities.getClassNameFromClass( InterfaceDefinition ) );
-			
-			var itemRect:Rectangle = item.getRect( this );
-			
-			DragManager.doDrag( _library, dragSource, event, getDragImage(), itemRect.x, itemRect.y );
-		}
-		
-		
-		
-		private function getDragImage():IFlexDisplayObject
-		{
-			var dragImage:UIComponent = new UIComponent;
-
-			return dragImage;
-		}
-		
-
 		private function getListEntryFromLibraryItem( libraryItem:LibraryItem ):ModuleLibraryListEntry
 		{
 			Assert.assertNotNull( libraryItem );

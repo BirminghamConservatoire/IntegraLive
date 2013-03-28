@@ -62,6 +62,7 @@ package components.views.ModuleGraph
 	import components.model.userData.ColorScheme;
 	import components.model.userData.LiveViewControl;
 	import components.model.userData.ViewMode;
+	import components.utils.DragImage;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
@@ -731,6 +732,8 @@ package components.views.ModuleGraph
 				return;
 			}
 
+			DragImage.suppressDragImage();
+			
 			var interfaceDefinition:InterfaceDefinition = event.dragSource.dataForFormat( Utilities.getClassNameFromClass( InterfaceDefinition ) ) as InterfaceDefinition;
 			Assert.assertNotNull( interfaceDefinition );
 

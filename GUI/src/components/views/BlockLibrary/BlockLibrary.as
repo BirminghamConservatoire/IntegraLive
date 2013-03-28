@@ -21,12 +21,16 @@
 
 package components.views.BlockLibrary
 {
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
+	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
+	import mx.controls.Image;
 	import mx.core.DragSource;
 	import mx.core.IFlexDisplayObject;
 	import mx.core.ScrollPolicy;
@@ -61,7 +65,6 @@ package components.views.BlockLibrary
 			_library.setStyle( "right", 0 );
 			addChild( _library );
 			
-			_library.addEventListener( DragEvent.DRAG_START, onDragStart );
 			_library.addEventListener( LibraryItem.INSTANTIATE_EVENT, onInstantiate );
 			
 			addEventListener( Event.RESIZE, onResize );
@@ -162,44 +165,8 @@ package components.views.BlockLibrary
 		}
 		
 		
-		private function onDragStart( event:DragEvent ):void
-		{
-			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
-			if( !item ) return;
-			
-			var listEntry:BlockLibraryListEntry = getListEntryFromLibraryItem( item );
-			Assert.assertNotNull( listEntry );
-			
-			var draggedFile:File = new File( listEntry.filepath );
-			Assert.assertTrue( draggedFile.exists );
-			
-			var dragSource:DragSource = new DragSource();
-			dragSource.addData( draggedFile, Utilities.getClassNameFromClass( File ) );
-			
-			var itemRect:Rectangle = item.getRect( this );
-			
-			DragManager.doDrag( _library, dragSource, event, getDragImage(), itemRect.x, itemRect.y );
-		}
-		
-		
-		private function getDragImage():IFlexDisplayObject
-		{
-			var dragImage:UIComponent = new UIComponent;
-			//dragImage.width = _moduleList.width;
-			//dragImage.height = _moduleList.rowHeight;
-			//dragImage.graphics.beginFill( 0xffffff, 0.4 );
-			//dragImage.graphics.drawRect( 0, 0, dragImage.width, dragImage.height );
-			//dragImage.graphics.endFill();
-			
-			return dragImage;
-		}
-		
-		
 		private function onUpdateRemove( menuItem:Object ):void
 		{
-			
-			//selectItemUnderMouse();
-			
 			var selectedItem:LibraryItem = _library.selectedItem;
 			if( !selectedItem )
 			{
@@ -232,18 +199,6 @@ package components.views.BlockLibrary
 			onAllDataChanged();
 		}
 		
-		
-		private function selectItemUnderMouse():void
-		{
-			/*
-			var index:int = ( _blockList.mouseY + _blockList.verticalScrollPosition ) / _blockList.rowHeight;
-			if( index < _blockList.dataProvider.length )
-			{
-				_blockList.selectedIndex = index;
-			} 
-			*/
-		}
-
 		
 		private function onResize( event:Event ):void
 		{

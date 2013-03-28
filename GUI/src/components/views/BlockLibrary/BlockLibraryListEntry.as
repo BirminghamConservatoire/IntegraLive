@@ -26,11 +26,18 @@ package components.views.BlockLibrary
 	import flash.filesystem.FileStream;
 	import flash.utils.ByteArray;
 	
+	import mx.core.DragSource;
+	
 	import components.model.Info;
+	import components.model.IntegraModel;
+	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.utils.Trace;
+	import components.utils.Utilities;
 	
 	import deng.fzip.FZip;
 	import deng.fzip.FZipFile;
+	
+	import flexunit.framework.Assert;
 	
 
 	public class BlockLibraryListEntry extends Object
@@ -53,6 +60,17 @@ package components.views.BlockLibrary
 		public function get isUserBlock():Boolean 	{ return _isUserBlock; }
 		public function get tint():uint 			{ return _isUserBlock ? _userBlockTint : _systemBlockTint; } 
 
+
+		public function get dragSource():DragSource
+		{
+			var draggedFile:File = new File( filepath );
+			Assert.assertTrue( draggedFile.exists );
+			
+			var dragSource:DragSource = new DragSource();
+			dragSource.addData( draggedFile, Utilities.getClassNameFromClass( File ) );
+			return dragSource;
+		}
+		
 		
 		public function isCurrent( file:File ):Boolean
 		{

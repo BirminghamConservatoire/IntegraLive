@@ -21,9 +21,13 @@
 
 package components.views.ModuleLibrary
 {
+	import mx.core.DragSource;
+	
 	import components.model.Info;
+	import components.model.IntegraModel;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.InterfaceInfo;
+	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
 
@@ -86,6 +90,17 @@ package components.views.ModuleLibrary
 			}
 			
 			return _info;
+		}
+		
+		
+		public function get dragSource():DragSource
+		{
+			var interfaceDefinition:InterfaceDefinition = IntegraModel.singleInstance.getInterfaceDefinitionByModuleGuid( guid );
+			Assert.assertNotNull( interfaceDefinition );
+			
+			var dragSource:DragSource = new DragSource();
+			dragSource.addData( interfaceDefinition, Utilities.getClassNameFromClass( InterfaceDefinition ) );
+			return dragSource;
 		}
 		
 		

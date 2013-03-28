@@ -21,6 +21,16 @@
 
 package components.views.ArrangeView
 {
+	import flash.display.DisplayObject;
+	import flash.events.MouseEvent;
+	import flash.filesystem.File;
+	import flash.geom.Rectangle;
+	
+	import mx.containers.Canvas;
+	import mx.core.ScrollPolicy;
+	import mx.events.DragEvent;
+	import mx.managers.DragManager;
+	
 	import components.controller.serverCommands.AddBlock;
 	import components.controller.serverCommands.ImportBlock;
 	import components.controller.serverCommands.RemoveBlock;
@@ -37,22 +47,13 @@ package components.views.ArrangeView
 	import components.model.Project;
 	import components.model.Track;
 	import components.model.userData.TimelineState;
+	import components.utils.DragImage;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
 	
-	import flash.display.DisplayObject;
-	import flash.events.MouseEvent;
-	import flash.filesystem.File;
-	import flash.geom.Rectangle;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.core.ScrollPolicy;
-	import mx.events.DragEvent;
-	import mx.managers.DragManager;
 	
 
 	public class ArrangeViewTrack extends IntegraView
@@ -475,6 +476,8 @@ package components.views.ArrangeView
 
 			Assert.assertNotNull( _dragOverOutline );
 			_dragOverOutline.x = event.localX - _dragOverOutline.width / 2;
+			
+			DragImage.suppressDragImage();
 		}
 
 

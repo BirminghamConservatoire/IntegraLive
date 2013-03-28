@@ -49,7 +49,11 @@
     	<![CDATA[
 			import flash.filters.DropShadowFilter;
 			
+			import mx.controls.Image;
+			import mx.core.DragSource;
+			import mx.core.IFlexDisplayObject;
 			import mx.events.DragEvent;
+			import mx.managers.DragManager;
 			
 			import components.model.userData.ColorScheme;
 			import components.views.MouseCapture;
@@ -246,7 +250,16 @@
 				
 				return data[ "tint" ] as uint;
 			}
+
 			
+			private function get dragSource():DragSource
+			{
+				if( !data ) return null;
+				if( !data.hasOwnProperty( "dragSource" ) ) return null;
+				
+				return data[ "dragSource" ] as DragSource;
+			}
+
 			
 			private function get titleHeight():Number
 			{
@@ -371,6 +384,8 @@
 
 			private function onRollOver( event:MouseEvent ):void
 			{
+				if( MouseCapture.instance.hasCapture ) return;
+				
 				_over = true;
 				invalidateDisplayList();
 			}
@@ -393,6 +408,8 @@
 				
 				if( expanded ) return;
 				
+				Assert.assertFalse( _dragging );
+				
 				_clickPoint = new Point( mouseX, mouseY );
 				mouseCapture.setCapture( this, onCapturedDrag, onCaptureFinished );
 				
@@ -404,12 +421,18 @@
 			
 			private function onCapturedDrag( event:MouseEvent ):void
 			{
+				if( _dragging ) return;
+
 				if( new Point( mouseX, mouseY ).subtract( _clickPoint ).length >= _dragThreshold )
 				{
-					var dragEvent:DragEvent = new DragEvent( DragEvent.DRAG_START, true );
-					dragEvent.buttonDown = true;
-					
-					dispatchEvent( dragEvent );
+					var dragSource:DragSource = this.dragSource;
+					if( dragSource )
+					{
+						DragManager.doDrag( this, dragSource, event );
+						_dragging = true;
+						
+						DragImage.addDragImage( this );
+					}
 				}
 			}
 			
@@ -420,6 +443,12 @@
 				_picked = false;
 
 				updateFilters();
+				
+				if( _dragging )
+				{
+					DragImage.removeDragImage();
+					_dragging = false;
+				}
 			}
 			
 			
@@ -494,6 +523,8 @@
 			private var _clickPoint:Point = null;
 			
 			private var _backgroundColors:Array;
+			
+			private var _dragging:Boolean = false;
 			
 			
 			private static const _cornerWidth:Number = 4;

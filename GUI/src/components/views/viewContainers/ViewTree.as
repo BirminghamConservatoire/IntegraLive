@@ -365,7 +365,7 @@ package components.views.viewContainers
 		
 		private function onDragOver( event:DragEvent ):void
 		{
-			var formatName:String = "ViewHolder";//Utilities.getClassNameFromClass( ViewHolder );
+			var formatName:String = Utilities.getClassNameFromClass( ViewHolder );
 			if( !_reordering || !event.dragSource.hasFormat( formatName ) )
 			{
 				return;
@@ -384,11 +384,11 @@ package components.views.viewContainers
 				{
 					if( targetIndex < reorderIndex )
 					{
-						if( _itemsHolder.mouseY > target.y + _reorderView.height ) return;
+						if( _itemsHolder.mouseY > target.y + _reorderView.height ) targetIndex++;
 					}
 					else
 					{
-						if( _itemsHolder.mouseY < target.y + target.height - _reorderView.height ) return;
+						if( _itemsHolder.mouseY < target.y + target.height - _reorderView.height ) targetIndex--;
 					}
 				}
 				
@@ -418,7 +418,6 @@ package components.views.viewContainers
 			{
 				_itemsHolder.setElementIndex( _reorderView, getItemIndex( _reorderView.view ) );
 			}
-			
 		}
 
 

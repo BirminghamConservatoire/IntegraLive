@@ -30,11 +30,6 @@ package components.utils
 	import flash.ui.Keyboard;
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
-	import flash.xml.XMLDocument;
-	import flash.xml.XMLNode;
-	import flash.xml.XMLNodeType;
-	
-	import flexunit.framework.Assert;
 	
 	
 	public class Utilities

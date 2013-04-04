@@ -56,6 +56,9 @@ package components.views.LiveView
 		}
 		
 		
+		public static function get highlightThickness():int { return _highlightThickness; }
+		
+		
 		public function get keyLabel():String { return _keyLabel.text; }
 
 
@@ -260,14 +263,14 @@ package components.views.LiveView
 		private var _topBackgroundColor:uint = 0;
 		private var _bottomBackgroundColor:uint = 0;		
 		
-		private const _keyLabelOffset:Number = 2;
-		private const _cornerWidth:Number = 24;
-		private const _cornerHeight:Number = 18;
+		private static const _keyLabelOffset:Number = 2;
+		private static const _cornerWidth:Number = 24;
+		private static const _cornerHeight:Number = 18;
 		
-		private const _highlightColor:uint = 0xff0000;
-		private const _highlightThickness:int = 3;
+		private static const _highlightColor:uint = 0xff0000;
+		private static const _highlightThickness:int = 3;
 		
-		private const _unassignedAlpha:Number = 0.4;
-		private const _fillerAlpha:Number = 0.3;
+		private static const _unassignedAlpha:Number = 0.4;
+		private static const _fillerAlpha:Number = 0.3;
 	}
 }

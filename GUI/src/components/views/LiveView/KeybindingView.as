@@ -21,6 +21,20 @@
 
 package components.views.LiveView
 {
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.text.TextField;
+	
+	import mx.core.DragSource;
+	import mx.core.IFlexDisplayObject;
+	import mx.core.ScrollPolicy;
+	import mx.core.UIComponent;
+	import mx.events.DragEvent;
+	import mx.managers.DragManager;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.controller.serverCommands.AddScene;
@@ -33,24 +47,13 @@ package components.views.LiveView
 	import components.model.userData.ColorScheme;
 	import components.model.userData.SceneUserData;
 	import components.model.userData.ViewMode;
+	import components.utils.DragImage;
 	import components.utils.Utilities;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
-	
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.text.TextField;
+	import components.views.InfoView.InfoMarkupForViews;
 	
 	import flexunit.framework.Assert;
-	
-	import mx.core.DragSource;
-	import mx.core.IFlexDisplayObject;
-	import mx.core.ScrollPolicy;
-	import mx.core.UIComponent;
-	import mx.events.DragEvent;
-	import mx.managers.DragManager;
 
 	public class KeybindingView extends IntegraView
 	{
@@ -224,7 +227,7 @@ package components.views.LiveView
 			var keyIcon:KeyIcon = new KeyIcon;
 			keyIcon.keyLabel = key;
 			keyIcon.addEventListener( MouseEvent.MOUSE_DOWN, onMouseDownKeyIcon );
-			keyIcon.addEventListener( DragEvent.DRAG_ENTER, onDragEnter );
+			keyIcon.addEventListener( DragEvent.DRAG_OVER, onDragOver );
 			keyIcon.addEventListener( DragEvent.DRAG_EXIT, onDragExit );
 			keyIcon.addEventListener( DragEvent.DRAG_DROP, onDragDrop );
 			 
@@ -365,7 +368,7 @@ package components.views.LiveView
 			var keyIcon:KeyIcon = event.currentTarget as KeyIcon;
 			var key:String = keyIcon.keyLabel;
 			
-			_draggedSceneName = null;
+			Assert.assertNull( _draggedSceneName );
 			
 			if( _mapKeyToSceneID.hasOwnProperty( key ) )
 			{
@@ -374,23 +377,29 @@ package components.views.LiveView
 
 				MouseCapture.instance.setCapture( keyIcon, onDragKeyIcon, onEndDragKeyIcon );
 				_clickedKeyIcon = keyIcon;
+				_clickPoint = new Point( mouseX, mouseY );
 			}
 		}
 		
 		
 		private function onDragKeyIcon( event:MouseEvent ):void
 		{
-			var key:String = _clickedKeyIcon.keyLabel;
+			if( _draggedSceneName ) return;
+			
+			if( _clickPoint.subtract( new Point( mouseX, mouseY ) ).length < _dragStartDistance ) return;
+			
+			_draggedSceneName = model.getScene( _mapKeyToSceneID[ _clickedKeyIcon.keyLabel ] ).name; 
 
-			if( !_clickedKeyIcon.getRect( this ).contains( mouseX, mouseY ) )
-			{
-				_draggedSceneName = model.getScene( _mapKeyToSceneID[ key ] ).name; 
-	
-				var dragSource:DragSource = new DragSource;
-				dragSource.addData( _clickedKeyIcon, Utilities.getClassNameFromObject( _clickedKeyIcon ) );
-				
-				DragManager.doDrag( _clickedKeyIcon, dragSource, event, getDragImage( _clickedKeyIcon) );
-			}
+			var dragSource:DragSource = new DragSource;
+			dragSource.addData( _clickedKeyIcon, Utilities.getClassNameFromObject( _clickedKeyIcon ) );
+			
+			DragManager.doDrag( _clickedKeyIcon, dragSource, event );
+			DragImage.addDragImage( _clickedKeyIcon, KeyIcon.highlightThickness );
+			
+			_clickedKeyIcon.sceneLabel = "";
+			_clickedKeyIcon.highlighted = false;
+			_draggedOntoOtherKey = false;
+			_dragOverKey = null;
 		}
 		
 		
@@ -398,26 +407,24 @@ package components.views.LiveView
 		{
 			Assert.assertNotNull( _clickedKeyIcon );
 			_clickedKeyIcon = null; 
+
+			if( _draggedSceneName )
+			{
+				_draggedSceneName = null;
+				DragImage.removeDragImage();
+				
+				updateAll();
+			}
 		}
 		
 		
-		private function getDragImage( keyIcon:KeyIcon ):IFlexDisplayObject
+		private function shouldAcceptDrag( event:DragEvent ):Boolean 
 		{
-			var dragImage:UIComponent = new UIComponent;
-			//dragImage.width = keyIcon.width;
-			//dragImage.height = keyIcon.height;
-			//dragImage.graphics.lineStyle( 3, 0xff0000 );
-			//dragImage.graphics.drawRect( 0, 0, dragImage.width, dragImage.height );
-			//dragImage.graphics.endFill();
-			return dragImage;
-		}	
-
-
-		private function onDragEnter( event:DragEvent ):void
-		{
+			const hitDeflation:Number = 0.1;
+			
 			if( !event.dragSource.hasFormat( Utilities.getClassNameFromClass( KeyIcon ) ) )
 			{
-				return;
+				return false;
 			}
 			
 			var draggedKey:KeyIcon = event.dragSource.dataForFormat( Utilities.getClassNameFromClass( KeyIcon ) ) as KeyIcon;
@@ -425,22 +432,46 @@ package components.views.LiveView
 
 			Assert.assertNotNull( draggedKey ); 
 			Assert.assertNotNull( overKey ); 
-
-			if( _mapKeyToSceneID.hasOwnProperty( overKey.keyLabel ) )
+			
+			var overKeyRect:Rectangle = overKey.getRect( overKey );
+			overKeyRect.inflate( -overKeyRect.width * hitDeflation, -overKeyRect.height * hitDeflation ); 
+			if( !overKeyRect.contains( overKey.mouseX, overKey.mouseY ) )
 			{
+				return false;
+			}			
+			
+			if( overKey == draggedKey ) 
+			{
+				return _draggedOntoOtherKey;
+			}
+			else
+			{
+				_draggedOntoOtherKey = true;
+			}
+			
+			return !_mapKeyToSceneID.hasOwnProperty( overKey.keyLabel );
+		}
+		
+		
+		private function onDragOver( event:DragEvent ):void
+		{
+			if( !shouldAcceptDrag( event ) ) 
+			{
+				removeOverHighlighting();
 				return;
 			}
-
-			DragManager.acceptDragDrop( overKey );
-
-			draggedKey.sceneLabel = "";
-			draggedKey.highlighted = false;
 			
-			overKey.sceneLabel = _draggedSceneName;
+			_dragOverKey = event.target as KeyIcon;
+			
+			DragManager.acceptDragDrop( _dragOverKey );
+			DragImage.suppressDragImage();
+			
+			_dragOverKey.sceneLabel = _draggedSceneName;
+			var draggedKey:KeyIcon = event.dragSource.dataForFormat( Utilities.getClassNameFromClass( KeyIcon ) ) as KeyIcon;
 			
 			if( model.selectedScene && model.selectedScene.id == _mapKeyToSceneID[ draggedKey.keyLabel ] )
 			{
-				overKey.highlighted = true;
+				_dragOverKey.highlighted = true;
 			} 
 		}
 		
@@ -448,34 +479,29 @@ package components.views.LiveView
 		private function onDragDrop( event:DragEvent ):void
 		{
 			var draggedKey:KeyIcon = event.dragSource.dataForFormat( Utilities.getClassNameFromClass( KeyIcon ) ) as KeyIcon;
-			var overKey:KeyIcon = event.target as KeyIcon;
-
-			overKey.highlighted = false;
 
 			Assert.assertNotNull( draggedKey ); 
-			Assert.assertNotNull( overKey );
+			Assert.assertNotNull( _dragOverKey );
 			
 			var sceneID:int = _mapKeyToSceneID[ draggedKey.keyLabel ];
-			controller.processCommand( new SetSceneKeybinding( sceneID, overKey.keyLabel ) );
+			controller.processCommand( new SetSceneKeybinding( sceneID, _dragOverKey.keyLabel ) );
 		}
 
 
 		private function onDragExit( event:DragEvent ):void
 		{
-			var draggedKey:KeyIcon = event.dragInitiator as KeyIcon;
-			var overKey:KeyIcon = event.target as KeyIcon;
-
-			Assert.assertNotNull( draggedKey ); 
-			Assert.assertNotNull( overKey ); 
-
-			if( !_mapKeyToSceneID.hasOwnProperty( overKey.keyLabel ) )
+			removeOverHighlighting();
+		}
+		
+		
+		private function removeOverHighlighting():void
+		{
+			if( _dragOverKey )
 			{
-				overKey.highlighted = false;
-				overKey.sceneLabel = "";
-			}
-			
-			draggedKey.highlighted = ( model.selectedScene && model.selectedScene.id == _mapKeyToSceneID[ draggedKey.keyLabel ] );
-			draggedKey.sceneLabel = _draggedSceneName;
+				_dragOverKey.highlighted = false;
+				_dragOverKey.sceneLabel = "";
+				_dragOverKey = null;
+			}			
 		}
 		
 		
@@ -527,11 +553,15 @@ package components.views.LiveView
 		private var _fillerIcons:Vector.<KeyIcon> = new Vector.<KeyIcon>;
 		
 		private var _clickedKeyIcon:KeyIcon = null;
+		private var _clickPoint:Point = null;
 		private var _draggedSceneName:String = null;
+		private var _dragOverKey:KeyIcon = null;
+		private var _draggedOntoOtherKey:Boolean = false;
 
 		private const _keyRows:Array = [ "1234567890", "QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM" ];
 		private const _rowXoffset:Number = 0.334;
 		private const _edgeMargin:Number = 10;
 		private const _internalMargin:Number = 3;
+		private const _dragStartDistance:Number = 3;
 	}
 }

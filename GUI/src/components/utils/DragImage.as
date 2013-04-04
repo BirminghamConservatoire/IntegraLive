@@ -16,15 +16,15 @@ package components.utils
 
 	public class DragImage
 	{
-		static public function addDragImage( dragObject:UIComponent ):void
+		static public function addDragImage( dragObject:UIComponent, edgeMargin:int = 0 ):void
 		{
 			Assert.assertNull( _dragImage );
 			
 			_stage = dragObject.stage;
 			_systemManager = dragObject.systemManager;
 
-			_dragImage = getDragImage( dragObject );
-			_dragOffset = new Point( dragObject.mouseX, dragObject.mouseY );
+			_dragImage = getDragImage( dragObject, edgeMargin );
+			_dragOffset = new Point( dragObject.mouseX + edgeMargin, dragObject.mouseY + edgeMargin );
 			dragObject.systemManager.popUpChildren.addChild( _dragImage );
 			dragObject.stage.addEventListener( DragEvent.DRAG_OVER, onDragOver );
 			
@@ -66,11 +66,14 @@ package components.utils
 		}
 		
 		
-		static private function getDragImage( dragObject:DisplayObject ):DisplayObject
+		static private function getDragImage( dragObject:DisplayObject, edgeMargin:int ):DisplayObject
 		{
-			var bitmapData:BitmapData = new BitmapData( dragObject.width, dragObject.height, true, 0 );
-			var m:Matrix = new Matrix();
-			bitmapData.draw( dragObject, m );
+			var bitmapData:BitmapData = new BitmapData( dragObject.width + edgeMargin * 2, dragObject.height + edgeMargin * 2, true, 0 );
+			
+			var matrix:Matrix = new Matrix();
+			matrix.translate( edgeMargin, edgeMargin );
+			
+			bitmapData.draw( dragObject, matrix );
 			
 			var image:Image = new Image();
 			image.source = new Bitmap( bitmapData );

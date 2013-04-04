@@ -201,9 +201,9 @@ package components.controller.serverCommands
 			if( commandCompletedOK( response ) )
 			{
 				var trackPath:Array = model.getPathArrayFromID( _trackID );
+				var newEmbeddedModuleGuids:Array = response[ 0 ][ 0 ].embeddedmodules;
 				
-				Assert.assertNotNull( _modelLoader );
-				_modelLoader.loadBranchOfNodeTree( trackPath, ModelLoader.IMPORTING_BLOCK, _blockID ); 
+				_modelLoader.loadBranchOfNodeTree( trackPath, ModelLoader.IMPORTING_BLOCK, _blockID, newEmbeddedModuleGuids ); 
 			}
 			else
 			{

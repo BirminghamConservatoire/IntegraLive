@@ -112,8 +112,9 @@ package components.controller.serverCommands
 			if( response.response == "command.load" )
 			{
 				var projectPath:Array = model.getPathArrayFromID( model.project.id );
-				Assert.assertNotNull( _modelLoader );
-				_modelLoader.loadBranchOfNodeTree( projectPath, ModelLoader.IMPORTING_TRACK, _trackID ); 
+				var newEmbeddedModuleGuids:Array = response.embeddedmodules;
+				
+				_modelLoader.loadBranchOfNodeTree( projectPath, ModelLoader.IMPORTING_TRACK, _trackID, newEmbeddedModuleGuids ); 
 			}
 			else
 			{

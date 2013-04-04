@@ -39,14 +39,12 @@ package components.controller
 	import components.controller.events.SaveFailedEvent;
 	import components.controller.events.ServerShutdownEvent;
 	import components.controller.serverCommands.AddBlock;
-	import components.controller.serverCommands.AddMidi;
 	import components.controller.serverCommands.AddTrack;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.ResetAllBlocks;
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.StoreUserData;
 	import components.controller.undostack.UndoManager;
-	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.controller.userDataCommands.SetProjectModified;
 	import components.model.Block;
 	import components.model.IntegraDataObject;

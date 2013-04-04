@@ -155,7 +155,6 @@ package components.model
 				
 				if( !found ) 
 				{
-					Trace.error("path not resolved");
 					return -1;	//path not resolved
 				}
 			}

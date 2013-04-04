@@ -31,8 +31,6 @@ package components.model.modelLoader
 	import flash.geom.Rectangle;
 	import flash.utils.Timer;
 	
-	import mx.controls.Alert;
-	
 	import __AS3__.vec.Vector;
 	
 	import components.controller.IntegraController;
@@ -111,31 +109,35 @@ package components.model.modelLoader
 		}
 
 
-		public function loadBranchOfNodeTree( branchPath:Array, mode:String, presuppliedID:int ):void
+		public function loadBranchOfNodeTree( branchPath:Array, mode:String, presuppliedID:int, newEmbeddedModuleGuids:Array ):void
 		{
+			_branchPath = branchPath;
 			_mode = mode;
-			_loadPhase = ModelLoadPhase.INSTANCES;
 			_presuppliedID = presuppliedID;
+
 			_error = null;
 			_topLevelLoadedObjectPaths = new Vector.<Array>;
 			_loadHierarchyLevel = branchPath.length + 1;
 
-			var instancesCall:IntegraConnection = new IntegraConnection( _serverUrl );
-			instancesCall.addEventListener( Event.COMPLETE, instancesHandler, false, 1 );
-			instancesCall.addEventListener( Event.COMPLETE, callResultHandler );
-			instancesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			instancesCall.addArrayParam( branchPath );
-			instancesCall.call( "query.nodelist" );			
+			var interfacesToLoad:Vector.<String> = new Vector.<String>;
+			for each( var guid:String in newEmbeddedModuleGuids )
+			{
+				interfacesToLoad.push( guid );
+			}
+			
+			loadInterfaceDefinitions( interfacesToLoad );
 		}
 		
 		
-		private function loadInterfaceDefinitions():void
+		private function loadInterfaceDefinitions( interfacesToLoad:Vector.<String> = null ):void
 		{
 			_loadPhase = ModelLoadPhase.INTERFACE_DEFINITIONS;
 			
 			var methodCalls:Array = new Array;
 			
-			for each( var guid:String in _model.interfaceList )
+			if( !interfacesToLoad ) interfacesToLoad = _model.interfaceList;
+			
+			for each( var guid:String in interfacesToLoad )
 			{
 				var interfaceInfoCall:Object = new Object;
 				interfaceInfoCall.methodName = "query.interfaceinfo";
@@ -166,11 +168,29 @@ package components.model.modelLoader
 		{
 			_loadPhase = ModelLoadPhase.INSTANCES;
 
+			if( _mode == LOADING_ALL )
+			{
+				_model.clearInstances();
+			}
+			
 			var instancesCall:IntegraConnection = new IntegraConnection( _serverUrl );
 			instancesCall.addEventListener( Event.COMPLETE, instancesHandler, false, 1 );
 			instancesCall.addEventListener( Event.COMPLETE, callResultHandler );
 			instancesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			instancesCall.addArrayParam( [] );
+			
+			switch( _mode )
+			{
+				case LOADING_ALL:
+					instancesCall.addArrayParam( [] );
+					break;
+				
+				case IMPORTING_TRACK:
+				case IMPORTING_BLOCK:
+				case IMPORTING_MODULE:
+					instancesCall.addArrayParam( _branchPath );
+					break;
+			}
+			
 			instancesCall.call( "query.nodelist" );
 		}
 		
@@ -334,7 +354,6 @@ package components.model.modelLoader
 					break;
 				
 				case ModelLoadPhase.INTERFACE_DEFINITIONS:
-					_model.clearInstances(); 
 					loadInstances();
 					break;
 
@@ -1457,12 +1476,13 @@ package components.model.modelLoader
 		
 		private var _serverUrl:String = null;
 
+		private var _branchPath:Array = null;
 		private var _presuppliedID:int = -1;
-		private var _shouldAddDefaultNewProjectObjects:Boolean = false;
 		private var _mode:String = LOADING_ALL;
 		private var _topLevelLoadedObjectPaths:Vector.<Array> = null;
 		private var _loadHierarchyLevel:int = -1;
 		
+		private var _shouldAddDefaultNewProjectObjects:Boolean = false;
 		private var _error:String = null;
 
 		

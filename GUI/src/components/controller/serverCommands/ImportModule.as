@@ -120,9 +120,9 @@ package components.controller.serverCommands
 			if( response.response == "command.load" )
 			{
 				var blockPath:Array = model.getPathArrayFromID( _blockID );
+				var newEmbeddedModuleGuids:Array = response.embeddedmodules;
 				
-				Assert.assertNotNull( _modelLoader );
-				_modelLoader.loadBranchOfNodeTree( blockPath, ModelLoader.IMPORTING_MODULE, _moduleID ); 
+				_modelLoader.loadBranchOfNodeTree( blockPath, ModelLoader.IMPORTING_MODULE, _moduleID, newEmbeddedModuleGuids ); 
 			}
 			else
 			{

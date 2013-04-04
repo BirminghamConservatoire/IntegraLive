@@ -99,6 +99,7 @@
 			import components.views.LiveView.LiveView;
 			import components.views.ModuleGraph.ModuleGraph;
 			import components.views.ModuleLibrary.ModuleLibrary;
+			import components.views.ModuleManager.ModuleManager;
 			import components.views.ModuleProperties.ModuleProperties;
 			import components.views.Preferences.Preferences;
 			import components.views.Timeline.TimelineMode;
@@ -238,6 +239,11 @@
 				{
 					_preferences.onStyleChanged( style );	
 				}
+
+				if( _isDisplayingModuleManager )
+				{
+					_moduleManager.onStyleChanged( style );	
+				}
 			}
 	
 	
@@ -250,6 +256,7 @@
 				updateColorSchemeAndContrast();
 				
 				updatePreferences();
+				updateModuleManager();
 			}
 
 
@@ -276,12 +283,19 @@
 					_preferences.updateSize();
 					mx.managers.PopUpManager.centerPopUp( _preferences );
 				}
+
+				if( _isDisplayingModuleManager )
+				{
+					_moduleManager.updateSize();
+					mx.managers.PopUpManager.centerPopUp( _moduleManager );
+				}
 			}
 	
 	
 			private function onViewModeChanged( command:SetViewMode ):void
 			{
 				updatePreferences();
+				updateModuleManager();
 
 				var viewMode:ViewMode = model.project.userData.viewMode;
 				if( viewMode.mode == ViewMode.ARRANGE )
@@ -446,6 +460,30 @@
  	      			}
      			}
 			}
+
+			
+			private function updateModuleManager():void
+			{
+				if( model.project.userData.viewMode.moduleManagerOpen )
+				{
+					if( !_isDisplayingModuleManager )
+					{
+						mx.managers.PopUpManager.addPopUp( _moduleManager, this );
+						mx.managers.PopUpManager.centerPopUp( _moduleManager );
+						_moduleManager.onStyleChanged( null );	
+						mx.managers.PopUpManager.bringToFront( _moduleManager );
+						_isDisplayingModuleManager = true;
+					}
+				}
+				else
+				{
+					if( _isDisplayingModuleManager )
+					{
+						mx.managers.PopUpManager.removePopUp( _moduleManager );
+						_isDisplayingModuleManager = false;
+					}
+				}
+			}
 			
 			
 			private function startModuleGraphTransition():void
@@ -575,10 +613,13 @@
 			[Bindable] private var _liveView:LiveView = new LiveView;
 			[Bindable] private var _keybindingView:KeybindingView = new KeybindingView;
 			[Bindable] private var _preferences:Preferences = new Preferences;
+			[Bindable] private var _moduleManager:ModuleManager = new ModuleManager;
 			[Bindable] private var _arrangeInfoView:InfoView = new InfoView( true );
 			[Bindable] private var _moduleGraphInfoView:InfoView = new InfoView( true );
 			[Bindable] private var _liveInfoView:InfoView = new InfoView( true );
-            private var _isDisplayingPreferences:Boolean = false;
+
+			private var _isDisplayingPreferences:Boolean = false;
+			private var _isDisplayingModuleManager:Boolean = false;
 
 			private var _moduleGraphTransitionTimer:Timer = new Timer( _moduleGraphTransitionDelay, _moduleGraphTransitionDuration / _moduleGraphTransitionDelay );
 			private var _moduleGraphTransitionCanvas:Canvas = new Canvas;

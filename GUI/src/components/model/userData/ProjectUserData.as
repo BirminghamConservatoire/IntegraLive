@@ -23,8 +23,6 @@ package components.model.userData
 {
 	import components.model.IntegraModel;
 	
-	import mx.collections.XMLListCollection;
-
 	
 	public class ProjectUserData extends UserData
 	{
@@ -52,6 +50,7 @@ package components.model.userData
 			xml.appendChild( <viewMode>{_viewMode.mode}</viewMode> );
 			xml.appendChild( <blockPropertiesOpen>{_viewMode.blockPropertiesOpen}</blockPropertiesOpen> );
 			xml.appendChild( <preferencesOpen>{_viewMode.preferencesOpen}</preferencesOpen> );
+			xml.appendChild( <moduleManagerOpen>{_viewMode.moduleManagerOpen}</moduleManagerOpen> );
 
 			//timeline state
 			xml.appendChild( <timelineScroll>{_timelineState.scroll}</timelineScroll> );
@@ -85,6 +84,12 @@ package components.model.userData
 			{
 				_viewMode.preferencesOpen = ( xml.preferencesOpen == "true" );
 			}
+			
+			if( xml.hasOwnProperty( "moduleManagerOpen" ) )
+			{
+				_viewMode.moduleManagerOpen = ( xml.moduleManagerOpen == "true" );
+			}
+			
 
 			//timeline state
 			if( xml.hasOwnProperty( "timelineScroll" ) )

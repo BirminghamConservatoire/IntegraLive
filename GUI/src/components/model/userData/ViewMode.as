@@ -29,19 +29,32 @@ package components.model.userData
 		}
 		
 		public function get mode():String { return _mode; }
-		public function set mode( mode:String ):void { _mode = mode; }
-
 		public function get blockPropertiesOpen():Boolean { return _blockPropertiesOpen; }
+		public function get preferencesOpen():Boolean { return _preferencesOpen; }
+		public function get moduleManagerOpen():Boolean { return _moduleManagerOpen; }
+
+		public function set mode( mode:String ):void { _mode = mode; }
 		public function set blockPropertiesOpen( blockPropertiesOpen:Boolean ):void { _blockPropertiesOpen = blockPropertiesOpen; }
 
-		public function get preferencesOpen():Boolean { return _preferencesOpen; }
-		public function set preferencesOpen( preferencesOpen:Boolean ):void { _preferencesOpen = preferencesOpen; }
+		public function set preferencesOpen( preferencesOpen:Boolean ):void 
+		{ 
+			_preferencesOpen = preferencesOpen;
+			if( _preferencesOpen ) _moduleManagerOpen = false;
+		}
+
+		public function set moduleManagerOpen( moduleManagerOpen:Boolean ):void 
+		{ 
+			_moduleManagerOpen = moduleManagerOpen;
+			if( _moduleManagerOpen ) _preferencesOpen = false;
+		}
+
 		
 		public function clear():void
 		{
 			_mode = ARRANGE;
 			_blockPropertiesOpen = false;		
-			_preferencesOpen = false;			
+			_preferencesOpen = false;
+			_moduleManagerOpen = false;
 		}
 		
 		
@@ -51,9 +64,11 @@ package components.model.userData
 			clone._mode = _mode;
 			clone._blockPropertiesOpen = _blockPropertiesOpen;
 			clone._preferencesOpen = _preferencesOpen; 
+			clone._moduleManagerOpen = _moduleManagerOpen;
 			
 			return clone;
 		}
+		
 		
 	    public static const ARRANGE:String = "arrange";
 	    public static const LIVE:String = "live";
@@ -61,5 +76,6 @@ package components.model.userData
 	    private var _mode:String;
 	    private var _blockPropertiesOpen:Boolean;
 	    private var _preferencesOpen:Boolean;
+		private var _moduleManagerOpen:Boolean;
 	}
 }

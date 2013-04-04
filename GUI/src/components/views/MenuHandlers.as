@@ -21,6 +21,15 @@
 
 package components.views
 {
+	import flash.desktop.NativeApplication;
+	import flash.display.NativeMenu;
+	import flash.display.NativeMenuItem;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
+	import flash.ui.Keyboard;
+	
 	import components.controller.IntegraController;
 	import components.controller.events.AllDataChangedEvent;
 	import components.controller.serverCommands.NextScene;
@@ -36,15 +45,6 @@ package components.views
 	import components.utils.FontSize;
 	import components.utils.Trace;
 	import components.utils.Utilities;
-	
-	import flash.desktop.NativeApplication;
-	import flash.display.NativeMenu;
-	import flash.display.NativeMenuItem;
-	import flash.events.Event;
-	import flash.events.KeyboardEvent;
-	import flash.net.URLRequest;
-	import flash.net.navigateToURL;
-	import flash.ui.Keyboard;
 	
 	import flexunit.framework.Assert;
 	
@@ -238,6 +238,15 @@ package components.views
 			infoViewItem.addEventListener(Event.PREPARING, onUpdateInfoViewMenuItem ); 
 			infoViewItem.keyEquivalent = "3";
 			viewMenu.submenu.addItem( infoViewItem );
+
+			//separator 
+			viewMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+			
+			var moduleManagerItem:NativeMenuItem = new NativeMenuItem( "Module Manager" ); 
+			moduleManagerItem.addEventListener(Event.SELECT, showModuleManager ); 
+			moduleManagerItem.addEventListener(Event.PREPARING, onUpdateModuleManagerMenuItem ); 
+			moduleManagerItem.keyEquivalent = "4";
+			viewMenu.submenu.addItem( moduleManagerItem );
 			
 			//separator 
 			viewMenu.submenu.addItem( new NativeMenuItem( "", true ) );
@@ -475,6 +484,15 @@ package components.views
 		{
 			_controller.processCommand( new ShowInfoView( !_model.showInfoView ) );	
 		}
+
+		
+		private function showModuleManager( event:Event ):void
+		{
+			var viewMode:ViewMode = _model.project.userData.viewMode.clone();
+			viewMode.moduleManagerOpen = !viewMode.moduleManagerOpen;
+			
+			_controller.processCommand( new SetViewMode( viewMode ) );	
+		}
 		
 		
 		private function toggleLighting( event:Event ):void
@@ -588,7 +606,14 @@ package components.views
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
 			menuItem.checked = ( _model.showInfoView );
 		}
-				
+
+		
+		private function onUpdateModuleManagerMenuItem( event:Event ):void
+		{
+			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
+			menuItem.checked = ( _model.project.userData.viewMode.moduleManagerOpen );
+		}
+		
 		
 		private function onUpdateLightingToggle( event:Event ):void
 		{

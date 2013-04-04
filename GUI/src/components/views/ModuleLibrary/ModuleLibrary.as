@@ -24,27 +24,20 @@ package components.views.ModuleLibrary
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.geom.Rectangle;
 	
-	import mx.core.DragSource;
-	import mx.core.IFlexDisplayObject;
+	import mx.controls.Button;
 	import mx.core.ScrollPolicy;
-	import mx.core.UIComponent;
-	import mx.events.DragEvent;
-	import mx.managers.DragManager;
 	
-	import components.controller.serverCommands.ImportBlock;
 	import components.controller.serverCommands.LoadModule;
 	import components.model.Block;
 	import components.model.Info;
-	import components.model.Track;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.utils.Library;
 	import components.utils.LibraryItem;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
-	import components.views.BlockLibrary.BlockLibraryListEntry;
 	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.CollapseButtonSkin;
 	
 	import flexunit.framework.Assert;
 
@@ -87,13 +80,15 @@ package components.views.ModuleLibrary
 				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary" );
 			}
 
-			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
-			if( item )
+			if( event.target is Button && ( event.target as Button ).getStyle( "skin" ) == CollapseButtonSkin )
 			{
-				var entry:ModuleLibraryListEntry = getListEntryFromLibraryItem( item );
-				Assert.assertNotNull( entry );
-				
-				_hoverInfo = entry.info;
+				return InfoMarkupForViews.instance.getInfoForView( "ExpandModuleVersions" );
+			}
+			
+			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;
+			if( item && item.data.hasOwnProperty( "info" ) )
+			{
+				_hoverInfo = item.data.info;
 			}
 
 			return _hoverInfo;
@@ -146,6 +141,9 @@ package components.views.ModuleLibrary
 					{
 						childItems.push( new ModuleLibraryListEntry( childInterface, false ) );
 					}
+					
+					insertLabels( childItems );
+					
 					originItem.childData = childItems;
 				}
 				
@@ -154,6 +152,7 @@ package components.views.ModuleLibrary
 			
 			
 			listData.sort( moduleCompareFunction );
+			
 			_library.data = listData;
 		}
 		
@@ -163,6 +162,24 @@ package components.views.ModuleLibrary
 			return a.compare( b );
 		}
 
+		
+		private function insertLabels( listData:Array ):void
+		{
+			var prevModuleSource:String = null;
+			
+			for( var i:int = 0; i < listData.length; i++ )
+			{
+				var listEntry:ModuleLibraryListEntry = listData[ i ] as ModuleLibraryListEntry;
+				if( !listEntry ) continue;
+				
+				var moduleSource:String = listEntry.moduleSource;
+				if( moduleSource == prevModuleSource ) continue;
+				
+				listData.splice( i, 0, new ModuleLibraryListLabel( moduleSource ) );
+				prevModuleSource = moduleSource; 
+			}
+		}
+		
 		
 		private function onInstantiate( event:Event ):void
 		{

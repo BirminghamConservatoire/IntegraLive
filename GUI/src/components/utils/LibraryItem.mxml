@@ -36,11 +36,6 @@
 			   skin="components.views.Skins.CollapseButtonSkin"
 			   visible="false"/>
 	
-	<mx:Label id="_alternativesLabel"
-			  visible="false"
-			  text="Alternative versions"/>
-	 
-	 
 	<utils:Library id="_childLibrary"
 			    verticalGap="0"
 				visible="false"/>
@@ -172,38 +167,59 @@
 	
 	            graphics.clear();
 
-				var alphas:Array =  [ 1, 1 ];
-				var ratios:Array = [0x00, 0xFF];
-	
-				var matrix:Matrix = new Matrix();
-	  			matrix.createGradientBox( width, height, Math.PI / 2 );
-	
-				if( !expanded )
+				if( isLabel )
 				{
-					if( _selected )
+					if( isDifferentTintToAncestor )
 					{
-						graphics.lineStyle( 2, getStyle( "color" ), 0.5 );
+						graphics.beginFill( _backgroundColors[ 0 ] );
+						graphics.drawRect( 0, 0, width, height );
+						graphics.endFill();
 					}
-					else
+				}
+				else
+				{
+					const alphas:Array =  [ 1, 1 ];
+					const ratios:Array = [0x00, 0xFF];
+		
+					var matrix:Matrix = new Matrix();
+		  			matrix.createGradientBox( width, height, Math.PI / 2 );
+		
+					if( !expanded )
 					{
-						if( _over )
+						if( _selected )
 						{
-							graphics.lineStyle( 1, getStyle( "color" ), 0.5 );
+							graphics.lineStyle( 2, getStyle( "color" ), 0.5 );
+						}
+						else
+						{
+							if( _over )
+							{
+								graphics.lineStyle( 1, getStyle( "color" ), 0.5 );
+							}
 						}
 					}
+					
+					graphics.beginGradientFill( GradientType.LINEAR, _backgroundColors, alphas, ratios, matrix );
+		        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
+		        	graphics.endFill();
+					
+					if( !expanded )
+					{
+						var titleHeight:Number = this.titleHeight;
+						var grabHandleSize:Number = titleHeight * 0.3;
+						var grabHandleOffset:Number = ( titleHeight - grabHandleSize ) * 0.5;
+						drawGrabHandle( grabHandleOffset, grabHandleOffset, grabHandleSize, grabHandleSize ); 
+					}
 				}
+			}
+			
+			
+			private function get isDifferentTintToAncestor():Boolean
+			{
+				var ancestor:LibraryItem = Utilities.getAncestorByType( parent, LibraryItem ) as LibraryItem;
+				if( !ancestor ) return false;
 				
-				graphics.beginGradientFill( GradientType.LINEAR, _backgroundColors, alphas, ratios, matrix );
-	        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
-	        	graphics.endFill();
-				
-				if( !expanded )
-				{
-					var titleHeight:Number = this.titleHeight;
-					var grabHandleSize:Number = titleHeight * 0.3;
-					var grabHandleOffset:Number = ( titleHeight - grabHandleSize ) * 0.5;
-					drawGrabHandle( grabHandleOffset, grabHandleOffset, grabHandleSize, grabHandleSize ); 
-				}
+				return ( ancestor.tint != tint );
 			}
 			
 			
@@ -240,6 +256,15 @@
 			}
 
 			
+			private function get isLabel():Boolean
+			{
+				if( !data ) return false;
+				if( !data.hasOwnProperty( "isLabel" ) ) return false;
+				
+				return data[ "isLabel" ] as Boolean;
+			}
+			
+			
 			private function get tint():uint
 			{
 				if( !data ) return null;
@@ -260,13 +285,14 @@
 			
 			private function get titleHeight():Number
 			{
-				return FontSize.getTextRowHeight( this );
-			}
-			
-			
-			private function get expansionHeight():Number
-			{
-				return _childLibrary.numChildren * FontSize.getTextRowHeight( this ) + FontSize.getButtonSize( this ); 
+				if( isLabel ) 
+				{
+					return _itemLabel.getStyle( FontSize.STYLENAME ) * 2;
+				}
+				else
+				{
+					return FontSize.getTextRowHeight( this );
+				}				
 			}
 			
 			
@@ -278,7 +304,6 @@
 				if( childData && childData.length > 0 )
 				{
 					_collapseButton.visible = true;
-					_alternativesLabel.visible = true;
 					_childLibrary.visible = true;
 					_collapseButton.selected = !expanded;
 					_collapseButton.setStyle( CollapseButtonSkin.COLLAPSE_DIRECTION_STYLENAME, CollapseButtonSkin.LEFT );
@@ -286,8 +311,11 @@
 					_childLibrary.data = childData;
 				}
 				
-				addEventListener( MouseEvent.ROLL_OVER, onRollOver );
-				addEventListener( MouseEvent.ROLL_OUT, onRollOut ); 
+				if( !isLabel )
+				{
+					addEventListener( MouseEvent.ROLL_OVER, onRollOver );
+					addEventListener( MouseEvent.ROLL_OUT, onRollOut );
+				}
 				
 				styleChanged( null );
 			}
@@ -317,9 +345,22 @@
 			private function positionContent():void
 			{
 				var fontSize:Number = getStyle( FontSize.STYLENAME );
-				_itemLabel.setStyle( "left", titleHeight ); 
+				if( isLabel ) 
+				{
+					const labelHeightFactor:Number = 0.8;
+
+					fontSize *= labelHeightFactor;
+					_itemLabel.setStyle( FontSize.STYLENAME, fontSize );
+					_itemLabel.setStyle( "left", 0 ); 
+					_itemLabel.setStyle( "top", 0 );
+				}
+				else
+				{
+					_itemLabel.setStyle( "left", titleHeight );
+					_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 );
+				}
+				
 				_itemLabel.setStyle( "right", _collapseButton.visible ? titleHeight : 0 );
-				_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 );
 					
 				if( _collapseButton.visible )
 				{
@@ -331,12 +372,9 @@
 					_collapseButton.width = buttonSize;
 					_collapseButton.height = buttonSize;
 
-					_alternativesLabel.setStyle( "top", titleHeight );
-					_alternativesLabel.setStyle( "left", buttonSize );
-					_alternativesLabel.setStyle( "fontSize", getStyle( FontSize.STYLENAME ) * 0.8 );
-					
-					_childLibrary.setStyle( "top", titleHeight + buttonSize );
+					_childLibrary.setStyle( "top", titleHeight );
 					_childLibrary.setStyle( "right", 0 );
+					//_childLibrary.setStyle( "left", 0 );
 					_childLibrary.setStyle( "left", buttonSize );
 					_childLibrary.setStyle( "bottom", 0 );
 				}
@@ -397,8 +435,9 @@
 			
 			private function onMouseDown( event:MouseEvent ):void
 			{
+				if( isLabel ) return;
+
 				var mouseCapture:MouseCapture = MouseCapture.instance;
-				
 				if( mouseCapture.hasCapture ) return;
 				
 				if( event.target == _collapseButton ) return;
@@ -508,6 +547,20 @@
 				}
 			}
 			
+			
+			private function get expansionHeight():Number
+			{
+				const bottomMargin:Number = 6;
+				
+				var expansionHeight:Number = bottomMargin;
+				for( var i:int = 0; i < _childLibrary.numChildren; i++ )
+				{
+					expansionHeight += _childLibrary.getLibraryItemAt( i ).titleHeight;
+				}
+				
+				return expansionHeight;
+				
+			}			
 
 			private var _initialized:Boolean = false;
 			

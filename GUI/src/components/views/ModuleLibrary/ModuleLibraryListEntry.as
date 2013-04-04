@@ -43,37 +43,23 @@ package components.views.ModuleLibrary
 
 		public function set childData( childData:Array ):void { _childData = childData; }
 		public function set expanded( expanded:Boolean ):void { _expanded = expanded; }
+
+		public function toString():String { return _interfaceDefinition.interfaceInfo.label; }
 		
 		public function get guid():String { return _interfaceDefinition.moduleGuid; }
+		public function get moduleSource():String { return _interfaceDefinition.moduleSource; }
+
 		public function get childData():Array { return _childData; }
 		public function get expanded():Boolean { return _expanded; }
-
-		public function get label():String 
-		{ 
-			var label:String = _interfaceDefinition.interfaceInfo.label;
-			if( !_isDefaultEntry )
-			{
-				label += " (";
-				switch( _interfaceDefinition.moduleSource )
-				{
-					case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	label += "system";			break;
-					case InterfaceDefinition.MODULE_THIRD_PARTY:			label += "3rd party";		break;
-					case InterfaceDefinition.MODULE_EMBEDDED:				label += "embedded";		break;
-					default:												label += "unknown source";	break;
-				}
-				label += ")";
-			}
-			return label; 
-		}
 
 
 		public function get tint():uint
 		{
 			switch( _interfaceDefinition.moduleSource )
 			{
-				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return _shippedWithIntegraTint;
-				case InterfaceDefinition.MODULE_THIRD_PARTY:			return _thirdPartyTint;
-				case InterfaceDefinition.MODULE_EMBEDDED:				return _embeddedTint;
+				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return shippedWithIntegraTint;
+				case InterfaceDefinition.MODULE_THIRD_PARTY:			return thirdPartyTint;
+				case InterfaceDefinition.MODULE_EMBEDDED:				return embeddedTint;
 					
 				default:
 					Assert.assertTrue( false );
@@ -186,8 +172,6 @@ package components.views.ModuleLibrary
 		}
 
 
-		public function toString():String { return label; }
-		
 		private var _interfaceDefinition:InterfaceDefinition;
 		private var _isDefaultEntry:Boolean = false;
 		private var _childData:Array = null;
@@ -196,8 +180,8 @@ package components.views.ModuleLibrary
 		private var _info:Info;
 
 	
-		private static const _shippedWithIntegraTint:uint = 0x000000;
-		private static const _thirdPartyTint:uint = 0x000020;
-		private static const _embeddedTint:uint = 0x100010;
+		public static const shippedWithIntegraTint:uint = 0x000000;
+		public static const thirdPartyTint:uint = 0x000020;
+		public static const embeddedTint:uint = 0x100010;
 	}
 }

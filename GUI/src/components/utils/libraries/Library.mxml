@@ -34,6 +34,8 @@
 
 	<fx:Script>
 		<![CDATA[
+			import components.utils.Utilities;
+			
 			import flexunit.framework.Assert;
 	
 			override public function set data( value:Object ):void
@@ -82,15 +84,33 @@
 			}
 			
 			
-			public function selectFirstLine():void
+			public function selectFirstLine():Boolean
 			{
-				select( 0, LibraryItem.FIRST_CHILD );
+				var firstSelectable:int = getNextSelectableLine( 0 );
+				if( firstSelectable >= 0 && firstSelectable != _selectedIndex )
+				{
+					select( firstSelectable, LibraryItem.FIRST_CHILD );
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			
 			
-			public function selectLastLine():void
+			public function selectLastLine():Boolean
 			{
-				select( numChildren - 1, LibraryItem.LAST_CHILD );
+				var lastSelectable:int = getPrevSelectableLine( numChildren - 1 );
+				if( lastSelectable >= 0 && lastSelectable != _selectedIndex )
+				{
+					select( lastSelectable, LibraryItem.LAST_CHILD );
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			
 			
@@ -133,31 +153,38 @@
 				Assert.assertTrue( numChildren > 0 );
 				
 				var usedEvent:Boolean = false;
+				var shouldPassToAncestor:Boolean = false;
 				
 				switch( event.keyCode )
 				{
 					case Keyboard.UP:
 						usedEvent = selectPrevLine();
+						shouldPassToAncestor = !usedEvent;
 						break;
 					
 					case Keyboard.DOWN:
 						usedEvent = selectNextLine();
+						shouldPassToAncestor = !usedEvent;
 						break;
 					
 					case Keyboard.PAGE_UP:
-						pageUp();
+						usedEvent = pageUp();
+						shouldPassToAncestor = true;
 						break;
 					
 					case Keyboard.PAGE_DOWN:
-						pageDown();
+						usedEvent = pageDown();
+						shouldPassToAncestor = true;
 						break;
 
 					case Keyboard.HOME:
-						selectFirstLine();
+						usedEvent = selectFirstLine();
+						shouldPassToAncestor = true;
 						break;
 					
 					case Keyboard.END:
-						selectLastLine();
+						usedEvent = selectLastLine();
+						shouldPassToAncestor = true;
 						break;
 
 					case Keyboard.LEFT:
@@ -173,20 +200,25 @@
 				}
 				
 				event.stopImmediatePropagation();
-
+				event.preventDefault();
+				
 				if( usedEvent )
 				{
-					event.preventDefault();
+					if( event is LibraryKeyboardEvent )
+					{
+						( event as LibraryKeyboardEvent ).eventWasUsed = true;
+					}
 				}
-				else
+
+				if( shouldPassToAncestor )
 				{
 					var ancestorLibrary:Library = Utilities.getAncestorByType( parent, Library ) as Library;
 					if( ancestorLibrary )
 					{
-						var ancestorEvent:KeyboardEvent = event.clone() as KeyboardEvent;
+						var ancestorEvent:LibraryKeyboardEvent = new LibraryKeyboardEvent( event );
 						ancestorLibrary.dispatchEvent( ancestorEvent );
 						
-						if( ancestorEvent.isDefaultPrevented() )
+						if( ancestorEvent.eventWasUsed )
 						{
 							ancestorLibrary.setFocus();
 						}
@@ -195,11 +227,40 @@
 			}
 			
 			
+			private function getPrevSelectableLine( index:int ):int 
+			{
+				for( var candidate:int = index; candidate >= 0; candidate-- )
+				{
+					if( getLibraryItemAt( candidate ).isSelectable ) 
+					{
+						return candidate;
+					}
+				}
+				
+				return -1;
+			}
+
+			
+			private function getNextSelectableLine( index:int ):int 
+			{
+				for( var candidate:int = index; candidate < numChildren; candidate++ )
+				{
+					if( getLibraryItemAt( candidate ).isSelectable ) 
+					{
+						return candidate;
+					}
+				}
+				
+				return -1;
+			}
+			
+			
 			private function selectPrevLine():Boolean
 			{
-				if( _selectedIndex > 0 ) 
+				var prevSelectableLine:int = getPrevSelectableLine( _selectedIndex - 1 );
+				if( prevSelectableLine >= 0 ) 
 				{
-					select( _selectedIndex - 1, LibraryItem.LAST_CHILD );
+					select( prevSelectableLine, LibraryItem.LAST_CHILD );
 					return true;
 				}
 				else
@@ -211,9 +272,10 @@
 			
 			private function selectNextLine():Boolean
 			{
-				if( _selectedIndex < numChildren - 1) 
+				var nextSelectableLine:int = getNextSelectableLine( _selectedIndex + 1 );
+				if( nextSelectableLine >= 0 ) 
 				{
-					select( _selectedIndex + 1, LibraryItem.FIRST_CHILD );
+					select( nextSelectableLine, LibraryItem.FIRST_CHILD );
 					return true;
 				}
 				else
@@ -223,10 +285,10 @@
 			}
 
 			
-			private function pageUp():void
+			private function pageUp():Boolean
 			{
-				var firstVisibleItem:LibraryItem = this.firstVisibleItem;
-				if( !firstVisibleItem ) return;
+				var firstVisibleItem:LibraryItem = this.firstVisibleSelectableItem;
+				if( !firstVisibleItem ) return false;
 				
 				if( firstVisibleItem.selected )
 				{
@@ -238,24 +300,23 @@
 						scrollAmount += ( getLibraryItemAt( i ).height + verticalGap );
 						if( scrollAmount >= height )
 						{
-							select( i + 1, LibraryItem.FIRST_CHILD );
-							return;
+							return select( getNextSelectableLine( i + 1 ), LibraryItem.FIRST_CHILD );
 						}
 					}
 					
-					selectFirstLine();
+					return selectFirstLine();
 				}
 				else
 				{
-					select( getChildIndex( firstVisibleItem ), LibraryItem.FIRST_CHILD );
+					return select( getChildIndex( firstVisibleItem ), LibraryItem.FIRST_CHILD );
 				}
 			}
 			
 			
-			private function pageDown():void
+			private function pageDown():Boolean
 			{
-				var lastVisibleItem:LibraryItem = this.lastVisibleItem;
-				if( !lastVisibleItem ) return;
+				var lastVisibleItem:LibraryItem = this.lastVisibleSelectableItem;
+				if( !lastVisibleItem ) return false;
 				
 				if( lastVisibleItem.selected )
 				{
@@ -267,20 +328,19 @@
 						scrollAmount += ( getLibraryItemAt( i ).height + verticalGap );
 						if( scrollAmount >= height )
 						{
-							select( i - 1, LibraryItem.LAST_CHILD );
-							return;
+							return select( getPrevSelectableLine( i - 1 ), LibraryItem.LAST_CHILD );
 						}
 					}
 					
-					selectLastLine();
+					return selectLastLine();
 				}
 				else
 				{
-					select( getChildIndex( lastVisibleItem ), LibraryItem.LAST_CHILD );
+					return select( getChildIndex( lastVisibleItem ), LibraryItem.LAST_CHILD );
 				}				
 			}
 
-			
+
 			private function expandSelectedItem():void
 			{
 				Assert.assertTrue( _selectedIndex >= 0 );
@@ -304,11 +364,11 @@
 			}
 			
 			
-			private function select( index:int, childToSelect:String ):void
+			private function select( index:int, childToSelect:String ):Boolean
 			{
 				if( index == _selectedIndex ) 
 				{
-					return;
+					return false;
 				}
 				
 				if( _selectedIndex >= 0 )
@@ -327,6 +387,8 @@
 					
 					newItem.selectChildList( childToSelect );
 				}
+				
+				return true;
 			}
 			
 			
@@ -351,13 +413,15 @@
 			}
 			
 			
-			private function get firstVisibleItem():LibraryItem
+			private function get firstVisibleSelectableItem():LibraryItem
 			{
 				const margin:Number = 4;
 				
 				for( var i:int = 0; i < numChildren; i++ )
 				{
-					var item:LibraryItem = getLibraryItemAt( i ); 
+					var item:LibraryItem = getLibraryItemAt( i );
+					if( !item.isSelectable ) continue;
+						
 					if( item.getRect( this ).top > -margin )
 					{
 						return item;
@@ -368,13 +432,15 @@
 			}
 			
 			
-			private function get lastVisibleItem():LibraryItem
+			private function get lastVisibleSelectableItem():LibraryItem
 			{
 				const margin:Number = 4;
 				
 				for( var i:int = numChildren - 1; i >= 0; i-- )
 				{
-					var item:LibraryItem = getLibraryItemAt( i ); 
+					var item:LibraryItem = getLibraryItemAt( i );
+					if( !item.isSelectable ) continue;
+					
 					if( item.getRect( this ).bottom < height + margin )
 					{
 						return item;

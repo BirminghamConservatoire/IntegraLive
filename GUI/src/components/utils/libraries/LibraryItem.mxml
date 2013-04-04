@@ -21,7 +21,7 @@
  -->
  <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
 			xmlns:mx="library://ns.adobe.com/flex/mx"
-			xmlns:utils="components.utils.*"
+			xmlns:libraries="components.utils.libraries.*"
 			initialize="{onInitialize()}"
 			mouseDown="{onMouseDown( event )}"
 			horizontalScrollPolicy="off" verticalScrollPolicy="off">
@@ -36,7 +36,7 @@
 			   skin="components.views.Skins.CollapseButtonSkin"
 			   visible="false"/>
 	
-	<utils:Library id="_childLibrary"
+	<libraries:Library id="_childLibrary"
 			    verticalGap="0"
 				visible="false"/>
 	 
@@ -48,6 +48,9 @@
 			import mx.managers.DragManager;
 			
 			import components.model.userData.ColorScheme;
+			import components.utils.DragImage;
+			import components.utils.FontSize;
+			import components.utils.Utilities;
 			import components.views.MouseCapture;
 			import components.views.Skins.CollapseButtonSkin;
 			
@@ -55,6 +58,7 @@
 
 			
 			public function get selected():Boolean { return _selected; }
+			public function get isSelectable():Boolean { return !isLabel; }
 			
 			public function set selected( selected:Boolean ):void 
 			{
@@ -256,7 +260,7 @@
 			}
 
 			
-			private function get isLabel():Boolean
+			public function get isLabel():Boolean
 			{
 				if( !data ) return false;
 				if( !data.hasOwnProperty( "isLabel" ) ) return false;
@@ -347,19 +351,18 @@
 				var fontSize:Number = getStyle( FontSize.STYLENAME );
 				if( isLabel ) 
 				{
-					const labelHeightFactor:Number = 0.8;
+					const labelHeightFactor:Number = 0.75;
 
 					fontSize *= labelHeightFactor;
 					_itemLabel.setStyle( FontSize.STYLENAME, fontSize );
 					_itemLabel.setStyle( "left", 0 ); 
-					_itemLabel.setStyle( "top", 0 );
 				}
 				else
 				{
 					_itemLabel.setStyle( "left", titleHeight );
-					_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 );
 				}
 				
+				_itemLabel.setStyle( "top", ( titleHeight - fontSize ) / 4 );
 				_itemLabel.setStyle( "right", _collapseButton.visible ? titleHeight : 0 );
 					
 				if( _collapseButton.visible )

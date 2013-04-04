@@ -41,8 +41,8 @@ package components.views.BlockLibrary
 	import components.controller.serverCommands.ImportBlock;
 	import components.model.Info;
 	import components.model.Track;
-	import components.utils.Library;
-	import components.utils.LibraryItem;
+	import components.utils.libraries.Library;
+	import components.utils.libraries.LibraryItem;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;

@@ -32,8 +32,8 @@ package components.views.ModuleLibrary
 	import components.model.Block;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
-	import components.utils.Library;
-	import components.utils.LibraryItem;
+	import components.utils.libraries.Library;
+	import components.utils.libraries.LibraryItem;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;

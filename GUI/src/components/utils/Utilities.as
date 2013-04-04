@@ -232,7 +232,7 @@ package components.utils
 
 		public static function getClassNameFromClass( classtype:Class ):String
 		{
-			var qualifiedClassName:String = describeType( classtype ).@name;
+			var qualifiedClassName:String = getQualifiedClassName( classtype );
 
 			return getClassNameFromQualifiedClassName( qualifiedClassName );
 		}

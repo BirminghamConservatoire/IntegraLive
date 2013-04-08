@@ -207,7 +207,7 @@
 		        	graphics.drawRoundRect( 0, 0, width, height, _cornerWidth, _cornerHeight );
 		        	graphics.endFill();
 					
-					if( !expanded )
+					if( dragSource && !expanded )
 					{
 						var titleHeight:Number = this.titleHeight;
 						var grabHandleSize:Number = titleHeight * 0.3;
@@ -438,7 +438,7 @@
 			
 			private function onMouseDown( event:MouseEvent ):void
 			{
-				if( isLabel ) return;
+				if( !dragSource ) return;
 
 				var mouseCapture:MouseCapture = MouseCapture.instance;
 				if( mouseCapture.hasCapture ) return;

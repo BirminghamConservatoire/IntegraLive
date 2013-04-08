@@ -26,9 +26,9 @@ package components.views.Skins
 	import mx.skins.halo.ButtonSkin;
 
 	
-	public class TabButtonSkin extends ButtonSkin
+	public class SideTabButtonSkin extends ButtonSkin
 	{
-		public function TabButtonSkin()
+		public function SideTabButtonSkin()
 		{
 			super();
 		}
@@ -45,7 +45,7 @@ package components.views.Skins
 						_normalBackgroundColor = 0xC2C2C2;
 						_selectedBackgroundColor = 0xBEBEBE;
 						break;
-					
+						
 					case ColorScheme.DARK:
 						_normalBackgroundColor = 0x3E3E3E;
 						_selectedBackgroundColor = 0x424242;
@@ -74,22 +74,18 @@ package components.views.Skins
 					selected = true;
 					break;
 			}			
-
+			
+			var rightHandRadius:Number = selected ? 0 : radius;
+			var backgroundWidth:Number = selected ? width : width - 3;
+			
 			graphics.beginFill( selected ? _selectedBackgroundColor : _normalBackgroundColor );
-	 		if( selected )
-			{
-				var radius:Number = height / 2;
-				graphics.drawRoundRectComplex( 0, 0, width, height, radius, radius, 0, 0 );
-			}
-			else
-			{
-				const deselectedMargin:Number = 2;
-				graphics.drawRoundRect( 0, 0, width, height - deselectedMargin, height, height );
-			}
+			graphics.drawRoundRectComplex( 0, 0, backgroundWidth, height, radius, rightHandRadius, radius, rightHandRadius );
 			graphics.endFill();
 		}
 		
 		private var _normalBackgroundColor:uint;
 		private var _selectedBackgroundColor:uint;
+		
+		private static const radius:Number = 8;
 	}
 }

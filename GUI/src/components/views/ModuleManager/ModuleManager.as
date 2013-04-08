@@ -63,15 +63,6 @@ package components.views.ModuleManager
 			_manageTab.label = "Manage";
 			_installTab.label = "Install / Uninstall";
 
-			var testLabel:Label = new Label;
-			testLabel.text = "hello world";
-			testLabel.x = 100;
-			testLabel.y = 100;
-			_upgradeTab.addChild( testLabel );
-			_upgradeTab.percentWidth = 100;
-			_upgradeTab.percentHeight = 100;
-			_upgradeTab.opaqueBackground = 0xc0c0ff;
-			
 			_tabNavigator.addChild( _upgradeTab );
 			_tabNavigator.addChild( _manageTab );
 			_tabNavigator.addChild( _installTab );
@@ -190,7 +181,7 @@ package components.views.ModuleManager
 		private var _titleCloseButton:Button = new Button;
 		
 		private var _tabNavigator:TabNavigator = new TabNavigator;
-		private var _upgradeTab:Canvas = new Canvas;
+		private var _upgradeTab:ModuleUpgradeTab = new ModuleUpgradeTab;
 		private var _manageTab:Canvas = new Canvas;
 		private var _installTab:Canvas = new Canvas;
 		

@@ -35,34 +35,6 @@ package components.views.Skins
 		}
 		
 		
-		/*override public function styleChanged( style:String ):void
-		{
-			switch( getStyle( ColorScheme.STYLENAME ) )
-			{
-				default:
-				case ColorScheme.LIGHT:
-					setStyle( "color", 0xcfcfcf );
-					setStyle( "textRollOverColor", 0xcfcfcf );
-					setStyle( "textSelectedColor", 0xcfcfcf );
-					
-					setStyle( "rollOverColor", 0x848484 );
-					setStyle( "selectionColor", 0x848484 );
-					setStyle( "alternatingItemColors", [ 0x747474, 0x747474 ] ); 
-					break;
-				
-				case ColorScheme.DARK:
-					setStyle( "color", 0x313131 );
-					setStyle( "textRollOverColor", 0x313131 );
-					setStyle( "textSelectedColor", 0x313131 );
-					
-					setStyle( "rollOverColor", 0x7c7c7c );
-					setStyle( "selectionColor", 0x7c7c7c );
-					setStyle( "alternatingItemColors", [ 0x8c8c8c, 0x8c8c8c ] ); 
-					break;
-			}
-		}*/
-		
-		
 		override protected function updateDisplayList( width:Number, height:Number ):void
 		{
 			super.updateDisplayList( width, height );

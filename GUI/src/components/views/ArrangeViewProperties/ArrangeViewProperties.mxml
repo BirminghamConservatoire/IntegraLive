@@ -30,9 +30,9 @@
 	minHeight="100" height="200" maxHeight="400">
 		
 	<fx:Style>
-	.tabButtonStyle 
+	.sideTabButtonStyle 
 	{
-		skin: ClassReference("components.views.Skins.TabButtonSkin");
+		skin: ClassReference("components.views.Skins.SideTabButtonSkin");
 		font-weight: "normal"; 
 	}
   	</fx:Style>
@@ -41,13 +41,13 @@
 		<mx:VBox id="tabButtons">
 			<mx:Button 
 				id="routingButton"
-				styleName="tabButtonStyle"
+				styleName="sideTabButtonStyle"
 				label="Routing" 
 				width="100%" 
 				click="onClickRouting();"/>
 			<mx:Button 
 				id="scriptingButton" 
-				styleName="tabButtonStyle" 
+				styleName="sideTabButtonStyle" 
 				label="Scripting" 
 				width="100%" 
 				click="onClickScripting();"/>

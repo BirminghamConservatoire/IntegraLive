@@ -39,6 +39,13 @@
 		<![CDATA[
 			import com.mattism.http.xmlrpc.MethodCallImpl;
 			
+			import mx.containers.TabNavigator;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.managers.SystemManager;
+			
 			import components.controlSDK.core.ControlManager;
 			import components.controller.IntegraController;
 			import components.controller.RemoteCommandHandler;
@@ -67,22 +74,16 @@
 			import components.utils.OSCServer;
 			import components.utils.Trace;
 			import components.utils.Utilities;
-			import components.views.AboutBox.AboutBox;
-			import components.views.CrashReport.CrashReport;
-			import components.views.InfoView.InfoMarkupForViews;
 			import components.views.IntegraView;
 			import components.views.MenuHandlers;
 			import components.views.MouseCapture;
+			import components.views.AboutBox.AboutBox;
+			import components.views.CrashReport.CrashReport;
+			import components.views.InfoView.InfoMarkupForViews;
 			import components.views.Upgrades.UpgradeWarning;
 			import components.views.viewContainers.ViewHolder;
 			
 			import flexunit.framework.Assert;
-			
-			import mx.controls.Alert;
-			import mx.core.UIComponent;
-			import mx.events.CloseEvent;
-			import mx.managers.PopUpManager;
-			import mx.managers.SystemManager;
 
 			
 			public function reloadAndUpdate( event:Event = null ):void
@@ -160,14 +161,34 @@
 			{
 				if( !style || style == ColorScheme.STYLENAME )
 				{
+					var tabNavigatorCSS:CSSStyleDeclaration = styleManager.getStyleDeclaration( "mx.containers.TabNavigator" );
+					var tabCSS:CSSStyleDeclaration = styleManager.getStyleDeclaration( ".tabStyle" );
+					var selectedTabCSS:CSSStyleDeclaration = styleManager.getStyleDeclaration( ".selectedTabStyle" );
+
 					switch( getStyle( ColorScheme.STYLENAME ) )
 					{
 						case ColorScheme.LIGHT:
 							mainVBox.opaqueBackground = 0xf5f5f5;
+							
+							tabCSS.setStyle( "color", 0x6D6D6D );
+							tabCSS.setStyle( "textRollOverColor", 0x6D6D6D );
+							selectedTabCSS.setStyle( "color", 0x020202 );
+							selectedTabCSS.setStyle( "textRollOverColor", 0x020202 );
+							
+							tabNavigatorCSS.setStyle( "backgroundColor", 0xffffff );
+							tabNavigatorCSS.setStyle( "borderColor", 0xbebebe );
 							break;
 
 						case ColorScheme.DARK:
 							mainVBox.opaqueBackground = 0x0b0b0b;
+
+							tabCSS.setStyle( "color", 0x939393 );
+							tabCSS.setStyle( "textRollOverColor", 0x939393 );
+							selectedTabCSS.setStyle( "color", 0xfefefe );
+							selectedTabCSS.setStyle( "textRollOverColor", 0xfefefe );
+							
+							tabNavigatorCSS.setStyle( "backgroundColor", 0x000000 );
+							tabNavigatorCSS.setStyle( "borderColor", 0x424242 );
 							break;
 					}
 				}
@@ -1294,6 +1315,30 @@
 			skin: ClassReference( "components.views.Skins.ComboBoxSkin" );
 			fontWeight: normal;
 		}
+
+		mx|TabNavigator 
+		{
+			tabStyleName: "tabStyle";
+			selectedTabTextStyleName: "selectedTabStyle";
+			horizontalGap: 3;
+		}		
+		
+		mx|Tab 
+		{
+			skin: ClassReference( "components.views.Skins.TabButtonSkin" );
+			fontWeight: "normal";
+			color:#ff0000;
+		}  
+		
+		.tabStyle 
+		{
+			fontWeight:normal;
+		}		
+
+		.selectedTabStyle 
+		{
+			fontWeight:normal;
+		}		
 		
 		global {
 			modalTransparencyBlur: 0;

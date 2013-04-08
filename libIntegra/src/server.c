@@ -178,7 +178,10 @@ void print_node_state(ntg_server *server, ntg_node *first,int indentation)
 
 				printf( has_children ? "  |" : "   ");
 
-				ntg_value_sprintf( value_buffer, NTG_LONG_STRLEN, attribute->value );
+				if( ntg_value_sprintf( value_buffer, NTG_LONG_STRLEN, attribute->value ) != NTG_NO_ERROR )
+				{
+					strcpy( value_buffer, "Error printing attribute - buffer too short?" );
+				}
 
 				printf("   -Attribute:  %s = %s\n", attribute->endpoint->name, value_buffer );
 			}
@@ -357,18 +360,31 @@ static void ntg_server_destroy_osc_interface(ntg_server *server)
 	return; /* LH - temporary hack - lo_server_thread_free is causing crash!*/
 
     lo_server_thread_free(osc_interface);
-
 }
+
+
+#ifdef _WINDOWS
+static void invalid_parameter_handler( const wchar_t * expression, const wchar_t * function, const wchar_t * file, unsigned int line, uintptr_t pReserved )
+{
+	NTG_TRACE_ERROR( "CRT encoutered invalid parameter!" );
+}
+#endif
+
+
 
 ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_client_port, const char *module_directories )
 {
-
     ntg_server *server = NULL;
 
     if(server_ != NULL) {
         NTG_TRACE_ERROR("ntg_server is a singleton, returning existing instance");
         return server_;
     }
+
+#ifdef _WINDOWS
+	_set_invalid_parameter_handler( invalid_parameter_handler );
+#endif
+
 
     server = ntg_malloc(sizeof(ntg_server));
 

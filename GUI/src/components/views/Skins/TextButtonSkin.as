@@ -97,6 +97,9 @@ package components.views.Skins
 				case "selectedDownSkin":
 					down = true;
 					break;
+
+				case "disabledSkin":
+					break;
 				
 				default:
 					Assert.assertTrue( false );

@@ -44,7 +44,11 @@ package components.views.ModuleManager
 		public function get guid():String { return _interfaceDefinition.moduleGuid; }
 		public function get moduleSource():String { return _interfaceDefinition.moduleSource; }
 
-
+		public function get hasTickbox():Boolean { return true; }
+		public function get ticked():Boolean { return _ticked; }
+		public function set ticked( ticked:Boolean ):void { _ticked = ticked; }
+		
+		
 		public function get tint():uint
 		{
 			switch( _interfaceDefinition.moduleSource )
@@ -147,5 +151,7 @@ package components.views.ModuleManager
 		private var _interfaceDefinition:InterfaceDefinition;
 		
 		private var _info:Info;
+		
+		private var _ticked:Boolean = false;
 	}
 }

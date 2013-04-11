@@ -379,6 +379,10 @@ ntg_command_status ntg_new_(ntg_server *server,
 
 	}
 
+    /* handle any system class logic */
+	ntg_system_class_handle_new( server, node, cmd_source );
+
+
     NTG_TRACE_VERBOSE_WITH_STRING( "Created node", node->name );
 
 	command_status.data = node;

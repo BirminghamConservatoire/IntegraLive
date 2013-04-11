@@ -47,6 +47,7 @@
 typedefs
 */
 
+typedef void (*ntg_system_class_new_handler_function)(ntg_server *server, const ntg_node *node, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_set_handler_function)(ntg_server *server, const ntg_node_attribute *attribute, const ntg_value *previous_value, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_rename_handler_function)(ntg_server *server, const ntg_node *node, const char *previous_name, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_move_handler_function)(ntg_server *server, const ntg_node *node, const ntg_path *previous_path, ntg_command_source cmd_source);
@@ -1598,6 +1599,65 @@ void ntg_generic_move_handler( ntg_server *server, const ntg_node *node, const n
 
 
 
+/*
+The following methods are executed when server new commands occur
+
+They must all conform the correct the method signature ntg_system_class_new_handler_function, 
+*/
+
+void ntg_generic_new_handler( ntg_server *server, const ntg_node *new_node, ntg_command_source cmd_source )
+{
+	/* add connections in host if needed */ 
+
+	const ntg_node *ancestor;
+	const ntg_node *sibling;
+	const ntg_node_attribute *source_path;
+	const ntg_node_attribute *target_path;
+	const ntg_node_attribute *source_attribute;
+	const ntg_node_attribute *target_attribute;
+
+	assert( server && new_node );
+
+	for( ancestor = new_node; ancestor->parent != NULL; ancestor = ancestor->parent )
+	{
+		sibling = ancestor->parent->nodes;
+		while( sibling )
+		{
+			if( sibling != ancestor && ntg_guids_are_equal( &sibling->interface->module_guid, &server->system_class_data->connection_interface_guid ) ) 
+			{
+				/* found a connection which might target the new node */
+
+				source_path = ntg_find_attribute( sibling, NTG_ATTRIBUTE_SOURCE_PATH );
+				target_path = ntg_find_attribute( sibling, NTG_ATTRIBUTE_TARGET_PATH );
+				assert( source_path && target_path );
+
+				source_attribute = ntg_server_resolve_relative_path( server, ancestor->parent, ntg_value_get_string( source_path->value ) );
+				target_attribute = ntg_server_resolve_relative_path( server, ancestor->parent, ntg_value_get_string( target_path->value ) );
+	
+				if( source_attribute && target_attribute )
+				{
+					if( source_attribute->node == new_node || target_attribute->node == new_node )
+					{
+						if( ntg_endpoint_is_audio_stream( source_attribute->endpoint ) && source_attribute->endpoint->stream_info->direction == NTG_STREAM_OUTPUT )
+						{
+							if( ntg_endpoint_is_audio_stream( target_attribute->endpoint ) && target_attribute->endpoint->stream_info->direction == NTG_STREAM_INPUT )
+							{
+								/* create connection in host */
+								ntg_server_connect_in_host( server, source_attribute, target_attribute, true );
+							}
+						}
+					}
+				}
+			}
+
+			sibling = sibling->next;
+			if( sibling == ancestor->parent->nodes )
+			{
+				break;
+			}
+		}
+	}
+}
 
 /*
 The following methods are executed when server delete commands occur
@@ -1758,6 +1818,20 @@ void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const 
 }
 
 
+ntg_system_class_handler *ntg_new_handlers_create( const ntg_server *server )
+{
+	ntg_system_class_handler *new_handlers = NULL;
+
+	assert( server );
+
+	NTG_TRACE_PROGRESS( "creating new handlers" );
+
+	ntg_system_class_handlers_add( &new_handlers, server, NULL, NULL, ntg_generic_new_handler );
+
+	return new_handlers;
+}
+
+
 ntg_system_class_handler *ntg_set_handlers_create(const ntg_server *server)
 {
 	ntg_system_class_handler *set_handlers = NULL;
@@ -1884,6 +1958,7 @@ void ntg_system_class_handlers_initialize( ntg_server *server )
 	const ntg_interface *connection_interface =  NULL;
 	ntg_system_class_data *system_class_data = ntg_malloc( sizeof( ntg_system_class_data ) );
 
+	system_class_data->new_handlers = ntg_new_handlers_create( server );
 	system_class_data->set_handlers = ntg_set_handlers_create( server );
 	system_class_data->rename_handlers = ntg_rename_handlers_create( server );
 	system_class_data->move_handlers = ntg_move_handlers_create( server );
@@ -1914,12 +1989,35 @@ void ntg_system_class_handlers_shutdown( ntg_server *server )
 
 	ntg_player_free( server );
 
+	ntg_system_class_handlers_free( server->system_class_data->new_handlers );
 	ntg_system_class_handlers_free( server->system_class_data->set_handlers );
 	ntg_system_class_handlers_free( server->system_class_data->rename_handlers );
 	ntg_system_class_handlers_free( server->system_class_data->move_handlers );
 	ntg_system_class_handlers_free( server->system_class_data->delete_handlers );
 
 	ntg_free( server->system_class_data );
+}
+
+
+void ntg_system_class_handle_new( ntg_server *server, const ntg_node *node, ntg_command_source cmd_source )
+{
+	ntg_system_class_handler *handler = NULL;
+	ntg_system_class_new_handler_function function = NULL;
+
+	assert( server );
+	assert( attribute );
+
+	for( handler = server->system_class_data->new_handlers; handler; handler = handler->next )
+	{
+		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node->interface->module_guid ) )
+		{
+			continue;
+		}
+
+		assert( handler->function );
+		function = ( ntg_system_class_new_handler_function ) handler->function;
+		function( server, node, cmd_source );
+	}
 }
 
 

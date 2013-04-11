@@ -9,6 +9,16 @@ package components.views.ModuleManager
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
 	
+	import components.controller.ServerCommand;
+	import components.controller.serverCommands.ImportBlock;
+	import components.controller.serverCommands.ImportModule;
+	import components.controller.serverCommands.ImportTrack;
+	import components.controller.serverCommands.LoadModule;
+	import components.controller.serverCommands.RemoveBlockImport;
+	import components.controller.serverCommands.RemoveTrackImport;
+	import components.controller.serverCommands.SwitchAllModuleVersions;
+	import components.controller.serverCommands.SwitchModuleVersion;
+	import components.controller.serverCommands.UnloadModule;
 	import components.model.Block;
 	import components.model.ModuleInstance;
 	import components.model.Track;
@@ -32,6 +42,15 @@ package components.views.ModuleManager
 			horizontalScrollPolicy = ScrollPolicy.OFF;  
 			verticalScrollPolicy = ScrollPolicy.OFF;    
 
+			addUpdateMethod( SwitchModuleVersion, onUpdateNeeded );
+			addUpdateMethod( LoadModule, onUpdateNeeded );
+			addUpdateMethod( UnloadModule, onUpdateNeeded );
+			addUpdateMethod( ImportModule, onUpdateNeeded );
+			addUpdateMethod( ImportTrack, onUpdateNeeded );
+			addUpdateMethod( ImportBlock, onUpdateNeeded );
+			addUpdateMethod( RemoveTrackImport, onUpdateNeeded );
+			addUpdateMethod( RemoveBlockImport, onUpdateNeeded );
+			
 			addEventListener( Event.RESIZE, onResize );
 			
 			addChild( _upgradeLabel );
@@ -95,13 +114,24 @@ package components.views.ModuleManager
 		}
 		
 		
+		private function onUpdateNeeded( command:ServerCommand ):void
+		{
+			if( !_updateFlagged )
+			{
+				/* this mechanism prevents multiple updates when many modules are switched */
+				_updateFlagged = true;
+				callLater( updateAll );
+			}
+		}
+		
+		
 		private function updateAll():void
 		{
 			var upgradables:Array = upgradableModules;
 			
 			if( upgradables.length > 0 )
 			{
-				_upgradeLabel.text = "Better versions Available:";
+				_upgradeLabel.text = "Improved versions available:";
 
 				_upgradableModuleList.data = upgradables;
 				
@@ -122,6 +152,8 @@ package components.views.ModuleManager
 				_upgradeAllButton.visible = false;
 				_upgradeButton.visible = false;
 			}
+			
+			_updateFlagged = false;
 		}
 
 		
@@ -288,7 +320,7 @@ package components.views.ModuleManager
 
 				Assert.assertTrue( toInterfaceDefinition != fromInterfaceDefinition && toInterfaceDefinition.originGuid == fromInterfaceDefinition.originGuid );
 
-				//controller.processCommand( new SwitchAllModuleVersions( fromInterfaceDefinition.moduleGuid, toInterfaceDefinition.moduleGuid ) );
+				controller.processCommand( new SwitchAllModuleVersions( fromInterfaceDefinition.moduleGuid, toInterfaceDefinition.moduleGuid ) );
 			}
 		}
 		
@@ -303,6 +335,8 @@ package components.views.ModuleManager
 		
 		private var _controlBackgroundColor:uint;
 		private var _labelColor:uint;
+		
+		private var _updateFlagged:Boolean = false;
 		
 		private static const _listBorder:Number = 4;
 	}

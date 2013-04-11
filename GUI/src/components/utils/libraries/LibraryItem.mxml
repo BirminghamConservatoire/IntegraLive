@@ -417,8 +417,8 @@
 
 					_childLibrary.setStyle( "top", titleHeight );
 					_childLibrary.setStyle( "right", 0 );
-					//_childLibrary.setStyle( "left", 0 );
-					_childLibrary.setStyle( "left", buttonSize );
+					_childLibrary.setStyle( "left", 0 );
+					//_childLibrary.setStyle( "left", buttonSize );
 					_childLibrary.setStyle( "bottom", 0 );
 				}
 

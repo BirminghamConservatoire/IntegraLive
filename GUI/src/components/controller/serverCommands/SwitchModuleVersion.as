@@ -22,10 +22,12 @@
 package components.controller.serverCommands
 {
 	import components.controller.ServerCommand;
-	import components.model.IntegraContainer;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
+	import components.model.interfaceDefinitions.Constraint;
+	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.interfaceDefinitions.StateInfo;
 	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
@@ -155,10 +157,130 @@ package components.controller.serverCommands
 		
 		private function generateNewAttributeValues( attributeValues:Object, newInterface:InterfaceDefinition ):Object
 		{
-			//todo
+			var newAttributeValues:Object = new Object;
 			
-			return copyAttributeValues( attributeValues );
+			for each( var endpoint:EndpointDefinition in newInterface.endpoints )
+			{
+				if( !endpoint.isStateful ) continue;
+				
+				var stateInfo:StateInfo = endpoint.controlInfo.stateInfo;
+				
+				if( attributeValues.hasOwnProperty( endpoint.name ) )
+				{
+					newAttributeValues[ endpoint.name ] = enforceConstraint( attributeValues[ endpoint.name ], stateInfo.type, stateInfo.constraint );
+				}
+				else
+				{
+					newAttributeValues[ endpoint.name ] = stateInfo.defaultValue;
+				}
+			}
+			
+			return newAttributeValues;
 		}
+		
+		
+		private function enforceConstraint( value:Object, type:String, constraint:Constraint ):Object
+		{
+			if( constraint.allowedValues )
+			{
+				var bestAllowedValue:Object = null;
+				var bestDistance:Number;
+				
+				for each( var allowedValue:Object in constraint.allowedValues )
+				{
+					var distance:Number = getDistance( value, allowedValue, type );
+
+					if( distance == 0 ) return allowedValue;	//early exit for perfect match
+					
+					if( !bestAllowedValue || distance < bestDistance )
+					{
+						bestAllowedValue = allowedValue;
+						bestDistance = distance;
+					}
+				}
+				
+				Assert.assertNotNull( bestAllowedValue );
+				return bestAllowedValue;
+			}
+			
+			//if we get here, it's a range constraint
+			
+			switch( type )
+			{
+				case StateInfo.INTEGER:
+					return int( Math.max( constraint.minimum, Math.min( constraint.maximum, Math.round( Number( value ) ) ) ) );
+				
+				case StateInfo.FLOAT:
+					return Math.max( constraint.minimum, Math.min( constraint.maximum, Number( value ) ) );
+					
+				case StateInfo.STRING:
+					var stringValue:String = String( value );
+					
+					//add asterixs to get to minimum length
+					for( var i:int = stringValue.length; i < constraint.minimum; i++ )
+					{
+						stringValue += "*";
+					}
+					
+					//truncate if above maximum length
+					if( stringValue.length > constraint.maximum )
+					{
+						stringValue = stringValue.substr( 0, constraint.maximum ); 
+					}
+
+					return stringValue;
+					
+				default:
+					Assert.assertTrue( false );
+					return null;
+			}
+		}
+		
+		
+		private function getDistance( value1:Object, value2:Object, type:String ):Number
+		{
+			switch( type )
+			{
+				case StateInfo.INTEGER:
+					return Math.abs( int( value1 ) - int( value2 ) );
+					
+				case StateInfo.FLOAT:
+					return Math.abs( Number( value1 ) - Number( value2 ) );
+					
+				case StateInfo.STRING:
+					return levenshtein_distance( String( value1 ), String( value2 ) );
+					
+				default:
+					Assert.assertTrue( false );
+					return 0;
+			}
+		}
+		
+		
+		private function levenshtein_distance( string1:String, string2:String ):int
+		{
+			var length1:int = string1.length;
+			var length2:int = string2.length;
+			
+			if( length1 == 0 ) return length2;
+			if( length2 == 0 ) return length1;
+
+			var cost:int = 0;
+			
+			if( string1.charCodeAt( 0 ) != string2.charCodeAt( 0 ) ) 
+			{
+				cost = 1;
+			}
+			
+			var string1From2ndChar:String = string1.substr( 1 );
+			var string2From2ndChar:String = string2.substr( 1 );
+			
+			return Math.min( Math.min( 
+				levenshtein_distance( string1From2ndChar, string2 ) + 1,
+				levenshtein_distance( string1, string2From2ndChar ) + 1 ), 
+				levenshtein_distance( string1From2ndChar, string2From2ndChar ) + cost );
+		}
+		
 		
 		
 		private var _moduleID:int;

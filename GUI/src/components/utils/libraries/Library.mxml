@@ -125,7 +125,7 @@
 				setFocus();
 				
 				var clickItem:LibraryItem = Utilities.getAncestorByType( event.target, LibraryItem ) as LibraryItem;
-				if( !clickItem ) return;
+				if( !clickItem || !Utilities.isDescendant( clickItem, this ) ) return;
 				
 				var clickIndex:int = getChildIndex( clickItem );
 				Assert.assertTrue( clickIndex >= 0 && clickIndex < numChildren );
@@ -140,7 +140,11 @@
 			{
 				if( _selectedIndex >= 0 ) 
 				{
-					instantiateSelection();
+					if( getLibraryItemAt( _selectedIndex ).isSelectable )
+					{
+						instantiateSelection();
+					}
+					
 					event.stopPropagation();
 				}
 			}
@@ -455,7 +459,12 @@
 			{
 				Assert.assertTrue( _selectedIndex >= 0 );
 				
-				getLibraryItemAt( _selectedIndex ).dispatchEvent( new Event( LibraryItem.INSTANTIATE_EVENT, true ) );
+				var item:LibraryItem = getLibraryItemAt( _selectedIndex );
+				Assert.assertNotNull( item );
+				
+				Assert.assertTrue( item.isSelectable );
+
+				item.dispatchEvent( new Event( LibraryItem.INSTANTIATE_EVENT, true ) );
 			}
 			
 			

@@ -21,8 +21,11 @@
 
 package components.controller.serverCommands
 {
+	import flash.geom.Rectangle;
+	
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
+	import components.controller.userDataCommands.SetModulePosition;
 	import components.model.Connection;
 	import components.model.IntegraContainer;
 	import components.model.IntegraModel;
@@ -89,6 +92,8 @@ package components.controller.serverCommands
 			removeObsoleteConnections( model, controller );
 			
 			correctScalerRanges( model, controller );
+			
+			correctModulePosition( model, controller );
 		}
 		
 		
@@ -405,9 +410,6 @@ package components.controller.serverCommands
 		
 		private function correctScalerRanges( model:IntegraModel, controller:IntegraController ):void
 		{
-			var oldInterface:InterfaceDefinition = model.getModuleInstance( _moduleID ).interfaceDefinition;
-			Assert.assertNotNull( oldInterface );
-			
 			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
 			Assert.assertNotNull( newInterface );
 			
@@ -462,6 +464,22 @@ package components.controller.serverCommands
 					}
 				}
 			}			
+		}
+		
+		
+		private function correctModulePosition( model:IntegraModel, controller:IntegraController ):void
+		{
+			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
+			Assert.assertNotNull( newInterface );
+
+			var position:Rectangle = model.getModulePosition( _moduleID ).clone();
+			
+			var newHeight:Number = ModuleInstance.getModuleHeight( newInterface );
+			if( newHeight != position.height )
+			{
+				position.height = newHeight;
+				controller.processCommand( new SetModulePosition( _moduleID, position ) );
+			}
 		}
 		
 		

@@ -29,6 +29,7 @@ package components.controller.serverCommands
 	import components.model.ModuleInstance;
 	import components.model.Scaler;
 	import components.model.interfaceDefinitions.Constraint;
+	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
@@ -86,6 +87,8 @@ package components.controller.serverCommands
 		override public function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
 			removeObsoleteConnections( model, controller );
+			
+			correctScalerRanges( model, controller );
 		}
 		
 		
@@ -364,6 +367,11 @@ package components.controller.serverCommands
 			switch( newEndpointDefinition.type )
 			{
 				case EndpointDefinition.CONTROL:
+					if( newEndpointDefinition.controlInfo.type == ControlInfo.STATE && newEndpointDefinition.controlInfo.stateInfo.type == StateInfo.STRING )
+					{
+						return false;
+					}
+					
 					if( isTarget ) 
 					{
 						return newEndpointDefinition.controlInfo.canBeTarget;
@@ -392,6 +400,68 @@ package components.controller.serverCommands
 					Assert.assertTrue( false );
 					return false;
 			}
+		}
+		
+		
+		private function correctScalerRanges( model:IntegraModel, controller:IntegraController ):void
+		{
+			var oldInterface:InterfaceDefinition = model.getModuleInstance( _moduleID ).interfaceDefinition;
+			Assert.assertNotNull( oldInterface );
+			
+			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
+			Assert.assertNotNull( newInterface );
+			
+			for( var ancestor:IntegraContainer = model.getBlockFromModuleInstance( _moduleID ); ancestor; ancestor = model.getParent( ancestor.id ) as IntegraContainer )
+			{
+				for each( var scaler:Scaler in ancestor.scalers )
+				{
+					if( scaler.upstreamConnection.sourceObjectID == _moduleID )
+					{
+						var upstreamEndpoint:EndpointDefinition = newInterface.getEndpointDefinition( scaler.upstreamConnection.sourceAttributeName );
+						Assert.assertNotNull( upstreamEndpoint );
+						Assert.assertNotNull( upstreamEndpoint.type == EndpointDefinition.CONTROL );
+						
+						var minimum:Number = 0;
+						var maximum:Number = 0;
+						if( upstreamEndpoint.isStateful )
+						{
+							minimum = upstreamEndpoint.controlInfo.stateInfo.constraint.minimum;
+							maximum = upstreamEndpoint.controlInfo.stateInfo.constraint.maximum;
+						}
+						
+						var inRangeMin:Number = Math.max( minimum, Math.min( maximum, scaler.inRangeMin ) );
+						var inRangeMax:Number = Math.max( minimum, Math.min( maximum, scaler.inRangeMax ) );
+						
+						if( inRangeMin != scaler.inRangeMin || inRangeMax != scaler.inRangeMax )
+						{
+							controller.processCommand( new SetScalerInputRange( scaler.id, inRangeMin, inRangeMax ) );
+						}
+					}
+					
+					if( scaler.downstreamConnection.targetObjectID == _moduleID )
+					{
+						var downstreamEndpoint:EndpointDefinition = newInterface.getEndpointDefinition( scaler.downstreamConnection.targetAttributeName );
+						Assert.assertNotNull( downstreamEndpoint );
+						Assert.assertNotNull( downstreamEndpoint.type == EndpointDefinition.CONTROL );
+						
+						minimum = 0;
+						maximum = 0;
+						if( downstreamEndpoint.isStateful )
+						{
+							minimum = downstreamEndpoint.controlInfo.stateInfo.constraint.minimum;
+							maximum = downstreamEndpoint.controlInfo.stateInfo.constraint.maximum;
+						}
+						
+						var outRangeMin:Number = Math.max( minimum, Math.min( maximum, scaler.outRangeMin ) );
+						var outRangeMax:Number = Math.max( minimum, Math.min( maximum, scaler.outRangeMax ) );
+						
+						if( outRangeMin != scaler.outRangeMin || outRangeMax != scaler.outRangeMax )
+						{
+							controller.processCommand( new SetScalerOutputRange( scaler.id, outRangeMin, outRangeMax ) );
+						}
+					}
+				}
+			}			
 		}
 		
 		

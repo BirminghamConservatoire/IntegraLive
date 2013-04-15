@@ -23,6 +23,17 @@
 
 package components.views.ArrangeViewProperties
 {
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	
+	import mx.containers.Canvas;
+	import mx.containers.HBox;
+	import mx.controls.Button;
+	import mx.controls.ComboBox;
+	import mx.core.ScrollPolicy;
+	import mx.core.UIComponent;
+	import mx.events.ListEvent;
+	
 	import components.controller.ServerCommand;
 	import components.controller.serverCommands.AddBlock;
 	import components.controller.serverCommands.AddScript;
@@ -37,6 +48,8 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
+	import components.controller.serverCommands.SwitchAllModuleVersions;
+	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.model.Connection;
 	import components.model.Envelope;
 	import components.model.Info;
@@ -47,22 +60,11 @@ package components.views.ArrangeViewProperties
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
 	
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.containers.HBox;
-	import mx.controls.Button;
-	import mx.controls.ComboBox;
-	import mx.core.ScrollPolicy;
-	import mx.core.UIComponent;
-	import mx.events.ListEvent;
 	
 
 	public class RoutingItem extends IntegraView
@@ -117,6 +119,8 @@ package components.views.ArrangeViewProperties
 			addUpdateMethod( AddTrack, onAvailableObjectsChanged );
 			addUpdateMethod( RemoveTrack, onAvailableObjectsChanged );
 			addUpdateMethod( RenameObject, onAvailableObjectsChanged );
+			
+			addUpdateMethod( SwitchModuleVersion, onModuleVersionChanged );
 
 			addEventListener( Event.RESIZE, onResize );
 		}
@@ -219,6 +223,23 @@ package components.views.ArrangeViewProperties
 		private function onScalerOutputRangeChanged( command:SetScalerOutputRange ):void
 		{
 			if( command.scalerID == _scalerID )
+			{
+				updateScalerOutputControls();
+			}
+		}
+		
+		
+		private function onModuleVersionChanged( command:SwitchModuleVersion ):void
+		{
+			var scaler:Scaler = model.getScaler( _scalerID );
+			Assert.assertNotNull( scaler );
+
+			if( command.moduleID == scaler.upstreamConnection.sourceObjectID )
+			{
+				updateScalerInputControls();
+			}
+
+			if( command.moduleID == scaler.downstreamConnection.targetObjectID )
 			{
 				updateScalerOutputControls();
 			}

@@ -23,7 +23,6 @@ package components.controller.serverCommands
 {
 	import components.controller.ServerCommand;
 	import components.model.Scaler;
-	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	
 	import flexunit.framework.Assert;

@@ -20,11 +20,23 @@
 
 package components.views.LiveView
 {
+	import flash.display.NativeMenu;
+	import flash.display.NativeMenuItem;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	
+	import mx.containers.Canvas;
+	import mx.core.ScrollPolicy;
+	import mx.events.FlexNativeMenuEvent;
+	
 	import components.controller.ServerCommand;
 	import components.controller.serverCommands.AddEnvelope;
 	import components.controller.serverCommands.RemoveEnvelope;
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetModuleAttribute;
+	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.userDataCommands.SetLiveViewControlPosition;
 	import components.controller.userDataCommands.SetLiveViewControls;
 	import components.controller.userDataCommands.ToggleLiveViewControl;
@@ -44,18 +56,7 @@ package components.views.LiveView
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	
-	import flash.display.NativeMenu;
-	import flash.display.NativeMenuItem;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.core.ScrollPolicy;
-	import mx.events.FlexNativeMenuEvent;
 	
 	public class LiveViewBlock extends IntegraView
 	{
@@ -77,6 +78,7 @@ package components.views.LiveView
 			addUpdateMethod( SetConnectionRouting, onPadlockStateMightHaveChanged );
 			addUpdateMethod( AddEnvelope, onPadlockStateMightHaveChanged );
 			addUpdateMethod( RemoveEnvelope, onPadlockStateMightHaveChanged );
+			addUpdateMethod( SwitchModuleVersion, onModuleVersionSwitched ); 
 			
 			addChild( _snapLinesCanvas );
 			
@@ -265,6 +267,15 @@ package components.views.LiveView
 		{
 			//these commands not currently expected to be executed when this view is open 
 			Assert.assertTrue( false );
+		}
+		
+		
+		private function onModuleVersionSwitched( command:SwitchModuleVersion ):void
+		{
+			if( model.getBlockFromModuleInstance( command.moduleID ).id == _blockID )
+			{
+				updateAll();
+			}
 		}
 
 

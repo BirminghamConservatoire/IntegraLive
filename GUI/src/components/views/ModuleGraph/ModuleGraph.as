@@ -42,6 +42,7 @@ package components.views.ModuleGraph
 	import components.controller.serverCommands.RemoveConnection;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
+	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.UnloadModule;
 	import components.controller.userDataCommands.SetLiveViewControls;
 	import components.controller.userDataCommands.SetModulePosition;
@@ -110,6 +111,7 @@ package components.views.ModuleGraph
 			addUpdateMethod( ToggleLiveViewControl, onLiveViewControlToggled );
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( RenameObject, onObjectRenamed );
+			addUpdateMethod( SwitchModuleVersion, onModuleVersionChanged );
 			
 			addVuMeterChangingCommand( SetPrimarySelectedChild );
 			
@@ -446,6 +448,15 @@ package components.views.ModuleGraph
 				var element:ModuleGraphElement = _elements[ command.objectID ] as ModuleGraphElement;
 				Assert.assertNotNull( element );
 				updateModuleGraphElement( element );
+			}
+		}
+		
+		
+		private function onModuleVersionChanged( command:SwitchModuleVersion ):void
+		{
+			if( _elements.hasOwnProperty( command.moduleID ) )
+			{
+				updateAll();
 			}
 		}
 		

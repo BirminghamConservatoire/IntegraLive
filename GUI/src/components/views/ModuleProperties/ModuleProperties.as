@@ -20,6 +20,9 @@
 
 package components.views.ModuleProperties
 {
+	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.controller.ServerCommand;
@@ -28,6 +31,7 @@ package components.views.ModuleProperties
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetModuleAttribute;
+	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.userDataCommands.SetColorScheme;
 	import components.controller.userDataCommands.SetLiveViewControls;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
@@ -46,11 +50,8 @@ package components.views.ModuleProperties
 	import components.utils.ControlContainer;
 	import components.utils.ControlMeasurer;
 	import components.utils.Utilities;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
-	
-	import flash.events.MouseEvent;
-	import flash.geom.Rectangle;
+	import components.views.InfoView.InfoMarkupForViews;
 	
 	import flexunit.framework.Assert;
 
@@ -73,6 +74,8 @@ package components.views.ModuleProperties
 			addUpdateMethod( AddEnvelope, onPadlockStateMightHaveChanged );
 			addUpdateMethod( RemoveEnvelope, onPadlockStateMightHaveChanged );
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
+			addUpdateMethod( SwitchModuleVersion, onModuleVersionSwitched );
+
 			addTitleInvalidatingCommand( SetPrimarySelectedChild );			
 			addTitleInvalidatingCommand( RenameObject );
 			addColorChangingCommand( SetColorScheme );
@@ -259,6 +262,15 @@ package components.views.ModuleProperties
 		private function onTrackColorChanged( command:SetTrackColor ):void
 		{
 			updateColor();
+		}
+		
+		
+		private function onModuleVersionSwitched( command:SwitchModuleVersion ):void
+		{
+			if( _module && command.moduleID == _module.id )
+			{
+				updateAll();
+			}
 		}
 		
 		

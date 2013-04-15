@@ -21,11 +21,16 @@
 
 package components.controller.serverCommands
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import components.controlSDK.core.ControlManager;
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
+	import components.controller.userDataCommands.SetLiveViewControlPosition;
 	import components.controller.userDataCommands.SetModulePosition;
+	import components.controller.userDataCommands.ToggleLiveViewControl;
+	import components.model.Block;
 	import components.model.Connection;
 	import components.model.IntegraContainer;
 	import components.model.IntegraModel;
@@ -37,6 +42,10 @@ package components.controller.serverCommands
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.interfaceDefinitions.StreamInfo;
+	import components.model.interfaceDefinitions.WidgetDefinition;
+	import components.model.userData.LiveViewControl;
+	import components.utils.ControlContainer;
+	import components.utils.ControlMeasurer;
 	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
@@ -94,6 +103,8 @@ package components.controller.serverCommands
 			correctScalerRanges( model, controller );
 			
 			correctModulePosition( model, controller );
+			
+			correctLiveViewControls( model, controller );
 		}
 		
 		
@@ -479,6 +490,50 @@ package components.controller.serverCommands
 			{
 				position.height = newHeight;
 				controller.processCommand( new SetModulePosition( _moduleID, position ) );
+			}
+		}
+		
+		
+		private function correctLiveViewControls( model:IntegraModel, controller:IntegraController ):void
+		{
+			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
+			Assert.assertNotNull( newInterface );
+
+			var block:Block = model.getBlockFromModuleInstance( _moduleID );
+			Assert.assertNotNull( block );
+			
+			var liveViewControls:Object = block.userData.liveViewControls;
+			var liveViewControlsToRemove:Vector.<LiveViewControl> = new Vector.<LiveViewControl>;
+			
+			for each( var liveViewControl:LiveViewControl in liveViewControls )
+			{
+				var newWidgetDefinition:WidgetDefinition = newInterface.getWidgetDefinition( liveViewControl.controlInstanceName );
+				if( newWidgetDefinition )
+				{
+					if( ControlMeasurer.doesControlExist( newWidgetDefinition.type ) )
+					{
+						var minimumSize:Point = ControlMeasurer.getMinimumSize( newWidgetDefinition.type ).add( ControlContainer.marginSizeWithoutLabel );
+						var maximumSize:Point = ControlMeasurer.getMaximumSize( newWidgetDefinition.type ).add( ControlContainer.marginSizeWithoutLabel );
+						
+						var newPosition:Rectangle = liveViewControl.position.clone();
+						newPosition.width = Math.max( minimumSize.x, Math.min( maximumSize.x, newPosition.width ) );
+						newPosition.height = Math.max( minimumSize.y, Math.min( maximumSize.y, newPosition.height ) );
+						
+						if( !newPosition.equals( liveViewControl.position ) )
+						{
+							controller.processCommand( new SetLiveViewControlPosition( _moduleID, liveViewControl.controlInstanceName, newPosition ) );
+						}
+						
+						continue;
+					}
+				}
+
+				liveViewControlsToRemove.push( liveViewControl );
+			}
+
+			for each( liveViewControl in liveViewControlsToRemove )
+			{
+				controller.processCommand( new ToggleLiveViewControl( liveViewControl ) );
 			}
 		}
 		

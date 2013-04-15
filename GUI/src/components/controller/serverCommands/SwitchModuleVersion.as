@@ -295,6 +295,9 @@ package components.controller.serverCommands
 		
 		private function removeObsoleteConnections( model:IntegraModel, controller:IntegraController ):void
 		{
+			var oldInterface:InterfaceDefinition = model.getModuleInstance( _moduleID ).interfaceDefinition;
+			Assert.assertNotNull( oldInterface );
+			
 			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
 			Assert.assertNotNull( newInterface );
 			
@@ -305,7 +308,7 @@ package components.controller.serverCommands
 				{
 					if( scaler.upstreamConnection.sourceObjectID == _moduleID )
 					{
-						if( !isConnectionStillValid( newInterface, scaler.upstreamConnection.sourceAttributeName, EndpointDefinition.CONTROL, false ) )
+						if( !isConnectionStillValid( oldInterface, newInterface, scaler.upstreamConnection.sourceAttributeName, false ) )
 						{
 							controller.processCommand( new RemoveScaledConnection( scaler.id ) );
 							continue;
@@ -314,7 +317,7 @@ package components.controller.serverCommands
 
 					if( scaler.downstreamConnection.targetObjectID == _moduleID )
 					{
-						if( !isConnectionStillValid( newInterface, scaler.downstreamConnection.targetAttributeName, EndpointDefinition.CONTROL, true ) )
+						if( !isConnectionStillValid( oldInterface, newInterface, scaler.downstreamConnection.targetAttributeName, true ) )
 						{
 							controller.processCommand( new RemoveScaledConnection( scaler.id ) );
 							continue;
@@ -327,7 +330,7 @@ package components.controller.serverCommands
 				{
 					if( connection.sourceObjectID == _moduleID )
 					{
-						if( !isConnectionStillValid( newInterface, connection.sourceAttributeName, EndpointDefinition.STREAM, false ) )
+						if( !isConnectionStillValid( oldInterface, newInterface, connection.sourceAttributeName, false ) )
 						{
 							controller.processCommand( new RemoveConnection( connection.id ) );
 							continue;
@@ -336,7 +339,7 @@ package components.controller.serverCommands
 					
 					if( connection.targetObjectID == _moduleID )
 					{
-						if( !isConnectionStillValid( newInterface, connection.targetAttributeName, EndpointDefinition.STREAM, true ) )
+						if( !isConnectionStillValid( oldInterface, newInterface, connection.targetAttributeName, true ) )
 						{
 							controller.processCommand( new RemoveConnection( connection.id ) );
 							continue;
@@ -348,12 +351,15 @@ package components.controller.serverCommands
 		}		
 		
 		
-		private function isConnectionStillValid( newInterface:InterfaceDefinition, endpointName:String, previousEndpointType:String, isTarget:Boolean ):Boolean
+		private function isConnectionStillValid( oldInterface:InterfaceDefinition, newInterface:InterfaceDefinition, endpointName:String, isTarget:Boolean ):Boolean
 		{
+			var oldEndpointDefinition:EndpointDefinition = oldInterface.getEndpointDefinition( endpointName );
+			Assert.assertNotNull( oldEndpointDefinition );
+
 			var newEndpointDefinition:EndpointDefinition = newInterface.getEndpointDefinition( endpointName );
 			if( !newEndpointDefinition ) return false;
 			
-			if( newEndpointDefinition.type != previousEndpointType ) return false;
+			if( newEndpointDefinition.type != oldEndpointDefinition.type ) return false;
 
 			switch( newEndpointDefinition.type )
 			{
@@ -368,6 +374,11 @@ package components.controller.serverCommands
 					}
 					
 				case EndpointDefinition.STREAM:
+					if( newEndpointDefinition.streamInfo.streamType != oldEndpointDefinition.streamInfo.streamType )
+					{
+						return false;
+					}
+					
 					if( isTarget )
 					{
 						return ( newEndpointDefinition.streamInfo.streamDirection == StreamInfo.DIRECTION_INPUT );

@@ -21,13 +21,18 @@
 
 package components.controller.serverCommands
 {
+	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
+	import components.model.Connection;
+	import components.model.IntegraContainer;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
+	import components.model.Scaler;
 	import components.model.interfaceDefinitions.Constraint;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
+	import components.model.interfaceDefinitions.StreamInfo;
 	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
@@ -75,6 +80,12 @@ package components.controller.serverCommands
 			Assert.assertNotNull( module );
 			
 			pushInverseCommand( new SwitchModuleVersion( _moduleID, module.interfaceDefinition.moduleGuid, copyAttributeValues( module.attributes ) ) );
+		}
+		
+		
+		override public function preChain( model:IntegraModel, controller:IntegraController ):void
+		{
+			removeObsoleteConnections( model, controller );
 		}
 		
 		
@@ -281,6 +292,96 @@ package components.controller.serverCommands
 				levenshtein_distance( string1From2ndChar, string2From2ndChar ) + cost );
 		}
 		
+		
+		private function removeObsoleteConnections( model:IntegraModel, controller:IntegraController ):void
+		{
+			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
+			Assert.assertNotNull( newInterface );
+			
+			for( var ancestor:IntegraContainer = model.getBlockFromModuleInstance( _moduleID ); ancestor; ancestor = model.getParent( ancestor.id ) as IntegraContainer )
+			{
+				//first remove scaled connections
+				for each( var scaler:Scaler in ancestor.scalers )
+				{
+					if( scaler.upstreamConnection.sourceObjectID == _moduleID )
+					{
+						if( !isConnectionStillValid( newInterface, scaler.upstreamConnection.sourceAttributeName, EndpointDefinition.CONTROL, false ) )
+						{
+							controller.processCommand( new RemoveScaledConnection( scaler.id ) );
+							continue;
+						}
+					}
+
+					if( scaler.downstreamConnection.targetObjectID == _moduleID )
+					{
+						if( !isConnectionStillValid( newInterface, scaler.downstreamConnection.targetAttributeName, EndpointDefinition.CONTROL, true ) )
+						{
+							controller.processCommand( new RemoveScaledConnection( scaler.id ) );
+							continue;
+						}
+					}
+				}
+					
+				//then remove stream connections
+				for each( var connection:Connection in ancestor.connections )
+				{
+					if( connection.sourceObjectID == _moduleID )
+					{
+						if( !isConnectionStillValid( newInterface, connection.sourceAttributeName, EndpointDefinition.STREAM, false ) )
+						{
+							controller.processCommand( new RemoveConnection( connection.id ) );
+							continue;
+						}
+					}
+					
+					if( connection.targetObjectID == _moduleID )
+					{
+						if( !isConnectionStillValid( newInterface, connection.targetAttributeName, EndpointDefinition.STREAM, true ) )
+						{
+							controller.processCommand( new RemoveConnection( connection.id ) );
+							continue;
+						}
+					}
+				}
+
+			}
+		}		
+		
+		
+		private function isConnectionStillValid( newInterface:InterfaceDefinition, endpointName:String, previousEndpointType:String, isTarget:Boolean ):Boolean
+		{
+			var newEndpointDefinition:EndpointDefinition = newInterface.getEndpointDefinition( endpointName );
+			if( !newEndpointDefinition ) return false;
+			
+			if( newEndpointDefinition.type != previousEndpointType ) return false;
+
+			switch( newEndpointDefinition.type )
+			{
+				case EndpointDefinition.CONTROL:
+					if( isTarget ) 
+					{
+						return newEndpointDefinition.controlInfo.canBeTarget;
+					}
+					else
+					{
+						return newEndpointDefinition.controlInfo.canBeSource;
+					}
+					
+				case EndpointDefinition.STREAM:
+					if( isTarget )
+					{
+						return ( newEndpointDefinition.streamInfo.streamDirection == StreamInfo.DIRECTION_INPUT );
+					}
+					else
+					{
+						return ( newEndpointDefinition.streamInfo.streamDirection == StreamInfo.DIRECTION_OUTPUT );
+					}
+					
+				default:
+					Assert.assertTrue( false );
+					return false;
+			}
+		}
 		
 		
 		private var _moduleID:int;

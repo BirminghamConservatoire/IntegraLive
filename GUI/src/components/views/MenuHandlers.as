@@ -466,7 +466,7 @@ package components.views
 		
 		private function switchToArrangeView(event:Event):void
 		{
-			var viewMode:ViewMode = _model.project.userData.viewMode.clone();
+			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
 			viewMode.mode = ViewMode.ARRANGE;
 			_controller.processCommand( new SetViewMode( viewMode ) );
 		}
@@ -474,7 +474,7 @@ package components.views
 		
 		private function switchToLiveView( event:Event ):void
 		{
-			var viewMode:ViewMode = _model.project.userData.viewMode.clone();
+			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
 			viewMode.mode = ViewMode.LIVE;
 			_controller.processCommand( new SetViewMode( viewMode ) );
 		}
@@ -488,7 +488,7 @@ package components.views
 		
 		private function showModuleManager( event:Event ):void
 		{
-			var viewMode:ViewMode = _model.project.userData.viewMode.clone();
+			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
 			viewMode.moduleManagerOpen = !viewMode.moduleManagerOpen;
 			
 			_controller.processCommand( new SetViewMode( viewMode ) );	
@@ -497,7 +497,7 @@ package components.views
 		
 		private function toggleLighting( event:Event ):void
 		{
-			switch( _model.project.userData.colorScheme )
+			switch( _model.project.projectUserData.colorScheme )
 			{
 				case ColorScheme.LIGHT:
 					_controller.processCommand( new SetColorScheme( ColorScheme.DARK ) );
@@ -516,7 +516,7 @@ package components.views
 		
 		private function toggleHighContrast( event:Event ):void
 		{
-			_controller.processCommand( new SetContrast( !_model.project.userData.highContrast ) );
+			_controller.processCommand( new SetContrast( !_model.project.projectUserData.highContrast ) );
 		}
 		
 		
@@ -540,7 +540,7 @@ package components.views
 		
 		private function onShowPreferences(event:Event):void
 		{ 
-			var viewMode:ViewMode = _model.project.userData.viewMode.clone();
+			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
 			viewMode.preferencesOpen = !viewMode.preferencesOpen;
 			
 			_controller.activateUndoStack = false;
@@ -590,14 +590,14 @@ package components.views
 		private function onUpdateArrangeViewMenuItem( event:Event ):void
 		{
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
-			menuItem.checked = ( _model.project.userData.viewMode.mode == ViewMode.ARRANGE );
+			menuItem.checked = ( _model.project.projectUserData.viewMode.mode == ViewMode.ARRANGE );
 			
 		} 
 		
 		private function onUpdateLiveViewMenuItem( event:Event ):void
 		{
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
-			menuItem.checked = ( _model.project.userData.viewMode.mode == ViewMode.LIVE );
+			menuItem.checked = ( _model.project.projectUserData.viewMode.mode == ViewMode.LIVE );
 		}
 		
 		
@@ -611,21 +611,21 @@ package components.views
 		private function onUpdateModuleManagerMenuItem( event:Event ):void
 		{
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
-			menuItem.checked = ( _model.project.userData.viewMode.moduleManagerOpen );
+			menuItem.checked = ( _model.project.projectUserData.viewMode.moduleManagerOpen );
 		}
 		
 		
 		private function onUpdateLightingToggle( event:Event ):void
 		{
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
-			menuItem.checked = ( _model.project.userData.colorScheme == ColorScheme.LIGHT );				
+			menuItem.checked = ( _model.project.projectUserData.colorScheme == ColorScheme.LIGHT );				
 		}     		
 		
 		
 		private function onUpdateHighContrastToggle( event:Event ):void
 		{
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
-			menuItem.checked = ( _model.project.userData.highContrast );				
+			menuItem.checked = ( _model.project.projectUserData.highContrast );				
 		}     		
 		
 		
@@ -653,7 +653,7 @@ package components.views
 		private function onUpdateShowPreferences( event:Event ):void
 		{
 			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
-			menuItem.checked = _model.project.userData.viewMode.preferencesOpen; 
+			menuItem.checked = _model.project.projectUserData.viewMode.preferencesOpen; 
 		}
 		
 		

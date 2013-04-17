@@ -25,9 +25,6 @@ package components.model
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.interfaceDefinitions.StreamInfo;
-	import components.model.userData.UserData;
-	
-	import flash.utils.ByteArray;
 	
 	import flexunit.framework.Assert;
 	
@@ -37,8 +34,6 @@ package components.model
 		public function ModuleInstance()
 		{
 			super();
-
-			internalUserData = new UserData;
 		}
 
 		public static function getModuleWidth():Number 
@@ -61,8 +56,6 @@ package components.model
 		
 		public function get attributes():Object { return _attributes; }
 		
-		public function get userData():UserData { return internalUserData; }
-
 		public function set attributes( attributes:Object ):void { _attributes = attributes; }
 
 		override public function setAttributeFromServer( attributeName:String, value:Object, model:IntegraModel ):Boolean

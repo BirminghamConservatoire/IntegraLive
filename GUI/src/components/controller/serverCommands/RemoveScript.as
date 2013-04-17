@@ -85,7 +85,7 @@ package components.controller.serverCommands
 			var parent:IntegraContainer = model.getContainerFromScript( _scriptID );
 			Assert.assertNotNull( parent );
 			
-			if( parent.primarySelectedChildID == _scriptID )
+			if( model.getPrimarySelectedChildID( parent.id ) == _scriptID )
 			{
 				controller.processCommand( new SetPrimarySelectedChild( parent.id, -1 ) );
 			}

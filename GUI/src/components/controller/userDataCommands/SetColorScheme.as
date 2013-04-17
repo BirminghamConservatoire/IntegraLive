@@ -36,19 +36,19 @@ package components.controller.userDataCommands
 		
 		public override function initialize( model:IntegraModel ):Boolean
 		{
-			return ( model.project.userData.colorScheme != _colorScheme );
+			return ( model.project.projectUserData.colorScheme != _colorScheme );
 		}
 		
 		
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetColorScheme( model.project.userData.colorScheme ) );
+			pushInverseCommand( new SetColorScheme( model.project.projectUserData.colorScheme ) );
 		}
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
-			model.project.userData.colorScheme = _colorScheme;
+			model.project.projectUserData.colorScheme = _colorScheme;
 		}
 		
 		

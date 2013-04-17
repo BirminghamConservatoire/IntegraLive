@@ -19,7 +19,7 @@ package components.controller.userDataCommands
 		
 		public override function initialize( model:IntegraModel ):Boolean
 		{
-			if( _timelineState.deepCompare( model.project.userData.timelineState ) )
+			if( _timelineState.deepCompare( model.project.projectUserData.timelineState ) )
 			{
 				return false;
 			}
@@ -30,13 +30,13 @@ package components.controller.userDataCommands
 		
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetTimelineState( model.project.userData.timelineState ) );
+			pushInverseCommand( new SetTimelineState( model.project.projectUserData.timelineState ) );
 		}
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
-			model.project.userData.timelineState = _timelineState;
+			model.project.projectUserData.timelineState = _timelineState;
 		}
 		
 		

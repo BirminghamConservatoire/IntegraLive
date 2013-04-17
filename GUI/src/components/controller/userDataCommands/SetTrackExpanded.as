@@ -61,10 +61,10 @@ package components.controller.userDataCommands
 			switch( _context )
 			{
 				case ARRANGE_VIEW: 	
-					return ( _expanded != track.userData.arrangeViewExpanded );
+					return ( _expanded != track.trackUserData.arrangeViewExpanded );
 					
 				case LIVE_VIEW: 	
-					return ( _expanded != track.userData.liveViewExpanded );
+					return ( _expanded != track.trackUserData.liveViewExpanded );
 					
 				default:			
 					return false;
@@ -80,11 +80,11 @@ package components.controller.userDataCommands
 			switch( _context )
 			{
 				case ARRANGE_VIEW: 	
-					pushInverseCommand( new SetTrackExpanded( _trackID, track.userData.arrangeViewExpanded, _context ) );
+					pushInverseCommand( new SetTrackExpanded( _trackID, track.trackUserData.arrangeViewExpanded, _context ) );
 					break;
 					
 				case LIVE_VIEW: 	
-					pushInverseCommand( new SetTrackExpanded( _trackID, track.userData.liveViewExpanded, _context ) );
+					pushInverseCommand( new SetTrackExpanded( _trackID, track.trackUserData.liveViewExpanded, _context ) );
 					break;
 					
 				default:
@@ -102,11 +102,11 @@ package components.controller.userDataCommands
 			switch( _context )
 			{
 				case ARRANGE_VIEW: 	
-					track.userData.arrangeViewExpanded = _expanded;
+					track.trackUserData.arrangeViewExpanded = _expanded;
 					break;
 					
 				case LIVE_VIEW: 	
-					track.userData.liveViewExpanded = _expanded;
+					track.trackUserData.liveViewExpanded = _expanded;
 					break;
 					
 				default:

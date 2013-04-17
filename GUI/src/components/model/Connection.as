@@ -21,7 +21,6 @@
 
 package components.model
 {
-	import components.model.userData.UserData;
 	import components.utils.Trace;
 	
 	import flexunit.framework.Assert;
@@ -31,16 +30,12 @@ package components.model
 		public function Connection()
 		{
 			super();
-			
-			internalUserData = new UserData;
 		}
 
 		public function get sourceObjectID():int	{ return _sourceObjectID; }
 		public function get sourceAttributeName():String { return _sourceAttributeName; }
 		public function get targetObjectID():int { return _targetObjectID; }
 		public function get targetAttributeName():String { return _targetAttributeName; }
-
-		public function get userData():UserData { return internalUserData; }
 
 		public function set sourceObjectID( sourceObjectID:int ):void { _sourceObjectID = sourceObjectID; }
 		public function set sourceAttributeName( sourceAttributeName:String ):void { _sourceAttributeName = sourceAttributeName; }

@@ -117,7 +117,7 @@
 
 		private function updateViewmodeButtons():void
 		{
-			var viewMode:String = model.project.userData.viewMode.mode;
+			var viewMode:String = model.project.projectUserData.viewMode.mode;
 
 			_arrangeButton.selected = ( viewMode == ViewMode.ARRANGE );
 			_liveButton.selected = ( viewMode == ViewMode.LIVE );
@@ -135,7 +135,7 @@
 		
  		private function switchToArrangeView():void
  		{
- 			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+ 			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
 			viewMode.mode = ViewMode.ARRANGE;
  			controller.processCommand( new SetViewMode( viewMode ) );
  		}
@@ -143,7 +143,7 @@
 
  		private function switchToLiveView():void
  		{
- 			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+ 			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
  			viewMode.mode = ViewMode.LIVE;
  			controller.processCommand( new SetViewMode( viewMode ) );
  		}
@@ -163,7 +163,7 @@
  		
  		private function toggleLighting():void
  		{
- 			switch( model.project.userData.colorScheme )
+ 			switch( model.project.projectUserData.colorScheme )
  			{
  				case ColorScheme.LIGHT:
  					controller.processCommand( new SetColorScheme( ColorScheme.DARK ) );

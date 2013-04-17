@@ -1,6 +1,8 @@
 package components.model
 {
 	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.userData.BlockUserData;
+	import components.model.userData.UserData;
 	import components.utils.Trace;
 	
 	import flexunit.framework.Assert;
@@ -22,6 +24,9 @@ package components.model
 		public function get midi():Midi { return _midi; }
 		public function get info():Info { return _info; }
 
+		public function get userData():UserData { return internalUserData; }
+
+		
 		public function set zIndex( zIndex:int ):void { _zIndex = zIndex; }
 		public function set children( children:Object ):void { _children = children; }
 		
@@ -114,6 +119,13 @@ package components.model
 			
 			switch( attributeName )
 			{
+				case "userData":
+					Assert.assertNotNull( userData );
+					Assert.assertTrue( value is String );
+					userDataString = String( value );
+					userData.load( userDataString, model, id );
+					return true;
+				
 				case "zIndex":
 					Assert.assertTrue( value is int );
 					_zIndex = int( value );

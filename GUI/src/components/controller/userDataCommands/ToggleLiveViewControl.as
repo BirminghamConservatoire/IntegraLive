@@ -47,7 +47,7 @@ package components.controller.userDataCommands
 		
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			var existingControl:LiveViewControl = model.getBlockFromModuleInstance( _liveViewControl.moduleID ).userData.liveViewControls[ _liveViewControl.id ] as LiveViewControl;
+			var existingControl:LiveViewControl = model.getBlockFromModuleInstance( _liveViewControl.moduleID ).blockUserData.liveViewControls[ _liveViewControl.id ] as LiveViewControl;
 			pushInverseCommand( new ToggleLiveViewControl( existingControl ) );
 		}
 		
@@ -57,7 +57,7 @@ package components.controller.userDataCommands
 			var block:Block = model.getBlockFromModuleInstance( _liveViewControl.moduleID );
 			Assert.assertNotNull( block );
 			
-			var liveViewControls:Object = block.userData.liveViewControls;
+			var liveViewControls:Object = block.blockUserData.liveViewControls;
 
 			var controlID:String = _liveViewControl.id;
 			

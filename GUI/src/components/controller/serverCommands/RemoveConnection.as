@@ -23,6 +23,7 @@ package components.controller.serverCommands
 {
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
+	import components.controller.userDataCommands.SetObjectSelection;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.model.Connection;
 	import components.model.IntegraContainer;
@@ -84,7 +85,12 @@ package components.controller.serverCommands
 			var container:IntegraContainer = model.getContainerFromConnection( _connectionID );
 			Assert.assertNotNull( container );
 			
-			if( container.primarySelectedChildID == _connectionID )
+			if( model.isObjectSelected( _connectionID ) )
+			{
+				controller.processCommand( new SetObjectSelection( _connectionID, false ) );
+			}
+
+			if( container.userData.primarySelectedChildID == _connectionID )
 			{
 				controller.processCommand( new SetPrimarySelectedChild( container.id, -1 ) );
 			}

@@ -36,7 +36,7 @@ package components.model
 		public function get blocks():Object { return _blocks; }
 		public function get blockEnvelopes():Object { return _blockEnvelopes; }
 
-		public function get userData():TrackUserData { return internalUserData as TrackUserData; }
+		public function get trackUserData():TrackUserData { return userData as TrackUserData; }
 
 		override public function childrenChanged():void 
 		{

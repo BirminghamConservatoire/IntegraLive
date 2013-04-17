@@ -73,6 +73,13 @@ package components.model
 			
 			switch( attributeName )
 			{        
+				case "userData":
+					Assert.assertNotNull( userData );
+					Assert.assertTrue( value is String );
+					userDataString = String( value );
+					userData.load( userDataString, model, id );
+					return true;
+				
 				case "start":
 					_start = int( value );
 					return true;

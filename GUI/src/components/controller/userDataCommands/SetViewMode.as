@@ -41,19 +41,19 @@ package components.controller.userDataCommands
 		
 		public override function initialize( model:IntegraModel ):Boolean
 		{
-			return ( model.project.userData.viewMode != _viewMode );	
+			return ( model.project.projectUserData.viewMode != _viewMode );	
 		}
 		
 		
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetViewMode( model.project.userData.viewMode ) );
+			pushInverseCommand( new SetViewMode( model.project.projectUserData.viewMode ) );
 		}
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
-			model.project.userData.viewMode = _viewMode;
+			model.project.projectUserData.viewMode = _viewMode;
 		}
 		
 		

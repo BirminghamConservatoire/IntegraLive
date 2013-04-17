@@ -122,7 +122,7 @@ package components.views.ModuleProperties
 		
 		override public function get color():uint
 		{
-			switch( model.project.userData.colorScheme )
+			switch( model.project.projectUserData.colorScheme )
 			{
 				default:
 				case ColorScheme.LIGHT:
@@ -184,7 +184,7 @@ package components.views.ModuleProperties
 
 			findLiveViewControls();
 			
-			var color:uint = model.selectedTrack.userData.color;			
+			var color:uint = model.selectedTrack.trackUserData.color;			
 			
 			for each( var widget:WidgetDefinition in widgets )
 			{
@@ -302,7 +302,7 @@ package components.views.ModuleProperties
 				return;
 			}
 			
-			var color:uint = track.userData.color;
+			var color:uint = track.trackUserData.color;
 			
 			for each( var control:ControlContainer in _allControls )
 			{
@@ -323,7 +323,7 @@ package components.views.ModuleProperties
 			var block:Block = model.getBlockFromModuleInstance( _module.id );
 			Assert.assertNotNull( block );
 			
-			for each( var liveViewControl:LiveViewControl in block.userData.liveViewControls )
+			for each( var liveViewControl:LiveViewControl in block.blockUserData.liveViewControls )
 			{
 				if( liveViewControl.moduleID != _module.id )
 				{

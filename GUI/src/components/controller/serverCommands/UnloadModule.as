@@ -27,6 +27,7 @@ package components.controller.serverCommands
 	import components.controller.ServerCommand;
 	import components.controller.userDataCommands.SetModuleInstanceLiveViewControls;
 	import components.controller.userDataCommands.SetModulePosition;
+	import components.controller.userDataCommands.SetObjectSelection;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.model.Block;
 	import components.model.Connection;
@@ -149,10 +150,15 @@ package components.controller.serverCommands
 
 		private function deselectModule( model:IntegraModel, controller:IntegraController ):void
 		{
+			if( model.isObjectSelected( _moduleID ) )
+			{
+				controller.processCommand( new SetObjectSelection( _moduleID, false ) );
+			}
+
 			var block:Block = model.getBlockFromModuleInstance( _moduleID );
 			Assert.assertNotNull( block );
 			
-			if( block.primarySelectedChildID == _moduleID )
+			if( model.getPrimarySelectedChildID( block.id ) == _moduleID )
 			{
 				controller.processCommand( new SetPrimarySelectedChild( block.id, -1 ) );
 			}

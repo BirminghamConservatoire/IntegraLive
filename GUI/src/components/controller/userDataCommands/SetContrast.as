@@ -39,19 +39,19 @@ package components.controller.userDataCommands
 		
 		public override function initialize( model:IntegraModel ):Boolean
 		{
-			return ( model.project.userData.highContrast != _highContrast );
+			return ( model.project.projectUserData.highContrast != _highContrast );
 		}
 		
 		
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetContrast( model.project.userData.highContrast ) );
+			pushInverseCommand( new SetContrast( model.project.projectUserData.highContrast ) );
 		}
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
-			model.project.userData.highContrast = _highContrast;
+			model.project.projectUserData.highContrast = _highContrast;
 		}
 		
 		

@@ -50,7 +50,7 @@ package components.controller.userDataCommands
 			var block:Block = model.getBlock( _blockID );
 			if( !block ) return false;
 			
-			return ( _envelopeLock != block.userData.envelopeLock );
+			return ( _envelopeLock != block.blockUserData.envelopeLock );
 		}
 		
 		
@@ -58,7 +58,7 @@ package components.controller.userDataCommands
 		{
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
-			var previousLock:Boolean = block.userData.envelopeLock;
+			var previousLock:Boolean = block.blockUserData.envelopeLock;
 
 			pushInverseCommand( new SetEnvelopeLock( _blockID, previousLock ) );
 		}
@@ -69,7 +69,7 @@ package components.controller.userDataCommands
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 			
-			block.userData.envelopeLock = _envelopeLock;
+			block.blockUserData.envelopeLock = _envelopeLock;
 		}
 
 

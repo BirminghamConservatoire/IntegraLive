@@ -44,7 +44,7 @@ package components.model
 		public function get modules():Object { return _modules; }
 		public function get envelopes():Object { return _envelopes; }
 		
-		public function get userData():BlockUserData { return internalUserData as BlockUserData; }
+		public function get blockUserData():BlockUserData { return userData as BlockUserData; }
 		
 		public function get blockEnvelope():Envelope { return _blockEnvelope }
 		public function set blockEnvelope( blockEnvelope:Envelope ):void { _blockEnvelope = blockEnvelope; }

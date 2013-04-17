@@ -502,7 +502,7 @@ package components.controller.serverCommands
 			var block:Block = model.getBlockFromModuleInstance( _moduleID );
 			Assert.assertNotNull( block );
 			
-			var liveViewControls:Object = block.userData.liveViewControls;
+			var liveViewControls:Object = block.blockUserData.liveViewControls;
 			var liveViewControlsToRemove:Vector.<LiveViewControl> = new Vector.<LiveViewControl>;
 			
 			for each( var liveViewControl:LiveViewControl in liveViewControls )

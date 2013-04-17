@@ -133,7 +133,7 @@ package components.views.ArrangeView
 
 		override public function get color():uint
 		{
-			return _track.userData.color;
+			return _track.trackUserData.color;
 		}
 		
 		
@@ -270,7 +270,7 @@ package components.views.ArrangeView
 
 		private function onPrimarySelectionChanged( command:SetPrimarySelectedChild ):void
 		{
-			if( model.getDataObjectByID( command.objectID ) is Project )
+			if( command.containerID == model.project.id )
 			{ 
 				updateSelection();
 			}
@@ -401,7 +401,7 @@ package components.views.ArrangeView
 				return;
 			}
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			
 			blockView.x = timelineState.ticksToPixels( block.start );
 			blockView.width = block.length * timelineState.zoom;
@@ -450,7 +450,7 @@ package components.views.ArrangeView
 			_dragOverOutline.setStyle( "top", 0 );
 			_dragOverOutline.setStyle( "bottom", 0 );
 			
-			_dragOverOutline.width = Block.newBlockSeconds * model.project.player.rate * model.project.userData.timelineState.zoom;
+			_dragOverOutline.width = Block.newBlockSeconds * model.project.player.rate * model.project.projectUserData.timelineState.zoom;
 			_dragOverOutline.x = event.localX - _dragOverOutline.width / 2;
 			
 			addChild( _dragOverOutline );
@@ -464,7 +464,7 @@ package components.views.ArrangeView
 			var file:File = event.dragSource.dataForFormat( Utilities.getClassNameFromClass( File ) ) as File;
 			Assert.assertNotNull( file ); 
 			
-			var blockStartTicks:int = Math.max( 0, model.project.userData.timelineState.pixelsToTicks( event.localX ) - Block.newBlockSeconds * model.project.player.rate / 2 );
+			var blockStartTicks:int = Math.max( 0, model.project.projectUserData.timelineState.pixelsToTicks( event.localX ) - Block.newBlockSeconds * model.project.player.rate / 2 );
 			
 			controller.processCommand( new ImportBlock( file.nativePath, trackID, blockStartTicks ) ); 
 		}

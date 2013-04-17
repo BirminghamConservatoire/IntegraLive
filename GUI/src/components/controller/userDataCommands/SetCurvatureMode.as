@@ -50,7 +50,7 @@ package components.controller.userDataCommands
 			var block:Block = model.getBlock( _blockID );
 			if( !block ) return false;
 			
-			return ( _curvatureMode != block.userData.curvatureMode );
+			return ( _curvatureMode != block.blockUserData.curvatureMode );
 		}
 		
 		
@@ -58,7 +58,7 @@ package components.controller.userDataCommands
 		{
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
-			var previousMode:Boolean = block.userData.curvatureMode;
+			var previousMode:Boolean = block.blockUserData.curvatureMode;
 
 			pushInverseCommand( new SetCurvatureMode( _blockID, previousMode ) );
 		}
@@ -69,7 +69,7 @@ package components.controller.userDataCommands
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 			
-			block.userData.curvatureMode = _curvatureMode;
+			block.blockUserData.curvatureMode = _curvatureMode;
 		}
 
 

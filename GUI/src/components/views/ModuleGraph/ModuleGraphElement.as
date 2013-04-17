@@ -329,7 +329,7 @@ package components.views.ModuleGraph
 		{
 			if( _moduleID < 0 ) return false;
 			
-			return _model.isModuleInstanceSelected( _moduleID );
+			return _model.isObjectSelected( _moduleID );
 		}	
 
 

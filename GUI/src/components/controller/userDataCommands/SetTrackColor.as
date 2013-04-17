@@ -51,20 +51,20 @@ package components.controller.userDataCommands
 				return false;
 			}
 			
-			return( _color != track.userData.color );	
+			return( _color != track.trackUserData.color );	
 		}
 
 
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetTrackColor( _trackID, model.getTrack( _trackID ).userData.color ) );
+			pushInverseCommand( new SetTrackColor( _trackID, model.getTrack( _trackID ).trackUserData.color ) );
 		}		
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
 			var track:Track = model.getTrack( _trackID );
-			track.userData.color = _color;			
+			track.trackUserData.color = _color;			
 		}
 
 

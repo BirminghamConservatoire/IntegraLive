@@ -30,7 +30,7 @@ package components.controller.userDataCommands
 			const timelineLeftProportion:Number = 0.1;	 
 			const timelineRightProportion:Number = 0.8;	 
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			
 			var playheadPixels:Number = timelineState.ticksToPixels( model.project.player.playPosition );
 			

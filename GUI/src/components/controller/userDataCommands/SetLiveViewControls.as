@@ -49,7 +49,7 @@ package components.controller.userDataCommands
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 			
-			pushInverseCommand( new SetLiveViewControls( _blockID, block.userData.liveViewControls ) );
+			pushInverseCommand( new SetLiveViewControls( _blockID, block.blockUserData.liveViewControls ) );
 		}
 		
 		
@@ -58,7 +58,7 @@ package components.controller.userDataCommands
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 
-			block.userData.liveViewControls = _liveViewControls;
+			block.blockUserData.liveViewControls = _liveViewControls;
 		}
 		
 		

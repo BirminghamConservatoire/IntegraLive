@@ -93,7 +93,7 @@ package components.views.LiveView
 
 		override public function get color():uint
 		{
-			switch( model.project.userData.colorScheme )
+			switch( model.project.projectUserData.colorScheme )
 			{
 				default:
 				case ColorScheme.LIGHT:
@@ -507,7 +507,7 @@ package components.views.LiveView
 		
 		private function onStageKeyDown( event:KeyboardEvent ):void
 		{
-			if( model.project.userData.viewMode.mode != ViewMode.LIVE ) 
+			if( model.project.projectUserData.viewMode.mode != ViewMode.LIVE ) 
 			{
 				return;		//only fire scene shortcuts in Live view
 			}

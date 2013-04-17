@@ -25,8 +25,9 @@ package components.controller.serverCommands
 	
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
+	import components.controller.userDataCommands.SetObjectSelection;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
-	import components.controller.userDataCommands.UpdateProjectLength;	
+	import components.controller.userDataCommands.UpdateProjectLength;
 	import components.model.Block;
 	import components.model.ControlPoint;
 	import components.model.Envelope;
@@ -204,9 +205,14 @@ package components.controller.serverCommands
 		
 		private function deselectBlock( model:IntegraModel, controller:IntegraController ):void
 		{
+			if( model.isObjectSelected( _blockID ) )
+			{
+				controller.processCommand( new SetObjectSelection( _blockID, false ) );
+			}
+			
 			var track:Track = model.getTrackFromBlock( _blockID );
 			Assert.assertNotNull( track );
-			if( track.primarySelectedChildID == _blockID )
+			if( model.getPrimarySelectedChildID( track.id ) == _blockID )
 			{
 				controller.processCommand( new SetPrimarySelectedChild( track.id, -1 ) );
 			}

@@ -165,7 +165,7 @@ package components.views.LiveView
 			}
 			
 			var trackView:LiveViewTrack = new LiveViewTrack( track.id );
-			trackView.collapsed = track.userData.liveViewCollapsed;
+			trackView.collapsed = track.trackUserData.liveViewCollapsed;
 			
 			_tracks.addItemAt( trackView, index );
 		}

@@ -162,7 +162,7 @@ package components.views.ModuleManager
 		
 		private function onClickTitleCloseButton( event:MouseEvent ):void
 		{
-			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
 			viewMode.moduleManagerOpen = false;
 			
 			controller.activateUndoStack = false;

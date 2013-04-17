@@ -103,12 +103,6 @@ package components.controller.serverCommands
 			return( response.response == "command.new" );
 		}
 		
-		
-		override public function postChain( model:IntegraModel, controller:IntegraController ):void
-		{
-			controller.processCommand( new SetObjectSelection( _connectionID, true ) );
-		}		
-
 
 		private var _containerID:int;
 		private var _connectionID:int;

@@ -77,7 +77,7 @@ package components.controller.serverCommands
 
 			if( !_position )
 			{
-				_position = model.getBlock( blockID ).userData.getUnusedModulePosition( interfaceDefinition );
+				_position = model.getBlock( blockID ).blockUserData.getUnusedModulePosition( interfaceDefinition );
 			}
 			
 			return true;				

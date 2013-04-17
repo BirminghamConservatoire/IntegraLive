@@ -85,7 +85,7 @@ package components.controller.serverCommands
 			{
 				for each( var block:Block in track.blocks )
 				{
-					if( block.isSelected )
+					if( model.isObjectSelected( block.id ) )
 					{
 						controller.processCommand( new SetObjectSelection( block.id, false ) );	
 					}

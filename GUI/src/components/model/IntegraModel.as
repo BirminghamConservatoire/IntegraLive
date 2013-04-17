@@ -198,6 +198,27 @@ package components.model
 		}		
 		
 		
+		public function isObjectSelected( objectID:int ):Boolean 
+		{ 
+			var parent:IntegraContainer = getParent( objectID ) as IntegraContainer;
+			if( parent )
+			{
+				return parent.userData.isChildSelected( objectID );
+			}
+			
+			return false;
+		}
+
+		
+		public function getPrimarySelectedChildID( containerID:int ):int 
+		{ 
+			var container:IntegraContainer = getContainer( containerID ) as IntegraContainer;
+			if( !container ) return -1;
+
+			return container.userData.primarySelectedChildID;
+		}
+		
+		
 		public function get primarySelectedModule():ModuleInstance
 		{
 			var block:Block = primarySelectedBlock;
@@ -334,7 +355,7 @@ package components.model
 		
 		public function get selectedScript():Script
 		{
-			var id:int = selectedContainer.primarySelectedChildID;
+			var id:int = getPrimarySelectedChildID( selectedContainer.id );
 
 			if( id < 0 ) return null;
 			
@@ -349,19 +370,7 @@ package components.model
 		
 		public function isModuleInstancePrimarySelected( instanceID:int ):Boolean
 		{
-			return( instanceID == getBlockFromModuleInstance( instanceID ).userData.primarySelectedChildID );	
-		}
-
-
-		public function isModuleInstanceSelected( instanceID:int ):Boolean
-		{
-			return getModuleInstance( instanceID ).userData.isSelected;;
-		}
-
-		
-		public function isConnectionSelected( connectionID:int ):Boolean
-		{
-			return getConnection( connectionID ).userData.isSelected;;
+			return( instanceID == getPrimarySelectedChildID( getBlockFromModuleInstance( instanceID ).id ) );	
 		}
 
 
@@ -377,15 +386,9 @@ package components.model
 		}
 
 
-		public function isBlockSelected( blockID:int ):Boolean
-		{
-			return getBlock( blockID ).userData.isSelected;
-		}
-
-		
 		public function isTrackSelected( trackID:int ):Boolean
 		{
-			return ( trackID == project.userData.primarySelectedChildID );
+			return ( trackID == getPrimarySelectedChildID( project.id ) );
 		}
 
 
@@ -589,9 +592,9 @@ package components.model
 			var block:Block = getBlockFromModuleInstance( moduleInstanceID );
 			Assert.assertNotNull( block );
 			
-			if( block.userData.modulePositions.hasOwnProperty( moduleInstanceID ) )
+			if( block.blockUserData.modulePositions.hasOwnProperty( moduleInstanceID ) )
 			{
-				return block.userData.modulePositions[ moduleInstanceID ] as Rectangle;
+				return block.blockUserData.modulePositions[ moduleInstanceID ] as Rectangle;
 			}
 			else
 			{
@@ -600,7 +603,7 @@ package components.model
 					var moduleInstance:ModuleInstance = getModuleInstance( moduleInstanceID );
 					Assert.assertNotNull( moduleInstance );
 					
-					return block.userData.getUnusedModulePosition( moduleInstance.interfaceDefinition );
+					return block.blockUserData.getUnusedModulePosition( moduleInstance.interfaceDefinition );
 				}
 				else
 				{
@@ -617,7 +620,7 @@ package components.model
 			
 			var liveViewControlID:String = LiveViewControl.makeLiveViewControlID( moduleID, controlInstanceName );
 
-			var liveViewControls:Object = block.userData.liveViewControls; 
+			var liveViewControls:Object = block.blockUserData.liveViewControls; 
 			if( !liveViewControls.hasOwnProperty( liveViewControlID ) )
 			{
 				return null;

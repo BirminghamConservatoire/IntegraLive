@@ -180,7 +180,7 @@
 			
 			override public function get color():uint
 			{
-				switch( model.project.userData.colorScheme )
+				switch( model.project.projectUserData.colorScheme )
 				{
 					default:
 					case ColorScheme.LIGHT:

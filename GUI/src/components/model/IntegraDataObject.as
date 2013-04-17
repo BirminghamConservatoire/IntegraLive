@@ -39,8 +39,6 @@ package components.model
 		public function get active():Boolean { return _active; }
 
 		public function get userDataString():String { return _userDataString; }
-		public function get primarySelectedChildID():int { return _userData.primarySelectedChildID; }
-		public function get isSelected():Boolean { return _userData.isSelected; }
 		public function set active( active:Boolean ):void { _active = active; }
 
 		public function set id( id:int ):void { _id = id; }
@@ -49,8 +47,6 @@ package components.model
 		public function set interfaceDefinition( interfaceDefinition:InterfaceDefinition ):void { _interfaceDefinition = interfaceDefinition; }
 
 		public function set userDataString( userDataString:String ):void { _userDataString = userDataString; }
-		public function set primarySelectedChildID( primarySelectedChildID:int ):void { _userData.primarySelectedChildID = primarySelectedChildID; }
-		public function set isSelected( isSelected:Boolean ):void { _userData.isSelected = isSelected; }
 
 
 		public function copyDataObjectProperties( toCopy:IntegraDataObject ):void
@@ -75,15 +71,6 @@ package components.model
 		{
 			switch( attributeName )
 			{
-				case "userData":
-					if( _userData )
-					{
-						Assert.assertTrue( value is String );
-						_userDataString = String( value );
-						_userData.load( _userDataString, model, _id );
-					}
-					return true;
-	
 				case "active":
 					Assert.assertTrue( value is int );
 					_active = Boolean( value );

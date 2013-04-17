@@ -357,14 +357,8 @@ package components.views.ArrangeView
 		
 		private function onPrimarySelectionChanged( command:SetPrimarySelectedChild ):void
 		{
-			var objectWhoseSelectedChildChanged:IntegraDataObject = model.getDataObjectByID( command.objectID );
-			Assert.assertNotNull( objectWhoseSelectedChildChanged );
-			
-			if( objectWhoseSelectedChildChanged is Project || objectWhoseSelectedChildChanged is Track || objectWhoseSelectedChildChanged is Block ) 
-			{
-				updateAlpha();
-				invalidateDisplayList();
-			}
+			updateAlpha();
+			invalidateDisplayList();
 		}
 		
 		
@@ -431,7 +425,7 @@ package components.views.ArrangeView
 		
 		private function updateGlow():void
 		{
-			var glow:GlowFilter = new GlowFilter( _track.userData.color, 0.5, 10, 10, 2 );
+			var glow:GlowFilter = new GlowFilter( _track.trackUserData.color, 0.5, 10, 10, 2 );
 			var filterArray:Array = new Array;
 			filterArray.push( glow );
 			filters = filterArray;
@@ -442,7 +436,7 @@ package components.views.ArrangeView
 		{
 			if( !isSelected ) return;
 			
-			var color:uint = _track.userData.color;
+			var color:uint = _track.trackUserData.color;
 			var controlPointX:Number = getXPixelsFromTick( controlPointTick );
 			var controlPointY:Number = getYPixelsFromValue( controlPointValue );
 
@@ -459,7 +453,7 @@ package components.views.ArrangeView
 			
 			const xIncrement:Number = 1;
 			
-			var color:uint = _track.userData.color;
+			var color:uint = _track.trackUserData.color;
 			var fromX:Number = getXPixelsFromTick( fromTick );
 			var fromY:Number = getYPixelsFromValue( fromValue );
 			var toX:Number = getXPixelsFromTick( toTick );
@@ -832,7 +826,7 @@ package components.views.ArrangeView
 
 		private function getXPixelsFromTick( tick:int ):Number 
 		{
-			return tick * model.project.userData.timelineState.zoom;
+			return tick * model.project.projectUserData.timelineState.zoom;
 		}
 		
 		
@@ -840,14 +834,14 @@ package components.views.ArrangeView
 		{
 			xPixels = Math.max( 0, Math.min( width, xPixels ) );
 			
-			var zoom:Number = model.project.userData.timelineState.zoom;
+			var zoom:Number = model.project.projectUserData.timelineState.zoom;
 			if( zoom <= 0 )
 			{
 				Assert.assertTrue( false );
 				return 0;
 			}
 			
-			return Math.round( xPixels / model.project.userData.timelineState.zoom );
+			return Math.round( xPixels / model.project.projectUserData.timelineState.zoom );
 		}
 
 

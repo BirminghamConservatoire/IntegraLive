@@ -57,10 +57,8 @@ package components.views.ArrangeView
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	import components.views.Timeline.PlayPositionMarker;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.viewContainers.ViewTree;
 	
-	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
@@ -73,15 +71,9 @@ package components.views.ArrangeView
 	
 	import flexunit.framework.Assert;
 	
-	import mx.containers.Tile;
-	import mx.containers.VBox;
 	import mx.controls.HScrollBar;
-	import mx.controls.scrollClasses.ScrollBar;
 	import mx.core.ScrollPolicy;
-	import mx.events.DragEvent;
-	import mx.events.FlexEvent;
 	import mx.events.ScrollEvent;
-	import mx.managers.DragManager;
 	
 
 	public class ArrangeView extends IntegraView
@@ -151,11 +143,11 @@ package components.views.ArrangeView
 				var trackView:ArrangeViewTrack = _tracks.getItem( trackIndex ) as ArrangeViewTrack;
 				Assert.assertNotNull( trackView );
 				
-				if( trackView.trackID != model.project.primarySelectedChildID ) continue;
+				if( trackView.trackID != model.getPrimarySelectedChildID( model.project.id ) ) continue;
 				
 				var rectangle:Rectangle = _tracks.getItemRect( trackIndex );
-				rectangle.x = model.project.userData.timelineState.ticksToPixels( primarySelectedBlock.start );
-				rectangle.width = model.project.userData.timelineState.ticksToPixels( primarySelectedBlock.end ) - rectangle.x;
+				rectangle.x = model.project.projectUserData.timelineState.ticksToPixels( primarySelectedBlock.start );
+				rectangle.width = model.project.projectUserData.timelineState.ticksToPixels( primarySelectedBlock.end ) - rectangle.x;
 				return rectangle;
 			}
 			
@@ -318,7 +310,7 @@ package components.views.ArrangeView
 		
 		private function onSetTimeDomainSnaplines( command:SetTimeDomainSnaplines ):void
 		{
-			_snapLines.update( command, model.project.userData.timelineState );
+			_snapLines.update( command, model.project.projectUserData.timelineState );
 		}
 		
 		
@@ -338,8 +330,8 @@ package components.views.ArrangeView
 			
 			var trackView:ArrangeViewTrack = new ArrangeViewTrack( track.id );
 			
-			trackView.collapsed = track.userData.arrangeViewCollapsed;
-			trackView.height = track.userData.arrangeViewHeight;
+			trackView.collapsed = track.trackUserData.arrangeViewCollapsed;
+			trackView.height = track.trackUserData.arrangeViewHeight;
 			
 			_tracks.addItemAt( trackView, index, true );
 		}
@@ -347,7 +339,7 @@ package components.views.ArrangeView
 		
 		private function updatePlayPositionMarker():void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var playPosition:int = model.project.player.playPosition;
 
 			_playPositionMarker.x = timelineState.ticksToPixels( playPosition );
@@ -369,7 +361,7 @@ package components.views.ArrangeView
 				_horizontalScrollBar.setStyle( "right", 0 );
 			}
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			_horizontalScrollBar.pageSize = scrollBarWidth / timelineState.zoom;
 			_horizontalScrollBar.pageScrollSize = _horizontalScrollBar.pageSize; 
 			
@@ -409,7 +401,7 @@ package components.views.ArrangeView
 		private function onHorizontalScroll( event:ScrollEvent ):void
 		{
 			var timelineState:TimelineState = new TimelineState;
-			timelineState.copyFrom( model.project.userData.timelineState ); 
+			timelineState.copyFrom( model.project.projectUserData.timelineState ); 
 			
 			timelineState.scroll = event.position;
 			
@@ -427,7 +419,7 @@ package components.views.ArrangeView
 			{
 				for each( var block:Block in track.blocks )
 				{
-					if( block.isSelected )
+					if( model.isObjectSelected( block.id ) )
 					{
 						controller.processCommand( new RemoveBlock( block.id ) );			
 					}
@@ -438,7 +430,7 @@ package components.views.ArrangeView
 
 		private function openBlock():void
 		{
- 			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+ 			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
  			viewMode.blockPropertiesOpen = true;
  			controller.processCommand( new SetViewMode( viewMode ) );			
 		}
@@ -464,7 +456,7 @@ package components.views.ArrangeView
 			}
 
 			var blockView:BlockView = _blockDragInfo.blockView;
-			_blockDragXTicks = model.project.userData.timelineState.pixelsToTicks( Math.max( 0, mouseX ) );
+			_blockDragXTicks = model.project.projectUserData.timelineState.pixelsToTicks( Math.max( 0, mouseX ) );
 			_blockDragXOffset = 0;
 
 			if( MouseCapture.instance.hasCapture )
@@ -562,7 +554,7 @@ package components.views.ArrangeView
 		{
 			Assert.assertNotNull( _blockDragInfo );
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var blockID:int = ( _blockDragInfo.blockView ) ? _blockDragInfo.blockView.blockID : -1;
 			var block:Block = ( blockID > 0 ) ? model.getBlock( blockID ) : null;
 
@@ -629,7 +621,7 @@ package components.views.ArrangeView
 		
 		private function doBlockMove( snapTicks:Vector.<int> ):Boolean
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			
 			var primaryBlock:Block = model.primarySelectedBlock;
 			Assert.assertNotNull( primaryBlock );
@@ -692,7 +684,7 @@ package components.views.ArrangeView
 			{
 				for each( var block:Block in track.blocks )
 				{
-					if( block.isSelected )
+					if( model.isObjectSelected( block.id ) )
 					{
 						var blockID:int = block.id;
 						
@@ -955,7 +947,7 @@ package components.views.ArrangeView
 		
 		private function getSnap( ticks:int ):Snapper
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			
 			var tickMargin:Number = _snapPixelMargin / timelineState.zoom;
 
@@ -968,11 +960,11 @@ package components.views.ArrangeView
 			{
 				if( track == model.selectedTrack ) continue;
 				
-				if( track.userData.arrangeViewCollapsed ) continue;		
+				if( track.trackUserData.arrangeViewCollapsed ) continue;		
 				
 				for each( var block:Block in track.blocks )
 				{
-					if( block.userData.isSelected ) continue;
+					if( model.isObjectSelected( block.id ) ) continue;
 					
 					if( _draggedBlocks.hasOwnProperty( block.id ) ) continue;
 					
@@ -1074,7 +1066,7 @@ package components.views.ArrangeView
 			const scrollMargin:int = 5;
 			const scrollPixels:int = 25;
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			
 			var scrollAmount:Number = 0; 
 			
@@ -1143,7 +1135,7 @@ package components.views.ArrangeView
 			var track:Track = model.getTrackFromBlock( blockID );
 			Assert.assertNotNull( track );
 			
-			_selectedBlockWasPreviouslySelected = model.getBlock( blockID ).isSelected;
+			_selectedBlockWasPreviouslySelected = model.isObjectSelected( blockID );
 			_selectedBlockWasMultiSelectionClicked = hasMultiselectionModifier && !isResizeArea;
 			
 			controller.processCommand( new SetPrimarySelectedChild( track.id, blockID ) );
@@ -1256,7 +1248,7 @@ package components.views.ArrangeView
  		
 		private function createBlockOnDoubleClick( trackID:int ):void
 		{
-			var centre:int = model.project.userData.timelineState.pixelsToTicks( mouseX );
+			var centre:int = model.project.projectUserData.timelineState.pixelsToTicks( mouseX );
 			var start:int = Math.max( 0, centre - Block.newBlockSeconds * model.project.player.rate / 2 );
 
 			createBlock( trackID, start );
@@ -1476,7 +1468,7 @@ package components.views.ArrangeView
 			{
 				for each( var block:Block in track.blocks )
 				{
-					if( block.isSelected )
+					if( model.isObjectSelected( block.id ) )
 					{
 						if( menuItem.enabled )
 						{

@@ -90,7 +90,7 @@ package components.controller.userDataCommands
 				}
 			}
 
-			if( Utilities.getNumberOfProperties( liveViewControls ) == Utilities.getNumberOfProperties( block.userData.liveViewControls ) )
+			if( Utilities.getNumberOfProperties( liveViewControls ) == Utilities.getNumberOfProperties( block.blockUserData.liveViewControls ) )
 			{
 				return;	//nothing changed
 			}				
@@ -103,7 +103,7 @@ package components.controller.userDataCommands
 		{
 			var copiedMap:Object = new Object;
 			
-			for each( var control:LiveViewControl in block.userData.liveViewControls )
+			for each( var control:LiveViewControl in block.blockUserData.liveViewControls )
 			{
 				var copiedControl:LiveViewControl = new LiveViewControl;
 				copiedControl.moduleID = control.moduleID;

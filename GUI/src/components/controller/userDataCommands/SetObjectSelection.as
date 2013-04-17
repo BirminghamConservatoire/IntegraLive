@@ -23,8 +23,9 @@ package components.controller.userDataCommands
 {
 	import components.controller.Command;
 	import components.controller.UserDataCommand;
-	import components.model.IntegraModel;
+	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
+	import components.model.IntegraModel;
 	
 	import flexunit.framework.Assert;
 
@@ -46,21 +47,24 @@ package components.controller.userDataCommands
 
 		public override function initialize( model:IntegraModel ):Boolean
 		{
-			return( _isSelected != model.getDataObjectByID( _objectID ).isSelected );
+			//can only set selection on objects which have a container as parent
+			if( !model.getParent( _objectID ) is IntegraContainer ) return false;
+
+			return( _isSelected != model.isObjectSelected( _objectID ) );
 		}
 		
 		
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetObjectSelection( _objectID, model.getDataObjectByID( _objectID ).isSelected ) ); 
+			pushInverseCommand( new SetObjectSelection( _objectID, model.isObjectSelected( _objectID ) ) ); 
 		}
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
-			var object:IntegraDataObject = model.getDataObjectByID( _objectID );
-			Assert.assertNotNull( object );
-			object.isSelected = _isSelected;
+			var parent:IntegraContainer = model.getParent( _objectID ) as IntegraContainer;
+			Assert.assertNotNull( parent );
+			parent.userData.setChildSelected( _objectID, _isSelected );
 		}
 
 
@@ -75,7 +79,7 @@ package components.controller.userDataCommands
 
 		public override function getObjectsWhoseUserDataIsAffected( model:IntegraModel, results:Vector.<int> ):void
 		{
-			results.push( _objectID );	
+			results.push( model.getParent( _objectID ).id );	
 		}
 
 

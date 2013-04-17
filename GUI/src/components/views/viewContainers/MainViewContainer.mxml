@@ -297,7 +297,7 @@
 				updatePreferences();
 				updateModuleManager();
 
-				var viewMode:ViewMode = model.project.userData.viewMode;
+				var viewMode:ViewMode = model.project.projectUserData.viewMode;
 				if( viewMode.mode == ViewMode.ARRANGE )
 				{
 					if( viewMode.blockPropertiesOpen && currentState.indexOf( "ArrangeState" ) == 0 )
@@ -340,7 +340,7 @@
 			
 			private function updateState():void
 			{
-				var viewMode:ViewMode = model.project.userData.viewMode;
+				var viewMode:ViewMode = model.project.projectUserData.viewMode;
 				
 				var newStateString:String;
 				
@@ -379,7 +379,7 @@
 			{
 				const contrastMultiplier:Number = 2;
 				
-				var colorScheme:String = model.project.userData.colorScheme;
+				var colorScheme:String = model.project.projectUserData.colorScheme;
 				if( parentApplication.getStyle( ColorScheme.STYLENAME ) != colorScheme )
 				{
 					parentApplication.setStyle( ColorScheme.STYLENAME, colorScheme );
@@ -402,7 +402,7 @@
 					0, 0, 0, 1, 0 
 				];	
 
-				if( model.project.userData.highContrast )
+				if( model.project.projectUserData.highContrast )
 				{
 					switch( colorScheme )
 					{
@@ -440,7 +440,7 @@
 			
 			private function updatePreferences():void
 			{
-     			if( model.project.userData.viewMode.preferencesOpen )
+     			if( model.project.projectUserData.viewMode.preferencesOpen )
      			{
      				if( !_isDisplayingPreferences )
      				{
@@ -464,7 +464,7 @@
 			
 			private function updateModuleManager():void
 			{
-				if( model.project.userData.viewMode.moduleManagerOpen )
+				if( model.project.projectUserData.viewMode.moduleManagerOpen )
 				{
 					if( !_isDisplayingModuleManager )
 					{
@@ -540,7 +540,7 @@
 				//easing function
 				transition = 0.5 - Math.cos( transition * Math.PI ) * 0.5;
 				
-				if( !model.project.userData.viewMode.blockPropertiesOpen )
+				if( !model.project.projectUserData.viewMode.blockPropertiesOpen )
 				{
 					transition = 1 - transition;
 				}

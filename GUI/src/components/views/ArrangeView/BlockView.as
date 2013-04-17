@@ -21,6 +21,22 @@
 
 package components.views.ArrangeView
 {
+	import flash.display.GradientType;
+	import flash.display.Stage;
+	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.geom.Matrix;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.ui.Keyboard;
+	
+	import mx.containers.Canvas;
+	import mx.controls.Button;
+	import mx.controls.CheckBox;
+	import mx.controls.TextInput;
+	import mx.core.ScrollPolicy;
+	
 	import components.controller.serverCommands.AddEnvelope;
 	import components.controller.serverCommands.RemoveEnvelope;
 	import components.controller.serverCommands.RenameObject;
@@ -33,6 +49,7 @@ package components.views.ArrangeView
 	import components.model.Block;
 	import components.model.Envelope;
 	import components.model.Info;
+	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.Project;
 	import components.model.Track;
@@ -41,30 +58,14 @@ package components.views.ArrangeView
 	import components.utils.CursorSetter;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.AddButtonSkin;
 	import components.views.Skins.CurveButtonSkin;
 	import components.views.Skins.LockButtonSkin;
 	
-	import flash.display.GradientType;
-	import flash.display.Stage;
-	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.ui.Keyboard;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.controls.Button;
-	import mx.controls.CheckBox;
-	import mx.controls.TextInput;
-	import mx.core.ScrollPolicy;
 
 
 	public class BlockView extends IntegraView
@@ -229,7 +230,7 @@ package components.views.ArrangeView
 			{
 				if( _mouseDownOffEnvelopeCounter >= 2 )
 				{
- 					var viewMode:ViewMode = model.project.userData.viewMode.clone();
+ 					var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
  					viewMode.blockPropertiesOpen = true;
  					controller.processCommand( new SetViewMode( viewMode ) );
  				}
@@ -383,13 +384,13 @@ package components.views.ArrangeView
 
 		private function onPrimarySelectionChanged( command:SetPrimarySelectedChild ):void
 		{
-			var dataObject:IntegraDataObject = model.getDataObjectByID( command.objectID );
-			if( dataObject is Track )
+			var container:IntegraContainer = model.getContainer( command.containerID );
+			if( container is Track )
 			{
 				updateSelection();
 			}
 			
-			if( dataObject is Project )
+			if( container is Project )
 			{
 				updateSelection();
 			}
@@ -561,7 +562,7 @@ package components.views.ArrangeView
 			}
 
 			var isPrimarySelected:Boolean = model.isBlockPrimarySelected( _blockID );
-			var isSelected:Boolean = model.isBlockSelected( _blockID );
+			var isSelected:Boolean = model.isObjectSelected( _blockID );
 			
 			if( isPrimarySelected == _isPrimarySelected && isSelected == _isSelected )
 			{
@@ -636,7 +637,7 @@ package components.views.ArrangeView
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 	
-			return block.userData.envelopeLock != _envelopeLockOverride;
+			return block.blockUserData.envelopeLock != _envelopeLockOverride;
 		}
 
 		
@@ -645,7 +646,7 @@ package components.views.ArrangeView
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 			
-			return block.userData.curvatureMode != _curvatureModeOverride;
+			return block.blockUserData.curvatureMode != _curvatureModeOverride;
 		}
 		
 		
@@ -761,7 +762,7 @@ package components.views.ArrangeView
 		
 		private function onClickOpenButton( event:MouseEvent ):void
 		{
- 			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+ 			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
  			viewMode.blockPropertiesOpen = true;
  			controller.processCommand( new SetViewMode( viewMode ) );
 		}
@@ -772,7 +773,7 @@ package components.views.ArrangeView
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 
-			controller.processCommand( new SetEnvelopeLock( _blockID, !block.userData.envelopeLock ) );
+			controller.processCommand( new SetEnvelopeLock( _blockID, !block.blockUserData.envelopeLock ) );
 		}
 
 		
@@ -787,7 +788,7 @@ package components.views.ArrangeView
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 			
-			controller.processCommand( new SetCurvatureMode( _blockID, !block.userData.curvatureMode ) );
+			controller.processCommand( new SetCurvatureMode( _blockID, !block.blockUserData.curvatureMode ) );
 		}
 		
 		
@@ -885,7 +886,7 @@ package components.views.ArrangeView
 			var track:Track = model.getTrackFromBlock( _blockID );
 			Assert.assertNotNull( track );
 			
-			_envelopeLockButton.setStyle( "color", track.userData.color );
+			_envelopeLockButton.setStyle( "color", track.trackUserData.color );
 			_envelopeLockButton.setStyle( LockButtonSkin.glowOverrideStyleName, _envelopeLockOverride );
 			_envelopeLockButton.selected = isEnvelopeLock;
 			
@@ -901,7 +902,7 @@ package components.views.ArrangeView
 			var track:Track = model.getTrackFromBlock( _blockID );
 			Assert.assertNotNull( track );
 			
-			_curvatureModeButton.setStyle( "color", track.userData.color );
+			_curvatureModeButton.setStyle( "color", track.trackUserData.color );
 			_curvatureModeButton.setStyle( CurveButtonSkin.glowOverrideStyleName, _curvatureModeOverride );
 			_curvatureModeButton.selected = isCurvatureMode;
 			

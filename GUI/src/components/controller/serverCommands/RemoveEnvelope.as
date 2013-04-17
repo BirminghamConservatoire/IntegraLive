@@ -25,6 +25,7 @@ package components.controller.serverCommands
 	
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
+	import components.controller.userDataCommands.SetObjectSelection;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.model.Block;
 	import components.model.ControlPoint;
@@ -110,7 +111,7 @@ package components.controller.serverCommands
 		{
 			var block:Block = model.getBlockFromEnvelope( _envelopeID );
 			Assert.assertNotNull( block );
-			if( block.primarySelectedChildID == _envelopeID )
+			if( model.getPrimarySelectedChildID( block.id ) == _envelopeID )
 			{
 				controller.processCommand( new SetPrimarySelectedChild( block.id, -1 ) );
 			}

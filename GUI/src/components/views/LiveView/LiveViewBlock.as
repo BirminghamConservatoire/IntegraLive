@@ -292,7 +292,7 @@ package components.views.LiveView
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
 			
-			for each( var liveViewControl:LiveViewControl in block.userData.liveViewControls )
+			for each( var liveViewControl:LiveViewControl in block.blockUserData.liveViewControls )
 			{
 				addLiveViewControl( liveViewControl );
 			}

@@ -71,7 +71,7 @@ package components.controller.serverCommands
 			var track:Track = model.getTrack( _trackID );
 			Assert.assertNotNull( track );
 			
-			pushInverseCommand( new AddTrack( _trackID, track.name, track.userData.color, track.zIndex ) ); 
+			pushInverseCommand( new AddTrack( _trackID, track.name, track.trackUserData.color, track.zIndex ) ); 
 		}
 		
 		
@@ -116,7 +116,7 @@ package components.controller.serverCommands
 		
 		private function deselectTrack( model:IntegraModel, controller:IntegraController ):void
 		{
-			if( model.project.primarySelectedChildID == _trackID )
+			if( model.getPrimarySelectedChildID( model.project.id ) == _trackID )
 			{
 				controller.processCommand( new SetPrimarySelectedChild( model.project.id, -1 ) );
 			}

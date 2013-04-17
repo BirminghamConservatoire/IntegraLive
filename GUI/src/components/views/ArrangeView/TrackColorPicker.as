@@ -191,7 +191,7 @@ package components.views.ArrangeView
 		
 		private function findCurrentPosition():void
 		{
-			var color:uint = _model.selectedTrack.userData.color;
+			var color:uint = _model.selectedTrack.trackUserData.color;
 			
 			var smallestDifference:uint = 0xffffff;
 

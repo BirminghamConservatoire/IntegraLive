@@ -21,8 +21,6 @@
 
 package components.model
 {
-	import flexunit.framework.Assert;
-	
 	public class Midi extends IntegraDataObject
 	{
 		public function Midi()

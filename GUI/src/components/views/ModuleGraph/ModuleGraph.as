@@ -54,6 +54,7 @@ package components.views.ModuleGraph
 	import components.model.Block;
 	import components.model.Connection;
 	import components.model.Info;
+	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.ModuleInstance;
 	import components.model.Track;
@@ -400,16 +401,16 @@ package components.views.ModuleGraph
 		
 		private function onPrimarySelectionChanged( command:SetPrimarySelectedChild ):void
 		{
-			var object:IntegraDataObject = model.getDataObjectByID( command.objectID );
+			var container:IntegraContainer = model.getContainer( command.containerID );
 			
-			if( object is Track )
+			if( container is Track )
 			{
 				//primary selected block changed
 				updateAll();
 				return;	
 			}
 			
-			if( object is Block )
+			if( container is Block )
 			{
 				//primary selected module changed
 				for each( var element:ModuleGraphElement in _elements )
@@ -463,7 +464,7 @@ package components.views.ModuleGraph
 		
 		private function onClickBackUpButton( event:MouseEvent ):void
 		{
- 			var viewMode:ViewMode = model.project.userData.viewMode.clone();
+ 			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
  			viewMode.blockPropertiesOpen = false;
  			controller.processCommand( new SetViewMode( viewMode ) );				
 		}
@@ -489,7 +490,7 @@ package components.views.ModuleGraph
 				return;
 			}
 
-			for each( var liveViewControl:LiveViewControl in block.userData.liveViewControls )
+			for each( var liveViewControl:LiveViewControl in block.blockUserData.liveViewControls )
 			{
 				_liveViewElements[ liveViewControl.moduleID ] = true;
 			}
@@ -498,7 +499,7 @@ package components.views.ModuleGraph
 		
 		private function updateColor():void
 		{
-			var color:uint = model.getTrackFromBlock( model.primarySelectedBlock.id ).userData.color;
+			var color:uint = model.selectedTrack.trackUserData.color;
 			setStyle( "color", color );
 			setStyle( "disabledColor", color );
 		}
@@ -589,6 +590,7 @@ package components.views.ModuleGraph
 					
 					controller.processCommand( addConnection );					
 					controller.processCommand( new SetConnectionRouting( addConnection.connectionID, sourceModuleID, sourceAttributeName, targetModuleID, targetAttributeName ) );
+					controller.processCommand( new SetObjectSelection( addConnection.connectionID, true ) );
 				}
 				
 				_newLinkAnchor = null;
@@ -986,7 +988,7 @@ package components.views.ModuleGraph
 			
 			for each( var module:ModuleInstance in block.modules )
 			{
-				if( !module.isSelected ) continue;
+				if( !model.isObjectSelected( module.id ) ) continue;
 				
 				var position:Rectangle = model.getModulePosition( module.id );
 				if( xMove < -position.x * gridSize )
@@ -1010,7 +1012,7 @@ package components.views.ModuleGraph
 			
 			for each( module in block.modules )
 			{
-				if( !module.isSelected ) continue;
+				if( !model.isObjectSelected( module.id ) ) continue;
 				
 				position = model.getModulePosition( module.id );
 				var newPosition:Rectangle = new Rectangle( position.x + xMove / gridSize, position.y + yMove / gridSize, ModuleInstance.getModuleWidth(), ModuleInstance.getModuleHeight( module.interfaceDefinition ) );
@@ -1033,11 +1035,11 @@ package components.views.ModuleGraph
 			_isMultiselectionClick = Utilities.hasMultiselectionModifier( event );  
 			if( !_isMultiselectionClick )
 			{
-				if( !model.isModuleInstanceSelected( moduleID ) )
+				if( !model.isObjectSelected( moduleID ) )
 				{
 					for each( var module:ModuleInstance in block.modules )
 					{
-						if( module.isSelected )
+						if( model.isObjectSelected( module.id ) )
 						{
 							controller.processCommand( new SetObjectSelection( module.id, false ) );
 						}
@@ -1046,7 +1048,7 @@ package components.views.ModuleGraph
 
 				for each( var connection:Connection in block.connections )
 				{
-					if( connection.isSelected )
+					if( model.isObjectSelected( connection.id ) )
 					{
 						controller.processCommand( new SetObjectSelection( connection.id, false ) );
 					}
@@ -1055,7 +1057,7 @@ package components.views.ModuleGraph
 			
 			controller.processCommand( new SetPrimarySelectedChild( block.id, _repositionModuleID ) );
 			
-			if( _isMultiselectionClick && model.isModuleInstanceSelected( moduleID ) )
+			if( _isMultiselectionClick && model.isObjectSelected( moduleID ) )
 			{
 				controller.processCommand( new SetObjectSelection( moduleID, false ) );
 				
@@ -1066,7 +1068,7 @@ package components.views.ModuleGraph
 				for each( connection in block.connections )
 				{
 					var connectionID:int = connection.id;
-					if( !connection.isSelected )
+					if( !model.isObjectSelected( connectionID ) )
 					{
 						continue;
 					}
@@ -1076,12 +1078,12 @@ package components.views.ModuleGraph
 						continue;
 					}
 					
-					if( connection.sourceObjectID == moduleID && !model.isModuleInstanceSelected( connection.targetObjectID ) )
+					if( connection.sourceObjectID == moduleID && !model.isObjectSelected( connection.targetObjectID ) )
 					{
 						controller.processCommand( new SetObjectSelection( connectionID, false ) );
 					}
 					
-					if( connection.targetObjectID == moduleID && !model.isModuleInstanceSelected( connection.sourceObjectID ) )
+					if( connection.targetObjectID == moduleID && !model.isObjectSelected( connection.sourceObjectID ) )
 					{
 						controller.processCommand( new SetObjectSelection( connectionID, false ) );
 					}
@@ -1097,7 +1099,7 @@ package components.views.ModuleGraph
 				{
 					if( connection.sourceObjectID == moduleID || connection.targetObjectID == moduleID )
 					{
-						if( !connection.isSelected )
+						if( !model.isObjectSelected( connection.id ) )
 						{
 							controller.processCommand( new SetObjectSelection( connection.id, true ) );
 						}						
@@ -1114,10 +1116,7 @@ package components.views.ModuleGraph
 				deselectEverything();
 			}
 			
-			var connection:Connection = model.getConnection( connectionID );
-			Assert.assertNotNull( connection )
-
-			controller.processCommand( new SetObjectSelection( connectionID, !connection.isSelected ) );
+			controller.processCommand( new SetObjectSelection( connectionID, !model.isObjectSelected( connectionID ) ) );
 		}	
 		
 		
@@ -1138,7 +1137,7 @@ package components.views.ModuleGraph
 			{
 				for each( var module:ModuleInstance in block.modules )
 				{
-					if( module.isSelected )
+					if( model.isObjectSelected( module.id ) )
 					{
 						_areaSelectionSnapshot.push( module.id );
 					}
@@ -1146,7 +1145,7 @@ package components.views.ModuleGraph
 
 				for each( var connection:Connection in block.connections )
 				{
-					if( connection.isSelected )
+					if( model.isObjectSelected( connection.id ) )
 					{
 						_areaSelectionSnapshot.push( module.id );
 					}
@@ -1289,7 +1288,7 @@ package components.views.ModuleGraph
 			
 			for each( var module:ModuleInstance in block.modules )
 			{
-				if( module.isSelected )
+				if( model.isObjectSelected( module.id ) )
 				{
 					controller.processCommand( new SetObjectSelection( module.id, false ) );
 				}
@@ -1297,7 +1296,7 @@ package components.views.ModuleGraph
 
 			for each( var connection:Connection in block.connections )
 			{
-				if( connection.isSelected )
+				if( model.isObjectSelected( connection.id ) )
 				{
 					controller.processCommand( new SetObjectSelection( connection.id, false ) );
 				}
@@ -1316,7 +1315,7 @@ package components.views.ModuleGraph
 				{				
 					for each( var module:ModuleInstance in block.modules )
 					{
-						if( module.id != _repositionModuleID && module.isSelected )
+						if( module.id != _repositionModuleID && model.isObjectSelected( module.id ) )
 						{
 							controller.processCommand( new SetObjectSelection( module.id, false ) );
 						}
@@ -1375,7 +1374,7 @@ package components.views.ModuleGraph
 					continue;
 				}
 				
-				if( connection.isSelected )
+				if( model.isObjectSelected( connection.id ) )
 				{
 					controller.processCommand( new RemoveConnection( connection.id ) );
 				}
@@ -1383,7 +1382,7 @@ package components.views.ModuleGraph
 			
 			for each( var module:ModuleInstance in block.modules )
 			{
-				if( module.isSelected )
+				if( model.isObjectSelected( module.id ) )
 				{
 					controller.processCommand( new UnloadModule( module.id ) );
 				}
@@ -1505,7 +1504,7 @@ package components.views.ModuleGraph
 
 			if( moduleID >= 0 )
 			{
-				if( model.isModuleInstancePrimarySelected( moduleID ) || model.isModuleInstanceSelected( moduleID ) )
+				if( model.isModuleInstancePrimarySelected( moduleID ) || model.isObjectSelected( moduleID ) )
 				{
 					element.moveElementToFront();
 				}
@@ -1598,7 +1597,7 @@ package components.views.ModuleGraph
 			getLinkPoint( connection.targetObjectID, connection.targetAttributeName, end, endTrackOffset );
 			var trackOffset:Point = Point.interpolate( startTrackOffset, endTrackOffset, 0.5 );
 			
-			var isSelected:Boolean = model.isConnectionSelected( connection.id );
+			var isSelected:Boolean = model.isObjectSelected( connection.id );
 			var linkWidth:int = isSelected ? selectedLinkWidth : normalLinkWidth;
 			var linkColor:int = isSelected ? _selectedLinkColor : _normalLinkColor;
 			
@@ -1613,7 +1612,7 @@ package components.views.ModuleGraph
 			var snapThreshold:int = maximumSnapThreshold;
 			for each( var element:ModuleGraphElement in _elements )
 			{
-				if( element.moduleID == _repositionModuleID || model.isModuleInstanceSelected( element.moduleID ) )
+				if( element.moduleID == _repositionModuleID || model.isObjectSelected( element.moduleID ) )
 				{
 					continue;
 				}
@@ -1663,7 +1662,7 @@ package components.views.ModuleGraph
 			var snapThreshold:int = maximumSnapThreshold;
 			for each( var element:ModuleGraphElement in _elements )
 			{
-				if( element.moduleID == _repositionModuleID || model.isModuleInstanceSelected( element.moduleID ) )
+				if( element.moduleID == _repositionModuleID || model.isObjectSelected( element.moduleID ) )
 				{
 					continue;
 				}
@@ -1813,7 +1812,7 @@ package components.views.ModuleGraph
 			
 			for each( var module:ModuleInstance in block.modules )
 			{
-				if( module.isSelected )
+				if( model.isObjectSelected( module.id ) )
 				{
 					menuItem.enabled = true;
 					return;
@@ -1822,7 +1821,7 @@ package components.views.ModuleGraph
 			
 			for each( var connection:Connection in block.connections )
 			{
-				if( connection.isSelected )
+				if( model.isObjectSelected( connection.id ) )
 				{
 					menuItem.enabled = true;
 					return;

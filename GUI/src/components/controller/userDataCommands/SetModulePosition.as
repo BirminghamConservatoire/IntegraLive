@@ -74,11 +74,11 @@ package components.controller.userDataCommands
 			
 			if( _position )
 			{
-				block.userData.modulePositions[ _instanceID ] = _position;
+				block.blockUserData.modulePositions[ _instanceID ] = _position;
 			}
 			else
 			{
-				delete block.userData.modulePositions[ _instanceID ];
+				delete block.blockUserData.modulePositions[ _instanceID ];
 			}
 		}
 

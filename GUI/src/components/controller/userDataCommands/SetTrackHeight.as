@@ -52,20 +52,20 @@ package components.controller.userDataCommands
 				return false;
 			}
 			
-			return( _height != track.userData.arrangeViewHeight );	
+			return( _height != track.trackUserData.arrangeViewHeight );	
 		}
 
 
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetTrackHeight( _trackID, model.getTrack( _trackID ).userData.arrangeViewHeight ) );
+			pushInverseCommand( new SetTrackHeight( _trackID, model.getTrack( _trackID ).trackUserData.arrangeViewHeight ) );
 		}		
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
 			var track:Track = model.getTrack( _trackID );
-			track.userData.arrangeViewHeight = _height;			
+			track.trackUserData.arrangeViewHeight = _height;			
 		}
 
 

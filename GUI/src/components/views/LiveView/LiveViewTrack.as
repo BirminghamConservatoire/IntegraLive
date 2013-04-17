@@ -111,7 +111,7 @@ package components.views.LiveView
 			if( !model.doesObjectExist( _trackID ) ) return 0;
 			if( !( model.getDataObjectByID( _trackID ) is Track ) ) return 0;
 				
-			return model.getTrack( _trackID ).userData.color;
+			return model.getTrack( _trackID ).trackUserData.color;
 		}
 		
 		
@@ -218,7 +218,7 @@ package components.views.LiveView
 			if( !model.doesObjectExist( _trackID ) ) return;
 			if( !model.getDataObjectByID( _trackID ) is Track ) return;
 				
-			setStyle( "color", model.getTrack( _trackID ).userData.color );
+			setStyle( "color", model.getTrack( _trackID ).trackUserData.color );
 		}
 		
 		
@@ -455,7 +455,7 @@ package components.views.LiveView
 			var block:Block = model.getBlock( liveViewBlock.blockID );
 			Assert.assertNotNull( block );
 			
-			for each( var liveViewControl:LiveViewControl in block.userData.liveViewControls )
+			for each( var liveViewControl:LiveViewControl in block.blockUserData.liveViewControls )
 			{
 				maximumControlBottom = Math.max( maximumControlBottom, liveViewControl.position.bottom );
 			}

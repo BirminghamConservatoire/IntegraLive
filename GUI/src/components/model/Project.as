@@ -40,7 +40,7 @@ package components.model
 		public function get tracks():Object { return _tracks; }
 		public function get player():Player { return _player; }
 		
-		public function get userData():ProjectUserData { return internalUserData as ProjectUserData; }
+		public function get projectUserData():ProjectUserData { return userData as ProjectUserData; }
 		
 		public function get orderedTracks():Vector.<Track>
 		{

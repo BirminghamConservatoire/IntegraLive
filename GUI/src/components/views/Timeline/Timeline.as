@@ -204,7 +204,7 @@ package components.views.Timeline
 			
 			graphics.clear();
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 
 			var smallestMarkingSizeTicks:Number = smallestMarkingWidth / timelineState.zoom;
 			var smallestMarkingSizeSeconds:Number = smallestMarkingSizeTicks / model.project.player.rate;
@@ -331,7 +331,7 @@ package components.views.Timeline
 		
 		private function onSetTimeDomainSnaplines( command:SetTimeDomainSnaplines ):void
 		{
-			_snapLines.update( command, model.project.userData.timelineState );
+			_snapLines.update( command, model.project.projectUserData.timelineState );
 		}
 		
 		
@@ -372,7 +372,7 @@ package components.views.Timeline
 			var sceneBar:SceneBar = _scenes[ sceneID ];
 			Assert.assertNotNull( sceneBar );
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var sceneStartPixels:Number = timelineState.ticksToPixels( scene.start ); 
 			var sceneEndPixels:Number = timelineState.ticksToPixels( scene.end ); 
 
@@ -389,7 +389,7 @@ package components.views.Timeline
 		
 		private function addScene( scene:Scene ):void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var sceneStartPixels:Number = timelineState.ticksToPixels( scene.start ); 
 			var sceneEndPixels:Number = timelineState.ticksToPixels( scene.end ); 
 
@@ -456,7 +456,7 @@ package components.views.Timeline
 			const smallestLabelSpacing:Number = 50;
 			
 			if( !model.project ) return;
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 
 			var smallestLabelSpacingTicks:Number = smallestLabelSpacing / timelineState.zoom;
 			var smallestLabelSpacingSeconds:Number = smallestLabelSpacingTicks / model.project.player.rate;
@@ -528,7 +528,7 @@ package components.views.Timeline
 		
 		private function updatePlayPositionMarker():void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var playPosition:int = model.project.player.playPosition;
 
 			_playPositionMarker.x = timelineState.ticksToPixels( playPosition );
@@ -547,7 +547,7 @@ package components.views.Timeline
 		
 		private function getScrollBarRect():Rectangle
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 
 			var projectLength:int = model.projectLength;
 			
@@ -655,7 +655,7 @@ package components.views.Timeline
 		
 		private function stampTimelineDragState():void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 
 			_timelineDragClickPoint = new Point( mouseX, mouseY );
 			_timelineDragInitialState = new TimelineState;
@@ -666,7 +666,7 @@ package components.views.Timeline
 		
 		private function setPlayPositionToMousePosition():void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var mousePosition:Number = Math.max( 0, Math.min( width, mouseX ) );
 			
 			controller.processCommand( new SetPlayPosition( timelineState.pixelsToTicks( mousePosition ) ) );
@@ -775,7 +775,7 @@ package components.views.Timeline
 		
 		private function startSceneCreationDrag():void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			
 			_sceneCreationClickPixels = Math.max( 0, mouseX );
 			_sceneCreationClickTicks = -1;
@@ -802,7 +802,7 @@ package components.views.Timeline
 
 		private function setSceneCreationToMousePosition():void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var mousePosition:Number = Math.max( 0, Math.min( width, mouseX ) );
 			
 			var clickSnap:Snapper = getSnap( timelineState.pixelsToTicks( _sceneCreationClickPixels ) );
@@ -893,7 +893,7 @@ package components.views.Timeline
 		
 		private function repositionSceneToMousePosition():void
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var mousePosition:Number = Math.max( 0, Math.min( width, mouseX ) );
 			
 			var selectedScene:Scene = model.selectedScene;
@@ -993,7 +993,7 @@ package components.views.Timeline
 		
 		private function getSnap( ticks:int ):Snapper
 		{
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			var tickMargin:Number = _snapToBlockMargin / timelineState.zoom;
 			
 			ticks = Math.max( 0, ticks );
@@ -1002,7 +1002,7 @@ package components.views.Timeline
 			
 			for each( var track:Track in model.project.tracks )
 			{
-				if( track.userData.arrangeViewCollapsed ) continue;		
+				if( track.trackUserData.arrangeViewCollapsed ) continue;		
 				
 				for each( var block:Block in track.blocks )
 				{
@@ -1144,7 +1144,7 @@ package components.views.Timeline
 			const scrollMargin:int = 5;
 			const scrollPixels:int = 25;
 			
-			var timelineState:TimelineState = model.project.userData.timelineState;
+			var timelineState:TimelineState = model.project.projectUserData.timelineState;
 			
 			var scrollAmount:Number = 0; 
 			

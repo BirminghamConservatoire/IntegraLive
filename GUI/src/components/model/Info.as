@@ -26,8 +26,7 @@ package components.model
 	import flash.xml.XMLNode;
 	import flash.xml.XMLNodeType;
 	
-	import flexunit.framework.Assert;
-	
+
 	public class Info
 	{
 		public function Info()

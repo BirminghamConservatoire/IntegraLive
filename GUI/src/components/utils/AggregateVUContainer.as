@@ -250,13 +250,13 @@ package components.utils
 			{
 				if( container is Track )
 				{
-					color = ( container as Track ).userData.color;
+					color = ( container as Track ).trackUserData.color;
 				}
 				else
 				{
 					Assert.assertTrue( container is Block );
 					
-					color = model.getTrackFromBlock( _containerID ).userData.color;
+					color = model.getTrackFromBlock( _containerID ).trackUserData.color;
 				}
 			}
 			

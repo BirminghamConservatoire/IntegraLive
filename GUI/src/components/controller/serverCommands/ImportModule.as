@@ -94,7 +94,7 @@ package components.controller.serverCommands
 			Assert.assertNotNull( block );
 			for each( var module:ModuleInstance in block.modules )
 			{
-				if( module.isSelected )
+				if( model.isObjectSelected( module.id ) )
 				{
 					controller.processCommand( new SetObjectSelection( module.id, false ) );	
 				}

@@ -24,7 +24,7 @@ package components.model.userData
 	import components.model.IntegraModel;
 	
 	import flexunit.framework.Assert;
-
+	
 	
 	public class UserData
 	{
@@ -33,11 +33,26 @@ package components.model.userData
 			clear();
 		}
 		
-		public function get isSelected():Boolean { return _isSelected; }
 		public function get primarySelectedChildID():int { return _primarySelectedChildID; }
-
-		public function set isSelected( isSelected:Boolean ):void { _isSelected = isSelected; }
 		public function set primarySelectedChildID( primarySelectedChildID:int ):void { _primarySelectedChildID = primarySelectedChildID; }
+
+		public function isChildSelected( childID:int ):Boolean 
+		{
+			return _selectedChildIDs.hasOwnProperty( childID );
+		}
+		
+		public function setChildSelected( childID:int, selected:Boolean ):void
+		{
+			if( selected )
+			{
+				_selectedChildIDs[ childID ] = 1;
+			}
+			else
+			{
+				delete _selectedChildIDs[ childID ];
+			}
+		}
+		
 		
 		public function save( model:IntegraModel ):String
 		{
@@ -69,58 +84,59 @@ package components.model.userData
 
 		protected function writeToXML( xml:XML, model:IntegraModel ):void
 		{
-			//is selected?
-			if( _isSelected )
-			{
-				 xml.appendChild( <isSelected>{_isSelected}</isSelected> );
-			}
-
 			//primary selected child			
 			if( _primarySelectedChildID >= 0 ) 
 			{
-				 xml.appendChild( <primarySelectedChild>{getSelectedChildNameFromID( _primarySelectedChildID, model )}</primarySelectedChild> );
+				 xml.appendChild( <primarySelectedChild>{getChildNameFromID( _primarySelectedChildID, model )}</primarySelectedChild> );
+			}
+			
+			//selected children
+			for( var idString:String in _selectedChildIDs )
+			{
+				xml.appendChild( <selectedChild>{getChildNameFromID( int( idString ), model )}</selectedChild> );
 			}
 		}
 
 
 		protected function readFromXML( xml:XML, model:IntegraModel, myID:int ):void
 		{
-			//is selected? 
-			if( xml.hasOwnProperty( "isSelected" ) )
-			{
-				_isSelected = xml.isSelected;
-			}
-
 			//primary selected child			
 			if( xml.hasOwnProperty( "primarySelectedChild" ) ) 
 			{
-				_primarySelectedChildID = getSelectedChildIDFromName( xml.primarySelectedChild, myID, model );
+				_primarySelectedChildID = getChildIDFromName( xml.primarySelectedChild, myID, model );
+			}
+			
+			if( xml.hasOwnProperty( "selectedChild" ) )
+			{
+				for each( var selectedChildName:String in xml.selectedChild )
+				{
+					setChildSelected( getChildIDFromName( selectedChildName, myID, model ), true );
+				}
 			}
 		}
 		
 		protected function clear():void
 		{
-			_isSelected = false;
+			_selectedChildIDs = new Object;
 			_primarySelectedChildID = -1;
 		}
 		
 		
-		//this method can be overridden to allow customised selection of objects which are not IntegraDataObjects 
-		protected function getSelectedChildNameFromID( selectedChildID:int, model:IntegraModel ):String
+ 		private function getChildNameFromID( selectedChildID:int, model:IntegraModel ):String
 		{
 			return model.getDataObjectByID( selectedChildID ).name;
 		} 
 		
 		
-		//this method can be overridden to allow customised selection of objects which are not IntegraDataObjects 
-		protected function getSelectedChildIDFromName( selectedChildName:String, myID:int, model:IntegraModel ):int
+		private function getChildIDFromName( selectedChildName:String, myID:int, model:IntegraModel ):int
 		{
 			var myPath:Array = model.getPathArrayFromID( myID );
 			return model.getIDFromPathArray( myPath.concat( selectedChildName ) );
 		} 
 		
 		
-		private var _isSelected:Boolean;
 		private var _primarySelectedChildID:int;
+		
+		private var _selectedChildIDs:Object = new Object;
 	}
 }

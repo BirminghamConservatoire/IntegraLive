@@ -25,6 +25,7 @@ package components.controller.userDataCommands
 	import components.controller.IntegraController;
 	import components.controller.UserDataCommand;
 	import components.controller.serverCommands.SelectScene;
+	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.Scene;
@@ -34,36 +35,36 @@ package components.controller.userDataCommands
 
 	public class SetPrimarySelectedChild extends UserDataCommand
 	{
-		public function SetPrimarySelectedChild( objectID:int, primarySelectedChildID:int )
+		public function SetPrimarySelectedChild( containerID:int, primarySelectedChildID:int )
 		{
 			super();
 
-			_objectID = objectID;
+			_containerID = containerID;
 			_primarySelectedChildID = primarySelectedChildID;
 		}
 
 
- 		public function get objectID():int { return _objectID; }
+ 		public function get containerID():int { return _containerID; }
  		public function get primarySelectedChildID():int { return _primarySelectedChildID; }
 
 
 		public override function initialize( model:IntegraModel ):Boolean
 		{
-			return( _primarySelectedChildID != model.getDataObjectByID( _objectID ).primarySelectedChildID );
+			return ( _primarySelectedChildID != model.getPrimarySelectedChildID( _containerID ) ); 
 		}
 		
 		
 		public override function generateInverse( model:IntegraModel ):void
 		{
-			pushInverseCommand( new SetPrimarySelectedChild( _objectID, model.getDataObjectByID( _objectID ).primarySelectedChildID ) ); 
+			pushInverseCommand( new SetPrimarySelectedChild( _containerID, model.getPrimarySelectedChildID( _containerID ) ) ); 
 		}
 		
 		
 		public override function execute( model:IntegraModel ):void
 		{
-			var object:IntegraDataObject = model.getDataObjectByID( _objectID );
-			Assert.assertNotNull( object );
-			object.primarySelectedChildID = _primarySelectedChildID;
+			var container:IntegraContainer = model.getContainer( _containerID );
+			Assert.assertNotNull( container );
+			container.userData.primarySelectedChildID = _primarySelectedChildID;
 		}
 
 
@@ -72,17 +73,17 @@ package components.controller.userDataCommands
 			var previous:SetPrimarySelectedChild = previousCommand as SetPrimarySelectedChild;
 			Assert.assertNotNull( previous );
 			
-			return( _objectID == previous._objectID ); 
+			return( _containerID == previous._containerID ); 
 		}		
 
 
 		public override function getObjectsWhoseUserDataIsAffected( model:IntegraModel, results:Vector.<int> ):void
 		{
-			results.push( _objectID );	
+			results.push( _containerID );	
 		}
 
 		
- 		private var _objectID:int;
+ 		private var _containerID:int;
  		private var _primarySelectedChildID:int;
 	}
 }

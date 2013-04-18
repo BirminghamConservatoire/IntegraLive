@@ -277,6 +277,25 @@ package components.utils
 		}
 		
 		
+		public static function applyTint( color:uint, tint:uint ):uint
+		{
+			var tintRed:Number = ( ( tint >> 16 ) & 0xff ) / 0xff;
+			var tintGreen:Number = ( ( tint >> 8 ) & 0xff ) / 0xff;
+			var tintBlue:Number = ( tint & 0xff ) / 0xff;
+			
+			var tintAverage:Number = ( tintRed + tintGreen + tintBlue ) / 3;
+			
+			var colorRed:Number = ( ( color >> 16 ) & 0xff ) / 0xff;
+			var colorGreen:Number = ( ( color >> 8 ) & 0xff ) / 0xff;
+			var colorBlue:Number = ( color & 0xff ) / 0xff;
+			
+			var outputRed:Number = Math.max( 0, Math.min( 1, colorRed * ( 1 - tintAverage ) + tintRed ) );
+			var outputGreen:Number = Math.max( 0, Math.min( 1, colorGreen * ( 1 - tintAverage ) + tintGreen ) );
+			var outputBlue:Number = Math.max( 0, Math.min( 1, colorBlue * ( 1 - tintAverage ) + tintBlue ) );
+			
+			return ( uint( outputRed * 0xff ) << 16 ) + ( uint( outputGreen * 0xff ) << 8 ) + uint( outputBlue * 0xff );
+		}		
+		
 		public static function getUserBlockLibraryDirectory():String
 		{
 			var userBlockLibraryDirectory:File = new File( File.applicationStorageDirectory.nativePath + "/" + "BlockLibrary" );

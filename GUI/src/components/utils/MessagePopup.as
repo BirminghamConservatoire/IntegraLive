@@ -23,10 +23,8 @@ package components.utils
 {
 	import flash.events.Event;
 	import flash.geom.Point;
-	import flash.utils.getTimer;
 	
 	import mx.containers.Canvas;
-	import mx.controls.Image;
 	
 	import spark.components.Label;
 	

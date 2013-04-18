@@ -36,13 +36,6 @@
 			   skin="components.views.Skins.CollapseButtonSkin"
 			   visible="false"/>
 
-	 <mx:Button id="_tickButton" 
-				toggle="true" 
-				click="onClickTickButton( event )"
-				doubleClick="onClickTickButton( event )"
-				skin="components.views.Skins.TickButtonSkin"
-				visible="false"/>
-	 
 	<libraries:Library id="_childLibrary"
 			    verticalGap="0"
 				visible="false"/>
@@ -129,24 +122,6 @@
 			}
 			
 			
-			public function get ticked():Boolean
-			{
-				if( !data ) return false;
-				if( !data.hasOwnProperty( "ticked" ) ) return false;
-				
-				return data[ "ticked" ] as Boolean;					
-			}			
-			
-			
-			public function set ticked( ticked:Boolean ):void
-			{
-				Assert.assertTrue( hasTickbox );
-				
-				data.ticked = ticked;
-				_tickButton.selected = ticked;
-			}
-			
-			
 			override public function styleChanged( style:String ):void
 			{
 				if( !style || style == ColorScheme.STYLENAME )
@@ -157,15 +132,15 @@
 					{
 						default:
 						case ColorScheme.LIGHT:
-							color = applyTint( 0x808080 );
-							collapseButtonColor = applyTint( 0xc0c0c0 );
-							_backgroundColors = [ applyTint( 0xd8d8d8 ), applyTint( 0xefefef ) ]; 
+							color = Utilities.applyTint( 0x808080, tint );
+							collapseButtonColor = Utilities.applyTint( 0xc0c0c0, tint );
+							_backgroundColors = [ Utilities.applyTint( 0xd8d8d8, tint ), Utilities.applyTint( 0xefefef, tint ) ]; 
 							break;
 						
 						case ColorScheme.DARK:
-							color = applyTint( 0x808080 );
-							collapseButtonColor = applyTint( 0x808080 );
-							_backgroundColors = [ applyTint( 0x282828 ), applyTint( 0x101010 ) ]; 
+							color = Utilities.applyTint( 0x808080, tint );
+							collapseButtonColor = Utilities.applyTint( 0x808080, tint );
+							_backgroundColors = [ Utilities.applyTint( 0x282828, tint ), Utilities.applyTint( 0x101010, tint ) ]; 
 							break;
 					}
 
@@ -325,15 +300,6 @@
 			}
 			
 			
-			private function get hasTickbox():Boolean
-			{
-				if( !data ) return false;
-				if( !data.hasOwnProperty( "hasTickbox" ) ) return false;
-				
-				return data[ "hasTickbox" ] as Boolean;				
-			}
-			
-			
 			private function onInitialize():void
 			{
 				_initialized = true;
@@ -349,12 +315,6 @@
 					_childLibrary.data = childData;
 				}
 				
-				if( hasTickbox )
-				{
-					_tickButton.visible = true;
-					_tickButton.selected = ticked;
-				}
-				
 				if( !isLabel )
 				{
 					addEventListener( MouseEvent.ROLL_OVER, onRollOver );
@@ -362,27 +322,6 @@
 				}
 				
 				styleChanged( null );
-			}
-			
-			
-			private function applyTint( color:uint ):uint
-			{
-				var tint:uint = this.tint;
-				var tintRed:Number = ( ( tint >> 16 ) & 0xff ) / 0xff;
-				var tintGreen:Number = ( ( tint >> 8 ) & 0xff ) / 0xff;
-				var tintBlue:Number = ( tint & 0xff ) / 0xff;
-
-				var tintAverage:Number = ( tintRed + tintGreen + tintBlue ) / 3;
-				
-				var colorRed:Number = ( ( color >> 16 ) & 0xff ) / 0xff;
-				var colorGreen:Number = ( ( color >> 8 ) & 0xff ) / 0xff;
-				var colorBlue:Number = ( color & 0xff ) / 0xff;
-
-				var outputRed:Number = Math.max( 0, Math.min( 1, colorRed * ( 1 - tintAverage ) + tintRed ) );
-				var outputGreen:Number = Math.max( 0, Math.min( 1, colorGreen * ( 1 - tintAverage ) + tintGreen ) );
-				var outputBlue:Number = Math.max( 0, Math.min( 1, colorBlue * ( 1 - tintAverage ) + tintBlue ) );
-				
-				return ( uint( outputRed * 0xff ) << 16 ) + ( uint( outputGreen * 0xff ) << 8 ) + uint( outputBlue * 0xff );
 			}
 			
 			
@@ -422,17 +361,6 @@
 					_childLibrary.setStyle( "bottom", 0 );
 				}
 
-				if( _tickButton.visible )
-				{
-					buttonSize = FontSize.getButtonSize( this );
-					buttonMargin = ( titleHeight - buttonSize ) / 2;
-					_tickButton.setStyle( "left", buttonMargin );
-					_tickButton.setStyle( "top", buttonMargin );
-					
-					_tickButton.width = buttonSize;
-					_tickButton.height = buttonSize;
-				}
-				
 				updateHeight();
 			}
 
@@ -471,13 +399,6 @@
 			}
 
 			
-			private function onClickTickButton( event:MouseEvent ):void
-			{
-				data.ticked = _tickButton.selected;
-				dispatchEvent( new Event( TICK_EVENT, true ) );
-			}
-			
-
 			private function onRollOver( event:MouseEvent ):void
 			{
 				if( MouseCapture.instance.hasCapture ) return;
@@ -650,8 +571,6 @@
 			public static const LAST_CHILD:String = "lastChild";
 			
 			public static const INSTANTIATE_EVENT:String = "instantiateEvent";
-			public static const TICK_EVENT:String = "tickEvent";
-			
 		]]>
 	</fx:Script>
 </mx:Canvas> 

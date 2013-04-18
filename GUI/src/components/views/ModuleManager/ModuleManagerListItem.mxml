@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Integra Live graphical user interface
+ *
+ * Copyright (C) 2009 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+ * USA.
+ -->
+ <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
+			xmlns:mx="library://ns.adobe.com/flex/mx"
+			xmlns:libraries="components.utils.libraries.*"
+			initialize="{onInitialize()}"
+			alpha="0.8"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+	<mx:Label id="_itemLabel" text="{toString()}"/>
+
+	<fx:Script>
+    	<![CDATA[
+			import components.model.interfaceDefinitions.InterfaceDefinition;
+			import components.model.userData.ColorScheme;
+			import components.utils.FontSize;
+			import components.utils.Utilities;
+			import components.views.MouseCapture;
+			import components.views.ModuleLibrary.ModuleLibraryListEntry;
+			
+			import flexunit.framework.Assert;
+			
+
+			override public function toString():String { return _interfaceDefinition.interfaceInfo.label; }
+			
+			public function get guid():String { return _interfaceDefinition.moduleGuid; }
+			public function get moduleSource():String { return _interfaceDefinition.moduleSource; }
+			
+			public function get selected():Boolean { return _selected; }
+			
+			private function get useTint():Boolean { return _useTint; }
+
+			public function set selected( selected:Boolean ):void 
+			{
+				if( selected != _selected )
+				{
+					_selected = selected;
+					
+					setStyle( "color", selected ? _selectedTextColor : _textColor );
+					
+					invalidateDisplayList();
+				}
+			}
+
+			private function set useTint( useTint:Boolean ):void { _useTint = useTint; invalidateDisplayList(); }
+			
+			public function set interfaceDefinition( interfaceDefinition:InterfaceDefinition ):void
+			{
+				_interfaceDefinition = interfaceDefinition;	
+			}
+			
+			
+			override public function styleChanged( style:String ):void
+			{
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					switch( getStyle( ColorScheme.STYLENAME ) )
+					{
+						default:
+						case ColorScheme.LIGHT:
+							_selectedBackgroundColor = 0xb0b0b0;
+							_backgroundColor = 0xcfcfcf;
+							_selectedTextColor = 0x000000;
+							_textColor = 0x404040;
+							break;
+						
+						case ColorScheme.DARK:
+							_selectedBackgroundColor = 0x505050;
+							_backgroundColor = 0x313131;
+							_selectedTextColor = 0xffffff;
+							_textColor = 0xc0c0c0;
+							break;
+					}
+					
+					if( useTint )
+					{
+						_selectedBackgroundColor = Utilities.applyTint( _selectedBackgroundColor, tint );
+						_backgroundColor = Utilities.applyTint( _backgroundColor, tint );
+
+						_selectedTextColor = Utilities.applyTint( _selectedTextColor, tint );;
+						_textColor = Utilities.applyTint( _textColor, tint );;
+					}
+
+					setStyle( "color", selected ? _selectedTextColor : _textColor );
+					
+					invalidateDisplayList();
+				}
+				
+				if( !style || style == FontSize.STYLENAME )
+				{
+					if( _initialized )
+					{
+						positionContent();
+					}
+				}
+			}
+			
+			
+			public function compare( other:ModuleManagerListItem ):int
+			{
+				//first compare source
+				var sourcePriority:Object = new Object;
+				sourcePriority[ InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA ] = 2;
+				sourcePriority[ InterfaceDefinition.MODULE_THIRD_PARTY ] = 1;
+				sourcePriority[ InterfaceDefinition.MODULE_EMBEDDED ] = 0;
+				
+				var mySourcePriority:Number = sourcePriority[ moduleSource ];
+				var otherSourcePriority:Number = sourcePriority[ other.moduleSource ];
+				
+				if( mySourcePriority > otherSourcePriority ) return -1;
+				if( otherSourcePriority > mySourcePriority ) return 1;
+				
+				//then compare label
+				var myUpperLabel:String = toString().toUpperCase();
+				var otherUpperLabel:String = other.toString().toUpperCase();
+				
+				if( myUpperLabel < otherUpperLabel ) return -1;
+				if( otherUpperLabel < myUpperLabel ) return 1;
+				
+				//then compare modification time
+				var myModificationTime:Number = _interfaceDefinition.interfaceInfo.modifiedDate.getTime();
+				var otherModificationTime:Number = other._interfaceDefinition.interfaceInfo.modifiedDate.getTime();
+				
+				if( myModificationTime > otherModificationTime ) return -1;
+				if( otherModificationTime > myModificationTime ) return 1;
+				
+				//then give up
+				return 0;
+			}
+			
+			
+
+			override protected function updateDisplayList( width:Number, height:Number):void
+			{
+				super.updateDisplayList( width, height );
+	
+	            graphics.clear();
+
+				if( _selected )
+				{
+					graphics.beginFill( _selectedBackgroundColor );
+				}
+				else
+				{
+					if( _over )
+					{
+						graphics.beginFill( Utilities.interpolateColors( _backgroundColor, _selectedBackgroundColor, 0.3 ) );
+					}
+					else
+					{
+						graphics.beginFill( _backgroundColor );
+					}
+				}
+				
+	        	graphics.drawRect( 0, 0, width, height );
+	        	graphics.endFill();
+			}
+			
+			
+			private function onInitialize():void
+			{
+				_initialized = true;
+
+				addEventListener( MouseEvent.ROLL_OVER, onRollOver );
+				addEventListener( MouseEvent.ROLL_OUT, onRollOut );
+				
+				styleChanged( null );
+			}
+			
+			
+			private function positionContent():void
+			{
+				var fontSize:Number = getStyle( FontSize.STYLENAME );
+
+				_itemLabel.x = fontSize * 0.25;
+				_itemLabel.y = fontSize * 0.25;
+					
+				height = FontSize.getTextRowHeight( this ) + 4;
+			}
+
+			
+			private function onRollOver( event:MouseEvent ):void
+			{
+				if( MouseCapture.instance.hasCapture ) return;
+				
+				_over = true;
+				invalidateDisplayList();
+			}
+
+
+			private function onRollOut( event:MouseEvent ):void
+			{
+				_over = false;
+				invalidateDisplayList();
+			}
+			
+			public function get tint():uint
+			{
+				switch( moduleSource )
+				{
+					case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return ModuleLibraryListEntry.shippedWithIntegraTint;
+					case InterfaceDefinition.MODULE_THIRD_PARTY:			return ModuleLibraryListEntry.thirdPartyTint;
+					case InterfaceDefinition.MODULE_EMBEDDED:				return ModuleLibraryListEntry.embeddedTint;
+						
+					default:
+						Assert.assertTrue( false );
+						return 0;
+				}		
+			}
+			
+			
+			private var _interfaceDefinition:InterfaceDefinition;
+			
+			
+			private var _initialized:Boolean = false;
+			
+			private var _over:Boolean = false;
+			private var _selected:Boolean = false;
+			private var _useTint:Boolean = false;
+
+			private var _selectedTextColor:uint;
+			private var _textColor:uint;
+			
+			private var _selectedBackgroundColor:uint;
+			private var _backgroundColor:uint;
+			
+			public static const SELECT_EVENT:String = "selectEvent";
+			
+		]]>
+	</fx:Script>
+</mx:Canvas> 

@@ -4,7 +4,6 @@ package components.views.ModuleManager
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	
-	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
@@ -25,8 +24,6 @@ package components.views.ModuleManager
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.libraries.Library;
-	import components.utils.libraries.LibraryItem;
 	import components.views.IntegraView;
 	import components.views.Skins.TextButtonSkin;
 	import components.views.Skins.TickButtonSkin;
@@ -54,16 +51,15 @@ package components.views.ModuleManager
 			addEventListener( Event.RESIZE, onResize );
 			
 			addChild( _upgradeLabel );
-			
+
+			_upgradableModuleList.multiSelection = true;
+			_upgradableModuleList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onItemSelected );
 			_upgradableModuleList.setStyle( "borderThickness", _listBorder );
 			_upgradableModuleList.setStyle( "cornerRadius", _listBorder );
-			_upgradableModuleList.addEventListener( LibraryItem.TICK_EVENT, onItemTicked );
 			addChild( _upgradableModuleList );
 			
-			_upgradeAllLabel.text = "Upgrade All";
-			addChild( _upgradeAllLabel );
-			
-			_upgradeAllButton.setStyle( "skin", TickButtonSkin );
+			_upgradeAllButton.setStyle( "skin", TextButtonSkin );
+			_upgradeAllButton.label = "Select All";
 			_upgradeAllButton.toggle = true;
 			_upgradeAllButton.addEventListener( MouseEvent.CLICK, onClickSelectAllButton );
 			_upgradeAllButton.addEventListener( MouseEvent.DOUBLE_CLICK, onClickSelectAllButton );
@@ -86,22 +82,18 @@ package components.views.ModuleManager
 					default:
 					case ColorScheme.LIGHT:
 						_labelColor = 0x747474;
-						_controlBackgroundColor = 0xcfcfcf;
+						//_controlBackgroundColor = 0xcfcfcf;
 						setButtonTextColor( _upgradeButton, 0x6D6D6D, 0x9e9e9e );
 						break;
 					
 					case ColorScheme.DARK:
 						_labelColor = 0x8c8c8c;
-						_controlBackgroundColor = 0x313131;
+						//_controlBackgroundColor = 0x313131;
 						setButtonTextColor( _upgradeButton, 0x939393, 0x626262 );
 						break;
 				}
 				
 				_upgradeLabel.setStyle( "color", _labelColor );
-				_upgradeAllLabel.setStyle( "color", _labelColor );
-				
-				_upgradableModuleList.setStyle( "borderColor", _controlBackgroundColor );
-				_upgradableModuleList.setStyle( "backgroundColor", _controlBackgroundColor );
 				
 				_upgradeAllButton.setStyle( "color", _labelColor );
 			}
@@ -127,28 +119,26 @@ package components.views.ModuleManager
 		
 		private function updateAll():void
 		{
-			var upgradables:Array = upgradableModules;
+			var upgradables:Vector.<ModuleManagerListItem> = upgradableModules;
 			
 			if( upgradables.length > 0 )
 			{
 				_upgradeLabel.text = "Improved versions available:";
 
-				_upgradableModuleList.data = upgradables;
+				_upgradableModuleList.items = upgradables;
 				
-				_upgradeAllButton.selected = allAreTicked;
+				_upgradeAllButton.selected = _upgradableModuleList.allAreSelected;
 				
 				_upgradableModuleList.visible = true;
-				_upgradeAllLabel.visible = true;
 				_upgradeAllButton.visible = true;
 				_upgradeButton.visible = true;
-				_upgradeButton.enabled = anyAreTicked;
+				_upgradeButton.enabled = _upgradableModuleList.anyAreSelected;
 			}
 			else
 			{
 				_upgradeLabel.text = "All modules are using the best available version";
 
 				_upgradableModuleList.visible = false;
-				_upgradeAllLabel.visible = false;
 				_upgradeAllButton.visible = false;
 				_upgradeButton.visible = false;
 			}
@@ -187,12 +177,9 @@ package components.views.ModuleManager
 			
 			_upgradeAllButton.x = rightPane.x;
 			_upgradeAllButton.y = rightPane.y;
-			_upgradeAllButton.width = FontSize.getButtonSize( this );
-			_upgradeAllButton.height = FontSize.getButtonSize( this );
+			_upgradeAllButton.width = rightPane.width;
+			_upgradeAllButton.height = FontSize.getTextRowHeight( this );
 
-			_upgradeAllLabel.x = rightPane.x + FontSize.getButtonSize( this );
-			_upgradeAllLabel.y = rightPane.y;
-			
 			_upgradeButton.x = rightPane.x;
 			_upgradeButton.width = rightPane.width;
 			_upgradeButton.height = FontSize.getTextRowHeight( this );
@@ -209,9 +196,9 @@ package components.views.ModuleManager
 		}
 		
 		
-		private function get upgradableModules():Array
+		private function get upgradableModules():Vector.<ModuleManagerListItem>
 		{
-			var upgradableModules:Array = new Array;
+			var upgradableModules:Vector.<ModuleManagerListItem> = new Vector.<ModuleManagerListItem>;
 			var moduleIDsAddedMap:Object = new Object;
 			
 			for each( var track:Track in model.project.tracks )
@@ -232,8 +219,9 @@ package components.views.ModuleManager
 						
 						if( interfaceDefinition != interfaceDefinitions[ 0 ] )
 						{
-							var listEntry:ModuleManagerListEntry = new ModuleManagerListEntry( interfaceDefinition );
-							upgradableModules.push( listEntry );
+							var item:ModuleManagerListItem = new ModuleManagerListItem;
+							item.interfaceDefinition = interfaceDefinition;
+							upgradableModules.push( item );
 							
 							moduleIDsAddedMap[ interfaceDefinition.moduleGuid ] = 1;
 						}
@@ -247,65 +235,41 @@ package components.views.ModuleManager
 		}
 		
 		
-		private function moduleCompareFunction( a:ModuleManagerListEntry, b:ModuleManagerListEntry ):Number
+		private function moduleCompareFunction( a:ModuleManagerListItem, b:ModuleManagerListItem ):Number
 		{
 			return a.compare( b );
 		}		
 		
 		
-		private function get allAreTicked():Boolean
+		private function onItemSelected( event:Event ):void
 		{
-			for( var i:int = 0; i < _upgradableModuleList.numChildren; i++ )
-			{
-				if( !_upgradableModuleList.getLibraryItemAt( i ).ticked ) 
-				{
-					return false;
-				}
-			}
-			
-			return true;
-		}
-
-		
-		private function get anyAreTicked():Boolean
-		{
-			for( var i:int = 0; i < _upgradableModuleList.numChildren; i++ )
-			{
-				if( _upgradableModuleList.getLibraryItemAt( i ).ticked ) 
-				{
-					return true;
-				}
-			}
-			
-			return false;
-		}
-		
-		
-		private function onItemTicked( event:Event ):void
-		{
-			_upgradeAllButton.selected = allAreTicked;
-			_upgradeButton.enabled = anyAreTicked;
+			_upgradeAllButton.selected = _upgradableModuleList.allAreSelected;
+			_upgradeButton.enabled = _upgradableModuleList.anyAreSelected;
 		}
 		
 		
 		private function onClickSelectAllButton( event:MouseEvent ):void
 		{
-			for( var i:int = 0; i < _upgradableModuleList.numChildren; i++ )
+			if( _upgradeAllButton.selected )
 			{
-				_upgradableModuleList.getLibraryItemAt( i ).ticked = _upgradeAllButton.selected;
+				_upgradableModuleList.selectAll();
+				_upgradeButton.enabled = true;
 			}
-			
-			_upgradeButton.enabled = _upgradeAllButton.selected;
+			else
+			{
+				_upgradableModuleList.deselectAll();
+				_upgradeButton.enabled = false;
+			}
 		}
 		
 		
 		private function onClickUpgradeButton( event:MouseEvent ):void
 		{
-			var data:Array = _upgradableModuleList.data as Array;
+			var items:Vector.<ModuleManagerListItem> = _upgradableModuleList.items;
 				
-			for each( var upgradeItem:ModuleManagerListEntry in _upgradableModuleList.data as Array )
+			for each( var upgradeItem:ModuleManagerListItem in items )
 			{
-				if( !upgradeItem.ticked ) 
+				if( !upgradeItem.selected ) 
 				{
 					continue;
 				}
@@ -326,9 +290,8 @@ package components.views.ModuleManager
 		
 		
 		private var _upgradeLabel:Label = new Label;
-		private var _upgradableModuleList:Library = new Library;
+		private var _upgradableModuleList:ModuleManagerList = new ModuleManagerList;
 		
-		private var _upgradeAllLabel:Label = new Label;
 		private var _upgradeAllButton:Button = new Button;
 
 		private var _upgradeButton:Button = new Button;

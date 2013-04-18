@@ -86,12 +86,16 @@ package components.views.ModuleManager
 					default:
 					case ColorScheme.LIGHT:
 						_backgroundColor = 0xffffff;
+						_borderColor = 0xc9e2f0;
+						_titleCloseButton.setStyle( "color", _borderColor );
 						_titleCloseButton.setStyle( "fillColor", 0x000000 );
 						_titleLabel.setStyle( "color", 0x000000 );
 						break;
 
 					case ColorScheme.DARK:
 						_backgroundColor = 0x000000;
+						_borderColor = 0x344c59;
+						_titleCloseButton.setStyle( "color", _borderColor );
 						_titleCloseButton.setStyle( "fillColor", 0xffffff );
 						_titleLabel.setStyle( "color", 0xffffff );
 						break;
@@ -186,8 +190,8 @@ package components.views.ModuleManager
 		private var _installTab:Canvas = new Canvas;
 		
 		private var _backgroundColor:uint = 0;
+		private var _borderColor:uint = 0;
 		
-		private const _borderColor:uint = 0xe95d0f;
 		private const _borderThickness:Number = 4;
 		private const _cornerRadius:Number = 15;
 	}

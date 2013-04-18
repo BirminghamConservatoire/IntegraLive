@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+* Integra Live graphical user interface
+*
+* Copyright (C) 2009 Birmingham City University
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+* USA.
+-->
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 verticalScrollPolicy="auto"
+		 initialize="{onInitialize()}"
+		 mouseDown="{onMouseDown( event )}"
+		 paddingTop="{_cornerRadius}" paddingBottom="{_cornerRadius}" paddingLeft="{_cornerRadius}" paddingRight="{_cornerRadius}"
+		 verticalGap="0">
+	<fx:Declarations>
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import components.model.userData.ColorScheme;
+			import components.utils.Utilities;
+			import components.views.MouseCapture;
+			
+			import flexunit.framework.Assert;
+
+			
+			public function get items():Vector.<ModuleManagerListItem>
+			{
+				return _items;
+			}
+			
+			
+			public function get selectedItem():ModuleManagerListItem 
+			{
+				Assert.assertFalse( _multiSelection );
+				
+				if( _selectedIndex < 0 ) return null;
+				
+				return getItemAt( _selectedIndex );
+			}
+			
+			
+			public function get allAreSelected():Boolean
+			{
+				Assert.assertTrue( _multiSelection );
+				
+				for( var i:int = 0; i < numChildren; i++ )
+				{
+					if( !getItemAt( i ).selected ) 
+					{
+						return false;
+					}
+				}
+				
+				return true;
+			}
+			
+			
+			public function get anyAreSelected():Boolean
+			{
+				Assert.assertTrue( _multiSelection );
+				
+				for( var i:int = 0; i < numChildren; i++ )
+				{
+					if( getItemAt( i ).selected ) 
+					{
+						return true;
+					}
+				}
+				
+				return false;
+			}			
+			
+			
+			public function getItemAt( index:int ):ModuleManagerListItem
+			{
+				Assert.assertTrue( index >= 0 && index < numChildren );
+				var item:ModuleManagerListItem = getChildAt( index ) as ModuleManagerListItem;
+				Assert.assertNotNull( item );
+				return item; 
+			}
+			
+			
+			public function set multiSelection( multiSelection:Boolean ):void 
+			{ 
+				_multiSelection = multiSelection;
+				
+				deselectAll();
+			}
+			
+			
+			public function set items( items:Vector.<ModuleManagerListItem> ):void
+			{
+				visible = false;
+				
+				removeAllChildren();
+				
+				_selectedIndex = -1;
+				_items = items;
+
+				for each( var item:ModuleManagerListItem in items )
+				{
+					item.percentWidth = 100;
+					addChild( item );
+				}
+				
+				visible = true;
+			}
+			
+			
+			public function selectAll():void
+			{
+				Assert.assertTrue( _multiSelection );
+				
+				for each( var item:ModuleManagerListItem in items )
+				{
+					item.selected = true;
+				}
+			}
+			
+			
+			public function deselectAll():void
+			{
+				for each( var item:ModuleManagerListItem in items )
+				{
+					item.selected = false;
+				}
+				
+				_selectedIndex = -1;
+			}
+
+			
+			override public function styleChanged( style:String ):void
+			{
+				if( !style || style == ColorScheme.STYLENAME )
+				{
+					switch( getStyle( ColorScheme.STYLENAME ) )
+					{
+						default:
+						case ColorScheme.LIGHT:
+							_backgroundColor = 0xcfcfcf;
+							break;
+						
+						case ColorScheme.DARK:
+							_backgroundColor = 0x313131;
+							break;
+					}
+					
+					invalidateDisplayList();
+				}
+			}
+
+			
+			private function onInitialize():void
+			{
+				_capturedScrollTimer.addEventListener( TimerEvent.TIMER, onCapturedScrollTimer );
+			}
+			
+			override protected function updateDisplayList( width:Number, height:Number ):void
+			{
+				super.updateDisplayList( width, height );
+				
+				graphics.clear();
+				
+				graphics.beginFill( _backgroundColor );
+				
+				graphics.drawRoundRect( 0, 0, width, height, _cornerRadius * 2, _cornerRadius * 2 );  
+			}
+			
+			private function onMouseDown( event:MouseEvent ):void
+			{
+				var clickItem:ModuleManagerListItem = Utilities.getAncestorByType( event.target, ModuleManagerListItem ) as ModuleManagerListItem;
+				if( !clickItem ) return;
+				
+				var clickIndex:int = getChildIndex( clickItem );
+				Assert.assertTrue( clickIndex >= 0 && clickIndex < numChildren );
+
+				select( clickIndex );
+				
+				if( _multiSelection )
+				{
+					_capturedDragStart = clickIndex;
+					
+					_capturedDragPolarity = clickItem.selected;
+					
+					for( var i:int = 0; i < numChildren; i++ )
+					{
+						_capturedDragInitialState[ i ] = getItemAt( i ).selected;
+					}
+				}
+				
+				MouseCapture.instance.setCapture( this, onCapturedDrag, onCapturedDragFinished );
+				_capturedScrollTimer.start();
+			}
+			
+			
+			private function onCapturedDrag( event:MouseEvent ):void
+			{
+				var overItem:ModuleManagerListItem = getItemFromPoint( new Point( mouseX, mouseY ) );
+				if( !overItem ) return;
+
+				var overIndex:int = getChildIndex( overItem );
+				
+				if( _multiSelection )
+				{
+					for( var i:int = 0; i < numChildren; i++ )
+					{
+						if( i < Math.min( _capturedDragStart, overIndex ) || i > Math.max( _capturedDragStart, overIndex ) ) 
+						{
+							getItemAt( i ).selected = _capturedDragInitialState[ i ];
+						}
+						else
+						{
+							getItemAt( i ).selected = _capturedDragPolarity;
+						}
+					}
+				}
+				else
+				{
+					select( overIndex );
+				}
+			}
+			
+			
+			private function onCapturedDragFinished():void
+			{
+				_capturedScrollTimer.stop();
+			}
+			
+			
+			private function onCapturedScrollTimer( event:TimerEvent ):void
+			{
+				const scrollAmount:Number = 3;
+				
+				if( mouseY < 0 )
+				{
+					verticalScrollPosition -= scrollAmount;
+				}
+				
+				if( mouseY >= height )
+				{
+					verticalScrollPosition += scrollAmount;
+				}
+			}
+				
+			
+			private function getItemFromPoint( point:Point ):ModuleManagerListItem
+			{
+				for each( var item:ModuleManagerListItem in _items )
+				{
+					if( item.getRect( this ).containsPoint( point ) ) 
+					{
+						return item;
+					}
+				}
+				
+				return null;
+			}
+				
+			
+			
+			private function select( index:int ):void
+			{
+				if( _multiSelection )
+				{
+					var item:ModuleManagerListItem = getItemAt( index );
+					Assert.assertNotNull( item );
+					
+					item.selected = !item.selected;
+					item.dispatchEvent( new Event( ModuleManagerListItem.SELECT_EVENT, true ) );
+				}
+				else
+				{
+					if( index == _selectedIndex ) 
+					{
+						return;
+					}
+				
+					if( _selectedIndex >= 0 )
+					{
+						getItemAt( _selectedIndex ).selected = false;
+					}
+					
+					_selectedIndex = index;
+				
+					if( _selectedIndex >= 0 )
+					{
+						getItemAt( _selectedIndex ).selected = true;
+					}
+					
+					dispatchEvent( new Event( ModuleManagerListItem.SELECT_EVENT ) );
+				}
+			}
+			
+			private var _items:Vector.<ModuleManagerListItem> = null;
+			
+			private var _multiSelection:Boolean = false;
+			private var _selectedIndex:int = -1;
+			
+			private var _backgroundColor:uint;
+			
+			private var _capturedDragStart:int = -1;
+			private var _capturedDragPolarity:Boolean = false;
+			private var _capturedDragInitialState:Vector.<Boolean> = new Vector.<Boolean>;
+			private var _capturedScrollTimer:Timer = new Timer( 20 );
+			
+			private const _cornerRadius:Number = 8;
+			
+		]]>
+	</fx:Script>
+
+</mx:VBox>

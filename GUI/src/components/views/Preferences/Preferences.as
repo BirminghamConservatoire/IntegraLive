@@ -111,6 +111,8 @@ package components.views.Preferences
 			_resetButton.setStyle( "skin", TextButtonSkin );
 			_resetButton.addEventListener( MouseEvent.CLICK, onClickResetButton );
 			addElement( _resetButton );
+			
+			styleChanged( null );
 		}
 
 		

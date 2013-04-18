@@ -45,6 +45,7 @@ package components.controller
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.StoreUserData;
 	import components.controller.undostack.UndoManager;
+	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.controller.userDataCommands.SetProjectModified;
 	import components.model.Block;
 	import components.model.IntegraDataObject;
@@ -643,6 +644,9 @@ package components.controller
 			}
 
 			processCommand( new SetProjectModified( false ) );
+			
+			processCommand( new PollForUpgradableModules() );
+			
 			_undoManager.clear();
 
 			dispatchEvent( new AllDataChangedEvent() );

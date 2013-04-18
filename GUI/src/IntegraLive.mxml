@@ -61,6 +61,7 @@
 			import components.controller.serverCommands.PreviousScene;
 			import components.controller.serverCommands.ResetAllBlocks;
 			import components.controller.serverCommands.SetPlaying;
+			import components.controller.userDataCommands.PollForUpgradableModules;
 			import components.controller.userDataCommands.SetDisplayedInfo;
 			import components.controller.userDataCommands.SetProjectModified;
 			import components.model.Info;
@@ -418,6 +419,7 @@
 						hideProgressPopup();
 						_controller.processCommand( new ResetAllBlocks() );
 						_controller.dispatchEvent( new AllDataChangedEvent() );
+						_controller.processCommand( new PollForUpgradableModules() );
 
 						break;
 

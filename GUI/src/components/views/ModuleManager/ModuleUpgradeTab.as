@@ -18,6 +18,7 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.SwitchAllModuleVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.UnloadModule;
+	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.model.Block;
 	import components.model.ModuleInstance;
 	import components.model.Track;
@@ -54,8 +55,6 @@ package components.views.ModuleManager
 
 			_upgradableModuleList.multiSelection = true;
 			_upgradableModuleList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onItemSelected );
-			_upgradableModuleList.setStyle( "borderThickness", _listBorder );
-			_upgradableModuleList.setStyle( "cornerRadius", _listBorder );
 			addChild( _upgradableModuleList );
 			
 			_upgradeAllButton.setStyle( "skin", TextButtonSkin );
@@ -155,18 +154,19 @@ package components.views.ModuleManager
 		
 		private function get moduleListRect():Rectangle
 		{
-			return new Rectangle( internalMargin, internalMargin * 2, width / 2 - internalMargin * 1.5, height - internalMargin * 3 );
+			return new Rectangle( internalMargin, internalMargin * 3, width / 2 - internalMargin * 1.5, height - internalMargin * 4 );
 		}
 
 		
 		private function onResize( event:Event ):void
 		{
 			var moduleListRect:Rectangle = moduleListRect;
-			moduleListRect.inflate( -_listBorder, -_listBorder );
-			_upgradableModuleList.x = moduleListRect.x;
-			_upgradableModuleList.y = moduleListRect.y;
-			_upgradableModuleList.width = moduleListRect.width;
-			_upgradableModuleList.height = moduleListRect.height;
+			var moduleListRectDeflated:Rectangle = moduleListRect.clone();
+			moduleListRectDeflated.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
+			_upgradableModuleList.x = moduleListRectDeflated.x;
+			_upgradableModuleList.y = moduleListRectDeflated.y;
+			_upgradableModuleList.width = moduleListRectDeflated.width;
+			_upgradableModuleList.height = moduleListRectDeflated.height;
 			
 			_upgradeLabel.x = internalMargin;
 			_upgradeLabel.y = internalMargin;
@@ -221,6 +221,7 @@ package components.views.ModuleManager
 						{
 							var item:ModuleManagerListItem = new ModuleManagerListItem;
 							item.interfaceDefinition = interfaceDefinition;
+							item.selected = true;
 							upgradableModules.push( item );
 							
 							moduleIDsAddedMap[ interfaceDefinition.moduleGuid ] = 1;
@@ -287,7 +288,7 @@ package components.views.ModuleManager
 				controller.processCommand( new SwitchAllModuleVersions( fromInterfaceDefinition.moduleGuid, toInterfaceDefinition.moduleGuid ) );
 			}
 		}
-		
+
 		
 		private var _upgradeLabel:Label = new Label;
 		private var _upgradableModuleList:ModuleManagerList = new ModuleManagerList;
@@ -300,7 +301,5 @@ package components.views.ModuleManager
 		private var _labelColor:uint;
 		
 		private var _updateFlagged:Boolean = false;
-		
-		private static const _listBorder:Number = 4;
 	}
 }

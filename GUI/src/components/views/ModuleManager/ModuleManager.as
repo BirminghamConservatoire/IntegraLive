@@ -29,6 +29,7 @@ package components.views.ModuleManager
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
 	
+	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.controller.userDataCommands.SetViewMode;
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
@@ -68,6 +69,10 @@ package components.views.ModuleManager
 			_tabNavigator.addChild( _installTab );
 			
 			addChild( _tabNavigator );
+			
+			addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
+			
+			styleChanged( null );
 		}
 
 		
@@ -178,6 +183,15 @@ package components.views.ModuleManager
 		private function get titleHeight():Number
 		{
 			return FontSize.getTextRowHeight( this );
+		}
+		
+		
+		private function onPollForUpgradableModules( command:PollForUpgradableModules ):void
+		{
+			if( command.foundUpgradableModules )
+			{
+				_tabNavigator.selectedChild = _upgradeTab;
+			}
 		}
 		
 		

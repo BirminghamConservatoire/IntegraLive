@@ -24,7 +24,6 @@
 		 verticalScrollPolicy="auto"
 		 initialize="{onInitialize()}"
 		 mouseDown="{onMouseDown( event )}"
-		 paddingTop="{_cornerRadius}" paddingBottom="{_cornerRadius}" paddingLeft="{_cornerRadius}" paddingRight="{_cornerRadius}"
 		 verticalGap="0">
 	<fx:Declarations>
 	</fx:Declarations>
@@ -178,7 +177,7 @@
 				
 				graphics.beginFill( _backgroundColor );
 				
-				graphics.drawRoundRect( 0, 0, width, height, _cornerRadius * 2, _cornerRadius * 2 );  
+				graphics.drawRoundRect( -cornerRadius, -cornerRadius, width + cornerRadius * 2, height + cornerRadius * 2, cornerRadius * 2, cornerRadius * 2 );  
 			}
 			
 			private function onMouseDown( event:MouseEvent ):void
@@ -210,7 +209,7 @@
 			
 			private function onCapturedDrag( event:MouseEvent ):void
 			{
-				var overItem:ModuleManagerListItem = getItemFromPoint( new Point( mouseX, mouseY ) );
+				var overItem:ModuleManagerListItem = getItemFromY( mouseY );
 				if( !overItem ) return;
 
 				var overIndex:int = getChildIndex( overItem );
@@ -258,20 +257,22 @@
 			}
 				
 			
-			private function getItemFromPoint( point:Point ):ModuleManagerListItem
+			private function getItemFromY( y:Number ):ModuleManagerListItem
 			{
-				for each( var item:ModuleManagerListItem in _items )
+				if( numChildren == 0 ) return null;
+				
+				//assume all items are of same height with no gap
+				var firstItem:ModuleManagerListItem = getItemAt( 0 );
+				var index:int = ( y + verticalScrollPosition ) / firstItem.height;
+				
+				if( index < 0 || index >= numChildren )
 				{
-					if( item.getRect( this ).containsPoint( point ) ) 
-					{
-						return item;
-					}
+					return null;
 				}
 				
-				return null;
+				return getItemAt( index );
 			}
 				
-			
 			
 			private function select( index:int ):void
 			{
@@ -318,7 +319,7 @@
 			private var _capturedDragInitialState:Vector.<Boolean> = new Vector.<Boolean>;
 			private var _capturedScrollTimer:Timer = new Timer( 20 );
 			
-			private const _cornerRadius:Number = 8;
+			public static const cornerRadius:Number = 8;
 			
 		]]>
 	</fx:Script>

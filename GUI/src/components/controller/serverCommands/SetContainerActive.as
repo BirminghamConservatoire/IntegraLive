@@ -68,6 +68,8 @@ package components.controller.serverCommands
 		
 		public override function execute( model:IntegraModel ):void
 		{
+			if( !model.doesObjectExist( _containerID ) ) return;		//special corner case for import block -> undo -> redo
+			
 			var container:IntegraContainer = model.getContainer( _containerID );
 			Assert.assertNotNull( container );
 			
@@ -77,6 +79,8 @@ package components.controller.serverCommands
 		
 		public override function executeServerCommand( model:IntegraModel ):void
 		{
+			if( !model.doesObjectExist( _containerID ) ) return;		//special corner case for import block -> undo -> redo
+			
 			connection.addArrayParam( model.getPathArrayFromID( _containerID ).concat( "active" ) );
 			connection.addParam( _active ? 1 : 0, XMLRPCDataTypes.INT );
 			connection.callQueued( "command.set" );	

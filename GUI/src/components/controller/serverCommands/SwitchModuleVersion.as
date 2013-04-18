@@ -139,13 +139,25 @@ package components.controller.serverCommands
 			methodCalls[ 1 ].methodName = "command.new";
 			methodCalls[ 1 ].params = [ _toGuid, moduleName, parentPath ];
 
+			
 			for( var attributeName:String in _newAttributeValues )
 			{
 				var setCall:Object = new Object;
 				setCall.methodName = "command.set";
 				setCall.params = [ modulePath.concat( attributeName ), _newAttributeValues[ attributeName ] ];
-				
-				methodCalls.push( setCall );
+
+				if( attributeName == "dataDirectory" )
+				{
+					/*
+					if there's a data directory, we need to set it first, because poorly-written modules might
+					not cope with data directory being set after filenames
+					*/					
+					methodCalls.splice( 2, 0, setCall );
+				}
+				else
+				{
+					methodCalls.push( setCall );					
+				}
 			}
 			
 			connection.addArrayParam( methodCalls );

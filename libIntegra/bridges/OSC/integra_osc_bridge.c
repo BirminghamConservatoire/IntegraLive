@@ -40,6 +40,7 @@ void lo_address_set_flags(lo_address t, int flags);
 #include "src/attribute.h"
 #include "src/node.h"
 
+#include "src/path.h"
 
 #define NTG_OSC_ERROR -1
 #define NTG_BRIDGE_LISTEN_PORT "7772"
@@ -135,16 +136,19 @@ static int osc_module_load(const ntg_id instance_id, const char *implementation_
 	    NTG_TRACE_ERROR("implementation_name is NULL");
     }
 
+	NTG_TRACE_PROGRESS_WITH_INT( implementation_name, instance_id );
+
     /* Load the module */
     res = lo_send(module_host, "/load", "si", implementation_name, instance_id);    
     if(res==-1) {
 	    NTG_TRACE_ERROR(lo_address_errstr(module_host));
     }
     return 0;
-
 }
 
 static int osc_module_remove(const ntg_id id){
+
+	NTG_TRACE_PROGRESS_WITH_INT( "", id );
 
     /* delete the instance */
     lo_send(module_host, "/remove", "i", id);
@@ -253,6 +257,11 @@ static void osc_send_value(const ntg_node_attribute *attribute)
 	module_id = attribute->node->id;
 	attribute_name = attribute->endpoint->name;
 	value = attribute->value;
+
+	if( value && value->type == NTG_STRING )
+	{
+		NTG_TRACE_PROGRESS_WITH_STRING( attribute->path->string, value->ctype.s );
+	}
 
 	if( value )
 	{

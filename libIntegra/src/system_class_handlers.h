@@ -59,7 +59,7 @@ bool ntg_node_is_active( const ntg_node *node );
 bool ntg_node_has_data_directory( const ntg_node *node );
 const char *ntg_node_get_data_directory( const ntg_node *node );
 
-bool ntg_should_copy_input_file( ntg_command_source cmd_source );
+bool ntg_should_copy_input_file( const ntg_value *value, ntg_command_source cmd_source );
 
 
 #ifdef __cplusplus

@@ -43,6 +43,7 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 
 const char *ntg_copy_file_to_data_directory( const ntg_node_attribute *attribute );
 
+const char *ntg_extract_filename_from_path( const char *path );
 
 
 #ifdef __cplusplus

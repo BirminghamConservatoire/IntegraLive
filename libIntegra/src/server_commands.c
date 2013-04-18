@@ -59,7 +59,7 @@ bool ntg_should_send_set_to_host( const ntg_server *server, const ntg_node_attri
 			break;		
 	}
 
-	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( cmd_source ) )
+	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( attribute->value, cmd_source ) )
 	{
 		return false;
 	}

@@ -103,7 +103,15 @@ package components.controller.serverCommands
 		{
 			var attributes:Object = module.attributes;
 			
-			for each( var endpoint:EndpointDefinition in module.interfaceDefinition.endpoints )
+			/*
+			if there's a data directory, we need to push it last, because poorly-written modules might
+			not cope with data directory being set after filenames
+			*/
+			
+			var sortedEndpoints:Vector.<EndpointDefinition> = module.interfaceDefinition.endpoints.concat();
+			sortedEndpoints.sort( dataDirectoryLast );
+			
+			for each( var endpoint:EndpointDefinition in sortedEndpoints )
 			{
 				if( !endpoint.isStateful )
 				{
@@ -113,13 +121,19 @@ package components.controller.serverCommands
 				var endpointName:String = endpoint.name;
 				var endpointType:String = endpoint.controlInfo.stateInfo.type;
 
-				if( endpointName == "userData" )
-				{
-					continue;
-				}
-
 				pushInverseCommand( new SetModuleAttribute( module.id, endpointName, attributes[ endpointName ], endpointType ) );
 			}
+		}
+		
+		
+		private function dataDirectoryLast( endpoint1:EndpointDefinition, endpoint2:EndpointDefinition ):int
+		{
+			const dataDirectory:String = "dataDirectory";
+			
+			if( endpoint1.name == dataDirectory ) return 1;
+			if( endpoint2.name == dataDirectory ) return -1;
+			
+			return 0;			
 		}
 
 

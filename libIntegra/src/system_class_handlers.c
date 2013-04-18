@@ -779,8 +779,10 @@ void ntg_update_connections_on_object_move( ntg_server *server, const ntg_node *
 }
 
 
-bool ntg_should_copy_input_file( ntg_command_source cmd_source )
+bool ntg_should_copy_input_file( const ntg_value *value, ntg_command_source cmd_source )
 {
+	assert( value && value->type == NTG_STRING );
+
 	switch( cmd_source )
 	{
 		case NTG_SOURCE_CONNECTION:
@@ -788,7 +790,11 @@ bool ntg_should_copy_input_file( ntg_command_source cmd_source )
 	    case NTG_SOURCE_XMLRPC_API:
 	    case NTG_SOURCE_OSC_API:
 	    case NTG_SOURCE_C_API:
-			return true;		/* these are the sources for which we want to copy the file to the data directory */
+			/* these are the sources for which we want to copy the file to the data directory */
+
+			/* but we only copy the file when a path is provided, otherwise we assume it is already in the data directory */
+			
+			return ( ntg_extract_filename_from_path( ntg_value_get_string( value ) ) != NULL );
 
 		case NTG_SOURCE_INITIALIZATION:
 		case NTG_SOURCE_LOAD:
@@ -1501,7 +1507,7 @@ void ntg_connection_target_path_handler( ntg_server *server, const ntg_node_attr
 
 void ntg_generic_set_handler( ntg_server *server, const ntg_node_attribute *attribute, const ntg_value *previous_value, ntg_command_source cmd_source )
 {
-	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( cmd_source ) )
+	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( attribute->value, cmd_source ) )
 	{
 		ntg_handle_input_file( server, attribute, cmd_source );
 	}
@@ -2005,7 +2011,7 @@ void ntg_system_class_handle_new( ntg_server *server, const ntg_node *node, ntg_
 	ntg_system_class_new_handler_function function = NULL;
 
 	assert( server );
-	assert( attribute );
+	assert( node );
 
 	for( handler = server->system_class_data->new_handlers; handler; handler = handler->next )
 	{

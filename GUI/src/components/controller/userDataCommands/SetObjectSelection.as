@@ -24,7 +24,6 @@ package components.controller.userDataCommands
 	import components.controller.Command;
 	import components.controller.UserDataCommand;
 	import components.model.IntegraContainer;
-	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	
 	import flexunit.framework.Assert;
@@ -62,6 +61,9 @@ package components.controller.userDataCommands
 		
 		public override function execute( model:IntegraModel ):void
 		{
+			if( !model.doesObjectExist( _objectID ) ) return;	//special corner case for import block -> undo -> redo 
+			
+			
 			var parent:IntegraContainer = model.getParent( _objectID ) as IntegraContainer;
 			Assert.assertNotNull( parent );
 			parent.userData.setChildSelected( _objectID, _isSelected );

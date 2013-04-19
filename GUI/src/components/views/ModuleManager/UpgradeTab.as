@@ -18,7 +18,6 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.SwitchAllModuleVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.UnloadModule;
-	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.model.Block;
 	import components.model.ModuleInstance;
 	import components.model.Track;
@@ -27,13 +26,12 @@ package components.views.ModuleManager
 	import components.utils.FontSize;
 	import components.views.IntegraView;
 	import components.views.Skins.TextButtonSkin;
-	import components.views.Skins.TickButtonSkin;
 	
 	import flexunit.framework.Assert;
 	
-	public class ModuleUpgradeTab extends IntegraView
+	public class UpgradeTab extends IntegraView
 	{
-		public function ModuleUpgradeTab()
+		public function UpgradeTab()
 		{
 			super();
 			
@@ -297,7 +295,7 @@ package components.views.ModuleManager
 
 		private var _upgradeButton:Button = new Button;
 		
-		private var _controlBackgroundColor:uint;
+		//private var _controlBackgroundColor:uint;
 		private var _labelColor:uint;
 		
 		private var _updateFlagged:Boolean = false;

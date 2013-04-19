@@ -94,6 +94,15 @@
 			}
 			
 			
+			public function getItemYCenter( item:ModuleManagerListItem ):Number
+			{
+				Assert.assertNotNull( item );
+				
+				//assume all items are of same height with no gap
+				return getChildIndex( item ) * item.height + item.height / 2 - verticalScrollPosition;
+			}
+			
+			
 			public function set multiSelection( multiSelection:Boolean ):void 
 			{ 
 				_multiSelection = multiSelection;
@@ -118,6 +127,12 @@
 				}
 				
 				visible = true;
+			}
+			
+			
+			public function removeAllItems():void
+			{
+				items = new Vector.<ModuleManagerListItem>;
 			}
 			
 			
@@ -307,7 +322,7 @@
 				}
 			}
 			
-			private var _items:Vector.<ModuleManagerListItem> = null;
+			private var _items:Vector.<ModuleManagerListItem> = new Vector.<ModuleManagerListItem>;
 			
 			private var _multiSelection:Boolean = false;
 			private var _selectedIndex:int = -1;

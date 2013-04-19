@@ -61,18 +61,18 @@ package components.views.ModuleManager
 			addChild( _titleCloseButton );
 			
 			_upgradeTab.label = "Upgrade";
-			_manageTab.label = "Manage";
+			_switchVersionsTab.label = "Manage";
 			_installTab.label = "Install / Uninstall";
 
 			_tabNavigator.addChild( _upgradeTab );
-			_tabNavigator.addChild( _manageTab );
+			_tabNavigator.addChild( _switchVersionsTab );
 			_tabNavigator.addChild( _installTab );
 			
 			addChild( _tabNavigator );
 			
 			addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
 			
-			styleChanged( null );
+			onStyleChanged( null );
 		}
 
 		
@@ -111,10 +111,12 @@ package components.views.ModuleManager
 			
 			if( !style || style == FontSize.STYLENAME )
 			{
-				Assert.assertNotNull( parentDocument );
-				setStyle( FontSize.STYLENAME, parentDocument.getStyle( FontSize.STYLENAME ) );
-				updateSize();
-				invalidateDisplayList();
+				if( parentDocument )
+				{
+					setStyle( FontSize.STYLENAME, parentDocument.getStyle( FontSize.STYLENAME ) );
+					updateSize();
+					invalidateDisplayList();
+				}
 			}
 		}
 				
@@ -199,8 +201,8 @@ package components.views.ModuleManager
 		private var _titleCloseButton:Button = new Button;
 		
 		private var _tabNavigator:TabNavigator = new TabNavigator;
-		private var _upgradeTab:ModuleUpgradeTab = new ModuleUpgradeTab;
-		private var _manageTab:Canvas = new Canvas;
+		private var _upgradeTab:UpgradeTab = new UpgradeTab;
+		private var _switchVersionsTab:Canvas = new SwitchVersionsTab;
 		private var _installTab:Canvas = new Canvas;
 		
 		private var _backgroundColor:uint = 0;

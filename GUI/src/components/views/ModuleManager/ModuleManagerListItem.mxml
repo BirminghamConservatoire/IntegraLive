@@ -42,12 +42,14 @@
 
 			override public function toString():String { return _interfaceDefinition.interfaceInfo.label; }
 			
+			public function get interfaceDefinition():InterfaceDefinition { return _interfaceDefinition; }
+
 			public function get guid():String { return _interfaceDefinition.moduleGuid; }
 			public function get moduleSource():String { return _interfaceDefinition.moduleSource; }
 			
 			public function get selected():Boolean { return _selected; }
 			
-			private function get useTint():Boolean { return _useTint; }
+			public function get useTint():Boolean { return _useTint; }
 
 			public function set selected( selected:Boolean ):void 
 			{
@@ -61,7 +63,7 @@
 				}
 			}
 
-			private function set useTint( useTint:Boolean ):void { _useTint = useTint; invalidateDisplayList(); }
+			public function set useTint( useTint:Boolean ):void { _useTint = useTint; invalidateDisplayList(); }
 			
 			public function set interfaceDefinition( interfaceDefinition:InterfaceDefinition ):void
 			{

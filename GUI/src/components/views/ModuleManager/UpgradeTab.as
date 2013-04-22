@@ -18,6 +18,7 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.SwitchAllModuleVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.UnloadModule;
+	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.model.Block;
 	import components.model.ModuleInstance;
 	import components.model.Track;
@@ -46,6 +47,7 @@ package components.views.ModuleManager
 			addUpdateMethod( ImportBlock, onUpdateNeeded );
 			addUpdateMethod( RemoveTrackImport, onUpdateNeeded );
 			addUpdateMethod( RemoveBlockImport, onUpdateNeeded );
+			addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
 			
 			addEventListener( Event.RESIZE, onResize );
 			
@@ -114,8 +116,20 @@ package components.views.ModuleManager
 		}
 		
 		
+		private function onPollForUpgradableModules( command:PollForUpgradableModules ):void
+		{
+			if( command.foundUpgradableModules )
+			{
+				_upgradableModuleList.selectAll();
+				updateAll();
+			}
+		}
+		
+		
 		private function updateAll():void
 		{
+			var selectedItems:Object = getSelectedItems();
+			
 			var upgradables:Vector.<ModuleManagerListItem> = upgradableModules;
 			
 			if( upgradables.length > 0 )
@@ -123,6 +137,8 @@ package components.views.ModuleManager
 				_upgradeLabel.text = "Improved versions available:";
 
 				_upgradableModuleList.items = upgradables;
+
+				setSelectedItems( selectedItems );				
 				
 				_upgradeAllButton.selected = _upgradableModuleList.allAreSelected;
 				
@@ -141,6 +157,35 @@ package components.views.ModuleManager
 			}
 			
 			_updateFlagged = false;
+		}
+		
+		
+		private function getSelectedItems():Object
+		{
+			var selectedItems:Object = new Object;
+			
+			for each( var item:ModuleManagerListItem in _upgradableModuleList.items )
+			{
+				selectedItems[ item.guid ] = item.selected;
+			}
+			
+			return selectedItems;
+		}
+
+		
+		private function setSelectedItems( selectedItems:Object ):void
+		{
+			for each( var item:ModuleManagerListItem in _upgradableModuleList.items )
+			{
+				if( selectedItems.hasOwnProperty( item.guid ) )
+				{
+					item.selected = selectedItems[ item.guid ];
+				}
+				else
+				{
+					item.selected = true;
+				}
+			}
 		}
 
 		
@@ -219,7 +264,6 @@ package components.views.ModuleManager
 						{
 							var item:ModuleManagerListItem = new ModuleManagerListItem;
 							item.interfaceDefinition = interfaceDefinition;
-							item.selected = true;
 							upgradableModules.push( item );
 							
 							moduleIDsAddedMap[ interfaceDefinition.moduleGuid ] = 1;

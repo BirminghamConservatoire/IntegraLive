@@ -49,7 +49,7 @@ extern "C" {
 #define NTG_LONG_STRLEN    1024
 
 #define NTG_FILE_SUFFIX "integra"
-#define NTG_MODULE_SUFFIX "im"
+#define NTG_MODULE_SUFFIX "integra-module"
 
 /* 
  we use linux-style path separators for all builds, because windows can use the two interchangeably, 

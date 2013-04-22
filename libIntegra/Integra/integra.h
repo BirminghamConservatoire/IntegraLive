@@ -422,7 +422,7 @@ LIBINTEGRA_API void ntg_print_state(void);
 /** \brief Create a new Integra server 
  *
  * \param bridge_file the filename of the bridge being loaded
- * \param module_directories comma separated list of directories from which IM files are loaded
+ * \param module_directories comma separated list of directories from which integra module files are loaded
  * \param xmlrpc_server_port port on which the xmlrpc interface 
  * listens for connections
  * \param osc_server_port port on which the osc interface 

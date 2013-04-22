@@ -132,7 +132,7 @@ void post_help(const char *command_name) {
 
             "\nBridge, Interface and Host options:\n"
             "  -bridge=[string]\t\tpath of server->host bridge\n"
-            "  -module_paths=[string]\t\tcomma-separated list of paths of directories in which .im files are located\n"
+            "  -module_paths=[string]\t\tcomma-separated list of paths of directories in which .integra-module files are located\n"
             "  -host=[string]\t\tpath of host executable\n"
             "  -hostargs\t\t\targuments are passed into the host\n"
 

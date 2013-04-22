@@ -44,6 +44,12 @@ package
 		{
 			return getter( "exportDirectory" );
 		}
+
+		
+		public function get bundleDirectory():String
+		{
+			return getter( "bundleDirectory" );
+		}
 		
 
 		public function set moduleDirectory( directory:String ):void
@@ -68,6 +74,12 @@ package
 		{
 			_sharedObject.data.exportDirectory = directory;
 		}
+
+		
+		public function set bundleDirectory( directory:String ):void
+		{
+			_sharedObject.data.bundleDirectory = directory;
+		}
 		
 		
 		private function getter( requestedDirectory:String ):String
@@ -87,7 +99,5 @@ package
 		private static var _singleInstance:DirectoryStore = null;
 		
 		private var _sharedObject:SharedObject;
-		
-		private static const _minDiskSpace:int = 10000;
 	}
 }

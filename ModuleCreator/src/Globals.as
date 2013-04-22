@@ -38,6 +38,7 @@ package
 		static public const imToplevelDirectoryName:String = "integra_module_data";
 		static public const imImplementationDirectoryName:String = imToplevelDirectoryName + "/implementation";
 
+		static public const bundleFileExtension:String = "integra-bundle";
 
 		
 		static public function labelColumnWidth( nesting:int = 0 ):Number { return 180 - nesting * 7; }

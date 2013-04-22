@@ -297,7 +297,7 @@
 					filenamePrompt = DirectoryStore.singleInstance.moduleDirectory;
 				}
 				
-				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.imFileExtension );
+				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
 				var file:File = new File( filenamePrompt );
 				file.browseForSave( "Save Module" );
 				
@@ -322,7 +322,7 @@
 			
 			private function doImport():void
 			{
-				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.imFileExtension );
+				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
 				var file:File = new File( DirectoryStore.singleInstance.importDirectory );
 				file.browseForOpen( "Load Module as Template", [filter] );
 				
@@ -332,7 +332,7 @@
 			
 			private function doLoad():void
 			{
-				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.imFileExtension );
+				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
 				var file:File = new File( DirectoryStore.singleInstance.moduleDirectory );
 				file.browseForOpen( "Load Module", [filter] );
 				
@@ -505,7 +505,7 @@
 				
 				loadInterfaceDeclaration( interfaceDefinition.content );
 
-				_implementation.retrieveImplementation( zipFile, Globals.imImplementationDirectoryName );
+				_implementation.retrieveImplementation( zipFile, Globals.moduleImplementationDirectoryName );
 				
 				updateApplicationTitle();
 				updateStatusBar();
@@ -522,7 +522,7 @@
 				
 				zipFile.addFile( _iidFileName, saveInterfaceDeclaration() );
 
-				_implementation.storeImplementation( zipFile, Globals.imImplementationDirectoryName );
+				_implementation.storeImplementation( zipFile, Globals.moduleImplementationDirectoryName );
 				
 				var outputFile:File = new File( _filename );
 				var outputFileStream:FileStream = new FileStream();
@@ -696,13 +696,13 @@
 				var indexOfLastDot:int = filename.lastIndexOf( "." );
 				if( indexOfLastDot < 0 )
 				{
-					return filename + "." + Globals.imFileExtension;
+					return filename + "." + Globals.moduleFileExtension;
 				}
 				else
 				{
-					if( filename.substr( indexOfLastDot + 1 ) != Globals.imFileExtension )
+					if( filename.substr( indexOfLastDot + 1 ) != Globals.moduleFileExtension )
 					{
-						return filename.substr( 0, indexOfLastDot + 1 ) + Globals.imFileExtension;
+						return filename.substr( 0, indexOfLastDot + 1 ) + Globals.moduleFileExtension;
 					}
 					else
 					{
@@ -851,7 +851,7 @@
 			private var _bundleMaker:BundleMaker = new BundleMaker;
 			private var _unusedPDPatches:FindUnusedPDPatches = new FindUnusedPDPatches;
 			
-			private const _iidFileName:String = Globals.imToplevelDirectoryName + "/interface_definition.iid";
+			private const _iidFileName:String = Globals.moduleToplevelDirectoryName + "/interface_definition.iid";
 			
 		]]>
 	</fx:Script>			

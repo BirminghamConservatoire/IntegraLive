@@ -111,13 +111,13 @@
 				}
 				
 				var integraModules:Array = integraModuleDirectory.getDirectoryListing();
-				var implementationDirectoryName:String = Globals.imImplementationDirectoryName + "/";
+				var implementationDirectoryName:String = Globals.moduleImplementationDirectoryName + "/";
 				
 				var usedPDPatches:Object = new Object;
 				
 				for each( var integraModule:File in integraModules )
 				{
-					if( !integraModule.extension || integraModule.extension.toLowerCase() != Globals.imFileExtension.toLowerCase() )
+					if( !integraModule.extension || integraModule.extension.toLowerCase() != Globals.moduleFileExtension.toLowerCase() )
 					{
 						continue;
 					}

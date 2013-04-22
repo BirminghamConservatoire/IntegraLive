@@ -25,7 +25,7 @@ package
 		
 		public function createModuleBundle( event:Event ):void
 		{
-			var moduleFilter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.imFileExtension );
+			var moduleFilter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
 			
 			_selectModules.browseForOpenMultiple( "Select Modules to include in your Bundle...", [ moduleFilter ] );
 		}
@@ -125,7 +125,7 @@ package
 					outputFileStream.writeBytes( moduleFile.content );
 					outputFileStream.close();
 					
-					resultsString += "\nExtracted " + moduleFileName + " ok.";
+					resultsString += "\nExtracted " + moduleFileName;
 				}
 			}
 			

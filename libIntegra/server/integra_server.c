@@ -132,7 +132,8 @@ void post_help(const char *command_name) {
 
             "\nBridge, Interface and Host options:\n"
             "  -bridge=[string]\t\tpath of server->host bridge\n"
-            "  -module_paths=[string]\t\tcomma-separated list of paths of directories in which .integra-module files are located\n"
+            "  -system_modules=[string]\t\tlocation of system-installed .integra-module files\n"
+            "  -third_party_modules=[string]\t\tlocation of third-party .integra-module files\n"
             "  -host=[string]\t\tpath of host executable\n"
             "  -hostargs\t\t\targuments are passed into the host\n"
 
@@ -158,7 +159,8 @@ int main( int argc, char *argv[] )
 {
     const char *command_name = NULL;
     const char *bridge_path = NULL;
-	const char *module_directories = NULL;
+	const char *system_module_directory = NULL;
+	const char *third_party_module_directory = NULL;
     const char *host_path = NULL;
     const char *host_arguments[ MAXIMUM_ARGUMENTS + 1 ];
 
@@ -217,13 +219,19 @@ int main( int argc, char *argv[] )
                 continue;
             }
 
-			if( memcmp( argument, "-module_paths", flag_length ) == 0 )
+			if( memcmp( argument, "-system_modules", flag_length ) == 0 )
 			{
-				module_directories = equals + 1;
+				system_module_directory = equals + 1;
 				continue;
 			}
 
-            if( memcmp( argument, "-host", flag_length ) == 0 )
+			if( memcmp( argument, "-third_party_modules", flag_length ) == 0 )
+			{
+				third_party_module_directory = equals + 1;
+				continue;
+			}
+			
+			if( memcmp( argument, "-host", flag_length ) == 0 )
             {
                 host_path = equals + 1;
                 continue;
@@ -307,7 +315,6 @@ int main( int argc, char *argv[] )
     }
 
     /*set the tracing settings */
-
     if(trace_errors) trace_category_bits |= TRACE_ERROR_BITS;
     if(trace_progress) trace_category_bits |= TRACE_PROGRESS_BITS;
     if(trace_verbose) trace_category_bits |= TRACE_VERBOSE_BITS;
@@ -316,10 +323,12 @@ int main( int argc, char *argv[] )
 
     /*close any processes that might be left over from a previous crash */
     NTG_TRACE_PROGRESS("closing orphaned processes");
-    if( host_path != NULL && strlen( host_path ) > 0) {
+    if( host_path != NULL && strlen( host_path ) > 0) 
+	{
         have_host_path = true;
         number_of_processes_to_close = NUMBER_OF_PROCESSES_TO_CLOSE;
-    } else {
+    } else 
+	{
         number_of_processes_to_close = NUMBER_OF_PROCESSES_TO_CLOSE - 1;
     }
 
@@ -346,8 +355,8 @@ int main( int argc, char *argv[] )
     }
 
     /*run the server */
-    ntg_server_run(bridge_path, module_directories, xmlrpc_server_port, osc_server_port,
-            osc_client_url, osc_client_port);
+    ntg_server_run( bridge_path, system_module_directory, third_party_module_directory, 
+					xmlrpc_server_port, osc_server_port, osc_client_url, osc_client_port);
 
     if( host_process_handle > 0 )
     {
@@ -360,7 +369,7 @@ int main( int argc, char *argv[] )
     } 
 	else 
 	{
-        NTG_TRACE_ERROR_WITH_INT("couldn't kill host, PID was:", host_process_handle );
+        NTG_TRACE_ERROR_WITH_INT( "couldn't kill host, PID was:", host_process_handle );
     }
 
     return 0;

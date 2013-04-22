@@ -296,6 +296,7 @@ package components.utils
 			return ( uint( outputRed * 0xff ) << 16 ) + ( uint( outputGreen * 0xff ) << 8 ) + uint( outputBlue * 0xff );
 		}		
 		
+		
 		public static function getUserBlockLibraryDirectory():String
 		{
 			var userBlockLibraryDirectory:File = new File( File.applicationStorageDirectory.nativePath + "/" + "BlockLibrary" );
@@ -320,6 +321,20 @@ package components.utils
 			 
 			return systemBlockLibraryDirectory.nativePath;
 		}
+		
+		
+		public static function get3rdPartyModulesDirectory():String
+		{
+			var thirdPartyModulesDirectory:File = new File( File.applicationStorageDirectory.nativePath + "/" + "ThirdPartyModules" );
+			
+			if( !thirdPartyModulesDirectory.exists )
+			{
+				thirdPartyModulesDirectory.createDirectory();
+			}
+			
+			return thirdPartyModulesDirectory.nativePath;
+		}
+		
 		
 
 		public static function getMidiNoteName( midiNote:int ):String

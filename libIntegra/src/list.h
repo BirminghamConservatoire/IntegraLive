@@ -38,5 +38,7 @@ struct ntg_list_ {
 ntg_list *ntg_list_new(ntg_list_type);
 void ntg_list_free(ntg_list *);
 
+void ntg_list_push_guid( ntg_list *list, const GUID *guid );
+
 #endif
 

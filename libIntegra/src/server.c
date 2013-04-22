@@ -372,7 +372,7 @@ static void invalid_parameter_handler( const wchar_t * expression, const wchar_t
 
 
 
-ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_client_port, const char *module_directories )
+ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_client_port, const char *system_module_directory, const char *third_party_module_directory )
 {
     ntg_server *server = NULL;
 
@@ -390,8 +390,7 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 
 	ntg_scratch_directory_initialize(server);
 
-	server->module_manager = ntg_module_manager_create( server->scratch_directory_root );
-	ntg_module_manager_load_from_directories( server->module_manager, module_directories );
+	server->module_manager = ntg_module_manager_create( server->scratch_directory_root, system_module_directory, third_party_module_directory );
 
     server->state_table				= ntg_hashtable_new();
     server->osc_client				= ntg_osc_client_new(osc_client_url, osc_client_port);
@@ -717,7 +716,8 @@ void ntg_server_halt(ntg_server * server)
 }
 
 ntg_error_code ntg_server_run(const char *bridge_path,
-		const char *module_directories,
+		const char *system_module_directory,
+		const char *third_party_module_directory,
         unsigned short xmlrpc_server_port,
         unsigned short osc_server_port,
         const char *osc_client_url,
@@ -748,32 +748,40 @@ ntg_error_code ntg_server_run(const char *bridge_path,
     ntg_sig_block(&signal_sigset);
 #endif
 
-    if (bridge_path == NULL) {
+    if (bridge_path == NULL) 
+	{
         NTG_TRACE_ERROR("bridge_path is NULL");
         return NTG_ERROR;
     }
 
-    if (module_directories == NULL) {
-        NTG_TRACE_ERROR("module_directories is NULL");
+    if( system_module_directory == NULL) 
+	{
+        NTG_TRACE_ERROR("system_module_directory is NULL");
         return NTG_ERROR;
     }
 
-    server_ = ntg_server_new(osc_client_url, osc_client_port, module_directories);
+    server_ = ntg_server_new( osc_client_url, osc_client_port, system_module_directory, third_party_module_directory );
 
-    if (bridge_path == NULL) {
+    if (bridge_path == NULL) 
+	{
         NTG_TRACE_ERROR("bridge_path is NULL");
         return NTG_ERROR;
     }
-    if (stat(bridge_path, &file_buffer) != 0) {
+
+    if (stat(bridge_path, &file_buffer) != 0) 
+	{
         NTG_TRACE_ERROR("bridge_path points to a nonexsitant file");
         return NTG_ERROR;
     }
 
     p = (ntg_bridge_interface *) ntg_bridge_load(bridge_path);
 
-    if (p != NULL) {
+    if (p != NULL) 
+	{
         p->bridge_init();
-    } else {
+    } 
+	else 
+	{
         NTG_TRACE_ERROR("bridge init failed");
         fflush(stderr);
         return NTG_FAILED;
@@ -794,9 +802,12 @@ ntg_error_code ntg_server_run(const char *bridge_path,
     ntg_node_set_name(root, "root");
     server_->root = root;
 
-    if(ntg_server_add_osc_interface(server_, osc_server_port)) {
+    if(ntg_server_add_osc_interface(server_, osc_server_port)) 
+	{
         NTG_TRACE_PROGRESS_WITH_INT("running OSC interface on port", osc_server_port);
-    } else {
+    } 
+	else 
+	{
         NTG_TRACE_ERROR_WITH_INT("failed to start OSC interface on port", osc_server_port);
     }
 

@@ -120,3 +120,17 @@ void ntg_list_free(ntg_list *list)
     }
 }
 
+
+void ntg_list_push_guid( ntg_list *list, const GUID *guid )
+{
+	GUID *guids;
+	assert( list && guid );
+	assert( list->type == NTG_LIST_GUIDS );
+
+	list->elems = ntg_realloc( list->elems, ( list->n_elems + 1 ) * sizeof( GUID ) );
+
+	guids = ( GUID * ) list->elems;
+	guids[ list->n_elems ] = *guid;
+
+	list->n_elems++;
+}

@@ -358,7 +358,8 @@
 				
 				var serverArguments:Vector.<String> = new Vector.<String>;
 				serverArguments.push( "-bridge=" + config.bridgePath );
-				serverArguments.push( "-module_paths=" + config.modulesPath );
+				serverArguments.push( "-system_modules=" + config.modulesPath );
+				serverArguments.push( "-third_party_modules=" + Utilities.get3rdPartyModulesDirectory() );
 				serverArguments.push( "-host=" + config.hostPath );
 				serverArguments.push( "-xmlrpc_server_port=" + config.xmlrpcServerPort );
 				serverArguments.push( "-osc_server_port=" + config.oscServerPort );

@@ -1128,6 +1128,40 @@ void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *state
 }
 
 
+bool ntg_node_is_module_in_use( const ntg_node *node, const GUID *module_id )
+{
+	const ntg_node *child_node;
+
+	assert( node && module_id );
+
+	if( node->interface )
+	{
+		if( ntg_guids_are_equal( &node->interface->module_guid, module_id ) )
+		{
+			return true;
+		}
+	}
+
+	/* recurse child nodes */
+	child_node = node->nodes;
+	if( child_node )
+	{
+		do
+		{
+			if( ntg_node_is_module_in_use( child_node, module_id ) )
+			{
+				return true;
+			}
+
+			child_node = child_node->next;
+		}
+		while( child_node != node->nodes );
+	}
+
+	return false;
+}
+
+
 void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable )
 {
 	const ntg_node *child_node;

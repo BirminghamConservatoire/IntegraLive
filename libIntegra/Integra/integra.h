@@ -422,7 +422,8 @@ LIBINTEGRA_API void ntg_print_state(void);
 /** \brief Create a new Integra server 
  *
  * \param bridge_file the filename of the bridge being loaded
- * \param module_directories comma separated list of directories from which integra module files are loaded
+ * \param system_module_directory location of system-installed integra module files 
+ * \param third_party_module_directory location of 3rd party integra module files
  * \param xmlrpc_server_port port on which the xmlrpc interface 
  * listens for connections
  * \param osc_server_port port on which the osc interface 
@@ -438,7 +439,8 @@ LIBINTEGRA_API void ntg_print_state(void);
  *
  * */
 LIBINTEGRA_API ntg_error_code ntg_server_run(const char *bridge_file, 
-							const char *module_directories,
+							const char *system_module_directory,
+							const char *third_party_module_directory,
 							unsigned short xmlrpc_server_port, 
 							unsigned short osc_server_port, 
 							const char *osc_client_url, 

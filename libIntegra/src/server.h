@@ -63,7 +63,7 @@ typedef struct ntg_server_ {
 
 void ntg_server_halt(ntg_server *server);
 
-ntg_server *ntg_server_new(const char *osc_client_url, unsigned short osc_client_port, const char *interfaces_directories);
+ntg_server *ntg_server_new(const char *osc_client_url, unsigned short osc_client_port, const char *system_module_directory, const char *third_party_module_directory );
 void ntg_server_free(ntg_server *server);
 
 /** \brief Callback function corresponing to ih_callback in the bridge interface (see integra_bridge.h ntg_bridge_interface->ih_callback */

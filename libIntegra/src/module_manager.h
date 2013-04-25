@@ -42,6 +42,8 @@ typedef struct ntg_interface_ ntg_interface;
 #endif
 
 typedef struct ntg_module_manager_ ntg_module_manager;
+typedef struct ntg_module_install_result_ ntg_module_install_result;
+typedef struct ntg_bundle_install_result_ ntg_bundle_install_result;
 
 struct ntg_module_manager_
 {
@@ -60,10 +62,24 @@ struct ntg_module_manager_
 };
 
 
+struct ntg_module_install_result_
+{
+	GUID module_id;
+	bool was_previously_embedded;
+};
+
+
+struct ntg_bundle_install_result_
+{
+	ntg_list *new_module_ids;
+	ntg_list *previously_embedded_module_ids;
+};
+
+
+
+
 ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_root, const char *system_module_directory, const char *third_party_module_directory );
 void ntg_module_manager_free( ntg_module_manager *module_manager );
-
-void ntg_module_manager_rescan_3rdparty_modules( ntg_module_manager *module_manager, const ntg_node *root_node, ntg_list **new_3rd_party_module_ids, ntg_list **removed_3rd_party_module_ids, ntg_list **embedded_to_third_party_ids, ntg_list **third_party_to_embedded_ids );
 
 /* returns ids of new embedded modules */
 ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_manager, const char *integra_file );

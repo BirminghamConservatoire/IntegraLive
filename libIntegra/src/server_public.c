@@ -68,6 +68,53 @@ ntg_command_status ntg_unload_orphaned_embedded_modules(void)
 }
 
 
+ntg_command_status ntg_install_module( const char *file_path )
+{
+    ntg_command_status status;
+
+    ntg_lock_server();
+    status = ntg_install_module_( server_, NTG_SOURCE_C_API, file_path );
+    ntg_unlock_server();
+
+    return status;
+}
+
+
+ntg_command_status ntg_install_bundle( const char *file_path )
+{
+    ntg_command_status status;
+
+    ntg_lock_server();
+    status = ntg_install_bundle_( server_, NTG_SOURCE_C_API, file_path );
+    ntg_unlock_server();
+
+    return status;
+}
+
+
+ntg_command_status ntg_install_embedded_module( const GUID *module_id )
+{
+    ntg_command_status status;
+
+    ntg_lock_server();
+    status = ntg_install_embedded_module_( server_, NTG_SOURCE_C_API, module_id );
+    ntg_unlock_server();
+
+    return status;
+}
+
+
+ntg_command_status ntg_uninstall_module( const GUID *module_id )
+{
+    ntg_command_status status;
+
+    ntg_lock_server();
+    status = ntg_uninstall_module_( server_, NTG_SOURCE_C_API, module_id );
+    ntg_unlock_server();
+
+    return status;
+}
+
 
 ntg_command_status ntg_rename(const ntg_path * path,
         const char *name)

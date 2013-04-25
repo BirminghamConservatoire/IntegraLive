@@ -454,6 +454,73 @@ ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, nt
 }
 
 
+ntg_command_status ntg_install_module_( ntg_server *server, ntg_command_source cmd_source, const char *file_path )
+{
+    ntg_error_code error_code = NTG_NO_ERROR;
+    ntg_command_status command_status;
+	ntg_module_install_result *module_install_result;
+
+	assert( server && file_path );
+	NTG_TRACE_PROGRESS( file_path );
+
+	module_install_result = ntg_malloc( sizeof( ntg_module_install_result ) );
+	command_status.data = module_install_result;
+
+	/* todo - implement the command */
+
+	NTG_COMMAND_STATUS_INIT
+
+}
+
+ntg_command_status ntg_install_bundle_( ntg_server *server, ntg_command_source cmd_source, const char *file_path )
+{
+    ntg_error_code error_code = NTG_NO_ERROR;
+    ntg_command_status command_status;
+	ntg_bundle_install_result *bundle_install_result;
+
+	assert( server && file_path );
+	NTG_TRACE_PROGRESS( file_path );
+
+	bundle_install_result = ntg_malloc( sizeof( ntg_bundle_install_result ) );
+	bundle_install_result->new_module_ids = ntg_list_new( NTG_LIST_GUIDS );
+	bundle_install_result->previously_embedded_module_ids = ntg_list_new( NTG_LIST_GUIDS );
+	command_status.data = bundle_install_result;
+
+	/* todo - implement the command */
+
+	NTG_COMMAND_STATUS_INIT
+
+}
+
+ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id )
+{
+    ntg_error_code error_code = NTG_NO_ERROR;
+    ntg_command_status command_status;
+
+	assert( server && module_id );
+	NTG_TRACE_PROGRESS( "" );
+
+	/* todo - implement the command */
+
+	NTG_COMMAND_STATUS_INIT
+}
+
+ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id )
+{
+    ntg_error_code error_code = NTG_NO_ERROR;
+    ntg_command_status command_status;
+
+	assert( server && module_id );
+	NTG_TRACE_PROGRESS( "" );
+
+	NTG_COMMAND_STATUS_INIT
+
+	/* todo - implement the command */
+
+	NTG_RETURN_COMMAND_STATUS
+}
+
+
 ntg_command_status ntg_rename_(ntg_server *server,
         ntg_command_source cmd_source,
         const ntg_path *path,

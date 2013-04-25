@@ -88,13 +88,13 @@
 
 #define HELPSTR_UNLOAD_ORPHANED_EMBEDDED "Remove orphaned embedded modules\n\\return {'response':'module.unloadorphanedembedded'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
-#define HELPSTR_INSTALL_INTEGRA_MODULE_FILE "Install 3rd party module from integra-module file\n\\param <string module file path>\n\\return {'response':'module.installintegramodulefile', module_id:<string>, was_previously_embedded:<boolean>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+#define HELPSTR_INSTALL_INTEGRA_MODULE_FILE "Install 3rd party module from integra-module file\n\\param <string module file path>\n\\return {'response':'module.installintegramodulefile', moduleid:<string>, waspreviouslyembedded:<boolean>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
-#define HELPSTR_INSTALL_INTEGRA_BUNDLE_FILE "Install 3rd party modules from integra-bundle file\n\\param <string bundle file path>\n\\return {'response':'module.installintegrabundlefile', new_module_ids:<array>, previously_embedded_module_ids:<array>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+#define HELPSTR_INSTALL_INTEGRA_BUNDLE_FILE "Install 3rd party modules from integra-bundle file\n\\param <string bundle file path>\n\\return {'response':'module.installintegrabundlefile', newmoduleids:<array>, previouslyembeddedmoduleids:<array>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
 #define HELPSTR_INSTALL_EMBEDDED_MODULE "Install embedded module\n\\param <string module guid>\n\\return {'response':'module.installembeddedmodule'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
-#define HELPSTR_UNINSTALL_MODULE "Uninstall 3rd party module\n\\param <string module guid>\n\\return {'response':'module.uninstallmodule'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+#define HELPSTR_UNINSTALL_MODULE "Uninstall 3rd party module\n\\param <string module guid>\n\\return {'response':'module.uninstallmodule, remainsasembedded:<boolean>'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
 #define RESPONSE_LABEL      "response"
 #define NTG_NULL_STRING     "None"
@@ -1225,11 +1225,11 @@ static void *ntg_xmlrpc_install_module_callback( ntg_server * server, const int 
     xmlrpc_DECREF(xmlrpc_temp);
 
     xmlrpc_temp = xmlrpc_string_new(env, module_id_string );
-    xmlrpc_struct_set_value(env, struct_, "module_id", xmlrpc_temp);
+    xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
 	xmlrpc_temp = xmlrpc_bool_new(env, result->was_previously_embedded );
-    xmlrpc_struct_set_value(env, struct_, "was_previously_embedded", xmlrpc_temp);
+    xmlrpc_struct_set_value(env, struct_, "waspreviouslyembedded", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
     /* free out-of-place memory */
@@ -1288,7 +1288,7 @@ static void *ntg_xmlrpc_install_bundle_callback( ntg_server * server, const int 
 		ntg_free( module_id_string );
     }
 
-    xmlrpc_struct_set_value(env, struct_, "new_module_ids", array_);
+    xmlrpc_struct_set_value(env, struct_, "newmoduleids", array_);
     xmlrpc_DECREF(array_);
 
 	number_of_previously_embedded_modules = result->previously_embedded_module_ids->n_elems;
@@ -1304,7 +1304,7 @@ static void *ntg_xmlrpc_install_bundle_callback( ntg_server * server, const int 
 		ntg_free( module_id_string );
     }
 
-    xmlrpc_struct_set_value(env, struct_, "previously_embedded_module_ids", array_);
+    xmlrpc_struct_set_value(env, struct_, "previouslyembeddedmoduleids", array_);
     xmlrpc_DECREF(array_);
 
 	/* free out-of-place memory */
@@ -1360,6 +1360,7 @@ static void *ntg_xmlrpc_uninstall_module_callback( ntg_server * server, const in
 	GUID module_id;
     ntg_command_status command_status;
     xmlrpc_env *env;
+	ntg_module_uninstall_result *result;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
 
 	assert( server );
@@ -1382,10 +1383,19 @@ static void *ntg_xmlrpc_uninstall_module_callback( ntg_server * server, const in
 		return ntg_xmlrpc_error( env, command_status.error_code);
 	}
 
+	result = ( ntg_module_uninstall_result * ) command_status.data;
+
     struct_ = xmlrpc_struct_new(env);
     xmlrpc_temp = xmlrpc_string_new(env, "module.uninstallmodule");
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
+
+	xmlrpc_temp = xmlrpc_bool_new( env, result->remains_as_embedded );
+    xmlrpc_struct_set_value( env, struct_, "remainsasembedded", xmlrpc_temp );
+    xmlrpc_DECREF( xmlrpc_temp );
+
+	/* free out-of-place memory */
+	ntg_free( result );
 
     return struct_;
 }
@@ -1789,12 +1799,17 @@ static xmlrpc_value *ntg_xmlrpc_install_module_file(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
+    const char *file_name;
+    size_t len;
+
     NTG_TRACE_VERBOSE("");
+
+    xmlrpc_decompose_value(env, paramArrayP, "(s#)", &file_name, &len);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_install_module_callback, 1, (void *)env);
+    return ntg_server_do_va(&ntg_xmlrpc_install_module_callback, 2, (void *)env, file_name );
 }
 
 
@@ -1802,12 +1817,17 @@ static xmlrpc_value *ntg_xmlrpc_install_bundle_file(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
+    const char *file_name;
+    size_t len;
+
     NTG_TRACE_VERBOSE("");
+
+    xmlrpc_decompose_value(env, paramArrayP, "(s#)", &file_name, &len);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_install_bundle_callback, 1, (void *)env);
+    return ntg_server_do_va(&ntg_xmlrpc_install_bundle_callback, 2, (void *)env, file_name );
 }
 
 
@@ -1815,12 +1835,17 @@ static xmlrpc_value *ntg_xmlrpc_install_embedded_module(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
+    const char *module_id_string;
+    size_t len;
+
     NTG_TRACE_VERBOSE("");
+
+    xmlrpc_decompose_value(env, paramArrayP, "(s#)", &module_id_string, &len);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_install_embedded_module_callback, 1, (void *)env);
+    return ntg_server_do_va(&ntg_xmlrpc_install_embedded_module_callback, 2, (void *)env, module_id_string );
 }
 
 
@@ -1828,12 +1853,17 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
+    const char *module_id_string;
+    size_t len;
+
     NTG_TRACE_VERBOSE("");
+
+    xmlrpc_decompose_value(env, paramArrayP, "(s#)", &module_id_string, &len);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_uninstall_module_callback, 1, (void *)env);
+    return ntg_server_do_va(&ntg_xmlrpc_uninstall_module_callback, 2, (void *)env, module_id_string );
 }
 
 
@@ -1969,13 +1999,13 @@ void *ntg_xmlrpc_server_run(void *portv)
             &ntg_xmlrpc_interfacelist, NULL, "S:",
             HELPSTR_INTERFACELIST);
 	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.interfaceinfo",
-            &ntg_xmlrpc_interfaceinfo, NULL, "S:",
+            &ntg_xmlrpc_interfaceinfo, NULL, "S:s",
             HELPSTR_INTERFACEINFO);
 	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.endpoints",
-            &ntg_xmlrpc_endpoints, NULL, "S:",
+            &ntg_xmlrpc_endpoints, NULL, "S:s",
             HELPSTR_ENDPOINTS);
 	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.widgets",
-            &ntg_xmlrpc_widgets, NULL, "S:",
+            &ntg_xmlrpc_widgets, NULL, "S:s",
             HELPSTR_WIDGETS);
     xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.nodelist",
             &ntg_xmlrpc_nodelist, NULL, "S:A",

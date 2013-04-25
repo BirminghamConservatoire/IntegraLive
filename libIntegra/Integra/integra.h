@@ -453,7 +453,12 @@ LIBINTEGRA_API ntg_command_status ntg_install_embedded_module( const GUID *modul
 /** \brief uninstall a 3rd party module
  * \param *module_id: id of the 3rd party module to uninstall
  * \return a struct of type ntg_command_status. If the function succeeded,
- * this will contain the error_code NTG_NO_ERROR.
+ * this will contain the error_code NTG_NO_ERROR, and the data member will point to 
+ * a struct of type ntg_module_uninstall_result.  This struct contains the bool
+ * remains_as_embedded.  This value informs the caller as to whether the uninstalled 
+ * is still loaded into memory as an embedded module, due to being currently in use.
+ * Note: it is the caller's responsibility to free the ntg_module_uninstall_result 
+ * using ntg_free
  * \error possible return values for error status are given in integra_error.h *
  * */
 

@@ -63,7 +63,19 @@ package components.utils
 		
 		public static function get integraFileExtension():String
 		{
-			return ".integra"
+			return ".integra";
+		}
+
+		
+		public static function get moduleFileExtension():String
+		{
+			return "integra-module";
+		}
+
+		
+		public static function get bundleFileExtension():String
+		{
+			return "integra-bundle";
 		}
 		
 		

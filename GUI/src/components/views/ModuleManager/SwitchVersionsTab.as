@@ -84,14 +84,12 @@ package components.views.ModuleManager
 					case ColorScheme.LIGHT:
 						_labelColor = 0x747474;
 						_arrowColor = 0x000000;
-						//_controlBackgroundColor = 0xcfcfcf;
 						setButtonTextColor( _switchVersionsButton, 0x6D6D6D, 0x9e9e9e );
 						break;
 					
 					case ColorScheme.DARK:
 						_labelColor = 0x8c8c8c;
 						_arrowColor = 0xffffff;
-						//_controlBackgroundColor = 0x313131;
 						setButtonTextColor( _switchVersionsButton, 0x939393, 0x626262 );
 						break;
 				}
@@ -429,7 +427,6 @@ package components.views.ModuleManager
 		
 		private var _switchVersionsButton:Button = new Button;
 		
-		private var _controlBackgroundColor:uint;
 		private var _labelColor:uint;
 		
 		private var _updateFlagged:Boolean = false;

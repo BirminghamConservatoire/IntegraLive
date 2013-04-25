@@ -115,6 +115,7 @@ package components.model.modelLoader
 			_mode = mode;
 			_presuppliedID = presuppliedID;
 
+			_shouldAddDefaultNewProjectObjects = false;
 			_error = null;
 			_topLevelLoadedObjectPaths = new Vector.<Array>;
 			_loadHierarchyLevel = branchPath.length + 1;
@@ -122,10 +123,55 @@ package components.model.modelLoader
 			var interfacesToLoad:Vector.<String> = new Vector.<String>;
 			for each( var guid:String in newEmbeddedModuleGuids )
 			{
+				Assert.assertFalse( _model.getInterfaceDefinitionByModuleGuid( guid ) );
+				
 				interfacesToLoad.push( guid );
+				_model.interfaceList.push( guid );
 			}
 			
 			loadInterfaceDefinitions( interfacesToLoad );
+		}
+		
+		
+		public function loadNewlyInstalledInterfaceDefinitions( newModuleGuids:Array ):void
+		{
+			_mode = LOADING_NEW_INTERFACES;
+			
+			_shouldAddDefaultNewProjectObjects = false;
+			_error = null;
+			
+			var interfacesToLoad:Vector.<String> = new Vector.<String>;
+			for each( var guid:String in newModuleGuids )
+			{
+				Assert.assertFalse( _model.getInterfaceDefinitionByModuleGuid( guid ) );
+				
+				interfacesToLoad.push( guid );
+				_model.interfaceList.push( guid );
+			}
+			
+			loadInterfaceDefinitions( interfacesToLoad );
+		}		
+		
+		
+		public function handleModuleSourcesChanged( moduleGuids:Array, previousModuleSource:String, newModuleSource:String ):void
+		{
+			for each( var moduleGuid:String in moduleGuids )
+			{
+				var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( moduleGuid );
+				if( !interfaceDefinition )
+				{
+					Trace.error( "Can't find embedded module", moduleGuid );
+					continue;
+				}
+				
+				if( interfaceDefinition.moduleSource != previousModuleSource )
+				{
+					Trace.error( "Unexpected module source", moduleGuid, interfaceDefinition.moduleSource );
+					continue;
+				}
+				
+				interfaceDefinition.moduleSource = newModuleSource;
+			}
 		}
 		
 		
@@ -188,6 +234,11 @@ package components.model.modelLoader
 				case IMPORTING_BLOCK:
 				case IMPORTING_MODULE:
 					instancesCall.addArrayParam( _branchPath );
+					break;
+				
+				case LOADING_NEW_INTERFACES:
+				default:
+					Assert.assertTrue( false );
 					break;
 			}
 			
@@ -345,6 +396,12 @@ package components.model.modelLoader
  			if( _timeoutTimer.running )
 			{
 				_timeoutTimer.stop();
+			}
+			
+			if( _mode == LOADING_NEW_INTERFACES )
+			{
+				Assert.assertTrue( _loadPhase, ModelLoadPhase.INTERFACE_DEFINITIONS );
+				loadComplete();
 			}
 			
 			switch( _loadPhase )
@@ -1150,6 +1207,7 @@ package components.model.modelLoader
 					_error = "This file cannot be imported as a module.\n\nTry opening it as a project, or importing it as a track or block";
 					break;
 				
+				case LOADING_NEW_INTERFACES:
 				default:
 					Assert.assertFalse( true );
 					break;
@@ -1413,6 +1471,7 @@ package components.model.modelLoader
 				case LOADING_ALL:
 					break;
 					
+				case LOADING_NEW_INTERFACES:
 				default:
 					Assert.assertTrue( false );
 					break;
@@ -1465,6 +1524,7 @@ package components.model.modelLoader
 		public static const IMPORTING_TRACK:String = "importingTrack";
 		public static const IMPORTING_BLOCK:String = "importingBlock";
 		public static const IMPORTING_MODULE:String = "importingModule";
+		public static const LOADING_NEW_INTERFACES:String = "loadingNewInterfaces";
 		
 		
 		private var _model:IntegraModel = null;

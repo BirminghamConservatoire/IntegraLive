@@ -203,7 +203,7 @@ package components.views.ModuleManager
 		private var _tabNavigator:TabNavigator = new TabNavigator;
 		private var _upgradeTab:UpgradeTab = new UpgradeTab;
 		private var _switchVersionsTab:Canvas = new SwitchVersionsTab;
-		private var _installTab:Canvas = new Canvas;
+		private var _installTab:InstallTab = new InstallTab;
 		
 		private var _backgroundColor:uint = 0;
 		private var _borderColor:uint = 0;

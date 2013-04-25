@@ -81,13 +81,11 @@ package components.views.ModuleManager
 					default:
 					case ColorScheme.LIGHT:
 						_labelColor = 0x747474;
-						//_controlBackgroundColor = 0xcfcfcf;
 						setButtonTextColor( _upgradeButton, 0x6D6D6D, 0x9e9e9e );
 						break;
 					
 					case ColorScheme.DARK:
 						_labelColor = 0x8c8c8c;
-						//_controlBackgroundColor = 0x313131;
 						setButtonTextColor( _upgradeButton, 0x939393, 0x626262 );
 						break;
 				}
@@ -339,7 +337,6 @@ package components.views.ModuleManager
 
 		private var _upgradeButton:Button = new Button;
 		
-		//private var _controlBackgroundColor:uint;
 		private var _labelColor:uint;
 		
 		private var _updateFlagged:Boolean = false;

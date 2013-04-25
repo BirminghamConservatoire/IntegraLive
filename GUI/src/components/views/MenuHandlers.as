@@ -32,6 +32,7 @@ package components.views
 	
 	import components.controller.IntegraController;
 	import components.controller.events.AllDataChangedEvent;
+	import components.controller.moduleManagement.InstallModules;
 	import components.controller.serverCommands.NextScene;
 	import components.controller.serverCommands.PreviousScene;
 	import components.controller.userDataCommands.SetColorScheme;
@@ -193,7 +194,18 @@ package components.views
 				preferencesItem.addEventListener( Event.PREPARING, onUpdateShowPreferences ); 
 				preferencesItem.keyEquivalent = ",";
 				fileMenu.submenu.addItem( preferencesItem );
-				
+			}
+
+			//separator
+			fileMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+			
+			var installItem:NativeMenuItem = new NativeMenuItem( "Install 3rd Party Modules..." );
+			installItem.addEventListener( Event.SELECT, onInstall3rdPartyModules ); 
+			fileMenu.submenu.addItem( installItem );
+
+			
+			if( Utilities.isWindows )
+			{
 				//separator
 				fileMenu.submenu.addItem( new NativeMenuItem( "", true ) );
 				
@@ -538,7 +550,7 @@ package components.views
 		}
 		
 		
-		private function onShowPreferences(event:Event):void
+		private function onShowPreferences( event:Event ):void
 		{ 
 			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
 			viewMode.preferencesOpen = !viewMode.preferencesOpen;
@@ -546,6 +558,12 @@ package components.views
 			_controller.activateUndoStack = false;
 			_controller.processCommand( new SetViewMode( viewMode ) );
 			_controller.activateUndoStack = true;
+		}
+		
+		
+		private function onInstall3rdPartyModules( event:Event ):void
+		{
+			InstallModules.doFileDialog();
 		}
 
 		

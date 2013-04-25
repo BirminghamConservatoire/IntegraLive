@@ -463,13 +463,22 @@ ntg_command_status ntg_install_module_( ntg_server *server, ntg_command_source c
 	assert( server && file_path );
 	NTG_TRACE_PROGRESS( file_path );
 
+	NTG_COMMAND_STATUS_INIT
+
 	module_install_result = ntg_malloc( sizeof( ntg_module_install_result ) );
 	command_status.data = module_install_result;
 
 	/* todo - implement the command */
 
-	NTG_COMMAND_STATUS_INIT
+	//the following is test code...
+	/*
+	ntg_string_to_guid( "01234567-89ab-cdef-0123-456789abcdef", &module_install_result->module_id );
+	module_install_result->was_previously_embedded = false;
+	*/
+	Sleep( 1000 );
 
+
+	NTG_RETURN_COMMAND_STATUS
 }
 
 ntg_command_status ntg_install_bundle_( ntg_server *server, ntg_command_source cmd_source, const char *file_path )
@@ -481,6 +490,8 @@ ntg_command_status ntg_install_bundle_( ntg_server *server, ntg_command_source c
 	assert( server && file_path );
 	NTG_TRACE_PROGRESS( file_path );
 
+	NTG_COMMAND_STATUS_INIT
+
 	bundle_install_result = ntg_malloc( sizeof( ntg_bundle_install_result ) );
 	bundle_install_result->new_module_ids = ntg_list_new( NTG_LIST_GUIDS );
 	bundle_install_result->previously_embedded_module_ids = ntg_list_new( NTG_LIST_GUIDS );
@@ -488,8 +499,20 @@ ntg_command_status ntg_install_bundle_( ntg_server *server, ntg_command_source c
 
 	/* todo - implement the command */
 
-	NTG_COMMAND_STATUS_INIT
+	//the following is test code...
+	{
+		/*
+		GUID test1, test2;
+		ntg_string_to_guid( "01234567-89ab-cdef-0123-456789abcdef", &test1 );
+		ntg_string_to_guid( "fedcba98-7654-3210-fedc-ba9876543210", &test2 );
+		ntg_list_push_guid( bundle_install_result->new_module_ids, &test1 );
+		ntg_list_push_guid( bundle_install_result->previously_embedded_module_ids, &test2 );
+		*/
+	}
+	Sleep( 5000 );
 
+
+	NTG_RETURN_COMMAND_STATUS
 }
 
 ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id )
@@ -500,20 +523,26 @@ ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_command
 	assert( server && module_id );
 	NTG_TRACE_PROGRESS( "" );
 
+	NTG_COMMAND_STATUS_INIT
+
 	/* todo - implement the command */
 
-	NTG_COMMAND_STATUS_INIT
+	NTG_RETURN_COMMAND_STATUS
 }
 
 ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id )
 {
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
+	ntg_module_uninstall_result *module_uninstall_result;
 
 	assert( server && module_id );
 	NTG_TRACE_PROGRESS( "" );
 
 	NTG_COMMAND_STATUS_INIT
+
+	module_uninstall_result = ntg_malloc( sizeof( ntg_module_uninstall_result ) );
+	command_status.data = module_uninstall_result;
 
 	/* todo - implement the command */
 

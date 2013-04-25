@@ -25,6 +25,7 @@ package components.utils
 	import flash.geom.Point;
 	
 	import mx.containers.Canvas;
+	import mx.core.ScrollPolicy;
 	
 	import spark.components.Label;
 	
@@ -35,6 +36,8 @@ package components.utils
 			super();
 
 			height = _height;
+			horizontalScrollPolicy = ScrollPolicy.OFF;
+			verticalScrollPolicy = ScrollPolicy.OFF;
 			
 			_label.setStyle( "left", _height );
 			_label.setStyle( "right", 0 );

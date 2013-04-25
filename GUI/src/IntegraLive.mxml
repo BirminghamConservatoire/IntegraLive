@@ -52,6 +52,7 @@
 			import components.controller.events.AllDataChangedEvent;
 			import components.controller.events.CrashReportEvent;
 			import components.controller.events.ImportEvent;
+			import components.controller.events.InstallEvent;
 			import components.controller.events.IntegraCommandEvent;
 			import components.controller.events.LoadFailedEvent;
 			import components.controller.events.ReloadAllDataEvent;
@@ -247,6 +248,7 @@
 				_controller.addEventListener( AllDataChangedEvent.EVENT_NAME, onAllDataChanged, false, 1 );
 				_controller.addEventListener( ReloadAllDataEvent.EVENT_NAME, onReloadAllData );
 				_controller.addEventListener( ImportEvent.EVENT_NAME, onImport );
+				_controller.addEventListener( InstallEvent.EVENT_NAME, onInstall );
 				_controller.addEventListener( LoadFailedEvent.EVENT_NAME, onLoadFailed );
 				_controller.addEventListener( SaveFailedEvent.EVENT_NAME, onSaveFailed );
 				_controller.addEventListener( ServerShutdownEvent.EVENT_NAME, onServerShutdownResponse );
@@ -421,9 +423,28 @@
 						_controller.processCommand( new ResetAllBlocks() );
 						_controller.dispatchEvent( new AllDataChangedEvent() );
 						_controller.processCommand( new PollForUpgradableModules() );
-
 						break;
 
+					default:
+						Assert.assertTrue( false );
+						break;
+				}
+			}
+
+			
+			private function onInstall( event:InstallEvent ):void
+			{
+				switch( event.mode )
+				{
+					case InstallEvent.STARTED:
+						displayProgressPopup( event.description );
+						break;
+					
+					case InstallEvent.FINISHED:
+						hideProgressPopup();
+						_controller.dispatchEvent( new AllDataChangedEvent() );
+						break;
+					
 					default:
 						Assert.assertTrue( false );
 						break;

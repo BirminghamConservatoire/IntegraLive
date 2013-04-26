@@ -62,7 +62,7 @@ typedef enum ntg_error_code_ {
 	NTG_REENTRANCE_ERROR = 7,
 	NTG_FILE_VALIDATION_ERROR = 8,
 	NTG_FILE_MORE_RECENT_ERROR = 9,
-	NTG_MODULE_ALREADY_LOADED = 10
+	NTG_MODULE_ALREADY_INSTALLED = 10
 } ntg_error_code;
 
 /** \brief returns a textual description of a given error code */

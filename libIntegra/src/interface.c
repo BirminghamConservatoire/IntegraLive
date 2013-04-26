@@ -494,6 +494,7 @@ void ntg_interface_free( ntg_interface *interface )
 {
 	assert( interface );
 
+	if( interface->file_path )		ntg_free( interface->file_path );
 	if( interface->info )			ntg_interface_info_free( interface->info );
 	if( interface->endpoint_list )	ntg_endpoint_list_free( interface->endpoint_list );
 	if( interface->widget_list )	ntg_widget_list_free( interface->widget_list );
@@ -1395,7 +1396,7 @@ bool ntg_interface_has_implementation( const ntg_interface *interface )
 }
 
 
-bool ntg_interface_should_store_module( const ntg_interface *interface )
+bool ntg_interface_should_embed_module( const ntg_interface *interface )
 {
 	return !interface->info->implemented_in_libintegra;
 }

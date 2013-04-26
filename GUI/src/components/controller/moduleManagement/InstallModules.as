@@ -29,7 +29,6 @@ package components.controller.moduleManagement
 	
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
-	import components.controller.events.ImportEvent;
 	import components.controller.events.InstallEvent;
 	import components.controller.events.LoadCompleteEvent;
 	import components.model.IntegraModel;
@@ -95,7 +94,7 @@ package components.controller.moduleManagement
 					count++;
 					if( count == maximumDescriptionItems )
 					{
-						description += ( "  ... <more files>" );
+						description += ( " <more files>" );
 					}
 				}
 				
@@ -171,7 +170,7 @@ package components.controller.moduleManagement
 				}
 			}
 			
-			_modelLoader.handleModuleSourcesChanged( previouslyEmbeddedModuleGuids, InterfaceDefinition.MODULE_EMBEDDED, InterfaceDefinition.MODULE_THIRD_PARTY );
+			IntegraModel.singleInstance.handleModuleSourcesChanged( previouslyEmbeddedModuleGuids, InterfaceDefinition.MODULE_EMBEDDED, InterfaceDefinition.MODULE_THIRD_PARTY );
 
 			if( newModuleGuids.length > 0 )
 			{

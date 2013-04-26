@@ -1330,7 +1330,7 @@ static void *ntg_xmlrpc_install_embedded_module_callback( ntg_server * server, c
     env = va_arg( argv, xmlrpc_env * );
     module_id_string = va_arg( argv, char * );
 
-	if( !ntg_string_to_guid( module_id_string, &module_id ) )
+	if( ntg_string_to_guid( module_id_string, &module_id ) != NTG_NO_ERROR )
 	{
         free( module_id_string );
 		return ntg_xmlrpc_error( env, NTG_ERROR );
@@ -1368,7 +1368,7 @@ static void *ntg_xmlrpc_uninstall_module_callback( ntg_server * server, const in
     env = va_arg( argv, xmlrpc_env * );
     module_id_string = va_arg( argv, char * );
 
-	if( !ntg_string_to_guid( module_id_string, &module_id ) )
+	if( ntg_string_to_guid( module_id_string, &module_id ) != NTG_NO_ERROR )
 	{
         free( module_id_string );
 		return ntg_xmlrpc_error( env, NTG_ERROR );

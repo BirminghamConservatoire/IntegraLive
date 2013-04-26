@@ -249,21 +249,21 @@ void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_pa
 }
 
 
-void ntg_find_module_guids_to_store( ntg_list *module_guids_to_store, const ntg_node *node )
+void ntg_find_module_guids_to_embed( ntg_list *module_guids_to_embed, const ntg_node *node )
 {
 	int i;
 	bool already_found;
 	GUID *guids;
 	const ntg_node *child_iterator;
 
-	assert( module_guids_to_store && node );
+	assert( module_guids_to_embed && node );
 
-	if( ntg_interface_should_store_module( node->interface ) )
+	if( ntg_interface_should_embed_module( node->interface ) )
 	{
 		already_found = false;
-		guids = ( GUID * ) module_guids_to_store->elems;
+		guids = ( GUID * ) module_guids_to_embed->elems;
 
-		for( i = 0; i < module_guids_to_store->n_elems; i++ )
+		for( i = 0; i < module_guids_to_embed->n_elems; i++ )
 		{
 			if( ntg_guids_are_equal( &guids[ i ], &node->interface->module_guid ) )
 			{
@@ -274,10 +274,10 @@ void ntg_find_module_guids_to_store( ntg_list *module_guids_to_store, const ntg_
 
 		if( !already_found )
 		{
-			module_guids_to_store->n_elems++;
-			guids = ntg_realloc( module_guids_to_store->elems, module_guids_to_store->n_elems * sizeof( GUID ) );
-			guids[ module_guids_to_store->n_elems - 1 ] = node->interface->module_guid;
-			module_guids_to_store->elems = guids;
+			module_guids_to_embed->n_elems++;
+			guids = ntg_realloc( module_guids_to_embed->elems, module_guids_to_embed->n_elems * sizeof( GUID ) );
+			guids[ module_guids_to_embed->n_elems - 1 ] = node->interface->module_guid;
+			module_guids_to_embed->elems = guids;
 		}
 	}
 
@@ -287,7 +287,7 @@ void ntg_find_module_guids_to_store( ntg_list *module_guids_to_store, const ntg_
 	{
 		do 
 		{
-			ntg_find_module_guids_to_store( module_guids_to_store, child_iterator );
+			ntg_find_module_guids_to_embed( module_guids_to_embed, child_iterator );
 			child_iterator = child_iterator->next;
 
 		} 
@@ -298,21 +298,21 @@ void ntg_find_module_guids_to_store( ntg_list *module_guids_to_store, const ntg_
 
 void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const ntg_module_manager *module_manager )
 {
-	ntg_list *module_guids_to_store;
+	ntg_list *module_guids_to_embed;
 	int i;
 	const GUID *guids;
 	const ntg_interface *interface;
 	char *unique_interface_name;
-	char *target_path, *source_path;
+	char *target_path;
 
 	assert( zip_file && node );
 
-	module_guids_to_store = ntg_list_new( NTG_LIST_GUIDS );
+	module_guids_to_embed = ntg_list_new( NTG_LIST_GUIDS );
 
-	ntg_find_module_guids_to_store( module_guids_to_store, node );
-	guids = (const GUID *) module_guids_to_store->elems;
+	ntg_find_module_guids_to_embed( module_guids_to_embed, node );
+	guids = (const GUID *) module_guids_to_embed->elems;
 
-	for( i = 0; i < module_guids_to_store->n_elems; i++ )
+	for( i = 0; i < module_guids_to_embed->n_elems; i++ )
 	{
 		interface = ntg_get_interface_by_module_id( module_manager, &guids[ i ] );
 		if( !interface )
@@ -321,21 +321,24 @@ void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const
 			continue;
 		}
 
+		if( !interface->file_path )
+		{
+			NTG_TRACE_ERROR( "Failed to locate module file" );
+			continue;
+		}
+
 		unique_interface_name = ntg_module_manager_get_unique_interface_name( interface );
 
 		target_path = ntg_malloc( strlen( NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME ) + strlen( unique_interface_name ) + strlen( NTG_MODULE_SUFFIX ) + 2 );
 		sprintf( target_path, "%s%s.%s", NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME, unique_interface_name, NTG_MODULE_SUFFIX );
 
-		source_path = ntg_module_manager_get_module_path( module_manager, interface );
-
-		ntg_copy_file_to_zip( zip_file, target_path, source_path );
+		ntg_copy_file_to_zip( zip_file, target_path, interface->file_path );
 
 		ntg_free( target_path );
-		ntg_free( source_path );
 		ntg_free( unique_interface_name );
 	}
 
-	ntg_list_free( module_guids_to_store );
+	ntg_list_free( module_guids_to_embed );
 }
 
 

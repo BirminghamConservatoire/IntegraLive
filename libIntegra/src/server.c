@@ -760,6 +760,12 @@ ntg_error_code ntg_server_run(const char *bridge_path,
         return NTG_ERROR;
     }
 
+    if( third_party_module_directory == NULL) 
+	{
+        NTG_TRACE_ERROR("third_party_module_directory is NULL");
+        return NTG_ERROR;
+    }
+
     server_ = ntg_server_new( osc_client_url, osc_client_port, system_module_directory, third_party_module_directory );
 
     if (bridge_path == NULL) 

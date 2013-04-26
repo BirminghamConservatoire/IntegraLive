@@ -8,7 +8,9 @@ package components.views.ModuleManager
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
 	
+	import components.controller.moduleManagement.InstallEmbeddedModules;
 	import components.controller.moduleManagement.InstallModules;
+	import components.controller.moduleManagement.UninstallModules;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
@@ -29,14 +31,16 @@ package components.views.ModuleManager
 			addChild( _3rdPartyModulesLabel );
 			addChild( _embeddedModulesLabel );
 
+			_3rdPartyModulesLabel.text = "3rd party modules:";
 			_3rdPartyModulesList.multiSelection = true;
 			_3rdPartyModulesList.addEventListener( ModuleManagerListItem.SELECT_EVENT, on3rdPartySelected );
 			addChild( _3rdPartyModulesList );
 			
+			_embeddedModulesLabel.text = "Embedded modules:";
 			_embeddedModulesList.multiSelection = true;
 			_embeddedModulesList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onEmbeddedSelected );
 			addChild( _embeddedModulesList );
-			
+
 			_installButton.setStyle( "skin", TextButtonSkin );
 			_installButton.label = "Install From Disk";
 			_installButton.addEventListener( MouseEvent.CLICK, onClickInstallButton );
@@ -94,44 +98,20 @@ package components.views.ModuleManager
 			
 			if( thirdPartyModules.length > 0 )
 			{
-				_3rdPartyModulesLabel.text = "Installed 3rd party modules:";
-
 				_3rdPartyModulesList.items = thirdPartyModules;
 				
 				_embeddedModulesList.removeAllItems();
 				
-				_3rdPartyModulesList.visible = true;
-				_uninstallButton.visible = true;
-				
 				updateUninstallEnable();
-			}
-			else
-			{
-				_3rdPartyModulesLabel.text = "No 3rd party modules are installed";
-
-				_3rdPartyModulesList.visible = false;
-				_uninstallButton.visible = false;
 			}
 
 			var embeddedModules:Vector.<ModuleManagerListItem> = getModulesBySource( InterfaceDefinition.MODULE_EMBEDDED );
 			
 			if( embeddedModules.length > 0 )
 			{
-				_embeddedModulesLabel.text = "Embedded modules:";
-				
 				_embeddedModulesList.items = embeddedModules;
 				
-				_embeddedModulesList.visible = true;
-				_embeddedModulesLabel.visible = true;
-				_installEmbeddedButton.visible = true;
-				
 				updateInstallEmbeddedEnable();
-			}
-			else
-			{
-				_embeddedModulesList.visible = false;
-				_embeddedModulesLabel.visible = false;
-				_installEmbeddedButton.visible = false;
 			}
 		}
 
@@ -262,13 +242,35 @@ package components.views.ModuleManager
 		
 		private function onClickUninstallButton( event:MouseEvent ):void
 		{
-			//todo
+			var moduleGuidsToUninstall:Vector.<String> = new Vector.<String>;
+			
+			for each( var item:ModuleManagerListItem in _3rdPartyModulesList.items )
+			{
+				if( item.selected )
+				{
+					moduleGuidsToUninstall.push( item.guid );
+				}
+			}
+						
+			UninstallModules.doFileDialog( model, moduleGuidsToUninstall );
 		}
 
 		
 		private function onClickInstallEmbeddedButton( event:MouseEvent ):void
 		{
-			//todo
+			var embeddedModulesGuidsToInstall:Vector.<String> = new Vector.<String>;
+			
+			for each( var item:ModuleManagerListItem in _embeddedModulesList.items )
+			{
+				if( item.selected )
+				{
+					embeddedModulesGuidsToInstall.push( item.guid );
+				}
+			}
+			
+			controller.activateUndoStack = false;
+			controller.processCommand( new InstallEmbeddedModules( embeddedModulesGuidsToInstall ) );
+			controller.activateUndoStack = true;
 		}
 		
 		

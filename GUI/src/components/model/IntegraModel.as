@@ -1007,6 +1007,71 @@ package components.model
 			}
 		}
 		
+		
+		public function handleModuleSourcesChanged( moduleGuids:Array, previousModuleSource:String, newModuleSource:String ):void
+		{
+			for each( var moduleGuid:String in moduleGuids )
+			{
+				var interfaceDefinition:InterfaceDefinition = getInterfaceDefinitionByModuleGuid( moduleGuid );
+				if( !interfaceDefinition )
+				{
+					Trace.error( "Can't find embedded module", moduleGuid );
+					continue;
+				}
+				
+				if( interfaceDefinition.moduleSource != previousModuleSource )
+				{
+					Trace.error( "Unexpected module source", moduleGuid, interfaceDefinition.moduleSource );
+					continue;
+				}
+				
+				interfaceDefinition.moduleSource = newModuleSource;
+			}
+		}
+		
+		
+		public function removeInterfaceDefinitions( removedModuleGuids:Array ):void
+		{
+			var removedGuidMap:Object = new Object
+			
+			//remove from module id map
+			for each( var moduleGuid:String in removedModuleGuids )
+			{
+				removedGuidMap[ moduleGuid ] = 1;
+				
+				Assert.assertTrue( _interfaceDefinitionsByModuleGuid.hasOwnProperty( moduleGuid ) );
+				delete _interfaceDefinitionsByModuleGuid[ moduleGuid ];
+			}
+			
+			//remove from interface list
+			for( var i:int = _interfaceList.length - 1; i >= 0; i-- ) 
+			{
+				if( removedGuidMap.hasOwnProperty( _interfaceList[ i ] ) )
+				{
+					_interfaceList.splice( i, 1 );
+				}
+			}
+			
+			//remove from origin list
+			for each( var originList:Vector.<InterfaceDefinition> in _interfaceDefinitionsByOriginGuid )
+			{
+				for( i = originList.length - 1; i >= 0; i-- ) 
+				{
+					if( removedGuidMap.hasOwnProperty( originList[ i ] ) )
+					{
+						originList.splice( i, 1 );
+					}
+				}
+			}
+			
+			//assert that module isn't in core list
+			for each( var coreInterface:InterfaceDefinition in _coreInterfaceDefinitionsByName )
+			{
+				Assert.assertFalse( removedGuidMap.hasOwnProperty( coreInterface.moduleGuid ) );
+			}
+		}
+		
+		
 
 		public function generateNewID():int
 		{

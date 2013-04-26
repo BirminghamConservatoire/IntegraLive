@@ -60,7 +60,7 @@
 #define NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME NTG_MODULE_INNER_DIRECTORY_NAME "implementation" NTG_PATH_SEPARATOR
 
 #define NTG_IMPLEMENTATION_DIRECTORY_NAME "implementations" NTG_PATH_SEPARATOR
-#define NTG_MODULE_DIRECTORY_NAME "loaded_modules" NTG_PATH_SEPARATOR
+#define NTG_EMBEDDED_MODULE_DIRECTORY_NAME "loaded_embedded_modules" NTG_PATH_SEPARATOR
 
 #ifndef _WINDOWS
 #include <sys/stat.h>
@@ -163,24 +163,6 @@ char *ntg_module_manager_get_implementation_path( const ntg_module_manager *modu
 	ntg_free( directory_name );
 
 	return implementation_path;
-}
-
-
-char *ntg_module_manager_get_module_path( const ntg_module_manager *module_manager, const ntg_interface *interface )
-{
-	char *module_path;
-	char *unique_name;
-
-	assert( module_manager && interface );
-
-	unique_name = ntg_module_manager_get_unique_interface_name( interface );
-
-	module_path = ntg_malloc( strlen( module_manager->loaded_module_directory_root ) + strlen( unique_name ) + strlen( NTG_MODULE_SUFFIX ) + 2 );
-	sprintf( module_path, "%s%s.%s", module_manager->loaded_module_directory_root, unique_name, NTG_MODULE_SUFFIX );
-
-	ntg_free( unique_name );
-
-	return module_path;
 }
 
 
@@ -311,7 +293,6 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 {
 	unzFile unzip_file;
 	ntg_interface *interface = NULL;
-	char *stored_module_path;
 
 	assert( module_manager && filename && module_guid );
 
@@ -342,6 +323,15 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 		return false;
 	}
 
+	if( interface->info->implemented_in_libintegra && module_source != NTG_MODULE_SHIPPED_WITH_INTEGRA )
+	{
+		NTG_TRACE_ERROR_WITH_STRING( "Attempt to load 'implemented in libintegra' module as 3rd party or embedded", interface->info->name )
+		ntg_interface_free( interface );
+		unzClose( unzip_file );
+		return false;
+	}
+
+	interface->file_path = ntg_strdup( filename );
 	interface->module_source = module_source;
 
 	ntg_hashtable_add_guid_key( module_manager->module_id_map, &interface->module_guid, interface );
@@ -372,13 +362,6 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 	if( ntg_interface_has_implementation( interface ) )
 	{
 		ntg_module_manager_extract_implementation( module_manager, unzip_file, interface );
-	}
-
-	if( ntg_interface_should_store_module( interface ) )
-	{
-		stored_module_path = ntg_module_manager_get_module_path( module_manager, interface );
-		ntg_copy_file( filename, stored_module_path );
-		ntg_free( stored_module_path );
 	}
 
 	unzClose( unzip_file );
@@ -507,7 +490,6 @@ void ntg_module_manager_load_modules_from_directory( ntg_module_manager *module_
 
 void ntg_unload_module( ntg_module_manager *module_manager, ntg_interface *interface )
 {
-	char *stored_module_path;
 	ntg_list *module_id_list;
 	GUID *ids;
 	int i;
@@ -515,16 +497,14 @@ void ntg_unload_module( ntg_module_manager *module_manager, ntg_interface *inter
 
 	assert( module_manager && interface );
 
-	if( ntg_interface_should_store_module( interface ) )
-	{
-		stored_module_path = ntg_module_manager_get_module_path( module_manager, interface );
-		ntg_delete_file( stored_module_path );
-		ntg_free( stored_module_path );
-	}
-
 	if( ntg_interface_has_implementation( interface ) )
 	{
 		ntg_module_manager_delete_implementation( module_manager, interface );
+	}
+
+	if( interface->module_source == NTG_MODULE_EMBEDDED )
+	{
+		ntg_delete_file( interface->file_path );
 	}
 
 	ntg_hashtable_remove_guid_key( module_manager->module_id_map, &interface->module_guid );
@@ -662,10 +642,10 @@ ntg_error_code ntg_interpret_legacy_module_id( const ntg_module_manager *module_
 ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_root, const char *system_module_directory, const char *third_party_module_directory )
 {
 	char *implementation_directory_root;
-	char *loaded_module_directory_root;
+	char *embedded_module_directory;
 	ntg_module_manager *module_manager;
 
-	assert( scratch_directory_root && system_module_directory );
+	assert( scratch_directory_root && system_module_directory && third_party_module_directory );
 
 	module_manager = ntg_malloc( sizeof( ntg_module_manager ) );
 	module_manager->module_id_map = ntg_hashtable_new();
@@ -685,27 +665,21 @@ ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_roo
 
 	module_manager->implementation_directory_root = implementation_directory_root;
 
-	loaded_module_directory_root = ntg_strdup( scratch_directory_root );
-	loaded_module_directory_root = ntg_string_append( loaded_module_directory_root, NTG_MODULE_DIRECTORY_NAME );
+	embedded_module_directory = ntg_strdup( scratch_directory_root );
+	embedded_module_directory = ntg_string_append( embedded_module_directory, NTG_EMBEDDED_MODULE_DIRECTORY_NAME );
 
-	if( !ntg_is_directory( loaded_module_directory_root ) )
+	if( !ntg_is_directory( embedded_module_directory ) )
 	{
-		mkdir( loaded_module_directory_root );
+		mkdir( embedded_module_directory );
 	}
 
-	module_manager->loaded_module_directory_root = loaded_module_directory_root;
+	module_manager->embedded_module_directory = embedded_module_directory;
 
 	ntg_module_manager_load_modules_from_directory( module_manager, system_module_directory, NTG_MODULE_SHIPPED_WITH_INTEGRA );
 
-	if( third_party_module_directory )
-	{
-		module_manager->third_party_module_directory = ntg_strdup( third_party_module_directory );
-		ntg_module_manager_load_modules_from_directory( module_manager, module_manager->third_party_module_directory, NTG_MODULE_3RD_PARTY );
-	}
-	else
-	{
-		module_manager->third_party_module_directory = NULL;
-	}
+	ntg_module_manager_load_modules_from_directory( module_manager, third_party_module_directory, NTG_MODULE_3RD_PARTY );
+	module_manager->third_party_module_directory = ntg_strdup( third_party_module_directory );
+	module_manager->third_party_module_directory = ntg_string_append( module_manager->third_party_module_directory, NTG_PATH_SEPARATOR );
 
 	return module_manager;
 }
@@ -731,45 +705,13 @@ void ntg_module_manager_free( ntg_module_manager *module_manager )
 	ntg_delete_directory( module_manager->implementation_directory_root );
 	ntg_free( module_manager->implementation_directory_root );
 
-	ntg_delete_directory( module_manager->loaded_module_directory_root );
-	ntg_free( module_manager->loaded_module_directory_root );
+	ntg_delete_directory( module_manager->embedded_module_directory );
+	ntg_free( module_manager->embedded_module_directory );
 
-	if( module_manager->third_party_module_directory )
-	{
-		ntg_free( module_manager->third_party_module_directory );
-	}
+	ntg_free( module_manager->third_party_module_directory );
 
 	ntg_free( module_manager );
 }
-
-
-#if 0
-void ntg_module_manager_load_from_directories( ntg_module_manager *module_manager, const char *module_directories )
-{
-	const char *comma;
-	int path_length;
-	char *path;
-
-	assert( module_manager && module_directories );
-
-	/* iterate through comma-separated list */
-	for( comma = strchr( module_directories, ',' ); comma; comma = strchr( module_directories, ',' ) )
-	{
-		path_length = comma - module_directories;
-		path = ntg_malloc( path_length + 1 );
-		memcpy( path, module_directories, path_length );
-		path[ path_length ] = 0;
-
-		ntg_module_manager_load_from_directory( module_manager, path, NTG_MODULE_SHIPPED_WITH_INTEGRA );
-		ntg_free( path );
-
-		module_directories = comma + 1;
-	}
-
-	/* load from the last list entry (after last comma) */
-	ntg_module_manager_load_from_directory( module_manager, module_directories, NTG_MODULE_SHIPPED_WITH_INTEGRA );
-}
-#endif
 
 
 char *ntg_module_manager_get_patch_path( const ntg_module_manager *module_manager, const ntg_interface *interface )
@@ -831,6 +773,83 @@ void ntg_module_manager_update_module_source( ntg_module_manager *module_manager
 	}
 
 	interface->module_source = new_source;
+}
+
+
+char *ntg_module_manager_get_storage_path( ntg_module_manager *module_manager, const ntg_interface *interface )
+{
+	const char *storage_directory;
+	char *module_path;
+	char *unique_name;
+
+	assert( module_manager && interface );
+
+	switch( interface->module_source )
+	{
+		case NTG_MODULE_3RD_PARTY:
+			storage_directory = module_manager->third_party_module_directory;
+			break;
+
+		case NTG_MODULE_EMBEDDED:
+			storage_directory = module_manager->embedded_module_directory; 
+			break;
+
+		case NTG_MODULE_SHIPPED_WITH_INTEGRA:
+		default:
+			NTG_TRACE_ERROR( "Unexpected module source" );
+			return NULL;
+	}
+
+	unique_name = ntg_module_manager_get_unique_interface_name( interface );
+
+	module_path = ntg_malloc( strlen( storage_directory ) + strlen( unique_name ) + strlen( NTG_MODULE_SUFFIX ) + 2 );
+	sprintf( module_path, "%s%s.%s", storage_directory, unique_name, NTG_MODULE_SUFFIX );
+
+	ntg_free( unique_name );
+
+	return module_path;
+}
+
+
+ntg_error_code ntg_module_manager_store_module( ntg_module_manager *module_manager, const GUID *module_id )
+{
+	ntg_interface *interface;
+	char *module_storage_path;
+	ntg_error_code error_code;
+
+	assert( module_manager && module_id );
+
+	interface = ( ntg_interface * ) ntg_get_interface_by_module_id( module_manager, module_id );
+	if( !interface )
+	{
+		NTG_TRACE_ERROR( "failed to lookup interface" );
+		return NTG_ERROR;
+	}
+
+	if( !interface->file_path )
+	{
+		NTG_TRACE_ERROR( "Unknown interface file path" );
+		return NTG_ERROR;
+	}
+
+	module_storage_path = ntg_module_manager_get_storage_path( module_manager, interface );
+	if( !module_storage_path )
+	{
+		NTG_TRACE_ERROR( "failed to get storage path" );
+		return NTG_ERROR;
+	}
+
+	error_code = ntg_copy_file( interface->file_path, module_storage_path );
+	if( error_code != NTG_NO_ERROR )
+	{
+		ntg_free( module_storage_path );
+		return error_code;
+	}
+
+	ntg_free( interface->file_path );
+	interface->file_path = module_storage_path;
+
+	return NTG_NO_ERROR;
 }
 
 
@@ -931,11 +950,9 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 
 		if( ntg_module_manager_load_module( module_manager, temporary_file_name, NTG_MODULE_EMBEDDED, &loaded_module_id ) )
 		{
-			GUID *guids;
-			embedded_module_ids->elems = ntg_realloc( embedded_module_ids->elems, ( embedded_module_ids->n_elems + 1 ) * sizeof( GUID ) );
-			guids = ( GUID * )embedded_module_ids->elems;
-			guids[ embedded_module_ids->n_elems ] = loaded_module_id;
-			embedded_module_ids->n_elems ++;
+			ntg_list_push_guid( embedded_module_ids, &loaded_module_id );
+
+			ntg_module_manager_store_module( module_manager, &loaded_module_id );
 		}
 
 		CLEANUP:
@@ -1043,4 +1060,147 @@ ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_man
 	}
 
 	return orphaned_embedded_modules;
+}
+
+
+ntg_error_code ntg_module_manager_change_module_source( ntg_module_manager *module_manager, ntg_interface *interface, ntg_module_source new_source )
+{
+	char *new_file_path;
+	assert( module_manager && interface );
+
+	/* sanity checks */
+	if( interface->module_source == NTG_MODULE_SHIPPED_WITH_INTEGRA || new_source == NTG_MODULE_SHIPPED_WITH_INTEGRA )
+	{
+		return NTG_ERROR;
+	}
+
+	if( interface->module_source == new_source )
+	{
+		return NTG_ERROR;
+	}
+
+	interface->module_source = new_source;
+
+	new_file_path = ntg_module_manager_get_storage_path( module_manager, interface );
+	if( !new_file_path )
+	{
+		return NTG_FAILED;			
+	}
+
+	rename( interface->file_path, new_file_path );
+
+	ntg_free( interface->file_path );
+	interface->file_path = new_file_path;
+	
+	return NTG_NO_ERROR;
+}
+
+
+ntg_error_code ntg_module_manager_install_module( ntg_module_manager *module_manager, const char *module_file, ntg_module_install_result *result )
+{
+	bool module_was_loaded = false;
+	GUID module_id;
+	const ntg_interface *existing_interface;
+	assert( module_manager && module_file && result );
+
+	ntg_guid_set_null( &module_id );
+
+	module_was_loaded = ntg_module_manager_load_module( module_manager, module_file, NTG_MODULE_3RD_PARTY, &module_id );
+
+	if( module_was_loaded )
+	{
+		result->module_id = module_id;
+		result->was_previously_embedded = false;
+		return ntg_module_manager_store_module( module_manager, &module_id );
+	}
+
+	if( ntg_guid_is_null( &module_id ) )
+	{
+		return NTG_FILE_VALIDATION_ERROR;
+	}
+
+	existing_interface = ntg_get_interface_by_module_id( module_manager, &module_id );
+	if( !existing_interface )
+	{
+		NTG_TRACE_ERROR( "can't lookup existing interface" );
+		return NTG_FAILED;
+	}
+
+	switch( existing_interface->module_source )
+	{
+		case NTG_MODULE_SHIPPED_WITH_INTEGRA:
+		case NTG_MODULE_3RD_PARTY:
+			return NTG_MODULE_ALREADY_INSTALLED;
+
+		case NTG_MODULE_EMBEDDED:
+			result->module_id = module_id;
+			result->was_previously_embedded = true;
+			return ntg_module_manager_change_module_source( module_manager, ( ntg_interface * )existing_interface, NTG_MODULE_3RD_PARTY );
+
+		default:
+
+			NTG_TRACE_ERROR( "existing interface has unexpected module source" );
+			return NTG_FAILED;
+	}
+}
+
+
+ntg_error_code ntg_module_manager_install_embedded_module( ntg_module_manager *module_manager, const GUID *module_id )
+{
+	const ntg_interface *interface;
+	assert( module_manager && module_id );
+
+	interface = ntg_get_interface_by_module_id( module_manager, module_id );
+	if( !interface )
+	{
+		NTG_TRACE_ERROR( "Can't find interface" );
+		return NTG_ERROR;
+	}
+
+	if( interface->module_source != NTG_MODULE_EMBEDDED )
+	{
+		NTG_TRACE_ERROR( "Module isn't embedded" );
+		return NTG_ERROR;
+	}
+
+	return ntg_module_manager_change_module_source( module_manager, ( ntg_interface * ) interface, NTG_MODULE_3RD_PARTY );
+}
+
+
+ntg_error_code ntg_module_manager_uninstall_module( ntg_module_manager *module_manager, const GUID *module_id, ntg_module_uninstall_result *module_uninstall_result )
+{
+	ntg_interface *interface;
+	ntg_error_code error_code = NTG_NO_ERROR;
+
+	assert( module_manager && module_id && module_uninstall_result );
+
+	interface = ( ntg_interface * ) ntg_get_interface_by_module_id( module_manager, module_id );
+	if( !interface )
+	{
+		NTG_TRACE_ERROR( "Can't find interface" );
+		return NTG_ERROR;
+	}
+
+	if( interface->module_source != NTG_MODULE_3RD_PARTY )
+	{
+		NTG_TRACE_ERROR( "Can't uninstall module - it is not a 3rd party module" );
+		return NTG_ERROR;
+	}
+
+	if( ntg_node_is_module_in_use( server_->root, module_id ) )
+	{
+		module_uninstall_result->remains_as_embedded = true;
+		return ntg_module_manager_change_module_source( module_manager, interface, NTG_MODULE_EMBEDDED );
+	}
+
+	error_code = ntg_delete_file( interface->file_path );
+	if( error_code != NTG_NO_ERROR )
+	{
+		return error_code;
+	}
+
+	module_uninstall_result->remains_as_embedded = false;
+
+	ntg_unload_module( module_manager, interface );
+	return NTG_NO_ERROR;
 }

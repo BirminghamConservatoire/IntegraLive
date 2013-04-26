@@ -466,17 +466,17 @@ ntg_command_status ntg_install_module_( ntg_server *server, ntg_command_source c
 	NTG_COMMAND_STATUS_INIT
 
 	module_install_result = ntg_malloc( sizeof( ntg_module_install_result ) );
-	command_status.data = module_install_result;
 
-	/* todo - implement the command */
+	error_code = ntg_module_manager_install_module( server->module_manager, file_path, module_install_result );
 
-	//the following is test code...
-	/*
-	ntg_string_to_guid( "01234567-89ab-cdef-0123-456789abcdef", &module_install_result->module_id );
-	module_install_result->was_previously_embedded = false;
-	*/
-	Sleep( 1000 );
-
+	if( error_code == NTG_NO_ERROR )
+	{
+		command_status.data = module_install_result;
+	}
+	else
+	{
+		ntg_free( module_install_result );
+	}
 
 	NTG_RETURN_COMMAND_STATUS
 }
@@ -525,7 +525,7 @@ ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_command
 
 	NTG_COMMAND_STATUS_INIT
 
-	/* todo - implement the command */
+	error_code = ntg_module_manager_install_embedded_module( server->module_manager, module_id );
 
 	NTG_RETURN_COMMAND_STATUS
 }
@@ -541,10 +541,18 @@ ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source
 
 	NTG_COMMAND_STATUS_INIT
 
-	module_uninstall_result = ntg_malloc( sizeof( ntg_module_uninstall_result ) );
-	command_status.data = module_uninstall_result;
+	module_uninstall_result = ntg_calloc( 1, sizeof( ntg_module_uninstall_result ) );
 
-	/* todo - implement the command */
+	error_code = ntg_module_manager_uninstall_module( server->module_manager, module_id, module_uninstall_result );
+
+	if( error_code == NTG_NO_ERROR )
+	{
+		command_status.data = module_uninstall_result;
+	}
+	else
+	{
+		ntg_free( module_uninstall_result );
+	}
 
 	NTG_RETURN_COMMAND_STATUS
 }

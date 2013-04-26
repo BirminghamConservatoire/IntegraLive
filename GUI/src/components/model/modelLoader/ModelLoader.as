@@ -153,28 +153,6 @@ package components.model.modelLoader
 		}		
 		
 		
-		public function handleModuleSourcesChanged( moduleGuids:Array, previousModuleSource:String, newModuleSource:String ):void
-		{
-			for each( var moduleGuid:String in moduleGuids )
-			{
-				var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( moduleGuid );
-				if( !interfaceDefinition )
-				{
-					Trace.error( "Can't find embedded module", moduleGuid );
-					continue;
-				}
-				
-				if( interfaceDefinition.moduleSource != previousModuleSource )
-				{
-					Trace.error( "Unexpected module source", moduleGuid, interfaceDefinition.moduleSource );
-					continue;
-				}
-				
-				interfaceDefinition.moduleSource = newModuleSource;
-			}
-		}
-		
-		
 		private function loadInterfaceDefinitions( interfacesToLoad:Vector.<String> = null ):void
 		{
 			_loadPhase = ModelLoadPhase.INTERFACE_DEFINITIONS;
@@ -398,12 +376,6 @@ package components.model.modelLoader
 				_timeoutTimer.stop();
 			}
 			
-			if( _mode == LOADING_NEW_INTERFACES )
-			{
-				Assert.assertTrue( _loadPhase, ModelLoadPhase.INTERFACE_DEFINITIONS );
-				loadComplete();
-			}
-			
 			switch( _loadPhase )
 			{
 				case ModelLoadPhase.INTERFACE_LIST:
@@ -411,7 +383,14 @@ package components.model.modelLoader
 					break;
 				
 				case ModelLoadPhase.INTERFACE_DEFINITIONS:
-					loadInstances();
+					if( _mode == LOADING_NEW_INTERFACES )
+					{
+						loadComplete();
+					}
+					else
+					{
+						loadInstances();
+					}
 					break;
 
 				case ModelLoadPhase.INSTANCES:

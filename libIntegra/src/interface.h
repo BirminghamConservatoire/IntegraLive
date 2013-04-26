@@ -119,6 +119,7 @@ struct ntg_interface_
 	GUID module_guid;
 	GUID origin_guid;
 	ntg_module_source module_source;
+	char *file_path;
 	ntg_interface_info *info;
 	ntg_endpoint *endpoint_list;
 	ntg_widget *widget_list;
@@ -259,7 +260,7 @@ bool ntg_interface_is_core( const ntg_interface *interface );
 bool ntg_interface_is_core_name_match( const ntg_interface *interface, const char *name );
 
 bool ntg_interface_has_implementation( const ntg_interface *interface );
-bool ntg_interface_should_store_module( const ntg_interface *interface );
+bool ntg_interface_should_embed_module( const ntg_interface *interface );
 
 bool ntg_endpoint_should_send_to_host( const ntg_endpoint *endpoint );
 bool ntg_endpoint_is_input_file( const ntg_endpoint *endpoint );

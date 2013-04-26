@@ -356,6 +356,12 @@ package components.controller
 		}
 		
 		
+		public function clearUndoStack():void
+		{
+			_undoManager.clear();
+		}
+		
+		
 		public function appendNextCommandsIntoPreviousTransaction():void
 		{
 			_undoManager.startInactivityTimer();

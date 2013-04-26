@@ -65,7 +65,7 @@ package components.controller.moduleManagement
 			{
 				if( count < maximumDescriptionItems )
 				{
-					var title:String = model.getInterfaceDefinitionByModuleGuid( moduleID ).interfaceInfo.name;
+					var title:String = model.getInterfaceDefinitionByModuleGuid( moduleID ).interfaceInfo.label;
 					if( count > 0 ) description += ", ";
 					description += title;
 					count++;

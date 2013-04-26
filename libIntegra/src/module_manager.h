@@ -43,7 +43,6 @@ typedef struct ntg_interface_ ntg_interface;
 
 typedef struct ntg_module_manager_ ntg_module_manager;
 typedef struct ntg_module_install_result_ ntg_module_install_result;
-typedef struct ntg_bundle_install_result_ ntg_bundle_install_result;
 typedef struct ntg_module_uninstall_result_ ntg_module_uninstall_result;
 
 struct ntg_module_manager_
@@ -67,13 +66,6 @@ struct ntg_module_install_result_
 {
 	GUID module_id;
 	bool was_previously_embedded;
-};
-
-
-struct ntg_bundle_install_result_
-{
-	ntg_list *new_module_ids;
-	ntg_list *previously_embedded_module_ids;
 };
 
 

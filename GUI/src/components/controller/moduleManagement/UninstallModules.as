@@ -76,7 +76,7 @@ package components.controller.moduleManagement
 			var messageText:String = "You have chosen to uninstall ";
 			if( modulesGuidsToUninstall.length == 1 )
 			{
-				messageText += model.getInterfaceDefinitionByModuleGuid( modulesGuidsToUninstall[ 0 ] ).interfaceInfo.name;
+				messageText += model.getInterfaceDefinitionByModuleGuid( modulesGuidsToUninstall[ 0 ] ).interfaceInfo.label;
 			}
 			else
 			{
@@ -155,7 +155,7 @@ package components.controller.moduleManagement
 			{
 				if( count < maximumDescriptionItems )
 				{
-					var title:String = model.getInterfaceDefinitionByModuleGuid( moduleID ).interfaceInfo.name;
+					var title:String = model.getInterfaceDefinitionByModuleGuid( moduleID ).interfaceInfo.label;
 					if( count > 0 ) description += ", ";
 					description += title;
 					count++;

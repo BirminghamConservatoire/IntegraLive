@@ -25,7 +25,10 @@ package components.controller.moduleManagement
 	import flash.events.EventDispatcher;
 	import flash.events.FileListEvent;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.net.FileFilter;
+	import flash.utils.ByteArray;
 	
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
@@ -36,6 +39,9 @@ package components.controller.moduleManagement
 	import components.model.modelLoader.ModelLoader;
 	import components.utils.Trace;
 	import components.utils.Utilities;
+	
+	import deng.fzip.FZip;
+	import deng.fzip.FZipFile;
 	
 	import flexunit.framework.Assert;
 	
@@ -82,10 +88,8 @@ package components.controller.moduleManagement
 			var description:String = "Installing...  ";
 			var count:int = 0;
 			
-			for each( var file:File in _fileArray )
+			for each( var file:File in _filesToInstall )
 			{
-				if( file.isDirectory ) continue;
-
 				if( count < maximumDescriptionItems )
 				{
 					var title:String = file.name.substr( 0, file.name.length - file.extension.length - 1 );
@@ -100,21 +104,8 @@ package components.controller.moduleManagement
 				
 				var methodCall:Object = new Object;
 				
-				switch( file.extension.toLowerCase() )
-				{
-					case Utilities.moduleFileExtension:
-						methodCall.methodName = "module.installintegramodulefile";
-						methodCall.params = [ file.nativePath ];
-						break;
-
-					case Utilities.bundleFileExtension:
-						methodCall.methodName = "module.installintegrabundlefile";
-						methodCall.params = [ file.nativePath ];
-						break;
-						
-					default:
-						Assert.assertTrue( false );
-				}
+				methodCall.methodName = "module.installintegramodulefile";
+				methodCall.params = [ file.nativePath ];
 				
 				methodCalls.push( methodCall );
 			}
@@ -181,13 +172,15 @@ package components.controller.moduleManagement
 				onInterfacesLoaded( null );
 			}
 			
+			deleteUnpackedBundleModules();
+			
 			return true;
 		}
 		
 		
 		private function onSelectFilesToInstall( event:FileListEvent ):void
 		{
-			_fileArray = event.files;
+			getFilesToInstall( event.files );
 			
 			var controller:IntegraController = IntegraController.singleInstance;
 			controller.activateUndoStack = false;
@@ -208,12 +201,84 @@ package components.controller.moduleManagement
 			
 			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED ) );
 		}
+		
+		
+		private function getFilesToInstall( pickedFiles:Array ):void
+		{
+			_filesToInstall = new Array;
+			_unpackedBundleFiles = new Array;
+			
+			for each( var file:File in pickedFiles )
+			{
+				if( file.isDirectory ) continue;
+
+				switch( file.extension.toLowerCase() )
+				{
+					case Utilities.moduleFileExtension:
+						_filesToInstall.push( file );
+						break;
+					
+					case Utilities.bundleFileExtension:
+						var unpackedFiles:Array = unpackBundleFile( file );
+						_filesToInstall = _filesToInstall.concat( unpackedFiles );
+						_unpackedBundleFiles = _unpackedBundleFiles.concat( unpackedFiles );
+						break;
+					
+					default:
+						Assert.assertTrue( false );	 //unhandled file extension
+						break;
+				}
+			}
+		}
+
+		
+		private function unpackBundleFile( bundleFile:File ):Array
+		{
+			var unpackedFiles:Array = new Array;
+			
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( bundleFile, FileMode.READ );
+			var rawBytes:ByteArray = new ByteArray();
+			fileStream.readBytes( rawBytes );
+			fileStream.close();			
+			
+			var bundleZipFile:FZip = new FZip();
+			bundleZipFile.loadBytes( rawBytes );			
+
+			var numberOfFiles:uint = bundleZipFile.getFileCount();
+			for( var i:int = 0; i < numberOfFiles; i++ )
+			{
+				var moduleFile:FZipFile = bundleZipFile.getFileAt( i );
+				var moduleFileName:String = moduleFile.filename;
 				
+				var outputFile:File = File.createTempFile();
+				
+				var outputFileStream:FileStream = new FileStream;
+				outputFileStream.open( outputFile, FileMode.WRITE );
+				outputFileStream.writeBytes( moduleFile.content );
+				outputFileStream.close();
+					
+				unpackedFiles.push( outputFile );
+			}	
+			
+			return unpackedFiles;
+		}
+		
+		
+		private function deleteUnpackedBundleModules():void
+		{
+			for each( var file:File in _unpackedBundleFiles )
+			{
+				file.deleteFile();
+			}
+		}
 		
 
 		private var _fileDialog:File;
-		private var _fileArray:Array;
+		private var _filesToInstall:Array;
 
+		private var _unpackedBundleFiles:Array;
+		
 		private var _modelLoader:ModelLoader = null;
 		private var _loadCompleteDispatcher:EventDispatcher = null;
 		

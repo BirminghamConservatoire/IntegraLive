@@ -426,20 +426,6 @@ LIBINTEGRA_API ntg_command_status ntg_unload_orphaned_embedded_modules(void);
  * */
 LIBINTEGRA_API ntg_command_status ntg_install_module( const char *file_path );
 
-/** \brief install a bundle of 3rd party integra modules from disk
- * \param *file_path: path to the integra-bundle file to install
- * \return a struct of type ntg_command_status. If the function succeeded,
- * this will contain the error_code NTG_NO_ERROR, and the data member will point to 
- * a struct of type ntg_bundle_install_result.  This struct contains the members 
- * new_module_ids (ntg_list of ids of the newly installed modules), and
- * previously_embedded_module_ids (ntg_list of ids of modules which were already
- * present as embedded modules, which are now installed as 3rd party modules).
- * Note: it is the caller's responsibility to free both these lists using ntg_list_free,
- * and to free the ntg_bundle_install_result using ntg_free.
- * \error possible return values for error status are given in integra_error.h *
- * */
-LIBINTEGRA_API ntg_command_status ntg_install_bundle( const char *file_path );
-
 /** \brief install a 3rd party integra module which is already loaded into memory as an
  * embedded module
  * \param *module_id: id of the embedded module to install

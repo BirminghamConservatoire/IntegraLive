@@ -94,25 +94,11 @@ package components.views.ModuleManager
 		
 		private function updateAll():void
 		{
-			var thirdPartyModules:Vector.<ModuleManagerListItem> = getModulesBySource( InterfaceDefinition.MODULE_THIRD_PARTY );
-			
-			if( thirdPartyModules.length > 0 )
-			{
-				_3rdPartyModulesList.items = thirdPartyModules;
+			_3rdPartyModulesList.items = getModulesBySource( InterfaceDefinition.MODULE_THIRD_PARTY );
+			updateUninstallEnable();
 				
-				_embeddedModulesList.removeAllItems();
-				
-				updateUninstallEnable();
-			}
-
-			var embeddedModules:Vector.<ModuleManagerListItem> = getModulesBySource( InterfaceDefinition.MODULE_EMBEDDED );
-			
-			if( embeddedModules.length > 0 )
-			{
-				_embeddedModulesList.items = embeddedModules;
-				
-				updateInstallEmbeddedEnable();
-			}
+			_embeddedModulesList.items = getModulesBySource( InterfaceDefinition.MODULE_EMBEDDED );
+			updateInstallEmbeddedEnable();
 		}
 
 		

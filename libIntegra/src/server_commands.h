@@ -66,7 +66,6 @@ ntg_command_status ntg_load_(ntg_server * server,
 
 ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, ntg_command_source cmd_source );
 ntg_command_status ntg_install_module_( ntg_server *server, ntg_command_source cmd_source, const char *file_path );
-ntg_command_status ntg_install_bundle_( ntg_server *server, ntg_command_source cmd_source, const char *file_path );
 ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id );
 ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id );
 

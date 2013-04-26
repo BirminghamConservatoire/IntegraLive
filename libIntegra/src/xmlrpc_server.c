@@ -90,8 +90,6 @@
 
 #define HELPSTR_INSTALL_INTEGRA_MODULE_FILE "Install 3rd party module from integra-module file\n\\param <string module file path>\n\\return {'response':'module.installintegramodulefile', moduleid:<string>, waspreviouslyembedded:<boolean>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
-#define HELPSTR_INSTALL_INTEGRA_BUNDLE_FILE "Install 3rd party modules from integra-bundle file\n\\param <string bundle file path>\n\\return {'response':'module.installintegrabundlefile', newmoduleids:<array>, previouslyembeddedmoduleids:<array>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
-
 #define HELPSTR_INSTALL_EMBEDDED_MODULE "Install embedded module\n\\param <string module guid>\n\\return {'response':'module.installembeddedmodule'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
 #define HELPSTR_UNINSTALL_MODULE "Uninstall 3rd party module\n\\param <string module guid>\n\\return {'response':'module.uninstallmodule, remainsasembedded:<boolean>'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
@@ -1241,82 +1239,6 @@ static void *ntg_xmlrpc_install_module_callback( ntg_server * server, const int 
 }
 
 
-static void *ntg_xmlrpc_install_bundle_callback( ntg_server * server, const int argc, va_list argv)
-{
-    char *file_path;
-    ntg_command_status command_status;
-    xmlrpc_env *env;
-	ntg_bundle_install_result *result;
-	int number_of_new_modules, number_of_previously_embedded_modules;
-	const GUID *new_module_ids, *previously_embedded_module_ids;
-	char *module_id_string;
-	int i;
-
-    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *array_ = NULL, *array_item = NULL;
-
-	assert( server );
-
-    env = va_arg( argv, xmlrpc_env * );
-    file_path = va_arg( argv, char * );
-
-    struct_ = xmlrpc_struct_new(env);
-    command_status = ntg_install_bundle_( server, NTG_SOURCE_XMLRPC_API, file_path );
-
-	if( command_status.error_code != NTG_NO_ERROR )
-	{
-        free( file_path );
-		return ntg_xmlrpc_error( env, command_status.error_code);
-	}
-
-	result = ( ntg_bundle_install_result * ) command_status.data;
-	assert( result );
-
-    xmlrpc_temp = xmlrpc_string_new(env, "module.installintegrabundlefile");
-    xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
-    xmlrpc_DECREF(xmlrpc_temp);
-
-	number_of_new_modules = result->new_module_ids->n_elems;
-	new_module_ids = ( const GUID * ) result->new_module_ids->elems;
-
-    array_ = xmlrpc_array_new( env );
-    for( i = 0; i < number_of_new_modules; i++ ) 
-	{
-		module_id_string = ntg_guid_to_string( &new_module_ids[ i ] );
-        array_item = xmlrpc_string_new( env, module_id_string );
-        xmlrpc_array_append_item(env, array_, array_item);
-        xmlrpc_DECREF(array_item);
-		ntg_free( module_id_string );
-    }
-
-    xmlrpc_struct_set_value(env, struct_, "newmoduleids", array_);
-    xmlrpc_DECREF(array_);
-
-	number_of_previously_embedded_modules = result->previously_embedded_module_ids->n_elems;
-	previously_embedded_module_ids = ( const GUID * ) result->previously_embedded_module_ids->elems;
-
-    array_ = xmlrpc_array_new( env );
-    for( i = 0; i < number_of_previously_embedded_modules; i++ ) 
-	{
-		module_id_string = ntg_guid_to_string( &previously_embedded_module_ids[ i ] );
-        array_item = xmlrpc_string_new( env, module_id_string );
-        xmlrpc_array_append_item(env, array_, array_item);
-        xmlrpc_DECREF(array_item);
-		ntg_free( module_id_string );
-    }
-
-    xmlrpc_struct_set_value(env, struct_, "previouslyembeddedmoduleids", array_);
-    xmlrpc_DECREF(array_);
-
-	/* free out-of-place memory */
-	ntg_list_free( result->new_module_ids );
-	ntg_list_free( result->previously_embedded_module_ids );
-	ntg_free( result );
-    free( file_path );
-
-    return struct_;
-}
-
-
 static void *ntg_xmlrpc_install_embedded_module_callback( ntg_server * server, const int argc, va_list argv)
 {
     char *module_id_string;
@@ -1813,24 +1735,6 @@ static xmlrpc_value *ntg_xmlrpc_install_module_file(xmlrpc_env * const env,
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_install_bundle_file(xmlrpc_env * const env,
-        xmlrpc_value * const paramArrayP,
-        void *const userData)
-{
-    const char *file_name;
-    size_t len;
-
-    NTG_TRACE_VERBOSE("");
-
-    xmlrpc_decompose_value(env, paramArrayP, "(s#)", &file_name, &len);
-
-    if (env->fault_occurred)
-        return NULL;
-
-    return ntg_server_do_va(&ntg_xmlrpc_install_bundle_callback, 2, (void *)env, file_name );
-}
-
-
 static xmlrpc_value *ntg_xmlrpc_install_embedded_module(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
@@ -2041,9 +1945,6 @@ void *ntg_xmlrpc_server_run(void *portv)
 	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.installintegramodulefile",
         &ntg_xmlrpc_install_module_file, NULL, "S:s",
         HELPSTR_INSTALL_INTEGRA_MODULE_FILE);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.installintegrabundlefile",
-        &ntg_xmlrpc_install_bundle_file, NULL, "S:s",
-        HELPSTR_INSTALL_INTEGRA_BUNDLE_FILE);
     xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.installembeddedmodule",
         &ntg_xmlrpc_install_embedded_module, NULL, "S:s",
         HELPSTR_INSTALL_EMBEDDED_MODULE);

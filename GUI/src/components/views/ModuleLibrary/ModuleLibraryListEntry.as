@@ -181,7 +181,7 @@ package components.views.ModuleLibrary
 
 	
 		public static const shippedWithIntegraTint:uint = 0x000000;
-		public static const thirdPartyTint:uint = 0x000020;
+		public static const thirdPartyTint:uint = 0x000420;
 		public static const embeddedTint:uint = 0x100010;
 	}
 }

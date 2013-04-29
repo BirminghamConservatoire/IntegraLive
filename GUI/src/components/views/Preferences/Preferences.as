@@ -131,7 +131,7 @@ package components.views.Preferences
 					default:
 					case ColorScheme.LIGHT:
 						_backgroundColor = 0xffffff;
-						_borderColor = 0xc9e2f0;
+						_borderColor = 0xaaccdf;
 						_titleCloseButton.setStyle( "color", _borderColor );
 						_titleCloseButton.setStyle( "fillColor", 0x000000 );
 						_titleLabel.setStyle( "color", 0x000000 );
@@ -157,7 +157,7 @@ package components.views.Preferences
 
 					case ColorScheme.DARK:
 						_backgroundColor = 0x000000;
-						_borderColor = 0x344c59;
+						_borderColor = 0x214356;
 						_titleCloseButton.setStyle( "color", _borderColor );
 						_titleCloseButton.setStyle( "fillColor", 0xffffff );
 						_titleLabel.setStyle( "color", 0xffffff );

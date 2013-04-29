@@ -142,7 +142,7 @@ package components.views.BlockLibrary
 		private var _isUserBlock:Boolean = false;
 
 		private static const _systemBlockTint:uint = 0x000000;
-		private static const _userBlockTint:uint = 0x000020;
+		private static const _userBlockTint:uint = 0x00031c;
 		
 		private static const _ixdFileName:String = "integra_data/nodes.ixd";
 	}

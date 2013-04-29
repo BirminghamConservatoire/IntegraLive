@@ -68,3 +68,8 @@ libtool
 
 # ctags file
 tags
+
+# sublime project and workspace
+*.sublime-project
+*.sublime-workspace
+

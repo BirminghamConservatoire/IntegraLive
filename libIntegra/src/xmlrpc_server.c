@@ -1095,25 +1095,27 @@ static void *ntg_xmlrpc_load_callback(ntg_server * server, const int argc,
     xmlrpc_struct_set_value(env, struct_, "parentpath", xmlrpc_path);
     xmlrpc_DECREF(xmlrpc_path);
 
-
-	embedded_module_ids = ( ntg_list * ) command_status.data;
-    guids = ( GUID * ) embedded_module_ids->elems;
-
 	xmlrpc_array = xmlrpc_array_new( env );
-	for( i = 0; i < embedded_module_ids->n_elems; i++ ) 
+	if( command_status.data )
 	{
-		module_id_string = ntg_guid_to_string( &guids[ i ] );
-        xmlrpc_temp = xmlrpc_string_new( env, module_id_string );
-        xmlrpc_array_append_item( env, xmlrpc_array, xmlrpc_temp);
-        xmlrpc_DECREF( xmlrpc_temp );
-		ntg_free( module_id_string );
-    }
+		embedded_module_ids = ( ntg_list * ) command_status.data;
+		guids = ( GUID * ) embedded_module_ids->elems;
+
+		for( i = 0; i < embedded_module_ids->n_elems; i++ ) 
+		{
+			module_id_string = ntg_guid_to_string( &guids[ i ] );
+			xmlrpc_temp = xmlrpc_string_new( env, module_id_string );
+			xmlrpc_array_append_item( env, xmlrpc_array, xmlrpc_temp);
+			xmlrpc_DECREF( xmlrpc_temp );
+			ntg_free( module_id_string );
+		}
+
+		ntg_free( embedded_module_ids );
+	}
 
     xmlrpc_struct_set_value(env, struct_, "embeddedmodules", xmlrpc_array );
 
     xmlrpc_DECREF(xmlrpc_array);
-
-	ntg_free( embedded_module_ids );
 
     return struct_;
 }

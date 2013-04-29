@@ -107,7 +107,7 @@ package components.model.preferences
 		
 		public static function get localFile():File
 		{
-			return File.applicationStorageDirectory.resolvePath( _midiSettingsFileName );
+			return File.applicationStorageDirectory.resolvePath( defaultObjectName + " " + Utilities.integraLiveVersion + Utilities.integraFileExtension );
 		}
 
 		
@@ -117,8 +117,6 @@ package components.model.preferences
 		
 		public static const defaultObjectName:String = "MidiSettings";
 	
-		private static const _midiSettingsFileName:String = "MidiSettings.integra"
-
 		private var _availableDrivers:Vector.<String> = new Vector.<String>;
 		private var _availableInputDevices:Vector.<String> = new Vector.<String>;
 		private var _availableOutputDevices:Vector.<String> = new Vector.<String>;

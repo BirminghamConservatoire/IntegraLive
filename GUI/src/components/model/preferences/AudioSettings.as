@@ -27,8 +27,6 @@ package components.model.preferences
 	
 	import flash.filesystem.File;
 	
-	import flexunit.framework.Assert;
-	
 	public class AudioSettings extends IntegraDataObject
 	{
 		public function AudioSettings()
@@ -126,7 +124,7 @@ package components.model.preferences
 		
 		public static function get localFile():File
 		{
-			return File.applicationStorageDirectory.resolvePath( _audioSettingsFileName );
+			return File.applicationStorageDirectory.resolvePath( defaultObjectName + " " + Utilities.integraLiveVersion + Utilities.integraFileExtension );
 		}
 		
 		
@@ -135,8 +133,6 @@ package components.model.preferences
 		
 		public static const defaultObjectName:String = "AudioSettings";
 
-		private static const _audioSettingsFileName:String = "AudioSettings.integra"
-		
 		private var _availableDrivers:Vector.<String> = new Vector.<String>;
 		private var _availableInputDevices:Vector.<String> = new Vector.<String>;
 		private var _availableOutputDevices:Vector.<String> = new Vector.<String>;

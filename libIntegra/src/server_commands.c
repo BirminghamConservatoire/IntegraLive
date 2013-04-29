@@ -787,6 +787,6 @@ void ntg_print_state_()
 {
 	printf("Print State:\n");
 	printf("***********:\n\n");
-    print_node_state(server_,ntg_server_get_root(server_)->nodes,0);
+    ntg_print_node_state(server_,ntg_server_get_root(server_)->nodes,0);
 	fflush( stdout );
 }

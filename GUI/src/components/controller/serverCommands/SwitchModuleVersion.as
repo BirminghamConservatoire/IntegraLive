@@ -24,24 +24,17 @@ package components.controller.serverCommands
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import components.controlSDK.core.ControlManager;
 	import components.controller.IntegraController;
-	import components.controller.ServerCommand;
 	import components.controller.userDataCommands.SetLiveViewControlPosition;
 	import components.controller.userDataCommands.SetModulePosition;
 	import components.controller.userDataCommands.ToggleLiveViewControl;
 	import components.model.Block;
-	import components.model.Connection;
-	import components.model.IntegraContainer;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
-	import components.model.Scaler;
 	import components.model.interfaceDefinitions.Constraint;
-	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
-	import components.model.interfaceDefinitions.StreamInfo;
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.LiveViewControl;
 	import components.utils.ControlContainer;
@@ -50,33 +43,26 @@ package components.controller.serverCommands
 	
 	import flexunit.framework.Assert;
 
-	public class SwitchModuleVersion extends ServerCommand
+	public class SwitchModuleVersion extends SwitchObjectVersion
 	{
 		public function SwitchModuleVersion( moduleID:int, toGuid:String, newAttributeValues:Object = null )
 		{
-			super();
+			super( moduleID, toGuid );
 	
-			_moduleID = moduleID;
-			_toGuid = toGuid;		
-			
 			_newAttributeValues = newAttributeValues;
 		}
 		
-		public function get moduleID():int { return _moduleID; }
-		public function get toGuid():String { return _toGuid; }
 		public function get newAttributeValues():Object { return _newAttributeValues; }
 		
 		override public function initialize( model:IntegraModel ):Boolean
 		{
-			var module:ModuleInstance = model.getModuleInstance( _moduleID );
-			if( !module ) return false;
+			if( !super.initialize( model ) ) return false;
 			
-			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
-			if( !newInterface ) return false;
+			var module:ModuleInstance = model.getModuleInstance( objectID );
+			Assert.assertNotNull( module );
 			
-			if( module.interfaceDefinition.originGuid != newInterface.originGuid ) return false;
-			
-			if( module.interfaceDefinition.moduleGuid == newInterface.moduleGuid ) return false;
+			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( toGuid );
+			Assert.assertNotNull( newInterface );
 			
 			if( !_newAttributeValues )
 			{
@@ -89,18 +75,16 @@ package components.controller.serverCommands
 		
 		override public function generateInverse( model:IntegraModel ):void
 		{
-			var module:ModuleInstance = model.getModuleInstance( _moduleID );
+			var module:ModuleInstance = model.getModuleInstance( objectID );
 			Assert.assertNotNull( module );
 			
-			pushInverseCommand( new SwitchModuleVersion( _moduleID, module.interfaceDefinition.moduleGuid, copyAttributeValues( module.attributes ) ) );
+			pushInverseCommand( new SwitchModuleVersion( objectID, module.interfaceDefinition.moduleGuid, copyAttributeValues( module.attributes ) ) );
 		}
 		
 		
 		override public function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
-			removeObsoleteConnections( model, controller );
-			
-			correctScalerRanges( model, controller );
+			super.preChain( model, controller );
 			
 			correctModulePosition( model, controller );
 			
@@ -110,21 +94,18 @@ package components.controller.serverCommands
 		
 		override public function execute( model:IntegraModel ):void
 		{
-			var module:ModuleInstance = model.getModuleInstance( _moduleID );
+			super.execute( model );
+
+			var module:ModuleInstance = model.getModuleInstance( objectID );
 			Assert.assertNotNull( module );
 
-			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
-			Assert.assertNotNull( newInterface );
-
-			module.interfaceDefinition = newInterface;
-			
 			module.attributes = _newAttributeValues;
 		}
 		
 		
 		override public function executeServerCommand( model:IntegraModel ):void
 		{
-			var modulePath:Array = model.getPathArrayFromID( _moduleID );
+			var modulePath:Array = model.getPathArrayFromID( objectID );
 			Assert.assertTrue( modulePath.length > 0 );
 			
 			var moduleName:String = modulePath[ modulePath.length - 1 ];
@@ -137,7 +118,7 @@ package components.controller.serverCommands
 			
 			methodCalls[ 1 ] = new Object;
 			methodCalls[ 1 ].methodName = "command.new";
-			methodCalls[ 1 ].params = [ _toGuid, moduleName, parentPath ];
+			methodCalls[ 1 ].params = [ toGuid, moduleName, parentPath ];
 
 			
 			for( var attributeName:String in _newAttributeValues )
@@ -322,196 +303,30 @@ package components.controller.serverCommands
 				levenshtein_distance( string1, string2From2ndChar ) + 1 ), 
 				levenshtein_distance( string1From2ndChar, string2From2ndChar ) + cost );
 		}
-		
-		
-		private function removeObsoleteConnections( model:IntegraModel, controller:IntegraController ):void
-		{
-			var oldInterface:InterfaceDefinition = model.getModuleInstance( _moduleID ).interfaceDefinition;
-			Assert.assertNotNull( oldInterface );
-			
-			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
-			Assert.assertNotNull( newInterface );
-			
-			for( var ancestor:IntegraContainer = model.getBlockFromModuleInstance( _moduleID ); ancestor; ancestor = model.getParent( ancestor.id ) as IntegraContainer )
-			{
-				//first remove scaled connections
-				for each( var scaler:Scaler in ancestor.scalers )
-				{
-					if( scaler.upstreamConnection.sourceObjectID == _moduleID )
-					{
-						if( !isConnectionStillValid( oldInterface, newInterface, scaler.upstreamConnection.sourceAttributeName, false ) )
-						{
-							controller.processCommand( new RemoveScaledConnection( scaler.id ) );
-							continue;
-						}
-					}
-
-					if( scaler.downstreamConnection.targetObjectID == _moduleID )
-					{
-						if( !isConnectionStillValid( oldInterface, newInterface, scaler.downstreamConnection.targetAttributeName, true ) )
-						{
-							controller.processCommand( new RemoveScaledConnection( scaler.id ) );
-							continue;
-						}
-					}
-				}
-					
-				//then remove stream connections
-				for each( var connection:Connection in ancestor.connections )
-				{
-					if( connection.sourceObjectID == _moduleID )
-					{
-						if( !isConnectionStillValid( oldInterface, newInterface, connection.sourceAttributeName, false ) )
-						{
-							controller.processCommand( new RemoveConnection( connection.id ) );
-							continue;
-						}
-					}
-					
-					if( connection.targetObjectID == _moduleID )
-					{
-						if( !isConnectionStillValid( oldInterface, newInterface, connection.targetAttributeName, true ) )
-						{
-							controller.processCommand( new RemoveConnection( connection.id ) );
-							continue;
-						}
-					}
-				}
-
-			}
-		}		
-		
-		
-		private function isConnectionStillValid( oldInterface:InterfaceDefinition, newInterface:InterfaceDefinition, endpointName:String, isTarget:Boolean ):Boolean
-		{
-			var oldEndpointDefinition:EndpointDefinition = oldInterface.getEndpointDefinition( endpointName );
-			Assert.assertNotNull( oldEndpointDefinition );
-
-			var newEndpointDefinition:EndpointDefinition = newInterface.getEndpointDefinition( endpointName );
-			if( !newEndpointDefinition ) return false;
-			
-			if( newEndpointDefinition.type != oldEndpointDefinition.type ) return false;
-
-			switch( newEndpointDefinition.type )
-			{
-				case EndpointDefinition.CONTROL:
-					if( newEndpointDefinition.controlInfo.type == ControlInfo.STATE && newEndpointDefinition.controlInfo.stateInfo.type == StateInfo.STRING )
-					{
-						return false;
-					}
-					
-					if( isTarget ) 
-					{
-						return newEndpointDefinition.controlInfo.canBeTarget;
-					}
-					else
-					{
-						return newEndpointDefinition.controlInfo.canBeSource;
-					}
-					
-				case EndpointDefinition.STREAM:
-					if( newEndpointDefinition.streamInfo.streamType != oldEndpointDefinition.streamInfo.streamType )
-					{
-						return false;
-					}
-					
-					if( isTarget )
-					{
-						return ( newEndpointDefinition.streamInfo.streamDirection == StreamInfo.DIRECTION_INPUT );
-					}
-					else
-					{
-						return ( newEndpointDefinition.streamInfo.streamDirection == StreamInfo.DIRECTION_OUTPUT );
-					}
-					
-				default:
-					Assert.assertTrue( false );
-					return false;
-			}
-		}
-		
-		
-		private function correctScalerRanges( model:IntegraModel, controller:IntegraController ):void
-		{
-			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
-			Assert.assertNotNull( newInterface );
-			
-			for( var ancestor:IntegraContainer = model.getBlockFromModuleInstance( _moduleID ); ancestor; ancestor = model.getParent( ancestor.id ) as IntegraContainer )
-			{
-				for each( var scaler:Scaler in ancestor.scalers )
-				{
-					if( scaler.upstreamConnection.sourceObjectID == _moduleID )
-					{
-						var upstreamEndpoint:EndpointDefinition = newInterface.getEndpointDefinition( scaler.upstreamConnection.sourceAttributeName );
-						Assert.assertNotNull( upstreamEndpoint );
-						Assert.assertNotNull( upstreamEndpoint.type == EndpointDefinition.CONTROL );
-						
-						var minimum:Number = 0;
-						var maximum:Number = 0;
-						if( upstreamEndpoint.isStateful )
-						{
-							minimum = upstreamEndpoint.controlInfo.stateInfo.constraint.minimum;
-							maximum = upstreamEndpoint.controlInfo.stateInfo.constraint.maximum;
-						}
-						
-						var inRangeMin:Number = Math.max( minimum, Math.min( maximum, scaler.inRangeMin ) );
-						var inRangeMax:Number = Math.max( minimum, Math.min( maximum, scaler.inRangeMax ) );
-						
-						if( inRangeMin != scaler.inRangeMin || inRangeMax != scaler.inRangeMax )
-						{
-							controller.processCommand( new SetScalerInputRange( scaler.id, inRangeMin, inRangeMax ) );
-						}
-					}
-					
-					if( scaler.downstreamConnection.targetObjectID == _moduleID )
-					{
-						var downstreamEndpoint:EndpointDefinition = newInterface.getEndpointDefinition( scaler.downstreamConnection.targetAttributeName );
-						Assert.assertNotNull( downstreamEndpoint );
-						Assert.assertNotNull( downstreamEndpoint.type == EndpointDefinition.CONTROL );
-						
-						minimum = 0;
-						maximum = 0;
-						if( downstreamEndpoint.isStateful )
-						{
-							minimum = downstreamEndpoint.controlInfo.stateInfo.constraint.minimum;
-							maximum = downstreamEndpoint.controlInfo.stateInfo.constraint.maximum;
-						}
-						
-						var outRangeMin:Number = Math.max( minimum, Math.min( maximum, scaler.outRangeMin ) );
-						var outRangeMax:Number = Math.max( minimum, Math.min( maximum, scaler.outRangeMax ) );
-						
-						if( outRangeMin != scaler.outRangeMin || outRangeMax != scaler.outRangeMax )
-						{
-							controller.processCommand( new SetScalerOutputRange( scaler.id, outRangeMin, outRangeMax ) );
-						}
-					}
-				}
-			}			
-		}
-		
+	
 		
 		private function correctModulePosition( model:IntegraModel, controller:IntegraController ):void
 		{
-			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
+			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( toGuid );
 			Assert.assertNotNull( newInterface );
 
-			var position:Rectangle = model.getModulePosition( _moduleID ).clone();
+			var position:Rectangle = model.getModulePosition( objectID ).clone();
 			
 			var newHeight:Number = ModuleInstance.getModuleHeight( newInterface );
 			if( newHeight != position.height )
 			{
 				position.height = newHeight;
-				controller.processCommand( new SetModulePosition( _moduleID, position ) );
+				controller.processCommand( new SetModulePosition( objectID, position ) );
 			}
 		}
 		
 		
 		private function correctLiveViewControls( model:IntegraModel, controller:IntegraController ):void
 		{
-			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
+			var newInterface:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( toGuid );
 			Assert.assertNotNull( newInterface );
 
-			var block:Block = model.getBlockFromModuleInstance( _moduleID );
+			var block:Block = model.getBlockFromModuleInstance( objectID );
 			Assert.assertNotNull( block );
 			
 			var liveViewControls:Object = block.blockUserData.liveViewControls;
@@ -533,7 +348,7 @@ package components.controller.serverCommands
 						
 						if( !newPosition.equals( liveViewControl.position ) )
 						{
-							controller.processCommand( new SetLiveViewControlPosition( _moduleID, liveViewControl.controlInstanceName, newPosition ) );
+							controller.processCommand( new SetLiveViewControlPosition( objectID, liveViewControl.controlInstanceName, newPosition ) );
 						}
 						
 						continue;
@@ -549,9 +364,6 @@ package components.controller.serverCommands
 			}
 		}
 		
-		
-		private var _moduleID:int;
-		private var _toGuid:String;		
 		
 		private var _newAttributeValues:Object;
 	}

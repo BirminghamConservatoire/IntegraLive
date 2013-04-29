@@ -455,7 +455,7 @@ package components.views.ModuleGraph
 		
 		private function onModuleVersionChanged( command:SwitchModuleVersion ):void
 		{
-			if( _elements.hasOwnProperty( command.moduleID ) )
+			if( _elements.hasOwnProperty( command.objectID ) )
 			{
 				updateAll();
 			}

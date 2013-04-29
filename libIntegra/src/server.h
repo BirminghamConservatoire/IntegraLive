@@ -130,7 +130,7 @@ void ntg_server_receive_(ntg_server * server,
 
 void ntg_server_set_host_dsp(const ntg_server *server, bool status);
 
-void print_node_state(ntg_server *server, ntg_node *first,int indentation);
+void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation);
 
 bool ntg_saved_version_is_newer_than_current( const char *saved_version );
 

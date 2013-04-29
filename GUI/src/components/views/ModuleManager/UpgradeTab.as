@@ -15,13 +15,11 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.LoadModule;
 	import components.controller.serverCommands.RemoveBlockImport;
 	import components.controller.serverCommands.RemoveTrackImport;
-	import components.controller.serverCommands.SwitchAllModuleVersions;
+	import components.controller.serverCommands.SwitchAllObjectVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
+	import components.controller.serverCommands.SwitchObjectVersion;
 	import components.controller.serverCommands.UnloadModule;
 	import components.controller.userDataCommands.PollForUpgradableModules;
-	import components.model.Block;
-	import components.model.ModuleInstance;
-	import components.model.Track;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
@@ -40,6 +38,7 @@ package components.views.ModuleManager
 			verticalScrollPolicy = ScrollPolicy.OFF;    
 
 			addUpdateMethod( SwitchModuleVersion, onUpdateNeeded );
+			addUpdateMethod( SwitchObjectVersion, onUpdateNeeded );
 			addUpdateMethod( LoadModule, onUpdateNeeded );
 			addUpdateMethod( UnloadModule, onUpdateNeeded );
 			addUpdateMethod( ImportModule, onUpdateNeeded );
@@ -240,33 +239,25 @@ package components.views.ModuleManager
 		private function get upgradableModules():Vector.<ModuleManagerListItem>
 		{
 			var upgradableModules:Vector.<ModuleManagerListItem> = new Vector.<ModuleManagerListItem>;
-			var moduleIDsAddedMap:Object = new Object;
-			
-			for each( var track:Track in model.project.tracks )
+
+			var allModuleIDs:Object = new Object;
+			model.project.getAllModuleGuidsInTree( allModuleIDs );
+
+			for( var moduleGuid:String in allModuleIDs )
 			{
-				for each( var block:Block in track.blocks )
+				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( moduleGuid );
+				
+				var interfaceDefinitions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
+				Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
+				
+				if( interfaceDefinition != interfaceDefinitions[ 0 ] )
 				{
-					for each( var module:ModuleInstance in block.modules )
-					{
-						var interfaceDefinition:InterfaceDefinition = module.interfaceDefinition;
-						
-						if( moduleIDsAddedMap.hasOwnProperty( interfaceDefinition.moduleGuid ) )
-						{
-							continue;
-						}
-						
-						var interfaceDefinitions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
-						Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
-						
-						if( interfaceDefinition != interfaceDefinitions[ 0 ] )
-						{
-							var item:ModuleManagerListItem = new ModuleManagerListItem;
-							item.interfaceDefinition = interfaceDefinition;
-							upgradableModules.push( item );
-							
-							moduleIDsAddedMap[ interfaceDefinition.moduleGuid ] = 1;
-						}
-					}
+					//we don't expect to encounter old versions of implemented-in-lib-integra modules
+					Assert.assertFalse( interfaceDefinition.interfaceInfo.implementedInLibintegra );
+					
+					var item:ModuleManagerListItem = new ModuleManagerListItem;
+					item.interfaceDefinition = interfaceDefinition;
+					upgradableModules.push( item );
 				}
 			}
 			
@@ -325,7 +316,7 @@ package components.views.ModuleManager
 
 				Assert.assertTrue( toInterfaceDefinition != fromInterfaceDefinition && toInterfaceDefinition.originGuid == fromInterfaceDefinition.originGuid );
 
-				controller.processCommand( new SwitchAllModuleVersions( fromInterfaceDefinition.moduleGuid, toInterfaceDefinition.moduleGuid ) );
+				controller.processCommand( new SwitchAllObjectVersions( fromInterfaceDefinition.moduleGuid, toInterfaceDefinition.moduleGuid ) );
 			}
 		}
 

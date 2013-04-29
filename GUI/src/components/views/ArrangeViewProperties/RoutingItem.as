@@ -48,8 +48,9 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
-	import components.controller.serverCommands.SwitchAllModuleVersions;
+	import components.controller.serverCommands.SwitchAllObjectVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
+	import components.controller.serverCommands.SwitchObjectVersion;
 	import components.model.Connection;
 	import components.model.Envelope;
 	import components.model.Info;
@@ -120,7 +121,8 @@ package components.views.ArrangeViewProperties
 			addUpdateMethod( RemoveTrack, onAvailableObjectsChanged );
 			addUpdateMethod( RenameObject, onAvailableObjectsChanged );
 			
-			addUpdateMethod( SwitchModuleVersion, onModuleVersionChanged );
+			addUpdateMethod( SwitchModuleVersion, onObjectVersionChanged );
+			addUpdateMethod( SwitchObjectVersion, onObjectVersionChanged );
 
 			addEventListener( Event.RESIZE, onResize );
 		}
@@ -229,17 +231,17 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function onModuleVersionChanged( command:SwitchModuleVersion ):void
+		private function onObjectVersionChanged( command:SwitchObjectVersion ):void
 		{
 			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
 
-			if( command.moduleID == scaler.upstreamConnection.sourceObjectID )
+			if( command.objectID == scaler.upstreamConnection.sourceObjectID )
 			{
 				updateScalerInputControls();
 			}
 
-			if( command.moduleID == scaler.downstreamConnection.targetObjectID )
+			if( command.objectID == scaler.downstreamConnection.targetObjectID )
 			{
 				updateScalerOutputControls();
 			}

@@ -880,6 +880,8 @@ package components.model.modelLoader
 								{
 									foundProjectMidi = true;
 									_model.project.midi.name = name;
+									_model.project.midi.interfaceDefinition = interfaceDefinition;
+									
 								}
 								break;
 								
@@ -941,6 +943,7 @@ package components.model.modelLoader
 								var midi:Midi = new Midi();
 								giveNewID( midi );
 								midi.name = name;
+								midi.interfaceDefinition = interfaceDefinition;
 								_model.addDataObject( parentID, midi );
 								break;
 
@@ -1007,6 +1010,7 @@ package components.model.modelLoader
 								midi = new Midi();
 								giveNewID( midi );
 								midi.name = name;
+								midi.interfaceDefinition = interfaceDefinition;
 								_model.addDataObject( parentID, midi );
 								break;	
 

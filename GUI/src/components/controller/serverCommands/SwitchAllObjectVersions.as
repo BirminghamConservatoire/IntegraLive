@@ -24,14 +24,16 @@ package components.controller.serverCommands
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
 	import components.model.Block;
+	import components.model.IntegraContainer;
+	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
 	import components.model.Track;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 
-	public class SwitchAllModuleVersions extends ServerCommand
+	public class SwitchAllObjectVersions extends ServerCommand
 	{
-		public function SwitchAllModuleVersions( fromGuid:String, toGuid:String )
+		public function SwitchAllObjectVersions( fromGuid:String, toGuid:String )
 		{
 			super();
 	
@@ -68,20 +70,33 @@ package components.controller.serverCommands
 		
 		override public function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
-			for each( var track:Track in model.project.tracks )
+			switchBranch( model.project, controller );
+		}
+		
+		
+		private function switchBranch( object:IntegraDataObject, controller:IntegraController ):void
+		{
+			if( object.interfaceDefinition.moduleGuid == _fromGuid )
 			{
-				for each( var block:Block in track.blocks )
+				if( object is ModuleInstance )
 				{
-					for each( var module:ModuleInstance in block.modules )
-					{
-						if( module.interfaceDefinition.moduleGuid == _fromGuid )
-						{
-							controller.processCommand( new SwitchModuleVersion( module.id, _toGuid ) );
-						}
-					}
+					controller.processCommand( new SwitchModuleVersion( object.id, _toGuid ) );
+				}
+				else
+				{
+					controller.processCommand( new SwitchObjectVersion( object.id, _toGuid ) );
+				}
+			}
+			
+			if( object is IntegraContainer )
+			{
+				for each( var child:IntegraDataObject in ( object as IntegraContainer ).children )
+				{
+					switchBranch( child, controller );
 				}
 			}
 		}
+
 	
 		
 		private var _fromGuid:String;

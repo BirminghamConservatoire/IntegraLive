@@ -18,16 +18,13 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.LoadModule;
 	import components.controller.serverCommands.RemoveBlockImport;
 	import components.controller.serverCommands.RemoveTrackImport;
-	import components.controller.serverCommands.SwitchAllModuleVersions;
+	import components.controller.serverCommands.SwitchAllObjectVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
+	import components.controller.serverCommands.SwitchObjectVersion;
 	import components.controller.serverCommands.UnloadModule;
-	import components.model.Block;
-	import components.model.ModuleInstance;
-	import components.model.Track;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.Skins.TextButtonSkin;
 	
@@ -50,6 +47,7 @@ package components.views.ModuleManager
 			addUpdateMethod( RemoveTrackImport, onUpdateNeeded );
 			addUpdateMethod( RemoveBlockImport, onUpdateNeeded );
 			addUpdateMethod( SwitchModuleVersion, onVersionsSwitched );
+			addUpdateMethod( SwitchObjectVersion, onVersionsSwitched );
 			
 			addEventListener( Event.RESIZE, onResize );
 			
@@ -116,7 +114,7 @@ package components.views.ModuleManager
 		}
 		
 		
-		private function onVersionsSwitched( command:SwitchModuleVersion ):void
+		private function onVersionsSwitched( command:SwitchObjectVersion ):void
 		{
 			updateArrows();
 		}
@@ -218,36 +216,34 @@ package components.views.ModuleManager
 		private function get switchableModules():Vector.<ModuleManagerListItem>
 		{
 			var switchableModules:Vector.<ModuleManagerListItem> = new Vector.<ModuleManagerListItem>;
-			var moduleIDsAddedMap:Object = new Object;
+
+			var allModuleIDs:Object = new Object;
+			model.project.getAllModuleGuidsInTree( allModuleIDs );
+
+			var switchableMap:Object = new Object;
 			
-			for each( var track:Track in model.project.tracks )
+			for( var moduleGuid:String in allModuleIDs )
 			{
-				for each( var block:Block in track.blocks )
+				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( moduleGuid );
+				
+				var interfaceDefinitions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
+				Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
+				
+				if( interfaceDefinitions.length > 1 )
 				{
-					for each( var module:ModuleInstance in block.modules )
+					var defaultVersion:InterfaceDefinition = interfaceDefinitions[ 0 ];
+					
+					if( switchableMap.hasOwnProperty( defaultVersion.moduleGuid ) )
 					{
-						var interfaceDefinition:InterfaceDefinition = module.interfaceDefinition;
-						
-						var interfaceDefinitions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
-						Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
-						
-						if( interfaceDefinitions.length > 1 )
-						{
-							var defaultVersion:InterfaceDefinition = interfaceDefinitions[ 0 ];
-							
-							if( moduleIDsAddedMap.hasOwnProperty( defaultVersion.moduleGuid ) )
-							{
-								continue;
-							}
-							
-							var item:ModuleManagerListItem = new ModuleManagerListItem;
-							item.useTint = true;
-							item.interfaceDefinition = defaultVersion;
-							switchableModules.push( item );
-							
-							moduleIDsAddedMap[ defaultVersion.moduleGuid ] = 1;
-						}
+						continue;
 					}
+					
+					var item:ModuleManagerListItem = new ModuleManagerListItem;
+					item.useTint = true;
+					item.interfaceDefinition = defaultVersion;
+					switchableModules.push( item );
+					
+					switchableMap[ defaultVersion.moduleGuid ] = 1;
 				}
 			}
 			
@@ -322,7 +318,7 @@ package components.views.ModuleManager
 				var guidToSwitch:String = versionToSwitch.moduleGuid;
 				if( guidToSwitch != targetModuleGuid )
 				{
-					controller.processCommand( new SwitchAllModuleVersions( guidToSwitch, targetModuleGuid ) );
+					controller.processCommand( new SwitchAllObjectVersions( guidToSwitch, targetModuleGuid ) );
 				}
 			}
 		}
@@ -342,16 +338,7 @@ package components.views.ModuleManager
 			{
 				//build map of all module guids
 				var allModuleGuids:Object = new Object;
-				for each( var track:Track in model.project.tracks )
-				{
-					for each( var block:Block in track.blocks )
-					{
-						for each( var module:ModuleInstance in block.modules )
-						{
-							allModuleGuids[ module.interfaceDefinition.moduleGuid ] = 1;
-						}
-					}
-				}
+				model.project.getAllModuleGuidsInTree( allModuleGuids );
 				
 				//now iterate through alternative items, adding to list as necessary
 				for each( var alternativeItem:ModuleManagerListItem in _alternativeVersionsList.items )

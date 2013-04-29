@@ -267,7 +267,7 @@ package components.views.ModuleProperties
 		
 		private function onModuleVersionSwitched( command:SwitchModuleVersion ):void
 		{
-			if( _module && command.moduleID == _module.id )
+			if( _module && command.objectID == _module.id )
 			{
 				updateAll();
 			}

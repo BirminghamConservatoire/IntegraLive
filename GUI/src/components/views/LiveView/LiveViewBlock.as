@@ -272,7 +272,7 @@ package components.views.LiveView
 		
 		private function onModuleVersionSwitched( command:SwitchModuleVersion ):void
 		{
-			if( model.getBlockFromModuleInstance( command.moduleID ).id == _blockID )
+			if( model.getBlockFromModuleInstance( command.objectID ).id == _blockID )
 			{
 				updateAll();
 			}

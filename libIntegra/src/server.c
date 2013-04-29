@@ -145,7 +145,7 @@ ntg_path *ntg_server_path_from_id(ntg_server * server, ntg_id id)
 
 }
 
-void print_node_state(ntg_server *server, ntg_node *first,int indentation)
+void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 {
     ntg_node *current = first;
     ntg_node *next;
@@ -153,6 +153,7 @@ void print_node_state(ntg_server *server, ntg_node *first,int indentation)
     int i;
 	bool has_children;
 	char value_buffer[ NTG_LONG_STRLEN ];
+	char *module_id_string;
 
     if(first==NULL){
         printf("No nodes\n");
@@ -165,7 +166,9 @@ void print_node_state(ntg_server *server, ntg_node *first,int indentation)
         for(i=0;i<indentation;i++)
             printf("  |");
 
-		printf("  Node: \"%s\".\t interface name: %s.\t Path: %s\n",current->name,current->interface->info->name, current->path->string);
+		module_id_string = ntg_guid_to_string( &current->interface->module_guid );
+		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n",current->name,current->interface->info->name, module_id_string, current->path->string);
+		ntg_free( module_id_string );
 
 		has_children = (current->nodes!=NULL);
 
@@ -193,7 +196,7 @@ void print_node_state(ntg_server *server, ntg_node *first,int indentation)
 		}
 
         if(has_children)
-            print_node_state(server,current->nodes,indentation+1);
+            ntg_print_node_state(server,current->nodes,indentation+1);
         current = next;
     }while(current!=first);
 }

@@ -108,7 +108,7 @@ package components.model
 			Assert.assertTrue( false );
 			return null;  
 		}
-
+		
 		
 		override public function setAttributeFromServer( attributeName:String, value:Object, model:IntegraModel ):Boolean
 		{
@@ -153,6 +153,19 @@ package components.model
 			super.name = name;
 			_info.title = name;		
 		}		
+		
+		
+		override public function getAllModuleGuidsInTree( results:Object ):void
+		{
+			super.getAllModuleGuidsInTree( results );
+			
+			for each( var descendant:IntegraDataObject in children )
+			{
+				descendant.getAllModuleGuidsInTree( results );
+			}
+		}		
+		
+		
 		
 		
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }

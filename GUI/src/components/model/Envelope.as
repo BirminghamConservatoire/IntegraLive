@@ -122,6 +122,18 @@ package components.model
 			Assert.assertTrue( false );
 			return null;  
 		}
+		
+
+		override public function getAllModuleGuidsInTree( results:Object ):void
+		{
+			super.getAllModuleGuidsInTree( results );
+			
+			for each( var descendant:ControlPoint in _controlPoints )
+			{
+				descendant.getAllModuleGuidsInTree( results );
+			}
+		}		
+		
 
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }
 		public static const _serverInterfaceName:String = "Envelope";

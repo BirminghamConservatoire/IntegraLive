@@ -101,6 +101,20 @@ package components.model
 		}
 			
 		
+		public function getAllModuleGuidsInTree( results:Object ):void
+		{
+			if( interfaceDefinition )
+			{
+				if( !results.hasOwnProperty( interfaceDefinition.moduleGuid ) )
+				{
+					results[ interfaceDefinition.moduleGuid ] = 1;
+				}
+			}
+			
+			//subclasses with children should override to walk child tree
+		}		
+		
+		
 		protected function get internalUserData():UserData { return _userData; }
 		protected function set internalUserData( userData:UserData ):void { _userData = userData; }
 		

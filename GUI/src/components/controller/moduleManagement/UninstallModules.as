@@ -21,11 +21,7 @@
 
 package components.controller.moduleManagement
 {
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.FileListEvent;
-	import flash.filesystem.File;
-	import flash.net.FileFilter;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
@@ -41,7 +37,6 @@ package components.controller.moduleManagement
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.modelLoader.ModelLoader;
 	import components.utils.Trace;
-	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
 	
@@ -111,7 +106,17 @@ package components.controller.moduleManagement
 		
 		public override function initialize( model:IntegraModel ):Boolean
 		{
-			return ( _modulesGuidsToUninstall.length > 0 );
+			if( _modulesGuidsToUninstall.length == 0 ) 
+			{
+				return false;
+			}
+			
+			for each( var guid:String in _modulesGuidsToUninstall )
+			{
+				_moduleLabelsToUninstall.push( model.getInterfaceDefinitionByModuleGuid( guid ).interfaceInfo.label );
+			}
+			
+			return true;
 		}
 		
 		
@@ -185,17 +190,24 @@ package components.controller.moduleManagement
 			var removedModuleGuids:Array = [];
 			var embeddedModuleGuids:Array = [];
 			
+			var resultsString:String = "Uninstall Modules...\n";				
+			
 			for( var i:int = 0; i < response.length; i++ )
 			{
+				resultsString += "\n* ";
+				resultsString += _moduleLabelsToUninstall[ i ];
+				
 				var responseNode:Object = response[ i ][ 0 ];
 				var moduleID:String = _modulesGuidsToUninstall[ i ];
 				
 				switch( responseNode.response )
 				{
 					case "module.uninstallmodule":
+						resultsString += " uninstalled"; 
 						if( responseNode.remainsasembedded )
 						{
 							embeddedModuleGuids.push( moduleID );
+							resultsString += ", retained in this project as Embedded Module";
 						}
 						else
 						{
@@ -204,10 +216,12 @@ package components.controller.moduleManagement
 						break;
 					
 					case "error":
+						resultsString += " " + responseNode.errortext; 
 						Trace.error( responseNode.errortext );
 						break;
 
 					case "default":
+						resultsString += " unexpected server response"; 
 						Trace.error( "unexpected response", responseNode.response );
 						break;
 				}
@@ -217,7 +231,7 @@ package components.controller.moduleManagement
 			IntegraModel.singleInstance.handleModuleSourcesChanged( embeddedModuleGuids, InterfaceDefinition.MODULE_THIRD_PARTY, InterfaceDefinition.MODULE_EMBEDDED );
 
 			
-			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED ) );
+			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED, resultsString ) );
 
 			_uninstaller = null;
 			
@@ -278,6 +292,7 @@ package components.controller.moduleManagement
 		}
 		
 		private var _modulesGuidsToUninstall:Vector.<String>;
+		private var _moduleLabelsToUninstall:Vector.<String> = new Vector.<String>;
 		private var _deleteInstances:Boolean = false;
 
 		private var _modelLoader:ModelLoader = null;

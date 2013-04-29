@@ -26,7 +26,6 @@ package components.controller.moduleManagement
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
 	import components.controller.events.InstallEvent;
-	import components.controller.events.LoadCompleteEvent;
 	import components.model.IntegraModel;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.modelLoader.ModelLoader;
@@ -51,6 +50,7 @@ package components.controller.moduleManagement
 		{
 			return ( _embeddedModulesGuidsToInstall.length > 0 );
 		}
+		
 		
 		public override function executeServerCommand( model:IntegraModel ):void
 		{
@@ -93,31 +93,39 @@ package components.controller.moduleManagement
 		protected override function testServerResponse( response:Object ):Boolean
 		{
 			var previouslyEmbeddedModuleGuids:Array = [];
+
+			var resultsString:String = "Install Embedded Modules:\n";
 			
 			for( var i:int = 0; i < response.length; i++ )
 			{
 				var responseNode:Object = response[ i ][ 0 ];
 				var moduleID:String = _embeddedModulesGuidsToInstall[ i ];
 				
+				resultsString += "\n* ";
+				resultsString += IntegraModel.singleInstance.getInterfaceDefinitionByModuleGuid( moduleID ).interfaceInfo.label;
+				
 				switch( responseNode.response )
 				{
 					case "module.installembeddedmodule":
 						previouslyEmbeddedModuleGuids.push( moduleID );
+						resultsString += " installed OK";
 						break;
 					
 					case "error":
 						Trace.error( responseNode.errortext );
+						resultsString += " not installed!  " + responseNode.errortext;
 						break;
 
 					case "default":
 						Trace.error( "unexpected response", responseNode.response );
+						resultsString += " unexpected server response";
 						break;
 				}
 			}
 			
 			IntegraModel.singleInstance.handleModuleSourcesChanged( previouslyEmbeddedModuleGuids, InterfaceDefinition.MODULE_EMBEDDED, InterfaceDefinition.MODULE_THIRD_PARTY );
 
-			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED ) );
+			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED, resultsString ) );
 			
 			return true;
 		}

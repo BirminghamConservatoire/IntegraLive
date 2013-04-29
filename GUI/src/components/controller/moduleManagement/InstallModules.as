@@ -92,7 +92,7 @@ package components.controller.moduleManagement
 			{
 				if( count < maximumDescriptionItems )
 				{
-					var title:String = file.name.substr( 0, file.name.length - file.extension.length - 1 );
+					var title:String = getFileTitle( file );
 					if( count > 0 ) description += ", ";
 					description += title;
 					count++;
@@ -125,12 +125,17 @@ package components.controller.moduleManagement
 		
 		protected override function testServerResponse( response:Object ):Boolean
 		{
+			_resultsString = "Install Modules:\n";
+			
 			var newModuleGuids:Array = [];
 			var previouslyEmbeddedModuleGuids:Array = [];
 			
-			for each( var responseItem:Object in response )
+			for( var i:int = 0; i < response.length; i++ )
 			{
-				var responseNode:Object = responseItem[ 0 ];
+				_resultsString += "\n* ";
+				_resultsString += _fileTitles[ i ];
+					
+				var responseNode:Object = response[ i ][ 0 ];
 				
 				switch( responseNode.response )
 				{
@@ -143,20 +148,18 @@ package components.controller.moduleManagement
 						{
 							newModuleGuids.push( responseNode.moduleid );
 						}
+						_resultsString += " installed OK";  
 					
-						break;
-					
-					case "module.installintegrabundlefile":
-						newModuleGuids = newModuleGuids.concat( responseNode.newmoduleids );
-						previouslyEmbeddedModuleGuids = newModuleGuids.concat( responseNode.previouslyembeddedmoduleids );
 						break;
 					
 					case "error":
 						Trace.error( responseNode.errortext );
+						_resultsString += " " + responseNode.errortext;
 						break;
 
 					case "default":
 						Trace.error( "unexpected response", responseNode.response );
+						_resultsString += " unexpected response from server";
 						break;
 				}
 			}
@@ -199,13 +202,26 @@ package components.controller.moduleManagement
 		{
 			_installer = null;
 			
-			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED ) );
+			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED, _resultsString ) );
 		}
+
 		
+		private function getFileTitle( file:File ):String
+		{
+			if( file.extension )
+			{
+				return file.name.substr( 0, file.name.length - file.extension.length - 1 );
+			}
+			else
+			{
+				return file.name;
+			}
+		}
 		
 		private function getFilesToInstall( pickedFiles:Array ):void
 		{
 			_filesToInstall = new Array;
+			_fileTitles = new Vector.<String>;
 			_unpackedBundleFiles = new Array;
 			
 			for each( var file:File in pickedFiles )
@@ -216,12 +232,11 @@ package components.controller.moduleManagement
 				{
 					case Utilities.moduleFileExtension:
 						_filesToInstall.push( file );
+						_fileTitles.push( getFileTitle( file ) );
 						break;
 					
 					case Utilities.bundleFileExtension:
-						var unpackedFiles:Array = unpackBundleFile( file );
-						_filesToInstall = _filesToInstall.concat( unpackedFiles );
-						_unpackedBundleFiles = _unpackedBundleFiles.concat( unpackedFiles );
+						unpackBundleFile( file );
 						break;
 					
 					default:
@@ -232,10 +247,8 @@ package components.controller.moduleManagement
 		}
 
 		
-		private function unpackBundleFile( bundleFile:File ):Array
+		private function unpackBundleFile( bundleFile:File ):void
 		{
-			var unpackedFiles:Array = new Array;
-			
 			var fileStream:FileStream = new FileStream();
 			fileStream.open( bundleFile, FileMode.READ );
 			var rawBytes:ByteArray = new ByteArray();
@@ -250,6 +263,14 @@ package components.controller.moduleManagement
 			{
 				var moduleFile:FZipFile = bundleZipFile.getFileAt( i );
 				var moduleFileName:String = moduleFile.filename;
+				var moduleFileExtension:String = Utilities.moduleFileExtension;
+				var moduleFileExtensionLength:int = moduleFileExtension.length;
+				
+				if( moduleFileName.length <= moduleFileExtensionLength || moduleFileName.substr( -moduleFileExtensionLength ) != moduleFileExtension )
+				{
+					Trace.error( "Found bundle content with incorrect extension", moduleFileName );
+					continue;
+				}
 				
 				var outputFile:File = File.createTempFile();
 				
@@ -258,10 +279,12 @@ package components.controller.moduleManagement
 				outputFileStream.writeBytes( moduleFile.content );
 				outputFileStream.close();
 					
-				unpackedFiles.push( outputFile );
+				_unpackedBundleFiles.push( outputFile );
+				_filesToInstall.push( outputFile );
+				
+				var title:String = moduleFileName.substr( 0, moduleFileName.length - moduleFileExtensionLength - 1 );
+				_fileTitles.push( title );
 			}	
-			
-			return unpackedFiles;
 		}
 		
 		
@@ -276,11 +299,14 @@ package components.controller.moduleManagement
 
 		private var _fileDialog:File;
 		private var _filesToInstall:Array;
+		private var _fileTitles:Vector.<String>;
 
 		private var _unpackedBundleFiles:Array;
 		
 		private var _modelLoader:ModelLoader = null;
 		private var _loadCompleteDispatcher:EventDispatcher = null;
+		
+		private var _resultsString:String;
 		
 		private static var _installer:InstallModules = null;
 		

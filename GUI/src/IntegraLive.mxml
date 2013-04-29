@@ -64,6 +64,7 @@
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.PollForUpgradableModules;
 			import components.controller.userDataCommands.SetDisplayedInfo;
+			import components.controller.userDataCommands.SetInstallResult;
 			import components.controller.userDataCommands.SetProjectModified;
 			import components.model.Info;
 			import components.model.IntegraModel;
@@ -443,6 +444,7 @@
 					case InstallEvent.FINISHED:
 						hideProgressPopup();
 						_controller.dispatchEvent( new AllDataChangedEvent() );
+						_controller.processCommand( new SetInstallResult( event.description ) );
 						break;
 					
 					default:

@@ -1032,7 +1032,7 @@ package components.model
 		
 		public function removeInterfaceDefinitions( removedModuleGuids:Array ):void
 		{
-			var removedGuidMap:Object = new Object
+			var removedGuidMap:Object = new Object;
 			
 			//remove from module id map
 			for each( var moduleGuid:String in removedModuleGuids )
@@ -1053,14 +1053,21 @@ package components.model
 			}
 			
 			//remove from origin list
-			for each( var originList:Vector.<InterfaceDefinition> in _interfaceDefinitionsByOriginGuid )
+			for( var originGuid:String in _interfaceDefinitionsByOriginGuid )
 			{
+				var originList:Vector.<InterfaceDefinition> = _interfaceDefinitionsByOriginGuid[ originGuid ];
+				
 				for( i = originList.length - 1; i >= 0; i-- ) 
 				{
-					if( removedGuidMap.hasOwnProperty( originList[ i ] ) )
+					if( removedGuidMap.hasOwnProperty( originList[ i ].moduleGuid ) )
 					{
 						originList.splice( i, 1 );
 					}
+				}
+				
+				if( originList.length == 0 )
+				{
+					delete _interfaceDefinitionsByOriginGuid[ originGuid ];
 				}
 			}
 			

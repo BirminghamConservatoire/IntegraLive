@@ -439,9 +439,7 @@ void ntg_server_free(ntg_server *server)
 
     ntg_free(server);
 
-#if BUILD_LUASCRIPTING
     /* FIX is there a luascripting_free() */
-#endif
 
 }
 

@@ -905,8 +905,6 @@ void ntg_script_trigger_handler( ntg_server *server, const ntg_node_attribute *a
 	char *script_output = NULL;
 	ntg_value *info_value;
 
-#if BUILD_LUASCRIPTING
-
     text_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_TEXT );
     assert(text_attribute);
 
@@ -924,10 +922,6 @@ void ntg_script_trigger_handler( ntg_server *server, const ntg_node_attribute *a
 	}
 
     NTG_TRACE_VERBOSE("script finished");
-
-#else
-    NTG_TRACE_ERROR("libintegra not compiled with support for scripting.");
-#endif
 }
 
 

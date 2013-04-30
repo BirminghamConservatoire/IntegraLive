@@ -33,8 +33,6 @@
 #include <unistd.h>
 #include <assert.h>
 
-#if BUILD_LUASCRIPTING
-
 #define LUA_COMPAT_MODULE
 
 #include <lua.h>
@@ -722,5 +720,3 @@ char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 	return output;
 }
 
-
-#endif	/* BUILD_LUASCRIPTING */

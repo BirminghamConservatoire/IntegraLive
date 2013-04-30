@@ -51,7 +51,7 @@
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/xmlrpc-c/include;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/liblo-master;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;INTEGRA_DEBUG=1;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;BUILD_LUASCRIPTING=1;_CRT_SECURE_NO_WARNINGS
+      <PreprocessorDefinitions>WIN32;_DEBUG;INTEGRA_DEBUG=1;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -102,7 +102,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/xmlrpc-c/include;../../libIntegra_dependencies/liblo-master;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;BUILD_LUASCRIPTING=1;_CRT_SECURE_NO_WARNINGS
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>

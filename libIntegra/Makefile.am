@@ -8,7 +8,9 @@ SUBDIRS = src Integra
 SUBDIRS += $(DOCUMENTATION_DIR)
 SUBDIRS += bridges server
 SUBDIRS += testing
-DEFSDIR = interfaces
+REPOBASEDIR = ..
+MODULESDIR = modules
+MODULESUFFIX = .integra-module
 SCHEMADIR = data
 COLLECTIONSCHEMA = CollectionSchema.xsd
 MAPPINGFILE = id2guid.csv
@@ -17,10 +19,10 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libIntegra.pc
 
 dist_pkgdata_DATA = $(SCHEMADIR)/$(COLLECTIONSCHEMA) $(SCHEMADIR)/$(MAPPINGFILE)
-nobase_dist_pkgdata_DATA = $(DEFSDIR)/*
+nobase_dist_pkgdata_DATA = $(MODULESDIR)/*
 
 ACLOCAL_AMFLAGS = -I m4
-BUILT_SOURCES = iid
+BUILT_SOURCES = $(MODULESDIR)
 
 EXTRA_DIST = \
 	autogen.sh \
@@ -32,9 +34,7 @@ EXTRA_DIST = \
 	doc/*.in
 
 
-RUNCOMMAND=./server/.libs/integra_server -bridge=bridges/dummy/.libs/integra_dummy_bridge.so -xmlrpc_server_port=8000 -osc_server_port=8001 -osc_client_port=8002 -osc_client_url=127.0.0.1 -module_paths=interfaces -trace_progress=1
-
-IMDIR=../modules/
+RUNCOMMAND=./server/.libs/integra_server -bridge=bridges/dummy/.libs/integra_dummy_bridge.so -xmlrpc_server_port=8000 -osc_server_port=8001 -osc_client_port=8002 -osc_client_url=127.0.0.1 -module_paths=modules -trace_progress=1
 
 run:
 	$(RUNCOMMAND)
@@ -43,18 +43,16 @@ run-debug:
 	gdb --args $(RUNCOMMAND)
 
 maintainer-clean-local:
-	-rm -rf $(DEFSDIR)
+	-rm -rf $(MODULESDIR)
 
 clean-local:
-	-rm -f $(DEFSDIR)/*
+	-rm -f $(MODULESDIR)/*
 
-iid:
-	-mkdir -p $(DEFSDIR)
-	-cp $(IMDIR)/*.im $(DEFSDIR)
-	-cp $(IMDIR)/*.csv $(DEFSDIR)
-
+$(MODULESDIR):
+	-mkdir -p $(MODULESDIR)
+	-cp $(REPOBASEDIR)/$(MODULESDIR)/*MODULESUFFIX $(MODULESDIR)
 
 dist-hook: 
-#	find -E ./ -iregex '(.*DS_Store$|.*svn$)' | xargs rm -rf
+#	find -E ./ -iregex '(.*DS_Store$|.*svn$)' | xargs rm -rf			
 
 AUTOMAKE_OPTIONS = foreign

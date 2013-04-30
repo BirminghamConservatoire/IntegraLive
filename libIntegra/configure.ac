@@ -58,14 +58,6 @@ LDFLAGS="$LDFLAGS"
 
 # --enable stuff
 
-AC_ARG_ENABLE(luascripting, 
-              [  --enable-luascripting   Enable support for using lua as an extension language],
-              [case "${enableval}" in
-               yes) luascripting=true ;;
-               no)  luascripting=false ;;
-               *) AC_MSG_ERROR(bad value ${disableval} for --enable-lua) ;;
-           esac],[luascripting=false])
-
 AC_ARG_ENABLE(osc_bridge, 
        [  --enable-osc_bridge    Compile the osc bridge],
        [case "${enableval}" in
@@ -105,6 +97,10 @@ AC_ARG_ENABLE(documentation,
 	no)  documentation=false ;;
 	*) AC_MSG_ERROR(bad value ${enableval} for --enable-documentation) ;;
     esac],[documentation=false])
+
+# Check for Lua
+CHECK_LUA([], AC_MSG_ERROR([you need lua >= 5.1]))
+CFLAGS="$CFLAGS $LUA_CFLAGS -DBUILDPATH=`pwd`"
 
 # Check for xmlrpc-c
 OLD_LIBS=[$LIBS]
@@ -246,14 +242,6 @@ AC_ARG_WITH(pd_include_dir,
 	echo
 	], [pd_include_dir=false])
 
-dnl are we building the luascripting component
-if [[ "$luascripting" = "true" ]] ; then
-    CHECK_LUA(AC_DEFINE([BUILD_LUASCRIPTING], [1], [Build the luascripting component]), AC_MSG_ERROR([you need lua >= 5.1]))
-    CFLAGS="$CFLAGS $LUA_CFLAGS -DBUILDPATH=`pwd`"
-fi
-
-AM_CONDITIONAL(BUILD_LUASCRIPTING, test "x${luascripting}" = 'xtrue')
-
 dnl are we building the osc_bridge 
 if [[ "$osc_bridge" = "true" ]] ; then
     AC_DEFINE([BUILD_OSC_BRIDGE], [1], [Build the OSC bridge])
@@ -267,17 +255,6 @@ if [[ "$server" = "true" ]] ; then
 fi
 
 AM_CONDITIONAL(BUILD_SERVER, test "x${server}" = 'xtrue')
-
-dnl are we building the cli_example 
-if [[ "$cli_example" = "true" ]] ; then
-    if [[ "$luascripting" = "true" ]] ; then
-        AC_DEFINE([BUILD_CLI_EXAMPLE], [1], [Build the CLI example])
-    else
-	AC_MSG_ERROR([Configuration failed: in order to build the CLI, --enable-luascripting must also be specified])
-    fi
-fi
-
-AM_CONDITIONAL(BUILD_CLI_EXAMPLE, test "x${cli_example}" = 'xtrue')
 
 dnl liblo deps
 
@@ -392,11 +369,6 @@ echo
 echo "Summary:"
 echo
 
-if test "$luascripting" = "true"; then
-  echo "lua component:                             yes"
-else
-  echo "lua component:                             no"
-fi
 if test "$dummy_bridge" = "true"; then
   echo "dummy bridge:			   	   yes"
 else
@@ -412,11 +384,6 @@ if test "$server" = "true"; then
 else
   echo "server application:		           no"
 fi
-if test "$cli_example" = "true"; then
-  echo "cli example:			   	   yes"
-else
-  echo "cli example:		           	   no"
-fi
 if test "$documentation" = "true"; then
   echo "documentation:			   	   yes"
 else
@@ -429,7 +396,7 @@ else
 fi
 
 
-
+  
 
 echo
 echo "**************************************************************"

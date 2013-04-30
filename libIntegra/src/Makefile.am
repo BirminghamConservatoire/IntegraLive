@@ -8,11 +8,11 @@ common_SOURCES =  id.c \
                 node.c \
                 init.c \
                 memory.c \
-		queue.c \
+				queue.c \
                 value.c \
                 server.c \
-		server_public.c \
-		server_commands.c \
+				server_public.c \
+				server_commands.c \
                 xmlrpc_server.c \
                 osc_client.c \
                 xmlrpc_common.c \
@@ -21,20 +21,21 @@ common_SOURCES =  id.c \
                 path.c \
                 bridge_host.c \
                 attribute.c \
-		signals.c \
-		list.c \
-		trace.c \
-		osc.c \
-		interface.c \
-		module_manager.c \
-		player_handler.c \
-		reentrance_checker.c \
-		system_class_handlers.c \
-		data_directory.c \
-		file_io.c \
-		scratch_directory.c \
-		platform_specifics.c \
-		node_list.c 
+				signals.c \
+				list.c \
+				trace.c \
+				osc.c \
+				interface.c \
+				module_manager.c \
+				player_handler.c \
+				reentrance_checker.c \
+				system_class_handlers.c \
+				data_directory.c \
+				file_io.c \
+				scratch_directory.c \
+				platform_specifics.c \
+				luascripting.c \
+				node_list.c 
 
 MINIZIP_DIR=../externals/minizip
 
@@ -48,13 +49,8 @@ if USE_XMLRPC
 #xmlrpc_SOURCES = 
 endif
 
-if BUILD_LUASCRIPTING
-luascripting_SOURCES = luascripting.c
-else
-luascripting_SOURCES = 
-endif
 
-SOURCES = $(common_SOURCES) $(luascripting_SOURCES) $(osc_SOURCES) $(minizip_SOURCES)
+SOURCES = $(common_SOURCES) $(osc_SOURCES) $(minizip_SOURCES)
 
 
 lib_LTLIBRARIES = libIntegra.la

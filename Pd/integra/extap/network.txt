@@ -1,5 +1,0 @@
-server_address  192.168.1.2
-server_port     7950
-client_address  192.168.1.1
-client_port     7951
-timeout         1000

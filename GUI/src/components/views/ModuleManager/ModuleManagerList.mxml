@@ -203,7 +203,7 @@
 				var clickIndex:int = getChildIndex( clickItem );
 				Assert.assertTrue( clickIndex >= 0 && clickIndex < numChildren );
 
-				select( clickIndex );
+				select( clickIndex, event.ctrlKey );
 				
 				if( _multiSelection )
 				{
@@ -245,7 +245,7 @@
 				}
 				else
 				{
-					select( overIndex );
+					select( overIndex, false );
 				}
 			}
 			
@@ -289,15 +289,30 @@
 			}
 				
 			
-			private function select( index:int ):void
+			private function select( index:int, control:Boolean ):void
 			{
 				if( _multiSelection )
 				{
-					var item:ModuleManagerListItem = getItemAt( index );
-					Assert.assertNotNull( item );
+					var selectItem:ModuleManagerListItem = getItemAt( index );
+					Assert.assertNotNull( selectItem );
+
+					if( control )
+					{
+						selectItem.selected = !selectItem.selected;
+					}
+					else
+					{
+						selectItem.selected = true;
+						for each( var otherItem:ModuleManagerListItem in items )
+						{
+							if( otherItem == selectItem ) continue;
+							
+							otherItem.selected = false;
+							otherItem.dispatchEvent( new Event( ModuleManagerListItem.SELECT_EVENT, true ) );
+						}
+					}
 					
-					item.selected = !item.selected;
-					item.dispatchEvent( new Event( ModuleManagerListItem.SELECT_EVENT, true ) );
+					selectItem.dispatchEvent( new Event( ModuleManagerListItem.SELECT_EVENT, true ) );
 				}
 				else
 				{

@@ -1,3 +1,24 @@
+/* Integra Live graphical user interface
+*
+* Copyright (C) 2009 Birmingham City University
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+* USA.
+*/
+
+
 package components.views.ModuleManager
 {
 	import flash.events.Event;
@@ -6,9 +27,9 @@ package components.views.ModuleManager
 	
 	import mx.controls.Button;
 	import mx.controls.Label;
-	import mx.controls.Text;
 	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
+	import mx.managers.PopUpManager;
 	
 	import components.controller.moduleManagement.InstallEmbeddedModules;
 	import components.controller.moduleManagement.InstallModules;
@@ -53,7 +74,7 @@ package components.views.ModuleManager
 			addChild( _installButton );
 
 			_uninstallButton.setStyle( "skin", TextButtonSkin );
-			_uninstallButton.label = "Uninstall Selected Modules";
+			_uninstallButton.label = "Uninstall Modules";
 			_uninstallButton.addEventListener( MouseEvent.CLICK, onClickUninstallButton );
 			addChild( _uninstallButton );
 			
@@ -62,25 +83,7 @@ package components.views.ModuleManager
 			_installEmbeddedButton.addEventListener( MouseEvent.CLICK, onClickInstallEmbeddedButton );
 			addChild( _installEmbeddedButton );
 			
-			
-			_installationReportLabel.text = "Installation Report:";
-			
-			addChild( _installationReportLabel );
-			_installationReportLabel.visible = false;
-			
-			_installationReport.visible = false;
-			_installationReport.setStyle( "borderStyle", "none" );
-			_installationReport.setStyle( "paddingLeft", 20 );
-			_installationReport.setStyle( "paddingRight", 20 );
-			_installationReport.setStyle( "paddingTop", 20 );
-			_installationReport.setStyle( "paddingBottom", 20 );
-			addChild( _installationReport );
-
-			_closeInstallationReportButton.visible = false;
-			_closeInstallationReportButton.setStyle( "skin", TextButtonSkin );
-			_closeInstallationReportButton.label = "OK";
-			_closeInstallationReportButton.addEventListener( MouseEvent.CLICK, onCloseInstallationReport );
-			addChild( _closeInstallationReportButton );
+			addChild( _info );
 		}
 		
 		
@@ -96,9 +99,6 @@ package components.views.ModuleManager
 						setButtonTextColor( _installButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _uninstallButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _installEmbeddedButton, 0x6D6D6D, 0x9e9e9e );
-						setButtonTextColor( _closeInstallationReportButton, 0x6D6D6D, 0x9e9e9e );
-						_installationReport.setStyle( "color", 0x000000 );
-						_installationReport.setStyle( "backgroundColor", 0xcfcfcf );
 						break;
 					
 					case ColorScheme.DARK:
@@ -106,16 +106,14 @@ package components.views.ModuleManager
 						setButtonTextColor( _installButton, 0x939393, 0x626262 );
 						setButtonTextColor( _uninstallButton, 0x939393, 0x626262 );
 						setButtonTextColor( _installEmbeddedButton, 0x939393, 0x626262 );
-						setButtonTextColor( _closeInstallationReportButton, 0x939393, 0x626262 );
-						_installationReport.setStyle( "color", 0xffffff );
-						_installationReport.setStyle( "backgroundColor", 0x313131 );
 						break;
 				}
 				
 				_3rdPartyModulesLabel.setStyle( "color", _labelColor );
 				_embeddedModulesLabel.setStyle( "color", _labelColor );
-				_installationReportLabel.setStyle( "color", _labelColor );
 			}
+			
+			_installationReport.styleChanged( style );	
 		}
 		
 		
@@ -132,6 +130,8 @@ package components.views.ModuleManager
 				
 			_embeddedModulesList.items = getModulesBySource( InterfaceDefinition.MODULE_EMBEDDED );
 			updateInstallEmbeddedEnable();
+			
+			updateInfo();
 		}
 
 		
@@ -143,7 +143,7 @@ package components.views.ModuleManager
 		
 		private function get thirdPartyListRect():Rectangle
 		{
-			return new Rectangle( internalMargin, internalMargin * 3, width / 2 - internalMargin * 1.5, height - internalMargin * 6 );
+			return new Rectangle( internalMargin, internalMargin * 3, width / 3 - internalMargin * 2, height - internalMargin * 4 );
 		}
 
 		
@@ -155,53 +155,45 @@ package components.views.ModuleManager
 			_3rdPartyModulesList.x = thirdPartyListRectDeflated.x;
 			_3rdPartyModulesList.y = thirdPartyListRectDeflated.y;
 			_3rdPartyModulesList.width = thirdPartyListRectDeflated.width;
+			_3rdPartyModulesList.height = thirdPartyListRectDeflated.height - internalMargin * 4 - FontSize.getTextRowHeight( this ) * 2;
 			
 			_3rdPartyModulesLabel.x = internalMargin;
 			_3rdPartyModulesLabel.y = internalMargin;
+
+			_uninstallButton.x = thirdPartyListRect.x;
+			_uninstallButton.width = thirdPartyListRect.width;
+			_uninstallButton.height = FontSize.getTextRowHeight( this );
+			_uninstallButton.y = thirdPartyListRect.bottom - internalMargin * 2 - FontSize.getTextRowHeight( this ) * 2;
+			
+			_installButton.x = thirdPartyListRect.x;
+			_installButton.width = thirdPartyListRect.width;
+			_installButton.height = FontSize.getTextRowHeight( this );
+			_installButton.y = thirdPartyListRect.bottom - FontSize.getTextRowHeight( this );
 			
 			var rightPane:Rectangle = thirdPartyListRect.clone();
-			rightPane.offset( width - rightPane.right - internalMargin, 0 );
+			rightPane.offset( width / 3, 0 );
 
 			_embeddedModulesLabel.x = rightPane.x;
 			_embeddedModulesLabel.y = internalMargin;
 			
 			var embeddedModulesRect:Rectangle = rightPane.clone();
 			embeddedModulesRect.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
-			embeddedModulesRect.height -= FontSize.getTextRowHeight( this ) * 2;
+			embeddedModulesRect.height -= FontSize.getTextRowHeight( this ) + internalMargin * 2;
 			_embeddedModulesList.x = embeddedModulesRect.x;
 			_embeddedModulesList.y = embeddedModulesRect.y;
 			_embeddedModulesList.width = embeddedModulesRect.width;
+			_embeddedModulesList.height = embeddedModulesRect.height;
 			
-			_installButton.x = thirdPartyListRect.x;
-			_installButton.width = thirdPartyListRect.width;
-			_installButton.height = FontSize.getTextRowHeight( this );
-			_installButton.y = height - internalMargin - _installButton.height;
-
-			_uninstallButton.x = thirdPartyListRect.x;
-			_uninstallButton.width = thirdPartyListRect.width;
-			_uninstallButton.height = FontSize.getTextRowHeight( this );
-			_uninstallButton.y = _installButton.y - internalMargin - _uninstallButton.height;
-
 			_installEmbeddedButton.x = rightPane.x;
 			_installEmbeddedButton.width = rightPane.width;
 			_installEmbeddedButton.height = FontSize.getTextRowHeight( this );
-			_installEmbeddedButton.y = height - internalMargin - _installEmbeddedButton.height;
+			_installEmbeddedButton.y = rightPane.bottom - _installEmbeddedButton.height;
 
-			_3rdPartyModulesList.height = _uninstallButton.y - internalMargin - _3rdPartyModulesList.y - ModuleManagerList.cornerRadius;
-			_embeddedModulesList.height = _installEmbeddedButton.y - internalMargin - _embeddedModulesList.y - ModuleManagerList.cornerRadius;
-
-			_installationReportLabel.x = internalMargin;
-			_installationReportLabel.y = internalMargin;
-			
-			_installationReport.x = internalMargin;
-			_installationReport.y = internalMargin * 3;
-			_installationReport.width = width - internalMargin * 2;
-			_installationReport.height = height - _installationReport.y - internalMargin * 2 - FontSize.getTextRowHeight( this );
-			
-			_closeInstallationReportButton.width = width / 3;
-			_closeInstallationReportButton.height = FontSize.getTextRowHeight( this );
-			_closeInstallationReportButton.y = height - internalMargin - _closeInstallationReportButton.height;
-			_closeInstallationReportButton.setStyle( "horizontalCenter", 0 );
+			rightPane.offset( width / 3, 0 );
+			_info.x = rightPane.x;
+			_info.y = rightPane.y;
+			_info.width = rightPane.width;
+			_info.height = rightPane.height;
 		}
 		
 		
@@ -245,12 +237,22 @@ package components.views.ModuleManager
 		private function on3rdPartySelected( event:Event ):void
 		{
 			updateUninstallEnable();
+			
+			_embeddedModulesList.deselectAll();
+			updateInstallEmbeddedEnable();
+			
+			updateInfo();
 		}
 		
 		
 		private function onEmbeddedSelected( event:Event ):void
 		{
 			updateInstallEmbeddedEnable();
+			
+			_3rdPartyModulesList.deselectAll();
+			updateUninstallEnable();
+			
+			updateInfo();
 		}
 		
 		
@@ -309,29 +311,14 @@ package components.views.ModuleManager
 		private function onInstallResult( event:SetInstallResult ):void
 		{
 			_installationReport.text = event.installResult;
-			showInstallationReport = true;	
+			PopUpManager.addPopUp( _installationReport, this, true );
+			PopUpManager.centerPopUp( _installationReport );
 		}
 		
 		
-		private function set showInstallationReport( showReport:Boolean ):void
+		private function updateInfo():void
 		{
-			_3rdPartyModulesLabel.visible = !showReport;
-			_embeddedModulesLabel.visible = !showReport;
-			_3rdPartyModulesList.visible = !showReport;
-			_embeddedModulesList.visible = !showReport;
-			_installButton.visible = !showReport;
-			_uninstallButton.visible = !showReport;
-			_installEmbeddedButton.visible = !showReport;
-			
-			_installationReportLabel.visible = showReport;
-			_installationReport.visible = showReport;
-			_closeInstallationReportButton.visible = showReport;
-		}
-		
-		
-		private function onCloseInstallationReport( event:Event ):void
-		{
-			showInstallationReport = false;
+			_info.markdown = "#Install/uninstall Info\n\ntest\n\ntest\n\ntest\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\ntest\ntest\n_test_";
 		}
 		
 		
@@ -345,9 +332,9 @@ package components.views.ModuleManager
 		private var _uninstallButton:Button = new Button;
 		private var _installEmbeddedButton:Button = new Button;
 
-		private var _installationReportLabel:Label = new Label;
-		private var _installationReport:TextArea = new TextArea;
-		private var _closeInstallationReportButton:Button = new Button;
+		private var _info:ModuleInfo = new ModuleInfo;
+		
+		private var _installationReport:InstallationReport = new InstallationReport;
 		
 		private var _labelColor:uint;
 	}

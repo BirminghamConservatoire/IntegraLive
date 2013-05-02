@@ -125,7 +125,7 @@ package components.controller.moduleManagement
 		
 		protected override function testServerResponse( response:Object ):Boolean
 		{
-			_resultsString = "Install Modules:\n";
+			_resultsString = "Install Modules\n";
 			
 			var newModuleGuids:Array = [];
 			var previouslyEmbeddedModuleGuids:Array = [];

@@ -94,7 +94,7 @@ package components.controller.moduleManagement
 		{
 			var previouslyEmbeddedModuleGuids:Array = [];
 
-			var resultsString:String = "Install Embedded Modules:\n";
+			var resultsString:String = "Install Embedded Modules\n";
 			
 			for( var i:int = 0; i < response.length; i++ )
 			{

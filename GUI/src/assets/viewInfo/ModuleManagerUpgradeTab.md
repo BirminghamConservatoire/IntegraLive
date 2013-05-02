@@ -1,3 +1,3 @@
-# Module Manager
+# Upgrade Tab
 
 todo - write documentation

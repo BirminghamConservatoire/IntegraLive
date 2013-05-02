@@ -1,3 +1,24 @@
+/* Integra Live graphical user interface
+*
+* Copyright (C) 2009 Birmingham City University
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+* USA.
+*/
+
+
 package components.views.ModuleManager
 {
 	import flash.events.Event;
@@ -69,6 +90,8 @@ package components.views.ModuleManager
 			_arrowCanvas.addChild( _arrowMask );
 			_arrowCanvas.mask = _arrowMask;
 			addChild( _arrowCanvas );
+			
+			addChild( _info );
 		}
 		
 		
@@ -117,26 +140,29 @@ package components.views.ModuleManager
 		private function onVersionsSwitched( command:SwitchObjectVersion ):void
 		{
 			updateArrows();
+			updateSwitchEnable();
 		}
 		
 		
 		private function updateAll():void
 		{
 			var switchables:Vector.<ModuleManagerListItem> = switchableModules;
+
+			_switchableModuleList.items = switchables;
+			_alternativeVersionsList.removeAllItems();
 			
 			if( switchables.length > 0 )
 			{
 				_switchablesLabel.text = "Alternative versions available:";
 
-				_switchableModuleList.items = switchables;
-				
-				_alternativeVersionsList.removeAllItems();
-				
 				_switchableModuleList.visible = true;
 				_alternativeVersionsList.visible = true;
 				_switchVersionsButton.visible = true;
+				_info.visible = true;
 				
 				updateSwitchEnable();
+				
+				updateInfo();
 			}
 			else
 			{
@@ -145,6 +171,7 @@ package components.views.ModuleManager
 				_switchableModuleList.visible = false;
 				_alternativeVersionsList.visible = false;
 				_switchVersionsButton.visible = false;
+				_info.visible = false;
 			}
 
 			updateArrows();
@@ -161,7 +188,7 @@ package components.views.ModuleManager
 		
 		private function get switchableListRect():Rectangle
 		{
-			return new Rectangle( internalMargin, internalMargin * 3, width / 2 - internalMargin * 3, height - internalMargin * 4 );
+			return new Rectangle( internalMargin, internalMargin * 3, width / 3 - internalMargin * 3, height - internalMargin * 4 );
 		}
 
 		
@@ -179,7 +206,7 @@ package components.views.ModuleManager
 			_switchablesLabel.y = internalMargin;
 			
 			var rightPane:Rectangle = switchableListRect.clone();
-			rightPane.offset( width - rightPane.right - internalMargin, 0 );
+			rightPane.offset( width / 3 + internalMargin * 1.5, 0 );
 			
 			var alternativeVersionsRect:Rectangle = rightPane.clone();
 			alternativeVersionsRect.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
@@ -189,11 +216,15 @@ package components.views.ModuleManager
 			_alternativeVersionsList.width = alternativeVersionsRect.width;
 			_alternativeVersionsList.height = alternativeVersionsRect.height;
 			
-			
 			_switchVersionsButton.x = rightPane.x;
 			_switchVersionsButton.width = rightPane.width;
 			_switchVersionsButton.height = FontSize.getTextRowHeight( this );
 			_switchVersionsButton.y = rightPane.bottom - _switchVersionsButton.height;
+			
+			_info.x = rightPane.right + internalMargin * 2;
+			_info.y = rightPane.top;
+			_info.width = width - _info.x - internalMargin;
+			_info.height = height - _info.y - internalMargin;
 			
 			_arrowMask.graphics.clear();
 			_arrowMask.graphics.beginFill( 0x808080 );
@@ -268,13 +299,16 @@ package components.views.ModuleManager
 			updateSwitchEnable();
 			
 			updateArrows();
+			
+			updateInfo();
 		}
 		
 		
 		private function onAlternativeVersionSelected( event:Event ):void
 		{
-			
 			updateSwitchEnable();
+			
+			updateInfo();
 		}
 
 		
@@ -287,6 +321,7 @@ package components.views.ModuleManager
 			{
 				var item:ModuleManagerListItem = new ModuleManagerListItem;
 				item.interfaceDefinition = version;
+				item.addEventListener( MouseEvent.DOUBLE_CLICK, onDoubleClickAlternativeVersion );
 				item.useTint = true;
 				items.push( item );
 			}
@@ -295,13 +330,40 @@ package components.views.ModuleManager
 		}
 		
 		
+		private function onDoubleClickAlternativeVersion( event:MouseEvent ):void
+		{
+			Assert.assertTrue( _alternativeVersionsList.selectedItem == event.currentTarget );
+			
+			switchVersions();
+		}
+		
+		
 		private function updateSwitchEnable():void
 		{
-			_switchVersionsButton.enabled = ( _switchableModuleList.selectedItem != null && _alternativeVersionsList.selectedItem != null );
+			_switchVersionsButton.enabled = false;
+			if( !_switchableModuleList.selectedItem || !_alternativeVersionsList.selectedItem )
+			{
+				return;
+			}
+			
+			for each( var versionInUse:ModuleManagerListItem in _arrowTargets )
+			{
+				if( versionInUse != _alternativeVersionsList.selectedItem )
+				{
+					_switchVersionsButton.enabled = true;
+					return;
+				}
+			}
 		}
 
 		
 		private function onClickSwitchVersionsButton( event:MouseEvent ):void
+		{
+			switchVersions();
+		}
+		
+		
+		private function switchVersions():void
 		{
 			var switchableVersion:ModuleManagerListItem = _switchableModuleList.selectedItem;
 			Assert.assertNotNull( switchableVersion );
@@ -310,7 +372,7 @@ package components.views.ModuleManager
 			
 			var targetVersion:ModuleManagerListItem = _alternativeVersionsList.selectedItem;
 			Assert.assertNotNull( targetVersion );
-		
+			
 			var targetModuleGuid:String = targetVersion.guid;
 			
 			for each( var versionToSwitch:InterfaceDefinition in switchableVersions )
@@ -405,12 +467,20 @@ package components.views.ModuleManager
 			_arrowCanvas.graphics.lineTo( to.x, to.y - arrowheadWidth );
 			_arrowCanvas.graphics.lineTo( to.x, to.y + arrowheadWidth );
 			_arrowCanvas.graphics.endFill();
-		}		
+		}	
+		
+		
+		private function updateInfo():void
+		{
+			_info.markdown = "#Switch Versions Info\n\ntest\n\ntest\n\ntest\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\ntest\ntest\n_test_";
+		}
 
 		
 		private var _switchablesLabel:Label = new Label;
 		private var _switchableModuleList:ModuleManagerList = new ModuleManagerList;
 		private var _alternativeVersionsList:ModuleManagerList = new ModuleManagerList;
+
+		private var _info:ModuleInfo = new ModuleInfo;
 		
 		private var _switchVersionsButton:Button = new Button;
 		

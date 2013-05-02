@@ -24,6 +24,7 @@
 			xmlns:libraries="components.utils.libraries.*"
 			initialize="{onInitialize()}"
 			alpha="0.8"
+			doubleClickEnabled="true"
 			horizontalScrollPolicy="off" verticalScrollPolicy="off">
 
 	<mx:Label id="_itemLabel" text="{toString()}"/>

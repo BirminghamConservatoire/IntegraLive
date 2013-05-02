@@ -190,7 +190,7 @@ package components.controller.moduleManagement
 			var removedModuleGuids:Array = [];
 			var embeddedModuleGuids:Array = [];
 			
-			var resultsString:String = "Uninstall Modules...\n";				
+			var resultsString:String = "Uninstall Modules\n";				
 			
 			for( var i:int = 0; i < response.length; i++ )
 			{

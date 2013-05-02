@@ -1,3 +1,24 @@
+/* Integra Live graphical user interface
+*
+* Copyright (C) 2009 Birmingham City University
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+* USA.
+*/
+
+
 package components.views.ModuleManager
 {
 	import flash.events.Event;
@@ -67,6 +88,8 @@ package components.views.ModuleManager
 			_upgradeButton.label = "Upgrade Modules";
 			_upgradeButton.addEventListener( MouseEvent.CLICK, onClickUpgradeButton );
 			addChild( _upgradeButton );
+			
+			addChild( _info );
 			
 		}
 		
@@ -141,8 +164,11 @@ package components.views.ModuleManager
 				
 				_upgradableModuleList.visible = true;
 				_upgradeAllButton.visible = true;
+				_info.visible = true;
 				_upgradeButton.visible = true;
 				_upgradeButton.enabled = _upgradableModuleList.anyAreSelected;
+				
+				updateInfo();
 			}
 			else
 			{
@@ -150,6 +176,7 @@ package components.views.ModuleManager
 
 				_upgradableModuleList.visible = false;
 				_upgradeAllButton.visible = false;
+				_info.visible = false;
 				_upgradeButton.visible = false;
 			}
 			
@@ -194,13 +221,17 @@ package components.views.ModuleManager
 		
 		private function get moduleListRect():Rectangle
 		{
-			return new Rectangle( internalMargin, internalMargin * 3, width / 2 - internalMargin * 1.5, height - internalMargin * 4 );
+			return new Rectangle( internalMargin, internalMargin * 3, width / 3 - internalMargin * 1.5, height - internalMargin * 6 - FontSize.getTextRowHeight( this ) );
 		}
 
 		
 		private function onResize( event:Event ):void
 		{
+			_upgradeLabel.x = internalMargin;
+			_upgradeLabel.y = internalMargin;
+
 			var moduleListRect:Rectangle = moduleListRect;
+
 			var moduleListRectDeflated:Rectangle = moduleListRect.clone();
 			moduleListRectDeflated.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
 			_upgradableModuleList.x = moduleListRectDeflated.x;
@@ -208,22 +239,26 @@ package components.views.ModuleManager
 			_upgradableModuleList.width = moduleListRectDeflated.width;
 			_upgradableModuleList.height = moduleListRectDeflated.height;
 			
-			_upgradeLabel.x = internalMargin;
-			_upgradeLabel.y = internalMargin;
-			
-			var rightPane:Rectangle = new Rectangle( moduleListRect.right + internalMargin, moduleListRect.y );
-			rightPane.width = width - internalMargin - rightPane.x;
-			rightPane.height = height - internalMargin - rightPane.y;
-			
-			_upgradeAllButton.x = rightPane.x;
-			_upgradeAllButton.y = rightPane.y;
-			_upgradeAllButton.width = rightPane.width;
+			_upgradeAllButton.x = moduleListRect.x;
+			_upgradeAllButton.y = moduleListRect.bottom + internalMargin * 2;
+			_upgradeAllButton.width = moduleListRect.width;
 			_upgradeAllButton.height = FontSize.getTextRowHeight( this );
+			
+			var rightPane:Rectangle = new Rectangle();
+			rightPane.x = width / 3 + internalMargin * 1.5;
+			rightPane.y = moduleListRect.y;
+			rightPane.width = width - internalMargin - rightPane.x;
+			rightPane.height = moduleListRect.height;
 
+			_info.x = rightPane.x;
+			_info.y = rightPane.y;
+			_info.width = rightPane.width;
+			_info.height = rightPane.height;
+			
 			_upgradeButton.x = rightPane.x;
 			_upgradeButton.width = rightPane.width;
 			_upgradeButton.height = FontSize.getTextRowHeight( this );
-			_upgradeButton.y = rightPane.bottom - _upgradeButton.height;
+			_upgradeButton.y = rightPane.bottom + internalMargin * 2;
 		}
 		
 		
@@ -277,6 +312,8 @@ package components.views.ModuleManager
 		{
 			_upgradeAllButton.selected = _upgradableModuleList.allAreSelected;
 			_upgradeButton.enabled = _upgradableModuleList.anyAreSelected;
+			
+			updateInfo();
 		}
 		
 		
@@ -292,6 +329,8 @@ package components.views.ModuleManager
 				_upgradableModuleList.deselectAll();
 				_upgradeButton.enabled = false;
 			}
+			
+			updateInfo();
 		}
 		
 		
@@ -319,6 +358,12 @@ package components.views.ModuleManager
 				controller.processCommand( new SwitchAllObjectVersions( fromInterfaceDefinition.moduleGuid, toInterfaceDefinition.moduleGuid ) );
 			}
 		}
+		
+		
+		private function updateInfo():void
+		{
+			_info.markdown = "#Upgrade Info\n\ntest\n\ntest\n\ntest\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\ntest\ntest\n_test_";
+		}
 
 		
 		private var _upgradeLabel:Label = new Label;
@@ -327,6 +372,8 @@ package components.views.ModuleManager
 		private var _upgradeAllButton:Button = new Button;
 
 		private var _upgradeButton:Button = new Button;
+
+		private var _info:ModuleInfo = new ModuleInfo;
 		
 		private var _labelColor:uint;
 		

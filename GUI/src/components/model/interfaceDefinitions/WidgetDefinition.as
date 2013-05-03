@@ -21,12 +21,7 @@
 
 package components.model.interfaceDefinitions
 {
-	import components.model.Info;
-	import components.utils.Utilities;
-	
 	import flash.geom.Rectangle;
-	
-	import flexunit.framework.Assert;
 	
 	public class WidgetDefinition
 	{

@@ -194,6 +194,11 @@ package components.views.ModuleManager
 			_info.y = rightPane.y;
 			_info.width = rightPane.width;
 			_info.height = rightPane.height;
+			
+			if( _installationReport.parent )
+			{
+				PopUpManager.centerPopUp( _installationReport );
+			}
 		}
 		
 		
@@ -310,9 +315,7 @@ package components.views.ModuleManager
 		
 		private function onInstallResult( event:SetInstallResult ):void
 		{
-			_installationReport.text = event.installResult;
-			PopUpManager.addPopUp( _installationReport, this, true );
-			PopUpManager.centerPopUp( _installationReport );
+			_installationReport.displayReport( event.installResult, this );
 		}
 		
 		

@@ -36,6 +36,7 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.LoadModule;
 	import components.controller.serverCommands.RemoveBlockImport;
 	import components.controller.serverCommands.RemoveTrackImport;
+	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SwitchAllObjectVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.SwitchObjectVersion;
@@ -67,6 +68,7 @@ package components.views.ModuleManager
 			addUpdateMethod( ImportBlock, onUpdateNeeded );
 			addUpdateMethod( RemoveTrackImport, onUpdateNeeded );
 			addUpdateMethod( RemoveBlockImport, onUpdateNeeded );
+			addUpdateMethod( RenameObject, onObjectRenamed );
 			addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
 			
 			addEventListener( Event.RESIZE, onResize );
@@ -133,6 +135,12 @@ package components.views.ModuleManager
 				_updateFlagged = true;
 				callLater( updateAll );
 			}
+		}
+		
+		
+		private function onObjectRenamed( command:RenameObject ):void
+		{
+			updateInfo();
 		}
 		
 		
@@ -362,9 +370,47 @@ package components.views.ModuleManager
 		
 		private function updateInfo():void
 		{
-			_info.markdown = "#Upgrade Info\n\ntest\n\ntest\n\ntest\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\ntest\ntest\n_test_";
-		}
+			var infoGenerator:ModuleManagementInfoGenerator = new ModuleManagementInfoGenerator;
+			
+			var instanceNames:String = "";
+			var upgradables:Vector.<ModuleManagerListItem> = _upgradableModuleList.items;
+			for each( var item:ModuleManagerListItem in upgradables )
+			{
+				if( !item.selected ) continue;
+				
+				instanceNames += infoGenerator.getInstanceNames( item.interfaceDefinition );
+			}
+			
+			if( instanceNames.length == 0 )
+			{
+				_info.markdown = "No modules are selected for upgrading";
+				return;
+			}
+			
+			var markdown:String = "##The following modules will be upgraded:\n\n" + instanceNames;
+		
+			for each( item in upgradables )
+			{
+				if( !item.selected ) continue;
+				
+				markdown += "\n\n##Upgrade summary for " + item.interfaceDefinition.interfaceInfo.label + "\n\n";
+				
+				var alternativeVersions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( item.interfaceDefinition.originGuid );
+				Assert.assertTrue( alternativeVersions && alternativeVersions.length > 1 );
+				
+				var targetInterfaceDefinition:InterfaceDefinition = alternativeVersions[ 0 ];
+				
+				Assert.assertTrue( item.interfaceDefinition != targetInterfaceDefinition && item.interfaceDefinition.originGuid == targetInterfaceDefinition.originGuid );
 
+				var sourceInterfaceDefinitions:Vector.<InterfaceDefinition> = new Vector.<InterfaceDefinition>;
+				sourceInterfaceDefinitions.push( item.interfaceDefinition );
+				
+				markdown += infoGenerator.getModuleDifferenceSummary( sourceInterfaceDefinitions, targetInterfaceDefinition, "Best version" );
+			}
+
+			_info.markdown = markdown;
+		}
+		
 		
 		private var _upgradeLabel:Label = new Label;
 		private var _upgradableModuleList:ModuleManagerList = new ModuleManagerList;

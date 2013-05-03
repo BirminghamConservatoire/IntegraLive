@@ -141,6 +141,7 @@ package components.views.ModuleManager
 		{
 			updateArrows();
 			updateSwitchEnable();
+			updateInfo();
 		}
 		
 		
@@ -188,7 +189,7 @@ package components.views.ModuleManager
 		
 		private function get switchableListRect():Rectangle
 		{
-			return new Rectangle( internalMargin, internalMargin * 3, width / 3 - internalMargin * 3, height - internalMargin * 4 );
+			return new Rectangle( internalMargin, internalMargin * 3, width / 4 - internalMargin * 3, height - internalMargin * 4 );
 		}
 
 		
@@ -206,7 +207,7 @@ package components.views.ModuleManager
 			_switchablesLabel.y = internalMargin;
 			
 			var rightPane:Rectangle = switchableListRect.clone();
-			rightPane.offset( width / 3 + internalMargin * 1.5, 0 );
+			rightPane.offset( width / 4 + internalMargin * 1.5, 0 );
 			
 			var alternativeVersionsRect:Rectangle = rightPane.clone();
 			alternativeVersionsRect.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
@@ -472,7 +473,47 @@ package components.views.ModuleManager
 		
 		private function updateInfo():void
 		{
-			_info.markdown = "#Switch Versions Info\n\ntest\n\ntest\n\ntest\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\ntest\ntest\n_test_";
+			var infoGenerator:ModuleManagementInfoGenerator = new ModuleManagementInfoGenerator;
+			
+			var switchableItem:ModuleManagerListItem = _switchableModuleList.selectedItem;
+			var targetVersionItem:ModuleManagerListItem = _alternativeVersionsList.selectedItem;
+			
+			if( !switchableItem || !targetVersionItem )
+			{
+				_info.markdown = "No modules are selected for version-switching";
+				return;				
+			}
+			
+			var targetVersion:InterfaceDefinition = targetVersionItem.interfaceDefinition;
+			
+			//var alternativeVersions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( switchableItem.interfaceDefinition.originGuid );
+			var versionsToSwitch:Vector.<InterfaceDefinition> = new Vector.<InterfaceDefinition>; 
+			var instanceNames:String = "";
+
+			for each( var itemInUse:ModuleManagerListItem in _arrowTargets )
+			{
+				var versionInUse:InterfaceDefinition = itemInUse.interfaceDefinition;
+				
+				if( versionInUse != targetVersion )
+				{
+					versionsToSwitch.push( versionInUse );
+					instanceNames += infoGenerator.getInstanceNames( versionInUse );
+				}
+			}
+			
+			if( instanceNames.length == 0 )
+			{
+				_info.markdown = "No modules are selected for version-switching";
+				return;
+			}
+			
+			var markdown:String = "##The following modules will be version-switched:\n\n" + instanceNames + "\n\n";
+			
+			markdown += "##Version-switch summary\n\n";
+
+			markdown += infoGenerator.getModuleDifferenceSummary( versionsToSwitch, targetVersion, "Target version" );
+			
+			_info.markdown = markdown;			
 		}
 
 		

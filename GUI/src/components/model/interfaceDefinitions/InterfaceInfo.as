@@ -40,6 +40,20 @@ package components.model.interfaceDefinitions
 		public function get modifiedDate():Date 					{ return _modifiedDate; }
 		public function get info():Info								{ return _info; }
 		
+		
+		public function get authorLabel():String
+		{
+			return ( author.length == 0 ) ? "&lt;unknown&gt;" : author;
+		}
+
+		
+		public function get modifiedDateLabel():String
+		{
+			return modifiedDate.toLocaleDateString();
+		}
+		
+		
+		
 		public function set name( name:String ):void 				{ _name = name; }
 		public function set label( label:String ):void 				
 		{ 	

@@ -21,8 +21,10 @@
 
 package components.controller.userDataCommands
 {
+	import components.controller.IntegraController;
 	import components.controller.UserDataCommand;
 	import components.model.IntegraModel;
+	import components.model.userData.ViewMode;
 	
 	
 	public class SetInstallResult extends UserDataCommand
@@ -42,6 +44,17 @@ package components.controller.userDataCommands
 		public override function initialize( model:IntegraModel ):Boolean
 		{
 			return true;	
+		}
+		
+		
+		public override function preChain( model:IntegraModel, controller:IntegraController ):void
+		{
+			if( !model.project.projectUserData.viewMode.moduleManagerOpen )
+			{
+				var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
+				viewMode.moduleManagerOpen = true;
+				controller.processCommand( new SetViewMode( viewMode ) );
+			}
 		}
 		
 		

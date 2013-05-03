@@ -31,6 +31,7 @@ package components.views.ModuleManager
 	import mx.core.ScrollPolicy;
 	
 	import components.controller.userDataCommands.PollForUpgradableModules;
+	import components.controller.userDataCommands.SetInstallResult;
 	import components.controller.userDataCommands.SetViewMode;
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
@@ -73,6 +74,7 @@ package components.views.ModuleManager
 			addChild( _tabNavigator );
 			
 			addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
+			addUpdateMethod( SetInstallResult, onSetInstallResult );
 			
 			onStyleChanged( null );
 		}
@@ -207,6 +209,12 @@ package components.views.ModuleManager
 			{
 				_tabNavigator.selectedChild = _upgradeTab;
 			}
+		}
+		
+		
+		private function onSetInstallResult( command:SetInstallResult ):void
+		{
+			_tabNavigator.selectedChild = _installTab;
 		}
 		
 		

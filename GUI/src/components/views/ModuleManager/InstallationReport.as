@@ -1,5 +1,6 @@
 package components.views.ModuleManager
 {
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
@@ -39,9 +40,16 @@ package components.views.ModuleManager
 		}
 		
 		
-		public function set text( text:String ):void
+		public function displayReport( text:String, parent:DisplayObject ):void
 		{
 			_report.text = text;
+			
+			if( !_showing )
+			{
+				PopUpManager.addPopUp( this, parent, true );
+				PopUpManager.centerPopUp( this );
+				_showing = true;
+			}
 		}
 		
 		
@@ -57,7 +65,7 @@ package components.views.ModuleManager
 						_borderColor = 0xaaccdf;
 						_label.setStyle( "color", 0x747474 );
 						setButtonTextColor( _closeButton, 0x6D6D6D, 0x9e9e9e );
-						_report.setStyle( "color", 0x000000 );
+						_report.setStyle( "color", 0x747474 );
 						_report.setStyle( "backgroundColor", 0xcfcfcf );
 						break;
 					
@@ -66,7 +74,7 @@ package components.views.ModuleManager
 						_borderColor = 0x214356;
 						_label.setStyle( "color", 0x8c8c8c );
 						setButtonTextColor( _closeButton, 0x939393, 0x626262 );
-						_report.setStyle( "color", 0xffffff );
+						_report.setStyle( "color", 0x8c8c8c );
 						_report.setStyle( "backgroundColor", 0x313131 );
 						break;
 				}
@@ -130,9 +138,10 @@ package components.views.ModuleManager
 		private function onCloseReport( event:Event ):void
 		{
 			PopUpManager.removePopUp( this );
+			_showing = false;
 		}
-		
-		
+
+		private var _showing:Boolean = false;
 		
 		private var _label:Label = new Label;
 		private var _report:TextArea = new TextArea;

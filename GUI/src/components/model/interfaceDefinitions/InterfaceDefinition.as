@@ -31,6 +31,19 @@ package components.model.interfaceDefinitions
 		public function get originGuid():String { return _originGuid; }
 		public function get moduleSource():String { return _moduleSource; }
 		
+
+		public function get moduleSourceLabel():String 
+		{ 
+			switch( moduleSource )
+			{
+				case MODULE_SHIPPED_WITH_INTEGRA: 	return "System Module";
+				case MODULE_THIRD_PARTY:			return "Third Party Module";
+				case MODULE_EMBEDDED:				return "Embedded in Project";
+				default:							return "<unknown module source>";
+			}
+		}
+		
+		
 		public function get interfaceInfo():InterfaceInfo { return _interfaceInfo; }
 		public function get endpoints():Vector.<EndpointDefinition> { return _endpoints; }
 		public function get widgets():Vector.<WidgetDefinition> { return _widgets; }

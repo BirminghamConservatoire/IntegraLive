@@ -65,7 +65,7 @@ package components.utils
 		
 		public static function get integraFileExtension():String
 		{
-			return ".integra";
+			return "integra";
 		}
 
 		
@@ -144,10 +144,11 @@ package components.utils
 		public static function fileTitleFromPath( path:String ):String 
 		{
 			var filename:String = fileNameFromPath( path );
-			if( filename.length > integraFileExtension.length )
+			var extension:String = "." + integraFileExtension;
+			if( filename.length > extension.length )
 			{
-				var lengthBeforeExtension:int = filename.length - integraFileExtension.length;
-				if( filename.substr( lengthBeforeExtension ) == integraFileExtension )
+				var lengthBeforeExtension:int = filename.length - extension.length;
+				if( filename.substr( lengthBeforeExtension ) == extension )
 				{
 					return filename.substr( 0, lengthBeforeExtension );
 				}

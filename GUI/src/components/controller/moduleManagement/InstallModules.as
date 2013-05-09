@@ -79,6 +79,16 @@ package components.controller.moduleManagement
 		}
 		
 		
+		public static function installModules( files:Array ):void
+		{
+			Assert.assertNull( _installer );
+			
+			_installer = new InstallModules();
+
+			_installer.doInstall( files );
+		}
+		
+		
 		public override function executeServerCommand( model:IntegraModel ):void
 		{
 			const maximumDescriptionItems:int = 3;
@@ -183,7 +193,13 @@ package components.controller.moduleManagement
 		
 		private function onSelectFilesToInstall( event:FileListEvent ):void
 		{
-			getFilesToInstall( event.files );
+			doInstall( event.files );
+		}
+
+		
+		private function doInstall( files:Array ):void
+		{
+			getFilesToInstall( files );
 			
 			var controller:IntegraController = IntegraController.singleInstance;
 			controller.activateUndoStack = false;

@@ -1783,7 +1783,7 @@ package components.views.ModuleGraph
 		
  		private function importModule():void
  		{
-			var filter:FileFilter = new FileFilter( "Integra Modules", "*" + Utilities.integraFileExtension + ";*.mixd" );
+			var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Utilities.integraFileExtension + ";*.mixd" );
  			var file:File = new File( moduleDirectory );
  			file.browseForOpen( "Import Module", [filter] );
  			
@@ -1793,8 +1793,8 @@ package components.views.ModuleGraph
 
  		private function exportModule():void
  		{
-			var filter:FileFilter = new FileFilter( "Integra Modules", "*" + Utilities.integraFileExtension );
- 			var file:File = new File( moduleDirectory + "/" + model.primarySelectedModule.name + Utilities.integraFileExtension );
+			var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Utilities.integraFileExtension );
+ 			var file:File = new File( moduleDirectory + "/" + model.primarySelectedModule.name + "." + Utilities.integraFileExtension );
  			file.browseForSave( "Export Module" );
  			
  			file.addEventListener( Event.SELECT, onSelectModuleToExport );      			

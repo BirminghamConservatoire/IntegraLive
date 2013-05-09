@@ -124,7 +124,7 @@ package components.model.preferences
 		
 		public static function get localFile():File
 		{
-			return File.applicationStorageDirectory.resolvePath( defaultObjectName + " " + Utilities.integraLiveVersion + Utilities.integraFileExtension );
+			return File.applicationStorageDirectory.resolvePath( defaultObjectName + " " + Utilities.integraLiveVersion + "." +Utilities.integraFileExtension );
 		}
 		
 		

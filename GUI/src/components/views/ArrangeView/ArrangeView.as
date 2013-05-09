@@ -1349,7 +1349,7 @@ package components.views.ArrangeView
  		
  		private function importBlock():void
  		{
-			var filter:FileFilter = new FileFilter( "Integra Blocks", "*" + Utilities.integraFileExtension + ";*.bixd" );
+			var filter:FileFilter = new FileFilter( "Integra Blocks", "*." + Utilities.integraFileExtension + ";*.bixd" );
  			var file:File = new File( blockDirectory );
  			file.browseForOpen( "Import Block", [filter] );
  			
@@ -1359,8 +1359,8 @@ package components.views.ArrangeView
 
  		private function exportBlock():void
  		{
-			var filter:FileFilter = new FileFilter( "Integra Blocks", "*" + Utilities.integraFileExtension );
- 			var file:File = new File( blockDirectory + "/" + model.primarySelectedBlock.name + Utilities.integraFileExtension );
+			var filter:FileFilter = new FileFilter( "Integra Blocks", "*." + Utilities.integraFileExtension );
+ 			var file:File = new File( blockDirectory + "/" + model.primarySelectedBlock.name + "." + Utilities.integraFileExtension );
  			file.browseForSave( "Export Block" );
  			
  			file.addEventListener( Event.SELECT, onSelectBlockToExport );      			
@@ -1375,7 +1375,7 @@ package components.views.ArrangeView
  			var block:Block = model.primarySelectedBlock;
  			Assert.assertNotNull( block );
  			
- 			var file:File = new File( directoryName + block.name + Utilities.integraFileExtension );
+ 			var file:File = new File( directoryName + block.name + "." + Utilities.integraFileExtension );
  			if( !file.exists )
  			{
  				controller.exportBlock( file.nativePath );
@@ -1385,7 +1385,7 @@ package components.views.ArrangeView
  			//if the first choice filename already exists, find a filename which doesn't exist
  			for( var i:int = 1; ; i++ )
  			{
- 				file = new File( directoryName + block.name + "_" + String( i ) + Utilities.integraFileExtension );
+ 				file = new File( directoryName + block.name + "_" + String( i ) + "." + Utilities.integraFileExtension );
  				if( !file.exists )
  				{
  					controller.exportBlock( file.nativePath );
@@ -1397,7 +1397,7 @@ package components.views.ArrangeView
 
  		private function importTrack():void
  		{
-			var filter:FileFilter = new FileFilter( "Integra Tracks", "*" + Utilities.integraFileExtension + ";*.tixd" );
+			var filter:FileFilter = new FileFilter( "Integra Tracks", "*." + Utilities.integraFileExtension + ";*.tixd" );
  			var file:File = new File( trackDirectory );
  			file.browseForOpen( "Import Track", [filter] );
  			
@@ -1407,8 +1407,8 @@ package components.views.ArrangeView
 
  		private function exportTrack():void
  		{
-			var filter:FileFilter = new FileFilter( "Integra Tracks", "*" + Utilities.integraFileExtension );
- 			var file:File = new File( trackDirectory + "/" + model.selectedTrack.name + Utilities.integraFileExtension );
+			var filter:FileFilter = new FileFilter( "Integra Tracks", "*." + Utilities.integraFileExtension );
+ 			var file:File = new File( trackDirectory + "/" + model.selectedTrack.name + "." + Utilities.integraFileExtension );
  			file.browseForSave( "Export Track" );
  			
  			file.addEventListener( Event.SELECT, onSelectTrackToExport );      			

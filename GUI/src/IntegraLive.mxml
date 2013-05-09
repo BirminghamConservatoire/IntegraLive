@@ -58,6 +58,7 @@
 			import components.controller.events.ReloadAllDataEvent;
 			import components.controller.events.SaveFailedEvent;
 			import components.controller.events.ServerShutdownEvent;
+			import components.controller.moduleManagement.InstallModules;
 			import components.controller.serverCommands.NextScene;
 			import components.controller.serverCommands.PreviousScene;
 			import components.controller.serverCommands.ResetAllBlocks;
@@ -134,15 +135,15 @@
 					if( filenamePrompt.substr( filenamePrompt.length - 4 ) == ".ixd" )
 					{
 						//update extension
-						filenamePrompt = filenamePrompt.substr( 0, filenamePrompt.length - 4 ) + Utilities.integraFileExtension;
+						filenamePrompt = filenamePrompt.substr( 0, filenamePrompt.length - 3 ) + Utilities.integraFileExtension;
 					}
 				}
 				else
 				{
-					filenamePrompt = File.documentsDirectory.nativePath + "/" + _model.project.name + Utilities.integraFileExtension;
+					filenamePrompt = File.documentsDirectory.nativePath + "/" + _model.project.name + "." + Utilities.integraFileExtension;
 				}
 				
-				var filter:FileFilter = new FileFilter( "Integra Projects", "*" + Utilities.integraFileExtension );
+				var filter:FileFilter = new FileFilter( "Integra Projects", "*." + Utilities.integraFileExtension );
 				var file:File = new File( filenamePrompt );
 				file.browseForSave( "Save Project" );
 				
@@ -304,28 +305,29 @@
 					return;
 				}
 
+				var autoLoadFilename:String;
 				if( Utilities.isWindows )
 				{
-					_autoLoadFilename = "";
+					autoLoadFilename = "";
 					for each( var argument:String in arguments )
 					{
-						if( _autoLoadFilename.length > 0 ) _autoLoadFilename += " ";
+						if( autoLoadFilename.length > 0 ) autoLoadFilename += " ";
 						
-						_autoLoadFilename += argument; 
+						autoLoadFilename += argument; 
 					}
 				}
 				else
 				{
 					Assert.assertTrue( Utilities.isMac );
 				
-					_autoLoadFilename = arguments[ 0 ];
+					autoLoadFilename = arguments[ 0 ];
 				}
 
-				var autoLoadFile:File = new File( _autoLoadFilename );
-				if( !autoLoadFile.exists )
+				_autoLoadFile = new File( autoLoadFilename );
+				if( !_autoLoadFile.exists )
 				{
-					Trace.error( "Can't autoload - file not found", _autoLoadFilename );
-					_autoLoadFilename = null;
+					Trace.error( "Can't autoload - file not found", autoLoadFilename );
+					_autoLoadFile = null;
 				}
 
 				doAutoloadIfNecessary();
@@ -494,22 +496,39 @@
 
 			private function doAutoloadIfNecessary():void
 			{
-				if( _autoLoadFilename != null && !ModalState.isInModalState )
+				if( _autoLoadFile != null && !ModalState.isInModalState )
 				{
-					_functionToExecuteAfterSaveModifiedAlert = doAutoLoad; 
-					saveModified( "Load Project" );
+					switch( _autoLoadFile.extension.toLowerCase() )
+					{
+						case Utilities.integraFileExtension:
+							_functionToExecuteAfterSaveModifiedAlert = doAutoLoad; 
+							saveModified( "Load Project" );
+							break;
+						
+						case Utilities.moduleFileExtension:
+						case Utilities.bundleFileExtension:
+							InstallModules.installModules( [ _autoLoadFile ] );
+							break;
+						
+						default:
+							Assert.assertTrue( false );
+							break;						
+					}
 				}
 			}
 
 			
 			private function doAutoLoad():void
 			{
-				Trace.progress( "autoload path:", _autoLoadFilename );
+				Assert.assertNotNull( _autoLoadFile );
+				Assert.assertTrue( _autoLoadFile.exists );
 				
-				_lastFilename = _autoLoadFilename;
-				_autoLoadFilename = null;
+				Trace.progress( "autoload path:", _autoLoadFile.nativePath );
 				
-				displayProgressPopup( "Loading: " + Utilities.fileNameFromPath( _lastFilename ) + "..." );
+				_lastFilename = _autoLoadFile.nativePath;
+				_autoLoadFile = null;
+				
+				displayProgressPopup( "Loading: " + _autoLoadFile.name + "..." );
 				_controller.loadProject( _lastFilename );
 			}
 			
@@ -580,7 +599,7 @@
 
 			private function doLoad():void
 			{
-				var filter:FileFilter = new FileFilter( "Integra Projects", "*" + Utilities.integraFileExtension + ";*.ixd" );
+				var filter:FileFilter = new FileFilter( "Integra Projects", "*." + Utilities.integraFileExtension + ";*.ixd" );
 				var file:File = new File();
 				file.browseForOpen( "Open Project", [filter] );
 
@@ -601,7 +620,7 @@
 			{
 				_lastFilename = event.target.nativePath;
 
-				var extension:String = Utilities.integraFileExtension;
+				var extension:String = "." + Utilities.integraFileExtension;
 				if( _lastFilename.length <= extension.length || _lastFilename.substr( _lastFilename.length - extension.length ).toLowerCase() != extension.toLowerCase() )
 				{
 					_lastFilename += extension;	
@@ -1293,7 +1312,7 @@
 	    private var _lastFilename:String = null;
 	    private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
 	    private var _functionToExecuteAfterSave:Function = null;
-		private var _autoLoadFilename:String;
+		private var _autoLoadFile:File;
 
 		private var _menuHandlers:MenuHandlers = null;
 		private var _isKeyRepeat:Boolean = false;

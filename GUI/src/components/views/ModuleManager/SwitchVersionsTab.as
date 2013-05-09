@@ -75,10 +75,12 @@ package components.views.ModuleManager
 			addChild( _switchablesLabel );
 
 			_switchableModuleList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onSwitchableSelected );
+			_switchableModuleList.addEventListener( ModuleManagerList.SELECTION_FINISHED_EVENT, onSelectionFinished );
 			_switchableModuleList.addEventListener( ScrollEvent.SCROLL, onScrollList );
 			addChild( _switchableModuleList );
 			
 			_alternativeVersionsList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onAlternativeVersionSelected );
+			_alternativeVersionsList.addEventListener( ModuleManagerList.SELECTION_FINISHED_EVENT, onSelectionFinished );
 			_alternativeVersionsList.addEventListener( ScrollEvent.SCROLL, onScrollList );
 			addChild( _alternativeVersionsList );
 			
@@ -141,7 +143,7 @@ package components.views.ModuleManager
 		{
 			updateArrows();
 			updateSwitchEnable();
-			updateInfo();
+			deferInfoUpdate();
 		}
 		
 		
@@ -163,7 +165,7 @@ package components.views.ModuleManager
 				
 				updateSwitchEnable();
 				
-				updateInfo();
+				deferInfoUpdate();
 			}
 			else
 			{
@@ -301,7 +303,7 @@ package components.views.ModuleManager
 			
 			updateArrows();
 			
-			updateInfo();
+			_info.markdown = "";
 		}
 		
 		
@@ -309,7 +311,13 @@ package components.views.ModuleManager
 		{
 			updateSwitchEnable();
 			
-			updateInfo();
+			_info.markdown = "";
+		}
+		
+		
+		private function onSelectionFinished( event:Event ):void
+		{
+			deferInfoUpdate();
 		}
 
 		
@@ -469,6 +477,13 @@ package components.views.ModuleManager
 			_arrowCanvas.graphics.lineTo( to.x, to.y + arrowheadWidth );
 			_arrowCanvas.graphics.endFill();
 		}	
+		
+		
+		private function deferInfoUpdate():void
+		{
+			_info.markdown = "Updating...";
+			callLater( callLater, [ updateInfo ] );			
+		}
 		
 		
 		private function updateInfo():void

@@ -250,6 +250,7 @@ struct ntg_widget_attribute_mapping_
 struct ntg_implementation_info_
 {
 	char *patch_name;
+	unsigned int checksum;
 };
 
 

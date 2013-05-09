@@ -77,6 +77,7 @@ package components.views.ModuleManager
 
 			_upgradableModuleList.multiSelection = true;
 			_upgradableModuleList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onItemSelected );
+			_upgradableModuleList.addEventListener( ModuleManagerList.SELECTION_FINISHED_EVENT, onSelectionFinished );
 			addChild( _upgradableModuleList );
 			
 			_upgradeAllButton.setStyle( "skin", TextButtonSkin );
@@ -140,7 +141,7 @@ package components.views.ModuleManager
 		
 		private function onObjectRenamed( command:RenameObject ):void
 		{
-			updateInfo();
+			deferInfoUpdate();
 		}
 		
 		
@@ -176,7 +177,7 @@ package components.views.ModuleManager
 				_upgradeButton.visible = true;
 				_upgradeButton.enabled = _upgradableModuleList.anyAreSelected;
 				
-				updateInfo();
+				deferInfoUpdate();
 			}
 			else
 			{
@@ -321,7 +322,13 @@ package components.views.ModuleManager
 			_upgradeAllButton.selected = _upgradableModuleList.allAreSelected;
 			_upgradeButton.enabled = _upgradableModuleList.anyAreSelected;
 			
-			updateInfo();
+			_info.markdown = "";
+		}
+		
+		
+		private function onSelectionFinished( event:Event ):void
+		{
+			deferInfoUpdate();
 		}
 		
 		
@@ -338,7 +345,14 @@ package components.views.ModuleManager
 				_upgradeButton.enabled = false;
 			}
 			
-			updateInfo();
+			deferInfoUpdate();
+		}
+		
+		
+		private function deferInfoUpdate():void
+		{
+			_info.markdown = "Updating...";
+			callLater( callLater, [ updateInfo ] );			
 		}
 		
 		

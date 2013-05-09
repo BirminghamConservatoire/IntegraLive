@@ -21,6 +21,8 @@
 
 package components.model.interfaceDefinitions
 {
+	import components.model.Info;
+
 	public class InterfaceDefinition
 	{
 		public function InterfaceDefinition()
@@ -30,6 +32,7 @@ package components.model.interfaceDefinitions
 		public function get moduleGuid():String { return _moduleGuid; }
 		public function get originGuid():String { return _originGuid; }
 		public function get moduleSource():String { return _moduleSource; }
+		public function get implementationChecksum():uint { return _implementationChecksum; }
 		
 
 		public function get moduleSourceLabel():String 
@@ -52,6 +55,7 @@ package components.model.interfaceDefinitions
 		public function set moduleGuid( moduleGuid:String ):void { _moduleGuid = moduleGuid; }
 		public function set originGuid( originGuid:String ):void { _originGuid = originGuid; }
 		public function set moduleSource( moduleSource:String ):void { _moduleSource = moduleSource; }
+		public function set implementationChecksum( implementationChecksum:uint ):void { _implementationChecksum = implementationChecksum; }
 		
 		
 		public function getEndpointDefinition( endpointName:String ):EndpointDefinition
@@ -125,9 +129,27 @@ package components.model.interfaceDefinitions
 		}
 		
 		
+		public function makeExtendedInfoMarkdown( includeModifiedAndAuthor:Boolean ):String
+		{
+			var markdown:String = "#" + interfaceInfo.label + "\n";
+			markdown += "##" + moduleSourceLabel + "\n\n";
+			
+			if( includeModifiedAndAuthor )
+			{
+				markdown += "**Last modified:** " + interfaceInfo.modifiedDateLabel + "\n\n";
+				markdown += "**Author:** " + interfaceInfo.authorLabel + "\n\n";
+			}
+			
+			markdown += interfaceInfo.description;
+
+			return markdown;
+		}			
+		
+		
 		private var _moduleGuid:String;
 		private var _originGuid:String;
 		private var _moduleSource:String;
+		private var _implementationChecksum:uint;
 		
 		private var _interfaceInfo:InterfaceInfo = new InterfaceInfo;
 		private var _endpoints:Vector.<EndpointDefinition> = new Vector.<EndpointDefinition>;

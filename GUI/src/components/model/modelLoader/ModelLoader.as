@@ -448,13 +448,16 @@ package components.model.modelLoader
 			{
 				var methodName:String = response[ 0 ].response;
 				var moduleGuid:String = response[ 0 ].moduleid;
-				var originGuid:String = response[ 0 ].originid;
-				var moduleSource:String = response[ 0 ].modulesource;
 				
 				switch( methodName )
 				{
 					case "query.interfaceinfo":
-						handleInterfaceInfo( moduleGuid, originGuid, moduleSource, response[ 0 ].interfaceinfo );
+						var originGuid:String = response[ 0 ].originid;
+						var moduleSource:String = response[ 0 ].modulesource;
+						var implementationChecksum:uint = response[ 0 ].implementationchecksum;
+						var interfaceInfo:Object = response[ 0 ].interfaceinfo;
+
+						handleInterfaceInfo( moduleGuid, originGuid, moduleSource, implementationChecksum, interfaceInfo );
 						break;
 
 					case "query.endpoints":
@@ -473,12 +476,13 @@ package components.model.modelLoader
 		}
 		
 		
-		private function handleInterfaceInfo( moduleGuid:String, originGuid:String, moduleSource:String, info:Object ):void
+		private function handleInterfaceInfo( moduleGuid:String, originGuid:String, moduleSource:String, implementationChecksum:uint, info:Object ):void
 		{
 			var interfaceDefinition:InterfaceDefinition = new InterfaceDefinition;
 			interfaceDefinition.moduleGuid = moduleGuid;
 			interfaceDefinition.originGuid = originGuid;
 			interfaceDefinition.moduleSource = moduleSource;
+			interfaceDefinition.implementationChecksum = implementationChecksum;
 			
 			interfaceDefinition.interfaceInfo.name = info.name;
 			interfaceDefinition.interfaceInfo.label = info.label;

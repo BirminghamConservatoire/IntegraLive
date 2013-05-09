@@ -321,7 +321,46 @@ package components.views.ModuleManager
 		
 		private function updateInfo():void
 		{
-			_info.markdown = "#Install/uninstall Info\n\ntest\n\ntest\n\ntest\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\n\ntest\n\ntest\n\n_test_\n\n__test__\ntest\ntest\n_test_";
+			var markdown:String = null;
+			
+			for each( var thirdPartyModule:ModuleManagerListItem in _3rdPartyModulesList.items ) 
+			{
+				if( !thirdPartyModule.selected ) continue;
+				
+				if( !markdown )
+				{
+					markdown = "###Modules selected for uninstall:\n";
+				}
+				else
+				{
+					markdown += "\n\n";
+				}
+				
+				markdown += thirdPartyModule.interfaceDefinition.makeExtendedInfoMarkdown( true );
+			}
+
+			for each( var embeddedModule:ModuleManagerListItem in _embeddedModulesList.items ) 
+			{
+				if( !embeddedModule.selected ) continue;
+				
+				if( !markdown )
+				{
+					markdown = "###Embedded modules selected for installation:\n";
+				}
+				else
+				{
+					markdown += "\n\n";
+				}
+				
+				markdown += embeddedModule.interfaceDefinition.makeExtendedInfoMarkdown( true );
+			}
+			
+			if( !markdown )
+			{
+				markdown = "No modules are selected"; 
+			}
+			
+			_info.markdown = markdown;
 		}
 		
 		

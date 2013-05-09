@@ -62,6 +62,8 @@
 #define NTG_IMPLEMENTATION_DIRECTORY_NAME "implementations" NTG_PATH_SEPARATOR
 #define NTG_EMBEDDED_MODULE_DIRECTORY_NAME "loaded_embedded_modules" NTG_PATH_SEPARATOR
 
+#define NTG_CHECKSUM_SEED 53
+
 #ifndef _WINDOWS
 #include <sys/stat.h>
 #define _S_IFMT S_IFMT
@@ -69,6 +71,8 @@
 
 
 #define NTG_LEGACY_CLASS_ID_FILENAME "id2guid.csv"
+
+unsigned int MurmurHash2( const void * key, int len, unsigned int seed );
 
 
 
@@ -166,7 +170,7 @@ char *ntg_module_manager_get_implementation_path( const ntg_module_manager *modu
 }
 
 
-ntg_error_code ntg_module_manager_extract_implementation( ntg_module_manager *module_manager, unzFile unzip_file, const ntg_interface *interface )
+ntg_error_code ntg_module_manager_extract_implementation( ntg_module_manager *module_manager, unzFile unzip_file, const ntg_interface *interface, unsigned int *checksum )
 {
 	char *implementation_directory;
 	char *target_path;
@@ -177,7 +181,9 @@ ntg_error_code ntg_module_manager_extract_implementation( ntg_module_manager *mo
 	FILE *output_file;
 	ntg_error_code result = NTG_NO_ERROR;
 
-	assert( module_manager && unzip_file && interface );
+	assert( module_manager && unzip_file && interface && checksum );
+
+	*checksum = 0;
 
 	implementation_directory = ntg_module_manager_get_implementation_path( module_manager, interface );
 
@@ -225,6 +231,8 @@ ntg_error_code ntg_module_manager_extract_implementation( ntg_module_manager *mo
 		target_path = ntg_strdup( implementation_directory );
 		target_path = ntg_string_append( target_path, relative_file_path );
 
+		*checksum ^= MurmurHash2( relative_file_path, strlen( relative_file_path ), NTG_CHECKSUM_SEED );
+
 		if( unzOpenCurrentFile( unzip_file ) == UNZ_OK )
 		{
 			output_file = fopen( target_path, "wb" );
@@ -239,6 +247,8 @@ ntg_error_code ntg_module_manager_extract_implementation( ntg_module_manager *mo
 				}
 				else
 				{
+					*checksum ^= MurmurHash2( output_buffer, file_info.uncompressed_size, NTG_CHECKSUM_SEED );
+
 					fwrite( output_buffer, 1, file_info.uncompressed_size, output_file );
 				}
 
@@ -293,6 +303,7 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 {
 	unzFile unzip_file;
 	ntg_interface *interface = NULL;
+	unsigned int checksum = 0;
 
 	assert( module_manager && filename && module_guid );
 
@@ -361,7 +372,10 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 
 	if( ntg_interface_has_implementation( interface ) )
 	{
-		ntg_module_manager_extract_implementation( module_manager, unzip_file, interface );
+		ntg_module_manager_extract_implementation( module_manager, unzip_file, interface, &checksum );
+
+		assert( interface && interface->implementation );
+		interface->implementation->checksum = checksum;
 	}
 
 	unzClose( unzip_file );

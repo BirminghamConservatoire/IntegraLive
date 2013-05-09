@@ -195,6 +195,7 @@
 				graphics.drawRoundRect( -cornerRadius, -cornerRadius, width + cornerRadius * 2, height + cornerRadius * 2, cornerRadius * 2, cornerRadius * 2 );  
 			}
 			
+			
 			private function onMouseDown( event:MouseEvent ):void
 			{
 				var clickItem:ModuleManagerListItem = Utilities.getAncestorByType( event.target, ModuleManagerListItem ) as ModuleManagerListItem;
@@ -233,13 +234,21 @@
 				{
 					for( var i:int = 0; i < numChildren; i++ )
 					{
+						var item:ModuleManagerListItem = getItemAt( i );
+						var selected:Boolean;
 						if( i < Math.min( _capturedDragStart, overIndex ) || i > Math.max( _capturedDragStart, overIndex ) ) 
 						{
-							getItemAt( i ).selected = _capturedDragInitialState[ i ];
+							selected = _capturedDragInitialState[ i ];
 						}
 						else
 						{
-							getItemAt( i ).selected = _capturedDragPolarity;
+							selected = _capturedDragPolarity;
+						}
+						
+						if( selected != item.selected )
+						{
+							item.selected = selected;
+							item.dispatchEvent( new Event( ModuleManagerListItem.SELECT_EVENT, true ) );
 						}
 					}
 				}
@@ -253,6 +262,8 @@
 			private function onCapturedDragFinished():void
 			{
 				_capturedScrollTimer.stop();
+				
+				dispatchEvent( new Event( SELECTION_FINISHED_EVENT ) );
 			}
 			
 			
@@ -350,6 +361,8 @@
 			private var _capturedScrollTimer:Timer = new Timer( 20 );
 			
 			public static const cornerRadius:Number = 8;
+			
+			public static const SELECTION_FINISHED_EVENT:String = "SelectionFinishedEvent";
 			
 		]]>
 	</fx:Script>

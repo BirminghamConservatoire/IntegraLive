@@ -105,7 +105,12 @@ package components.views.ModuleManager
 			
 			if( !areArraysEqual( fromVersion.widgets, toVersion.widgets ) )
 			{
-				output += "\n* Widget Layout changed";
+				output += "\n* Widget layout changed";
+			}
+			
+			if( fromVersion.implementationChecksum != toVersion.implementationChecksum )
+			{
+				output += "\n* Implementation changed";
 			}
 			
 			return output;
@@ -126,7 +131,7 @@ package components.views.ModuleManager
 			{
 				if( !fromEndpointSet.hasOwnProperty( endpoint.name ) )
 				{
-					output += "\n* Added Endpoint " + getBriefEndpointDescription( endpoint );
+					output += "\n* Added endpoint " + getBriefEndpointDescription( endpoint );
 				}
 			}
 			
@@ -134,7 +139,7 @@ package components.views.ModuleManager
 			{
 				if( !toEndpointSet.hasOwnProperty( endpoint.name ) )
 				{
-					output += "\n* Removed Endpoint " + getBriefEndpointDescription( endpoint );
+					output += "\n* Removed endpoint " + getBriefEndpointDescription( endpoint );
 				}
 			}
 

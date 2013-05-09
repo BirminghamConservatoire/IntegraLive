@@ -125,29 +125,17 @@ package components.views.ModuleLibrary
 		
 		private function makeInfo():Info
 		{
-			var interfaceInfo:InterfaceInfo = _interfaceDefinition.interfaceInfo;
-
 			if( _isDefaultEntry && _interfaceDefinition.moduleSource == InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA )
 			{
 				//use standard info when it's a default AND system module
-				return interfaceInfo.info;
+				return _interfaceDefinition.interfaceInfo.info;
 			}
-			
-			var info:Info = new Info;
-			info.title = interfaceInfo.label;
-			
-			var markdown:String = "##" + _interfaceDefinition.moduleSourceLabel + "\n\n";
-			
-			if( !_isDefaultEntry )
+			else
 			{
-				markdown += "**Last modified:** " + interfaceInfo.modifiedDateLabel + "\n\n";
-				markdown += "**Author:** " + interfaceInfo.authorLabel + "\n\n";
+				var extendedInfo:Info = new Info;
+				extendedInfo.markdown = _interfaceDefinition.makeExtendedInfoMarkdown( !_isDefaultEntry );
+				return extendedInfo;				
 			}
-			
-			markdown += interfaceInfo.description;
-			
-			info.markdown = markdown;
-			return info;
 		}
 
 

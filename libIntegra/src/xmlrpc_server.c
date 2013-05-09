@@ -351,6 +351,13 @@ static void *ntg_xmlrpc_interfaceinfo_callback(ntg_server * server,
     xmlrpc_struct_set_value(env, struct_, "interfaceinfo", info_struct);
     xmlrpc_DECREF(info_struct);
 
+	if( interface->implementation )
+	{
+		xmlrpc_temp = xmlrpc_int_new( env, ( int ) interface->implementation->checksum );
+		xmlrpc_struct_set_value( env, struct_, "implementationchecksum", xmlrpc_temp );
+		xmlrpc_DECREF(xmlrpc_temp);
+	}
+
     /* free out-of-place memory */
     free(module_id_string);
 

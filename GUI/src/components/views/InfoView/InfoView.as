@@ -395,7 +395,7 @@ package components.views.InfoView
 			var focusObject:InteractiveObject = getFocus();
 			if( focusObject ) 
 			{
-				if( focusObject == this || Utilities.isDescendant( focusObject, this ) )
+				if( Utilities.isEqualOrDescendant( focusObject, this ) )
 				{					
 					return;		//subcomponent of info view gaining focus
 				}

@@ -358,7 +358,7 @@
 				var newFocus:InteractiveObject = event.relatedObject;
 				if( newFocus )
 				{
-					if( Utilities.isDescendant( newFocus, this ) || ( this == newFocus ) )
+					if( Utilities.isEqualOrDescendant( newFocus, this ) )
 					{
 						return;
 					}

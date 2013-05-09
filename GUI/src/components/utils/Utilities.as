@@ -443,6 +443,22 @@ package components.utils
 			
 			return false;
 		}
+
+		
+		public static function isEqualOrDescendant( candidateDescendant:Object, candidateAncestor:DisplayObject ):Boolean
+		{
+			for( var iterator:DisplayObject = candidateDescendant as DisplayObject; iterator; iterator = iterator.parent )
+			{
+				if( iterator == candidateAncestor )
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		
 		
 		
 		public static function getAncestorByType( descendant:Object, ancestorType:Class ):DisplayObject

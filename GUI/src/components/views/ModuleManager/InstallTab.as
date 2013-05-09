@@ -35,10 +35,13 @@ package components.views.ModuleManager
 	import components.controller.moduleManagement.InstallModules;
 	import components.controller.moduleManagement.UninstallModules;
 	import components.controller.userDataCommands.SetInstallResult;
+	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.TextButtonSkin;
 	
 	
@@ -85,6 +88,42 @@ package components.views.ModuleManager
 			
 			addChild( _info );
 		}
+		
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			if( Utilities.isEqualOrDescendant( event.target, _3rdPartyModulesList ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTab3rdPartyList" );
+			}
+			
+			if( Utilities.isEqualOrDescendant( event.target, _embeddedModulesList ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabEmbeddedList" );
+			}
+			
+			if( Utilities.isEqualOrDescendant( event.target, _installButton ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabInstallButton" );
+			}
+			
+			if( Utilities.isEqualOrDescendant( event.target, _uninstallButton ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabUninstallButton" );
+			}
+
+			if( Utilities.isEqualOrDescendant( event.target, _installEmbeddedButton ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabInstallEmbeddedButton" );
+			}
+
+			if( Utilities.isEqualOrDescendant( event.target, _info ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabInfo" );
+			}
+			
+			return null;
+		}		
 		
 		
 		override public function styleChanged( style:String ):void

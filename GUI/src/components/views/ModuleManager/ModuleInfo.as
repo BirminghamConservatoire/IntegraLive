@@ -63,13 +63,13 @@ package components.views.ModuleManager
 				{
 					default:
 					case ColorScheme.LIGHT:
-						_backgroundColor = 0xcfcfcf;
+						_borderColor = 0xcfcfcf;
 						_textColor ='#6D6D6D';
 						_linkColor = '#0000C0';
 						break;
 					
 					case ColorScheme.DARK:
-						_backgroundColor = 0x313131;
+						_borderColor = 0x313131;
 						_textColor = '#939393';
 						_linkColor = '#4080FF';
 						break;
@@ -95,7 +95,7 @@ package components.views.ModuleManager
 			
 			graphics.clear();
 			
-			graphics.beginFill( _backgroundColor );
+			graphics.lineStyle( 2, _borderColor );
 			
 			graphics.drawRoundRect( 0, 0, width, height, ModuleManagerList.cornerRadius * 2, ModuleManagerList.cornerRadius * 2 );  
 		}
@@ -174,7 +174,7 @@ package components.views.ModuleManager
 
 		private var _textArea:TextArea = null;
 		
-		private var _backgroundColor:uint;
+		private var _borderColor:uint;
 		private var _textColor:String;
 		private var _linkColor:String;
 	

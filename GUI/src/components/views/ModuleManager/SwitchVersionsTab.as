@@ -43,10 +43,13 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.SwitchObjectVersion;
 	import components.controller.serverCommands.UnloadModule;
+	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.TextButtonSkin;
 	
 	import flexunit.framework.Assert;
@@ -96,6 +99,32 @@ package components.views.ModuleManager
 			addChild( _info );
 		}
 		
+		
+		override public function getInfoToDisplay( event:MouseEvent ):Info
+		{
+			if( Utilities.isEqualOrDescendant( event.target, _switchableModuleList ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabSwitchableList" );
+			}
+			
+			if( Utilities.isEqualOrDescendant( event.target, _alternativeVersionsList ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabAlternativeVersionsList" );
+			}
+			
+			if( Utilities.isEqualOrDescendant( event.target, _switchVersionsButton ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabSwitchButton" );
+			}
+			
+			if( Utilities.isEqualOrDescendant( event.target, _info ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabInfo" );
+			}
+			
+			return null;
+		}
+
 		
 		override public function styleChanged( style:String ):void
 		{

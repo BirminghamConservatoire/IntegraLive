@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		   xmlns:mx="library://ns.adobe.com/flex/mx">
+		   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*">
 	<fx:Declarations>
 	</fx:Declarations>
 	
 	<mx:HBox horizontalGap="20">
-		<mx:Accordion id="_accordian" resizeToContent="true" change="{ updateButtonEnables() }" openDuration="200" creationPolicy="all"/>
+		<local:MyAccordion id="_accordion" resizeToContent="true" change="{ onChangeSelectedEndpoint( event ) }" openDuration="200" creationPolicy="all"/>
 		<mx:VBox verticalGap="10">
 			<mx:Button id="_addEndpointButton" label="Add Endpoint" click="{ onClickAddEndpoint() }" width="{_buttonWidth}"/>
 			<mx:Button id="_removeEndpointButton" label="Remove Endpoint" click="{ onClickRemoveEndpoint() }" width="{_buttonWidth}"/>
@@ -26,7 +26,8 @@
 	
 	<fx:Script>
 		<![CDATA[
-
+			import mx.events.IndexChangedEvent;
+			
 			import flexunit.framework.Assert;
 			
 			
@@ -53,16 +54,16 @@
 			{
 				var valid:Boolean = validateMyOwnContent();
 				
-				for( var i:int = 0; i < _accordian.numChildren; i++ )
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
 				{
-					var endpoint:Endpoint = _accordian.getChildAt( i ) as Endpoint;
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
 					Assert.assertNotNull( endpoint );
 					
 					if( !endpoint.validateContent() )
 					{
 						if( valid )
 						{
-							_accordian.selectedIndex = i;
+							_accordion.selectedIndex = i;
 						}
 						
 						valid = false;
@@ -77,14 +78,21 @@
 			{
 				for each( var endpointXML:XML in xml.Endpoint )
 				{
-					var endpoint:Endpoint = createNewEndpoint();
+					var endpoint:Endpoint = createNewEndpoint( true );
+					endpoint.storeXML( endpointXML );
 					
-					if( !endpoint.loadFromXML( endpointXML ) )
+					/*if( !endpoint.loadFromXML( endpointXML ) )
 					{
 						trace( "Error loading endpoint from xml: " + endpointXML.toString() );
-						_accordian.removeChildAt( _accordian.numChildren - 1 );
+						_accordion.removeChildAt( _accordion.numChildren - 1 );
 						continue;
-					}
+					}*/
+				}
+				
+				var selectedEndpoint:Endpoint = _accordion.selectedChild as Endpoint;
+				if( selectedEndpoint )
+				{
+					lazyLoadEndpoint( selectedEndpoint );
 				}
 
 				updateButtonEnables();
@@ -97,9 +105,9 @@
 			{
 				var xml:XML = new XML( "<EndpointInfo></EndpointInfo>" );
 
-				for( var i:int = 0; i < _accordian.numChildren; i++ )
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
 				{
-					var endpoint:Endpoint = _accordian.getChildAt( i ) as Endpoint;
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
 					Assert.assertNotNull( endpoint );
 					
 					xml.appendChild( endpoint.saveToXML() ); 
@@ -111,7 +119,7 @@
 			
 			public function getEndpoint( endpointName:String ):Endpoint
 			{
-				for each( var endpoint:Endpoint in _accordian.getChildren() )
+				for each( var endpoint:Endpoint in _accordion.getChildren() )
 				{
 					if( endpoint.label == endpointName ) 
 					{
@@ -125,23 +133,23 @@
 			
 			private function removeEndpoints():void
 			{
-				for( var i:int = 0; i < _accordian.numChildren; i++ )
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
 				{
-					var endpoint:Endpoint = _accordian.getChildAt( i ) as Endpoint;
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
 					Assert.assertNotNull( endpoint );
 					
 					endpoint.free();
 				}
 				
-				_accordian.removeAllChildren();
+				_accordion.removeAllChildren();
 			}
 			
 			
 			private function onEndpointNameChanged( event:Event ):void
 			{
-				for( var i:int = 0; i < _accordian.numChildren; i++ )
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
 				{
-					var endpoint:Endpoint = _accordian.getChildAt( i ) as Endpoint;
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
 					Assert.assertNotNull( endpoint );
 
 					endpoint.onEndpointNameChanged();
@@ -151,7 +159,7 @@
 			
 			private function validateMyOwnContent():Boolean
 			{
-				if( _accordian.numChildren == 0 )
+				if( _accordion.numChildren == 0 )
 				{
 					_addEndpointButton.errorString = "You must create at least one Endpoint";
 					return false;
@@ -171,14 +179,20 @@
 			}
 			
 			
-			private function createNewEndpoint():Endpoint
+			private function createNewEndpoint( deferCreation:Boolean = false ):Endpoint
 			{
 				var endpoint:Endpoint = new Endpoint;
 
-				_accordian.addChild( endpoint );
-				endpoint.doInitialize( _widgetLayout );
+				_accordion.addChild( endpoint );
 				endpoint.addEventListener( Globals.modifiedEvent, onEndpointChanged );
 				endpoint.addEventListener( Globals.endpointRenamedEvent, onEndpointNameChanged );
+
+				if( !deferCreation )
+				{
+					endpoint._contentHolder.createComponentsFromDescriptors( true );
+					endpoint.doInitialize( _widgetLayout );
+				}
+
 				return endpoint;
 			}
 			
@@ -188,7 +202,7 @@
 	
 				endpoint.label = newEndpointName;
 
-				_accordian.selectedChild = endpoint;
+				_accordion.selectedChild = endpoint;
 				
 				updateButtonEnables();
 				updateControlsWithoutWidgets();
@@ -198,13 +212,13 @@
 
 			private function onClickRemoveEndpoint():void
 			{
-				Assert.assertTrue( _accordian.selectedIndex >= 0 );
+				Assert.assertTrue( _accordion.selectedIndex >= 0 );
 
-				var endpoint:Endpoint = _accordian.getChildAt( _accordian.selectedIndex ) as Endpoint;
+				var endpoint:Endpoint = _accordion.getChildAt( _accordion.selectedIndex ) as Endpoint;
 				Assert.assertNotNull( endpoint );
 				_widgetLayout.onRemovedEndpoint( endpoint );
 				
-				_accordian.removeChildAt( _accordian.selectedIndex );
+				_accordion.removeChildAt( _accordion.selectedIndex );
 				
 				updateButtonEnables();
 				updateControlsWithoutWidgets();
@@ -214,13 +228,13 @@
 
 			private function onClickMoveUp():void
 			{
-				Assert.assertTrue( _accordian.selectedIndex >= 1 );
+				Assert.assertTrue( _accordion.selectedIndex >= 1 );
 				
-				var endpoint:Endpoint = _accordian.getChildAt( _accordian.selectedIndex ) as Endpoint;
+				var endpoint:Endpoint = _accordion.getChildAt( _accordion.selectedIndex ) as Endpoint;
 				Assert.assertNotNull( endpoint );
 				
-				_accordian.setChildIndex( endpoint, _accordian.selectedIndex - 1 );
-				_accordian.selectedIndex--;
+				_accordion.setChildIndex( endpoint, _accordion.selectedIndex - 1 );
+				_accordion.selectedIndex--;
 				
 				updateButtonEnables();
 				interfaceChanged();
@@ -228,13 +242,13 @@
 
 			private function onClickMoveDown():void
 			{
-				Assert.assertTrue( _accordian.selectedIndex >= 0 && _accordian.selectedIndex < _accordian.numChildren - 1 );
+				Assert.assertTrue( _accordion.selectedIndex >= 0 && _accordion.selectedIndex < _accordion.numChildren - 1 );
 
-				var endpoint:Endpoint = _accordian.getChildAt( _accordian.selectedIndex ) as Endpoint;
+				var endpoint:Endpoint = _accordion.getChildAt( _accordion.selectedIndex ) as Endpoint;
 				Assert.assertNotNull( endpoint );
 				
-				_accordian.setChildIndex( endpoint, _accordian.selectedIndex + 1 );
-				_accordian.selectedIndex++;
+				_accordion.setChildIndex( endpoint, _accordion.selectedIndex + 1 );
+				_accordion.selectedIndex++;
 				
 				updateButtonEnables();
 				interfaceChanged();
@@ -244,21 +258,21 @@
 			private function onClickSort():void
 			{
 				var endpoints:Vector.<Endpoint> = new Vector.<Endpoint>;
-				var selectedEndpoint:Endpoint = _accordian.selectedChild as Endpoint;
+				var selectedEndpoint:Endpoint = _accordion.selectedChild as Endpoint;
 				
-				for( var i:int = 0; i < _accordian.numChildren; i++ )
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
 				{
-					endpoints.push( _accordian.getChildAt( i ) );
+					endpoints.push( _accordion.getChildAt( i ) );
 				}
 				
 				endpoints.sort( endpointSortFunction );
 				
 				for( i = 0; i < endpoints.length; i++ )
 				{
-					_accordian.setChildIndex( endpoints[ i ], i );
+					_accordion.setChildIndex( endpoints[ i ], i );
 				}
 								
-				_accordian.selectedChild = selectedEndpoint;
+				_accordion.selectedChild = selectedEndpoint;
 
 				updateButtonEnables();
 				interfaceChanged();
@@ -273,13 +287,13 @@
 			
 			private function updateButtonEnables():void
 			{
-				_removeEndpointButton.enabled = ( _accordian.selectedIndex >= 0 );
+				_removeEndpointButton.enabled = ( _accordion.selectedIndex >= 0 );
 				
-				_moveEndpointDownButton.enabled = ( _accordian.selectedIndex >= 0 && _accordian.selectedIndex < _accordian.numChildren - 1 );
+				_moveEndpointDownButton.enabled = ( _accordion.selectedIndex >= 0 && _accordion.selectedIndex < _accordion.numChildren - 1 );
 
-				_moveEndpointUpButton.enabled = ( _accordian.selectedIndex > 0 );
+				_moveEndpointUpButton.enabled = ( _accordion.selectedIndex > 0 );
 				
-				_sortButton.enabled = ( _accordian.numChildren > 1 );
+				_sortButton.enabled = ( _accordion.numChildren > 1 );
 			}
 
 			
@@ -295,7 +309,7 @@
 			{
 				var controlsWithoutWidgets:Array = new Array;
 				
-				for each( var endpoint:Endpoint in _accordian.getChildren() )
+				for each( var endpoint:Endpoint in _accordion.getChildren() )
 				{
 					if( !endpoint.isControl )
 					{
@@ -310,13 +324,43 @@
 				
 				_controlsWithoutWidgets.dataProvider = controlsWithoutWidgets;
 			}
+
 			
+			private function lazyLoadEndpoint( endpoint:Endpoint ):void
+			{
+				Assert.assertTrue( endpoint.hasStoredXML );
+				
+				endpoint._contentHolder.createComponentsFromDescriptors( true );
+				endpoint.doInitialize( _widgetLayout );
+				
+				if( !endpoint.loadFromStoredXML() )
+				{
+					trace( "Error loading endpoint from xml" );
+					_accordion.removeChild( endpoint );
+				}		
+				
+				_accordion.invalidateSize();
+				_accordion.validateNow();
+			}
+			
+			private function onChangeSelectedEndpoint( event:IndexChangedEvent ):void
+			{
+				var newEndpoint:Endpoint = _accordion.getChildAt( event.newIndex ) as Endpoint;
+				Assert.assertNotNull( newEndpoint );
+				
+				if( newEndpoint.hasStoredXML )
+				{
+					lazyLoadEndpoint( newEndpoint );
+				}
+
+				updateButtonEnables();
+			}
 			
 			private function onChangeControlsWithoutWidgets():void
 			{
 				if( _controlsWithoutWidgets.selectedItem )
 				{
-					_accordian.selectedChild = getEndpoint( _controlsWithoutWidgets.selectedItem as String );
+					_accordion.selectedChild = getEndpoint( _controlsWithoutWidgets.selectedItem as String );
 				}
 			}
 			

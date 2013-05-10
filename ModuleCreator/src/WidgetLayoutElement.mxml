@@ -13,7 +13,7 @@
 			import flexunit.framework.Assert;
 
 			public function get widgetDefinition():WidgetDefinition { return _widgetDefinition; }
-			public function get attributeMapping():Object { return _attributeMapping; }
+			public function get attributeMapping():Object   { return _attributeMapping; }
 
 			public function get minimumWidth():Number		{ return _widgetDefinition.minimumSize.x;	}
 			public function get minimumHeight():Number		{ return _widgetDefinition.minimumSize.y;	}

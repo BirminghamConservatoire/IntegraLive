@@ -4,7 +4,7 @@
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
-	<mx:HBox styleName="internalPadding" horizontalGap="20">
+	<mx:HBox styleName="internalPadding" horizontalGap="20" id="_contentHolder" creationPolicy="none">
 		<mx:VBox>
 			<mx:HBox>
 				<mx:Label text="Endpoint Name" width="{_labelColumnWidth}" textAlign="right"/>
@@ -56,11 +56,11 @@
 	<fx:Script>
 		<![CDATA[
 
-			import flexunit.framework.Assert;
-			
 			import mx.containers.Accordion;
 			
-	
+			import flexunit.framework.Assert;
+			
+			
 			public function doInitialize( widgetLayout:WidgetLayout ):void
 			{
 				_widgetLayout = widgetLayout;
@@ -78,12 +78,17 @@
 			
 			public function free():void
 			{
-				_widgetSelection.free();
+				if( _widgetSelection )
+				{
+					_widgetSelection.free();
+				}
 			}
 			
 
 			public function validateContent():Boolean
 			{
+				if( _storedXML ) return true;	//can't validate if we haven't loaded it yet!
+				
 				var valid:Boolean = validateName();
 				
 				if( _controlInfo.visible )
@@ -108,8 +113,35 @@
 			}
 
 			
-			public function loadFromXML( xml:XML ):Boolean
+			public function storeXML( xml:XML ):void
 			{
+				_storedXML = xml;
+				
+				if( xml.hasOwnProperty( "Name" ) )
+				{
+					label = xml.Name;
+				}
+
+				if( xml.hasOwnProperty( "Type" ) )
+				{
+					_storedXmlIsControl = ( xml.Type.toString() == "control" );
+				}
+			}
+			
+			
+			public function get hasStoredXML():Boolean
+			{
+				return ( _storedXML != null );
+			}
+			
+			
+			public function loadFromStoredXML():Boolean
+			{
+				Assert.assertNotNull( _storedXML );
+				
+				var xml:XML = _storedXML;
+				_storedXML = null;
+				
 				if( xml.hasOwnProperty( "Name" ) )
 				{
 					_endpointName.text = xml.Name;
@@ -164,6 +196,11 @@
 			
 			public function saveToXML():XML
 			{
+				if( _storedXML )
+				{
+					return _storedXML;
+				}
+				
 				var xml:XML = new XML( "<Endpoint></Endpoint>" );
 				xml.appendChild( <Name> { _endpointName.text } </Name> );
 				
@@ -208,7 +245,14 @@
 			
 			public function get isControl():Boolean
 			{
-				return ( _endpointType.selectedItem == _controlLabel );
+				if( _storedXML ) 
+				{
+					return _storedXmlIsControl;
+				}
+				else
+				{
+					return ( _endpointType.selectedItem == _controlLabel );
+				}
 			}
 			
 			
@@ -467,6 +511,8 @@
 				_markdownPreview = null;
 			}
 			
+			private var _storedXML:XML = null; 
+			private var _storedXmlIsControl:Boolean = false;
 			
 			private var _widgetLayout:WidgetLayout;
 			

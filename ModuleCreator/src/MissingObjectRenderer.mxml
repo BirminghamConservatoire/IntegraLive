@@ -24,7 +24,7 @@
 					
 					if( value.hasOwnProperty( "children" ) )
 					{
-						( owner as Tree ).expandItem( value, true );
+						//( owner as Tree ).expandItem( value, true );
 					}
 					else
 					{

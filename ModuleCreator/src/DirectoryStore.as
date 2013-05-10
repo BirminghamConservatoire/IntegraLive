@@ -1,7 +1,7 @@
 package
 {
-	import flash.net.SharedObject;
 	import flash.filesystem.File;
+	import flash.net.SharedObject;
 	
 	import flexunit.framework.Assert;
 	
@@ -34,17 +34,11 @@ package
 		}
 
 		
-		public function get importDirectory():String
+		public function get workingDirectory():String
 		{
-			return getter( "importDirectory" );
+			return getter( "workingDirectory" );
 		}
 		
-		
-		public function get exportDirectory():String
-		{
-			return getter( "exportDirectory" );
-		}
-
 		
 		public function get bundleDirectory():String
 		{
@@ -64,15 +58,9 @@ package
 		}
 
 		
-		public function set importDirectory( directory:String ):void
+		public function set workingDirectory( directory:String ):void
 		{
-			_sharedObject.data.importDirectory = directory;
-		}
-
-		
-		public function set exportDirectory( directory:String ):void
-		{
-			_sharedObject.data.exportDirectory = directory;
+			_sharedObject.data.workingDirectory = directory;
 		}
 
 		

@@ -1,37 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		   xmlns:mx="library://ns.adobe.com/flex/mx" creationComplete="{onCreationComplete()}">
-	<mx:HBox top="0" bottom="0">
+	<mx:VBox top="0" bottom="0">
 		<mx:VBox height="100%">
 			<mx:HBox styleName="internalPadding">
-				<mx:Label text="Implementation" width="{Globals.labelColumnWidth()}" textAlign="right"/>
-				<mx:TextInput id="_implementationName"
+				<mx:Label text="Working Directory" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:TextInput id="_workingDirectoryDisplay"
 							  editable="false" 
 							  width="{Globals.propertyColumnWidth()}"/>
+				<mx:HBox width="{Globals.labelColumnWidth()}">
+					<mx:Button id="_openWorkingDirectory" label="Open" click="onClickOpenWorkingDirectory()"/>
+					<mx:Button id="_changeWorkingDirectory" label="Relocate..." click="onClickChangeWorkingDirectory()"/>
+				</mx:HBox>
+			</mx:HBox>
+			<mx:HBox styleName="internalPadding">
+				<mx:Label text="Main Patch File" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:ComboBox id="_patchFileName"
+							  editable="false" 
+							  width="{Globals.propertyColumnWidth()}" change="onChangePatchFileName()"/>
 			</mx:HBox>
 			<mx:HBox styleName="internalPadding" height="100%">
 				<mx:Label text="Dependencies" width="{Globals.labelColumnWidth()}" textAlign="right"/>
 				<mx:Tree id="_dependencyTree" height="100%" 
 						 showDataTips="true"
 						 defaultLeafIcon="{null}"
-						 width="{Globals.propertyColumnWidth()}"/>
-			</mx:HBox>
-			<mx:HBox styleName="internalPadding">
-				<mx:Label text="Missing Objects" width="{Globals.labelColumnWidth()}" textAlign="right"/>
-				<mx:Tree id="_missingObjects" 
-						 itemRenderer="MissingObjectRenderer"
-						 showDataTips="true"
-						 defaultLeafIcon="{null}"
-						 width="{Globals.propertyColumnWidth()}"/>
+						 width="{Globals.propertyColumnWidth()}"
+						 minHeight="100"/>
 			</mx:HBox>
 		</mx:VBox>
-		<mx:VBox styleName="internalPadding" verticalGap="10">
-			<mx:Button label="Import Implementation..." id="_importButton" click="{onImport();}" width="{ _buttonWidth }"/>
-			<mx:Button label="Extract Implementation..." id="_exportButton" click="{onExport();}" width="{ _buttonWidth }"/>
-			<mx:Button label="Clear Implementation" id="_clearButton" click="{onClear();}" width="{ _buttonWidth }"/>
-		</mx:VBox>
-		
-	</mx:HBox>
+		<mx:Canvas width="{Globals.labelColumnWidth()*2+Globals.propertyColumnWidth()}">
+			<mx:HBox styleName="internalPadding" horizontalCenter="0">
+				<mx:VBox>
+					<mx:Label text="Missing Objects" width="{Globals.labelColumnWidth()}" textAlign="center"/>
+					<mx:Tree id="_missingObjects" 
+							 itemRenderer="MissingObjectRenderer"
+							 showDataTips="true"
+							 defaultLeafIcon="{null}"
+							 width="{Globals.propertyColumnWidth()}"/>
+				</mx:VBox>
+				<mx:VBox>
+					<mx:Label text="Unused Objects" width="{Globals.labelColumnWidth()}" textAlign="center"/>
+					<mx:Tree id="_unusedObjects" 
+							 itemRenderer="UnusedObjectRenderer"
+							 showDataTips="true"
+							 defaultLeafIcon="{null}"
+							 width="{Globals.propertyColumnWidth()}"/>
+				</mx:VBox>
+			</mx:HBox>	
+		</mx:Canvas>
+	</mx:VBox>
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -39,13 +56,12 @@
 
 	<fx:Script>
 		<![CDATA[
+			import mx.collections.IList;
+			
 			import deng.fzip.FZip;
 			import deng.fzip.FZipFile;
 			
 			import flexunit.framework.Assert;
-			
-			import mx.collections.ArrayCollection;
-			import mx.collections.IList;
 
 
 			
@@ -60,7 +76,7 @@
 			{
 				if( hasMissingObjects )
 				{
-					_missingObjects.errorString = "Dependencies of the imported PD patch can't be found.  They are either unsupported externals, or missing abstractions.  Abstractions should be placed in the same directory as the imported patch, or in a sub-directory";
+					_missingObjects.errorString = "Dependencies of the PD patch can't be found.  They are either unsupported externals, or missing abstractions.  Abstractions should be placed in the working directory.";
 					return false;
 				}
 				else
@@ -77,7 +93,7 @@
 				
 				if( xml.hasOwnProperty( "PatchName" ) )
 				{
-					_implementationName.text = xml.PatchName;
+					_selectedPatchName = xml.PatchName;
 				}
 				else
 				{
@@ -92,7 +108,7 @@
 			public function saveToXML():XML
 			{
 				var xml:XML = new XML( "<ImplementationInfo></ImplementationInfo>" );
-				xml.appendChild( <PatchName> { _implementationName.text } </PatchName> );
+				xml.appendChild( <PatchName> { _selectedPatchName } </PatchName> );
 				
 				return xml;
 			}
@@ -100,10 +116,7 @@
 			
 			public function storeImplementation( zipFile:FZip, implementationDirectory:String ):void
 			{
-				if( _tempDirectory )
-				{
-					storeImplementationBranch( zipFile, implementationDirectory, _tempDirectory );
-				}
+				storeImplementationBranch( zipFile, implementationDirectory, workingDirectory );
 			}
 			
 			
@@ -114,8 +127,8 @@
 					return;
 				}
 				
-				Assert.assertNull( _tempDirectory ); 
-				_tempDirectory = File.createTempDirectory();
+				clearWorkingDirectory();
+				var workingDirectory:File = workingDirectory;
 
 				implementationDirectory += "/";
 				
@@ -137,28 +150,30 @@
 					}
 					
 					var deployedName:String = contentName.substr( implementationDirectory.length );
-					var targetFile:File = _tempDirectory.resolvePath( deployedName );
+					var targetFile:File = workingDirectory.resolvePath( deployedName );
 					
 					var targetFileStream:FileStream = new FileStream;
 					targetFileStream.open( targetFile, FileMode.WRITE );
 					targetFileStream.writeBytes( contentFile.content );
 					targetFileStream.close();					
 				}
-				
-				updateDependencies( _tempDirectory.resolvePath( _implementationName.text ) );
-				updateEnables();
+
+				scanWorkingDirectory();
 			}
 			
 			
 			public function get hasImplementation():Boolean 
 			{
-				return ( _implementationName.text.length > 0 );
+				return ( _selectedPatchName != null );
 			}
 			
 			
 			public function shutdown():void
 			{
-				removeTempDirectory();
+				removeWorkingDirectory();
+
+				_pollWorkingDirectoryTimer.removeEventListener( TimerEvent.TIMER, onPollWorkingDirectory );
+				_pollWorkingDirectoryTimer.stop();
 			}
 			
 			
@@ -167,81 +182,187 @@
 				loadObjectSet( _pdInternalObjectsFilename, _pdInternalObjects );
 				loadObjectSet( _supportedPdAbstractionsFilename, _supportedPdAbstractions );
 				loadObjectSet( _supportedPdExternalsFilename, _supportedPdExternals );
+				
+				updateWorkingDirectoryDisplay();
+				
+				_pollWorkingDirectoryTimer.addEventListener( TimerEvent.TIMER, onPollWorkingDirectory );
+				_pollWorkingDirectoryTimer.start();
 			}
 			
 			
-			private function onClear():void
+			private function get workingDirectory():File
 			{
-				clearImplementation();
+				var workingDirectoryParent:File = new File( DirectoryStore.singleInstance.workingDirectory );
+				var workingDirectory:File = workingDirectoryParent.resolvePath( _workingDirectoryName );
+				if( !workingDirectory.exists )
+				{
+					workingDirectory.createDirectory();
+				}
 				
-				updateEnables();
-				interfaceChanged();
+				while( !workingDirectory.isDirectory )
+				{
+					workingDirectory = new File( workingDirectory.nativePath + "_" );
+					if( !workingDirectory.exists )
+					{
+						workingDirectory.createDirectory();
+					}
+				}
+
+				return workingDirectory;
 			}
 			
 			
 			private function clearImplementation():void
 			{
-				_implementationName.text = "";
+				_patchFileName.dataProvider = [];
+				_selectedPatchName = null;
 				
 				_dependencyTree.dataProvider = [];
 
 				_missingObjects.dataProvider = [];
+				
+				_unusedObjects.dataProvider = [];
 
-				removeTempDirectory();
+				clearWorkingDirectory();
 			}
 			
 			
-			private function onImport():void
+			private function onPollWorkingDirectory( event:TimerEvent ):void
 			{
-				var filter:FileFilter = new FileFilter( "Pure Data Patches", "*" + _pdExtension );
-				var file:File = new File( DirectoryStore.singleInstance.importDirectory );
-				file.browseForOpen( "Import PD Implementation", [filter] );
+				var workingDirectoryContents:Object = directoryMap;
 				
-				file.addEventListener( Event.SELECT, onSelectFileToImport );      			
-			}
-			
-			
-			private function onSelectFileToImport( event:Event ):void
-			{
-				var file:File = event.target as File;
-				if( !file ) return;
-				
-				DirectoryStore.singleInstance.importDirectory = file.parent.nativePath;
-
-				_implementationName.text = file.name;
-				
-				updateDependencies( file );
-
-				removeTempDirectory();
-				if( !hasMissingObjects )
+				if( !areMapsEqual( workingDirectoryContents, _mapWorkingDirectoryContentsToModificationTime ) )
 				{
-					makeDeployedCopy( file );
+					scanWorkingDirectory();
+					interfaceChanged();
+				}
+			}
+			
+			
+			private function areMapsEqual( map1:Object, map2:Object ):Boolean
+			{
+				if( !map1 || !map2 )
+				{
+					return !( map1 || map2 );
+				}
+				
+				for( var key:String in map1 )
+				{
+					if( !map2.hasOwnProperty( key ) ) return false;
+					
+					if( map1[ key ] != map2[ key ] ) return false;
+				}
+
+				for( key in map2 )
+				{
+					if( !map1.hasOwnProperty( key ) ) return false;
+				}
+				
+				return true;
+			}
+
+			
+			private function scanWorkingDirectory():void
+			{
+				_mapWorkingDirectoryContentsToModificationTime = directoryMap;
+
+				updatePatchNamesList();				
+				
+				if( hasImplementation )
+				{
+					updateDependencies( workingDirectory.resolvePath( _selectedPatchName ) );
+				}
+				else
+				{
+					_dependencyTree.dataProvider = [];
+					_missingObjects.dataProvider = [];
+					_unusedObjects.dataProvider = [];
 				}
 				
 				updateEnables();
-				interfaceChanged();
+			}
+
+			
+			private function get directoryMap():Object
+			{
+				var results:Object = new Object;
+				buildDirectoryMap( workingDirectory, "", results );
+				return results;
+			}
+
+			
+			private function buildDirectoryMap( searchDirectory:File, prefix:String, results:Object ):void
+			{
+				Assert.assertTrue( searchDirectory.exists && searchDirectory.isDirectory );
+				var directoryContents:Array = searchDirectory.getDirectoryListing();
+				for each( var content:File in directoryContents )
+				{
+					if( content.isDirectory )
+					{
+						buildDirectoryMap( content, content.name + "/", results );
+					}
+					else
+					{
+						results[ prefix + content.name ] = content.modificationDate.time;
+					}
+				}
 			}
 			
+			
+			private function updatePatchNamesList():void
+			{
+				var directoryContents:Array = workingDirectory.getDirectoryListing();
+				var availablePatchNames:Array = new Array;
+				
+				for each( var file:File in directoryContents )
+				{
+					if( file.isDirectory ) continue;
+					
+					if( file.extension.toLowerCase() != _pdExtension ) continue;
+					
+					availablePatchNames.push( file.name );
+				}
+
+				_patchFileName.dataProvider = availablePatchNames;
+				
+				if( availablePatchNames.indexOf( _selectedPatchName ) >= 0 )
+				{
+					_patchFileName.selectedItem = _selectedPatchName;
+				}
+				else
+				{
+					_patchFileName.selectedItem = null;
+					_selectedPatchName = null;
+				}
+			}
+
 			
 			private function updateDependencies( pdPatch:File ):void
 			{
 				var dependencyData:Array = new Array;
 				var missingObjectData:Array = new Array;
+				var usedPdFileMap:Object = new Object;
 				
-				loadDependencies( pdPatch, pdPatch.parent, dependencyData, missingObjectData, new Vector.<String> );
+				loadDependencies( pdPatch, pdPatch.parent, dependencyData, missingObjectData, new Vector.<String>, usedPdFileMap );
+				
+				var unusedObjectData:Array = getUnusedObjects( workingDirectory, usedPdFileMap );
 				
 				_dependencyTree.dataProvider = dependencyData;
 				_missingObjects.dataProvider = missingObjectData;
+				_unusedObjects.dataProvider = unusedObjectData;
 			}
 			
 			
-			private function loadDependencies( pdFile:File, rootDirectory:File, results:Array, missingObjectData:Array, ancestorChain:Vector.<String> ):void
+			private function loadDependencies( pdFile:File, rootDirectory:File, results:Array, missingObjectData:Array, ancestorChain:Vector.<String>, usedPdFileMap:Object ):void
 			{
 				if( !pdFile.exists )
 				{
 					trace( "can't find file: " + pdFile.nativePath );
 					return;
 				}
+				
+				
+				usedPdFileMap[ pdFile.nativePath ] = 1;
 				
 				var owningDirectory:File = pdFile.parent;
 				
@@ -288,7 +409,7 @@
 					
 					pdObjects[ pdObject ] = 1;
 					
-					var abstractionFile:File = owningDirectory.resolvePath( pdObject + _pdExtension );
+					var abstractionFile:File = owningDirectory.resolvePath( pdObject + "." + _pdExtension );
 					
 					if( abstractionFile.exists )
 					{
@@ -302,7 +423,7 @@
 						treeNode.label = getRelativePath( rootDirectory, abstractionFile );
 						
 						var children:Array = new Array;
-						loadDependencies( abstractionFile, rootDirectory, children, missingObjectData, concatString( ancestorChain, abstractionFile.nativePath ) );
+						loadDependencies( abstractionFile, rootDirectory, children, missingObjectData, concatString( ancestorChain, abstractionFile.nativePath ), usedPdFileMap );
 						
 						if( children.length > 0 )
 						{
@@ -338,7 +459,7 @@
 					}
 				}
 			}
-
+			
 			
 			private function loadObjectSet( filename:String, results:Object ):void
 			{
@@ -369,9 +490,41 @@
 					results[ line ] = 1;
 				}			
 			}			
+
+			
+			private function getUnusedObjects( searchDirectory:File, usedPdFileMap:Object ):Array
+			{
+				var results:Array = new Array;
+				
+				for each( var file:File in searchDirectory.getDirectoryListing() )
+				{
+					if( file.isDirectory )
+					{
+						var directoryObjects:Array = getUnusedObjects( file, usedPdFileMap );
+						if( directoryObjects.length > 0 )
+						{
+							var directoryItem:Object = new Object;
+							directoryItem.label = file.name;
+							directoryItem.children = directoryObjects;
+							results.push( directoryItem );
+						}
+					}
+					else
+					{
+						if( !usedPdFileMap.hasOwnProperty( file.nativePath ) )
+						{
+							var fileItem:Object = new Object;
+							fileItem.label = file.name;
+							results.push( fileItem );
+						}
+					}
+				}
+				
+				return results;
+			}
 			
 			
-			private function makeDeployedCopy( pdPatch:File ):void
+/*			private function makeDeployedCopy( pdPatch:File ):void
 			{
 				Assert.assertNull( _tempDirectory ); 
 				_tempDirectory = File.createTempDirectory();
@@ -380,9 +533,9 @@
 				
 				deployDependencies( pdPatch.parent, ( _dependencyTree.dataProvider as ArrayCollection ).source );
 			}
+*/			
 			
-			
-			private function deployDependencies( rootDirectory:File, dependencies:Array ):void
+			/*private function deployDependencies( rootDirectory:File, dependencies:Array ):void
 			{
 				for each( var dependency:Object in dependencies )
 				{
@@ -407,10 +560,10 @@
 					
 					source.copyTo( target );
 				}
-			}
+			}*/
 			
 			
-			private function onExport():void
+			/*private function onExport():void
 			{
 				var file:File = new File( DirectoryStore.singleInstance.exportDirectory );
 				file.browseForDirectory( "Export Implementation..." );
@@ -464,7 +617,7 @@
 					
 					source.copyTo( target );
 				}
-			}			
+			}	*/		
 			
 			
 			private function storeImplementationBranch( zipFile:FZip, outputDirectoryName:String, branch:File ):void
@@ -543,22 +696,41 @@
 			
 			private function updateEnables():void
 			{
-				_implementationName.enabled = hasImplementation;
+				_patchFileName.enabled = ( _patchFileName.dataProvider.length > 0 );
 				_dependencyTree.enabled = hasImplementation;
 				_missingObjects.enabled = hasImplementation;
-				_clearButton.enabled = hasImplementation;
-
-				_exportButton.enabled = hasImplementation && !hasMissingObjects;
+				_unusedObjects.enabled = hasImplementation;
 			}
 			
 			
-			private function removeTempDirectory():void
+			private function updateWorkingDirectoryDisplay():void
 			{
-				if( _tempDirectory )
+				_workingDirectoryDisplay.text = workingDirectory.nativePath;	
+			}
+			
+			
+			private function clearWorkingDirectory():void
+			{
+				var contents:Array = workingDirectory.getDirectoryListing();
+				for each( var content:File in contents )
 				{
-					_tempDirectory.deleteDirectory( true );
-					_tempDirectory = null;
+					if( content.isDirectory )
+					{
+						content.deleteDirectory( true );
+					}
+					else
+					{
+						content.deleteFile();
+					}
 				}
+				
+				_mapWorkingDirectoryContentsToModificationTime = new Object;
+			}
+
+			
+			private function removeWorkingDirectory():void
+			{
+				workingDirectory.deleteDirectory( true );
 			}
 			
 			
@@ -575,20 +747,122 @@
 			}
 			
 			
+			private function get isWindows():Boolean
+			{
+				return ( Capabilities.os.indexOf( "Windows" ) >= 0 );
+			}
 			
-			private var _tempDirectory:File = null;
+			
+			private function get isMac():Boolean
+			{
+				return ( Capabilities.os.indexOf( "Mac OS" ) >= 0 );
+			}
+			
+			
+			private function onClickOpenWorkingDirectory():void
+			{
+				var executable:File = null;
+				
+				if( isWindows )
+				{
+					var driveRoots:Array = File.getRootDirectories();
+					for each( var driveRoot:File in driveRoots )
+					{
+						executable = driveRoot.resolvePath( "Windows\\explorer.exe" );
+						if( executable.exists ) break;
+					}
+				}
+				
+				if( isMac )
+				{
+					executable = new File( "/System/Library/CoreServices/Finder.app" );
+				}
+				
+				if( !executable || !executable.exists )
+				{
+					return;
+				}
+				
+				var arguments:Vector.<String> = new Vector.<String>;
+				arguments.push( workingDirectory.nativePath );	
+				
+				var startupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo;
+				startupInfo.executable = executable;
+				startupInfo.arguments = arguments;					
 
+				var nativeProcess:NativeProcess = new NativeProcess;
+				nativeProcess.start( startupInfo );
+			}
+			
+			
+			private function onClickChangeWorkingDirectory():void
+			{
+				var newWorkingDirectory:File = new File( DirectoryStore.singleInstance.workingDirectory );
+				newWorkingDirectory.addEventListener( Event.SELECT, onChooseNewWorkingDirectory );
+				newWorkingDirectory.browseForDirectory( "Set Working Directory Location" );
+			}
+			
+			
+			private function onChooseNewWorkingDirectory( event:Event ):void
+			{
+				var newWorkingDirectoryParent:File = event.target as File;
+				Assert.assertNotNull( newWorkingDirectoryParent );
+
+				//ensure target not inside source!
+				if( newWorkingDirectoryParent.nativePath.length >= workingDirectory.nativePath.length )
+				{
+					if( newWorkingDirectoryParent.nativePath.substr( 0, workingDirectory.nativePath.length ).toLowerCase() == workingDirectory.nativePath.toLowerCase() )
+					{
+						AlertManager.show( "That's not a valid working directory!\n\nNew working directory must be outside your current working directory!", "Can't relocate working directory" );	
+						return;						
+					}
+				}
+				
+				var oldWorkingDirectory:File = workingDirectory;
+				
+				DirectoryStore.singleInstance.workingDirectory = newWorkingDirectoryParent.nativePath;
+				
+				var newWorkingDirectory:File = workingDirectory;
+				var contents:Array = oldWorkingDirectory.getDirectoryListing();
+
+				for each( var content:File in contents )
+				{
+					content.moveTo( newWorkingDirectory.resolvePath( content.name ), true );
+				}
+				
+				oldWorkingDirectory.deleteDirectory( true );
+				
+				updateWorkingDirectoryDisplay();
+			}
+			
+			
+			private function onChangePatchFileName():void
+			{
+				_selectedPatchName = _patchFileName.selectedItem as String;
+				scanWorkingDirectory();
+				interfaceChanged();
+			}
+			
+			
 			private var _pdInternalObjects:Object = new Object;
 			private var _supportedPdAbstractions:Object = new Object;
 			private var _supportedPdExternals:Object = new Object;
+			
+			private var _selectedPatchName:String = null;
+			private var _pollWorkingDirectoryTimer:Timer = new Timer( _pollWorkingDirectoryMsecs );
+			private var _mapWorkingDirectoryContentsToModificationTime:Object = new Object;
 			
 			private static const _pdInternalObjectsFilename:String = "assets/pd_internal_objects.txt"; 
 			private static const _supportedPdExternalsFilename:String = "assets/supported_pd_externals.txt";
 			private static const _supportedPdAbstractionsFilename:String = "assets/supported_pd_abstractions.txt";
 			
-			private static const _pdExtension:String = ".pd"; 
+			private static const _pdExtension:String = "pd"; 
 
 			private static const _buttonWidth:Number = 180;
+			
+			private static const _pollWorkingDirectoryMsecs:Number = 10000;
+			
+			private static const _workingDirectoryName:String = "Integra Module Creator";
 			
 		]]>
 	</fx:Script>			

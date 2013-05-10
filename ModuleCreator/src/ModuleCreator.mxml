@@ -323,7 +323,7 @@
 			private function doImport():void
 			{
 				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
-				var file:File = new File( DirectoryStore.singleInstance.importDirectory );
+				var file:File = new File( DirectoryStore.singleInstance.templateDirectory );
 				file.browseForOpen( "Load Module as Template", [filter] );
 				
 				file.addEventListener( Event.SELECT, onSelectFileToImport );      			
@@ -356,7 +356,7 @@
 			{
 				newFile();
 				
-				DirectoryStore.singleInstance.importDirectory = event.target.parent.nativePath;
+				DirectoryStore.singleInstance.templateDirectory = event.target.parent.nativePath;
 				
 				loadFile( event.target.nativePath );
 				

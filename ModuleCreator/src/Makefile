@@ -12,7 +12,6 @@ PRODUCT="ModuleCreator"
 CONFIG=app-config.xml
 DESCRIPTOR=ModuleCreator-app.xml
 ARGS=
-SVNROOT=../../..
 
 CERTIFICATE=integraCert.pfx
 

@@ -1,4 +1,0 @@
-#N canvas 190 354 710 320 10;
-#X obj 110 112 inlet;
-#X obj 110 158 ntg_send_ \$1 vector;
-#X connect 0 0 1 0;

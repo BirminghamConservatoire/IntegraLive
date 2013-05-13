@@ -390,13 +390,10 @@
 					return false;
 				}
 
-				if( !Config.singleInstance.allowNonLowerCamelEndpointNames )
+				if( Globals.lowerCaseChars.indexOf( _endpointName.text.charAt( 0 ) ) < 0 )
 				{
-					if( Globals.lowerCaseChars.indexOf( _endpointName.text.charAt( 0 ) ) < 0 )
-					{
-						_endpointName.errorString = "Endpoint Name must use lowerCamelCase";
-						return false;
-					}
+					_endpointName.errorString = "Endpoint Name must use lowerCamelCase";
+					return false;
 				}
 			
 				var owner:Accordion = parent as Accordion;

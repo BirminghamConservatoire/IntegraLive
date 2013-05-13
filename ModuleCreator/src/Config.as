@@ -21,11 +21,9 @@
 
 package 
 {
-	import flash.events.EventDispatcher;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.system.Capabilities;
 	
 	import flexunit.framework.Assert;
 	
@@ -46,7 +44,8 @@ package
 		} 		
 
 		public function get hasIntegraDeveloperPrivileges():Boolean { return _hasIntegraDeveloperPrivileges; }
-		public function get allowNonLowerCamelEndpointNames():Boolean { return _allowNonLowerCamelEndpointNames; }
+
+		public function get templatesPath():String	{ return _templatesPath; }
 		
 		public function get widgets():Vector.<WidgetDefinition> 	{ return _widgetDefinitions; }
 
@@ -74,13 +73,25 @@ package
 				_hasIntegraDeveloperPrivileges = true;
 			}
 			
-			if( xml.hasOwnProperty( "allownonlowercamelendpointnames" ) )
+			if( xml.hasOwnProperty( "paths" ) )
 			{
-				_allowNonLowerCamelEndpointNames = true;
+				var paths:XMLList = xml.paths;
+				
+				var osKey:String;
+				if( Globals.isWindows ) osKey = "windows";
+				if( Globals.isMac ) osKey = "mac";
+				
+				if( paths.hasOwnProperty( osKey ) )
+				{
+					var osSpecificPaths:XMLList = paths[ osKey ];
+					if( osSpecificPaths.hasOwnProperty( "templatespath" ) )
+					{
+						_templatesPath = osSpecificPaths.templatespath;						
+					}
+				}
 			}
 			
 			
-
 			if( xml.hasOwnProperty( "widgets" ) )
 			{
 				for each( var widget:XML in xml.widgets.widget ) 
@@ -125,7 +136,8 @@ package
 		private static var _singleInstance:Config = null;
 
 		private var _hasIntegraDeveloperPrivileges:Boolean = false;
-		private var _allowNonLowerCamelEndpointNames:Boolean = false;
+
+		private var _templatesPath:String = "";
 		
 		private var _widgetDefinitions:Vector.<WidgetDefinition> = new Vector.<WidgetDefinition>;
 		

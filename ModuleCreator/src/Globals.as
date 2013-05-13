@@ -44,9 +44,9 @@ package
 		static public function labelColumnWidth( nesting:int = 0 ):Number { return 180 - nesting * 7; }
 		static public function propertyColumnWidth( nesting:int = 0 ):Number { return 200 - nesting * 7; }
 		
-		static public function get isWindows():Boolean { return ( Capabilities.os.indexOf( "Windows" ) >= 0 ); }
+		static public function get isWindows():Boolean 	{ return ( Capabilities.os.indexOf( "Windows" ) >= 0 ); 	}
+		static public function get isMac():Boolean		{ return ( Capabilities.os.indexOf( "Mac OS" ) >= 0 );		}
 		
-		static public function get pathSeparator():String { return isWindows ? "\\" : "/"; }
 		
 		static public function doTypesMatch( value:String, type:String ):Boolean
 		{

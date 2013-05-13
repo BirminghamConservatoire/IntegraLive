@@ -734,23 +734,11 @@
 			}
 			
 			
-			private function get isWindows():Boolean
-			{
-				return ( Capabilities.os.indexOf( "Windows" ) >= 0 );
-			}
-			
-			
-			private function get isMac():Boolean
-			{
-				return ( Capabilities.os.indexOf( "Mac OS" ) >= 0 );
-			}
-			
-			
 			private function onClickOpenWorkingDirectory():void
 			{
 				var executable:File = null;
 				
-				if( isWindows )
+				if( Globals.isWindows )
 				{
 					var driveRoots:Array = File.getRootDirectories();
 					for each( var driveRoot:File in driveRoots )
@@ -760,9 +748,9 @@
 					}
 				}
 				
-				if( isMac )
+				if( Globals.isMac )
 				{
-					executable = new File( "/System/Library/CoreServices/Finder.app" );
+					executable = new File( "/usr/bin/open" );
 				}
 				
 				if( !executable || !executable.exists )

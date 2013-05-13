@@ -1,15 +1,29 @@
-<iideditorconfig>
+<modulecreatorconfig>
 
 	<!--  integradeveloper is an easter-egg tag which allows the use of 'core' and 'implemented in libIntegra' settings -->
 	<integradeveloper/>
 
-	<!--  allownonlowercamelendpointnames is an easter-egg tag which allows the saving of illegal endpoint names.  
-		  we can remove this functionality once all endpoint names are legal. -->
+	<!--        configuration of paths 													-->
+	<paths>
 
-	<!-- <allownonlowercamelendpointnames/>	 -->	 
+		<!--			windows-specific paths											-->
+		<windows>
+			<!--		path to template modules directory, relative to Module Creator	-->
+			<templatespath>..\..\templates\</templatespath>
 
+		</windows>
+		
+		<!--			mac-specific paths												-->
+		<mac>
+			<!--		path to template modules directory, relative to Module Creator	-->
+            <templatespath>../../templates/</templatespath>
 
-
+		</mac>
+	
+	</paths>
+	
+	
+	
     <!--        available widgets:									-->
     <widgets>
         <widget name="Checkbox" minWidth="16" minHeight="16" defaultWidth="64" defaultHeight="64" maxWidth="320" maxHeight="320">
@@ -82,4 +96,4 @@
             <attribute>y</attribute>
         </widget>
     </widgets>
-</iideditorconfig>
+</modulecreatorconfig>

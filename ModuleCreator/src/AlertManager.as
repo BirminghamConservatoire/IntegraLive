@@ -19,7 +19,7 @@ package
 		public static function show(text:String = "", title:String = "", flags:uint = 0x4, parent:Sprite = null, closeHandler:Function = null, iconClass:Class = null, defaultButtonFlag:uint = 0x4, moduleFactory:IFlexModuleFactory = null ):Alert
 		{
 			var alert:Alert = Alert.show( text, title, flags, parent, closeHandler, iconClass, defaultButtonFlag, moduleFactory );
-			alert.addEventListener( CloseEvent.CLOSE, instance.onCloseAlert );
+			alert.addEventListener( CloseEvent.CLOSE, instance.onCloseAlert, false, 1 );
 			
 			_numberOfAlerts++;
 			

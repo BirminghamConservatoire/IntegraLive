@@ -140,10 +140,24 @@
 				newItem.keyEquivalent = "n";
 				fileMenu.submenu.addItem( newItem );
 
-				var importItem:NativeMenuItem = new NativeMenuItem( "Import Template..." );
-				importItem.addEventListener(Event.SELECT, fileImport ); 
-				importItem.keyEquivalent = "n";
-				fileMenu.submenu.addItem( importItem );
+				var importGroup:NativeMenuItem = new NativeMenuItem( "Import Template..." );
+				fileMenu.submenu.addItem( importGroup );
+
+				//relative paths don't work unless we reconstruct File object from full path name 
+				var applicationDirectory:File = new File( File.applicationDirectory.nativePath );
+				var templatesDirectory:File = applicationDirectory.resolvePath( Config.singleInstance.templatesPath );
+
+				addTemplateMenus( importGroup, templatesDirectory );
+
+				//separator
+				importGroup.submenu.addItem( new NativeMenuItem( "", true ) );
+				
+				var browseForImportItem:NativeMenuItem = new NativeMenuItem( "Browse..." );
+				browseForImportItem.addEventListener( Event.SELECT, browseForImport ); 
+				importGroup.submenu.addItem( browseForImportItem );
+
+				//separator
+				fileMenu.submenu.addItem( new NativeMenuItem( "", true ) );
 				
 				
 				var openItem:NativeMenuItem = new NativeMenuItem( "Open..." );
@@ -173,7 +187,8 @@
 					exitItem.addEventListener( Event.SELECT, quit ); 
 					fileMenu.submenu.addItem( exitItem );
 				}
-				else	//mac
+				
+				if( Globals.isMac )
 				{
 					// Integra Live menu
 					var integraMenuItem:NativeMenuItem = _menu.getItemAt( 0 );
@@ -207,6 +222,41 @@
 			}
 			
 			
+			private function addTemplateMenus( parentItem:NativeMenuItem, directory:File ):void
+			{
+				var directoryListing:Array = directory.getDirectoryListing();
+				directoryListing.sort( compareTemplateFiles );
+				
+				parentItem.submenu = new NativeMenu; 
+				
+				for each( var content:File in directoryListing )
+				{
+					var menuItem:NativeMenuItem = new NativeMenuItem( content.name );
+					
+					if( content.isDirectory )
+					{
+						addTemplateMenus( menuItem, content );
+					}
+					else
+					{
+						menuItem.data = content;
+						menuItem.addEventListener( Event.SELECT, onSelectTemplate );						
+					}
+					
+					parentItem.submenu.addItem( menuItem );
+				}
+			}
+			
+			
+			private function compareTemplateFiles( file1:File, file2:File ):Number
+			{
+				if( file1.isDirectory && !file2.isDirectory ) return 1;
+				if( file2.isDirectory && !file1.isDirectory ) return -1;
+				
+				return ( file1.name > file2.name ) ? 1 : -1;
+			}
+			
+			
 			//creates menu for OS with application menu (ie Mac)
 			private function createApplicationMenu():void
 			{
@@ -237,13 +287,25 @@
 			}
 			
 			
-			private function fileImport( event:Event ):void
+			private function onSelectTemplate( event:Event ):void
 			{
 				if( handleCommandWhenInAlert() ) return;
 				
-				saveModified( "Import Template Interface", doImport );
+				Assert.assertTrue( event.target.hasOwnProperty( "data" ) );
+				_templateToImport = event.target.data as File;
+				Assert.assertNotNull( _templateToImport );
+				
+				saveModified( "Import Template Interface", doLoadTemplate );
 			}
-
+			
+			
+			private function browseForImport( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+				
+				saveModified( "Import Template Interface", doBrowseForImport );
+			}
+			
 			
 			private function fileLoad( event:Event ):void
 			{
@@ -320,13 +382,13 @@
 			}
 			
 			
-			private function doImport():void
+			private function doBrowseForImport():void
 			{
 				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
 				var file:File = new File( DirectoryStore.singleInstance.templateDirectory );
 				file.browseForOpen( "Load Module as Template", [filter] );
 				
-				file.addEventListener( Event.SELECT, onSelectFileToImport );      			
+				file.addEventListener( Event.SELECT, onPickTemplateToImport );      			
 			}				
 			
 			
@@ -352,20 +414,33 @@
 			}
 
 			
-			private function onSelectFileToImport( event:Event ):void
+			private function onPickTemplateToImport( event:Event ):void
+			{
+				DirectoryStore.singleInstance.templateDirectory = event.target.parent.nativePath;
+				
+				importTemplate( event.target.nativePath );
+			}
+			
+			
+			private function doLoadTemplate():void
+			{
+				importTemplate( _templateToImport.nativePath );
+				_templateToImport = null;
+			}
+
+			
+			private function importTemplate( filename:String ):void
 			{
 				newFile();
 				
-				DirectoryStore.singleInstance.templateDirectory = event.target.parent.nativePath;
-				
-				loadFile( event.target.nativePath );
+				loadFile( filename );
 				
 				_moduleGuid = GUID.create();
 				_originGuid = GUID.create();
 				updateStatusBar();
 				
 				_interfaceInfo.templateImported();
-			}
+			}			
 			
 			
 			private function onSelectFileToSave( event:Event ):void
@@ -846,6 +921,8 @@
 			private var _filename:String = null;
 			private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
 			private var _functionToExecuteAfterSave:Function = null;
+			
+			private var _templateToImport:File = null;
 			
 			private var _menu:NativeMenu;
 			private var _bundleMaker:BundleMaker = new BundleMaker;

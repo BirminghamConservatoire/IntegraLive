@@ -7,8 +7,6 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import mx.controls.Tree;
-			
 			override public function set data( value:Object ):void
 			{
 				super.data = value;
@@ -22,11 +20,7 @@
 					clearStyle( "textRollOverColor" );
 					clearStyle( "textSelectedColor" );
 					
-					if( value.hasOwnProperty( "children" ) )
-					{
-						//( owner as Tree ).expandItem( value, true );
-					}
-					else
+					if( !value.hasOwnProperty( "children" ) )
 					{
 						setStyle( "fontStyle", "italic" );
 						setStyle( "color", 0x808000 );

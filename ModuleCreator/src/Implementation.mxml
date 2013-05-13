@@ -28,20 +28,28 @@
 						 minHeight="100"/>
 			</mx:HBox>
 		</mx:VBox>
-		<mx:Canvas width="{Globals.labelColumnWidth()*2+Globals.propertyColumnWidth()}">
+		<mx:Canvas width="{Globals.propertyColumnWidth()*3 + 30}">
 			<mx:HBox styleName="internalPadding" horizontalCenter="0">
 				<mx:VBox>
-					<mx:Label text="Missing Objects" width="{Globals.labelColumnWidth()}" textAlign="center"/>
+					<mx:Label id="_missingObjectsLabel" text="Missing Objects" width="{Globals.labelColumnWidth()}" textAlign="center"/>
 					<mx:Tree id="_missingObjects" 
-							 itemRenderer="MissingObjectRenderer"
+							 itemRenderer="ErrorTreeRenderer"
 							 showDataTips="true"
 							 defaultLeafIcon="{null}"
 							 width="{Globals.propertyColumnWidth()}"/>
 				</mx:VBox>
 				<mx:VBox>
-					<mx:Label text="Unused Objects" width="{Globals.labelColumnWidth()}" textAlign="center"/>
-					<mx:Tree id="_unusedObjects" 
-							 itemRenderer="UnusedObjectRenderer"
+					<mx:Label id="_unusedFilesLabel" text="Unused Files" width="{Globals.labelColumnWidth()}" textAlign="center"/>
+					<mx:Tree id="_unusedFiles" 
+							 itemRenderer="WarningTreeRenderer"
+							 showDataTips="true"
+							 defaultLeafIcon="{null}"
+							 width="{Globals.propertyColumnWidth()}"/>
+				</mx:VBox>
+				<mx:VBox>
+					<mx:Label id="_oversizedFilesLabel" text="Oversized Files" width="{Globals.labelColumnWidth()}" textAlign="center"/>
+					<mx:Tree id="_oversizedFiles" 
+							 itemRenderer="WarningTreeRenderer"
 							 showDataTips="true"
 							 defaultLeafIcon="{null}"
 							 width="{Globals.propertyColumnWidth()}"/>
@@ -56,7 +64,9 @@
 
 	<fx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
 			import mx.collections.IList;
+			import mx.collections.XMLListCollection;
 			
 			import deng.fzip.FZip;
 			import deng.fzip.FZipFile;
@@ -220,8 +230,8 @@
 				_dependencyTree.dataProvider = [];
 
 				_missingObjects.dataProvider = [];
-				
-				_unusedObjects.dataProvider = [];
+				_unusedFiles.dataProvider = [];
+				_oversizedFiles.dataProvider = [];
 
 				clearWorkingDirectory();
 			}
@@ -268,16 +278,26 @@
 
 				updatePatchNamesList();				
 				
+				var usedPdFileMap:Object = new Object;
+				
 				if( hasImplementation )
 				{
-					updateDependencies( workingDirectory.resolvePath( _selectedPatchName ) );
+					updateDependencies( workingDirectory.resolvePath( _selectedPatchName ), usedPdFileMap );
 				}
 				else
 				{
 					_dependencyTree.dataProvider = [];
 					_missingObjects.dataProvider = [];
-					_unusedObjects.dataProvider = [];
 				}
+
+				var unusedFileData:Array = getUnusedFiles( workingDirectory, usedPdFileMap );
+				var oversizedFileData:Array = getOversizedFiles( workingDirectory );
+				
+				_unusedFiles.dataProvider = unusedFileData;
+				_oversizedFiles.dataProvider = oversizedFileData;
+				
+				expandAllItems( _unusedFiles );   
+				expandAllItems( _oversizedFiles );
 				
 				updateEnables();
 			}
@@ -337,19 +357,43 @@
 			}
 
 			
-			private function updateDependencies( pdPatch:File ):void
+			private function updateDependencies( pdPatch:File, usedPdFileMap:Object ):void
 			{
 				var dependencyData:Array = new Array;
 				var missingObjectData:Array = new Array;
-				var usedPdFileMap:Object = new Object;
 				
 				loadDependencies( pdPatch, pdPatch.parent, dependencyData, missingObjectData, new Vector.<String>, usedPdFileMap );
 				
-				var unusedObjectData:Array = getUnusedObjects( workingDirectory, usedPdFileMap );
-				
 				_dependencyTree.dataProvider = dependencyData;
 				_missingObjects.dataProvider = missingObjectData;
-				_unusedObjects.dataProvider = unusedObjectData;
+				
+				expandAllItems( _missingObjects );
+			}
+			
+			
+			private function expandAllItems( tree:Tree ):void
+			{
+				tree.validateNow();
+				
+				var items:ArrayCollection = tree.dataProvider as ArrayCollection;
+				
+				for each( var item:Object in items.source ) 
+				{
+					if( item.hasOwnProperty( "children" ) )
+					{
+						tree.expandItem( item, true, false );
+						tree.expandChildrenOf( item, true );
+					}
+				}
+			}
+			
+			
+			private function hasTreeContent( tree:Tree ):Boolean
+			{
+				var items:ArrayCollection = tree.dataProvider as ArrayCollection;
+				if( !items ) return false;
+				
+				return ( items.length > 0 );
 			}
 			
 			
@@ -492,7 +536,7 @@
 			}			
 
 			
-			private function getUnusedObjects( searchDirectory:File, usedPdFileMap:Object ):Array
+			private function getUnusedFiles( searchDirectory:File, usedPdFileMap:Object ):Array
 			{
 				var results:Array = new Array;
 				
@@ -500,7 +544,7 @@
 				{
 					if( file.isDirectory )
 					{
-						var directoryObjects:Array = getUnusedObjects( file, usedPdFileMap );
+						var directoryObjects:Array = getUnusedFiles( file, usedPdFileMap );
 						if( directoryObjects.length > 0 )
 						{
 							var directoryItem:Object = new Object;
@@ -524,100 +568,36 @@
 			}
 			
 			
-/*			private function makeDeployedCopy( pdPatch:File ):void
+			private function getOversizedFiles( searchDirectory:File ):Array
 			{
-				Assert.assertNull( _tempDirectory ); 
-				_tempDirectory = File.createTempDirectory();
+				var results:Array = new Array;
 				
-				pdPatch.copyTo( _tempDirectory.resolvePath( pdPatch.name ) );
-				
-				deployDependencies( pdPatch.parent, ( _dependencyTree.dataProvider as ArrayCollection ).source );
-			}
-*/			
-			
-			/*private function deployDependencies( rootDirectory:File, dependencies:Array ):void
-			{
-				for each( var dependency:Object in dependencies )
+				for each( var file:File in searchDirectory.getDirectoryListing() )
 				{
-					if( dependency.hasOwnProperty( "children" ) )
+					if( file.isDirectory )
 					{
-						deployDependencies( rootDirectory, dependency.children as Array );
+						var directoryObjects:Array = getOversizedFiles( file );
+						if( directoryObjects.length > 0 )
+						{
+							var directoryItem:Object = new Object;
+							directoryItem.label = file.name;
+							directoryItem.children = directoryObjects;
+							results.push( directoryItem );
+						}
 					}
-					
-					var source:File = rootDirectory.resolvePath( dependency.label );
-					if( !source.exists )
+					else
 					{
-						trace( "Can't deploy dependency " + source.nativePath + " - file doesn't exist" );
-						continue;
+						if( file.size >= _oversizedFileThreshold )
+						{
+							var fileItem:Object = new Object;
+							fileItem.label = file.name;
+							results.push( fileItem );
+						}
 					}
-					
-					var target:File = _tempDirectory.resolvePath( dependency.label );
-					if( target.exists ) 
-					{
-						//already got it
-						continue;
-					}
-					
-					source.copyTo( target );
 				}
-			}*/
-			
-			
-			/*private function onExport():void
-			{
-				var file:File = new File( DirectoryStore.singleInstance.exportDirectory );
-				file.browseForDirectory( "Export Implementation..." );
-				file.addEventListener( Event.SELECT, onSelectDirectoryToExportTo );
-			}
-			
-			
-			private function onSelectDirectoryToExportTo( event:Event ):void
-			{
-				var exportDirectory:File = event.target as File;
-				if( !exportDirectory ) return;
 				
-				DirectoryStore.singleInstance.exportDirectory = exportDirectory.parent.nativePath;
-				
-				Assert.assertTrue( exportDirectory.isDirectory );
-				Assert.assertNotNull( _tempDirectory );
-				
-				var pdPatch:File = _tempDirectory.resolvePath( _implementationName.text );
-				Assert.assertTrue( pdPatch.exists );
-				
-				pdPatch.copyTo( exportDirectory.resolvePath( pdPatch.name ) );
-				
-				exportDependencies( exportDirectory, ( _dependencyTree.dataProvider as ArrayCollection ).source );
-				
-				AlertManager.show( "Export Complete" );
-			}
-			
-			
-			private function exportDependencies( exportDirectory:File, dependencies:Array ):void
-			{
-				for each( var dependency:Object in dependencies )
-				{
-					if( dependency.hasOwnProperty( "children" ) )
-					{
-						exportDependencies( exportDirectory, dependency.children as Array );
-					}
-					
-					var source:File = _tempDirectory.resolvePath( dependency.label );
-					if( !source.exists )
-					{
-						trace( "Can't export dependency " + source.nativePath + " - file doesn't exist" );
-						continue;
-					}
-					
-					var target:File = exportDirectory.resolvePath( dependency.label );
-					if( target.exists ) 
-					{
-						//already got it
-						continue;
-					}
-					
-					source.copyTo( target );
-				}
-			}	*/		
+				return results;
+			}			
 			
 			
 			private function storeImplementationBranch( zipFile:FZip, outputDirectoryName:String, branch:File ):void
@@ -698,8 +678,15 @@
 			{
 				_patchFileName.enabled = ( _patchFileName.dataProvider.length > 0 );
 				_dependencyTree.enabled = hasImplementation;
-				_missingObjects.enabled = hasImplementation;
-				_unusedObjects.enabled = hasImplementation;
+				
+				_missingObjects.visible = hasTreeContent( _missingObjects );
+				_missingObjectsLabel.visible = hasTreeContent( _missingObjects );
+				
+				_unusedFiles.visible = hasTreeContent( _unusedFiles );
+				_unusedFilesLabel.visible = hasTreeContent( _unusedFiles );
+				
+				_oversizedFiles.visible = hasTreeContent( _oversizedFiles );
+				_oversizedFilesLabel.visible = hasTreeContent( _oversizedFiles );
 			}
 			
 			
@@ -863,6 +850,8 @@
 			private static const _pollWorkingDirectoryMsecs:Number = 10000;
 			
 			private static const _workingDirectoryName:String = "Integra Module Creator";
+			
+			private static const _oversizedFileThreshold:int = 1024000;
 			
 		]]>
 	</fx:Script>			

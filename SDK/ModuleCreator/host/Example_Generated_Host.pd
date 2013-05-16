@@ -1,0 +1,45 @@
+#N canvas 244 22 790 520 10;
+#X obj 800 36 r integra;
+#X msg 802 116 \; pd dsp 1;
+#X obj 802 90 loadbang;
+#N canvas 486 250 435 353 integra-canvas 0;
+#X obj 127 103 adc~ 1 2 3 4 5 6 7 8;
+#X obj 127 166 DummyStereoProcessor 1;
+#X obj 127 224 dac~ 1 2 3 4 5 6 7 8;
+#X connect 0 0 1 0;
+#X connect 0 1 1 1;
+#X connect 1 0 2 0;
+#X connect 1 1 2 1;
+#X restore 802 183 pd integra-canvas;
+#X obj 293 10 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X text 297 8 Test Module Parameters;
+#X obj 804 215 r integra-broadcast-receive;
+#X obj 800 61 print to_server;
+#X obj 62 9 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X text 66 7 Toggle Audio On / Off;
+#X obj 63 34 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
+0;
+#X obj 73 44 tgl 40 0 empty empty empty 17 7 0 40 -262144 -1 -1 0 1
+;
+#X msg 73 105 \; pd dsp \$1;
+#X msg 517 112 \; pd-DummyStereoProcessor.pd vis \$1;
+#X obj 506 11 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X obj 507 34 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
+0;
+#X obj 517 44 tgl 40 1 empty empty empty 17 7 0 40 -262144 -1 -1 1
+1;
+#X text 510 9 Show / Hide Module;
+#X obj 804 266 print to_module;
+#X obj 804 239 route 1;
+#X obj 293 34 send-value float parameterOne 1.22;
+#X obj 293 86 send-value symbol parameterTwo Hello;
+#X obj 293 138 send-value bang parameterThree bang;
+#X connect 0 0 7 0;
+#X connect 2 0 1 0;
+#X connect 6 0 19 0;
+#X connect 11 0 12 0;
+#X connect 16 0 13 0;
+#X connect 19 0 18 0;

@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" 
+		   verticalScrollPolicy="auto"
+		   width="300" height="200"
+		   backgroundColor="#d0d0d0"
+		   borderStyle="solid"
+		   borderColor="#808080"
+		   borderThickness="2"		   
+		   >
+	
+	<mx:TextArea id="_text" 
+				 left="10" right="10" top="10" bottom="10"
+				 borderStyle="none"
+				 backgroundAlpha="0"
+				 focusAlpha="0"
+				 editable="false"
+				 condenseWhite="true">
+	</mx:TextArea>	
+
+	<fx:Script>
+		<![CDATA[	
+			import com.cstrahan.Showdown;
+			
+			import flexunit.framework.Assert;
+			
+			import mx.controls.TextArea;
+			import mx.core.Application;
+			import mx.managers.IFocusManagerComponent;
+			import mx.managers.PopUpManager;
+			
+			
+			public function show( input:TextArea, title:String ):void
+			{
+				_input = input;
+				_title = title;
+				
+				_lazyChangeReporter = new LazyChangeReporter( input, updatePreview );
+				
+				for( var ancestor:DisplayObject = input.parent; ancestor; ancestor = ancestor.parent )
+				{
+					if( ancestor is Application )
+					{
+						_application = ancestor as Application;
+						break;
+					}
+				}
+				
+				Assert.assertNotNull( _application );
+				
+				PopUpManager.addPopUp( this, _application );
+			
+				reposition();
+				
+				_input.addEventListener( FocusEvent.FOCUS_OUT, onFocusOutInput );
+				
+				_application.addEventListener( Event.RESIZE, onResizeApplication );
+				
+				addEventListener( Event.ENTER_FRAME, onFrame );
+				addEventListener( FocusEvent.FOCUS_OUT, onFocusOutPreview );
+
+				
+				initTextCSS();
+				
+				updatePreview();
+				
+				alpha = 0;
+			}
+			
+			
+			private function hide():void
+			{
+				_input.removeEventListener( FocusEvent.FOCUS_OUT, onFocusOutInput );
+				_lazyChangeReporter.close();
+				_lazyChangeReporter = null;
+
+				_application.removeEventListener( Event.RESIZE, onResizeApplication );
+				
+				PopUpManager.removePopUp( this );					
+				removeEventListener( Event.ENTER_FRAME, onFrame );
+				removeEventListener( FocusEvent.FOCUS_OUT, onFocusOutPreview );
+				
+				dispatchEvent( new Event( FINISHED_EVENT ) );
+			}
+			
+			
+			private function updatePreview( isInvalid:Boolean = false ):void
+			{
+				generateTooltip();
+				
+				var html:String = "<html>";
+				
+				if( isInvalid )
+				{
+					html += _invalidHtmlWarning; 
+				}
+				
+				var preprocessedMarkdown:String = isInvalid ? htmlEscape( _input.text ) : _input.text;
+				
+				html += Showdown.makeHtml( preprocessedMarkdown );
+				
+				html = addSpacingParagraphs( html );
+				
+				html = decorateBlockQuotes( html );
+				
+				html = decorateCode( html );
+				
+				html += "</html>";
+				
+				if( !validateHtml( html ) )
+				{
+					if( isInvalid )
+					{				
+						html = _invalidHtmlWarning;
+					}
+					else
+					{
+						updatePreview( true );
+					}
+					
+					return;
+				}
+				
+				_text.text = html;
+			}
+
+			
+			private function htmlEscape( string:String ):String
+			{
+				return XML( new XMLNode( XMLNodeType.TEXT_NODE, string ) ).toXMLString();
+			}		
+			
+			
+			private function addSpacingParagraphs( html:String ):String
+			{
+				//add an extra paragraph with class='space' to each paragraph, list, and heading 
+				//because as3 doesn't allow vertical paragraph margins.  This allows us to style our own
+				const replaceAllCloseP:RegExp = /<\/p>/gi;
+				const replaceAllCloseUL:RegExp = /<\/ul>/gi;
+				const replaceAllCloseOL:RegExp = /<\/ol>/gi;
+				const replaceAllClosePreTags:RegExp = /<\/pre>/gi;
+				
+				const spacerParagraph:String = "<p class='space'></p>";
+				
+				
+				html = html.replace( replaceAllCloseP, "</p>" + spacerParagraph );
+				html = html.replace( replaceAllCloseUL, "</ul>" + spacerParagraph );
+				html = html.replace( replaceAllCloseOL, "</ol>" + spacerParagraph );
+				html = html.replace( replaceAllClosePreTags, "</pre>" + spacerParagraph );
+				
+				for( var headingLevel:int = 1; headingLevel <= 6; headingLevel++ )
+				{
+					var closeHeadingTag:String = "</h" + String( headingLevel ) + ">";
+					
+					var replaceAllCloseHeading:RegExp = new RegExp( closeHeadingTag, "gi" ); 
+					html = html.replace( replaceAllCloseHeading, closeHeadingTag + spacerParagraph );
+				}
+				
+				return html;
+			}
+			
+			
+			private function decorateBlockQuotes( html:String ):String
+			{
+				//add textformat tags to blockquote tags, so that they show up with some blockindent
+				const replaceAllOpenBlockquote:RegExp = /<blockquote>/gi;
+				const replaceAllCloseBlockquote:RegExp = /<\/blockquote>/gi;
+				
+				html = html.replace( replaceAllOpenBlockquote, "<blockquote><textformat blockindent=\"" + _blockindent + "\">" );
+				html = html.replace( replaceAllCloseBlockquote, "</textformat></blockquote>" );
+				
+				return html;
+			}
+			
+			
+			private function decorateCode( html:String ):String
+			{
+				//create start and end paragraphs within pre tags
+				
+				const openCode:String = "<pre><code>";
+				const closeCode:String = "</code></pre>";
+				
+				var preformattedEnd:int = 0;
+				while( true )
+				{
+					var preformattedStart:int = html.indexOf( openCode, preformattedEnd );
+					if( preformattedStart < 0 ) break;
+					
+					preformattedStart += openCode.length;
+					
+					preformattedEnd = html.indexOf( closeCode, preformattedStart );
+					if( preformattedEnd < 0 ) break;
+					
+					var paragraphStart:int = preformattedStart;
+					while( true )
+					{
+						var paragraphEnd:int = html.indexOf( "\n", paragraphStart );
+						if( paragraphEnd < 0 || paragraphEnd >= preformattedEnd ) break;
+						
+						var indent:int = _codeindent;
+						for( var i:int = paragraphStart; i < html.length && html.charAt( i ) == " "; i++ )
+						{
+							indent += _characterIndent;
+						}
+						
+						var openParagraphTag:String = "<p><textformat blockindent=\"" + indent + "\">";
+						var closeParagraphTag:String = "</textformat></p>";
+						
+						html = html.substr( 0, paragraphStart ) + openParagraphTag + html.substr( paragraphStart, paragraphEnd - paragraphStart ) + closeParagraphTag + html.substr( paragraphEnd );
+						var insertedLength:int = openParagraphTag.length + closeParagraphTag.length;
+						
+						paragraphStart = paragraphEnd + insertedLength + 1;
+						preformattedEnd += insertedLength;
+					}
+					
+					
+					preformattedEnd += closeCode.length;
+				}
+				
+				return html;
+			}
+			
+			
+			private function validateHtml( html:String ):Boolean
+			{
+				try 
+				{
+					var xml:XML = XML( html );
+				}
+				catch (e:Error) 
+				{
+					return false;
+				}
+				
+				return true;
+			}
+			
+			
+			private function generateTooltip():void
+			{
+				const startToken:String = "<!--";
+				const endToken:String = "-->";
+				
+				toolTip = null;
+				
+				var tooltipStart:int = 0;
+				var tooltipEnd:int = 0;
+				
+				while( true )
+				{
+					tooltipStart = _input.text.indexOf( startToken, tooltipEnd );
+					if( tooltipStart < 0 )
+					{
+						return;
+					}
+					
+					tooltipStart += startToken.length;
+					
+					tooltipEnd = _input.text.indexOf( endToken, tooltipStart );
+					var tooltipLength:int = tooltipEnd - tooltipStart;
+					if( tooltipLength < 0 )
+					{
+						return;
+					}
+					
+					var tooltipLine:String = _input.text.substr( tooltipStart, tooltipLength );
+					
+					if( toolTip )
+					{
+						toolTip += ( "\n" + tooltipLine );
+					}
+					else
+					{
+						toolTip = tooltipLine;
+					}
+					
+					tooltipEnd += endToken.length;
+				}
+			}
+			
+			
+			private function initTextCSS():void
+			{
+				const textColor:String ='#6D6D6D';
+				const linkColor:String = '#0000C0';
+	
+				const fontSize:Number = 10;
+				
+				var myStyles:StyleSheet = new StyleSheet();
+				
+				myStyles.setStyle( "body", { fontSize:fontSize, color:textColor } );
+				myStyles.setStyle( "li", { fontSize:fontSize, color:textColor } );
+				
+				myStyles.setStyle( "h1", { fontSize:fontSize + 4, fontWeight:'bold', color:textColor } );
+				myStyles.setStyle( "h2", { fontSize:fontSize + 3, fontWeight:'bold', color:textColor, fontStyle:'italic' } );
+				myStyles.setStyle( "h3", { fontSize:fontSize + 2, fontWeight:'bold', color:textColor } );
+				myStyles.setStyle( "h4", { fontSize:fontSize + 1, fontWeight:'bold', color:textColor, fontStyle:'italic' } );
+				myStyles.setStyle( "h5", { fontSize:fontSize, fontWeight:'bold', color:textColor } );
+				myStyles.setStyle( "h6", { fontSize:fontSize -1, fontWeight:'bold', color:textColor, fontStyle:'italic' } );
+				
+				myStyles.setStyle( "a:link", {textDecoration:'none', color:linkColor } );
+				myStyles.setStyle( "a:hover", {textDecoration:'underline', color:linkColor } );
+				
+				myStyles.setStyle( "strong", { fontWeight:'bold', display:'inline' } );
+				myStyles.setStyle( "em", { fontStyle:'italic', display:'inline' } );	
+				
+				myStyles.setStyle( "pre", { display:'block' } );
+				myStyles.setStyle( "code", { fontFamily:'courier', color:textColor } );
+				
+				myStyles.setStyle( ".space", { leading:String( -fontSize / 2 ) } );
+				
+				_text.styleSheet = myStyles;
+			}		
+			
+			
+			private function onResizeApplication( event:Event ):void
+			{
+				reposition();
+			}
+			
+			
+			private function reposition():void
+			{
+				var inputRect:Rectangle = _input.getRect( _application );
+				move( inputRect.right + 5, inputRect.top );
+			}
+			
+			
+			private function onFrame( event:Event ):void
+			{
+				if( _fadingIn )
+				{
+					alpha = Math.min( _maxAlpha, alpha + _fadeIncrement );
+					
+					if( alpha >= _maxAlpha )
+					{
+						_fadingIn = false;
+					}
+				}
+			}
+			
+			
+			private function onFocusOutInput( event:Event ):void
+			{
+				var component:IFocusManagerComponent = focusManager.getFocus();
+				
+				if( component != _text )
+				{
+					hide();
+				}
+			}
+
+			
+			private function onFocusOutPreview( event:Event ):void
+			{
+				var component:IFocusManagerComponent = focusManager.getFocus();
+				
+				if( component != _input )
+				{
+					hide();
+				}
+			}
+			
+			
+			private var _input:TextArea = null;
+			private var _application:Application;
+			private var _title:String = null;
+			
+			private var _lazyChangeReporter:LazyChangeReporter = null;
+			
+			private var _fadingIn:Boolean = true;
+			
+			private static const _fadeIncrement:Number = 0.03;
+			private static const _maxAlpha:Number = 0.95;
+
+			private static const _blockindent:int = 20;
+			private static const _codeindent:int = 20;
+			private static const _characterIndent:int = 8;
+
+			private static const _invalidHtmlWarning:String = "<p align='right'><font color='#ff4040'>Invalid HTML!</font></p>"
+			
+			public static const FINISHED_EVENT:String = "FINISHED_EVENT";
+			
+		]]>
+	</fx:Script>			
+	
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+</mx:Canvas>

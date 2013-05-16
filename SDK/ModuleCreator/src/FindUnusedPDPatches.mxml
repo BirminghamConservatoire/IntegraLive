@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   opaqueBackground="#ffffff" borderColor="#000000" borderStyle="solid">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:VBox top="20" bottom="20" left="20" right="20">
+		<mx:Label text="Find Unused PD Patches" textAlign="center" fontWeight="bold"/>
+		<mx:Spacer height="10"/>
+		<mx:TextArea text="Use this tool to compare a directory of integra modules with a directory tree of .pd patches, and identify any .pd patches that are not referred to by any integra module."
+					 width="100%"
+					 height="100%"
+					 borderStyle="none"
+					 backgroundAlpha="0"
+					 focusAlpha="0"
+					 verticalScrollPolicy="off"
+				 />
+		<mx:Spacer height="10"/>
+		<mx:HBox>
+			<mx:Label text="Integra Module Directory" textAlign="right" width="200"/>
+			<mx:TextInput id="_imDirectory" editable="false" width="300"/>
+			<mx:Button label="..." click="{pickIntegraModuleDirectory()}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="PD Implementation Directory" textAlign="right" width="200"/>
+			<mx:TextInput id="_pdImplementationDirectory" editable="false" width="300"/>
+			<mx:Button label="..." click="{pickPDImplementationDirectory()}"/>
+		</mx:HBox>
+		<mx:Spacer height="20"/>
+		<mx:Canvas width="100%">
+			<mx:Button id="_runButton" label="Find Unused PD Patches!" click="{run()}" enabled="false" horizontalCenter="16"/>
+		</mx:Canvas>
+		<mx:Spacer height="30"/>
+		<mx:HBox>
+			<mx:Label text="Unused PD Patches" textAlign="right" width="200"/>
+			<mx:List id="_resultsList" width="350" height="200"/>
+		</mx:HBox>
+		<mx:Canvas width="100%">
+			<mx:Button id="_copyButton" label="Copy results to Clipboard" click="{copyResultsToClipboard()}" enabled="false" right="0"/>
+		</mx:Canvas>
+		<mx:Spacer height="20"/>
+		<mx:Canvas width="100%">
+			<mx:Button label="Close" click="{close()}" horizontalCenter="0"/>
+		</mx:Canvas>
+			
+	</mx:VBox>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import flexunit.framework.Assert;
+			
+			import mx.collections.IList;
+			
+			import deng.fzip.FZip;
+			import deng.fzip.FZipFile;
+			
+			import mx.managers.PopUpManager;
+
+			private function pickIntegraModuleDirectory():void
+			{
+				var file:File = new File();
+				file.browseForDirectory( "Locate Integra Module Directory" );
+				file.addEventListener( Event.SELECT, onSelectIntegraModuleDirectory );
+			}
+
+			private function pickPDImplementationDirectory():void
+			{
+				var file:File = new File();
+				file.browseForDirectory( "Locate Integra Module Directory" );
+				file.addEventListener( Event.SELECT, onSelectPDImplementationDirectory );
+			}
+			
+
+			private function onSelectIntegraModuleDirectory( event:Event ):void
+			{
+				var directory:File = event.target as File;
+				if( !directory ) return;
+				
+				_imDirectory.text = directory.nativePath;
+				updateEnables();
+			}
+
+			private function onSelectPDImplementationDirectory( event:Event ):void
+			{
+				var directory:File = event.target as File;
+				if( !directory ) return;
+				
+				_pdImplementationDirectory.text = directory.nativePath;
+				updateEnables();
+			}
+			
+			
+			private function updateEnables():void
+			{
+				_runButton.enabled = _imDirectory.text.length > 0 && _pdImplementationDirectory.text.length > 0;
+				
+				var results:IList = _resultsList.dataProvider as IList;
+				_copyButton.enabled = ( results && results.length > 0 );
+			}
+			
+			private function run():void
+			{
+				var integraModuleDirectory:File = new File( _imDirectory.text );
+				if( !integraModuleDirectory || !integraModuleDirectory.isDirectory )
+				{
+					AlertManager.show( _imDirectory.text + " is not a directory", _alertTitle );
+					return;
+				}
+				
+				var integraModules:Array = integraModuleDirectory.getDirectoryListing();
+				var implementationDirectoryName:String = Globals.moduleImplementationDirectoryName + "/";
+				
+				var usedPDPatches:Object = new Object;
+				
+				for each( var integraModule:File in integraModules )
+				{
+					if( !integraModule.extension || integraModule.extension.toLowerCase() != Globals.moduleFileExtension.toLowerCase() )
+					{
+						continue;
+					}
+					
+					var fileStream:FileStream = new FileStream();
+					fileStream.open( integraModule, FileMode.READ );
+					var rawBytes:ByteArray = new ByteArray();
+					fileStream.readBytes( rawBytes );
+					fileStream.close();			
+					
+					var zipFile:FZip = new FZip();
+					zipFile.loadBytes( rawBytes );
+					
+					for( var i:int = 0; i < zipFile.getFileCount(); i++ )
+					{
+						var contentFile:FZipFile = zipFile.getFileAt( i );
+						var contentFilename:String = contentFile.filename;
+						
+						if( contentFilename.length <= implementationDirectoryName.length || contentFilename.substr( 0, implementationDirectoryName.length ) != implementationDirectoryName )
+						{
+							continue;	//not a pd implementation
+						}
+						
+						if( contentFile.content.length == 0 )
+						{
+							continue;	//it's a directory entry
+						}
+						
+						var pdPatchName:String = contentFilename.substr( implementationDirectoryName.length );
+					
+						usedPDPatches[ pdPatchName ] = 1;
+					}
+				}
+				
+				var unusedPDPatches:Array = new Array;
+				var pdImplementationDirectory:File = new File( _pdImplementationDirectory.text );
+				if( !pdImplementationDirectory || !pdImplementationDirectory.isDirectory )
+				{
+					AlertManager.show( _pdImplementationDirectory.text + " is not a directory", _alertTitle );
+					return;
+				}
+				
+				getUnusedPDImplementations( pdImplementationDirectory, pdImplementationDirectory, usedPDPatches, unusedPDPatches );
+				
+				_resultsList.dataProvider = unusedPDPatches;
+				
+				AlertManager.show( "Found " + unusedPDPatches.length + " unused PD patches", _alertTitle );
+				
+				updateEnables();
+			}
+
+			
+			private function getUnusedPDImplementations( searchDirectory:File, rootSearchDirectory:File, usedPDPatches:Object, results:Array ):void
+			{
+				var directoryContents:Array = searchDirectory.getDirectoryListing();
+				for each( var directoryContent:File in directoryContents )
+				{
+					if( directoryContent.isDirectory )
+					{
+						getUnusedPDImplementations( directoryContent, rootSearchDirectory, usedPDPatches, results );
+					}
+					else
+					{
+						if( directoryContent.extension && directoryContent.extension.toLowerCase() == _pdExtension )
+						{
+							var relativePath:String = "";
+							if( searchDirectory != rootSearchDirectory )
+							{
+								relativePath = searchDirectory.nativePath.substr( rootSearchDirectory.nativePath.length + 1 ) + "/";
+								relativePath.replace( "\\", "/" );	//swap windows for linux slashes
+							}
+							
+							relativePath += directoryContent.name;
+							
+							if( usedPDPatches.hasOwnProperty( relativePath ) )
+							{
+								continue;
+							}
+							
+							results.push( relativePath );
+						}
+					}
+				}
+			}
+			
+			
+			private function copyResultsToClipboard():void
+			{
+				var results:IList = _resultsList.dataProvider as IList;
+				Assert.assertNotNull( results );
+
+				var resultsString:String = new String;
+				for( var i:int = 0; i < results.length; i++ )
+				{
+					resultsString += ( results.getItemAt( i ) + "\n" );
+				}
+				
+				System.setClipboard( resultsString );
+			}
+
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp( this );
+			}
+			
+			
+			private const _pdExtension:String = "pd";
+			private const _alertTitle:String = "Unused PD Patch Finder";
+			
+		]]>
+	</fx:Script>			
+			
+			
+</mx:Canvas>

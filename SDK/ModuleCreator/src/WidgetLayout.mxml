@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx">
+	<mx:HBox id="_controls" 
+			 horizontalGap="20" 
+			 paddingLeft="5"
+			 paddingRight="5">
+		<mx:CheckBox id="_useGuides" label="Use Guides" selected="true"/>
+		<mx:HBox>
+			<mx:Label text="Margin:"/>
+			<mx:TextInput id="_margin" restrict="0-9" width="80" text="{_defaultMargin}"/>
+		</mx:HBox>		
+		<mx:Button label="Auto-arrange" 
+				   toolTip="Arrange Widgets horizontally, in order of their current layout"
+				   click="{onAutoArrange()}"/>
+	</mx:HBox>		
+	<mx:Canvas width="100%" height="100%" >
+		<mx:Canvas id="_layoutArea" width="100%" height="100%" borderStyle="inset"
+				   rollOut="{onRollOut( event )}"
+				   mouseMove="{onMouseMove( event )}"
+				   mouseDown="{onMouseDown( event )}"/>
+		<mx:Canvas id="_snapLinesCanvas" width="100%" height="100%"/>
+	</mx:Canvas>
+
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			import flexunit.framework.Assert;
+			
+			import mx.core.UIComponent;
+			
+			
+			public function newFile():void
+			{
+				_layoutArea.removeAllChildren();
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				return true;
+			}
+			
+			
+			public function get isEmpty():Boolean
+			{
+				return ( widgets.length == 0 );
+			}
+			
+			
+			public function get widgets():Vector.<WidgetLayoutElement>
+			{
+				var widgets:Vector.<WidgetLayoutElement> = new Vector.<WidgetLayoutElement>;
+				
+				for each( var widget:UIComponent in _layoutArea.getChildren() )
+				{
+					Assert.assertTrue( widget is WidgetLayoutElement );
+					widgets.push( widget as WidgetLayoutElement );
+				}
+				
+				return widgets;
+			}
+			
+			
+			public function getWidget( endpoint:Endpoint ):WidgetLayoutElement
+			{
+				for each( var widget:WidgetLayoutElement in widgets )
+				{
+					for each( var mappedEndpoint:Endpoint in widget.attributeMapping )
+					{
+						if( endpoint == mappedEndpoint )
+						{
+							return widget;
+						}
+					}
+				}
+				
+				return null;
+			}
+			
+			
+			public function loadFromXML( xml:XMLList, endpointList:EndpointList ):Boolean
+			{
+				for each( var widgetXML:XML in xml.Widget )
+				{
+					var widget:WidgetLayoutElement = new WidgetLayoutElement;
+					
+					if( !widget.loadFromXML( widgetXML, endpointList ) )
+					{
+						trace( "Error loading widget from xml: " + widgetXML.toString() );
+						continue;
+					}
+					
+					_layoutArea.addChild( widget );
+					widget.updateLabel();
+				}
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<WidgetInfo></WidgetInfo>" );
+
+				for each( var widget:WidgetLayoutElement in widgets )
+				{
+					xml.appendChild( widget.saveToXML() );
+				}
+				
+				return xml;
+			}
+
+			
+			public function assignEndpoint( endpoint:Endpoint, widgetDefinition:WidgetDefinition = null, widgetAttribute:String = null, widgetToShare:WidgetLayoutElement = null ):void
+			{
+				Assert.assertNotNull( endpoint );
+				
+				var anythingChanged:Boolean = false;
+				
+				if( unassignEndpoint( endpoint ) ) anythingChanged = true; 
+	
+				if( widgetDefinition && widgetAttribute )
+				{
+					var widget:WidgetLayoutElement = widgetToShare ? widgetToShare : createNewWidget( widgetDefinition );
+				
+					widget.attributeMapping[ widgetAttribute ] = endpoint;
+					
+					widget.updateLabel();
+					
+					anythingChanged = true;
+				}
+				
+				if( anythingChanged )
+				{
+					widgetAssignmentModified();
+					interfaceChanged();
+				}
+			}
+			
+			
+			public function onRemovedEndpoint( endpoint:Endpoint ):void
+			{
+				if( unassignEndpoint( endpoint ) )
+				{
+					widgetAssignmentModified();
+					interfaceChanged();
+				}
+			}
+
+			
+			private function unassignEndpoint( endpoint:Endpoint ):Boolean
+			{
+				var widgetToUnassign:WidgetLayoutElement = getWidget( endpoint );
+				if( !widgetToUnassign ) return false;
+
+				var attributeMapping:Object = widgetToUnassign.attributeMapping;
+					
+				for( var attribute:String in attributeMapping )
+				{
+					if( attributeMapping[ attribute ] == endpoint )
+					{
+						delete attributeMapping[ attribute ];
+					}
+				}
+				
+				if( Globals.isObjectEmpty( attributeMapping ) )
+				{
+					_layoutArea.removeChild( widgetToUnassign );
+				}
+				else
+				{
+					widgetToUnassign.updateLabel();
+				}
+				
+				return true;
+			}
+			
+			
+			private function createNewWidget( widgetDefinition:WidgetDefinition ):WidgetLayoutElement
+			{
+				var widget:WidgetLayoutElement = new WidgetLayoutElement;
+				widget.widgetDefinition= widgetDefinition;
+				
+				widget.width = widgetDefinition.defaultSize.x;
+				widget.height = widgetDefinition.defaultSize.y;
+				
+				//todo - find default position
+				
+				_layoutArea.addChild( widget );
+				
+				return widget;
+			}
+			
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}
+			
+			
+			private function widgetAssignmentModified():void
+			{
+				dispatchEvent( new Event( Globals.widgetAssignmentModifiedEvent ) );
+			}
+
+			
+			private function onMouseMove( event:MouseEvent ):void
+			{
+				if( MouseCapture.getCaptureID() < 0 )
+				{
+					updateCursor();
+				}
+			}
+			
+			
+			private function onRollOut( event:MouseEvent ):void
+			{
+				if( MouseCapture.getCaptureID() < 0 )
+				{
+					removeCursor();
+				}			
+			}
+			
+			
+			private function onMouseDown( event:MouseEvent ):void
+			{
+				if( _layoutArea.horizontalScrollBar && _layoutArea.horizontalScrollBar.getRect( _layoutArea ).contains( _layoutArea.mouseX, _layoutArea.mouseY ) ) 
+				{
+					return;
+				}
+				
+				if( _layoutArea.verticalScrollBar && _layoutArea.verticalScrollBar.getRect( _layoutArea ).contains( _layoutArea.mouseX, _layoutArea.mouseY ) ) 
+				{
+					return;
+				}
+				
+				for each( var element:WidgetLayoutElement in _layoutArea.getChildren() )
+				{
+					if( element.getRect( _layoutArea ).contains( _layoutArea.mouseX, _layoutArea.mouseY ) )
+					{
+						_dragElement = element;
+						_dragType = element.getDragType();
+						
+						if( _dragType )
+						{
+							_mouseDownOffset = new Point( _layoutArea.mouseX - element.x, _layoutArea.mouseY - element.y );
+							MouseCapture.setCapture( this, onRepositionDrag, onRepositionDragFinished );
+						}
+						
+						return;
+					}
+				}
+			}		
+			
+			
+			private function updateCursor():void
+			{
+				var dragType:String = null;
+				
+				for each( var element:WidgetLayoutElement in _layoutArea.getChildren() )
+				{
+					if( element.getRect( _layoutArea ).contains( _layoutArea.mouseX, _layoutArea.mouseY ) )
+					{
+						dragType = element.getDragType();
+						if( dragType == _dragType && dragType != LayoutDragType.MOVE )
+						{
+							return;
+						}
+						else
+						{
+							break;
+						}
+					}
+				}	
+				
+				removeCursor();
+				
+				_dragType = dragType;
+				switch( _dragType )
+				{
+					case LayoutDragType.MOVE:
+						_cursorID = CursorSetter.setCursor( CursorSetter.HAND );
+						break;
+					
+					case LayoutDragType.RESIZE_LEFT:
+					case LayoutDragType.RESIZE_RIGHT:
+						_cursorID = CursorSetter.setCursor( CursorSetter.RESIZE_EW );
+						break;
+					
+					case LayoutDragType.RESIZE_TOP:
+					case LayoutDragType.RESIZE_BOTTOM:
+						_cursorID = CursorSetter.setCursor( CursorSetter.RESIZE_NS );
+						break;
+					
+					case LayoutDragType.RESIZE_BOTTOMLEFT:
+					case LayoutDragType.RESIZE_TOPRIGHT:
+						_cursorID = CursorSetter.setCursor( CursorSetter.RESIZE_NESW );
+						break;
+					
+					case LayoutDragType.RESIZE_TOPLEFT:
+					case LayoutDragType.RESIZE_BOTTOMRIGHT:
+						_cursorID = CursorSetter.setCursor( CursorSetter.RESIZE_SENW );
+						break;
+					
+					default:
+						break;
+				}
+			}
+			
+			
+			private function removeCursor():void
+			{
+				if( _cursorID >= 0 )
+				{
+					CursorSetter.removeCursor( _cursorID );
+					_cursorID = -1;
+				}
+			}		
+			
+			
+			private function onRepositionDrag( event:MouseEvent ):void
+			{
+				clearSnapLines();
+				
+				var xSnapLines:Vector.<SnapLine> = new Vector.<SnapLine>;
+				var ySnapLines:Vector.<SnapLine> = new Vector.<SnapLine>;
+				
+				switch( _dragType )
+				{
+					case LayoutDragType.MOVE:
+						_dragElement.x = Math.max( 0, doXMoveSnap( _layoutArea.mouseX - _mouseDownOffset.x, xSnapLines ) );
+						_dragElement.y = Math.max( 0, doYMoveSnap( _layoutArea.mouseY - _mouseDownOffset.y, ySnapLines ) );
+						break;
+					
+					case LayoutDragType.RESIZE_LEFT:
+						resizeLeft( xSnapLines);
+						break;  
+					
+					case LayoutDragType.RESIZE_RIGHT:
+						resizeRight( xSnapLines );
+						break;  
+					
+					case LayoutDragType.RESIZE_TOP:
+						resizeTop( ySnapLines );
+						break;
+					
+					case LayoutDragType.RESIZE_BOTTOM:
+						resizeBottom( ySnapLines );
+						break;
+					
+					case LayoutDragType.RESIZE_TOPLEFT:
+						resizeLeft( xSnapLines );
+						resizeTop( ySnapLines );
+						break;  
+					
+					case LayoutDragType.RESIZE_TOPRIGHT:
+						resizeRight( xSnapLines );
+						resizeTop( ySnapLines );
+						break;  
+					
+					case LayoutDragType.RESIZE_BOTTOMLEFT:
+						resizeLeft( xSnapLines );
+						resizeBottom( ySnapLines );
+						break;  
+					
+					case LayoutDragType.RESIZE_BOTTOMRIGHT:
+						resizeRight( xSnapLines );
+						resizeBottom( ySnapLines );
+						break;  
+					
+					default:
+						break;
+				}
+				
+				for each( var xSnapLine:SnapLine in xSnapLines )
+				{
+					//if( xSnapLine == _dragElement.x || xSnapLine == _dragElement.x + _dragElement.width )
+					{ 
+						drawXSnapLine( xSnapLine );
+					}
+				}
+				
+				for each( var ySnapLine:SnapLine in ySnapLines )
+				{
+					//if( ySnapLine == _dragElement.y || ySnapLine == _dragElement.y + _dragElement.height )
+					{ 
+						drawYSnapLine( ySnapLine );
+					}
+				}
+				
+				interfaceChanged();
+			}			
+			
+			
+			private function resizeLeft( xSnapLines:Vector.<SnapLine> ):void
+			{
+				var right:Number = _dragElement.x + _dragElement.width; 
+				_dragElement.x = Math.max( 0, Math.max( right - _dragElement.maximumWidth, Math.min( right - _dragElement.minimumWidth, doXResizeSnap( _layoutArea.mouseX + _layoutArea.horizontalScrollPosition, false, xSnapLines ) ) ) );
+				_dragElement.width = right - _dragElement.x;
+			}
+			
+			
+			private function resizeRight( xSnapLines:Vector.<SnapLine> ):void
+			{
+				_dragElement.width = Math.min( _dragElement.maximumWidth, Math.max( _dragElement.minimumWidth, doXResizeSnap( _layoutArea.mouseX + _layoutArea.horizontalScrollPosition, true, xSnapLines ) - _dragElement.x ) );
+			}
+			
+			
+			private function resizeTop( ySnapLines:Vector.<SnapLine> ):void
+			{
+				var bottom:Number = _dragElement.y + _dragElement.height; 
+				_dragElement.y = Math.max( 0, Math.max( bottom - _dragElement.maximumHeight, Math.min( bottom - _dragElement.minimumHeight, doYResizeSnap( _layoutArea.mouseY + _layoutArea.verticalScrollPosition, false, ySnapLines ) ) ) );
+				_dragElement.height = bottom - _dragElement.y;
+			}
+			
+			
+			private function resizeBottom( ySnapLines:Vector.<SnapLine> ):void
+			{
+				_dragElement.height = Math.min( _dragElement.maximumHeight, Math.max( _dragElement.minimumHeight, doYResizeSnap( _layoutArea.mouseY + _layoutArea.verticalScrollPosition, true, ySnapLines ) - _dragElement.y ) );
+			}
+			
+			
+			private function onRepositionDragFinished():void
+			{
+				clearSnapLines();
+				_mouseDownOffset = null;
+				_dragElement = null;
+				
+				updateCursor();
+			}
+			
+			
+			private function clearSnapLines():void
+			{
+				_snapLinesCanvas.graphics.clear();
+			}
+			
+			
+			private function drawXSnapLine( xCoords:SnapLine ):void
+			{
+				xCoords.v1 -= _layoutArea.horizontalScrollPosition;
+				xCoords.v2 -= _layoutArea.horizontalScrollPosition;
+				if( xCoords.v2 < 0 || xCoords.v1 >= _snapLinesCanvas.width ) return;
+				xCoords.v1 = Math.max( xCoords.v1, 0 );
+				xCoords.v2 = Math.min( xCoords.v2, _snapLinesCanvas.width );
+
+				var yBottom:Number = _layoutArea.height;
+				if( _layoutArea.horizontalScrollBar && _layoutArea.horizontalScrollBar.maxScrollPosition > 0 )
+				{
+					yBottom -= _layoutArea.horizontalScrollBar.height;
+				}
+
+				_snapLinesCanvas.graphics.beginFill( 0x808080, 0.3 );
+				_snapLinesCanvas.graphics.drawRect( xCoords.v1, 0, xCoords.v2 - xCoords.v1, yBottom );
+				_snapLinesCanvas.graphics.endFill();
+			}
+			
+			
+			private function drawYSnapLine( yCoords:SnapLine ):void
+			{
+				yCoords.v1 -= _layoutArea.verticalScrollPosition;
+				yCoords.v2 -= _layoutArea.verticalScrollPosition;
+				if( yCoords.v2 < 0 || yCoords.v1 >= _snapLinesCanvas.height ) return;
+				yCoords.v1 = Math.max( yCoords.v1, 0 );
+				yCoords.v2 = Math.min( yCoords.v2, _snapLinesCanvas.height );
+				
+				var xRight:Number = _layoutArea.width;
+				if( _layoutArea.verticalScrollBar && _layoutArea.verticalScrollBar.maxScrollPosition > 0 )
+				{
+					xRight -= _layoutArea.verticalScrollBar.width;
+				}
+				
+				_snapLinesCanvas.graphics.beginFill( 0x808080, 0.3 );
+				_snapLinesCanvas.graphics.drawRect( 0, yCoords.v1, xRight, yCoords.v2 - yCoords.v1 );
+				_snapLinesCanvas.graphics.endFill();
+			}		
+
+			
+			private function get margin():Number
+			{
+				return Number( _margin.text );
+			}
+			
+			private function doXMoveSnap( candidateX:int, snapLines:Vector.<SnapLine> ):int
+			{
+				var snappedX:int = -1;
+				var leftSnap:int = -1;
+				var rightSnap:int = -1;
+				
+				var leftSnapThreshold:int = _maximumSnapThreshold;
+				var rightSnapThreshold:int = _maximumSnapThreshold;
+				
+				var leftDifference:int; 
+				var rightDifference:int;
+				
+				var usedMargin:Boolean = false;
+				
+				if( !_useGuides.selected ) return candidateX;
+				
+				for each( var element:WidgetLayoutElement in _layoutArea.getChildren() )
+				{
+					if( element == _dragElement )
+					{
+						continue;
+					}
+					
+					leftDifference = Math.abs( element.x - candidateX );
+					if( leftDifference < leftSnapThreshold )
+					{
+						snappedX = element.x;
+						leftSnap = snappedX;
+						leftSnapThreshold = leftDifference;
+					}
+					
+					var elementRight:Number = element.x + element.width + margin;
+					leftDifference = Math.abs( elementRight - candidateX );
+					if( leftDifference < leftSnapThreshold )
+					{
+						snappedX = element.x + element.width + margin;
+						leftSnap = snappedX;
+						leftSnapThreshold = leftDifference;
+						usedMargin = true;
+					}				
+					
+					rightDifference = Math.abs( element.x - candidateX - _dragElement.width - margin );
+					if( rightDifference < rightSnapThreshold )
+					{
+						snappedX = element.x - _dragElement.width - margin;
+						rightSnap = snappedX;
+						rightSnapThreshold = rightDifference;
+						usedMargin = true;
+					}
+					
+					rightDifference = Math.abs( element.x + element.width - candidateX - _dragElement.width );
+					if( rightDifference < rightSnapThreshold )
+					{
+						snappedX = element.x + element.width - _dragElement.width;
+						rightSnap = snappedX;
+						rightSnapThreshold = rightDifference;
+					}
+				}
+				
+				if( snappedX < 0 ) 
+				{
+					return candidateX;
+				}
+				
+				if( snappedX == leftSnap )
+				{
+					if( usedMargin )
+					{
+						snapLines.push( new SnapLine( snappedX - margin, margin ) );
+					}
+					else
+					{
+						snapLines.push( new SnapLine( snappedX ) );
+					}
+				}
+				
+				if( snappedX == rightSnap )
+				{
+					if( usedMargin )
+					{
+						snapLines.push( new SnapLine( snappedX + _dragElement.width, margin ) );
+					}
+					else
+					{
+						snapLines.push( new SnapLine( snappedX + _dragElement.width ) );
+					}
+				}
+				
+				return snappedX;
+			}
+			
+			
+			private function doYMoveSnap( candidateY:int, snapLines:Vector.<SnapLine> ):int
+			{
+				var snappedY:int = -1;
+				var topSnap:int = -1;
+				var bottomSnap:int = -1;
+				
+				var topSnapThreshold:int = _maximumSnapThreshold;
+				var bottomSnapThreshold:int = _maximumSnapThreshold;
+				
+				var topDifference:int; 
+				var bottomDifference:int;
+				
+				var usedMargin:Boolean = false;
+				
+				if( !_useGuides.selected ) return candidateY;
+				
+				for each( var element:WidgetLayoutElement in _layoutArea.getChildren() )
+				{
+					if( element == _dragElement )
+					{
+						continue;
+					}
+					
+					topDifference = Math.abs( element.y - candidateY );
+					if( topDifference < topSnapThreshold )
+					{
+						snappedY = element.y;
+						topSnap = snappedY;
+						topSnapThreshold = topDifference;
+					}
+					
+					topDifference = Math.abs( element.y + element.height + margin - candidateY );
+					if( topDifference < topSnapThreshold )
+					{
+						snappedY = element.y + element.height + margin;
+						topSnap = snappedY;
+						topSnapThreshold = topDifference;
+						usedMargin = true;
+					}
+					
+					bottomDifference = Math.abs( element.y - candidateY - _dragElement.height - margin );
+					if( bottomDifference < bottomSnapThreshold )
+					{
+						snappedY = element.y - _dragElement.height - margin;
+						bottomSnap = snappedY;
+						bottomSnapThreshold = bottomDifference;
+						usedMargin = true;
+					}
+					
+					bottomDifference = Math.abs( element.y + element.height - candidateY - _dragElement.height );
+					if( bottomDifference < bottomSnapThreshold )
+					{
+						snappedY = element.y + element.height - _dragElement.height;
+						bottomSnap = snappedY;
+						bottomSnapThreshold = bottomDifference;
+					}
+				}
+				
+				if( snappedY < 0 ) 
+				{
+					return candidateY;
+				}
+				
+				if( snappedY == topSnap )
+				{
+					if( usedMargin )
+					{
+						snapLines.push( new SnapLine( snappedY - margin, margin ) );
+					}
+					else
+					{
+						snapLines.push( new SnapLine( snappedY ) );
+					}
+				}
+				
+				if( snappedY == bottomSnap )
+				{
+					if( usedMargin )
+					{
+						snapLines.push( new SnapLine( snappedY + _dragElement.height, margin ) );
+					}
+					else
+					{
+						snapLines.push( new SnapLine( snappedY + _dragElement.height ) );
+					}
+				}
+				
+				return snappedY;
+			}
+			
+			
+			private function doXResizeSnap( candidateX:int, resizingRight:Boolean, snapLines:Vector.<SnapLine> ):int
+			{
+				var snappedX:int = -1;
+				
+				var snapThreshold:int = _maximumSnapThreshold;
+				var difference:int;
+	
+				var usedMargin:Boolean = false;
+				
+				if( !_useGuides.selected ) return candidateX;
+				
+				for each( var element:WidgetLayoutElement in _layoutArea.getChildren() )
+				{
+					if( element == _dragElement )
+					{
+						continue;
+					}
+					
+					var leftMargin:Number = resizingRight ? margin : 0; 
+					difference = Math.abs( element.x - candidateX - leftMargin );
+					if( difference < snapThreshold )
+					{
+						usedMargin = resizingRight;
+						snappedX = element.x - leftMargin;
+						snapThreshold = difference;
+					}
+
+					var rightMargin:Number = resizingRight ? 0 : margin; 
+					difference = Math.abs( element.x + element.width + rightMargin - candidateX );
+					if( difference < snapThreshold )
+					{
+						usedMargin = !resizingRight;
+						snappedX = element.x + element.width + rightMargin;
+						snapThreshold = difference;
+					}				
+				}
+				
+				if( snappedX < 0 ) 
+				{
+					return candidateX;
+				}
+				
+				if( usedMargin )
+				{
+					snapLines.push( new SnapLine( snappedX - ( resizingRight ? 0 : margin ), margin ) );
+				}
+				else
+				{
+					snapLines.push( new SnapLine( snappedX ) );
+				}
+				
+				return snappedX;
+			}
+			
+			
+			private function doYResizeSnap( candidateY:int, resizingBottom:Boolean, snapLines:Vector.<SnapLine> ):int
+			{
+				var snappedY:int = -1;
+				
+				var snapThreshold:int = _maximumSnapThreshold;
+				var difference:int;
+
+				var usedMargin:Boolean = false;
+
+				if( !_useGuides.selected ) return candidateY;
+				
+				for each( var element:WidgetLayoutElement in _layoutArea.getChildren() )
+				{
+					if( element == _dragElement )
+					{
+						continue;
+					}
+					
+					var topMargin:Number = resizingBottom ? margin : 0; 
+					difference = Math.abs( element.y - candidateY - topMargin );
+					if( difference < snapThreshold )
+					{
+						usedMargin = resizingBottom;
+						snappedY = element.y - topMargin;
+						snapThreshold = difference;
+					}
+					
+					var bottomMargin:Number = resizingBottom ? 0 : margin; 
+					difference = Math.abs( element.y + element.height + bottomMargin - candidateY );
+					if( difference < snapThreshold )
+					{
+						usedMargin = !resizingBottom;
+						snappedY = element.y + element.height + bottomMargin;
+						snapThreshold = difference;
+					}				
+				}
+
+				if( snappedY < 0 ) 
+				{
+					return candidateY;
+				}
+
+				if( usedMargin )
+				{
+					snapLines.push( new SnapLine( snappedY - ( resizingBottom ? 0 : margin ), margin ) );
+				}
+				else
+				{
+					snapLines.push( new SnapLine( snappedY ) );
+				}
+				
+				return snappedY;
+			}	
+			
+			
+			private function onAutoArrange():void
+			{
+				var margin:Number = Number( _margin.text );
+				
+				var elements:Array = _layoutArea.getChildren().concat();
+				
+				elements.sortOn( "xMiddle", Array.NUMERIC );
+				
+				var nextX:Number = margin;
+				
+				for each( var element:WidgetLayoutElement in elements )
+				{
+					element.x = nextX;
+					element.y = margin;
+					
+					nextX += ( element.width + margin ); 
+				}
+				
+				interfaceChanged();
+			}			
+			
+			
+			private var _dragType:String = null;
+			private var _dragElement:WidgetLayoutElement = null;
+			private var _mouseDownOffset:Point = null;
+			private var _cursorID:int = -1;
+			
+			private static const _defaultMargin:int = 10;
+			private static const _maximumSnapThreshold:int = 10;
+		]]>
+	</fx:Script>			
+	
+</mx:VBox>

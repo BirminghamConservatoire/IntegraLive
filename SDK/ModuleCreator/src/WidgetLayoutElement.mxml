@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Text id="_elementLabel" left="0" right="0" textAlign="center" verticalCenter="0" selectable="false"/>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<fx:Script>
+		<![CDATA[
+			
+			import flexunit.framework.Assert;
+
+			public function get widgetDefinition():WidgetDefinition { return _widgetDefinition; }
+			public function get attributeMapping():Object   { return _attributeMapping; }
+
+			public function get minimumWidth():Number		{ return _widgetDefinition.minimumSize.x;	}
+			public function get minimumHeight():Number		{ return _widgetDefinition.minimumSize.y;	}
+			public function get maximumWidth():Number		{ return _widgetDefinition.maximumSize.x;	}
+			public function get maximumHeight():Number		{ return _widgetDefinition.maximumSize.y;	}
+			
+			public function get widgetLabel():String 
+			{ 
+				if( Globals.getNumberOfProperties( _attributeMapping ) == 1 )
+				{
+					for each( var endpoint:Endpoint in _attributeMapping )
+					{
+						return endpoint.label;
+					}
+				}
+				
+				return _widgetLabel; 
+			}
+			
+			
+			public function get xMiddle():Number 		{	return x + width / 2; }
+			
+			
+			public function set widgetDefinition( widgetDefinition:WidgetDefinition ):void 
+			{ 
+				_widgetDefinition = widgetDefinition;
+				_widgetLabel = _widgetDefinition.name.toLowerCase();				
+			}
+			
+			
+			public function set widgetLabel( widgetLabel:String ):void 
+			{
+				Assert.assertFalse( Globals.getNumberOfProperties( _attributeMapping ) == 1 );
+				
+				_widgetLabel = widgetLabel;
+				
+				updateLabel();
+			}
+			
+			
+			public function updateLabel():void
+			{
+				_elementLabel.text = widgetLabel;
+				
+				if( Globals.getNumberOfProperties( _attributeMapping ) > 1 )
+				{
+					_elementLabel.text = _widgetLabel + "\n\n";
+					
+					for( var attribute:String in _attributeMapping )
+					{
+						_elementLabel.text += ( attribute + " ->" + _attributeMapping[ attribute ].label + "\n" );
+					}
+				}
+				
+				this.toolTip = _elementLabel.text;
+			}
+
+			
+			public function loadFromXML( xml:XML, endpointList:EndpointList ):Boolean
+			{
+				if( !xml.hasOwnProperty( "WidgetType" ) ) return false;
+				
+				_widgetDefinition = getWidgetDefinition( xml.WidgetType );
+				if( !_widgetDefinition ) return false;
+
+				if( !xml.hasOwnProperty( "Label" ) ) return false;
+				_widgetLabel = xml.Label;
+				
+				if( !xml.hasOwnProperty( "Position" ) ) return false;
+				var positionXML:XMLList = xml.Position;
+				
+				if( !positionXML.hasOwnProperty( "X" ) 
+					|| !positionXML.hasOwnProperty( "Y" )
+					|| !positionXML.hasOwnProperty( "Width" )
+					|| !positionXML.hasOwnProperty( "Height" ) ) return false;
+				
+				x = Number( positionXML.X );
+				y = Number( positionXML.Y );
+				width = Number( positionXML.Width );
+				height = Number( positionXML.Height );
+				
+				if( !xml.hasOwnProperty( "AttributeMappings" ) ) return false;
+				
+				_attributeMapping = new Object;
+				var numberOfMappedAttributes:int = 0;
+				for each( var attributeMappingXML:XML in xml.AttributeMappings.AttributeMapping )
+				{
+					if( !attributeMappingXML.hasOwnProperty( "WidgetAttribute" ) ) return false;
+					if( !attributeMappingXML.hasOwnProperty( "Endpoint" ) ) return false;
+						
+					var widgetAttribute:String = attributeMappingXML.WidgetAttribute;
+					var endpoint:Endpoint = endpointList.getEndpoint( attributeMappingXML.Endpoint );
+					if( !endpoint ) return false;
+					
+					_attributeMapping[ widgetAttribute ] = endpoint;
+					numberOfMappedAttributes++;
+				}
+				
+				if( numberOfMappedAttributes == 0 )	return false;
+				
+				if( numberOfMappedAttributes == 1 && endpoint.label != _widgetLabel )
+				{
+					return false;
+				}
+				
+				return true;
+			}
+
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<Widget></Widget>" );
+				
+				xml.appendChild( <WidgetType> { _widgetDefinition.name } </WidgetType> );
+				xml.appendChild( <Label> { widgetLabel } </Label> );
+				
+				var positionXML:XML = new XML( "<Position></Position>" );
+				positionXML.appendChild( <X> { x } </X> );
+				positionXML.appendChild( <Y> { y } </Y> );
+				positionXML.appendChild( <Width> { width } </Width> );
+				positionXML.appendChild( <Height> { height } </Height> );
+				xml.appendChild( positionXML );
+
+				var attributeMappingsXML:XML = new XML( "<AttributeMappings></AttributeMappings>" );
+				
+				for( var attribute:String in _attributeMapping )
+				{
+					var mappingXML:XML = new XML( "<AttributeMapping></AttributeMapping>" );
+					
+					mappingXML.appendChild( <WidgetAttribute> { attribute } </WidgetAttribute> );
+					mappingXML.appendChild( <Endpoint> { _attributeMapping[ attribute ].label } </Endpoint> );
+					
+					attributeMappingsXML.appendChild( mappingXML );
+				}
+				
+				xml.appendChild( attributeMappingsXML );
+				
+				return xml;
+			}
+			
+			
+			public function getDragType():String
+			{
+				if( mouseX < _resizeMargin )
+				{
+					if( mouseY < _resizeMargin ) return LayoutDragType.RESIZE_TOPLEFT;
+					if( mouseY >= height - _resizeMargin ) return LayoutDragType.RESIZE_BOTTOMLEFT;
+					
+					return LayoutDragType.RESIZE_LEFT;
+				}
+				
+				if( mouseX >= width - _resizeMargin )
+				{
+					if( mouseY < _resizeMargin ) return LayoutDragType.RESIZE_TOPRIGHT;
+					if( mouseY >= height - _resizeMargin ) return LayoutDragType.RESIZE_BOTTOMRIGHT;
+					
+					return LayoutDragType.RESIZE_RIGHT;
+				}
+				
+				if( mouseY < _resizeMargin ) return LayoutDragType.RESIZE_TOP;
+				if( mouseY >= height - _resizeMargin ) return LayoutDragType.RESIZE_BOTTOM;
+				
+				return LayoutDragType.MOVE;
+			}	
+			
+			
+			public function getWidgetAttribute( mappedEndpoint:Endpoint ):String
+			{
+				for( var attribute:String in _attributeMapping )
+				{
+					if( _attributeMapping[ attribute ] == mappedEndpoint )
+					{
+						return attribute;
+					}
+				}
+				
+				return null;	//not mapped
+			}
+			
+			
+			override protected function updateDisplayList( width:Number, height:Number ):void
+			{
+				super.updateDisplayList( width, height );
+				
+				graphics.clear();
+				
+				graphics.beginFill( 0x808080, _alpha );
+				graphics.lineStyle( 2, 0, _alpha );
+				
+				graphics.drawRect( 0, 0, width, height );
+			}
+
+			
+			private function getWidgetDefinition( widgetName:String ):WidgetDefinition
+			{
+				for each( var widgetDefinition:WidgetDefinition in Config.singleInstance.widgets )
+				{
+					if( widgetDefinition.name == widgetName ) 
+					{
+						return widgetDefinition;
+					}
+				}
+				
+				return null;
+			}
+			
+			
+			private var _widgetDefinition:WidgetDefinition;
+			private var _widgetLabel:String;
+			
+			private var _attributeMapping:Object = new Object;
+			
+			private static const _alpha:Number = 0.3;
+			private static const _resizeMargin:Number = 5; 
+			
+		]]>
+	</fx:Script>
+</mx:Canvas>

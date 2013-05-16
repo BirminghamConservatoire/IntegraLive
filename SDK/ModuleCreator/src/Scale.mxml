@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" borderStyle="inset" xmlns:local="*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:VBox styleName="internalPadding">
+		<mx:HBox>
+			<mx:Label text="Scale" width="{Globals.labelColumnWidth( 3 )}"/>
+			<mx:List id="_scaleType" 
+					 change="{ onChangeScaleType() }" 
+					 toolTip="Choose Scale type"
+					 rowCount="{ _scaleType.dataProvider.length }"
+					 verticalAlign="middle"
+					 styleName="smallRows"
+					 width="{Globals.propertyColumnWidth( 3 )}" 
+					 dataProvider="{[_linearLabel, _exponentialLabel, _decibelLabel ]}"/>		
+		</mx:HBox>
+		<mx:HBox id="_baseGroup" visible="false" maxHeight="0">
+			<mx:Label text="Exponent Base" width="{Globals.labelColumnWidth( 3 )}" textAlign="right"/>
+			<mx:TextInput id="_base" 
+					 change="{ interfaceChanged() }"
+					 restrict="0-9"
+					 toolTip="Specify a number base"
+					 width="{Globals.propertyColumnWidth( 3 )}"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<fx:Script>
+		<![CDATA[	
+			
+			import flexunit.framework.Assert;
+			
+			public function doInitialize():void
+			{
+				_scaleType.selectedItem = _linearLabel;
+				_base.text = "2";
+				showNumberBase( false );
+			}
+			
+			
+			public function setRange( minimum:Number, maximum:Number ):void
+			{
+				_rangeMinimum = minimum;
+				_rangeMaximum = maximum;
+				
+				validateContent();
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				var valid:Boolean = true;
+				
+				_scaleType.errorString = null;
+				if( _scaleType.selectedItem == _exponentialLabel )
+				{
+					if( _rangeMinimum <= 0 )
+					{
+						_scaleType.errorString = "Exponential Scales can only be used when minimum range is greater than 0";
+						valid = false;
+					}
+					else
+					{
+						if( _rangeMaximum <= _rangeMinimum )
+						{
+							_scaleType.errorString = "Exponential Scales can only be used when maximum value is greater than minimum value";
+							valid = false;
+						}
+					}
+				}
+				
+				if( _base.visible && int( _base.text ) < 2 )
+				{
+					_base.errorString = "Exponent Base must be an integer greater than 1";
+					valid = false;
+				}
+				else
+				{
+					_base.errorString = null;
+					
+				}
+				
+				return valid;
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				if( !xml.hasOwnProperty( "ScaleType" ) ) return false;
+				
+				switch( xml.ScaleType.toString() )
+				{
+					case "linear":
+						_scaleType.selectedItem = _linearLabel;
+						break;
+					
+					case "exponential":
+						_scaleType.selectedItem = _exponentialLabel;
+						break;
+					
+					case "decibel":
+						_scaleType.selectedItem = _decibelLabel;
+						break;
+					
+					default:
+						return false;
+				}				
+
+				if( _scaleType.selectedItem == _exponentialLabel )
+				{
+					if( !xml.hasOwnProperty( "Base" ) ) return false;
+
+					_base.text = xml.Base.toString();
+					
+					showNumberBase( true );
+				}
+				else
+				{
+					showNumberBase( false );
+				}
+
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<Scale></Scale>" );
+				
+				switch( _scaleType.selectedItem.toString() )
+				{
+					case _linearLabel:
+						xml.appendChild( <ScaleType>linear</ScaleType> );
+						break;
+					
+					case _exponentialLabel:
+						xml.appendChild( <ScaleType>exponential</ScaleType> );
+						xml.appendChild( <Base>{_base.text}</Base> );
+						break;	
+					
+					case _decibelLabel:
+						xml.appendChild( <ScaleType>decibel</ScaleType> );
+						break;
+				}				
+				
+				return xml;
+			}		
+			
+			
+			private function onChangeScaleType():void
+			{
+				showNumberBase( _scaleType.selectedItem == _exponentialLabel );
+				interfaceChanged();
+			}
+
+			
+			private function showNumberBase( show:Boolean ):void
+			{
+				_baseGroup.visible = show;
+				_baseGroup.maxHeight = show ? NaN : 0;
+			}
+				
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}			
+			
+			
+			private var _rangeMinimum:Number = 0;
+			private var _rangeMaximum:Number = 0;
+			
+			private const _linearLabel:String = "Linear";
+			private const _exponentialLabel:String = "Exponential";
+			private const _decibelLabel:String = "Decibel";
+			
+		]]>
+	</fx:Script>		
+	
+</mx:Canvas>

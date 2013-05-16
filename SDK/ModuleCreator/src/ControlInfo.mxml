@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" borderStyle="inset" xmlns:local="*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:VBox styleName="internalPadding" paddingTop="0">
+		<mx:Label text="Control Info"/>
+		<mx:HBox>
+			<mx:Label text="Control Type" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
+			<mx:List id="_controlType" 
+					 change="{ onChangeControlType() }" 
+					 toolTip="Choose Control type"
+					 rowCount="{ _controlType.dataProvider.length }"
+					 styleName="smallRows"
+					 verticalAlign="middle"
+					 width="{Globals.propertyColumnWidth( 1 )}"
+					 dataProvider="{[ _stateLabel, _bangLabel ] }"/>
+		</mx:HBox>
+		<local:StateInfo id="_stateInfo"/>
+		<mx:VBox id="_advancedControls">
+			<mx:HBox>
+				<mx:Label text="Can Be Source" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
+				<mx:CheckBox id="_canBeSource" 
+							 change="{interfaceChanged()}"
+							 toolTip="Tick if this Endpoint can be a source, EG for Connections or Scripts"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Can Be Target" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
+				<mx:CheckBox id="_canBeTarget" 
+							 change="{interfaceChanged()}"
+							 toolTip="Tick if this Endpoint can be a target, EG for Connections or Scripts"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Is Sent To Host" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
+				<mx:CheckBox id="_isSentToHost" 
+							 change="{interfaceChanged()}"
+							 toolTip="Tick if this Endpoint should be sent to the host"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:CheckBox id="_advancedControlsButton"
+					 label="show advanced controls"
+					 click="{onClickAdvancedControls()}"/>
+	</mx:VBox>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			
+
+			public function doInitialize():void
+			{
+				showAdvancedControls = false;
+				
+				_stateInfo.doInitialize();
+				_stateInfo.addEventListener( Globals.modifiedEvent, onSubComponentChanged );
+				
+				_controlType.selectedItem = _stateLabel;
+				showStateInfo = true;
+				
+				_isSentToHost.selected = true;
+				_canBeSource.selected = true;
+				_canBeTarget.selected = true;
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				var valid:Boolean = true;
+				
+				if( _stateInfo.visible )
+				{
+					if( !_stateInfo.validateContent() ) valid = false;
+				}
+
+				return valid;
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				if( !xml.hasOwnProperty( "ControlType" ) ) return false;
+				
+				switch( xml.ControlType.toString() )
+				{
+					case "state":
+						showStateInfo = true;
+						_controlType.selectedItem = _stateLabel;
+						
+						if( !xml.hasOwnProperty( "StateInfo" ) ) return false;
+						if( !_stateInfo.loadFromXML( xml.child( "StateInfo" ) ) ) return false;
+						break;
+					
+					case "bang":
+						showStateInfo = false;
+						_controlType.selectedItem = _bangLabel;
+						break;
+					
+					default:
+						return false;
+				}
+				
+				if( xml.hasOwnProperty( "CanBeSource" ) )
+				{
+					_canBeSource.selected = ( xml.CanBeSource == "true" );
+				}
+				
+				if( xml.hasOwnProperty( "CanBeTarget" ) )
+				{
+					_canBeTarget.selected = ( xml.CanBeTarget == "true" );
+				}
+
+				if( xml.hasOwnProperty( "IsSentToHost" ) )
+				{
+					_isSentToHost.selected = ( xml.IsSentToHost == "true" );
+				}
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<ControlInfo></ControlInfo>" );
+				
+				switch( _controlType.selectedItem.toString() )
+				{
+					case _stateLabel:
+						xml.appendChild( <ControlType>state</ControlType> );
+						xml.appendChild( _stateInfo.saveToXML() );
+						break;
+
+					case _bangLabel:
+						xml.appendChild( <ControlType>bang</ControlType> );
+						break;
+				}
+
+				xml.appendChild( <CanBeSource>{_canBeSource.selected ? "true":"false"}</CanBeSource> );
+				xml.appendChild( <CanBeTarget>{_canBeTarget.selected ? "true":"false"}</CanBeTarget> );
+				xml.appendChild( <IsSentToHost>{_isSentToHost.selected ? "true":"false"}</IsSentToHost> );
+				
+				return xml;
+			}			
+			
+			
+			public function get isValidDataDirectory():Boolean
+			{
+				if( _controlType.selectedItem != _stateLabel ) return false;
+				if( !_stateInfo.isValidDataDirectory ) return false;
+				if( _canBeTarget.selected ) return false;
+				if( !_isSentToHost.selected ) return false;
+				
+				return true;
+			}
+		
+			
+			private function onChangeControlType():void
+			{
+				showStateInfo = ( _controlType.selectedItem == _stateLabel );
+				interfaceChanged();
+			}
+
+			
+			private function onClickAdvancedControls():void
+			{
+				showAdvancedControls = _advancedControlsButton.selected; 
+			}
+
+			
+			private function set showAdvancedControls( show:Boolean ):void
+			{
+				_advancedControls.visible = show;
+				_advancedControls.maxHeight = show ? NaN : 0;
+				
+				_stateInfo.showAdvancedControls = show;
+			}
+			
+			
+			private function set showStateInfo( show:Boolean ):void
+			{
+				_stateInfo.visible = show;
+				_stateInfo.maxHeight = show ? NaN : 0;
+			}
+			
+			
+			private function onSubComponentChanged( event:Event ):void
+			{
+				interfaceChanged();
+			}
+			
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}			
+			
+
+			
+			private const _stateLabel:String = "State";
+			private const _bangLabel:String = "Bang";
+			
+		]]>
+	</fx:Script>		
+</mx:Canvas>

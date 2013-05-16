@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+
+	<mx:HBox>
+		<mx:Label text="State Labels" width="{Globals.labelColumnWidth( 2 )}" textAlign="right"/>
+		<mx:VBox verticalGap="0"> 
+			<mx:DataGrid id="_labels" 
+					 width="{Globals.propertyColumnWidth( 2 )}" 
+					 editable="true"
+					 columnCount="2"
+					 change="{ onLabelSelected(); }"
+					 itemEditBeginning="{ onBeginningItemEdit( event ) }"
+					 itemEditEnd="{ onEndItemEdit( event ) }"
+					 rowCount="{ Math.max( 2, _labels.dataProvider.length ) }" 
+					 verticalAlign="middle"/>
+			<mx:HBox>
+				<mx:Button id="_addLabel" label="add" width="{Globals.propertyColumnWidth( 2 ) / 2 - 4}" click="{ onClickAddLabel() }"/>
+				<mx:Button id="_removeLabel" label="remove" width="{Globals.propertyColumnWidth( 2 ) / 2 - 4}" click="{ onClickRemoveLabel() }"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>		
+	
+	<fx:Script>
+		<![CDATA[	
+			import flexunit.framework.Assert;
+			
+			import mx.collections.IList;
+			import mx.controls.TextInput;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.DataGridEvent;
+			import mx.events.ListEvent;
+			
+
+			public function doInitialize( validationFunction:Function ):void
+			{
+				_newLabelIndex = 1;
+				
+				_validationFunction = validationFunction;
+				
+				var columns:Array = new Array;
+				columns.push( new DataGridColumn( _valueColumnName ) );
+				columns.push( new DataGridColumn( _labelColumnName ) );
+				
+				_labels.columns = columns;
+
+				_labels.dataProvider = [];
+				updateRemoveLabelEnable();
+			}
+			
+
+			public function set stateType( type:String ):void
+			{
+				_stateType = type;
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				var items:IList = _labels.dataProvider as IList;
+				Assert.assertNotNull( items );
+				
+				var stateMap:Object = new Object;
+				
+				for( var i:int = 0; i < items.length; i++ )
+				{
+					var item:Object = items.getItemAt( i );
+					Assert.assertTrue( item.hasOwnProperty( _valueColumnName ) && item.hasOwnProperty( _labelColumnName ) );
+					
+					var value:String = item[ _valueColumnName ];
+					
+					var errorReason:Object = new Object;
+					if( !_validationFunction( value, errorReason ) )
+					{
+						_labels.errorString = errorReason[ value ];
+						return false;
+					}
+					
+					
+					if( _stateType != Globals.stringType )
+					{
+						//convert to number and back to string, so that 0 == 0.000 (for example)
+						value = Number( value ).toString();
+					}
+					
+					if( stateMap.hasOwnProperty( value ) )
+					{
+						_labels.errorString = "State Labels must not contain duplicates.  Found duplicate: '" + value + "'";
+						return false;
+					}
+					
+					stateMap[ value ] = value;
+				}
+				
+				_labels.errorString = null;
+				return true;			
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				var items:Array = new Array;
+				
+				for each( var stateLabel:XML in xml.Label )
+				{
+					if( !stateLabel.hasOwnProperty( "State" ) )
+					{
+						return false;
+						
+					}
+
+					var item:Object = new Object;
+					item[ _valueColumnName ] = stateLabel.State.toString(); 
+					
+					if( stateLabel.hasOwnProperty( "Text" ) )
+					{
+						item[ _labelColumnName ] = stateLabel.Text.toString();
+					}
+					else
+					{
+						item[ _labelColumnName ] = "";
+					}
+					
+					items.push( item );
+				}
+
+				_labels.dataProvider = items;
+				
+				updateRemoveLabelEnable();
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<StateLabels></StateLabels>" );
+
+				var values:IList = _labels.dataProvider as IList;
+				Assert.assertNotNull( values );
+
+				for( var i:int = 0; i < values.length; i++ )
+				{
+					var item:Object = values.getItemAt( i );
+					Assert.assertNotNull( item );
+					Assert.assertTrue( item.hasOwnProperty( _valueColumnName ) && item.hasOwnProperty( _labelColumnName ) );
+					
+					var labelXML:XML = new XML( "<Label></Label>" );
+					
+					labelXML.appendChild( <State> { item[ _valueColumnName ] } </State> );
+					labelXML.appendChild( <Text> { item[ _labelColumnName ] } </Text> );
+					
+					xml.appendChild( labelXML );
+				}
+				
+				return xml;
+			}
+
+			
+			public function get isEmpty():Boolean
+			{
+				var values:IList = _labels.dataProvider as IList;
+				Assert.assertNotNull( values );
+				
+				return( values.length == 0 );
+			}
+			
+			
+			private function onClickAddLabel():void
+			{
+				var values:IList = _labels.dataProvider as IList;
+				Assert.assertNotNull( values );
+				
+				var newItem:Object = new Object;
+				newItem[ _valueColumnName ] = "<value #" + _newLabelIndex + ">";
+				newItem[ _labelColumnName ] = "<label #" + _newLabelIndex + ">";
+				values.addItem( newItem );
+				
+				_newLabelIndex ++;
+				
+				_labels.selectedIndex = values.length - 1;
+				updateRemoveLabelEnable();
+				interfaceChanged();
+			}
+
+			
+			private function onClickRemoveLabel():void
+			{
+				var values:IList = _labels.dataProvider as IList;
+				Assert.assertNotNull( values );
+			
+				Assert.assertTrue( _labels.selectedIndex >= 0 );
+				
+				values.removeItemAt( _labels.selectedIndex );
+				
+				updateRemoveLabelEnable();
+				interfaceChanged();				
+			}
+			
+			
+			private function onLabelSelected():void
+			{
+				_labelSelected = true;
+				callLater( function():void { _labelSelected = false; } );
+				
+				updateRemoveLabelEnable(); 
+			}
+			
+			
+			private function onBeginningItemEdit( event:DataGridEvent ):void
+			{
+				if( _labelSelected )
+				{
+					event.preventDefault();
+				}
+			}
+			
+			
+			private function onEndItemEdit( event:DataGridEvent ):void
+			{
+				event.preventDefault();
+
+				var values:IList = _labels.dataProvider as IList;
+				Assert.assertNotNull( values );
+				
+				Assert.assertTrue( _labels.selectedIndex >= 0 && _labels.selectedIndex < values.length );
+				
+				var item:Object = values.getItemAt( _labels.selectedIndex );
+				
+				Assert.assertTrue( event.dataField == _valueColumnName || event.dataField == _labelColumnName );
+				
+				item[ event.dataField ] = ( _labels.itemEditorInstance as TextInput ).text;
+
+				_labels.destroyItemEditor();
+				
+				values.setItemAt( item, _labels.selectedIndex );
+				
+				interfaceChanged();
+				
+				callLater( updateRemoveLabelEnable );
+			}
+			
+			
+			/* MOVE TO Globals private function compareAsNumbers( value1:Object, value2:Object ):int
+			{
+				var number1:Number = Number( value1 );
+				var number2:Number = Number( value2 );
+				
+				if( isNaN( number1 ) ) 
+				{
+					if( isNaN( number2 ) )
+					{
+						return ( value1.toString() < value2.toString() ) ? -1 : 1;
+					}
+					else
+					{
+						return 1;
+					}
+				}
+				else
+				{
+					if( isNaN( number2 ) ) 
+					{
+						return -1;
+					}
+					else
+					{
+						if( number1 < number2 ) return -1;
+						if( number2 < number1 ) return 1;
+					}
+				}
+				
+				return 0;
+			}*/
+			
+			
+			private function updateRemoveLabelEnable():void
+			{
+				_removeLabel.enabled = ( _labels.selectedIndex >= 0 );
+			}			
+
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+			}			
+			
+			
+			
+			private var _stateType:String;
+			
+			private var _newLabelIndex:int = 1;
+			private var _labelSelected:Boolean = false;
+			
+			private var _validationFunction:Function = null;
+			
+			private static const _valueColumnName:String = "Value";
+			private static const _labelColumnName:String = "Label";
+			
+		]]>
+	</fx:Script>		
+			
+</mx:Canvas>

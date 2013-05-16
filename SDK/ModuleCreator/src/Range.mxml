@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" borderStyle="inset" xmlns:local="*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:VBox styleName="internalPadding">
+		<mx:Label text="Range"/>
+		<mx:HBox>
+			<mx:Label id="_minimumLabel" width="{Globals.labelColumnWidth( 3 )}" textAlign="right"/>
+			<mx:TextInput id="_minimum" 
+					 change="{ interfaceChanged() }" 
+					 maxChars="20"
+					 toolTip="Set a minimum"
+					 width="{Globals.propertyColumnWidth( 3 )}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label id="_maximumLabel" width="{Globals.labelColumnWidth( 3 )}" textAlign="right"/>
+			<mx:TextInput id="_maximum" 
+						  change="{ interfaceChanged() }" 
+						  maxChars="20"
+						  toolTip="Set a maximum"
+						  width="{Globals.propertyColumnWidth( 3 )}"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<fx:Script>
+		<![CDATA[	
+			
+			import flexunit.framework.Assert;
+			
+			public function doInitialize():void
+			{
+			}
+			
+			
+			public function set stateType( type:String ):void
+			{
+				_stateType = type;
+				
+				switch( _stateType )
+				{
+					case Globals.floatType:
+						_minimumLabel.text = "Minimum Value";
+						_maximumLabel.text = "Maximum Value";
+						Globals.restrictToNumber( _minimum );
+						Globals.restrictToNumber( _maximum );
+						break;
+
+					case Globals.intType:
+						_minimumLabel.text = "Minimum Value";
+						_maximumLabel.text = "Maximum Value";
+						Globals.restrictToInteger( _minimum );
+						Globals.restrictToInteger( _maximum );
+						break;
+					
+					case Globals.stringType:
+						_minimumLabel.text = "Minimum Length";
+						_maximumLabel.text = "Maximum Length";
+						Globals.restrictToUnsignedInteger( _minimum );
+						Globals.restrictToUnsignedInteger( _maximum );
+						break;
+					
+					default:
+						Assert.assertTrue( false );
+				}
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				var valid:Boolean = true;
+				
+				var expectedType:String = ( _stateType == Globals.stringType ) ? Globals.intType : _stateType;
+				
+				_minimum.errorString = _maximum.errorString = null; 
+				
+				if( !Globals.doTypesMatch( _minimum.text, expectedType ) )
+				{
+					_minimum.errorString = "Minimum must be of type '" + expectedType + "'";
+					valid = false;
+				}
+				
+				if( !Globals.doTypesMatch( _maximum.text, expectedType ) )
+				{
+					_maximum.errorString = "Maximum must be of type '" + expectedType + "'";
+					valid = false;
+				}
+
+				if( !valid ) return false;
+				
+				var minimum:Number = Number( _minimum.text );
+				var maximum:Number = Number( _maximum.text );
+				
+				Assert.assertTrue( !isNaN( minimum ) && !isNaN( maximum ) );
+				
+				if( minimum > maximum )
+				{
+					_maximum.errorString = "Maximum must greater or equal to Minimum";
+					return false;
+				}
+				
+				if( _stateType == Globals.stringType )
+				{
+					if( minimum < 0 )
+					{
+						_minimum.errorString = "Strings cannot have negative length";
+						return false;
+					}
+					
+					Assert.assertTrue( maximum >= 0 );
+				}
+				
+				return true;
+			}
+			
+			
+			public function isValueValid( value:String ):Boolean
+			{
+				var minimum:Number = Number( _minimum.text );
+				var maximum:Number = Number( _maximum.text );
+				
+				if( isNaN( minimum ) || isNaN( maximum ) )
+				{
+					return false;
+				}
+				
+				if( _stateType == Globals.stringType )
+				{
+					return ( value.length >= minimum && value.length <= maximum );
+				}
+				else
+				{
+					var number:Number = Number( value );
+					if( isNaN( number ) )
+					{
+						return false;
+					}
+					
+					return ( number >= minimum && number <= maximum );
+				}
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				if( !xml.hasOwnProperty( "Minimum" ) ) return false;
+				if( !xml.hasOwnProperty( "Maximum" ) ) return false;
+				
+				_minimum.text = xml.Minimum;
+				_maximum.text = xml.Maximum;
+
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<Range></Range>" );
+				
+				xml.appendChild( <Minimum>{_minimum.text}</Minimum> );
+				xml.appendChild( <Maximum>{_maximum.text}</Maximum> );
+				
+				return xml;
+			}		
+
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}			
+			
+			
+			private var _stateType:String;
+			
+		]]>
+	</fx:Script>		
+	
+</mx:Canvas>

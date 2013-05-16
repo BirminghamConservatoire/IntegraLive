@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+						xmlns:mx="library://ns.adobe.com/flex/mx"
+						xmlns:local="*"
+						width="1000" height="640"
+						invoke="{ onInvoke( event ) }"
+						layout="absolute">
+	<fx:Declarations>
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Style>
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		@namespace local "*";
+		
+		.smallRows
+		{
+			rowHeight: 15;
+		}
+		
+		.internalPadding
+		{
+			paddingLeft: 5;
+			paddingRight: 5;
+			paddingTop: 5;
+			paddingBottom: 5;
+		}
+		
+		mx|Tree 
+		{
+			defaultLeafIcon: ClassReference( null );
+			folderClosedIcon: ClassReference( null );
+			folderOpenIcon: ClassReference( null );
+		}
+
+	</fx:Style>
+		
+
+	<mx:TabNavigator id="_tabNavigator" 
+					 left="{Globals.externalPadding}" 
+					 right="{Globals.externalPadding}" 
+					 top="{Globals.externalPadding}" 
+					 bottom="{Globals.externalPadding}" 
+					 borderStyle="solid" 
+					 creationPolicy="all">
+		
+		<mx:Canvas id="_interfaceInfoTab" label="Interface Info" top="{Globals.externalPadding}" bottom="{Globals.externalPadding}">
+			<local:InterfaceInfo id="_interfaceInfo" horizontalCenter="{-Globals.labelColumnWidth()/2}"/>
+		</mx:Canvas>
+		
+		<mx:Canvas id="_endpointInfoTab" label="Endpoints">
+			<local:EndpointList id="_endpointInfo" horizontalCenter="0"/>	
+		</mx:Canvas>
+
+		<mx:Canvas id="_widgetLayoutTab" label="Widget Layout">
+			<local:WidgetLayout id="_widgetLayout" left="{Globals.externalPadding}" top="{Globals.externalPadding}" right="{Globals.externalPadding}" bottom="{Globals.externalPadding}"/>	
+		</mx:Canvas>
+
+		<mx:Canvas id="_implementationTab" label="Implementation">
+			<local:Implementation id="_implementation" horizontalCenter="0" top="{Globals.externalPadding}" bottom="{Globals.externalPadding}"/>	
+		</mx:Canvas>
+		
+	</mx:TabNavigator>
+
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.core.INavigatorContent;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.managers.ToolTipManager;
+			
+			import deng.fzip.FZip;
+			import deng.fzip.FZipFile;
+			
+			import flexunit.framework.Assert;
+			
+			private function onInvoke( event:InvokeEvent ):void
+			{
+				if( !_doneInitialize )
+				{
+					doInitialize();
+					_doneInitialize = true;
+				}				
+			}
+
+			
+			private function doInitialize():void
+			{
+				MouseCapture.setSystemManager( systemManager );
+				
+				addEventListener( Event.CLOSING, onClosing );
+				_interfaceInfo.addEventListener( Globals.modifiedEvent, onInterfaceModified );
+				_endpointInfo.addEventListener( Globals.modifiedEvent, onInterfaceModified );
+				_widgetLayout.addEventListener( Globals.modifiedEvent, onInterfaceModified );
+				_implementation.addEventListener( Globals.modifiedEvent, onInterfaceModified );
+				
+				_interfaceInfo.doInitialize();
+				_endpointInfo.doInitialize( _widgetLayout );
+				
+				buildMenu();
+				
+				ToolTipManager.showDelay = 0;
+				ToolTipManager.scrubDelay = 0;
+				
+				newFile();
+			}
+			
+			
+			private function buildMenu(): void
+			{
+				var menuInsertionIndex:int = 0;
+				
+				if( NativeApplication.supportsMenu )
+				{
+					createApplicationMenu();
+					
+					menuInsertionIndex = 1;
+				}
+				else
+				{
+					createNormalMenu();
+				}
+				
+				//create top-level menus
+				
+				var toolsMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Tools" );
+				var bundlesMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Module Bundles" );
+				var fileMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "File" );
+				
+				//var helpMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), _menu.numItems, "Help" );
+				
+				// Populate menus
+				
+				//File menu
+				var newItem:NativeMenuItem = new NativeMenuItem( "New" );
+				newItem.addEventListener(Event.SELECT, fileNew ); 
+				newItem.keyEquivalent = "n";
+				fileMenu.submenu.addItem( newItem );
+
+				var importGroup:NativeMenuItem = new NativeMenuItem( "Import Template..." );
+				fileMenu.submenu.addItem( importGroup );
+
+				//relative paths don't work unless we reconstruct File object from full path name 
+				var applicationDirectory:File = new File( File.applicationDirectory.nativePath );
+				var templatesDirectory:File = applicationDirectory.resolvePath( Config.singleInstance.templatesPath );
+
+				addTemplateMenus( importGroup, templatesDirectory );
+
+				//separator
+				importGroup.submenu.addItem( new NativeMenuItem( "", true ) );
+				
+				var browseForImportItem:NativeMenuItem = new NativeMenuItem( "Browse..." );
+				browseForImportItem.addEventListener( Event.SELECT, browseForImport ); 
+				importGroup.submenu.addItem( browseForImportItem );
+
+				//separator
+				fileMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+				
+				
+				var openItem:NativeMenuItem = new NativeMenuItem( "Open..." );
+				openItem.addEventListener(Event.SELECT, fileLoad ); 
+				openItem.keyEquivalent = "o";
+				fileMenu.submenu.addItem( openItem );
+				
+				//separator
+				fileMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+				
+				var saveItem:NativeMenuItem = new NativeMenuItem( "Save" );
+				saveItem.addEventListener(Event.SELECT, fileSave ); 
+				saveItem.keyEquivalent = "s";
+				fileMenu.submenu.addItem( saveItem );
+				
+				var saveAsItem:NativeMenuItem = new NativeMenuItem( "Save As..." );
+				saveAsItem.addEventListener(Event.SELECT, fileSaveAs ); 
+				saveAsItem.keyEquivalent = "S";
+				fileMenu.submenu.addItem( saveAsItem );
+				
+				if( Globals.isWindows )
+				{
+					//separator
+					fileMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+					
+					var exitItem:NativeMenuItem = new NativeMenuItem( "Exit" );
+					exitItem.addEventListener( Event.SELECT, quit ); 
+					fileMenu.submenu.addItem( exitItem );
+				}
+				
+				if( Globals.isMac )
+				{
+					// Integra Live menu
+					var integraMenuItem:NativeMenuItem = _menu.getItemAt( 0 );
+					var quitItem:NativeMenuItem = integraMenuItem.submenu.getItemAt( 6 );
+					quitItem.addEventListener( Event.SELECT, quit ); 
+					
+					//integraMenuItem.submenu.removeItemAt( 0 );	//remove default About menuitem
+				}
+				
+				//Bundles Menu
+				var createModuleBundle:NativeMenuItem = new NativeMenuItem( "Create Module Bundle..." );
+				createModuleBundle.addEventListener(Event.SELECT, _bundleMaker.createModuleBundle ); 
+				bundlesMenu.submenu.addItem( createModuleBundle );				
+
+				var extractModuleBundle:NativeMenuItem = new NativeMenuItem( "Extract Contents From Module Bundle..." );
+				extractModuleBundle.addEventListener(Event.SELECT, _bundleMaker.extractModuleBundle ); 
+				bundlesMenu.submenu.addItem( extractModuleBundle );				
+				
+				//Tools menu
+				var findUnusedPDPatches:NativeMenuItem = new NativeMenuItem( "Find Unused PD Patches..." );
+				findUnusedPDPatches.addEventListener(Event.SELECT, onFindUnusedPDPatches ); 
+				toolsMenu.submenu.addItem( findUnusedPDPatches );				
+				
+				
+				/*var config:Config = Config.singleInstance;
+				var helpLinks:Vector.<String> = config.helpLinks;
+				for each( var helpLink:String in helpLinks )
+				{
+					addHelpLink( helpMenu.submenu, helpLink );
+				}*/
+			}
+			
+			
+			private function addTemplateMenus( parentItem:NativeMenuItem, directory:File ):void
+			{
+				var directoryListing:Array = directory.getDirectoryListing();
+				directoryListing.sort( compareTemplateFiles );
+				
+				parentItem.submenu = new NativeMenu; 
+				
+				for each( var content:File in directoryListing )
+				{
+					var menuItem:NativeMenuItem = new NativeMenuItem( content.name );
+					
+					if( content.isDirectory )
+					{
+						addTemplateMenus( menuItem, content );
+					}
+					else
+					{
+						menuItem.data = content;
+						menuItem.addEventListener( Event.SELECT, onSelectTemplate );						
+					}
+					
+					parentItem.submenu.addItem( menuItem );
+				}
+			}
+			
+			
+			private function compareTemplateFiles( file1:File, file2:File ):Number
+			{
+				if( file1.isDirectory && !file2.isDirectory ) return 1;
+				if( file2.isDirectory && !file1.isDirectory ) return -1;
+				
+				return ( file1.name > file2.name ) ? 1 : -1;
+			}
+			
+			
+			//creates menu for OS with application menu (ie Mac)
+			private function createApplicationMenu():void
+			{
+				_menu = NativeApplication.nativeApplication.menu;
+				
+				//remove all but first and last items (leaving just IID Editor and Window menus)
+				while( _menu.numItems > 2 )
+				{
+					_menu.removeItemAt( 1 );
+				}
+			}
+			
+			
+			//creates menu for OS without application menu (ie Windows)
+			private function createNormalMenu():void
+			{
+				_menu = new NativeMenu;
+				
+				nativeWindow.menu = _menu;
+			}
+			
+			
+			private function fileNew( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+				
+				saveModified( "Create New Interface", newFile );
+			}
+			
+			
+			private function onSelectTemplate( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+				
+				Assert.assertTrue( event.target.hasOwnProperty( "data" ) );
+				_templateToImport = event.target.data as File;
+				Assert.assertNotNull( _templateToImport );
+				
+				saveModified( "Import Template Interface", doLoadTemplate );
+			}
+			
+			
+			private function browseForImport( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+				
+				saveModified( "Import Template Interface", doBrowseForImport );
+			}
+			
+			
+			private function fileLoad( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+
+				saveModified( "Load Interface", doLoad );
+			}
+
+			
+			private function fileSave( event:Event ):void
+			{
+				if( event )
+				{
+					if( handleCommandWhenInAlert() ) return;
+				}
+				
+				if( !validateContent() )
+				{
+					reportValidationFailure();
+					return;
+				}
+				
+				if( _filename )
+				{
+					saveFile();
+				}
+				else
+				{
+					fileSaveAs( event );
+				}				
+			}
+
+			
+			private function fileSaveAs( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+				
+				if( !validateContent() )
+				{
+					reportValidationFailure();
+					return;
+				}
+				
+				var filenamePrompt:String;
+				if( _filename )
+				{
+					filenamePrompt = _filename;
+				}
+				else
+				{
+					filenamePrompt = DirectoryStore.singleInstance.moduleDirectory;
+				}
+				
+				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
+				var file:File = new File( filenamePrompt );
+				file.browseForSave( "Save Module" );
+				
+				file.addEventListener( Event.SELECT, onSelectFileToSave );   				
+			}
+
+			
+			private function quit( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+				
+				saveModified( "Quit", shutdown );
+			}
+
+			
+			private function onClosing( event:Event ):void
+			{
+				event.preventDefault();
+				quit( null );
+			}
+			
+			
+			private function doBrowseForImport():void
+			{
+				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
+				var file:File = new File( DirectoryStore.singleInstance.templateDirectory );
+				file.browseForOpen( "Load Module as Template", [filter] );
+				
+				file.addEventListener( Event.SELECT, onPickTemplateToImport );      			
+			}				
+			
+			
+			private function doLoad():void
+			{
+				var filter:FileFilter = new FileFilter( "Integra Modules", "*." + Globals.moduleFileExtension );
+				var file:File = new File( DirectoryStore.singleInstance.moduleDirectory );
+				file.browseForOpen( "Load Module", [filter] );
+				
+				file.addEventListener( Event.SELECT, onSelectFileToLoad );      			
+			}
+			
+			
+			private function onSelectFileToLoad( event:Event ):void
+			{
+				newFile();
+
+				DirectoryStore.singleInstance.moduleDirectory = event.target.parent.nativePath;
+				
+				_filename = event.target.nativePath;
+
+				loadFile( _filename );
+			}
+
+			
+			private function onPickTemplateToImport( event:Event ):void
+			{
+				DirectoryStore.singleInstance.templateDirectory = event.target.parent.nativePath;
+				
+				importTemplate( event.target.nativePath );
+			}
+			
+			
+			private function doLoadTemplate():void
+			{
+				importTemplate( _templateToImport.nativePath );
+				_templateToImport = null;
+			}
+
+			
+			private function importTemplate( filename:String ):void
+			{
+				newFile();
+				
+				loadFile( filename );
+				
+				_moduleGuid = GUID.create();
+				_originGuid = GUID.create();
+				updateStatusBar();
+				
+				_interfaceInfo.templateImported();
+			}			
+			
+			
+			private function onSelectFileToSave( event:Event ):void
+			{
+				_filename = event.target.nativePath;
+
+				DirectoryStore.singleInstance.moduleDirectory = event.target.parent.nativePath;
+				
+				saveFile();
+			}
+			
+			
+			private function saveModified( caption:String, functionToExecute:Function ):void
+			{
+				Assert.assertNotNull( functionToExecute );
+				Assert.assertNull( _functionToExecuteAfterSaveModifiedAlert );
+				
+				if( interfaceChanged )
+				{
+					_functionToExecuteAfterSaveModifiedAlert = functionToExecute;
+					
+					AlertManager.show( "The module \"" + _interfaceInfo._iidName.text + "\" has changed.\nWould you like to save your changes?", caption, Alert.YES | Alert.NO | Alert.CANCEL, this, saveModifiedHandler );
+				}
+				else
+				{
+					functionToExecute();
+				}
+			}
+			
+			
+			private function handleCommandWhenInAlert():Boolean
+			{
+				if( AlertManager.areThereAnyAlerts )
+				{
+					if( nativeWindow.displayState == NativeWindowDisplayState.MINIMIZED )
+					{
+						restore();
+					}
+					
+					stage.nativeWindow.notifyUser( NotificationType.INFORMATIONAL );
+					return true;	
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+			
+			private function saveModifiedHandler( event:CloseEvent ):void
+			{
+				Assert.assertNotNull( _functionToExecuteAfterSaveModifiedAlert );
+				
+				switch( event.detail )
+				{
+					case Alert.NO:
+						_functionToExecuteAfterSaveModifiedAlert();
+						break;
+					
+					case Alert.YES:
+						_functionToExecuteAfterSave = _functionToExecuteAfterSaveModifiedAlert;
+						fileSave( null );
+						break;
+					
+					case Alert.CANCEL:
+						break;
+					
+					default:
+						Assert.assertTrue( false );
+						break;		
+				}
+				
+				_functionToExecuteAfterSaveModifiedAlert = null;
+			}
+			
+			
+			private function onFileSaved():void
+			{
+				if( _functionToExecuteAfterSave != null )
+				{
+					_functionToExecuteAfterSave();
+					_functionToExecuteAfterSave = null;     				
+				}
+			}
+
+			
+			private function newFile():void
+			{
+				_filename = null;
+				
+				_interfaceInfo.newFile();
+				_endpointInfo.newFile();
+				_widgetLayout.newFile();
+				_implementation.newFile();
+				
+				_moduleGuid = GUID.create();
+				_originGuid = GUID.create();
+				updateStatusBar();
+					
+				interfaceChanged = false;
+				
+				validateContent();
+			}
+				
+			
+			private function loadError( errorDescription:String ):void
+			{
+				AlertManager.show( "Error loading module file: " + errorDescription, Globals.alertTitle );
+				newFile();	//failsafe
+			}
+			
+			
+			private function loadFile( filename:String ):void
+			{
+				var file:File = new File( filename );
+				if( !file.exists )
+				{
+					loadError( "can't open file" );
+					return;	
+				}
+
+				var fileStream:FileStream = new FileStream();
+				fileStream.open( file, FileMode.READ );
+				var rawBytes:ByteArray = new ByteArray();
+				fileStream.readBytes( rawBytes );
+				fileStream.close();			
+				
+				var zipFile:FZip = new FZip();
+				zipFile.loadBytes( rawBytes );
+				
+				var interfaceDefinition:FZipFile = zipFile.getFileByName( _iidFileName );
+				if( !interfaceDefinition )
+				{
+					loadError( "Can't extract interface definition " + _iidFileName );
+					return;
+				}
+				
+				loadInterfaceDeclaration( interfaceDefinition.content );
+
+				_implementation.retrieveImplementation( zipFile, Globals.moduleImplementationDirectoryName );
+				
+				updateApplicationTitle();
+				updateStatusBar();
+				validateContent();
+			}
+			
+			
+			private function saveFile():void
+			{
+				Assert.assertNotNull( _filename );
+				_filename = ensureCorrectExtension( _filename );
+				
+				var zipFile:FZip = new FZip();
+				
+				zipFile.addFile( _iidFileName, saveInterfaceDeclaration() );
+
+				_implementation.storeImplementation( zipFile, Globals.moduleImplementationDirectoryName );
+				
+				var outputFile:File = new File( _filename );
+				var outputFileStream:FileStream = new FileStream();
+				outputFileStream.open( outputFile, FileMode.WRITE );
+				zipFile.serialize( outputFileStream );
+				outputFileStream.close();					
+		
+				interfaceChanged = false;
+
+				onFileSaved();
+			}
+			
+			
+			private function loadInterfaceDeclaration( interfaceDefinition:ByteArray ):void
+			{
+				var xmlString:String = interfaceDefinition.readUTFBytes( interfaceDefinition.length );
+				
+				var xml:XML = new XML( xmlString );	
+				
+				if( xml.hasOwnProperty( "@moduleGuid" ) )
+				{
+					_moduleGuid = xml.@moduleGuid;
+				}
+				else
+				{
+					loadError( "no module guid" );
+					return;					
+				}
+				
+				if( xml.hasOwnProperty( "@originGuid" ) )
+				{
+					_originGuid = xml.@originGuid;
+				}
+				else
+				{
+					_originGuid = GUID.create();
+				}
+				
+				
+				if( xml.hasOwnProperty( "InterfaceInfo" ) )
+				{
+					if( !_interfaceInfo.loadFromXML( xml.child( "InterfaceInfo" ) ) )
+					{
+						loadError( "error reading InterfaceInfo section" );
+						return;					
+					}
+				}
+				else
+				{
+					loadError( "no InterfaceInfo" );
+					return;
+				}
+				
+				if( xml.hasOwnProperty( "EndpointInfo" ) )
+				{
+					if( !_endpointInfo.loadFromXML( xml.child( "EndpointInfo" ) ) )
+					{
+						loadError( "error reading EndpointInfo section" );
+						return;					
+					}
+				}
+				else
+				{
+					loadError( "no EndpointInfo" );
+					return;
+				}
+				
+				if( xml.hasOwnProperty( "WidgetInfo" ) )
+				{
+					if( !_widgetLayout.loadFromXML( xml.child( "WidgetInfo" ), _endpointInfo ) )
+					{
+						loadError( "error reading WidgetInfo section" );
+						return;					
+					}
+				}
+				
+				_widgetLayout.dispatchEvent( new Event( Globals.widgetAssignmentModifiedEvent ) );				
+				
+				if( xml.hasOwnProperty( "ImplementationInfo" ) )
+				{
+					if( !_implementation.loadFromXML( xml.child( "ImplementationInfo" ) ) )
+					{
+						loadError( "error reading ImplementationInfo section" );
+						return;					
+					}
+				}
+				else
+				{
+					_implementation.newFile();
+				}				
+			}			
+			
+			
+			private function saveInterfaceDeclaration():ByteArray
+			{
+				const xmlHeader:String = "<?xml version=\"1.0\" ?>\n";
+				
+				var xml:XML = new XML( "<InterfaceDeclaration></InterfaceDeclaration>" );
+				
+				xml.@moduleGuid = _moduleGuid;
+				xml.@originGuid = _originGuid;
+				xml.@infoSchemaVersionMajor = Globals.infoSchemaVersionMajor;
+				xml.@infoSchemaVersionMinor = Globals.infoSchemaVersionMinor;
+				
+				xml.appendChild( _interfaceInfo.saveToXML() );
+				
+				xml.appendChild( _endpointInfo.saveToXML() );
+				
+				if( !_widgetLayout.isEmpty )
+				{
+					xml.appendChild( _widgetLayout.saveToXML() );
+				}
+				
+				if( _implementation.hasImplementation )
+				{
+					xml.appendChild( _implementation.saveToXML() );
+				}
+				
+				var byteArray:ByteArray = new ByteArray;
+				byteArray.writeUTFBytes( xmlHeader );
+				byteArray.writeUTFBytes( xml.toString() );
+
+				return byteArray;
+			}
+			
+			
+			private function shutdown():void
+			{
+				_implementation.shutdown();
+				
+				callLater( NativeApplication.nativeApplication.exit, [ 0 ] );
+			}
+	
+			
+			private function onInterfaceModified( event:Event ):void
+			{
+				_interfaceInfo.updateModificationStamp();
+				_moduleGuid = GUID.create();
+				updateStatusBar();
+				
+				interfaceChanged = true;
+			}
+			
+			
+			private function get interfaceChanged():Boolean
+			{
+				return _interfaceChanged;
+			}
+			
+			
+			private function set interfaceChanged( isFileModified:Boolean ):void
+			{
+				_interfaceChanged = isFileModified;
+				updateApplicationTitle();
+			}
+			
+			
+			private function updateApplicationTitle():void
+			{
+				var newTitle:String = getApplicationTitle();
+				
+				if( title != newTitle )
+				{
+					title = newTitle;
+				}
+			}
+			
+			
+			private function ensureCorrectExtension( filename:String ):String
+			{
+				var indexOfLastDot:int = filename.lastIndexOf( "." );
+				if( indexOfLastDot < 0 )
+				{
+					return filename + "." + Globals.moduleFileExtension;
+				}
+				else
+				{
+					if( filename.substr( indexOfLastDot + 1 ) != Globals.moduleFileExtension )
+					{
+						return filename.substr( 0, indexOfLastDot + 1 ) + Globals.moduleFileExtension;
+					}
+					else
+					{
+						return filename;		
+					}
+				}
+			}
+			
+			
+			private function getApplicationTitle():String
+			{
+				var title:String = "Integra Module Creator";
+				if( _filename )
+				{
+					title += " - "; 
+					
+					var indexOfLastSlash:int = Math.max( _filename.lastIndexOf( "/" ),  _filename.lastIndexOf( "\\" ) );
+					if( indexOfLastSlash >= 0 )
+					{
+						title += _filename.substr( indexOfLastSlash + 1 );
+					}
+					else
+					{
+						title += _filename;
+					}
+				}
+				
+				if( interfaceChanged )
+				{
+					title += " *";
+				}
+				
+				return title;
+			}
+			
+			
+			private function updateStatusBar():void
+			{
+				status = "module id: " + _moduleGuid + "         origin id: " + _originGuid;
+			}
+			
+			
+		
+			private function validateContent():Boolean
+			{
+				var valid:Boolean = true;
+				
+				if( !_interfaceInfo.validateContent() )		valid = false;
+				if( !_endpointInfo.validateContent() )		valid = false;
+				if( !_widgetLayout.validateContent() )		valid = false;
+				if( !_implementation.validateContent() )	valid = false;
+
+				return valid;
+			}
+			
+			
+			private function reportValidationFailure():void
+			{
+				const maximumFailureReports:uint = 10;
+				
+				var failureStrings:Vector.<String> = new Vector.<String>;
+				var failedObjects:Vector.<UIComponent> = new Vector.<UIComponent>;
+				findValidationFailures( _tabNavigator, failureStrings, failedObjects );
+				
+				if( failureStrings.length > maximumFailureReports )
+				{
+					failureStrings.length = maximumFailureReports;
+					failureStrings.push( "...(truncated)" );
+				}
+				
+				var foundTabPage:Boolean = false;
+				
+				for each( var failedObject:UIComponent in failedObjects )
+				{
+					for( var ancestorChain:DisplayObject = failedObject; ancestorChain; ancestorChain = ancestorChain.parent )
+					{
+						if( ancestorChain.parent == _tabNavigator )
+						{
+							_tabNavigator.selectedChild = ancestorChain as INavigatorContent;
+							foundTabPage = true;
+							break;
+						}
+					}
+					
+					if( foundTabPage ) break;
+				}
+				
+				var errorMessage:String = "Validation Error(s):\n\n";
+				
+				for each( var failureString:String in failureStrings )
+				{
+					errorMessage += ( "* " + failureString + "\n" );
+				}
+
+				errorMessage += "\n\nYou must fix all errors before saving.";
+				
+				AlertManager.show( errorMessage, Globals.alertTitle, Alert.OK, this );
+			}
+
+			
+			private function findValidationFailures( searchObject:DisplayObjectContainer, failureStrings:Vector.<String>, failedObjects:Vector.<UIComponent> ):void
+			{
+				for( var i:int = 0; i < searchObject.numChildren; i++ )
+				{
+					var child:DisplayObject = searchObject.getChildAt( i );
+					if( child is UIComponent )
+					{
+						var uiComponent:UIComponent = child as UIComponent;
+						if( uiComponent.maxHeight == 0 )
+						{
+							continue;
+						}
+						
+						if( uiComponent.errorString )
+						{
+							failureStrings.push( uiComponent.errorString );
+							failedObjects.push( uiComponent );
+						}
+					}
+
+					if( child is DisplayObjectContainer )
+					{
+						findValidationFailures( child as DisplayObjectContainer, failureStrings, failedObjects );
+					}
+				}
+			}
+			
+			
+			private function onFindUnusedPDPatches( event:Event ):void
+			{
+				PopUpManager.addPopUp( _unusedPDPatches, this, true );
+				PopUpManager.centerPopUp( _unusedPDPatches );
+			}
+			
+			
+			private var _interfaceChanged:Boolean = false;
+			private var _moduleGuid:String = new String;
+			private var _originGuid:String = new String;
+			
+			private var _doneInitialize:Boolean = false;
+			private var _filename:String = null;
+			private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
+			private var _functionToExecuteAfterSave:Function = null;
+			
+			private var _templateToImport:File = null;
+			
+			private var _menu:NativeMenu;
+			private var _bundleMaker:BundleMaker = new BundleMaker;
+			private var _unusedPDPatches:FindUnusedPDPatches = new FindUnusedPDPatches;
+			
+			private const _iidFileName:String = Globals.moduleToplevelDirectoryName + "/interface_definition.iid";
+			
+		]]>
+	</fx:Script>			
+
+</mx:WindowedApplication>

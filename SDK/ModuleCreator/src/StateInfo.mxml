@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" borderStyle="inset" xmlns:local="*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<mx:VBox styleName="internalPadding" paddingTop="0">
+		<mx:Label text="State Info"/>
+		<mx:HBox>
+			<mx:Label text="State Type" width="{Globals.labelColumnWidth( 2 )}" textAlign="right"/>
+			<mx:List id="_stateType" 
+					 change="{ onChangeStateType() }" 
+					 toolTip="Choose State type"
+					 rowCount="{ _stateType.dataProvider.length }"
+					 verticalAlign="middle"
+					 styleName="smallRows"
+					 width="{Globals.propertyColumnWidth( 2 )}" 
+					 dataProvider="{[Globals.floatType, Globals.intType, Globals.stringType ]}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Constraint" width="{Globals.labelColumnWidth( 2 )}" textAlign="right"/>
+			<mx:List id="_constraint" 
+					 change="{ onChangeConstraintType() }" 
+					 toolTip="Choose Constraint Type"
+					 rowCount="{ _constraint.dataProvider.length }"
+					 verticalAlign="middle"
+					 styleName="smallRows"
+					 width="{Globals.propertyColumnWidth( 2 )}"
+					 dataProvider="{[_rangeLabel, _allowedValuesLabel]}"/>
+		</mx:HBox>
+		<local:Range id="_range" visible="false" maxHeight="0"/>
+		<local:AllowedValues id="_allowedValues" visible="false" maxHeight="0"/>
+		<mx:HBox>
+			<mx:Label text="Default Value" width="{Globals.labelColumnWidth( 2 )}" textAlign="right"/>
+			<mx:TextArea id="_default" 
+						  change="{ interfaceChanged(); }" 
+						  restrict="{Globals.printableCharacterRestrict}"
+						  toolTip="Specify a default value"
+						  width="{Globals.propertyColumnWidth( 2 )}"
+						  styleName="smallRows"/>
+		</mx:HBox>		
+		<local:Scale id="_scale" visible="false" maxHeight="0"/>
+		<local:StateLabels id="_stateLabels"/>
+		<mx:VBox id="_advancedControls">
+			<mx:HBox>
+				<mx:Label text="Is Saved To File" width="{Globals.labelColumnWidth( 2 )}" textAlign="right"/>
+				<mx:CheckBox id="_isSavedToFile" 
+							 change="{interfaceChanged()}"
+							 toolTip="Tick if this Endpoint should be stored in ixd files"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Is Input File" width="{Globals.labelColumnWidth( 2 )}" textAlign="right"/>
+				<mx:CheckBox id="_isInputFile" 
+							 change="{interfaceChanged()}"
+							 toolTip="Tick if this Endpoint is the path to an input file which needs to be managed by libIntegra"/>
+			</mx:HBox>
+		</mx:VBox>
+		
+	</mx:VBox>
+	
+	<fx:Script>
+		<![CDATA[	
+			import flexunit.framework.Assert;
+			
+			import mx.containers.Accordion;
+			import mx.core.UIComponent;
+	
+			
+			public function doInitialize():void
+			{
+				showAdvancedControls = false;
+				
+				_stateType.selectedItem = Globals.floatType;
+				
+				_constraint.selectedItem = _rangeLabel;
+				
+				_range.doInitialize();
+				_allowedValues.doInitialize();
+				
+				_scale.doInitialize();
+
+				propogateStateType();
+				updateScaleControl();
+				
+				_range.addEventListener( Globals.modifiedEvent, onSubComponentChanged );
+				_allowedValues.addEventListener( Globals.modifiedEvent, onSubComponentChanged );
+				_scale.addEventListener( Globals.modifiedEvent, onSubComponentChanged );
+				_stateLabels.addEventListener( Globals.modifiedEvent, onSubComponentChanged );
+				
+				showRangeConstraint();
+
+				_isSavedToFile.selected = true;
+				_isInputFile.selected = false;
+
+				_default.text = "";
+				
+				_stateLabels.doInitialize( validateValue );
+			}
+	
+			
+			public function validateContent():Boolean
+			{
+				var valid:Boolean = true;
+				
+				if( !validateInputFile() ) 
+				{
+					valid = false;
+				}
+				
+				if( _range.visible && !_range.validateContent() )
+				{
+					valid = false;
+				}
+				
+				if( _allowedValues.visible && !_allowedValues.validateContent() )
+				{
+					valid = false;
+				}
+				
+				var validationError:Object = new Object;
+				if( validateValue( _default.text, validationError ) )
+				{
+					_default.errorString = null;
+				}
+				else
+				{
+					_default.errorString = "Default Value " + validationError[ _default.text ];
+					valid = false;
+				}
+
+				if( _scale.visible && !_scale.validateContent() )
+				{
+					valid = false;
+				}
+				
+				if( !_stateLabels.validateContent() )
+				{
+					valid = false;
+				}
+					
+				return valid;
+			}
+
+
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				if( !xml.hasOwnProperty( "StateType" ) ) return false;
+				
+				switch( xml.StateType.toString() )
+				{
+					case "float":
+						_stateType.selectedItem = Globals.floatType;
+						break;
+
+					case "integer":
+						_stateType.selectedItem = Globals.intType;
+						break;
+					
+					case "string":
+						_stateType.selectedItem = Globals.stringType;
+						break;
+
+					default:
+						return false;
+				}
+				
+				propogateStateType();
+				
+				if( xml.hasOwnProperty( "IsSavedToFile" ) )
+				{
+					_isSavedToFile.selected = ( xml.IsSavedToFile == "true" );
+				}
+				
+				if( xml.hasOwnProperty( "IsInputFile" ) )
+				{
+					_isInputFile.selected = ( xml.IsInputFile == "true" );
+				}
+				
+				if( !xml.hasOwnProperty( "Constraint" ) ) return false;
+				var constraintXML:XMLList = xml.child( "Constraint" );
+
+				var hasRange:Boolean = constraintXML.hasOwnProperty( "Range" );
+				var hasAllowedValues:Boolean = constraintXML.hasOwnProperty( "AllowedStates" );
+				if( hasRange == hasAllowedValues ) return false;	//should have one or the other, never neither or both
+				
+				if( hasRange )
+				{
+					_range.loadFromXML( constraintXML.child( "Range" ) );
+					_constraint.selectedItem = _rangeLabel;
+					showRangeConstraint();
+				}
+				else
+				{
+					_allowedValues.loadFromXML( constraintXML.child( "AllowedStates" ) );
+					_constraint.selectedItem = _allowedValuesLabel;
+					showAllowedValuesConstraint();
+				}
+
+				if( !xml.hasOwnProperty( "Default" ) ) return false;
+
+				_default.text = xml.Default.toString();
+				
+				if( xml.hasOwnProperty( "Scale" ) )
+				{
+					_scale.loadFromXML( xml.child( "Scale" ) );
+				}				
+
+				updateScaleControl();
+				
+				if( xml.hasOwnProperty( "StateLabels" ) )
+				{
+					_stateLabels.loadFromXML( xml.child( "StateLabels" ) );
+				}
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<StateInfo></StateInfo>" );
+				
+				switch( _stateType.selectedItem.toString() )
+				{
+					case Globals.floatType:
+						xml.appendChild( <StateType>float</StateType> );
+						break;
+					
+					case Globals.intType:
+						xml.appendChild( <StateType>integer</StateType> );
+						break;	
+					
+					case Globals.stringType:
+						xml.appendChild( <StateType>string</StateType> );
+						break;
+				}
+
+				xml.appendChild( <IsSavedToFile>{_isSavedToFile.selected ? "true":"false"}</IsSavedToFile> );
+				xml.appendChild( <IsInputFile>{_isInputFile.selected ? "true":"false"}</IsInputFile> );
+				
+				var constraintXML:XML = new XML( "<Constraint></Constraint>" );
+				if( _range.visible )
+				{
+					Assert.assertFalse( _allowedValues.visible );
+					constraintXML.appendChild( _range.saveToXML() );
+				}
+				else
+				{
+					Assert.assertTrue( _allowedValues.visible );
+					constraintXML.appendChild( _allowedValues.saveToXML() );
+				}
+				
+				xml.appendChild( constraintXML );
+
+				xml.appendChild( <Default>{_default.text}</Default> );
+
+				if( _scale.visible )
+				{
+					xml.appendChild( _scale.saveToXML() );
+				}
+
+				if( !_stateLabels.isEmpty )
+				{
+					xml.appendChild( _stateLabels.saveToXML() );
+				}
+				
+				return xml;			
+			}
+			
+			
+			public function set showAdvancedControls( show:Boolean ):void
+			{
+				_advancedControls.visible = show;
+				_advancedControls.maxHeight = show ? NaN : 0;
+			}
+			
+			
+			public function get isValidDataDirectory():Boolean
+			{
+				if( _stateType.selectedItem != Globals.stringType ) return false;
+				
+				if( _isSavedToFile.selected ) return false;
+				
+				return true;
+			}
+			
+			
+			private function onChangeStateType():void
+			{
+				propogateStateType();
+				updateScaleControl();
+				interfaceChanged();
+			}
+			
+			private function onChangeConstraintType():void
+			{
+				switch( _constraint.selectedItem.toString() )
+				{
+					 case _rangeLabel:
+						 showRangeConstraint();
+						 break;
+					 
+					 case _allowedValuesLabel:
+						 showAllowedValuesConstraint();
+						 break;
+
+					 default:
+						 Assert.assertTrue( false );
+						 break;
+				}
+				
+				updateScaleControl();
+				interfaceChanged();
+			}
+
+			
+			private function showRangeConstraint():void
+			{
+				_range.visible = true;
+				_range.maxHeight = NaN;
+				
+				_allowedValues.visible = false;
+				_allowedValues.maxHeight = 0;
+			}
+
+			
+			private function showAllowedValuesConstraint():void
+			{
+				_allowedValues.visible = true;
+				_allowedValues.maxHeight = NaN;
+				
+				_range.visible = false;
+				_range.maxHeight = 0;
+			}
+
+			
+			private function updateScaleControl():void
+			{
+				var show:Boolean = ( _stateType.selectedItem == Globals.floatType ) && ( _constraint.selectedItem = _rangeLabel );
+
+				_scale.visible = show;
+				_scale.maxHeight = show ? NaN : 0;
+				
+				propogateRange();
+			}
+			
+			
+			private function propogateRange():void
+			{
+				if( _range.visible && _scale.visible )
+				{
+					_scale.setRange( Number( _range._minimum.text ), Number( _range._maximum.text ) );
+				}
+			}
+			
+			
+			private function validateInputFile():Boolean
+			{
+				if( !_isInputFile.selected ) return true;
+				
+				if( _stateType.selectedItem != Globals.stringType )
+				{
+					_isInputFile.errorString = "Input File Endpoints must be strings";
+					return false;
+				}
+				
+				
+				var accordion:Accordion = getAncestorByClass( Accordion ) as Accordion;
+				Assert.assertNotNull( accordion );
+				
+				var foundDataDirectory:Boolean = false;
+				for each( var endpoint:Endpoint in accordion.getChildren() )
+				{
+					if( endpoint.label == Globals.dataDirectoryName )
+					{
+						foundDataDirectory = true;
+						break;
+					}
+				}
+				
+				if( !foundDataDirectory )
+				{
+					_isInputFile.errorString = "Cannot use input files unless interface has a 'dataDirectory' Endpoint";
+					return false;
+				}
+				
+				if( !_isSavedToFile.selected )
+				{
+					_isInputFile.errorString = "Cannot use input files unless IsSavedToFile = true";
+					return false;
+				}
+				
+				var controlInfo:ControlInfo = getAncestorByClass( ControlInfo ) as ControlInfo;
+				Assert.assertNotNull( controlInfo );
+				
+				if( !controlInfo._isSentToHost.selected )
+				{
+					_isInputFile.errorString = "Cannot use input files unless IsSentToHost = true";
+					return false;
+				}
+
+				if( controlInfo._canBeTarget.selected )
+				{
+					_isInputFile.errorString = "Cannot use input files unless CanBeTarget = false";
+					return false;
+				}
+				
+				_isInputFile.errorString = null;
+				return true;
+			}
+			
+			
+			private function getAncestorByClass( ancestorClass:Class ):DisplayObjectContainer
+			{
+				for( var ancestor:DisplayObjectContainer = parent; ancestor; ancestor = ancestor.parent )
+				{
+					if( ancestor is ancestorClass )
+					{
+						return ancestor;
+					}
+				}	
+				
+				return null;	//not found
+			}
+			
+			
+			private function propogateStateType():void
+			{
+				var stateType:String = _stateType.selectedItem.toString();
+
+				_range.stateType = stateType;
+				_allowedValues.stateType = stateType;
+				_stateLabels.stateType = stateType;
+				
+				switch( stateType )
+				{
+					case Globals.floatType:
+						Globals.restrictToNumber( _default );
+						break;
+					
+					case Globals.intType:
+						Globals.restrictToInteger( _default );
+						break;
+					
+					case Globals.stringType:
+						_default.restrict = null;
+						break;
+					
+					default:
+						Assert.assertTrue( false );
+				}				
+			}
+			
+			
+			private function onSubComponentChanged( event:Event ):void
+			{
+				propogateRange();
+				
+				interfaceChanged();
+			}
+			
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateContent();
+			}	
+			
+			
+			private function validateValue( value:String, errorReason:Object ):Boolean
+			{
+				var stateType:String = _stateType.selectedItem.toString();
+				if( !Globals.doTypesMatch( value, stateType ) )
+				{
+					errorReason[ value ] = "'" + value + "' is not of type '" + stateType + "'";
+					return false;
+				}
+					
+				if( _range.visible )
+				{
+					Assert.assertFalse( _allowedValues.visible );
+					if( !_range.isValueValid( value ) )
+					{
+						if( stateType == Globals.stringType )
+						{
+							errorReason[ value ] = "'" + value + "' is not within the allowed string length constraint";
+						}
+						else
+						{
+							errorReason[ value ] = "'" + value + "' is not within the allowed range constraint";
+						}
+						
+						return false;
+					}
+				}
+				else
+				{
+					Assert.assertTrue( _allowedValues.visible );
+
+					if( !_allowedValues.isValueValid( value ) )
+					{
+						errorReason[ value ] = "'" + value + "' is not a member of the set of allowed values";
+						return false;
+					}
+				}
+				
+				return true;
+			}
+			
+			
+			private static const _rangeLabel:String = "Range";
+			private static const _allowedValuesLabel:String = "Allowed Values";
+		]]>
+	</fx:Script>		
+		
+</mx:Canvas>

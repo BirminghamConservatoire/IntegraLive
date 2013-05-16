@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*">
+	<fx:Declarations>
+	</fx:Declarations>
+	
+	<mx:HBox horizontalGap="20">
+		<local:MyAccordion id="_accordion" resizeToContent="true" change="{ onChangeSelectedEndpoint( event ) }" openDuration="200" creationPolicy="all"/>
+		<mx:VBox verticalGap="10">
+			<mx:Button id="_addEndpointButton" label="Add Endpoint" click="{ onClickAddEndpoint() }" width="{_buttonWidth}"/>
+			<mx:Button id="_removeEndpointButton" label="Remove Endpoint" click="{ onClickRemoveEndpoint() }" width="{_buttonWidth}"/>
+			<mx:Button id="_moveEndpointUpButton" label="Move Up" click="{ onClickMoveUp() }" width="{_buttonWidth}"/>
+			<mx:Button id="_moveEndpointDownButton" label="Move Down" click="{ onClickMoveDown() }" width="{_buttonWidth}"/>
+			<mx:Button id="_sortButton" label="Sort" click="{ onClickSort() }" width="{_buttonWidth}" toolTip="Orders Endpoints by type, then name (stream endpoints) or widget x-position (control endpoints)"/>
+			<mx:Spacer height="50"/>
+			<mx:Label text="Controls without Widgets:"
+					  visible="{ _controlsWithoutWidgets.dataProvider.length > 0 }"/>
+			<mx:List id="_controlsWithoutWidgets"
+					 width="{_buttonWidth}" 
+					 editable="false"
+					 visible="{ _controlsWithoutWidgets.dataProvider.length > 0 }"
+					 change="{onChangeControlsWithoutWidgets()}"
+					 rowCount="{ Math.max( 2, _controlsWithoutWidgets.dataProvider.length ) }"/>					 
+		</mx:VBox>		
+	</mx:HBox>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.IndexChangedEvent;
+			
+			import flexunit.framework.Assert;
+			
+			
+			public function doInitialize( widgetLayout:WidgetLayout ):void
+			{
+				_widgetLayout = widgetLayout;
+				_widgetLayout.addEventListener( Globals.widgetAssignmentModifiedEvent, onWidgetsChanged );
+			}
+			
+			
+			public function newFile():void
+			{
+				_newEndpointNumber = 0;
+
+				removeEndpoints();
+				
+				updateButtonEnables();
+				
+				updateControlsWithoutWidgets();
+			}
+			
+			
+			public function validateContent():Boolean
+			{
+				var valid:Boolean = validateMyOwnContent();
+				
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
+				{
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
+					Assert.assertNotNull( endpoint );
+					
+					if( !endpoint.validateContent() )
+					{
+						if( valid )
+						{
+							_accordion.selectedIndex = i;
+						}
+						
+						valid = false;
+					}
+				}
+
+				return valid;
+			}
+			
+			
+			public function loadFromXML( xml:XMLList ):Boolean
+			{
+				for each( var endpointXML:XML in xml.Endpoint )
+				{
+					var endpoint:Endpoint = createNewEndpoint( true );
+					endpoint.storeXML( endpointXML );
+					
+					/*if( !endpoint.loadFromXML( endpointXML ) )
+					{
+						trace( "Error loading endpoint from xml: " + endpointXML.toString() );
+						_accordion.removeChildAt( _accordion.numChildren - 1 );
+						continue;
+					}*/
+				}
+				
+				var selectedEndpoint:Endpoint = _accordion.selectedChild as Endpoint;
+				if( selectedEndpoint )
+				{
+					lazyLoadEndpoint( selectedEndpoint );
+				}
+
+				updateButtonEnables();
+				
+				return true;
+			}
+			
+			
+			public function saveToXML():XML
+			{
+				var xml:XML = new XML( "<EndpointInfo></EndpointInfo>" );
+
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
+				{
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
+					Assert.assertNotNull( endpoint );
+					
+					xml.appendChild( endpoint.saveToXML() ); 
+				}
+				
+				return xml;
+			}	
+			
+			
+			public function getEndpoint( endpointName:String ):Endpoint
+			{
+				for each( var endpoint:Endpoint in _accordion.getChildren() )
+				{
+					if( endpoint.label == endpointName ) 
+					{
+						return endpoint; 
+					}
+				}
+				
+				return null;
+			}
+			
+			
+			private function removeEndpoints():void
+			{
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
+				{
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
+					Assert.assertNotNull( endpoint );
+					
+					endpoint.free();
+				}
+				
+				_accordion.removeAllChildren();
+			}
+			
+			
+			private function onEndpointNameChanged( event:Event ):void
+			{
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
+				{
+					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
+					Assert.assertNotNull( endpoint );
+
+					endpoint.onEndpointNameChanged();
+				}
+			}
+			
+			
+			private function validateMyOwnContent():Boolean
+			{
+				if( _accordion.numChildren == 0 )
+				{
+					_addEndpointButton.errorString = "You must create at least one Endpoint";
+					return false;
+				}
+				else
+				{
+					_addEndpointButton.errorString = null;
+					return true;
+				}
+			}
+			
+			
+			private function get newEndpointName():String
+			{
+				_newEndpointNumber++;
+				return "<New Endpoint #" + _newEndpointNumber.toString() + ">";
+			}
+			
+			
+			private function createNewEndpoint( deferCreation:Boolean = false ):Endpoint
+			{
+				var endpoint:Endpoint = new Endpoint;
+
+				_accordion.addChild( endpoint );
+				endpoint.addEventListener( Globals.modifiedEvent, onEndpointChanged );
+				endpoint.addEventListener( Globals.endpointRenamedEvent, onEndpointNameChanged );
+
+				if( !deferCreation )
+				{
+					endpoint._contentHolder.createComponentsFromDescriptors( true );
+					endpoint.doInitialize( _widgetLayout );
+				}
+
+				return endpoint;
+			}
+			
+			private function onClickAddEndpoint():void
+			{
+				var endpoint:Endpoint = createNewEndpoint();
+	
+				endpoint.label = newEndpointName;
+
+				_accordion.selectedChild = endpoint;
+				
+				updateButtonEnables();
+				updateControlsWithoutWidgets();
+				validateMyOwnContent();
+				interfaceChanged();
+			}
+
+			private function onClickRemoveEndpoint():void
+			{
+				Assert.assertTrue( _accordion.selectedIndex >= 0 );
+
+				var endpoint:Endpoint = _accordion.getChildAt( _accordion.selectedIndex ) as Endpoint;
+				Assert.assertNotNull( endpoint );
+				_widgetLayout.onRemovedEndpoint( endpoint );
+				
+				_accordion.removeChildAt( _accordion.selectedIndex );
+				
+				updateButtonEnables();
+				updateControlsWithoutWidgets();
+				validateMyOwnContent();
+				interfaceChanged();
+			}
+
+			private function onClickMoveUp():void
+			{
+				Assert.assertTrue( _accordion.selectedIndex >= 1 );
+				
+				var endpoint:Endpoint = _accordion.getChildAt( _accordion.selectedIndex ) as Endpoint;
+				Assert.assertNotNull( endpoint );
+				
+				_accordion.setChildIndex( endpoint, _accordion.selectedIndex - 1 );
+				_accordion.selectedIndex--;
+				
+				updateButtonEnables();
+				interfaceChanged();
+			}
+
+			private function onClickMoveDown():void
+			{
+				Assert.assertTrue( _accordion.selectedIndex >= 0 && _accordion.selectedIndex < _accordion.numChildren - 1 );
+
+				var endpoint:Endpoint = _accordion.getChildAt( _accordion.selectedIndex ) as Endpoint;
+				Assert.assertNotNull( endpoint );
+				
+				_accordion.setChildIndex( endpoint, _accordion.selectedIndex + 1 );
+				_accordion.selectedIndex++;
+				
+				updateButtonEnables();
+				interfaceChanged();
+			}
+			
+			
+			private function onClickSort():void
+			{
+				var endpoints:Vector.<Endpoint> = new Vector.<Endpoint>;
+				var selectedEndpoint:Endpoint = _accordion.selectedChild as Endpoint;
+				
+				for( var i:int = 0; i < _accordion.numChildren; i++ )
+				{
+					endpoints.push( _accordion.getChildAt( i ) );
+				}
+				
+				endpoints.sort( endpointSortFunction );
+				
+				for( i = 0; i < endpoints.length; i++ )
+				{
+					_accordion.setChildIndex( endpoints[ i ], i );
+				}
+								
+				_accordion.selectedChild = selectedEndpoint;
+
+				updateButtonEnables();
+				interfaceChanged();
+			}
+			
+			
+			private function endpointSortFunction( endpoint1:Endpoint, endpoint2:Endpoint ):Number
+			{
+				return endpoint1.getOrder( endpoint2 );
+			}
+			
+			
+			private function updateButtonEnables():void
+			{
+				_removeEndpointButton.enabled = ( _accordion.selectedIndex >= 0 );
+				
+				_moveEndpointDownButton.enabled = ( _accordion.selectedIndex >= 0 && _accordion.selectedIndex < _accordion.numChildren - 1 );
+
+				_moveEndpointUpButton.enabled = ( _accordion.selectedIndex > 0 );
+				
+				_sortButton.enabled = ( _accordion.numChildren > 1 );
+			}
+
+			
+			private function onEndpointChanged( event:Event ):void
+			{
+				interfaceChanged();
+				
+				updateControlsWithoutWidgets();
+			}
+			
+			
+			private function updateControlsWithoutWidgets():void
+			{
+				var controlsWithoutWidgets:Array = new Array;
+				
+				for each( var endpoint:Endpoint in _accordion.getChildren() )
+				{
+					if( !endpoint.isControl )
+					{
+						continue;
+					}
+					
+					if( !_widgetLayout.getWidget( endpoint ) )
+					{
+						controlsWithoutWidgets.push( endpoint.label );
+					}
+				}
+				
+				_controlsWithoutWidgets.dataProvider = controlsWithoutWidgets;
+			}
+
+			
+			private function lazyLoadEndpoint( endpoint:Endpoint ):void
+			{
+				Assert.assertTrue( endpoint.hasStoredXML );
+				
+				endpoint._contentHolder.createComponentsFromDescriptors( true );
+				endpoint.doInitialize( _widgetLayout );
+				
+				if( !endpoint.loadFromStoredXML() )
+				{
+					trace( "Error loading endpoint from xml" );
+					_accordion.removeChild( endpoint );
+				}		
+				
+				_accordion.invalidateSize();
+				_accordion.validateNow();
+			}
+			
+			private function onChangeSelectedEndpoint( event:IndexChangedEvent ):void
+			{
+				var newEndpoint:Endpoint = _accordion.getChildAt( event.newIndex ) as Endpoint;
+				Assert.assertNotNull( newEndpoint );
+				
+				if( newEndpoint.hasStoredXML )
+				{
+					lazyLoadEndpoint( newEndpoint );
+				}
+
+				updateButtonEnables();
+			}
+			
+			private function onChangeControlsWithoutWidgets():void
+			{
+				if( _controlsWithoutWidgets.selectedItem )
+				{
+					_accordion.selectedChild = getEndpoint( _controlsWithoutWidgets.selectedItem as String );
+				}
+			}
+			
+			
+			private function onWidgetsChanged( event:Event ):void
+			{
+				updateControlsWithoutWidgets();
+			}
+			
+			
+			private function interfaceChanged():void
+			{
+				dispatchEvent( new Event( Globals.modifiedEvent ) );
+				validateMyOwnContent();
+			}			
+			
+
+			private var _newEndpointNumber:int; 
+			private var _widgetLayout:WidgetLayout;
+			
+			private static const _buttonWidth:Number = 150;
+		]]>
+	</fx:Script>			
+			
+</mx:Canvas>
+

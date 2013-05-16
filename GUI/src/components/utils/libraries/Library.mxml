@@ -35,6 +35,7 @@
 	<fx:Script>
 		<![CDATA[
 			import components.utils.Utilities;
+			import components.views.ModuleLibrary.ModuleLibraryListEntry;
 			
 			import flexunit.framework.Assert;
 	
@@ -120,9 +121,64 @@
 			}
 			
 			
-			public function search( searchText:String, direction:int, offset:int ):void
+			public function search( searchText:String, direction:int, skipFirstItem:Boolean, wrapAround:Boolean ):Boolean
 			{
+				Assert.assertTrue( direction == 1 || direction == -1 );
 				
+				var searchStart:int = ( _selectedIndex >= 0 ) ? _selectedIndex : ( direction > 0 ) ? 0 : numChildren - 1;
+				
+				var searchEnd:int;
+				if( wrapAround )
+				{
+					searchEnd = searchStart - direction;
+					if( searchEnd < 0 ) searchEnd += numChildren;
+					if( searchEnd >= numChildren ) searchEnd -= numChildren;
+				}
+				else
+				{
+					searchEnd = (direction > 0 ) ? numChildren - 1 : 0;
+				}
+				
+				var skipNextItem:Boolean = skipFirstItem;
+				var searchIndex:int = searchStart;
+
+				while( true )
+				{
+					var item:LibraryItem = getLibraryItemAt( searchIndex ); 
+					if( !item.isLabel ) 
+					{
+						if( item.searchChildList( searchText, direction, skipNextItem ) )
+						{
+							select( searchIndex, null );
+							return true;
+						}
+						
+						if( skipNextItem )
+						{
+							skipNextItem = false;
+						}
+						else
+						{
+							if( item.matchesSearch( searchText ) )
+							{
+								select( searchIndex, LibraryItem.FIRST_CHILD );
+								return true;
+							}
+						}
+					}
+					
+					if( searchIndex == searchEnd )
+					{
+						return false;
+					}
+					
+					searchIndex += direction;
+					if( searchIndex < 0 ) searchIndex += numChildren;
+					if( searchIndex >= numChildren ) searchIndex -= numChildren;
+				}
+				
+				Assert.assertTrue( false );	//can't ever get here
+				return false;
 			}
 			
 			

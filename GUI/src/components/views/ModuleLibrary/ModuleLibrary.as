@@ -226,19 +226,19 @@ package components.views.ModuleLibrary
 		
 		private function onSearchChange( event:Event ):void
 		{
-			_library.search( _searchBox.searchText, 1, 0 );
+			_searchBox.searchWasSuccessful = _library.search( _searchBox.searchText, 1, false, true );
 		}
 
 		
 		private function onSearchNext( event:Event ):void
 		{
-			_library.search( _searchBox.searchText, 1, 1 );
+			_searchBox.searchWasSuccessful = _library.search( _searchBox.searchText, 1, true, true );
 		}
 
 		
 		private function onSearchPrev( event:Event ):void
 		{
-			_library.search( _searchBox.searchText, -1, -1 );
+			_searchBox.searchWasSuccessful = _library.search( _searchBox.searchText, -1, true, true );
 		}
 		
 		

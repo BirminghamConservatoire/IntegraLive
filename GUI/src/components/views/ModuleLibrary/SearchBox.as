@@ -11,7 +11,6 @@ package components.views.ModuleLibrary
 	import mx.controls.Button;
 	import mx.controls.TextInput;
 	
-	import components.views.Skins.TickButtonSkin;
 	import components.views.Skins.UpDownButtonSkin;
 	
 	public class SearchBox extends Canvas
@@ -31,9 +30,9 @@ package components.views.ModuleLibrary
 			addChild( _input );
 			
 			addEventListener( Event.RESIZE, onResize );
+			addEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
 			
 			_input.addEventListener( Event.CHANGE, onChangeInput );
-			_input.addEventListener( KeyboardEvent.KEY_DOWN, onKeyDownInput );
 
 			_next.setStyle( "top", _inputMargin );
 			_next.setStyle( "bottom", _inputMargin );
@@ -49,6 +48,8 @@ package components.views.ModuleLibrary
 			
 			_next.addEventListener( MouseEvent.CLICK, onClickNext );
 			_prev.addEventListener( MouseEvent.CLICK, onClickPrev );
+			_next.addEventListener( MouseEvent.DOUBLE_CLICK, onClickNext );
+			_prev.addEventListener( MouseEvent.DOUBLE_CLICK, onClickPrev );
 
 			_next.enabled = false;
 			_prev.enabled = false;
@@ -59,6 +60,17 @@ package components.views.ModuleLibrary
 
 		
 		public function get searchText():String { return _input.text; }
+		
+		public function set searchWasSuccessful( wasFound:Boolean ) 
+		{
+			if( wasFound != _wasFound )
+			{
+				_wasFound = wasFound;
+				invalidateDisplayList();
+				updateButtonEnables();
+			}
+		}
+		
 		
 		override protected function updateDisplayList( width:Number, height:Number):void
 		{
@@ -75,7 +87,7 @@ package components.views.ModuleLibrary
 			var circleRadius:Number = magnifierRect.width * 0.33;
 			var circleCenter:Point = new Point( magnifierRect.right - circleRadius, magnifierRect.top + circleRadius );
 			
-			graphics.lineStyle( 2, magnifierColor );
+			graphics.lineStyle( 2, magnifierColor, showAsFound ? 1 : 0.5 );
 			graphics.drawCircle( circleCenter.x, circleCenter.y, circleRadius );
 			
 			var handleOffset:Number = circleRadius * Math.SQRT1_2;
@@ -89,42 +101,39 @@ package components.views.ModuleLibrary
 			_input.x = height + _inputMargin;
 			_input.width = width - height * 3 - _inputMargin * 2;
 			
-			_next.x = width - height * 2 + _inputMargin;
-			_next.width = height - 2 * _inputMargin;
-
-			_prev.x = width - height + _inputMargin;
+			_prev.x = width - height * 2 + _inputMargin;
 			_prev.width = height - 2 * _inputMargin;
+
+			_next.x = width - height + _inputMargin;
+			_next.width = height - 2 * _inputMargin;
 		}
 		
 		
 		private function onChangeInput( event:Event ):void
 		{
+			invalidateDisplayList();
+			updateButtonEnables();
+
 			if( searchText.length > 0 )
 			{
-				_next.enabled = true;
-				_prev.enabled = true;
 				dispatchEvent( new Event( SEARCH_CHANGE_EVENT ) );
-			}
-			else
-			{
-				_next.enabled = false;
-				_prev.enabled = false;
 			}
 		}
 		
 		
-		private function onKeyDownInput( event:KeyboardEvent ):void
+		private function onKeyDown( event:KeyboardEvent ):void
 		{
 			if( searchText.length > 0 )
 			{
 				switch( event.keyCode )
 				{
 					case Keyboard.DOWN:
+					case Keyboard.ENTER:
 						dispatchEvent( new Event( SEARCH_NEXT_EVENT ) );
 						break;
 	
 					case Keyboard.UP:
-						dispatchEvent( new Event( SEARCH_NEXT_EVENT ) );
+						dispatchEvent( new Event( SEARCH_PREV_EVENT ) );
 						break;
 				}
 			}
@@ -143,11 +152,26 @@ package components.views.ModuleLibrary
 		}
 		
 		
+		private function updateButtonEnables():void
+		{
+			_next.enabled = showAsFound;
+			_prev.enabled = showAsFound;
+		}
+		
+		
+		private function get showAsFound():Boolean
+		{
+			return ( searchText.length > 0 ) && _wasFound;
+		}
+		
+		
 		private var _input:TextInput = new TextInput;
 		private var _next:Button = new Button;
 		private var _prev:Button = new Button;
 		
-		private var _inputMargin:Number = 3;
+		private var _wasFound:Boolean = false;
+		
+		private const _inputMargin:Number = 3;
 		
 		
 		static public const SEARCH_CHANGE_EVENT:String = "SearchChange"; 

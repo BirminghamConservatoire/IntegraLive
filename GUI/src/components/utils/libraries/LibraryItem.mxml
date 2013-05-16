@@ -127,6 +127,34 @@
 			}
 			
 			
+			public function searchChildList( searchText:String, direction:int, skipFirstItem:Boolean ):Boolean
+			{
+				if( !childData || childData.length == 0 ) 
+				{
+					return false;
+				}
+				
+				if( !_childLibrary.search( searchText, direction, skipFirstItem, false ) )
+				{
+					return false;
+				}
+				
+				if( !expanded )
+				{
+					toggleExpanded();
+				}
+				
+				return true;
+			}
+			
+			
+			public function matchesSearch( searchText:String ):Boolean
+			{
+				var contentLower:String = data.toString().toLowerCase();
+				return ( contentLower.indexOf( searchText.toLowerCase() ) >= 0 );
+			}
+			
+			
 			override public function styleChanged( style:String ):void
 			{
 				if( !style || style == ColorScheme.STYLENAME )

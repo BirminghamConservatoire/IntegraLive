@@ -32,9 +32,10 @@ package components.views.ModuleLibrary
 	import components.model.Block;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.utils.FontSize;
+	import components.utils.Utilities;
 	import components.utils.libraries.Library;
 	import components.utils.libraries.LibraryItem;
-	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CollapseButtonSkin;
@@ -55,6 +56,14 @@ package components.views.ModuleLibrary
 			_library.setStyle( "left", 0 );
 			_library.setStyle( "right", 0 );
 			addChild( _library );
+			
+			_searchBox.setStyle( "left", 0 );
+			_searchBox.setStyle( "right", 0 );
+			_searchBox.setStyle( "bottom", 0 );
+			_searchBox.addEventListener( SearchBox.SEARCH_CHANGE_EVENT, onSearchChange );
+			_searchBox.addEventListener( SearchBox.SEARCH_NEXT_EVENT, onSearchNext );
+			_searchBox.addEventListener( SearchBox.SEARCH_PREV_EVENT, onSearchPrev );
+			addChild( _searchBox );
 			
 			_library.addEventListener( LibraryItem.INSTANTIATE_EVENT, onInstantiate );
 			
@@ -209,11 +218,32 @@ package components.views.ModuleLibrary
 		
 		private function onResize( event:Event ):void
 		{
-			_library.height = height;
+			_searchBox.height = FontSize.getTextRowHeight( this );
+
+			_library.height = height - _searchBox.height;
+		}
+
+		
+		private function onSearchChange( event:Event ):void
+		{
+			_library.search( _searchBox.searchText, 1, 0 );
+		}
+
+		
+		private function onSearchNext( event:Event ):void
+		{
+			_library.search( _searchBox.searchText, 1, 1 );
+		}
+
+		
+		private function onSearchPrev( event:Event ):void
+		{
+			_library.search( _searchBox.searchText, -1, -1 );
 		}
 		
 		
 		private var _library:Library = new Library;
+		private var _searchBox:SearchBox = new SearchBox;
 		
 		private var _hoverInfo:Info = null;
 	}

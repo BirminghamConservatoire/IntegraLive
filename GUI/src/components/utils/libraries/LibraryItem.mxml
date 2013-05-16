@@ -66,6 +66,11 @@
 				{
 					_selected = selected;
 					invalidateDisplayList();
+					
+					if( !selected )
+					{
+						_childLibrary.clearSelection();
+					}
 				}
 			}
 			

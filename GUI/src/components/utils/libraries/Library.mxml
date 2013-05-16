@@ -114,6 +114,18 @@
 			}
 			
 			
+			public function clearSelection():void
+			{
+				select( -1, null );
+			}
+			
+			
+			public function search( searchText:String, direction:int, offset:int ):void
+			{
+				
+			}
+			
+			
 			private function onInitialize():void
 			{
 				addEventListener( FocusEvent.FOCUS_OUT, onFocusOut );
@@ -131,6 +143,15 @@
 				Assert.assertTrue( clickIndex >= 0 && clickIndex < numChildren );
 
 				select( clickIndex, LibraryItem.FIRST_CHILD );
+				
+				var parentLibraryItem:LibraryItem = Utilities.getAncestorByType( this, LibraryItem ) as LibraryItem;
+				if( parentLibraryItem )
+				{
+					var parentLibrary:Library = Utilities.getAncestorByType( parentLibraryItem, Library ) as Library;
+					Assert.assertNotNull( parentLibrary );
+					parentLibrary.select( parentLibrary.getChildIndex( parentLibraryItem ), null ); 
+					
+				}
 				
 				event.stopPropagation();
 			}
@@ -353,9 +374,28 @@
 			}
 			
 			
+			/*
 			private function onFocusOut( event:FocusEvent ):void
 			{
 				var newFocus:InteractiveObject = event.relatedObject;
+				if( newFocus )
+				{
+					var otherLibrary:Library = Utilities.getAncestorByType( newFocus, Library ) as Library;
+					if( otherLibrary && otherLibrary != this )
+					{
+						if( Utilities.isDescendant( this, otherLibrary ) || Utilities.isDescendant( otherLibrary, this ) )
+						{
+							select( -1, null );
+						}
+					}
+				}
+			}
+			*/
+			
+			
+			private function onFocusOut( event:FocusEvent ):void
+			{
+				/*var newFocus:InteractiveObject = event.relatedObject;
 				if( newFocus )
 				{
 					if( Utilities.isEqualOrDescendant( newFocus, this ) )
@@ -364,7 +404,7 @@
 					}
 				}
 
-				select( -1, null );	
+				select( -1, null );	*/
 			}
 			
 			
@@ -389,7 +429,10 @@
 					
 					scrollToSelection();
 					
-					newItem.selectChildList( childToSelect );
+					if( childToSelect )
+					{
+						newItem.selectChildList( childToSelect );
+					}
 				}
 				
 				return true;

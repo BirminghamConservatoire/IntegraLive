@@ -1,0 +1,8 @@
+#N canvas 533 353 450 300 10;
+#X obj 104 51 r \$1-receive;
+#X obj 104 196 s \$1-send;
+#X obj 104 124 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
+-261234 -1 -1 1.22 256;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X coords 0 -1 1 1 100 50 2 100 100;

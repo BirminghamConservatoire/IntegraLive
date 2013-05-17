@@ -48,7 +48,8 @@ package components.views.Skins
 			graphics.clear();
 
 			var glowStrength:int = 1;
-			var thickness:int = 2;
+			var crossThickness:int = 1;
+			var borderThickness:int = 1;
 			var color:uint = getStyle( "color" );
 			var fillColor:uint = getStyle( "fillColor" );
 			var fillAlpha:Number = getStyle( "fillAlpha" );
@@ -68,12 +69,14 @@ package components.views.Skins
 					break;
 					
 				case "overSkin":
-					thickness++;
+					borderThickness++;
+					crossThickness+=2;
 					break;
 					
 				case "downSkin":
 					glowStrength++;
-					thickness++;
+					borderThickness++;
+					crossThickness+=2;
 					break;
 					
 				case "disabledSkin":
@@ -87,22 +90,23 @@ package components.views.Skins
 					break;
 			}			
 
-			var radius:Number = Math.min( width, height ) / 2;
+			var radius:Number = Math.round( Math.min( width, height ) / 2 );
 
-			var centreX:Number = width / 2;
-			var centreY:Number = height / 2;
+			var centreX:Number = Math.round( width / 2 );
+			var centreY:Number = Math.round( height / 2 );
 			
-			graphics.lineStyle( thickness, color, alpha );
+			graphics.lineStyle( borderThickness, color, alpha );
 			graphics.beginFill( fillColor, fillAlpha );
-			graphics.drawCircle( centreX, centreY, radius );
+			graphics.drawCircle( centreX + 0.5, centreY + 0.5, radius );
 			graphics.endFill();
 			
 			//draw the cross
-			graphics.moveTo( centreX, centreY - radius * 0.6 );
-			graphics.lineTo( centreX, centreY + radius * 0.6 ); 
+			graphics.lineStyle( crossThickness, color, alpha );
+			graphics.moveTo( centreX, centreY - radius * 0.4 );
+			graphics.lineTo( centreX, centreY + radius * 0.4 + 1); 
 
-			graphics.moveTo( centreX - radius * 0.6, centreY );
-			graphics.lineTo( centreX + radius * 0.6, centreY ); 
+			graphics.moveTo( centreX - radius * 0.4, centreY );
+			graphics.lineTo( centreX + radius * 0.4 + 1, centreY ); 
 			
 			//update the glow
 			var filterArray:Array = new Array;

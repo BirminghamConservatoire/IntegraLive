@@ -1,17 +1,19 @@
 package components.views.ModuleLibrary
 {
 	import flash.events.Event;
+	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.ui.Keyboard;
 	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
 	import mx.controls.TextInput;
 	
-	import components.views.Skins.UpDownButtonSkin;
+	import components.utils.FontSize;
+	import components.utils.Utilities;
+	import components.views.Skins.CloseButtonSkin;
 	
 	public class SearchBox extends Canvas
 	{
@@ -19,6 +21,7 @@ package components.views.ModuleLibrary
 		{
 			super();
 			
+			_input.restrict = Utilities.printableCharacterRestrict;
 			_input.setStyle( "top", _inputMargin );
 			_input.setStyle( "bottom", _inputMargin );
 			
@@ -27,47 +30,33 @@ package components.views.ModuleLibrary
 			_input.setStyle( "borderSkin", null );
 			_input.setStyle( "focusAlpha", 0 );
 			_input.setStyle( "backgroundAlpha", 0 );
+			_input.addEventListener( Event.CHANGE, onChangeInput );
+			_input.addEventListener( FocusEvent.FOCUS_IN, onFocusIn );
+			_input.addEventListener( FocusEvent.FOCUS_OUT, onFocusOut );
+			
 			addChild( _input );
 			
+			_clearButton.visible = false;
+			_clearButton.setStyle( "skin", CloseButtonSkin );
+			_clearButton.setStyle( "color", 0x808080 );
+			_clearButton.addEventListener( MouseEvent.CLICK, onClear );
+			addChild( _clearButton );
+
+			showEmptyPrompt = true;
+			
 			addEventListener( Event.RESIZE, onResize );
-			addEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
 			
-			_input.addEventListener( Event.CHANGE, onChangeInput );
-
-			_next.setStyle( "top", _inputMargin );
-			_next.setStyle( "bottom", _inputMargin );
-			_prev.setStyle( "top", _inputMargin );
-			_prev.setStyle( "bottom", _inputMargin );
-			
-			_next.setStyle( "skin", UpDownButtonSkin );
-			_prev.setStyle( "skin", UpDownButtonSkin );
-			_next.setStyle( "color", "#808080" );
-			_prev.setStyle( "color", "#808080" );
-			_next.setStyle( UpDownButtonSkin.DIRECTION_STYLENAME, UpDownButtonSkin.DOWN );
-			_prev.setStyle( UpDownButtonSkin.DIRECTION_STYLENAME, UpDownButtonSkin.UP );
-			
-			_next.addEventListener( MouseEvent.CLICK, onClickNext );
-			_prev.addEventListener( MouseEvent.CLICK, onClickPrev );
-			_next.addEventListener( MouseEvent.DOUBLE_CLICK, onClickNext );
-			_prev.addEventListener( MouseEvent.DOUBLE_CLICK, onClickPrev );
-
-			_next.enabled = false;
-			_prev.enabled = false;
-			
-			addChild( _next );
-			addChild( _prev );
 		}
 
 		
-		public function get searchText():String { return _input.text; }
+		public function get searchText():String { return _showingEmptyPrompt ? "" : _input.text; }
 		
-		public function set searchWasSuccessful( wasFound:Boolean ) 
+		public function set filteredEverything( filteredEverything:Boolean ):void
 		{
-			if( wasFound != _wasFound )
+			if( filteredEverything != _filteredEverything )
 			{
-				_wasFound = wasFound;
+				_filteredEverything = filteredEverything;
 				invalidateDisplayList();
-				updateButtonEnables();
 			}
 		}
 		
@@ -99,83 +88,88 @@ package components.views.ModuleLibrary
 		private function onResize( event:Event ):void
 		{
 			_input.x = height + _inputMargin;
-			_input.width = width - height * 3 - _inputMargin * 2;
+			_input.width = width - height * 2 - _inputMargin * 2;
 			
-			_prev.x = width - height * 2 + _inputMargin;
-			_prev.width = height - 2 * _inputMargin;
-
-			_next.x = width - height + _inputMargin;
-			_next.width = height - 2 * _inputMargin;
+			_clearButton.width = _clearButton.height = height * 0.5;
+			var clearButtonMargin:Number = ( height - _clearButton.height ) / 2;
+			
+			_clearButton.x = width + clearButtonMargin - height;
+			_clearButton.y = clearButtonMargin;
+			
 		}
 		
 		
 		private function onChangeInput( event:Event ):void
 		{
 			invalidateDisplayList();
-			updateButtonEnables();
 
-			if( searchText.length > 0 )
-			{
-				dispatchEvent( new Event( SEARCH_CHANGE_EVENT ) );
-			}
+			dispatchEvent( new Event( SEARCH_CHANGE_EVENT ) );
+			
+			_clearButton.visible = ( searchText.length > 0 );
 		}
 		
 		
-		private function onKeyDown( event:KeyboardEvent ):void
+		private function onClear( event:MouseEvent ):void
 		{
-			if( searchText.length > 0 )
-			{
-				switch( event.keyCode )
-				{
-					case Keyboard.DOWN:
-					case Keyboard.ENTER:
-						dispatchEvent( new Event( SEARCH_NEXT_EVENT ) );
-						break;
-	
-					case Keyboard.UP:
-						dispatchEvent( new Event( SEARCH_PREV_EVENT ) );
-						break;
-				}
-			}
-		}
-		
-		
-		private function onClickNext( event:MouseEvent ):void
-		{
-			dispatchEvent( new Event( SEARCH_NEXT_EVENT ) );
-		}
-
-		
-		private function onClickPrev( event:MouseEvent ):void
-		{
-			dispatchEvent( new Event( SEARCH_PREV_EVENT ) );
-		}
-		
-		
-		private function updateButtonEnables():void
-		{
-			_next.enabled = showAsFound;
-			_prev.enabled = showAsFound;
+			showEmptyPrompt = true;
+			dispatchEvent( new Event( SEARCH_CHANGE_EVENT ) );
+			
+			_clearButton.visible = false;
 		}
 		
 		
 		private function get showAsFound():Boolean
 		{
-			return ( searchText.length > 0 ) && _wasFound;
+			return !_showingEmptyPrompt && ( searchText.length > 0 ) && !_filteredEverything;
 		}
 		
 		
+		private function onFocusIn( event:Event ):void
+		{
+			if( _showingEmptyPrompt )
+			{
+				showEmptyPrompt = false;
+			}
+		}
+
+		
+		private function onFocusOut( event:Event ):void
+		{
+			if( _input.length == 0 )
+			{
+				showEmptyPrompt = true;
+			}
+		}
+
+		
+		private function set showEmptyPrompt( showEmptyPrompt:Boolean ):void
+		{
+			_showingEmptyPrompt = showEmptyPrompt;
+			
+			if( showEmptyPrompt )
+			{
+				_input.alpha = 0.5;
+				_input.text = _emptyPrompt;
+			}
+			else
+			{
+				_input.alpha = 1;
+				_input.text = "";
+			}
+		}
+		
+		
+		private var _showingEmptyPrompt:Boolean;
+		
 		private var _input:TextInput = new TextInput;
-		private var _next:Button = new Button;
-		private var _prev:Button = new Button;
+		private var _clearButton:Button = new Button;
 		
-		private var _wasFound:Boolean = false;
+		private var _filteredEverything:Boolean = false;
 		
-		private const _inputMargin:Number = 3;
+		private static const _inputMargin:Number = 3;
+		private static const _emptyPrompt:String = "Search Modules...";
 		
 		
 		static public const SEARCH_CHANGE_EVENT:String = "SearchChange"; 
-		static public const SEARCH_NEXT_EVENT:String = "SearchNext"; 
-		static public const SEARCH_PREV_EVENT:String = "SearchPrev"; 
 	}
 }

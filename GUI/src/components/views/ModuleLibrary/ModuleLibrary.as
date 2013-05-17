@@ -59,10 +59,8 @@ package components.views.ModuleLibrary
 			
 			_searchBox.setStyle( "left", 0 );
 			_searchBox.setStyle( "right", 0 );
-			_searchBox.setStyle( "bottom", 0 );
+			_searchBox.setStyle( "top", 0 );
 			_searchBox.addEventListener( SearchBox.SEARCH_CHANGE_EVENT, onSearchChange );
-			_searchBox.addEventListener( SearchBox.SEARCH_NEXT_EVENT, onSearchNext );
-			_searchBox.addEventListener( SearchBox.SEARCH_PREV_EVENT, onSearchPrev );
 			addChild( _searchBox );
 			
 			_library.addEventListener( LibraryItem.INSTANTIATE_EVENT, onInstantiate );
@@ -127,9 +125,12 @@ package components.views.ModuleLibrary
 				
 				var interfaces:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
 				Assert.assertNotNull( interfaces );
-				
-				originGuidSet[ interfaceDefinition.originGuid ] = interfaces;
-					
+
+				var filteredInterfaces:Vector.<InterfaceDefinition> = interfaces.filter( shouldIncludeModule );
+				if( filteredInterfaces.length > 0 )
+				{
+					originGuidSet[ interfaceDefinition.originGuid ] = filteredInterfaces;
+				}
 			}
 
 			//second pass - build list data
@@ -163,6 +164,39 @@ package components.views.ModuleLibrary
 			listData.sort( moduleCompareFunction );
 			
 			_library.data = listData;
+			
+			_searchBox.filteredEverything = ( _library.numChildren == 0 );
+		}
+		
+		
+		private function shouldIncludeModule( interfaceDefinition:InterfaceDefinition, index:int, vector:Vector.<InterfaceDefinition> ):Boolean
+		{
+			if( !interfaceDefinition.hasAudioEndpoints )
+			{
+				//don't display modules with no endpoints
+				return false;
+			}
+			
+			if( !shouldIncludeAccordingToSearchText( interfaceDefinition ) )
+			{
+				return false;
+			}
+			
+			//todo - tag cloud filter
+			
+			return true;
+		}
+		
+		
+		private function shouldIncludeAccordingToSearchText( interfaceDefinition:InterfaceDefinition ):Boolean
+		{
+			var searchText:String = _searchBox.searchText;
+			if( searchText.length == 0 ) return true;
+			
+			var needle:String = searchText.toUpperCase();
+			var haystack:String = interfaceDefinition.interfaceInfo.label.toUpperCase();
+			
+			return ( haystack.indexOf( needle ) >= 0 );
 		}
 		
 		
@@ -220,27 +254,16 @@ package components.views.ModuleLibrary
 		{
 			_searchBox.height = FontSize.getTextRowHeight( this );
 
+			_library.y = _searchBox.height;
 			_library.height = height - _searchBox.height;
 		}
 
 		
 		private function onSearchChange( event:Event ):void
 		{
-			_searchBox.searchWasSuccessful = _library.search( _searchBox.searchText, 1, false, true );
+			onAllDataChanged();
 		}
 
-		
-		private function onSearchNext( event:Event ):void
-		{
-			_searchBox.searchWasSuccessful = _library.search( _searchBox.searchText, 1, true, true );
-		}
-
-		
-		private function onSearchPrev( event:Event ):void
-		{
-			_searchBox.searchWasSuccessful = _library.search( _searchBox.searchText, -1, true, true );
-		}
-		
 		
 		private var _library:Library = new Library;
 		private var _searchBox:SearchBox = new SearchBox;

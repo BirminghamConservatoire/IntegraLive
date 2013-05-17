@@ -127,31 +127,13 @@
 			}
 			
 			
-			public function searchChildList( searchText:String, direction:int, skipFirstItem:Boolean ):Boolean
+			override public function set data( value:Object ):void
 			{
-				if( !childData || childData.length == 0 ) 
-				{
-					return false;
-				}
+				super.data = value;
+				if( !_initialized ) return;
 				
-				if( !_childLibrary.search( searchText, direction, skipFirstItem, false ) )
-				{
-					return false;
-				}
-				
-				if( !expanded )
-				{
-					toggleExpanded();
-				}
-				
-				return true;
-			}
-			
-			
-			public function matchesSearch( searchText:String ):Boolean
-			{
-				var contentLower:String = data.toString().toLowerCase();
-				return ( contentLower.indexOf( searchText.toLowerCase() ) >= 0 );
+				updateChildLibrary();
+				styleChanged( null );
 			}
 			
 			
@@ -337,24 +319,42 @@
 			{
 				_initialized = true;
 
-				var childData:Array = childData;
-				if( childData && childData.length > 0 )
-				{
-					_collapseButton.visible = true;
-					_childLibrary.visible = true;
-					_collapseButton.selected = !expanded;
-					_collapseButton.setStyle( CollapseButtonSkin.COLLAPSE_DIRECTION_STYLENAME, CollapseButtonSkin.LEFT );
+				addEventListener( MouseEvent.ROLL_OVER, onRollOver );
+				addEventListener( MouseEvent.ROLL_OUT, onRollOut );
+				_collapseButton.setStyle( CollapseButtonSkin.COLLAPSE_DIRECTION_STYLENAME, CollapseButtonSkin.LEFT );
 
-					_childLibrary.data = childData;
-				}
-				
-				if( !isLabel )
-				{
-					addEventListener( MouseEvent.ROLL_OVER, onRollOver );
-					addEventListener( MouseEvent.ROLL_OUT, onRollOut );
-				}
+				updateChildLibrary();
 				
 				styleChanged( null );
+			}
+			
+			
+			private function updateChildLibrary():void
+			{
+				var hasChildLibrary:Boolean = _childLibrary.visible;
+
+				var childData:Array = childData;
+				var needsChildLibrary:Boolean = ( childData && childData.length > 0 ); 
+
+				if( needsChildLibrary )
+				{
+					if( !hasChildLibrary )
+					{
+						_collapseButton.visible = true;
+						_childLibrary.visible = true;
+						_collapseButton.selected = !expanded;
+					}
+					
+					_childLibrary.data = childData;
+				}
+				else
+				{
+					if( hasChildLibrary )
+					{
+						_collapseButton.visible = false;
+						_childLibrary.visible = false;
+					}
+				}
 			}
 			
 			
@@ -435,6 +435,7 @@
 			private function onRollOver( event:MouseEvent ):void
 			{
 				if( MouseCapture.instance.hasCapture ) return;
+				if( isLabel ) return;
 				
 				_over = true;
 				invalidateDisplayList();
@@ -443,6 +444,8 @@
 
 			private function onRollOut( event:MouseEvent ):void
 			{
+				if( isLabel ) return;
+				
 				_over = false;
 				invalidateDisplayList();
 			}

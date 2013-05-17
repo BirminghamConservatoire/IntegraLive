@@ -47,7 +47,7 @@ package components.views.Skins
 			graphics.clear();
 
 			var glowStrength:int = 1;
-			var thickness:int = 2;
+			var thickness:int = 1;
 			var color:uint = getStyle( "color" );
 			var fillColor:uint = getStyle( "fillColor" );
 			var fillAlpha:Number = getStyle( "fillAlpha" );

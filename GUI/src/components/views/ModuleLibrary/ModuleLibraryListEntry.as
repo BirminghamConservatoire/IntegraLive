@@ -26,7 +26,6 @@ package components.views.ModuleLibrary
 	import components.model.Info;
 	import components.model.IntegraModel;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
-	import components.model.interfaceDefinitions.InterfaceInfo;
 	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;

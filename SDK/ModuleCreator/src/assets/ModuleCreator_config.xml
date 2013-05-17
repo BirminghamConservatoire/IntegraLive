@@ -9,7 +9,8 @@
 		<!--			windows-specific paths											-->
 		<windows>
 			<!--		path to template modules directory, relative to Module Creator	-->
-			<templatespath>..\..\templates\</templatespath>
+			<templatespath>..\templates\</templatespath>
+			<hostpath>..\..\host\bin\pd.exe</hostpath>
 
 		</windows>
 		
@@ -17,11 +18,14 @@
 		<mac>
 			<!--		path to template modules directory, relative to Module Creator	-->
             <templatespath>../../templates/</templatespath>
-
+			<hostpath>../../../host/bin/pd_integra</hostpath>
 		</mac>
-	
 	</paths>
-	
+
+	<!-- 		arguments to be passed into host executable on startup							-->
+	<hostargs>
+		<hostarg>-noprefs</hostarg>
+	</hostargs>	
 	
 	
     <!--        available widgets:									-->

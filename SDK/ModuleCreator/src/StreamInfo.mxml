@@ -16,7 +16,7 @@
 					 styleName="smallRows"
 					 verticalAlign="middle"
 					 width="{Globals.propertyColumnWidth( 1 )}" 
-					 dataProvider="{[_audioLabel]}"/>
+					 dataProvider="{[audioLabel]}"/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label text="Stream Direction" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
@@ -27,7 +27,7 @@
 					 styleName="smallRows"
 					 verticalAlign="middle"
 					 width="{Globals.propertyColumnWidth( 1 )}"
-					 dataProvider="{[_inputLabel, _outputLabel]}"/>
+					 dataProvider="{[inputLabel, outputLabel]}"/>
 		</mx:HBox>
 	</mx:VBox>
 	
@@ -37,8 +37,8 @@
 			
 			public function doInitialize():void
 			{
-				_streamType.selectedItem = _audioLabel;
-				_streamDirection.selectedItem = _inputLabel;
+				_streamType.selectedItem = audioLabel;
+				_streamDirection.selectedItem = inputLabel;
 			}
 			
 			
@@ -56,7 +56,7 @@
 				switch( xml.StreamType.toString() )
 				{
 					case "audio":
-						_streamType.selectedItem = _audioLabel;
+						_streamType.selectedItem = audioLabel;
 						break;
 					
 					default:
@@ -68,11 +68,11 @@
 				switch( xml.StreamDirection.toString() )
 				{
 					case "input":
-						_streamDirection.selectedItem = _inputLabel;
+						_streamDirection.selectedItem = inputLabel;
 						break;
 					
 					case "output":
-						_streamDirection.selectedItem = _outputLabel;
+						_streamDirection.selectedItem = outputLabel;
 						break;
 
 					default:
@@ -89,18 +89,18 @@
 				
 				switch( _streamType.selectedItem.toString() )
 				{
-					case _audioLabel:
+					case audioLabel:
 						xml.appendChild( <StreamType>audio</StreamType> );
 						break;
 				}
 
 				switch( _streamDirection.selectedItem.toString() )
 				{
-					case _inputLabel:
+					case inputLabel:
 						xml.appendChild( <StreamDirection>input</StreamDirection> );
 						break;
 
-					case _outputLabel:
+					case outputLabel:
 						xml.appendChild( <StreamDirection>output</StreamDirection> );
 						break;
 				}
@@ -128,9 +128,9 @@
 			}			
 			
 			
-			private const _audioLabel:String = "Audio";
-			private const _inputLabel:String = "Input";
-			private const _outputLabel:String = "Output";
+			public static const audioLabel:String = "Audio";
+			public static const inputLabel:String = "Input";
+			public static const outputLabel:String = "Output";
 			
 		]]>
 	</fx:Script>		

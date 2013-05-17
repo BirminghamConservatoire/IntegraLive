@@ -21,4 +21,11 @@
 		<nature>com.adobe.flexbuilder.project.flexnature</nature>
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>bin-debug</name>
+			<type>2</type>
+			<location>C:/IntegraLive.git/build/Debug/sdk/ModuleCreator-debug</location>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -18,6 +18,10 @@ if exist ..\..\build\Release\modules rd /s /q ..\..\build\Release\modules
 mkdir ..\..\build\Release\modules
 xcopy "..\..\modules" "..\..\build\Release\modules" /Y /Q
 
+if exist ..\..\build\Release\SDK\templates rd /s /q ..\..\build\Release\SDK\templates
+mkdir ..\..\build\Release\SDK\templates
+xcopy "..\..\SDK\templates" "..\..\build\Release\SDK\templates" /Y /Q /S
+
 copy "..\..\host\Pd\Integra_Host.pd" "..\..\build\Release\host\extra"
 
 CALL documentation_deployment\compileAllDocumentation.bat ..\..\build\Release\

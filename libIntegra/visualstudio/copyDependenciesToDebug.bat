@@ -18,6 +18,10 @@ if exist ..\..\build\Debug\modules rd /s /q ..\..\build\Debug\modules
 mkdir ..\..\build\Debug\modules
 xcopy "..\..\modules" "..\..\build\Debug\modules" /Y /Q
 
+if exist ..\..\build\Debug\SDK\templates rd /s /q ..\..\build\Debug\SDK\templates
+mkdir ..\..\build\Debug\SDK\templates
+xcopy "..\..\SDK\templates" "..\..\build\Debug\SDK\templates" /Y /Q /S
+
 copy "..\..\host\Pd\Integra_Host.pd" "..\..\build\Debug\host\extra"
 
 if exist ..\..\build\Debug\gui-debug\BlockLibrary rd /s /q ..\..\build\Debug\gui-debug\BlockLibrary

@@ -100,6 +100,8 @@
 				_interfaceInfo.doInitialize();
 				_endpointInfo.doInitialize( _widgetLayout );
 				
+				_implementation.doInitialize( _endpointInfo );
+				
 				buildMenu();
 				
 				ToolTipManager.showDelay = 0;
@@ -224,6 +226,12 @@
 			
 			private function addTemplateMenus( parentItem:NativeMenuItem, directory:File ):void
 			{
+				if( !directory.exists )
+				{
+					trace( "Can't find templates directory" );
+					return;
+				}
+				
 				var directoryListing:Array = directory.getDirectoryListing();
 				directoryListing.sort( compareTemplateFiles );
 				
@@ -250,8 +258,8 @@
 			
 			private function compareTemplateFiles( file1:File, file2:File ):Number
 			{
-				if( file1.isDirectory && !file2.isDirectory ) return 1;
-				if( file2.isDirectory && !file1.isDirectory ) return -1;
+				if( file1.isDirectory && !file2.isDirectory ) return -1;
+				if( file2.isDirectory && !file1.isDirectory ) return 1;
 				
 				return ( file1.name > file2.name ) ? 1 : -1;
 			}
@@ -458,11 +466,26 @@
 				Assert.assertNotNull( functionToExecute );
 				Assert.assertNull( _functionToExecuteAfterSaveModifiedAlert );
 				
-				if( interfaceChanged )
+				if( interfaceChanged || _implementation.isHostRunning )
 				{
 					_functionToExecuteAfterSaveModifiedAlert = functionToExecute;
 					
-					AlertManager.show( "The module \"" + _interfaceInfo._iidName.text + "\" has changed.\nWould you like to save your changes?", caption, Alert.YES | Alert.NO | Alert.CANCEL, this, saveModifiedHandler );
+					var alertText:String = "";
+					if( interfaceChanged )
+					{
+						alertText = "The module \"" + _interfaceInfo._iidName.text + "\" has changed.";
+					}
+					
+					var hostRunningText:String = "";
+					if( _implementation.isHostRunning )
+					{
+						if( alertText.length > 0 ) alertText += "\n\n";
+						alertText += "You are editing this module's implementation in PD!\nYou must save your changes in PD first!";
+					}
+					
+					alertText += "\n\nWould you like to save your changes?";
+					
+					AlertManager.show( alertText, caption, Alert.YES | Alert.NO | Alert.CANCEL, this, saveModifiedHandler );
 				}
 				else
 				{

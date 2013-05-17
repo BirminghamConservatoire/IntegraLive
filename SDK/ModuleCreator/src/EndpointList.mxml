@@ -80,13 +80,8 @@
 				{
 					var endpoint:Endpoint = createNewEndpoint( true );
 					endpoint.storeXML( endpointXML );
-					
-					/*if( !endpoint.loadFromXML( endpointXML ) )
-					{
-						trace( "Error loading endpoint from xml: " + endpointXML.toString() );
-						_accordion.removeChildAt( _accordion.numChildren - 1 );
-						continue;
-					}*/
+
+					//lazy loading - doesn't actually load here
 				}
 				
 				var selectedEndpoint:Endpoint = _accordion.selectedChild as Endpoint;
@@ -128,6 +123,28 @@
 				}
 				
 				return null;
+			}
+
+			
+			public function get numberOfEndpoints():int
+			{
+				return _accordion.numChildren;
+			}
+
+			
+			public function getEndpointAt( index:int ):Endpoint
+			{
+				Assert.assertTrue( index >= 0 && index < _accordion.numChildren );
+			
+				var endpoint:Endpoint = _accordion.getChildAt( index ) as Endpoint;
+				Assert.assertNotNull( endpoint );
+				
+				if( endpoint.hasStoredXML )
+				{
+					lazyLoadEndpoint( endpoint );
+				}
+				
+				return endpoint;				
 			}
 			
 			

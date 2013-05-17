@@ -18,6 +18,7 @@
 				<mx:ComboBox id="_patchFileName"
 							  editable="false" 
 							  width="{Globals.propertyColumnWidth()}" change="onChangePatchFileName()"/>
+				<mx:Button id="_editPatchInPD" label="Edit" click="onClickEditPatchInPD()"/>
 			</mx:HBox>
 			<mx:HBox styleName="internalPadding" height="100%">
 				<mx:Label text="Dependencies" width="{Globals.labelColumnWidth()}" textAlign="right"/>
@@ -66,13 +67,17 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			import mx.collections.IList;
-			import mx.collections.XMLListCollection;
 			
 			import deng.fzip.FZip;
 			import deng.fzip.FZipFile;
 			
 			import flexunit.framework.Assert;
 
+			
+			public function doInitialize( endpoints:EndpointList ):void 
+			{ 
+				_endpoints = endpoints; 
+			}
 
 			
 			public function newFile():void
@@ -95,6 +100,9 @@
 					return true;
 				}
 			}
+			
+			
+			public function get isHostRunning():Boolean { return _hostStarter.isHostRunning; }
 			
 			
 			public function loadFromXML( xml:XMLList ):Boolean
@@ -184,6 +192,8 @@
 
 				_pollWorkingDirectoryTimer.removeEventListener( TimerEvent.TIMER, onPollWorkingDirectory );
 				_pollWorkingDirectoryTimer.stop();
+
+				_hostStarter.killHost();
 			}
 			
 			
@@ -227,6 +237,8 @@
 				_patchFileName.dataProvider = [];
 				_selectedPatchName = null;
 				
+				_editPatchInPD.enabled = false;
+				
 				_dependencyTree.dataProvider = [];
 
 				_missingObjects.dataProvider = [];
@@ -234,6 +246,8 @@
 				_oversizedFiles.dataProvider = [];
 
 				clearWorkingDirectory();
+				
+				_hostStarter.killHost();
 			}
 			
 			
@@ -679,6 +693,8 @@
 				_patchFileName.enabled = ( _patchFileName.dataProvider.length > 0 );
 				_dependencyTree.enabled = hasImplementation;
 				
+				_editPatchInPD.enabled = hasImplementation;
+				
 				_missingObjects.visible = hasTreeContent( _missingObjects );
 				_missingObjectsLabel.visible = hasTreeContent( _missingObjects );
 				
@@ -819,6 +835,14 @@
 			}
 			
 			
+			private function onClickEditPatchInPD():void
+			{
+				_hostStarter.startHost( workingDirectory.resolvePath( _selectedPatchName ), _endpoints );
+			}			
+			
+
+			private var _endpoints:EndpointList = null;
+			
 			private var _pdInternalObjects:Object = new Object;
 			private var _supportedPdAbstractions:Object = new Object;
 			private var _supportedPdExternals:Object = new Object;
@@ -826,6 +850,8 @@
 			private var _selectedPatchName:String = null;
 			private var _pollWorkingDirectoryTimer:Timer = new Timer( _pollWorkingDirectoryMsecs );
 			private var _mapWorkingDirectoryContentsToModificationTime:Object = new Object;
+			
+			private var _hostStarter:HostStarter = new HostStarter;
 			
 			private static const _pdInternalObjectsFilename:String = "assets/pd_internal_objects.txt"; 
 			private static const _supportedPdExternalsFilename:String = "assets/supported_pd_externals.txt";

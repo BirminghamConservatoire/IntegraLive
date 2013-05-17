@@ -45,7 +45,9 @@ package
 
 		public function get hasIntegraDeveloperPrivileges():Boolean { return _hasIntegraDeveloperPrivileges; }
 
-		public function get templatesPath():String	{ return _templatesPath; }
+		public function get templatesPath():String					{ return _templatesPath; }
+		public function get hostPath():String						{ return _hostPath; }
+		public function get hostArguments():Vector.<String>			{ return _hostArguments; }
 		
 		public function get widgets():Vector.<WidgetDefinition> 	{ return _widgetDefinitions; }
 
@@ -88,6 +90,19 @@ package
 					{
 						_templatesPath = osSpecificPaths.templatespath;						
 					}
+
+					if( osSpecificPaths.hasOwnProperty( "hostpath" ) )
+					{
+						_hostPath = osSpecificPaths.hostpath;						
+					}
+				}
+			}
+			
+			if( xml.hasOwnProperty( "hostargs" ) )
+			{
+				for each( var hostArg:XML in xml.hostargs.hostarg ) 
+				{ 
+					hostArguments.push( hostArg.toString() );
 				}
 			}
 			
@@ -138,6 +153,8 @@ package
 		private var _hasIntegraDeveloperPrivileges:Boolean = false;
 
 		private var _templatesPath:String = "";
+		private var _hostPath:String = "";
+		private var _hostArguments:Vector.<String> = new Vector.<String>;
 		
 		private var _widgetDefinitions:Vector.<WidgetDefinition> = new Vector.<WidgetDefinition>;
 		

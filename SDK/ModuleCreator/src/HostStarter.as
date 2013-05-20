@@ -128,14 +128,19 @@ package
 			var host:String = templateStream.readUTFBytes( _hostTemplate.size );
 			templateStream.close();
 			
+			//replace module path
+			var modulePath:String = modulePatch.parent.nativePath;
+			modulePath = replaceAllInstances( modulePath, '\\', '/' );	//pd doesn't allow windows-style slashes
+			modulePath = replaceAllInstances( modulePath, ' ', '\\ ' );	//slash-escape spaces
+			host = replaceAllInstances( host, _templateHooks.modulePath , modulePath  );
+			
 			//replace module name
-			var moduleName:String = modulePatch.nativePath;
+			var moduleName:String = modulePatch.name;
 			if( modulePatch.extension )
 			{
 				moduleName = moduleName.substr( 0, moduleName.length - modulePatch.extension.length - 1 );
 			}
 
-			moduleName = replaceAllInstances( moduleName, '\\', '/' );	//pd doesn't allow windows-style slashes
 			moduleName = replaceAllInstances( moduleName, ' ', '\\ ' );	//slash-escape spaces
 			
 			host = replaceAllInstances( host, _templateHooks.moduleName, moduleName );
@@ -209,26 +214,30 @@ package
 			{
 				var endpoint:Endpoint = endpoints.getEndpointAt( i );
 				
-				if( endpoint._endpointType.selectedItem == Endpoint.streamLabel )
+				if( endpoint._endpointType.selectedItem != Endpoint.streamLabel )
 				{
-					var streamInfo:StreamInfo = endpoint._streamInfo;
-					if( streamInfo._streamType.selectedItem == StreamInfo.audioLabel )
-					{
-						switch( streamInfo._streamDirection.selectedItem )
-						{
-							case StreamInfo.inputLabel:
-								numberOfInputs++;
-								break;
-							
-							case StreamInfo.outputLabel:
-								numberOfOutputs++;
-								break;
-							
-							default:
-								trace( "unexpected stream direction: " + streamInfo._streamDirection.selectedItem );
-								break;
-						}
-					}
+					continue;
+				}
+
+				var streamInfo:StreamInfo = endpoint._streamInfo;
+				if( streamInfo._streamType.selectedItem != StreamInfo.audioLabel )
+				{
+					continue;
+				}
+				
+				switch( streamInfo._streamDirection.selectedItem )
+				{
+					case StreamInfo.inputLabel:
+						numberOfInputs++;
+						break;
+					
+					case StreamInfo.outputLabel:
+						numberOfOutputs++;
+						break;
+					
+					default:
+						trace( "unexpected stream direction: " + streamInfo._streamDirection.selectedItem );
+						break;
 				}
 			}
 			
@@ -262,7 +271,74 @@ package
 		
 		private function generateSendValues( endpoints:EndpointList ):String
 		{
-			return "";
+			var sendValues:String = "";
+			var controlY = controlYStart;
+			
+			for( var i:int = 0; i < endpoints.numberOfEndpoints; i++ )
+			{
+				var endpoint:Endpoint = endpoints.getEndpointAt( i );
+				var endpointName:String = endpoint._endpointName.text;
+				
+				if( endpoint._endpointType.selectedItem != Endpoint.controlLabel )
+				{
+					continue;
+				}
+				
+				var controlInfo:ControlInfo = endpoint._controlInfo;
+				if( !controlInfo._isSentToHost.selected )
+				{
+					continue;
+				}
+				
+				var controlType:String = null;
+				var defaultValue:String = null;
+				switch( controlInfo._controlType.selectedItem )
+				{
+					case ControlInfo._stateLabel:
+						var stateInfo:StateInfo = controlInfo._stateInfo;
+						switch( stateInfo._stateType.selectedItem )
+						{
+							case Globals.intType:
+							case Globals.floatType:
+								controlType = "float";
+								break;
+							
+							case Globals.stringType:
+								controlType = "symbol";
+								break;
+							
+							default:
+								trace( "Unexpected State Type: " + stateInfo._stateType.selectedItem );
+								break;
+						}
+						
+						defaultValue = stateInfo._default.text;
+						break;
+						
+					case ControlInfo._bangLabel:
+						controlType = "bang";
+						defaultValue = "bang";
+						break;
+						
+					default:
+						trace( "Unexpected Control Type: " + controlInfo._controlType.selectedItem );
+						break;
+				}
+				
+				if( controlType == null || defaultValue == null )
+				{
+					trace( "Unable to generate send value for " + endpointName );
+					continue;
+				}
+				
+				var sendValue:String = "#X obj " + controlX + " " + controlY + " send-value " + controlType + " " + endpointName + " " + defaultValue + ";";
+				sendValues += sendValue;
+				sendValues += "\n";
+				
+				controlY += controlYSpacing;
+			}
+			
+			return sendValues;
 		}
 		
 		
@@ -275,12 +351,13 @@ package
 		
 		private static const _hostInputLocation:String = "assets/host/";
 			
-		private static const _hostTemplateName:String = "Template_Host.pd";		
+		private static const _hostTemplateName:String = "host.pd_template";		
 		
 		private static const _hostDependencies:Array = [ "bang-box.pd", "float-box.pd", "send-value.pd", "symbol-box.pd" ];
 
 		private static const _templateHooks:Object = 
 			{
+				modulePath: 		"/* MODULE PATH */",
 				moduleName: 		"/* MODULE NAME */",
 				moduleConnections: 	"/* MODULE CONNECTIONS */",
 				endpointSendValues: "/* ENDPOINT SENDVALUE INSTANCES */"
@@ -288,5 +365,10 @@ package
 		
 		private static const maxInputs:int = 8;
 		private static const maxOutputs:int = 8;
+		
+		private static const controlX:int = 293;
+		private static const controlYStart:int = 34;
+		private static const controlYSpacing:int = 52;
+		
 	}
 }

@@ -198,8 +198,8 @@
 			
 
 			
-			private const _stateLabel:String = "State";
-			private const _bangLabel:String = "Bang";
+			public static const _stateLabel:String = "State";
+			public static const _bangLabel:String = "Bang";
 			
 		]]>
 	</fx:Script>		

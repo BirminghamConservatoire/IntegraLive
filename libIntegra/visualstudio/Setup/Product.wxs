@@ -62,6 +62,10 @@
 
             </Component>
 
+            <Component Id="ModuleCreatorExecutableComponent" Guid="EDE975B4-3357-43C9-B0AB-7BD608AD6F05">
+              <File Id="ModuleCreatorExecutableFile" KeyPath="yes" Source="$(var.SourceDirectory)\SDK\ModuleCreator\ModuleCreator.exe" />
+            </Component>
+
           </Directory>
         </Directory>
 			</Directory>
@@ -81,6 +85,17 @@
             Key="Software\Integra Live\Integra Live"
             Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
+      
+      <Component Id="ModuleCreatorApplicationShortcut" Guid="2AF97BFB-CD9F-4F42-94DB-056F2051BCD8">
+        <Shortcut Id="ModuleCreatorApplicationStartMenuShortcut"
+            Name="Integra Module Creator"
+            Description="A tool to make Integra Live Modules"
+            Target="[INSTALLLOCATION]sdk\ModuleCreator\ModuleCreator.exe"
+            WorkingDirectory="INSTALLLOCATION"/>
+        <RegistryValue Root="HKCU"
+            Key="Software\Integra Live\Integra Module Creator"
+            Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
     </DirectoryRef>
 
 
@@ -95,7 +110,18 @@
       <ComponentGroupRef Id="Product.Generated" />
       
     </Feature>
-    
+
+    <Feature Id="ModuleCreatorFeature" Title="Integra Module Creator" Level="1">
+
+      <ComponentGroupRef Id="InstallationFiles"/>
+
+      <ComponentRef Id="ModuleCreatorExecutableComponent" />
+
+      <ComponentRef Id="ModuleCreatorApplicationShortcut" />
+      <ComponentGroupRef Id="Product.Generated" />
+
+    </Feature>
+
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
     <UIRef Id="WixUI_MyUI" />
     <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" />

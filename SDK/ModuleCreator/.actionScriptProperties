@@ -70,7 +70,7 @@
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
     <buildTarget buildTargetName="default" platformId="default">
-      <airSettings airCertificatePath="C:/Users/integra PC/Documents/integra interface creator certificate.p12" airTimestamp="true" anePathSet="true" version="1">
+      <airSettings airCertificatePath="C:/IntegraLive.git/SDK/ModuleCreator/src/module_creator_certificate.p12" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes/>
         <anePaths/>
         <newLaunchParams/>

@@ -8,15 +8,8 @@ package
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	
-	import mx.controls.Alert;
-	import mx.events.CloseEvent;
-	
-	import flashx.textLayout.tlf_internal;
-	
 	import flexunit.framework.Assert;
 	
-	import org.osmf.net.StreamType;
-
 	public class HostStarter
 	{
 		public function HostStarter()
@@ -30,7 +23,7 @@ package
 
 			if( _hostProcess )
 			{
-				AlertManager.show( "You are already editing the implementation in PD!\n\nForce close PD?", "Edit Patch", Alert.YES | Alert.NO, null, closeHostHandler );
+				AlertManager.show( "You are already editing this implementation.\n\nYou must close PD before you can reopen it.", "Edit Patch" );
 				return;
 			}
 			
@@ -89,18 +82,6 @@ package
 			
 			removeHostPatch();
 		}		
-		
-		
-		private function closeHostHandler( event:CloseEvent ):void
-		{
-			if( event.detail == Alert.YES )
-			{
-				if( _hostProcess )
-				{
-					_hostProcess.exit( true );
-				}
-			}
-		}
 		
 		
 		private function createHostPatch( modulePatch:File, endpoints:EndpointList ):Boolean

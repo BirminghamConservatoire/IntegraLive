@@ -324,33 +324,33 @@
 					if( handleCommandWhenInAlert() ) return;
 				}
 				
-				if( !validateContent() )
-				{
-					reportValidationFailure();
-					return;
-				}
-				
+				doValidation( doSave );
+			}
+			
+
+			private function doSave():void
+			{
 				if( _filename )
 				{
 					saveFile();
 				}
 				else
 				{
-					fileSaveAs( event );
+					doSaveAs();
 				}				
 			}
-
+			
 			
 			private function fileSaveAs( event:Event ):void
 			{
 				if( handleCommandWhenInAlert() ) return;
 				
-				if( !validateContent() )
-				{
-					reportValidationFailure();
-					return;
-				}
-				
+				doValidation( doSaveAs );
+			}
+			
+			
+			private function doSaveAs():void
+			{
 				var filenamePrompt:String;
 				if( _filename )
 				{
@@ -460,23 +460,11 @@
 				Assert.assertNotNull( functionToExecute );
 				Assert.assertNull( _functionToExecuteAfterSaveModifiedAlert );
 				
-				if( interfaceChanged || _implementation.isHostRunning )
+				if( interfaceChanged )
 				{
 					_functionToExecuteAfterSaveModifiedAlert = functionToExecute;
 					
-					var alertText:String = "";
-					if( interfaceChanged )
-					{
-						alertText = "The module \"" + _interfaceInfo._iidName.text + "\" has changed.";
-					}
-					
-					var hostRunningText:String = "";
-					if( _implementation.isHostRunning )
-					{
-						if( alertText.length > 0 ) alertText += "\n\n";
-						alertText += "You are editing this module's implementation in PD!\nYou must save your changes in PD first!";
-					}
-					
+					var alertText:String = "The module \"" + _interfaceInfo._iidName.text + "\" has changed.";
 					alertText += "\n\nWould you like to save your changes?";
 					
 					AlertManager.show( alertText, caption, Alert.YES | Alert.NO | Alert.CANCEL, this, saveModifiedHandler );
@@ -837,6 +825,39 @@
 			}
 			
 			
+
+			private function doValidation( functionToExecute:Function ):void
+			{
+				Assert.assertNull( _functionToExecuteAfterHostOpenAlert );
+				if( !validateContent() )
+				{
+					reportValidationFailure();
+					return;
+				}
+				
+				if( _implementation.isHostRunning )
+				{
+					_functionToExecuteAfterHostOpenAlert = functionToExecute;
+					AlertManager.show( "You are currently editing this module's implementation in PD.  You must save your changes in PD before saving your module.\n\nContinue?", "Save Module", Alert.YES | Alert.NO, this, hostOpenAlertHandler ); 
+				}
+				else
+				{
+					functionToExecute();
+				}
+			}
+			
+			
+			private function hostOpenAlertHandler( event:CloseEvent ):void
+			{
+				Assert.assertNotNull( _functionToExecuteAfterHostOpenAlert );
+				if( event.detail == Alert.YES )
+				{
+					_functionToExecuteAfterHostOpenAlert();
+				}
+				
+				_functionToExecuteAfterHostOpenAlert = null;				
+			}
+			
 		
 			private function validateContent():Boolean
 			{
@@ -929,6 +950,7 @@
 			
 			private var _doneInitialize:Boolean = false;
 			private var _filename:String = null;
+			private var _functionToExecuteAfterHostOpenAlert:Function = null;
 			private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
 			private var _functionToExecuteAfterSave:Function = null;
 			

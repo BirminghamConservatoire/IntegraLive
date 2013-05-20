@@ -89,16 +89,19 @@
 			
 			public function validateContent():Boolean
 			{
+				var valid:Boolean = true;
+				
 				if( hasMissingObjects )
 				{
 					_missingObjects.errorString = "Dependencies of the PD patch can't be found.  They are either unsupported externals, or missing abstractions.  Abstractions should be placed in the working directory.";
-					return false;
+					valid = false;
 				}
 				else
 				{
 					_missingObjects.errorString = null;
-					return true;
 				}
+				
+				return valid;
 			}
 			
 			
@@ -841,6 +844,7 @@
 			private function onClickEditPatchInPD():void
 			{
 				_hostStarter.startHost( workingDirectory.resolvePath( _selectedPatchName ), _endpoints );
+				interfaceChanged();
 			}			
 			
 

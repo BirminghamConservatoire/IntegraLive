@@ -128,7 +128,6 @@
 				
 				//create top-level menus
 				
-				var toolsMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Tools" );
 				var bundlesMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Module Bundles" );
 				var fileMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "File" );
 				
@@ -208,11 +207,6 @@
 				var extractModuleBundle:NativeMenuItem = new NativeMenuItem( "Extract Contents From Module Bundle..." );
 				extractModuleBundle.addEventListener(Event.SELECT, _bundleMaker.extractModuleBundle ); 
 				bundlesMenu.submenu.addItem( extractModuleBundle );				
-				
-				//Tools menu
-				var findUnusedPDPatches:NativeMenuItem = new NativeMenuItem( "Find Unused PD Patches..." );
-				findUnusedPDPatches.addEventListener(Event.SELECT, onFindUnusedPDPatches ); 
-				toolsMenu.submenu.addItem( findUnusedPDPatches );				
 				
 				
 				/*var config:Config = Config.singleInstance;
@@ -929,13 +923,6 @@
 			}
 			
 			
-			private function onFindUnusedPDPatches( event:Event ):void
-			{
-				PopUpManager.addPopUp( _unusedPDPatches, this, true );
-				PopUpManager.centerPopUp( _unusedPDPatches );
-			}
-			
-			
 			private var _interfaceChanged:Boolean = false;
 			private var _moduleGuid:String = new String;
 			private var _originGuid:String = new String;
@@ -949,7 +936,6 @@
 			
 			private var _menu:NativeMenu;
 			private var _bundleMaker:BundleMaker = new BundleMaker;
-			private var _unusedPDPatches:FindUnusedPDPatches = new FindUnusedPDPatches;
 			
 			private const _iidFileName:String = Globals.moduleToplevelDirectoryName + "/interface_definition.iid";
 			

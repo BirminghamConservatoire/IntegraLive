@@ -752,25 +752,28 @@
 			
 			private function onClickOpenWorkingDirectory():void
 			{
+				var path:String = Config.singleInstance.fileViewerPath;
+				
 				var executable:File = null;
 				
 				if( Globals.isWindows )
 				{
+					//search drives roots
 					var driveRoots:Array = File.getRootDirectories();
 					for each( var driveRoot:File in driveRoots )
 					{
-						executable = driveRoot.resolvePath( "Windows\\explorer.exe" );
+						executable = driveRoot.resolvePath( path );
 						if( executable.exists ) break;
 					}
 				}
-				
-				if( Globals.isMac )
+				else
 				{
-					executable = new File( "/usr/bin/open" );
+					executable = new File( path );
 				}
 				
 				if( !executable || !executable.exists )
 				{
+					trace( "Can't find file viewer " + executable.nativePath );
 					return;
 				}
 				

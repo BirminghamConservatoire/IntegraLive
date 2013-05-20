@@ -272,7 +272,7 @@ package
 		private function generateSendValues( endpoints:EndpointList ):String
 		{
 			var sendValues:String = "";
-			var controlY = controlYStart;
+			var controlY:Number = controlYStart;
 			
 			for( var i:int = 0; i < endpoints.numberOfEndpoints; i++ )
 			{

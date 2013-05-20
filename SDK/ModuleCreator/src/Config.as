@@ -47,6 +47,7 @@ package
 
 		public function get templatesPath():String					{ return _templatesPath; }
 		public function get hostPath():String						{ return _hostPath; }
+		public function get fileViewerPath():String					{ return _fileViewerPath; }
 		public function get hostArguments():Vector.<String>			{ return _hostArguments; }
 		
 		public function get widgets():Vector.<WidgetDefinition> 	{ return _widgetDefinitions; }
@@ -94,6 +95,11 @@ package
 					if( osSpecificPaths.hasOwnProperty( "hostpath" ) )
 					{
 						_hostPath = osSpecificPaths.hostpath;						
+					}
+
+					if( osSpecificPaths.hasOwnProperty( "fileviewerpath" ) )
+					{
+						_fileViewerPath = osSpecificPaths.fileviewerpath;						
 					}
 				}
 			}
@@ -154,6 +160,7 @@ package
 
 		private var _templatesPath:String = "";
 		private var _hostPath:String = "";
+		private var _fileViewerPath:String = "";
 		private var _hostArguments:Vector.<String> = new Vector.<String>;
 		
 		private var _widgetDefinitions:Vector.<WidgetDefinition> = new Vector.<WidgetDefinition>;

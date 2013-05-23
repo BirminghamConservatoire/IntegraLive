@@ -62,6 +62,14 @@ package components.views.ModuleLibrary
 			_searchBox.setStyle( "top", 0 );
 			_searchBox.addEventListener( SearchBox.SEARCH_CHANGE_EVENT, onSearchChange );
 			addChild( _searchBox );
+
+			_tagCloud.setStyle( "left", 0 );
+			_tagCloud.setStyle( "right", 0 );
+			_tagCloud.setStyle( "bottom", 0 );
+			_tagCloud.addEventListener( Event.RESIZE, onResizeTagCloud );
+			_tagCloud.addEventListener( TagCloud.TAG_SELECTION_CHANGED, onTagSelectionChanged );
+			
+			addChild( _tagCloud );
 			
 			_library.addEventListener( LibraryItem.INSTANTIATE_EVENT, onInstantiate );
 			
@@ -104,16 +112,26 @@ package components.views.ModuleLibrary
 
 		override protected function onAllDataChanged():void
 		{
-			//first pass - build map of origin guid -> vector of interfaces
+			updateLibrary();
+			
+			updateTagList();
+			
+			updateSearchBox();
+		}
+		
+		
+		private function updateLibrary():void
+		{
+			//first pass - build map of origin guid -> vector of interfaces and count tags
 			var originGuidSet:Object = new Object;
 			for each( var guid:String in model.interfaceList )
 			{
 				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( guid );
 				Assert.assertNotNull( interfaceDefinition );
-
+				
 				if( !interfaceDefinition.hasAudioEndpoints )
 				{
-					//don't display modules with no endpoints
+					//don't display modules with no audio endpoints
 					continue;
 				}
 				
@@ -125,14 +143,14 @@ package components.views.ModuleLibrary
 				
 				var interfaces:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
 				Assert.assertNotNull( interfaces );
-
+				
 				var filteredInterfaces:Vector.<InterfaceDefinition> = interfaces.filter( shouldIncludeModule );
 				if( filteredInterfaces.length > 0 )
 				{
 					originGuidSet[ interfaceDefinition.originGuid ] = filteredInterfaces;
 				}
 			}
-
+			
 			//second pass - build list data
 			var listData:Array = new Array;
 			for( var originGuid:String in originGuidSet )
@@ -141,7 +159,7 @@ package components.views.ModuleLibrary
 				Assert.assertTrue( group.length > 0 );
 				
 				var defaultInterface:InterfaceDefinition = group[ 0 ];
-
+				
 				var originItem:ModuleLibraryListEntry = new ModuleLibraryListEntry( defaultInterface, true );
 				
 				if( group.length > 1 )
@@ -163,8 +181,72 @@ package components.views.ModuleLibrary
 			
 			listData.sort( moduleCompareFunction );
 			
-			_library.data = listData;
+			_library.data = listData;		}
+		
+		
+		
+		private function updateTagList():void
+		{
+			//build map of tags to number of times used
+			_tagSet = new Object;	
 			
+			for each( var guid:String in model.interfaceList )
+			{
+				var interfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( guid );
+				Assert.assertNotNull( interfaceDefinition );
+				
+				if( !interfaceDefinition.hasAudioEndpoints )
+				{
+					//don't include tags for modules with no audio endpoints
+					continue;
+				}
+
+				for each( var tag:String in interfaceDefinition.interfaceInfo.tags )
+				{
+					if( tag.length == 0 ) continue;		//clean up slightly messy data
+					
+					if( _tagSet.hasOwnProperty( tag ) )
+					{
+						_tagSet[ tag ] = 1;	
+					}
+					else
+					{
+						_tagSet[ tag ] ++;
+					}
+				}
+			}
+			
+			//now turn it into a vector of strings
+			var tags:Vector.<String> = new Vector.<String>;
+			for( tag in _tagSet )
+			{
+				tags.push( tag );
+			}
+			
+			tags.sort( compareTags );
+			
+			_tagCloud.tags = tags;
+		}
+		
+		
+		private function compareTags( tag1:String, tag2:String ):int
+		{
+			var tag1Uses:int = _tagSet[ tag1 ];
+			var tag2Uses:int = _tagSet[ tag2 ];
+			
+			if( tag1Uses > tag2Uses ) return -1;
+			if( tag2Uses > tag1Uses ) return 1;
+			
+			if( tag1 > tag2 ) return 1;
+			if( tag2 > tag1 ) return -1;
+		
+			return 0;
+		}
+		
+		
+		
+		private function updateSearchBox():void
+		{
 			_searchBox.filteredEverything = ( _library.numChildren == 0 );
 		}
 		
@@ -181,8 +263,11 @@ package components.views.ModuleLibrary
 			{
 				return false;
 			}
-			
-			//todo - tag cloud filter
+
+			if( !shouldIncludeAccordingToTagCloud( interfaceDefinition ) )
+			{
+				return false;
+			}
 			
 			return true;
 		}
@@ -200,11 +285,38 @@ package components.views.ModuleLibrary
 		}
 		
 		
+		private function shouldIncludeAccordingToTagCloud( interfaceDefinition:InterfaceDefinition ):Boolean
+		{
+			var selectedTags:Object = _tagCloud.selectedTags;
+			if( Utilities.isObjectEmpty( selectedTags ) )
+			{
+				return true;
+			}
+			
+			for each( var tag:String in interfaceDefinition.interfaceInfo.tags )
+			{
+				if( selectedTags.hasOwnProperty( tag ) )
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
+
+		
 		private function moduleCompareFunction( a:ModuleLibraryListEntry, b:ModuleLibraryListEntry ):Number
 		{
 			return a.compare( b );
 		}
 
+		
+		private function onTagSelectionChanged( event:Event ):void
+		{
+			updateLibrary();
+			updateSearchBox();
+		}
+		
 		
 		private function insertLabels( listData:Array ):void
 		{
@@ -252,10 +364,24 @@ package components.views.ModuleLibrary
 		
 		private function onResize( event:Event ):void
 		{
-			_searchBox.height = FontSize.getTextRowHeight( this );
+			_tagCloud.maxHeight = height / 2;
 
+			positionControls();
+		}
+		
+		
+		private function onResizeTagCloud( event:Event ):void
+		{
+			positionControls();
+		}
+		
+		
+		private function positionControls():void
+		{
+			_searchBox.height = FontSize.getTextRowHeight( this );
+			
 			_library.y = _searchBox.height;
-			_library.height = height - _searchBox.height;
+			_library.height = height - _searchBox.height - _tagCloud.height;
 		}
 
 		
@@ -267,7 +393,10 @@ package components.views.ModuleLibrary
 		
 		private var _library:Library = new Library;
 		private var _searchBox:SearchBox = new SearchBox;
+		private var _tagCloud:TagCloud = new TagCloud;
+		private var _tagSet:Object = null;
 		
 		private var _hoverInfo:Info = null;
+		
 	}
 }

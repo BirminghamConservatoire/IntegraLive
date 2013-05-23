@@ -11,7 +11,8 @@
 			<!--		path to template modules directory, relative to Module Creator	-->
 			<templatespath>..\templates\</templatespath>
 			<hostpath>..\..\host\bin\pd.exe</hostpath>
-			<fileviewerpath>Windows\\explorer.exe</fileviewerpath>
+			<fileviewerpath>Windows\explorer.exe</fileviewerpath>
+			<documentspath>..\..\documentation</documentspath>
 
 		</windows>
 		
@@ -21,6 +22,7 @@
             <templatespath>../../templates/</templatespath>
 			<hostpath>../../../host/bin/pd_integra</hostpath>
 			<fileviewerpath>/usr/bin/open</fileviewerpath>
+			<documentspath>documentation</documentspath>
 		</mac>
 	</paths>
 
@@ -28,6 +30,21 @@
 	<hostargs>
 		<hostarg>-noprefs</hostarg>
 	</hostargs>	
+	
+
+	<!-- 		help links.  Can be web or local relative to documentation directory			-->
+	<helplinks>
+		<helplink name="Module Development Guide">
+			html/module-development/module-development.htm
+		</helplink>
+		<helplink name="www.integralive.org">
+			http://www.integralive.org
+		</helplink>
+		<helplink name="User Forum">
+			http://integralive.uservoice.com/forums/58883-general
+		</helplink>
+	</helplinks>		
+	
 	
 	
     <!--        available widgets:									-->

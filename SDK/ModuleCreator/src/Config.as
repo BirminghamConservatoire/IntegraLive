@@ -48,7 +48,9 @@ package
 		public function get templatesPath():String					{ return _templatesPath; }
 		public function get hostPath():String						{ return _hostPath; }
 		public function get fileViewerPath():String					{ return _fileViewerPath; }
+		public function get documentationPath():String				{ return _documentationPath; }
 		public function get hostArguments():Vector.<String>			{ return _hostArguments; }
+		public function get helpLinks():Vector.<String>				{ return _helpLinks; }
 		
 		public function get widgets():Vector.<WidgetDefinition> 	{ return _widgetDefinitions; }
 
@@ -101,6 +103,20 @@ package
 					{
 						_fileViewerPath = osSpecificPaths.fileviewerpath;						
 					}
+					
+					if( osSpecificPaths.hasOwnProperty( "documentspath" ) )
+					{
+						_documentationPath = osSpecificPaths.documentspath;
+						
+						var applicationDirectory:String = File.applicationDirectory.nativePath; 
+						_documentationDirectory = new File( applicationDirectory ).resolvePath( documentationPath );
+						if( !_documentationDirectory.exists )
+						{
+							trace( "can't find documentation directory", _documentationDirectory.nativePath );
+							_documentationDirectory = null;
+						}
+					}
+					
 				}
 			}
 			
@@ -112,6 +128,21 @@ package
 				}
 			}
 			
+			
+			if( xml.hasOwnProperty( "helplinks" ) )
+			{
+				for each( var helpLink:XML in xml.helplinks.helplink ) 
+				{ 
+					if( !helpLink.hasOwnProperty( "@name" ) )
+					{
+						trace( "helplink missing a name attribute" );
+						continue;
+					}
+					
+					var name:String = helpLink.@name;
+					_helpLinks.push( name + ";" + resolveDocumentationPath( helpLink.toString() ) );
+				}
+			}					
 			
 			if( xml.hasOwnProperty( "widgets" ) )
 			{
@@ -153,6 +184,30 @@ package
 			}
 		}
 	
+		
+		private function resolveDocumentationPath( relativePath:String ):String
+		{
+			if( !_documentationDirectory )
+			{
+				trace( "documentation directory not defined" );
+				return null;
+			}
+			
+			var path:File = _documentationDirectory.resolvePath( relativePath );
+			if( path.exists )
+			{
+				trace( "found documentation at", path.nativePath );
+				return path.nativePath;
+			}
+			else
+			{
+				//assume it's a web link
+				trace( "interpreting", relativePath, "as weblink" );
+				
+				return relativePath;
+			}
+		}
+		
 	
 		private static var _singleInstance:Config = null;
 
@@ -161,7 +216,12 @@ package
 		private var _templatesPath:String = "";
 		private var _hostPath:String = "";
 		private var _fileViewerPath:String = "";
+
+		private var _documentationPath:String = "";
+		private var _documentationDirectory:File = null;
+		
 		private var _hostArguments:Vector.<String> = new Vector.<String>;
+		private var _helpLinks:Vector.<String> = new Vector.<String>;
 		
 		private var _widgetDefinitions:Vector.<WidgetDefinition> = new Vector.<WidgetDefinition>;
 		

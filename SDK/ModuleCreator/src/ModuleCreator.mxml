@@ -65,10 +65,13 @@
 
 	<fx:Script>
 		<![CDATA[
+			import flash.net.navigateToURL;
+			
 			import mx.controls.Alert;
 			import mx.core.INavigatorContent;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
+			import mx.events.MenuEvent;
 			import mx.managers.PopUpManager;
 			import mx.managers.ToolTipManager;
 			
@@ -130,8 +133,7 @@
 				
 				var bundlesMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Module Bundles" );
 				var fileMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "File" );
-				
-				//var helpMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), _menu.numItems, "Help" );
+				var helpMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), _menu.numItems, "Help" );
 				
 				// Populate menus
 				
@@ -209,12 +211,19 @@
 				bundlesMenu.submenu.addItem( extractModuleBundle );				
 				
 				
-				/*var config:Config = Config.singleInstance;
+				var config:Config = Config.singleInstance;
 				var helpLinks:Vector.<String> = config.helpLinks;
 				for each( var helpLink:String in helpLinks )
 				{
 					addHelpLink( helpMenu.submenu, helpLink );
-				}*/
+				}
+				
+				//separator 
+				helpMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+				var aboutBox:NativeMenuItem = new NativeMenuItem( "About Integra Module Creator..." );
+				aboutBox.addEventListener( Event.SELECT, onAboutBox );
+				aboutBox.addEventListener( Event.PREPARING, updateAboutBox );
+				helpMenu.submenu.addItem( aboutBox );				
 			}
 			
 			
@@ -256,6 +265,90 @@
 				if( file2.isDirectory && !file1.isDirectory ) return 1;
 				
 				return ( file1.name > file2.name ) ? 1 : -1;
+			}
+			
+			
+			private function addHelpLink( menu:NativeMenu, helpLink:String ):void
+			{
+				var separator:int = helpLink.indexOf( ";" );
+				if( separator < 0 ) 
+				{
+					trace( "can't add help link - no semicolon separating name and link" );
+					return;
+				}
+				
+				var name:String = helpLink.substr( 0, separator );
+				var link:String = helpLink.substr( separator+1 );
+				
+				if( isWebLink( link ) )
+				{
+					//separator 
+					menu.addItem( new NativeMenuItem( "", true ) );
+				}
+				
+				var menuitem:NativeMenuItem = new NativeMenuItem( name );
+				menuitem.data = link;
+				menuitem.addEventListener( Event.SELECT, onHelpLink );
+				menu.addItem( menuitem );			
+			}
+
+			
+			private function onHelpLink( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+				
+				var link:String = event.target.data;
+				if( !link )
+				{
+					trace( "can't open help link" );
+					return;
+				}
+				
+				if( !isWebLink( link ) )
+				{
+					link = "file://" + link;
+				}
+				trace( "opening help link", link );
+				
+				navigateToURL( new URLRequest( link ), "_blank" );
+			}			
+
+			
+			private function isWebLink( link:String ):Boolean
+			{
+				return ( link.substr( 0, 7 ) == "http://" );			
+			}		
+			
+			
+			private function updateAboutBox( event:Event ):void
+			{
+				var menuItem:NativeMenuItem = event.target as NativeMenuItem;
+				menuItem.checked = ( _aboutBox != null ); 
+			}			
+
+			
+			private function onAboutBox( event:Event ):void
+			{
+				if( handleCommandWhenInAlert() ) return;
+
+				if( _aboutBox )
+				{
+					PopUpManager.removePopUp( _aboutBox );
+					_aboutBox = null;
+				}
+				else
+				{
+					_aboutBox = new AboutBox;
+					_aboutBox.addEventListener( Event.REMOVED_FROM_STAGE, onAboutBoxClosed );
+					PopUpManager.addPopUp( _aboutBox, this, true );
+					PopUpManager.centerPopUp( _aboutBox );
+				}
+			}			
+			
+			
+			private function onAboutBoxClosed( event:Event ):void
+			{
+				_aboutBox = null;
 			}
 			
 			
@@ -958,6 +1051,7 @@
 			
 			private var _menu:NativeMenu;
 			private var _bundleMaker:BundleMaker = new BundleMaker;
+			private var _aboutBox:AboutBox = null;
 			
 			private const _iidFileName:String = Globals.moduleToplevelDirectoryName + "/interface_definition.iid";
 			

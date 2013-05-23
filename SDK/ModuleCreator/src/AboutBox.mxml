@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" 
+		   width="400" height="300"
+		   creationComplete="onCreationComplete()"
+		   backgroundColor="#ffffff"
+		   borderStyle="solid" borderThickness="4" borderColor="#000080">
+	
+	<mx:Label text="Integra Module Creator" fontSize="20" left="10" top="10"/>
+
+	<mx:Label id="_versionLabel" left="10" top="40"/>
+	
+	<mx:Button label="OK" horizontalCenter="0" bottom="10" click="onClose()"/>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+
+			private function onCreationComplete():void
+			{
+				_versionLabel.text = versionNumber;
+			}
+			
+			
+			private function onClose():void
+			{
+				PopUpManager.removePopUp( this );
+			}
+			
+			
+			private function get versionNumber():String
+			{
+				var descriptor:XML = NativeApplication.nativeApplication.applicationDescriptor;
+				
+				var ns:Namespace = descriptor.namespaceDeclarations()[0];
+				var versionString:String = descriptor.ns::versionLabel;
+				
+				if( !versionString || versionString.length == 0 )
+				{
+					versionString = descriptor.ns::versionNumber;
+					
+					if( !versionString || versionString.length == 0 )
+					{
+						versionString = "<unknown version>";
+					}
+				}
+				
+				return versionString;
+			}
+		]]>
+	</fx:Script>			
+
+			
+</mx:Canvas>

@@ -24,8 +24,11 @@
       </Directory> 
 
       <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="Integra Live"/>
-      </Directory>
+        <Directory Id="ApplicationProgramsFolder" Name="Integra Live">
+          <Directory Id="ModuleDeveloperSDKFolder" Name="Module Developer SDK"/>
+
+          </Directory>
+    </Directory>
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION" Name="Integra Live">
           <Directory Id="GUILOCATION" Name="gui">
@@ -85,13 +88,17 @@
             Key="Software\Integra Live\Integra Live"
             Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
-      
+    </DirectoryRef>
+
+    <DirectoryRef Id="ModuleDeveloperSDKFolder">
       <Component Id="ModuleCreatorApplicationShortcut" Guid="2AF97BFB-CD9F-4F42-94DB-056F2051BCD8">
         <Shortcut Id="ModuleCreatorApplicationStartMenuShortcut"
             Name="Integra Module Creator"
             Description="A tool to make Integra Live Modules"
             Target="[INSTALLLOCATION]sdk\ModuleCreator\ModuleCreator.exe"
             WorkingDirectory="INSTALLLOCATION"/>
+        <RemoveFolder Id="ModuleDeveloperSDKFolder"
+            On="uninstall"/>
         <RegistryValue Root="HKCU"
             Key="Software\Integra Live\Integra Module Creator"
             Name="installed" Type="integer" Value="1" KeyPath="yes"/>

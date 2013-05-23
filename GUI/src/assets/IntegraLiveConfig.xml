@@ -97,12 +97,9 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<helplink name="Scripting Tutorial 2">
 				html/scripting2/scripting2.htm
 			</helplink>
-<!--	Temporarily removed help link for module development
-
 			<helplink name="Module Development Guide">
 				html/module-development/module-development.htm
 			</helplink>
--->
 			<helplink name="www.integralive.org">
 				http://www.integralive.org
 			</helplink>

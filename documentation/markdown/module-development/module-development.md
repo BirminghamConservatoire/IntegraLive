@@ -1,5 +1,9 @@
 ## Integra Module Development
 
+## This documentation is obsolete!
+
+## Todo: write new documentation
+
 In this tutorial we are going to look at how to create our own Integra Live modules. We will cover the two main aspects of module development: creating a new module on the Integra Database; and editing a Pd patch that will contain your new module. Before we can begin to create modules you will need to download Integra Live 1.x.x (beta)-dev-latest.tar.gz; this is the developer version of the software that displays the Pd backend concurrently with the Integra GUI. This can be found at [http://www.integralive.org/nightly/](../nightly/) You will also need to register yourself on the Integra Database. Follow this link to sign up: [http://db.integralive.org/signup](http://db.integralive.org/signup).
 
 ### Creating a new module definition on the Integra Database

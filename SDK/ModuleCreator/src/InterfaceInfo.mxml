@@ -305,6 +305,12 @@
 				{
 					var tag:String = tags.getItemAt( i ) as String;
 					
+					if( tag.length == 0 ) 
+					{
+						_iidTags.errorString = "Tags must not be empty";
+						return false;
+					}
+					
 					if( !TagEditor.isTagValid( tag ) )
 					{
 						_iidTags.errorString = "Tags may only contain letters, numbers and spaces";
@@ -387,12 +393,16 @@
 
 				Assert.assertTrue( _iidTags.selectedIndex >= 0 && _iidTags.selectedIndex < tags.length );
 				
-				tags.setItemAt( ( _iidTags.itemEditorInstance as TextInput ).text, _iidTags.selectedIndex );
+				var tag:String = ( _iidTags.itemEditorInstance as TextInput ).text;
+				if( tag.length > 0 )
+				{
+					tag = tag.toLowerCase();
+					tags.setItemAt( tag, _iidTags.selectedIndex );
+					interfaceChanged();
+				}
 				
 				event.preventDefault();
 				_iidTags.destroyItemEditor();
-				
-				interfaceChanged();
 			}
 			
 			

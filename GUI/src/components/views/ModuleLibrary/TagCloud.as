@@ -27,9 +27,15 @@ package components.views.ModuleLibrary
 	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
+	import mx.controls.Label;
+	import mx.core.ScrollPolicy;
 	
 	import components.model.userData.ColorScheme;
+	import components.utils.CursorSetter;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
+	import components.views.MouseCapture;
+	import components.views.Skins.CloseButtonSkin;
 	import components.views.Skins.TextButtonSkin;
 	
 	public class TagCloud extends Canvas
@@ -40,8 +46,28 @@ package components.views.ModuleLibrary
 			
 			height = 60;
 			
+			horizontalScrollPolicy = ScrollPolicy.OFF;
+			verticalScrollPolicy = ScrollPolicy.OFF;
+			
+			_label.setStyle( "color", '#808080' );
+			_label.alpha = 0.5;
+			_label.x = _labelMargin;
+			_label.y = _labelMargin;
+			_label.text = "Tags...";
+			addChild( _label );
+
+			_clearButton.visible = false;
+			_clearButton.setStyle( "skin", CloseButtonSkin );
+			_clearButton.setStyle( "color", 0x808080 );
+			_clearButton.addEventListener( MouseEvent.CLICK, onClear );
+			addChild( _clearButton );
+			
+			_buttonCanvas.horizontalScrollPolicy = ScrollPolicy.OFF;
+			addChild( _buttonCanvas );
 			
 			addEventListener( Event.RESIZE, onResize );
+			addEventListener( MouseEvent.MOUSE_DOWN, onMouseDown );
+			addEventListener( MouseEvent.MOUSE_MOVE, onMouseMove );
 		}
 		
 		
@@ -53,7 +79,7 @@ package components.views.ModuleLibrary
 			{
 				var tag:String = tags[ i ];
 				
-				if( i >= _buttons.length )
+				if( i >= _tagButtons.length )
 				{
 					var button:Button = new Button;
 					button.toggle = true;
@@ -61,32 +87,34 @@ package components.views.ModuleLibrary
 					button.setStyle( "skin", TextButtonSkin );
 					button.addEventListener( MouseEvent.CLICK, onClickTagButton );
 					button.addEventListener( MouseEvent.DOUBLE_CLICK, onDoubleClickTagButton );
-					_buttons.push( button );
+					_tagButtons.push( button );
 					
-					addChild( button );
+					_buttonCanvas.addChild( button );
 				}
 				
-				_buttons[ i ].label = tag;
+				_tagButtons[ i ].label = tag;
 				if( _selectedTags.hasOwnProperty( tag ) )
 				{
-					_buttons[ i ].selected = true;
+					_tagButtons[ i ].selected = true;
 					prunedSelectedTags[ tag ] = 1;
 				}
+				
+				_tagButtons[ i ].validateNow();
 			}
 			
-			if( _buttons.length > tags.length )
+			if( _tagButtons.length > tags.length )
 			{
-				for( tags.length;i < _buttons.length; i++ )
+				for( tags.length;i < _tagButtons.length; i++ )
 				{
-					removeChild( _buttons[ i ] );
+					_buttonCanvas.removeChild( _tagButtons[ i ] );
 				}
 				
-				_buttons.length = tags.length;
+				_tagButtons.length = tags.length;
 			}
 
 			_selectedTags = prunedSelectedTags;
 			
-			positionButtons();
+			positionTagButtons();
 		}
 		
 
@@ -119,12 +147,14 @@ package components.views.ModuleLibrary
 			
 			if( !style || style == FontSize.STYLENAME )
 			{
-				for each( var button:Button in _buttons )
+				for each( var button:Button in _tagButtons )
 				{
 					button.height = buttonHeight;
 				}
+
+				positionClearButton();
 				
-				callLater( positionButtons );
+				callLater( positionTagButtons );
 			}
 		}
 		
@@ -137,31 +167,48 @@ package components.views.ModuleLibrary
 		
 		private function onResize( event:Event ):void
 		{
-			positionButtons();
+			positionClearButton();
+			positionTagButtons();
+		}
+		
+		
+		private function positionClearButton():void
+		{
+			_clearButton.width = _clearButton.height = buttonHeight * 0.5;
+			_clearButton.setStyle( "right", buttonHeight * 0.25 );
+			_clearButton.setStyle( "top", buttonHeight * 0.25 );
 		}
 
 	
-		private function positionButtons():void
+		private function positionTagButtons():void
 		{
-			const leftMargin:Number = 2;
-			const topMargin:Number = 2;
-			const rightMargin:Number = 18;	//include room for vertical scroll bar
+			const edgeMargin:Number = 2;
 			const innerMargin:Number = 2;
-			var x:Number = leftMargin;
-			var y:Number = topMargin;
 			
-			for( var i:int = 0; i < _buttons.length; i++ )
+			_buttonCanvas.x = 0;
+			_buttonCanvas.y = buttonHeight;
+			_buttonCanvas.width = width;
+			_buttonCanvas.height = height - buttonHeight;
+
+			var x:Number = edgeMargin;
+			var y:Number = edgeMargin;
+			
+			_buttonCanvasHeight = 0;
+				
+			for( var i:int = 0; i < _tagButtons.length; i++ )
 			{
-				if( x + _buttons[ i ].measuredWidth > width - rightMargin )
+				if( x + _tagButtons[ i ].measuredWidth > width - edgeMargin - _scrollBarWidth )
 				{
-					x = leftMargin;
+					x = edgeMargin;
 					y += ( buttonHeight + innerMargin );
 				}
 				
-				_buttons[ i ].x = x;
-				_buttons[ i ].y = y;
+				_tagButtons[ i ].x = x;
+				_tagButtons[ i ].y = y;
 				
-				x += ( _buttons[ i ].measuredWidth + innerMargin );
+				x += ( _tagButtons[ i ].measuredWidth + innerMargin );
+				
+				_buttonCanvasHeight = y + buttonHeight;
 			}
 		}
 		
@@ -179,6 +226,21 @@ package components.views.ModuleLibrary
 				_selectedTags[ tag ] = 1;
 			}
 			
+			_clearButton.visible = !Utilities.isObjectEmpty( _selectedTags );
+
+			dispatchEvent( new Event( TAG_SELECTION_CHANGED ) );
+		}
+
+		
+		private function onClear( event:MouseEvent ):void
+		{
+			_selectedTags = new Object;
+			for each( var button:Button in _tagButtons )
+			{
+				button.selected = false;
+			}
+			
+			_clearButton.visible = false;
 			dispatchEvent( new Event( TAG_SELECTION_CHANGED ) );
 		}
 		
@@ -189,11 +251,69 @@ package components.views.ModuleLibrary
 			event.target.selected = !event.target.selected;
 			onClickTagButton( event );
 		}
+		
+		
+		private function get mouseIsInResizeArea():Boolean
+		{
+			if( mouseY >= buttonHeight )
+			{
+				return false;
+			}
+			
+			if( _clearButton.visible && _clearButton.getRect( this ).contains( mouseX, mouseY ) )
+			{
+				return false;
+			}
+				
+			return true;
+		}
 
 		
-		private var _buttons:Vector.<Button> = new Vector.<Button>;
+		private function onMouseMove( event:MouseEvent ):void
+		{
+			if( mouseIsInResizeArea )
+			{
+				CursorSetter.setCursor( CursorSetter.RESIZE_NS, this );
+			}
+			else
+			{
+				CursorSetter.setCursor( CursorSetter.ARROW, this );
+			}
+		}
+		
+		
+		private function onMouseDown( event:MouseEvent ):void
+		{
+			if( mouseIsInResizeArea )
+			{
+				_heightDragOffset = stage.mouseY + height;
+				MouseCapture.instance.setCapture( this, onDragResize, null, CursorSetter.RESIZE_NS );
+			}
+		}
+		
+		
+		private function onDragResize( event:MouseEvent ):void
+		{
+			var min:Number = buttonHeight;
+			var max:Number = Math.min( maxHeight, buttonHeight + _buttonCanvasHeight );
+			
+			height = Math.max( min, Math.min( max, _heightDragOffset - stage.mouseY ) );
+		}
+
+		
+		private var _label:Label = new Label;
+		private var _clearButton:Button = new Button;
+
+		private var _buttonCanvas:Canvas = new Canvas;
+		private var _tagButtons:Vector.<Button> = new Vector.<Button>;
 		private var _selectedTags:Object = new Object;
 		
+		private var _buttonCanvasHeight:Number = 0;
+		
+		private var _heightDragOffset:Number = 0;
+		
+		private static const _labelMargin:Number = 3;
+		private static const _scrollBarWidth:Number = 16;
 		
 		public static const TAG_SELECTION_CHANGED:String = "tagSelectionChanged";
 	}

@@ -22,14 +22,14 @@
  
 package components.views.Skins
 {
-	import components.model.userData.ColorScheme;
-	
 	import flash.filters.GlowFilter;
 	
-	import flexunit.framework.Assert;
-	
-	import mx.controls.Button;
 	import mx.skins.halo.ButtonSkin;
+	
+	import components.model.userData.ColorScheme;
+	import components.utils.Utilities;
+	
+	import flexunit.framework.Assert;
 
 	public class TextButtonSkin extends ButtonSkin
 	{
@@ -67,38 +67,42 @@ package components.views.Skins
 			super.updateDisplayList( width, height );
 				
 			graphics.clear();
-			
-			var over:Boolean = false;
-			var down:Boolean = false;
+
+			const overInterpolation:Number = 0.25;
+			var color:uint = 0;
+			var glow:Boolean = false;
 			
 			switch( name )
 			{
 				case "skin":
 				case "upSkin":
+					color = _normalBackgroundColor;
 					break;
 				
 				case "overSkin":
-					over = true;
+					color = Utilities.interpolateColors( _normalBackgroundColor, _selectedBackgroundColor, overInterpolation );
 					break;
 				
 				case "downSkin":
-					down = true;
+					color = _selectedBackgroundColor;
 					break;
 				
 				case "selectedUpSkin":
-					down = true;
+					color = _selectedBackgroundColor;
+					glow = true;
 					break;
 
 				case "selectedOverSkin":
-					over = true;
-					down = true;
+					color = _selectedBackgroundColor;
+					glow = true;
 					break;
 
 				case "selectedDownSkin":
-					down = true;
+					color = Utilities.interpolateColors( _normalBackgroundColor, _selectedBackgroundColor, overInterpolation );;
 					break;
 
 				case "disabledSkin":
+					color = _normalBackgroundColor;
 					break;
 				
 				default:
@@ -106,14 +110,14 @@ package components.views.Skins
 					break;				
 			}			
 			
-			graphics.beginFill( over || down ? _selectedBackgroundColor : _normalBackgroundColor );
+			graphics.beginFill( color );
 			graphics.drawRoundRectComplex( 0, 0, width, height, radius, radius, radius, radius );
 			graphics.endFill();
 			
 			//update the glow
 			var filterArray:Array = new Array;
 			
-			if( down )
+			if( glow )
 			{
 				filterArray.push( new GlowFilter( _selectedBackgroundColor, 0.6, 10, 10, 2 ) );
 			}

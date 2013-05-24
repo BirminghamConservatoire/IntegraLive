@@ -21,6 +21,8 @@
 
 package components.model
 {
+	import flexunit.framework.Assert;
+
 	public class Midi extends IntegraDataObject
 	{
 		public function Midi()
@@ -28,8 +30,16 @@ package components.model
 			super();
 		}
 
-	
 		
+		public function setCCState( index:int, value:int ):void
+		{
+			Assert.assertTrue( index >= 0 && index < numberOfCCNumbers );
+			Assert.assertTrue( value >= 0 && value < 128 );
+			
+			_ccState[ index ] = value;
+		}
+		
+	
 		override public function setAttributeFromServer( attributeName:String, value:Object, model:IntegraModel ):Boolean
 		{
 			if( super.setAttributeFromServer( attributeName, value, model ) )

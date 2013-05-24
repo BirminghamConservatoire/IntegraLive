@@ -39,7 +39,6 @@
 		<![CDATA[
 			import com.mattism.http.xmlrpc.MethodCallImpl;
 			
-			import mx.containers.TabNavigator;
 			import mx.controls.Alert;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
@@ -1412,7 +1411,7 @@
 
 	</fx:Style>
 
-	<mx:VBox id="mainVBox" width="100%" height="100%">
+	<mx:VBox id="mainVBox" width="100%" height="100%" verticalGap="0">
 		<RibbonBar:RibbonBar id="ribbonBar"/>
 		<viewContainers:MainViewContainer id="mainViewContainer"/>
 	</mx:VBox>

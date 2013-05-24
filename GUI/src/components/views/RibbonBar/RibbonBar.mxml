@@ -30,6 +30,9 @@
 
 	<fx:Script>
 		<![CDATA[
+			import mx.core.ScrollPolicy;
+			
+			import components.controller.serverCommands.ReceiveMidiInput;
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetViewMode;
@@ -41,8 +44,6 @@
 			import components.views.InfoView.InfoMarkupForViews;
 			
 			import flexunit.framework.Assert;
-			
-			import mx.core.ScrollPolicy;
 		
 
 		override public function styleChanged( style:String ):void
@@ -65,7 +66,9 @@
 			
 			if( !style || style == FontSize.STYLENAME )
 			{
-				height = FontSize.getTextRowHeight( this ) * 1.5;
+				height = FontSize.getTextRowHeight( this ) * 1.5 + 3;
+				
+				updateMidiInputIndicatorWidth();
 			}
 		}
 
@@ -80,6 +83,7 @@
 			if( button == _pauseButton ) return infos.getInfoForView( "PauseButton" );
 			if( button == _arrangeButton ) return infos.getInfoForView( "ArrangeViewButton" );			
 			if( button == _liveButton ) return infos.getInfoForView( "LiveViewButton" );
+			if( button == _midiButton ) return infos.getInfoForView( "MidiInputButton" );
 			if( button == _lightButton ) return infos.getInfoForView( "LightingButton" );
 				
 			return null;
@@ -100,6 +104,9 @@
 			
 			addUpdateMethod( SetViewMode, onViewModeChanged );
 			addUpdateMethod( SetPlaying, onPlaystateChanged );
+			addUpdateMethod( ReceiveMidiInput, onReceiveMidiInput );
+			
+			_midiInputTimer.addEventListener( TimerEvent.TIMER, onMidiInputTimer );
 		}
 
 
@@ -112,6 +119,14 @@
 		private function onPlaystateChanged( command:SetPlaying ):void
 		{
 			updatePlaystateButtons();
+		}
+			
+			
+		private function onReceiveMidiInput( command:ReceiveMidiInput ):void
+		{
+			if( command.midiID != model.project.midi.id ) return;
+			
+			_midiButton.pulse();
 		}
 
 
@@ -160,7 +175,57 @@
  			controller.processCommand( new SetPlaying( false ) );
  		}
  		
- 		
+			
+		private function toggleMidiInfo():void
+		{
+			_midiButton.selected = !_midiButton.selected;
+			
+			if( _midiInputDirection == 0 )
+			{
+				_midiInputTimer.start();
+			}
+			_midiInputDirection = _midiButton.selected ? 1 : -1;
+			
+		}
+			
+			
+		private function onMidiInputTimer( event:TimerEvent ):void
+		{
+			_midiInputInterpolation = Math.max( 0, Math.min( 1, _midiInputInterpolation + _midiInputDirection * _midiInputStep ) );
+			
+			if( _midiInputInterpolation > 0 )
+			{
+				if( _midiInputIndicator.parent != _midiInputContainer )
+				{
+					_midiInputContainer.addChild( _midiInputIndicator );
+				}
+				
+				updateMidiInputIndicatorWidth();
+				
+				if( _midiInputInterpolation == 1 )
+				{
+					_midiInputTimer.stop();
+					_midiInputDirection = 0;
+				}
+			}
+			else
+			{
+				if( _midiInputIndicator.parent == _midiInputContainer )
+				{
+					_midiInputContainer.removeChild( _midiInputIndicator );
+					_midiInputTimer.stop();
+					_midiInputDirection = 0;
+				}
+			}
+		}
+			
+			
+		private function updateMidiInputIndicatorWidth():void
+		{
+			_midiInputIndicator.width = _midiInputIndicator.fullWidth * _midiInputInterpolation; 
+		}
+
+			
  		private function toggleLighting():void
  		{
  			switch( model.project.projectUserData.colorScheme )
@@ -178,8 +243,16 @@
  					break;
  			}
  		}
+			
+			
+		private var _midiInputIndicator:MidiInputIndicator = new MidiInputIndicator;
+		private var _midiInputInterpolation:Number = 0;
+		private var _midiInputDirection:int = 0;
+		private var _midiInputTimer:Timer = new Timer( _midiInputTimerDelay );
 
-		
+		private static const _midiInputTimerDelay:Number = 20;
+		private static const _midiInputStep:Number = 0.1;
+			
 		]]>
 	</fx:Script>	
 
@@ -201,10 +274,17 @@
 									click="{switchToLiveView()}"/>
 		</mx:HBox>
 	</mx:HBox>
-	<RibbonBar:RibbonButton id="_lightButton" 
-							right="20" 
-							verticalCenter="0" 
-							ribbonButtonIcon="{RibbonButton.RIBBONICON_LIGHT}" 
-							click="{toggleLighting()}"/>
+	<mx:HBox right="20" horizontalGap="20" verticalCenter="0">
+		<mx:HBox id="_midiInputContainer" horizontalGap="5">
+			<RibbonBar:RibbonButton id="_midiButton" 
+									ribbonButtonIcon="{RibbonButton.RIBBONICON_MIDI}"
+									receivesPulses="true"
+									click="{toggleMidiInfo()}"/>
+		</mx:HBox>
+		<RibbonBar:RibbonButton id="_lightButton" 
+								ribbonButtonIcon="{RibbonButton.RIBBONICON_LIGHT}" 
+								click="{toggleLighting()}"/>
+	</mx:HBox>
+	
 
 </IntegraView>

@@ -21,24 +21,26 @@
 
 package components.views.RibbonBar
 {
-	import components.model.userData.ColorScheme;
-	import components.utils.FontSize;
-	import components.utils.Utilities;
-	import components.views.MouseCapture;
-	
 	import flash.display.GradientType;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filters.BevelFilter;
 	import flash.filters.GlowFilter;
 	import flash.geom.Matrix;
-	
-	import flexunit.framework.Assert;
+	import flash.geom.Point;
+	import flash.utils.getTimer;
 	
 	import mx.containers.Canvas;
 	import mx.core.ScrollPolicy;
 	
 	import spark.components.Label;
+	
+	import components.model.userData.ColorScheme;
+	import components.utils.FontSize;
+	import components.utils.Utilities;
+	import components.views.MouseCapture;
+	
+	import flexunit.framework.Assert;
 	
 
 	public class RibbonButton extends Canvas
@@ -64,6 +66,16 @@ package components.views.RibbonBar
 		}
 		
 		
+		public function get selected():Boolean { return _selected; } 
+		
+		
+		public function set selected( selected:Boolean ):void 
+		{ 
+			_selected = selected;
+			updateEverything();
+		}
+		
+		
 		public function set ribbonButtonLabel( label:String ):void 
 		{
 			_label.text = label; 
@@ -77,22 +89,37 @@ package components.views.RibbonBar
 		}
 		
 		
-		public function set selected( selected:Boolean ):void 
-		{ 
-			_selected = selected;
+		public function set receivesPulses( receivesPulses:Boolean ):void
+		{
+			_receivesPulses = receivesPulses; 
 			updateIconColor();
 			updateFilters();
 			invalidateDisplayList(); 
 		}
 
+		
+		public function pulse():void
+		{
+			Assert.assertTrue( _receivesPulses );
 
+			if( !_inPulse )
+			{
+				_inPulse = true;
+				addEventListener( Event.ENTER_FRAME, onPulseFrame )
+			}
+
+			_pulseStartTicks = getTimer();
+			_pulseIntensity = 1;
+			updateEverything();
+			
+		}
+		
+		
 		override public function styleChanged( style:String ):void
 		{
 			if( !style || style == ColorScheme.STYLENAME )
 			{
-				updateIconColor();
-				invalidateDisplayList(); 
-				updateFilters();
+				updateEverything();
 			}			
 
 			if( !style || style == FontSize.STYLENAME )
@@ -110,24 +137,40 @@ package components.views.RibbonBar
 
             graphics.clear();
 
-			var rimBackgroundColor:uint;
-			var middleBackgroundColor:uint;
-
+			var strongRimColor:uint, normalRimColor:uint, strongMiddleColor:uint, normalMiddleColor:uint; 
 			switch( getStyle( ColorScheme.STYLENAME ) )
 			{
 				default:
 				case ColorScheme.LIGHT:
-					rimBackgroundColor = _selected ? 0x959595 : 0xCECECE;
-					middleBackgroundColor = _selected ? 0xC8C8C8 : 0xEDEDED;
+					strongRimColor = 0x959595;
+					normalRimColor = 0xCECECE;
+					strongMiddleColor = 0xC8C8C8;
+					normalMiddleColor = 0xEDEDED;
 					break;
-					
+				
 				case ColorScheme.DARK:
-					rimBackgroundColor = _selected ? 0x6B6B6B : 0x313131;
-					middleBackgroundColor = _selected ? 0x383838 : 0x121212;
+					strongRimColor = 0x6B6B6B;
+					normalRimColor = 0x313131;
+					strongMiddleColor = 0x383838;
+					normalMiddleColor = 0x121212;
 					break;
 			}
 			
-			var colors:Array = [ rimBackgroundColor, middleBackgroundColor, rimBackgroundColor ];
+			var rimColor:uint;
+			var middleColor:uint;
+			
+			if( _receivesPulses )
+			{
+				rimColor = Utilities.interpolateColors( normalRimColor, strongRimColor, _pulseIntensity );
+				middleColor = Utilities.interpolateColors( normalMiddleColor, strongMiddleColor, _pulseIntensity );
+			}
+			else
+			{
+				rimColor = _selected ? strongRimColor : normalRimColor;
+				middleColor = _selected ? strongMiddleColor : normalMiddleColor;
+			}
+
+			var colors:Array = [ rimColor, middleColor, rimColor ];
 			var alphas:Array = [ 1, 1, 1 ];
 			var ratios:Array = [0x00, 0x80, 0xFF];
 
@@ -151,6 +194,10 @@ package components.views.RibbonBar
 				case RIBBONICON_LIGHT:
 					drawLightIcon( width, height );
 					break;
+				
+				case RIBBONICON_MIDI:
+					drawMidiIcon( width, height );
+					break;
 					
 				case RIBBONICON_NONE:
 					break;
@@ -160,8 +207,8 @@ package components.views.RibbonBar
 					break;
 			}	
         }
-
-
+		
+		
 		private function drawPlayIcon( width:Number, height:Number ):void
 		{
 			graphics.beginFill( _iconColor );
@@ -213,21 +260,71 @@ package components.views.RibbonBar
 			graphics.curveTo( width * 0.65, height * 0.3, width * 0.55, height * 0.5 );
 			graphics.curveTo( width * 0.5, height * 0.6, width * 0.45, height * 0.5 );
 		}
-       
+
+		
+		private function drawMidiIcon( width:Number, height:Number ):void
+		{
+			var circleRadius:Number = Math.min( width, height ) * 0.3;
+			var circleCenter:Point = new Point( width * 0.5, height * 0.5 );
+			
+			graphics.lineStyle( 1, _iconColor );
+			graphics.drawCircle( circleCenter.x, circleCenter.y, circleRadius );
+			
+			var pinHeadDistance:Number = circleRadius * 0.55;
+			var pinHeadRadius:Number = 0.5;
+			
+			graphics.lineStyle( 0, _iconColor );
+			
+			for( var i:int = 0; i < 5; i++ )
+			{
+				var theta:Number = i * Math.PI / 4;
+				var vector:Point = new Point( Math.cos( theta ), Math.sin( theta ) );
+				
+				var pinOffset:Point = new Point( vector.x * pinHeadDistance, vector.y * pinHeadDistance );
+				var pinPosition:Point = circleCenter.add( pinOffset );
+				
+				graphics.beginFill( _iconColor );
+				graphics.drawCircle( pinPosition.x, pinPosition.y, pinHeadRadius );
+			}
+		}
+
+		
+		private function updateEverything():void
+		{
+			updateIconColor();
+			invalidateDisplayList(); 
+			updateFilters();
+		}
+		
         
         private function updateIconColor():void
         {
+			var strongColor:uint;
+			var normalColor:uint;
+			
 			switch( getStyle( ColorScheme.STYLENAME ) )
 			{
 				default:
 				case ColorScheme.LIGHT:
-					_iconColor = _selected ? 0x000000 : 0x808080;
+					strongColor = 0x000000;
+					normalColor = 0x808080;
 					break;
 					
 				case ColorScheme.DARK:
-					_iconColor = _selected ? 0xffffff : 0x808080;
+					strongColor = 0xffffff;
+					normalColor = 0x808080;
 					break;
 			}
+			
+			if( _receivesPulses )
+			{
+				_iconColor = Utilities.interpolateColors( normalColor, strongColor, _pulseIntensity );			
+			}
+			else
+			{
+				_iconColor = _selected ? strongColor : normalColor;
+			}
+			
 			
 			_label.setStyle( "color", _iconColor );
         }
@@ -309,14 +406,44 @@ package components.views.RibbonBar
 			var bevel:BevelFilter = new BevelFilter( _pressed ? 1 : 2, 45, highlightColor, 0.5, shadowColor, 0.5 );
 			filterArray.push( bevel );
 			
-			if( _over || _selected )
+			var glowProportion:Number = 0;
+			var glowDistance:Number = 10;
+			
+			if( _receivesPulses )
 			{
-				var glow:GlowFilter = new GlowFilter( 0x808080, 0.6, 10, 10, 1.5 );
+				glowProportion = _over ? 1 : _pulseIntensity;
+				glowDistance = Math.max( glowDistance, _pulseIntensity * 20 );
+			}
+			else
+			{
+				glowProportion = ( _over || _selected ) ? 1 : 0;
+			}
+
+			if( glowProportion > 0 )
+			{
+				var glow:GlowFilter = new GlowFilter( 0x808080, 0.6 * glowProportion, glowDistance, glowDistance, 1.5 );
 				filterArray.push( glow );
 			}
 			
 			filters = filterArray;
 		}
+		
+		
+		private function onPulseFrame( event:Event ):void
+		{
+			_pulseIntensity = Math.max( 0, 1 - ( getTimer() - _pulseStartTicks ) / _pulseMilliseconds );
+			
+			_pulseIntensity = 1 - Math.cos( _pulseIntensity * Math.PI / 2 );	//curve	
+			
+			updateEverything();
+			
+			if( _pulseIntensity == 0 )
+			{
+				_inPulse = false;
+				removeEventListener( Event.ENTER_FRAME, onPulseFrame );
+			}
+		}
+		
 		
 		private var _pressed:Boolean = false;
 		private var _selected:Boolean = false;
@@ -325,11 +452,20 @@ package components.views.RibbonBar
 		private var _label:Label = new Label;
 		private var _icon:String = RIBBONICON_NONE;
 
+		private var _receivesPulses:Boolean = false;
+		
+		private var _inPulse:Boolean = false;
+		private var _pulseIntensity:Number = 0;
+		private var _pulseStartTicks:Number = 0;
+
 		private var _iconColor:uint = 0;
+		
+		private static const _pulseMilliseconds:Number = 1000;
 
 		public static const RIBBONICON_PLAY:String = "play";
 		public static const RIBBONICON_PAUSE:String = "pause";
 		public static const RIBBONICON_LIGHT:String = "light";
+		public static const RIBBONICON_MIDI:String = "midi";
 		public static const RIBBONICON_NONE:String = "none";
 	}
 }

@@ -21,6 +21,14 @@
 
 package components.utils
 {
+	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	import flash.utils.getTimer;
+	
+	import mx.core.Container;
+	import mx.core.ScrollPolicy;
+	
 	import components.controlSDK.core.ControlManager;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetBlockTrack;
@@ -38,18 +46,10 @@ package components.utils
 	import components.model.interfaceDefinitions.StreamInfo;
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.ColorScheme;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
-	
-	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
-	import flash.utils.getTimer;
+	import components.views.InfoView.InfoMarkupForViews;
 	
 	import flexunit.framework.Assert;
-	
-	import mx.core.Container;
-	import mx.core.ScrollPolicy;
 	
 	import org.osmf.net.StreamType;
 
@@ -144,39 +144,41 @@ package components.utils
 		override protected function onAllDataChanged():void
 		{
 			//update tracked endpoints from model
-			_trackedEndpoints = new Object;
 			_mapTrackedInterfaceGuidsToEndpoints = new Object;
 			
 			for each( var interfaceName:String in _audioOutputInterfaces )
 			{
-				var interfaceDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( interfaceName );
-				if( !interfaceDefinition )
+				var coreInterfaceDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( interfaceName );
+				if( !coreInterfaceDefinition )
 				{
 					continue;
 				}
 				
-				var guid:String = interfaceDefinition.moduleGuid;
-				
-				for each( var widget:WidgetDefinition in interfaceDefinition.widgets )
+				var allVersions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( coreInterfaceDefinition.originGuid );
+				for each( var interfaceDefinition:InterfaceDefinition in allVersions )
 				{
-					if( widget.type == _vuMeterControlName )
+					var guid:String = interfaceDefinition.moduleGuid;
+					
+					for each( var widget:WidgetDefinition in interfaceDefinition.widgets )
 					{
-						for each( var endpointName:String in widget.attributeToEndpointMap )
+						if( widget.type == _vuMeterControlName )
 						{
-							_trackedEndpoints[ endpointName ] = 1;
-							var endpointsForThisInterface:Object = null;
-							
-							if( _mapTrackedInterfaceGuidsToEndpoints.hasOwnProperty( guid ) )
+							for each( var endpointName:String in widget.attributeToEndpointMap )
 							{
-								endpointsForThisInterface = _mapTrackedInterfaceGuidsToEndpoints[ guid ];
+								var endpointsForThisInterface:Object = null;
+								
+								if( _mapTrackedInterfaceGuidsToEndpoints.hasOwnProperty( guid ) )
+								{
+									endpointsForThisInterface = _mapTrackedInterfaceGuidsToEndpoints[ guid ];
+								}
+								else
+								{
+									endpointsForThisInterface = new Object;
+									_mapTrackedInterfaceGuidsToEndpoints[ guid ] = endpointsForThisInterface;
+								}
+								
+								endpointsForThisInterface[ endpointName ] = 1;
 							}
-							else
-							{
-								endpointsForThisInterface = new Object;
-								_mapTrackedInterfaceGuidsToEndpoints[ guid ] = endpointsForThisInterface;
-							}
-							
-							endpointsForThisInterface[ endpointName ] = 1;
 						}
 					}
 				}
@@ -285,11 +287,6 @@ package components.utils
 				return;
 			}
 			
-			if( !_trackedEndpoints.hasOwnProperty( command.endpointName ) )
-			{
-				return;
-			}
-
 			var moduleID:int = command.moduleID;
 			var module:ModuleInstance = model.getModuleInstance( moduleID );
 			Assert.assertNotNull( module );
@@ -372,7 +369,6 @@ package components.utils
 		private var _bottomBackgroundColor:uint = 0;
 		private var _topBackgroundColor:uint = 0;
 
-		private var _trackedEndpoints:Object = new Object;
 		private var _mapTrackedInterfaceGuidsToEndpoints:Object = new Object;
 		
 		private static const _vuMeterControlName:String = "VuMeter"; 

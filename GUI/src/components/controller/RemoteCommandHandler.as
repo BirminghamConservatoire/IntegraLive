@@ -1,5 +1,6 @@
 package components.controller
 {
+	import components.controller.serverCommands.ReceiveMidiInput;
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.serverCommands.SetAudioDevices;
 	import components.controller.serverCommands.SetAudioDriver;
@@ -16,6 +17,7 @@ package components.controller
 	import components.controller.serverCommands.SetPlaying;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
+	import components.model.Midi;
 	import components.model.ModuleInstance;
 	import components.model.Player;
 	import components.model.Script;
@@ -183,8 +185,6 @@ package components.controller
 			}
 			else if( object is AudioSettings )
 			{
-				Assert.assertTrue( endpointName.length > 0 );
-				
 				var audioSettings:AudioSettings = model.audioSettings;
 				
 				switch( endpointName )
@@ -241,8 +241,6 @@ package components.controller
 			}
 			else if( object is MidiSettings )
 			{
-				Assert.assertTrue( endpointName.length > 0 );
-				
 				switch( endpointName )
 				{
 					case "availableDrivers":
@@ -277,6 +275,24 @@ package components.controller
 					
 					default:
 						break;					
+				}
+			}
+			else if( object is Midi )
+			{
+				const ccTagLength:int = ReceiveMidiInput.CC.length;
+				if( endpointName.substr( 0, ccTagLength ) == ReceiveMidiInput.CC )
+				{
+					var index:int = int( endpointName.substr( ccTagLength ) );
+					command = new ReceiveMidiInput( object.id, ReceiveMidiInput.CC, index, int( value ) );
+				}
+				else
+				{
+					const noteOnTagLength:int = ReceiveMidiInput.NOTE_ON.length;
+					if( endpointName.substr( 0, noteOnTagLength ) == ReceiveMidiInput.NOTE_ON )
+					{
+						index = int( endpointName.substr( noteOnTagLength ) );
+						command = new ReceiveMidiInput( object.id, ReceiveMidiInput.NOTE_ON, index );
+					}
 				}
 			}
 

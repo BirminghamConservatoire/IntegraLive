@@ -30,11 +30,13 @@ package components.views.ModuleLibrary
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
 	
+	import components.model.Info;
 	import components.model.userData.ColorScheme;
 	import components.utils.CursorSetter;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.MouseCapture;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
 	import components.views.Skins.TextButtonSkin;
 	
@@ -69,6 +71,19 @@ package components.views.ModuleLibrary
 			addEventListener( MouseEvent.MOUSE_DOWN, onMouseDown );
 			addEventListener( MouseEvent.MOUSE_MOVE, onMouseMove );
 		}
+		
+		
+		public function getInfoToDisplay( mouseObject:Object ):Info
+		{
+			if( mouseObject == _clearButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleTagsClearButton" );
+			}
+			else
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleTags" );
+			}
+		}		
 		
 		
 		public function set tags( tags:Vector.<String> ):void

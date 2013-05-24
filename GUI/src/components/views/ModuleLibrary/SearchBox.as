@@ -31,7 +31,9 @@ package components.views.ModuleLibrary
 	import mx.controls.Button;
 	import mx.controls.TextInput;
 	
+	import components.model.Info;
 	import components.utils.Utilities;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
 	
 	public class SearchBox extends Canvas
@@ -80,12 +82,30 @@ package components.views.ModuleLibrary
 		}
 		
 		
+		public function getInfoToDisplay( mouseObject:Object ):Info
+		{
+			if( mouseObject == _clearButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleSearchClearButton" );
+			}
+			else
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleSearchBox" );
+			}
+		}
+		
+		
 		override protected function updateDisplayList( width:Number, height:Number):void
 		{
 			super.updateDisplayList( width, height );
 			
 			graphics.clear();
 			
+			//draw invisible background
+			
+			graphics.beginFill( 0, 0 );
+			graphics.drawRect( 0, 0, width, height );
+
 			//drag magnifying glass
 			var magnifierColor:uint = _input.getStyle( "color" );
 			
@@ -96,6 +116,7 @@ package components.views.ModuleLibrary
 			var circleCenter:Point = new Point( magnifierRect.right - circleRadius, magnifierRect.top + circleRadius );
 			
 			graphics.lineStyle( 2, magnifierColor, showAsFound ? 1 : 0.5 );
+			graphics.beginFill( 0, 0 );
 			graphics.drawCircle( circleCenter.x, circleCenter.y, circleRadius );
 			
 			var handleOffset:Number = circleRadius * Math.SQRT1_2;

@@ -84,6 +84,16 @@ package components.views.ModuleLibrary
 
 		override public function getInfoToDisplay( event:MouseEvent ):Info 
 		{
+			if( Utilities.isEqualOrDescendant( event.target, _searchBox ) )
+			{
+				return _searchBox.getInfoToDisplay( event.target );
+			}
+			
+			if( Utilities.isEqualOrDescendant( event.target, _tagCloud ) )
+			{
+				return _tagCloud.getInfoToDisplay( event.target );
+			}
+			
 			if( _library.numChildren == 0 )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary" );

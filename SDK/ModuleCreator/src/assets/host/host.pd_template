@@ -1,40 +1,42 @@
-#N canvas 244 22 790 520 10;
-#X obj 800 36 r integra;
-#X msg 802 116 \; pd dsp 1;
-#X obj 802 90 loadbang;
+#N canvas 70 32 1085 600 10;
+#N canvas 52 306 224 301 host 0;
+#X obj -361 8 r integra;
+#X msg -359 88 \; pd dsp 1;
+#X obj -359 62 loadbang;
 #N canvas 486 250 435 353 integra-canvas 0;
 #X obj 127 103 adc~ 1 2 3 4 5 6 7 8;
 #X obj 127 166 /* MODULE PATH *///* MODULE NAME */ 1;
 #X obj 127 224 dac~ 1 2 3 4 5 6 7 8;
 /* MODULE CONNECTIONS */
-#X restore 802 183 pd integra-canvas;
-#X obj 293 10 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
-0;
-#X text 297 8 Test Module Parameters;
-#X obj 804 215 r integra-broadcast-receive;
-#X obj 800 61 print to_server;
-#X obj 62 9 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
-0;
-#X text 66 7 Toggle Audio On / Off;
-#X obj 63 34 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
-0;
-#X obj 73 44 tgl 40 0 empty empty empty 17 7 0 40 -262144 -1 -1 0 1
-;
-#X msg 73 105 \; pd dsp \$1;
-#X msg 517 112 \; pd-/* MODULE NAME */.pd vis \$1;
-#X obj 506 11 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
-0;
-#X obj 507 34 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
-0;
-#X obj 517 44 tgl 40 1 empty empty empty 17 7 0 40 -262144 -1 -1 1
-1;
-#X text 510 9 Show / Hide Module;
-#X obj 804 266 print to_module;
-#X obj 804 239 route 1;
-/* ENDPOINT SENDVALUE INSTANCES */
-#X connect 0 0 7 0;
+#X restore -359 155 pd integra-canvas;
+#X obj -357 187 r integra-broadcast-receive;
+#X obj -361 33 print to_server;
+#X obj -357 238 print to_module;
+#X obj -357 211 route 1;
+#X connect 0 0 5 0;
 #X connect 2 0 1 0;
-#X connect 6 0 19 0;
-#X connect 11 0 12 0;
-#X connect 16 0 13 0;
-#X connect 19 0 18 0;
+#X connect 4 0 7 0;
+#X connect 7 0 6 0;
+#X restore -353 8 pd host;
+#X obj -286 7 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X text -282 5 Toggle Audio On / Off;
+#X obj -285 32 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
+0;
+#X obj -275 42 tgl 40 0 empty empty empty 17 7 0 40 -262144 -1 -1 0
+1;
+#X msg -275 103 \; pd dsp \$1;
+#X msg -114 103 \; pd-/* MODULE NAME */.pd vis \$1;
+#X obj -125 7 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X obj -124 30 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
+0;
+#X obj -114 40 tgl 40 1 empty empty empty 17 7 0 40 -262144 -1 -1 1
+1;
+#X text -121 5 Show / Hide Module;
+#X obj 132 6 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X text 136 4 Test Module Parameters;
+/* ENDPOINT SENDVALUE INSTANCES */
+#X connect 4 0 5 0;
+#X connect 9 0 6 0;

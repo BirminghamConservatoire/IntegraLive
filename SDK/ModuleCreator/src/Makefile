@@ -8,7 +8,8 @@
 # the variables you most likely will want to adjust are
 # FLEX_SDK_PATH and AIR_SDK_PATH
 
-PRODUCT="ModuleCreator"
+PRODUCT="Integra Module Creator"
+SWFNAME="ModuleCreator"
 CONFIG=app-config.xml
 DESCRIPTOR=ModuleCreator-app.xml
 ARGS=
@@ -36,12 +37,12 @@ CURL = curl
 
 .PHONY: $(DESCRIPTOR) clean
 
-all:  ModuleCreator.swf
+all:  $(SWFNAME).swf
 
 run:
 	$(ADL) $(ADL_FLAGS) $(DESCRIPTOR) -- $(ARGS)
 
-ModuleCreator.swf: $(CONFIG)
+$(SWFNAME).swf: $(CONFIG)
 	$(AMXMLC) $(AMXMLC_FLAGS) ModuleCreator.mxml
 
 key:
@@ -49,15 +50,15 @@ key:
 	    $(ADT) -certificate -cn SelfSigned 1024-RSA $(CERTIFICATE) integra;\
 	fi
 
-app: ModuleCreator.swf key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle ModuleCreator.app ModuleCreator-app.xml ModuleCreator.swf assets
+app: $(SWFNAME).swf key
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle $(PRODUCT).app ModuleCreator-app.xml $(SWFNAME).swf assets
 
 
-air: ModuleCreator.swf key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra ModuleCreator.air ModuleCreator-app.xml ModuleCreator.swf assets
+air: $(SWFNAME).swf key
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra $(PRODUCT).air ModuleCreator-app.xml $(SWFNAME).swf assets
 
 clean:
-	-@rm -f ModuleCreator.swf
+	-@rm -f $(SWFNAME).swf
 	-@rm -f *.bak
 	-@rm -f app-config.xml
 	-@rm -f $(CERTIFICATE)

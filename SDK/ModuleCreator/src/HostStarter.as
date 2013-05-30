@@ -253,7 +253,9 @@ package
 		private function generateSendValues( endpoints:EndpointList ):String
 		{
 			var sendValues:String = "";
+			var controlX:Number = controlXStart;
 			var controlY:Number = controlYStart;
+			var column:int = 0;
 			
 			for( var i:int = 0; i < endpoints.numberOfEndpoints; i++ )
 			{
@@ -316,7 +318,17 @@ package
 				sendValues += sendValue;
 				sendValues += "\n";
 				
-				controlY += controlYSpacing;
+				column++;
+				if( column >= controlColumns )
+				{
+					column = 0;	
+					controlX = controlXStart;
+					controlY += controlYSpacing;
+				}
+				else
+				{
+					controlX += controlXSpacing;
+				}
 			}
 			
 			return sendValues;
@@ -347,9 +359,11 @@ package
 		private static const maxInputs:int = 8;
 		private static const maxOutputs:int = 8;
 		
-		private static const controlX:int = 293;
-		private static const controlYStart:int = 34;
-		private static const controlYSpacing:int = 52;
+		private static const controlXStart:int = 132;
+		private static const controlYStart:int = 30;
+		private static const controlXSpacing:int = 104;
+		private static const controlYSpacing:int = 54;
+		private static const controlColumns:int = 5;
 		
 	}
 }

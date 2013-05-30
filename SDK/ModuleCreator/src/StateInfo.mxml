@@ -27,7 +27,7 @@
 					 verticalAlign="middle"
 					 styleName="smallRows"
 					 width="{Globals.propertyColumnWidth( 2 )}"
-					 dataProvider="{[_rangeLabel, _allowedValuesLabel]}"/>
+					 dataProvider="{[rangeLabel, allowedValuesLabel]}"/>
 		</mx:HBox>
 		<local:Range id="_range" visible="false" maxHeight="0"/>
 		<local:AllowedValues id="_allowedValues" visible="false" maxHeight="0"/>
@@ -73,7 +73,7 @@
 				
 				_stateType.selectedItem = Globals.floatType;
 				
-				_constraint.selectedItem = _rangeLabel;
+				_constraint.selectedItem = rangeLabel;
 				
 				_range.doInitialize();
 				_allowedValues.doInitialize();
@@ -187,13 +187,13 @@
 				if( hasRange )
 				{
 					_range.loadFromXML( constraintXML.child( "Range" ) );
-					_constraint.selectedItem = _rangeLabel;
+					_constraint.selectedItem = rangeLabel;
 					showRangeConstraint();
 				}
 				else
 				{
 					_allowedValues.loadFromXML( constraintXML.child( "AllowedStates" ) );
-					_constraint.selectedItem = _allowedValuesLabel;
+					_constraint.selectedItem = allowedValuesLabel;
 					showAllowedValuesConstraint();
 				}
 
@@ -297,11 +297,11 @@
 			{
 				switch( _constraint.selectedItem.toString() )
 				{
-					 case _rangeLabel:
+					 case rangeLabel:
 						 showRangeConstraint();
 						 break;
 					 
-					 case _allowedValuesLabel:
+					 case allowedValuesLabel:
 						 showAllowedValuesConstraint();
 						 break;
 
@@ -337,7 +337,7 @@
 			
 			private function updateScaleControl():void
 			{
-				var show:Boolean = ( _stateType.selectedItem == Globals.floatType ) && ( _constraint.selectedItem = _rangeLabel );
+				var show:Boolean = ( _stateType.selectedItem == Globals.floatType ) && ( _constraint.selectedItem = rangeLabel );
 
 				_scale.visible = show;
 				_scale.maxHeight = show ? NaN : 0;
@@ -509,8 +509,8 @@
 			}
 			
 			
-			private static const _rangeLabel:String = "Range";
-			private static const _allowedValuesLabel:String = "Allowed Values";
+			public static const rangeLabel:String = "Range";
+			public static const allowedValuesLabel:String = "Allowed Values";
 		]]>
 	</fx:Script>		
 		

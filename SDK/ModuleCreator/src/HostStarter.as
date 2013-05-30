@@ -275,6 +275,9 @@ package
 				
 				var controlType:String = null;
 				var defaultValue:String = null;
+				var minimum:String = null;
+				var maximum:String = null;
+				
 				switch( controlInfo._controlType.selectedItem )
 				{
 					case ControlInfo._stateLabel:
@@ -284,6 +287,8 @@ package
 							case Globals.intType:
 							case Globals.floatType:
 								controlType = "float";
+								minimum = getMinimum( stateInfo );
+								maximum = getMaximum( stateInfo );
 								break;
 							
 							case Globals.stringType:
@@ -314,7 +319,14 @@ package
 					continue;
 				}
 				
-				var sendValue:String = "#X obj " + controlX + " " + controlY + " send-value " + controlType + " " + endpointName + " " + defaultValue + ";";
+				var sendValue:String = "#X obj " + controlX + " " + controlY + " send-value " + controlType + " " + endpointName + " " + defaultValue;
+				if( minimum && maximum )
+				{
+					sendValue += ( " " + minimum + " " + maximum );
+				}
+				
+				sendValue += ";";
+				
 				sendValues += sendValue;
 				sendValues += "\n";
 				
@@ -332,6 +344,41 @@ package
 			}
 			
 			return sendValues;
+		}
+		
+		
+		private function getMinimum( stateInfo:StateInfo ):String 
+		{
+			switch( stateInfo._constraint.selectedItem )
+			{
+				case StateInfo.rangeLabel:
+					return stateInfo._range._minimum.text;
+					
+				case StateInfo.allowedValuesLabel:
+					return String( stateInfo._allowedValues.minimum );					
+					
+				default:
+					trace( "unexpected constraint type" );
+					return null;
+			}
+		}
+
+		
+		private function getMaximum( stateInfo:StateInfo ):String 
+		{
+			switch( stateInfo._constraint.selectedItem )
+			{
+				case StateInfo.rangeLabel:
+					return stateInfo._range._maximum.text;
+					
+				case StateInfo.allowedValuesLabel:
+					return String( stateInfo._allowedValues.maximum );					
+					
+				default:
+					trace( "unexpected constraint type" );
+					Assert.assertTrue( false );
+					return null;
+			}
 		}
 		
 		

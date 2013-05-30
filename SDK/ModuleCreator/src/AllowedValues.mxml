@@ -27,11 +27,11 @@
 	<fx:Script>
 		<![CDATA[	
 			
-			import flexunit.framework.Assert;
-			
 			import mx.collections.IList;
 			import mx.controls.TextInput;
 			import mx.events.ListEvent;
+			
+			import flexunit.framework.Assert;
 			
 
 			public function doInitialize():void
@@ -123,6 +123,54 @@
 				}
 			
 				return xml;
+			}
+			
+			
+			public function get minimum():Number
+			{
+				var minimum:Number = 0;
+				var first:Boolean = true;
+				
+				var values:IList = _valuesList.dataProvider as IList;
+				Assert.assertNotNull( values );
+
+				for( var i:int = 0; i < values.length; i++ )
+				{
+					var value:Number = Number( values.getItemAt( i ).toString() );
+					if( isNaN( value ) ) continue;
+					
+					if( first || value < minimum )
+					{
+						minimum = value;
+						first = false;
+					}
+				}
+				
+				return minimum;
+			}
+
+			
+			public function get maximum():Number
+			{
+				var maximum:Number = 0;
+				var first:Boolean = true;
+				
+				var values:IList = _valuesList.dataProvider as IList;
+				Assert.assertNotNull( values );
+				
+				for( var i:int = 0; i < values.length; i++ )
+				{
+					var value:Number = Number( values.getItemAt( i ).toString() );
+					if( isNaN( value ) ) continue;
+					
+					if( first || value > maximum )
+					{
+						maximum = value;
+						first = false;
+					}
+				}
+				
+				return maximum;
 			}
 
 			

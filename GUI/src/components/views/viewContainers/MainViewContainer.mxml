@@ -40,7 +40,7 @@
 	
 	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="ArrangeState,ArrangeStateWithInfo">
 		<mx:HBox width="100%" height="100%" horizontalGap="2">
-			<viewContainers:ViewHolder view="{_arrangeView}" timelineMode="{TimelineMode.EDITABLE}"/>
+			<viewContainers:ViewHolder view="{_arrangeView}" timelineMode="{TimelineMode.EDITABLE}" hasActiveButton="true"/>
 			<viewContainers:ViewHolder view="{_blockLibrary}" changeWidthFromLeft="true"/>
 		</mx:HBox>
 		<mx:HBox width="100%" horizontalGap="2">
@@ -61,7 +61,7 @@
 	</mx:VBox>
 	
 	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="LiveState,LiveStateWithInfo">
-		<viewContainers:ViewHolder view="{_liveView}" height="100%" timelineMode="{TimelineMode.READONLY}"/>
+		<viewContainers:ViewHolder view="{_liveView}" height="100%" timelineMode="{TimelineMode.READONLY}" hasActiveButton="true"/>
 		<mx:HBox width="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_keybindingView}" canCollapse="true" changeHeightFromTop="true"/> 
 			<viewContainers:ViewHolder view="{_liveInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true" includeIn="LiveStateWithInfo"/>

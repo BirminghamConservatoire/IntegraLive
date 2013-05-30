@@ -124,7 +124,7 @@ package components.model
 		private var _name:String = null;
 		private var _interfaceDefinition:InterfaceDefinition = null;
 		
-		private var _active:Boolean = false;		
+		private var _active:Boolean = true;		
 		
 		private var _userDataString:String = null;
 		private var _userData:UserData = null;

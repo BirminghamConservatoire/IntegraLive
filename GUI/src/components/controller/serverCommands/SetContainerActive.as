@@ -91,6 +91,12 @@ package components.controller.serverCommands
 		{
 			return response.response == "command.set";
 		}
+
+		
+		public override function getAttributesChangedByThisCommand( model:IntegraModel, changedAttributes:Vector.<String> ):void
+		{
+			changedAttributes.push( model.getPathStringFromID( _containerID ) + ".active" );
+		}		
 		
 		
 		private var _containerID:int;

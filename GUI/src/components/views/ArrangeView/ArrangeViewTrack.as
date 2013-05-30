@@ -37,6 +37,7 @@ package components.views.ArrangeView
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.RepositionBlock;
 	import components.controller.serverCommands.SetBlockTrack;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.controller.userDataCommands.SetTimelineState;
 	import components.controller.userDataCommands.SetTrackColor;
@@ -77,6 +78,7 @@ package components.views.ArrangeView
 			
 			addTitleInvalidatingCommand( RenameObject );
 			addColorChangingCommand( SetTrackColor );
+			addActiveChangingCommand( SetContainerActive );
 			
 			horizontalScrollPolicy = ScrollPolicy.OFF;  
 			verticalScrollPolicy = ScrollPolicy.OFF;    
@@ -136,6 +138,18 @@ package components.views.ArrangeView
 			return _track.trackUserData.color;
 		}
 		
+		
+		override public function get active():Boolean
+		{
+			return _track ? _track.active : false;
+		}
+		
+		
+		override public function set active( active:Boolean ):void 
+		{
+			controller.processCommand( new SetContainerActive( _trackID, active ) );
+		}
+				
 		
 		override public function resizeFinished():void
 		{

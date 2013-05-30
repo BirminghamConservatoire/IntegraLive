@@ -20,6 +20,20 @@
 
 package components.views.ArrangeView
 {
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
+	import flash.filesystem.File;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.net.FileFilter;
+	import flash.ui.Keyboard;
+	import flash.utils.Timer;
+	
+	import mx.controls.HScrollBar;
+	import mx.core.ScrollPolicy;
+	import mx.events.ScrollEvent;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.controller.events.ScrollbarShowHideEvent;
@@ -33,6 +47,7 @@ package components.views.ArrangeView
 	import components.controller.serverCommands.RepositionBlock;
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.serverCommands.SetBlockTrack;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetPlayPosition;
 	import components.controller.serverCommands.SetTrackOrder;
 	import components.controller.userDataCommands.SetObjectSelection;
@@ -59,21 +74,7 @@ package components.views.ArrangeView
 	import components.views.Timeline.PlayPositionMarker;
 	import components.views.viewContainers.ViewTree;
 	
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.filesystem.File;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.net.FileFilter;
-	import flash.ui.Keyboard;
-	import flash.utils.Timer;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.controls.HScrollBar;
-	import mx.core.ScrollPolicy;
-	import mx.events.ScrollEvent;
 	
 
 	public class ArrangeView extends IntegraView
@@ -123,6 +124,7 @@ package components.views.ArrangeView
 			addUpdateMethod( UpdateProjectLength, onProjectLengthChanged );
 			
 			addTitleInvalidatingCommand( RenameObject );
+			addActiveChangingCommand( SetContainerActive );
 			
 			addEventListener( Event.RESIZE, onResize );
 			
@@ -172,6 +174,18 @@ package components.views.ArrangeView
 			return model.project.info;
 		}
 		
+		
+		override public function get active():Boolean
+		{
+			return model.project.active;
+		}
+		
+		
+		override public function set active( active:Boolean ):void 
+		{
+			controller.processCommand( new SetContainerActive( model.project.id, active ) );
+		}
+				
 		
 		public function get lastBlockDirectory():String { return _lastBlockDirectory; }
 		public function set lastBlockDirectory( lastBlockDirectory:String ):void { _lastBlockDirectory = lastBlockDirectory; }

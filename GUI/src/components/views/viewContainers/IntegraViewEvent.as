@@ -36,6 +36,7 @@ package components.views.viewContainers
 		public static const COLOR_CHANGED:String = "COLOR_CHANGED";
 		public static const MINHEIGHT_CHANGED:String = "MINHEIGHT_CHANGED";
 		public static const COLLAPSE_CHANGED:String = "COLLAPSE_CHANGED";
+		public static const ACTIVE_CHANGED:String = "ACTIVE_CHANGED";
 		public static const EXPAND_COLLAPSE_ENABLE_CHANGED:String = "EXPAND_COLLAPSE_ENABLE_CHANGED";
 		public static const RESIZED_BY_DIMENSION_SHARER:String = "RESIZED_BY_DIMENSION_SHARER"; 
 	}

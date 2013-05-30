@@ -21,11 +21,19 @@
 
 package components.views.LiveView
 {
+	import flash.events.Event;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	
+	import mx.core.ScrollPolicy;
+	
 	import components.controller.serverCommands.AddBlock;
+	import components.controller.serverCommands.AddTrack;
 	import components.controller.serverCommands.RemoveBlock;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.RepositionBlock;
 	import components.controller.serverCommands.SetBlockTrack;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetPlayPosition;
 	import components.controller.userDataCommands.SetLiveViewControlPosition;
 	import components.controller.userDataCommands.SetLiveViewControls;
@@ -38,13 +46,7 @@ package components.views.LiveView
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	
-	import flash.events.Event;
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.core.ScrollPolicy;
 
 
 	public class LiveViewTrack extends IntegraView
@@ -68,6 +70,7 @@ package components.views.LiveView
 			addTitleInvalidatingCommand( RenameObject );
 			addTitleInvalidatingCommand( SetPlayPosition );
 			addColorChangingCommand( SetTrackColor );
+			addActiveChangingCommand( SetContainerActive );
 
 			addEventListener( Event.RESIZE, onResize );
 			
@@ -121,6 +124,22 @@ package components.views.LiveView
 
 			controller.processCommand( new SetTrackExpanded( _trackID, !collapsed, SetTrackExpanded.LIVE_VIEW ) );
 		}
+		
+		
+		override public function get active():Boolean
+		{
+			if( !model.doesObjectExist( _trackID ) ) return false;
+			if( !( model.getDataObjectByID( _trackID ) is Track ) ) return false;
+
+			return model.getTrack( _trackID ).active;
+		}
+		
+		
+		override public function set active( active:Boolean ):void 
+		{
+			controller.processCommand( new SetContainerActive( _trackID, active ) );
+		}
+		
 		
 		
 

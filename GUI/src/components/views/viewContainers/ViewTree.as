@@ -91,6 +91,7 @@ package components.views.viewContainers
 			var viewHolder:ViewHolder = new ViewHolder;
 			viewHolder.view = item;
 			viewHolder.canCollapse = true;
+			viewHolder.hasActiveButton = true;
 			
 			if( userCanChangeHeight )
 			{

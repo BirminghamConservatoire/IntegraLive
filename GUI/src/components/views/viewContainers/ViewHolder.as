@@ -46,8 +46,10 @@ package components.views.viewContainers
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
+	import components.views.Skins.ActiveButtonSkin;
 	import components.views.Skins.CloseButtonSkin;
 	import components.views.Skins.CollapseButtonSkin;
+	import components.views.Skins.TickButtonSkin;
 	import components.views.Timeline.Timeline;
 	import components.views.Timeline.TimelineMode;
 	
@@ -107,6 +109,7 @@ package components.views.viewContainers
 				_view.removeEventListener( IntegraViewEvent.COLOR_CHANGED, onColorChanged );
 				_view.removeEventListener( IntegraViewEvent.MINHEIGHT_CHANGED, onViewMinHeightChanged );
 				_view.removeEventListener( IntegraViewEvent.COLLAPSE_CHANGED, onCollapseChanged );
+				_view.removeEventListener( IntegraViewEvent.ACTIVE_CHANGED, onActiveChanged );
 				_view.removeEventListener( IntegraViewEvent.EXPAND_COLLAPSE_ENABLE_CHANGED, onExpandCollapseEnableChanged );
 				_view.removeEventListener( IntegraViewEvent.RESIZED_BY_DIMENSION_SHARER, onResizedByDimensionSharer );
 				_view.removeEventListener( Event.RESIZE, onResizeView );
@@ -124,6 +127,7 @@ package components.views.viewContainers
 			_view.addEventListener( IntegraViewEvent.COLOR_CHANGED, onColorChanged );
 			_view.addEventListener( IntegraViewEvent.MINHEIGHT_CHANGED, onViewMinHeightChanged );
 			_view.addEventListener( IntegraViewEvent.COLLAPSE_CHANGED, onCollapseChanged );
+			_view.addEventListener( IntegraViewEvent.ACTIVE_CHANGED, onActiveChanged );
 			_view.addEventListener( IntegraViewEvent.EXPAND_COLLAPSE_ENABLE_CHANGED, onExpandCollapseEnableChanged );
 			_view.addEventListener( IntegraViewEvent.RESIZED_BY_DIMENSION_SHARER, onResizedByDimensionSharer );
 			_view.addEventListener( Event.RESIZE, onResizeView );
@@ -139,6 +143,12 @@ package components.views.viewContainers
 				_collapseButton.setStyle( "color", color );
 			}
 
+			if( _activeButton )
+			{
+				_activeButton.selected = active;
+				_activeButton.setStyle( "color", color );
+			}
+			
 			positionChildren();
 		}
 
@@ -181,6 +191,44 @@ package components.views.viewContainers
 			return _view.collapsed;
 		}
 
+		
+		public function set hasActiveButton( hasActiveButton:Boolean ):void
+		{
+			if( hasActiveButton == _hasActiveButton ) return;
+			
+			_hasActiveButton = hasActiveButton;
+			
+			if( hasActiveButton )
+			{
+				_activeButton = new Button;
+				_activeButton.toggle = true;
+				_activeButton.setStyle( "skin", ActiveButtonSkin );
+				_activeButton.setStyle( "color", color );
+				addElementAt( _activeButton, 0 );
+				
+				_activeButton.selected = active;
+				
+				_activeButton.addEventListener( MouseEvent.CLICK, onClickActiveButton );
+				_activeButton.addEventListener( MouseEvent.DOUBLE_CLICK, onClickActiveButton );
+			}
+			else
+			{
+				_activeButton.removeEventListener( MouseEvent.CLICK, onClickActiveButton );
+				_activeButton.removeEventListener( MouseEvent.DOUBLE_CLICK, onClickActiveButton );
+				removeElement( _activeButton );
+				_activeButton = null;
+			}
+			
+			positionChildren();
+		}
+		
+		
+		public function get active():Boolean
+		{
+			if( !_view ) return false;
+			
+			return _view.active;
+		}		
 
 		public function set hasCloseButton( hasCloseButton:Boolean ):void
 		{
@@ -500,6 +548,12 @@ package components.views.viewContainers
 		}
 
 		
+		private function onClickActiveButton( event:MouseEvent ):void
+		{
+			_view.active = !_view.active;
+		}
+		
+		
 		private function onResize( event:Event ):void
 		{
 			positionChildren();
@@ -543,7 +597,12 @@ package components.views.viewContainers
 			{
 				_closeButton.setStyle( "color", color );
 			}
-        }
+
+			if( _activeButton )
+			{
+				_activeButton.setStyle( "color", color );
+			}
+		}
         
         
         private function onViewMinHeightChanged( event:IntegraViewEvent ):void
@@ -570,6 +629,17 @@ package components.views.viewContainers
 			
 			_collapseButton.enabled = _view.expandCollapseEnabled;
 		}
+		
+		
+		private function onActiveChanged( event:IntegraViewEvent ):void
+		{
+			if( _activeButton )
+			{
+				_activeButton.selected = active;
+			}
+			
+			positionChildren();
+		}		
 		
 		
 		
@@ -813,7 +883,14 @@ package components.views.viewContainers
 			if( _vuMeter )
 			{
 				_vuMeter.y = _titleControlOffset;
-				_vuMeter.setStyle( "right", _titleControlOffset );
+				if( _activeButton )
+				{
+					_vuMeter.setStyle( "right", _titleControlOffset * 2 + FontSize.getButtonSize( this ) );
+				}
+				else
+				{
+					_vuMeter.setStyle( "right", _titleControlOffset );
+				}
 				_vuMeter.height = _titleHeight - _titleControlOffset * 2;
 				_vuMeter.width = _vuMeterWidth;
 				updateVuMeterBackgroundColors();
@@ -825,6 +902,14 @@ package components.views.viewContainers
 				_closeButton.setStyle( "right", _titleControlOffset );
 				_closeButton.height = FontSize.getButtonSize( this );
 				_closeButton.width = FontSize.getButtonSize( this );
+			}
+
+			if( _activeButton )
+			{
+				_activeButton.y = _titleControlOffset;
+				_activeButton.setStyle( "right", _titleControlOffset );
+				_activeButton.height = FontSize.getButtonSize( this );
+				_activeButton.width = FontSize.getButtonSize( this );
 			}
 		}
 		
@@ -1027,7 +1112,10 @@ package components.views.viewContainers
 		private function shouldHandleTitleClick( clickObject:Object ):Boolean
 		{
 			if( clickObject is IntegraView ) return false;
-				
+
+			if( Utilities.isEqualOrDescendant( clickObject, _vuMeter ) ) return false;
+			if( Utilities.isEqualOrDescendant( clickObject, _activeButton ) ) return false;
+			
 			return true;
 			
 			/*if( clickObject == this ) return true;
@@ -1062,6 +1150,9 @@ package components.views.viewContainers
 
 		private var _hasCloseButton:Boolean = false;
 		private var _closeButton:Button = null;
+
+		private var _hasActiveButton:Boolean = false;
+		private var _activeButton:Button = null;
 		
 		private var _changeHeightFromBottom:Boolean = false;
 		private var _changeHeightFromTop:Boolean = false;

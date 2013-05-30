@@ -9,12 +9,14 @@ package components.controller
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableMidiDrivers;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetMidiDevices;
 	import components.controller.serverCommands.SetMidiDriver;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.SetPlayPosition;
 	import components.controller.serverCommands.SetPlaying;
+	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.Midi;
@@ -295,6 +297,16 @@ package components.controller
 					}
 				}
 			}
+			else if( object is IntegraContainer )
+			{
+				switch( endpointName )
+				{
+					case "active":
+						command = new SetContainerActive( object.id, ( value != 0 ) );
+						break;
+				}
+			}
+				
 
 			
 			/*

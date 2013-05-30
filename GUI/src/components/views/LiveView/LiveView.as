@@ -20,26 +20,25 @@
 
 package components.views.LiveView
 {
+	import flash.events.MouseEvent;
+	
+	import mx.core.ScrollPolicy;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.controller.serverCommands.AddTrack;
 	import components.controller.serverCommands.RemoveTrack;
 	import components.controller.serverCommands.RenameObject;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetTrackOrder;
 	import components.controller.userDataCommands.SetTrackExpanded;
-	import components.model.Block;
 	import components.model.Info;
 	import components.model.Track;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.viewContainers.ViewTree;
 	
-	import flash.events.MouseEvent;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.core.Container;
-	import mx.core.ScrollPolicy;
 	
 	
 
@@ -63,6 +62,7 @@ package components.views.LiveView
 			addUpdateMethod( SetTrackExpanded, onTrackExpanded );			
 			
 			addTitleInvalidatingCommand( RenameObject );
+			addActiveChangingCommand( SetContainerActive );
 		}
 
 
@@ -75,6 +75,18 @@ package components.views.LiveView
 		{
 			return model ? model.project.id : super.vuMeterContainerID;
 		}	
+		
+		
+		override public function get active():Boolean
+		{
+			return model.project.active;
+		}
+		
+		
+		override public function set active( active:Boolean ):void 
+		{
+			controller.processCommand( new SetContainerActive( model.project.id, active ) );
+		}
 		
 
 		override public function styleChanged( style:String ):void

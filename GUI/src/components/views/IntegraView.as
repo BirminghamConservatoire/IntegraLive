@@ -97,11 +97,16 @@ package components.views
 			_expandCollapseEnabled = expandCollapseEnabled;
 			dispatchEvent( new IntegraViewEvent( IntegraViewEvent.EXPAND_COLLAPSE_ENABLE_CHANGED ) );
 		}
+
+		
+		public function set active( active:Boolean ):void {}
 		
 		
 		public function get collapsed():Boolean { return _collapsed; }
 		public function get expanded():Boolean { return !collapsed; }
 		public function get expandCollapseEnabled():Boolean { return _expandCollapseEnabled; }
+		public function get active():Boolean { return false; }
+
 		
 		
 		public function resizeFinished():void {}
@@ -127,6 +132,7 @@ package components.views
 			_titlebarInvalidatingCommands = null;
 			_vuMeterChangingCommands = null;
 			_colorChangingCommands = null;
+			_activeChangingCommands = null;
 			
 			_freed = true;
 		}
@@ -190,6 +196,15 @@ package components.views
 			_colorChangingCommands[ className ] = 1;
 		}
 
+		
+		protected function addActiveChangingCommand( command:Class ):void
+		{
+			var className:String = Utilities.getClassNameFromClass( command );
+			
+			Assert.assertFalse( _activeChangingCommands.hasOwnProperty( className ) );
+			_activeChangingCommands[ className ] = 1;
+		}
+		
 
 		protected function set contextMenuDataProvider( contextMenuDataProvider:Array ):void
 		{
@@ -274,6 +289,11 @@ package components.views
 			{
 				colorMightHaveChanged();
 			}
+			
+			if( _activeChangingCommands.hasOwnProperty( className ) )
+			{
+				activeMightHaveChanged();
+			}
 		}
 
 
@@ -306,6 +326,7 @@ package components.views
 			titlebarMightHaveChanged();
 			vuMeterContainerMightHaveChanged();
 			colorMightHaveChanged();
+			activeMightHaveChanged();
 		}
 
 
@@ -345,6 +366,19 @@ package components.views
 			dispatchEvent( new IntegraViewEvent( IntegraViewEvent.COLOR_CHANGED ) );			
 		}
 
+		
+		private function activeMightHaveChanged():void
+		{
+			var active:Boolean = this.active;
+			if( active == _active ) 
+			{
+				return;
+			}
+			
+			_active = active;
+			dispatchEvent( new IntegraViewEvent( IntegraViewEvent.ACTIVE_CHANGED ) );			
+		}
+		
 
 		private function onMouseDown( event:MouseEvent ):void
 		{
@@ -481,6 +515,7 @@ package components.views
 		private var _titlebarInvalidatingCommands:Object = new Object;
 		private var _vuMeterChangingCommands:Object = new Object;
 		private var _colorChangingCommands:Object = new Object;
+		private var _activeChangingCommands:Object = new Object;
 		 
 		private var _contextMenu:FlexNativeMenu = null;
 		private var _addedToStage:Boolean = false;
@@ -491,6 +526,8 @@ package components.views
 
 		private var _collapsed:Boolean = false;
 		private var _expandCollapseEnabled:Boolean = true;
+
+		private var _active:Boolean = false;
 		
 		private var _freed:Boolean = false;
 	}

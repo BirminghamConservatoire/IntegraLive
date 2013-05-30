@@ -4,11 +4,18 @@
 		   width="400" height="300"
 		   creationComplete="onCreationComplete()"
 		   backgroundColor="#ffffff"
-		   borderStyle="solid" borderThickness="4" borderColor="#000080">
+		   borderStyle="solid" borderThickness="4" borderColor="#c0c0c0">
 	
 	<mx:Label text="Integra Module Creator" fontSize="20" left="10" top="10"/>
 
-	<mx:Label id="_versionLabel" left="10" top="40"/>
+	<mx:Label id="_versionLabel" x="10" y="50"/>
+	<mx:Label id="_licenseLabel" x="10" y="80" text="Released under "/>
+	<mx:Label id="_licenseLink" y="80"
+			  rollOver="onRollOverLicenseLink()" rollOut="onRollOutLicenseLink()" click="onClickLicenseLink()"
+			  color='#0000ff' />
+
+	<mx:Label id="_copyrightLabel" x="10" y="110"/>
+	
 	
 	<mx:Button label="OK" horizontalCenter="0" bottom="10" click="onClose()"/>
 	
@@ -18,11 +25,17 @@
 	
 	<fx:Script>
 		<![CDATA[
+			
 			import mx.managers.PopUpManager;
 
 			private function onCreationComplete():void
 			{
 				_versionLabel.text = versionNumber;
+				
+				_licenseLink.x = _licenseLabel.x + _licenseLabel.width;
+				_licenseLink.text = _licenseText;
+				
+				_copyrightLabel.text = _copyrightText;
 			}
 			
 			
@@ -51,6 +64,33 @@
 				
 				return versionString;
 			}
+
+			
+			private function onRollOverLicenseLink():void
+			{
+				_licenseLink.setStyle( "textDecoration", "underline" );
+			}
+
+			
+			private function onRollOutLicenseLink():void
+			{
+				_licenseLink.setStyle( "textDecoration", "none" );
+			}
+
+			
+			private function onClickLicenseLink():void
+			{
+				navigateToURL( new URLRequest( _licenseUrl ), "_blank" );
+			}
+			
+			
+			
+			private const _licenseText:String = "GNU General Public License Version 2";
+			private const _licenseUrl:String = "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html";
+			
+			private const _copyrightText:String = "Copyright ©2009-2013 Birmingham City University";
+			
+			
 		]]>
 	</fx:Script>			
 

@@ -126,12 +126,13 @@ package components.views.RibbonBar
             graphics.clear();
 			
 			graphics.lineStyle( 1, 0x808080, 0.5 );
-			graphics.moveTo( 0, height / 2 );
-			graphics.lineTo( height, 0 );
+			graphics.moveTo( 0, height * 0.5 );
+			graphics.cubicCurveTo( height * 0.5, height * 0.5, height * 0.5, 0, height, 0 );
 			graphics.lineTo( fullWidth - 1, 0 );
 			graphics.lineTo( fullWidth - 1, height - 1 );
 			graphics.lineTo( height, height - 1 );
-			graphics.lineTo( 0, height / 2 );
+			graphics.moveTo( 0, height * 0.5 );
+			graphics.cubicCurveTo( height * 0.5, height * 0.5, height * 0.5, height - 1, height, height - 1 );
         }
 
 

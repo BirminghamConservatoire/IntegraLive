@@ -78,7 +78,8 @@ package components.controlSDK.core
 	
 		    _control.addEventListener( MouseEvent.MOUSE_MOVE, onControlMouseMove );
 		    _control.addEventListener( MouseEvent.MOUSE_DOWN, onControlMouseDown );
-		    _control.addEventListener( MouseEvent.ROLL_OUT, onControlMouseOut );
+			_control.addEventListener( MouseEvent.ROLL_OVER, onControlRollOver );
+		    _control.addEventListener( MouseEvent.ROLL_OUT, onControlRollOut );
 	
 			//create filter canvas
 			_filterCanvas = new Canvas;
@@ -478,16 +479,23 @@ package components.controlSDK.core
 				}
 		    } 
 		}
-	
+
+		
+		private function onControlRollOver( event:MouseEvent ):void
+		{
+			_mouseInControl = true;
+			updateIsInActiveArea();
+			updateCursor();
+		}
+		
 	
 		private function onControlMouseMove( event:MouseEvent ):void
 		{
 		    updateIsInActiveArea();
-		    _mouseInControl = true;
 		}
 	
 	
-		private function onControlMouseOut( event:MouseEvent ):void
+		private function onControlRollOut( event:MouseEvent ):void
 		{
 		    _mouseInActiveArea = false;
 		    _mouseInControl = false;
@@ -527,25 +535,32 @@ package components.controlSDK.core
 		    {
 				_mouseInActiveArea = mouseInActiveArea;
 
-				if( _mouseInActiveArea )
+				updateCursor();
+		    }
+		}
+		
+		
+		private function updateCursor():void
+		{
+			if( _mouseInActiveArea )
+			{
+				CursorSetter.setCursor( CursorSetter.HAND, _control );
+				
+			}
+			else
+			{
+				if( _repositionable )
 				{
-					CursorSetter.setCursor( CursorSetter.HAND, _control );
+					CursorSetter.setCursor( CursorSetter.MOVE_NSEW, _control );
 				}
 				else
 				{
-					if( _repositionable )
-					{
-						CursorSetter.setCursor( CursorSetter.MOVE_NSEW, _control );
-					}
-					else
-					{
-						CursorSetter.setCursor( CursorSetter.ARROW, _control );
-					}
+					CursorSetter.setCursor( CursorSetter.ARROW, _control );
 				}
-		    }
+			}			
 		}
-			
-			
+
+		
 		private function isMouseInActiveArea():Boolean
 		{
 		    //check whether control has any writable attributes (early exit if no)

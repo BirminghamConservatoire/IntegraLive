@@ -21,17 +21,10 @@
 
 package components.controlSDK.core
 {
-    import __AS3__.vec.Vector;
-    
-    import components.controls.AllControlsToInclude;
-    import components.utils.CursorSetter;
-    import components.utils.Trace;
-    import components.utils.Utilities;
-	import components.views.MouseCapture;
-    
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
     import flash.display.GradientType;
+    import flash.display.Sprite;
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.events.StatusEvent;
@@ -40,17 +33,21 @@ package components.controlSDK.core
     import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
-    import flash.net.LocalConnection;
     import flash.utils.ByteArray;
     import flash.utils.getDefinitionByName;
-	import flash.ui.Mouse;
-    
-    import flexunit.framework.Assert;
     
     import mx.containers.Canvas;
-    import mx.core.Application;
     import mx.core.ScrollPolicy;
-    import mx.managers.CursorManager;
+    
+    import __AS3__.vec.Vector;
+    
+    import components.controls.AllControlsToInclude;
+    import components.utils.CursorSetter;
+    import components.utils.Trace;
+    import components.utils.Utilities;
+    import components.views.MouseCapture;
+    
+    import flexunit.framework.Assert;
 	
 	AllControlsToInclude;	//forces compilation of all the control classes listed in AllControlsToInclude.as 
 	
@@ -147,6 +144,7 @@ package components.controlSDK.core
 			{
 				_values[ key ] = values[ key ];
 			}
+			
 			_control.onValueChange( values );
 		}
 	
@@ -639,11 +637,6 @@ package components.controlSDK.core
 		}
 			
 			
-		private function onConnectionStatus( event:StatusEvent ):void
-		{
-		}
-			
-			
 		private function renderBackgroundCanvas():void
 		{
 			if( !_backgroundCanvas ) 
@@ -664,8 +657,8 @@ package components.controlSDK.core
 		    _backgroundCanvas.graphics.drawRect( 0, 0, _backgroundCanvas.width, _backgroundCanvas.height );
 		    _backgroundCanvas.graphics.endFill();
 		}
-			
-			
+		
+		
 		private var _control:IntegraControl = null; 
 		private var _parent:DisplayObjectContainer = null;
 		private var _notificationSink:ControlNotificationSink = null;

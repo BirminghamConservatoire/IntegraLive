@@ -1,5 +1,29 @@
+/* Integra Live graphical user interface
+*
+* Copyright (C) 2009 Birmingham City University
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+* USA.
+*/
+
+
 package components.controller
 {
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	
 	import components.controller.serverCommands.ReceiveMidiInput;
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.serverCommands.SetAudioDevices;
@@ -39,6 +63,8 @@ package components.controller
 		{
 			Assert.assertNull( _singleInstance );
 			_singleInstance = this;
+			
+			_processQueueTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onProcessQueueTimer );
 		}
 		
 		
@@ -81,12 +107,51 @@ package components.controller
 			{
 				var remoteCommandResponse:RemoteCommandResponse = buildGUICommandFromSet( attributePath, value );
 			
-				IntegraController.singleInstance.processRemoteCommand( remoteCommandResponse );
+				switch( remoteCommandResponse.response )
+				{
+					case RemoteCommandResponse.HANDLE_COMMAND:
+						for( var i:int = _setCommandQueue.length - 1; i >= 0; i-- )
+						{
+							if( _setCommandQueue[ i ].path == path )
+							{
+								_setCommandQueue.splice( i, 1 );
+								break;	//can safely break here as we don't expect to encounter duplicates
+							}
+						}
+						_setCommandQueue.push( new QueuedRemoteSetCommand( path, remoteCommandResponse ) );
+						if( !_processQueueTimer.running )
+						{
+							_processQueueTimer.start();
+						}
+						break;
+					
+					case RemoteCommandResponse.RELOAD_ALL:
+						clearSetCommandQueue();
+						IntegraController.singleInstance.processRemoteCommand( remoteCommandResponse );
+						break;
+				}
 			}
 			
 			return "command.set";
 		}
+		
+		
+		private function onProcessQueueTimer( event:TimerEvent ):void
+		{
+			for each( var remoteSetCommand:QueuedRemoteSetCommand in _setCommandQueue )
+			{
+				IntegraController.singleInstance.processRemoteCommand( remoteSetCommand.response );
+			}
+			
+			clearSetCommandQueue();
+		}
 
+		
+		private function clearSetCommandQueue():void
+		{
+			_setCommandQueue.length = 0;
+			_processQueueTimer.reset();
+		}
 		
 		private function buildGUICommandFromSet( path:Array, value:Object ):RemoteCommandResponse
 		{
@@ -171,7 +236,6 @@ package components.controller
 						Assert.assertTrue( false );
 						break;
 				}
-				
 			}
 			else if( object is Script )
 			{
@@ -344,6 +408,7 @@ package components.controller
 		{
 			if( commandOrigin != XMLRPC_COMMAND )
 			{
+				clearSetCommandQueue();
 				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
 			}
 			
@@ -355,6 +420,7 @@ package components.controller
 		{
 			if( commandOrigin != XMLRPC_COMMAND )
 			{
+				clearSetCommandQueue();
 				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
 			}
 			
@@ -366,6 +432,7 @@ package components.controller
 		{
 			if( commandOrigin != XMLRPC_COMMAND )
 			{
+				clearSetCommandQueue();
 				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
 			}
 			
@@ -375,11 +442,6 @@ package components.controller
 		
 		public function commandSave( commandOrigin:String, path:String, fileName:String ):String
 		{
-			if( commandOrigin != XMLRPC_COMMAND )
-			{
-				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
-			}
-			
 			return "command.save";
 		}
 
@@ -388,6 +450,7 @@ package components.controller
 		{
 			if( commandOrigin != XMLRPC_COMMAND )
 			{
+				clearSetCommandQueue();
 				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
 			}
 			
@@ -399,6 +462,7 @@ package components.controller
 		{
 			if( commandOrigin != XMLRPC_COMMAND )
 			{
+				clearSetCommandQueue();
 				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
 			}
 			
@@ -420,6 +484,9 @@ package components.controller
 
 		
 		private var _attributesLastTouchedRemotely:Object = new Object;
+		
+		private var _setCommandQueue:Vector.<QueuedRemoteSetCommand> = new Vector.<QueuedRemoteSetCommand>;
+		private var _processQueueTimer:Timer = new Timer( 1, 1 );
 
 		private static var _singleInstance:RemoteCommandHandler = null;
 		

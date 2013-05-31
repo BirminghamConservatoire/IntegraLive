@@ -41,6 +41,7 @@
 #include "helper.h"
 #include "module_manager.h"
 #include "interface.h"
+#include "list.h"
 
 
 /*
@@ -72,133 +73,6 @@ typedef struct ntg_system_class_handler_
 /*
 The following methods are helpers used by the system class attribute handlers
 */
-
-
-bool ntg_node_are_all_ancestors_active( const ntg_node *node )
-{
-	const ntg_node_attribute *parent_active = NULL;
-
-	assert( node );
-
-	if( node->parent && !ntg_node_is_root( node->parent ) )
-	{
-		parent_active = ntg_find_attribute( node->parent, NTG_ATTRIBUTE_ACTIVE );
-		assert( parent_active );
-
-		if( ntg_value_get_int( parent_active->value ) == 0 )
-		{
-			return false;
-		}
-		else
-		{
-			return ntg_node_are_all_ancestors_active( node->parent );
-		}
-	}
-	else
-	{
-		return true;
-	}
-}
-
-
-void ntg_node_activate_leaves(ntg_server *server, const ntg_node *node, bool activate)
-{
-	/*
-	sets 'active' attribute on leaf descendants.  
-	If any node in ancestor chain are not active, sets leaves to not active
-	If all node in ancestor chain are active, sets leaves to active
-	*/
-
-	const ntg_node_attribute *active_attribute = NULL;
-	ntg_node *child = NULL;
-	ntg_value *value = NULL;
-	int value_i = 0;
-
-	assert( server );
-	assert( node );
-
-	active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
-	if( !active_attribute )
-	{
-		return;
-	}
-
-	child = node->nodes;
-	if( child )
-	{
-		activate &= ( ntg_value_get_int( active_attribute->value ) != 0 );
-
-		do{
-			ntg_node_activate_leaves( server, child, activate );
-
-			child = child->next;
-
-		} while(child != node->nodes);
-	}
-	else
-	{
-		value_i = activate ? 1 : 0;
-		value = ntg_value_new( NTG_INTEGER, &value_i );
-
-		if( ntg_value_compare( active_attribute->value, value ) != NTG_NO_ERROR )
-		{
-			ntg_set_( server, NTG_SOURCE_SYSTEM, active_attribute->path, value );
-		}
-
-		ntg_value_free( value );
-	}
-}
-
-
-void ntg_container_active_handler( ntg_server *server, const ntg_node *node, bool active )
-{
-	const ntg_node *child = NULL;
-
-	assert( server );
-	assert( node );
-
-	child = node->nodes;
-	if( child )
-	{
-		do{
-			ntg_node_activate_leaves( server, child, active && ntg_node_are_all_ancestors_active( node ) );
-
-			child = child->next;
-
-		} while(child != node->nodes);
-	}
-}
-
-
-void ntg_non_container_active_initializer( ntg_server *server, const ntg_node * node)
-{
-	/*
-	sets 'active' attribute to false if node is leaf and any ancestor's active attribute is false
-	*/
-
-	const ntg_node_attribute *active_attribute = NULL;
-	ntg_value *value = NULL;
-	int value_i = 0;
-
-	assert( server );
-	assert( node );
-
-	if( !node->nodes ) 
-	{
-		/* node is not a leaf */
-		return;
-	}
-	
-	active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
-	assert( active_attribute );
-
-	if( !ntg_node_are_all_ancestors_active( node ) )
-	{
-		value = ntg_value_new( NTG_INTEGER, &value_i );
-		ntg_set_( server, NTG_SOURCE_SYSTEM, active_attribute->path, value );
-		ntg_value_free( value );
-	}
-}
 
 
 void ntg_envelope_update_value(ntg_server *server, const ntg_node *envelope_node)
@@ -355,6 +229,179 @@ void ntg_envelope_update_value(ntg_server *server, const ntg_node *envelope_node
 	{
 		ntg_set_( server, NTG_SOURCE_SYSTEM, current_value_attribute->path, output_value );
 		ntg_value_free(output_value);
+	}
+}
+
+
+bool ntg_node_are_all_ancestors_active( const ntg_node *node )
+{
+	const ntg_node_attribute *parent_active = NULL;
+
+	assert( node );
+
+	if( node->parent && !ntg_node_is_root( node->parent ) )
+	{
+		parent_active = ntg_find_attribute( node->parent, NTG_ATTRIBUTE_ACTIVE );
+		assert( parent_active );
+
+		if( ntg_value_get_int( parent_active->value ) == 0 )
+		{
+			return false;
+		}
+		else
+		{
+			return ntg_node_are_all_ancestors_active( node->parent );
+		}
+	}
+	else
+	{
+		return true;
+	}
+}
+
+
+void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activate, ntg_list *activated_nodes )
+{
+	/*
+	sets 'active' attribute on any descendants that are not containers
+	If any node in ancestor chain are not active, sets descendants to not active
+	If all node in ancestor chain are active, sets descendants to active
+
+	Additionally, the function pushes 'activated_nodes' - a list of pointers to 
+	nodes which were activated by the function.
+	The caller can use this list to perform additional logic
+	*/
+
+	const ntg_node_attribute *active_attribute = NULL;
+	ntg_node *child = NULL;
+	ntg_value *value = NULL;
+	int value_i = 0;
+
+	assert( server );
+	assert( node );
+	assert( activated_nodes );
+
+	if( ntg_interface_is_core_name_match( node->interface, NTG_CLASS_CONTAINER ) )
+	{
+		/* if node is a container, update 'activate' according to it's active flag */
+		active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
+		assert( active_attribute );
+		activate &= ( ntg_value_get_int( active_attribute->value ) != 0 );
+	}
+	else
+	{
+		/* if node is not a container, update it's active flag (if it has one) according to 'activate' */
+		active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
+		if( active_attribute )
+		{
+			value_i = activate ? 1 : 0;
+			value = ntg_value_new( NTG_INTEGER, &value_i );
+
+			if( ntg_value_compare( active_attribute->value, value ) != NTG_NO_ERROR )
+			{
+				ntg_set_( server, NTG_SOURCE_SYSTEM, active_attribute->path, value );
+
+				if( activate )
+				{
+					ntg_list_push_node( activated_nodes, node->path );
+				}
+			}
+
+			ntg_value_free( value );
+		}
+	}
+
+	/* walk subtree */ 
+	child = node->nodes;
+	if( child )
+	{
+		do{
+			ntg_node_activate_tree( server, child, activate, activated_nodes );
+
+			child = child->next;
+
+		} while(child != node->nodes);
+	}
+}
+
+
+void ntg_container_active_handler( ntg_server *server, const ntg_node *node, bool active )
+{
+	const ntg_node *child = NULL;
+	ntg_list *activated_nodes = ntg_list_new( NTG_LIST_NODES );
+	int i;
+
+	assert( server );
+	assert( node );
+
+	child = node->nodes;
+	if( child )
+	{
+		do{
+			ntg_node_activate_tree( server, child, active && ntg_node_are_all_ancestors_active( node ), activated_nodes );
+
+			child = child->next;
+
+		} while(child != node->nodes);
+	}
+
+	/* 
+	Now we explicitly update some system classes which were activated by this operation.
+	This needs to be done here, instead of via a normal set handler, in order to ensure that subsequent
+	business logic happens after	everything else has become active
+	*/
+
+	for( i = 0; i < activated_nodes->n_elems; i++ )
+	{
+		const ntg_path *path = ( ( ntg_path ** ) activated_nodes->elems )[ i ];
+		const ntg_node *activated_node = ntg_node_find_by_path( path, server->root );
+		assert( activated_node );
+
+		if( ntg_interface_is_core_name_match( activated_node->interface, NTG_CLASS_ENVELOPE ) )
+		{
+			ntg_envelope_update_value( server, activated_node );
+		}
+
+		if( ntg_interface_is_core_name_match( activated_node->interface, NTG_CLASS_PLAYER ) )
+		{
+			const ntg_node_attribute *player_tick = ntg_find_attribute( activated_node, NTG_ATTRIBUTE_TICK );
+			assert( player_tick );
+
+			ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->path, player_tick->value );
+		}
+	}
+
+	ntg_list_free( activated_nodes );
+}
+
+
+void ntg_non_container_active_initializer( ntg_server *server, const ntg_node * node)
+{
+	/*
+	sets 'active' attribute to false if node is leaf and any ancestor's active attribute is false
+	*/
+
+	const ntg_node_attribute *active_attribute = NULL;
+	ntg_value *value = NULL;
+	int value_i = 0;
+
+	assert( server );
+	assert( node );
+
+	if( !node->nodes ) 
+	{
+		/* node is not a leaf */
+		return;
+	}
+	
+	active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
+	assert( active_attribute );
+
+	if( !ntg_node_are_all_ancestors_active( node ) )
+	{
+		value = ntg_value_new( NTG_INTEGER, &value_i );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, active_attribute->path, value );
+		ntg_value_free( value );
 	}
 }
 

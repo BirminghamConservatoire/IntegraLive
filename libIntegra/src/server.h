@@ -93,11 +93,6 @@ ntg_error_code ntg_server_connect_in_host( ntg_server *server, const ntg_node_at
  * */
 ntg_error_code ntg_server_node_delete(ntg_server *server, ntg_node *node);
 
-/** \brief Fix connections that point to node so that the point to 'name'
-  */
-ntg_error_code ntg_server_fix_connections(ntg_server *server, 
-        ntg_node *node, const char *name);
-
 
 /** \brief shortcut for making/removing connections 
  *  \param *parent_path, a pointer to the path of the parent we want to make the connection inside, e.g. ["Track1", "Block1"]

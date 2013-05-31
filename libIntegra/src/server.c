@@ -246,11 +246,7 @@ ntg_list *ntg_server_get_nodelist(const ntg_server * server,
         }
 
         /* add the path to the node list */
-        nodelist->n_elems++;
-        nodes = (ntg_path **)nodelist->elems;
-        nodes = ntg_realloc(nodes, nodelist->n_elems * sizeof(ntg_path));
-		nodelist->elems = nodes;
-        nodes[nodelist->n_elems - 1] = ntg_path_copy(path);
+		ntg_list_push_node( nodelist, path );
 
         if (current->nodes != NULL) {
             nodelist = ntg_server_get_nodelist(server, current, path, nodelist);

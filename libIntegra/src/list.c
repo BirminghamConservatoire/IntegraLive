@@ -50,16 +50,6 @@ void ntg_list_free_(ntg_list *list)
     ntg_free(list);
 }
 
-void ntg_list_free_as_attributes(ntg_list *list)
-{
-    ntg_free(list->elems);
-    list->elems   = NULL;
-    list->n_elems = 0;
-
-    ntg_list_free_(list);
-}
-
-
 void ntg_list_free_as_nodelist(ntg_list *list)
 {
 
@@ -108,9 +98,6 @@ void ntg_list_free(ntg_list *list)
         case NTG_LIST_NODES:
             ntg_list_free_as_nodelist(list);
             break;
-        case NTG_LIST_ATTRIBUTES:
-            ntg_list_free_as_attributes(list);
-            break;
 		case NTG_LIST_GUIDS:
 			ntg_list_free_as_guids(list);
 			break;
@@ -118,6 +105,19 @@ void ntg_list_free(ntg_list *list)
             NTG_TRACE_ERROR("invalid list type");
             break;
     }
+}
+
+
+void ntg_list_push_node( ntg_list *list, const ntg_path *path )
+{
+	ntg_path **paths;
+	assert( list && path );
+
+    list->n_elems++;
+    paths = (ntg_path **)list->elems;
+    paths = (ntg_path **) ntg_realloc( list->elems, list->n_elems * sizeof( ntg_path * ) );
+	list->elems = paths;
+    paths[ list->n_elems - 1] = ntg_path_copy( path );
 }
 
 
@@ -134,3 +134,5 @@ void ntg_list_push_guid( ntg_list *list, const GUID *guid )
 
 	list->n_elems++;
 }
+
+

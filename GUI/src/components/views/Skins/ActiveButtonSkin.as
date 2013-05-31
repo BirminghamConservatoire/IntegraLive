@@ -128,12 +128,12 @@ package components.views.Skins
 			if( !isActive )
 			{
 				//inactive cross
-				graphics.lineStyle( 0, color );
-				graphics.moveTo( radius * 0.4, radius * 0.4 );
-				graphics.lineTo( radius * 1.6, radius * 1.6 );
+				graphics.lineStyle( 2, color );
+				graphics.moveTo( radius * 0.6, radius * 0.4 );
+				graphics.lineTo( radius * 1.4, radius * 1.6 );
 				
-				graphics.moveTo( radius * 0.4, radius * 1.6 );
-				graphics.lineTo( radius * 1.6, radius * 0.4 );
+				//graphics.moveTo( radius * 0.5, radius * 1.5 );
+				//graphics.lineTo( radius * 1.5, radius * 0.5 );
 			}
 			
 			//update the glow

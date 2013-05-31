@@ -22,15 +22,10 @@
 package components.utils
 {
 	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
-	import flash.utils.getTimer;
 	
-	import mx.core.Container;
 	import mx.core.ScrollPolicy;
 	
 	import components.controlSDK.core.ControlManager;
-	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetBlockTrack;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.userDataCommands.SetTrackColor;
@@ -43,7 +38,6 @@ package components.utils
 	import components.model.Track;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
-	import components.model.interfaceDefinitions.StreamInfo;
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.ColorScheme;
 	import components.views.IntegraView;
@@ -51,7 +45,6 @@ package components.utils
 	
 	import flexunit.framework.Assert;
 	
-	import org.osmf.net.StreamType;
 
 	
 	public class AggregateVUContainer extends IntegraView
@@ -69,6 +62,8 @@ package components.utils
 				Assert.assertTrue( false );
 				return;
 			}
+			
+			setStyle( "disabledOverlayAlpha", 0 );
 			
 			_control = new ControlManager( controlClass, this, null );
 
@@ -108,6 +103,16 @@ package components.utils
 			
 			Assert.assertTrue( false );
 			return null;
+		}
+		
+		
+		override public function set enabled( enabled:Boolean ):void
+		{
+			super.enabled = enabled;
+
+			alpha = enabled ? 1 : 0.3;
+			
+			setControlForegroundColor();
 		}
 		
 		
@@ -261,6 +266,8 @@ package components.utils
 					color = model.getTrackFromBlock( _containerID ).trackUserData.color;
 				}
 			}
+			
+			if( !enabled ) color = Utilities.makeGreyscale( color );
 			
 			_control.setControlForegroundColor( color );
 		}

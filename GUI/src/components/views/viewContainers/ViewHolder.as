@@ -146,6 +146,8 @@ package components.views.viewContainers
 			if( _activeButton )
 			{
 				_activeButton.selected = active;
+				if( _vuMeter ) _vuMeter.enabled = _activeButton.selected;  
+				
 				_activeButton.setStyle( "color", color );
 			}
 			
@@ -207,6 +209,7 @@ package components.views.viewContainers
 				addElementAt( _activeButton, 0 );
 				
 				_activeButton.selected = active;
+				if( _vuMeter ) _vuMeter.enabled = _activeButton.selected;  
 				
 				_activeButton.addEventListener( MouseEvent.CLICK, onClickActiveButton );
 				_activeButton.addEventListener( MouseEvent.DOUBLE_CLICK, onClickActiveButton );
@@ -636,6 +639,7 @@ package components.views.viewContainers
 			if( _activeButton )
 			{
 				_activeButton.selected = active;
+				if( _vuMeter ) _vuMeter.enabled = _activeButton.selected;  
 			}
 			
 			positionChildren();
@@ -734,6 +738,8 @@ package components.views.viewContainers
         		{
 	        		_vuMeter = new AggregateVUContainer;
 	        		_vuMeter.containerID = vuMeterContainerID;
+					if( _activeButton ) _vuMeter.enabled = _activeButton.selected;  
+
 					addElement( _vuMeter );
     	    		updateVuMeterBackgroundColors();
     	    	}

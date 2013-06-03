@@ -298,20 +298,14 @@ package components.views.ModuleLibrary
 		private function shouldIncludeAccordingToTagCloud( interfaceDefinition:InterfaceDefinition ):Boolean
 		{
 			var selectedTags:Object = _tagCloud.selectedTags;
-			if( Utilities.isObjectEmpty( selectedTags ) )
+			var interfaceTags:Vector.<String> = interfaceDefinition.interfaceInfo.tags;
+			
+			for( var selectedTag:String in selectedTags )
 			{
-				return true;
+				if( interfaceTags.indexOf( selectedTag ) < 0 ) return false;
 			}
 			
-			for each( var tag:String in interfaceDefinition.interfaceInfo.tags )
-			{
-				if( selectedTags.hasOwnProperty( tag ) )
-				{
-					return true;
-				}
-			}
-			
-			return false;
+			return true;
 		}
 
 		

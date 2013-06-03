@@ -356,8 +356,7 @@ package components.controlSDK.core
 		    {
 				if( !isAttributeWritable( attributeName ) )
 				{
-				    Assert.assertTrue( false );		//attempt to modify readonly attribute
-				    continue; 
+				    continue; 							//attempt to modify readonly attribute
 				}
 						
 				var newValue:Object = getQuantisedValue( attributeName, data[ attributeName ] );

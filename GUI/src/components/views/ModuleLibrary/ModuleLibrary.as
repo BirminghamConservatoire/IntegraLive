@@ -82,7 +82,7 @@ package components.views.ModuleLibrary
 		override public function get isSidebarColours():Boolean { return true; }
 
 
-		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		override public function getInfoToDisplay( event:Event ):Info 
 		{
 			if( Utilities.isEqualOrDescendant( event.target, _searchBox ) )
 			{

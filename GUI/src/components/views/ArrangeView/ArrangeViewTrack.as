@@ -22,6 +22,7 @@
 package components.views.ArrangeView
 {
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
 	import flash.geom.Rectangle;
@@ -163,7 +164,7 @@ package components.views.ArrangeView
 		}
 		
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		override public function getInfoToDisplay( event:Event ):Info 
 		{ 
 			return _track.info; 
 		}

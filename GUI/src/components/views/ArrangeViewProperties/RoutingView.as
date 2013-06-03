@@ -23,6 +23,12 @@
 
 package components.views.ArrangeViewProperties
 {
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	
+	import mx.containers.VBox;
+	import mx.controls.Button;
+	
 	import components.controller.serverCommands.AddScaledConnection;
 	import components.controller.serverCommands.RemoveScaledConnection;
 	import components.controller.serverCommands.SetConnectionRouting;
@@ -33,16 +39,11 @@ package components.views.ArrangeViewProperties
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.AddButtonSkin;
 	
-	import flash.events.MouseEvent;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.VBox;
-	import mx.controls.Button;
 
 	
 	public class RoutingView extends IntegraView
@@ -98,7 +99,7 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			if( event.target == _newItemButton ) 
 			{

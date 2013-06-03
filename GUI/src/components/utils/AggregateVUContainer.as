@@ -21,6 +21,7 @@
 
 package components.utils
 {
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import mx.core.ScrollPolicy;
@@ -92,7 +93,7 @@ package components.utils
 		}
 		
 		
-		override public function getInfoToDisplay(event:MouseEvent):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			var container:IntegraContainer = model.getContainer( _containerID );
 			Assert.assertNotNull( container );

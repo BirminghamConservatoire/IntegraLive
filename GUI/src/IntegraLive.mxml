@@ -84,6 +84,7 @@
 			import components.views.CrashReport.CrashReport;
 			import components.views.InfoView.InfoMarkupForViews;
 			import components.views.Upgrades.UpgradeWarning;
+			import components.views.viewContainers.IntegraViewEvent;
 			import components.views.viewContainers.ViewHolder;
 			
 			import flexunit.framework.Assert;
@@ -258,6 +259,7 @@
 				_menuHandlers = new MenuHandlers( this );
 				
 				addEventListener( Event.CLOSING, onClosing );
+				addEventListener( IntegraViewEvent.EXPLICIT_INFO_UPDATE, onExplicitInfoUpdate );
 				
 				MouseCapture.instance.setSystemManager( systemManager );
 				
@@ -1107,7 +1109,7 @@
 			}
 			
 			
-			private function getInfoToDisplay( event:MouseEvent ):Info
+			private function getInfoToDisplay( event:Event ):Info
 			{
 
 				function effectiveParent( child:DisplayObject ):DisplayObject 
@@ -1148,6 +1150,18 @@
 
 			
 			private function onStageMouseMove( event:MouseEvent ):void
+			{
+				updateInfo( event );
+			}
+
+			
+			private function onExplicitInfoUpdate( event:Event ):void
+			{
+				updateInfo( event );
+			}
+			
+			
+			private function updateInfo( event:Event ):void
 			{
 				var displayedInfo:Info = getInfoToDisplay( event );
 				if( displayedInfo == _model.currentInfo )

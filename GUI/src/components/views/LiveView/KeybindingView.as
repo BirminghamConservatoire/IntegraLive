@@ -108,7 +108,7 @@ package components.views.LiveView
 		override public function get isSidebarColours():Boolean { return true; }
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			var keyIcon:KeyIcon = Utilities.getAncestorByType( event.target, KeyIcon ) as KeyIcon;
 			if( keyIcon )

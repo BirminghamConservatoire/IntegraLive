@@ -27,7 +27,19 @@ package components.views.viewContainers
 	{
 		public function IntegraViewEvent( type:String )
 		{
-			super( type );
+			var bubbles:Boolean = false;
+			
+			switch( type )
+			{
+				case EXPLICIT_INFO_UPDATE:
+					bubbles = true;
+					break;
+				
+				default:
+					break;
+			}
+			
+			super( type, bubbles );			
 		}
 		
 		public static const TITLE_CHANGED:String = "TITLE_CHANGED";
@@ -38,6 +50,8 @@ package components.views.viewContainers
 		public static const COLLAPSE_CHANGED:String = "COLLAPSE_CHANGED";
 		public static const ACTIVE_CHANGED:String = "ACTIVE_CHANGED";
 		public static const EXPAND_COLLAPSE_ENABLE_CHANGED:String = "EXPAND_COLLAPSE_ENABLE_CHANGED";
-		public static const RESIZED_BY_DIMENSION_SHARER:String = "RESIZED_BY_DIMENSION_SHARER"; 
+		public static const RESIZED_BY_DIMENSION_SHARER:String = "RESIZED_BY_DIMENSION_SHARER";
+		
+		public static const EXPLICIT_INFO_UPDATE:String = "EXPLICIT_INFO_UPDATE";
 	}
 }

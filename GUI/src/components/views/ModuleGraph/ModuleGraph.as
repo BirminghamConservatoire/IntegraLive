@@ -142,7 +142,7 @@ package components.views.ModuleGraph
 		}	
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		override public function getInfoToDisplay( event:Event ):Info 
 		{
 			if( getLinkUnderMouse() )
 			{

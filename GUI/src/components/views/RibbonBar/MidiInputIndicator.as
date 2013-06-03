@@ -71,7 +71,7 @@ package components.views.RibbonBar
 		}
 		
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			return InfoMarkupForViews.instance.getInfoForView( "MidiInputIndicator" );
 		}

@@ -108,7 +108,7 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			if( event.target == _deleteEnvelopeButton )
 			{

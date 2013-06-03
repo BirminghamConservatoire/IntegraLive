@@ -21,6 +21,20 @@
 
 package components.views.Preferences
 {
+	import flash.events.Event;
+	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
+	import flash.ui.Keyboard;
+	
+	import mx.controls.Button;
+	import mx.controls.ComboBox;
+	import mx.controls.Label;
+	import mx.controls.TextInput;
+	import mx.core.ScrollPolicy;
+	import mx.events.ListEvent;
+	
 	import components.controller.ServerCommand;
 	import components.controller.serverCommands.ResetAudioAndMidiSettings;
 	import components.controller.serverCommands.SetAudioDevices;
@@ -41,26 +55,13 @@ package components.views.Preferences
 	import components.model.userData.ColorScheme;
 	import components.model.userData.ViewMode;
 	import components.utils.FontSize;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
 	import components.views.Skins.NumberEditSkin;
 	import components.views.Skins.TextButtonSkin;
 	
-	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.geom.Rectangle;
-	import flash.ui.Keyboard;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.controls.Button;
-	import mx.controls.ComboBox;
-	import mx.controls.Label;
-	import mx.controls.TextInput;
-	import mx.core.ScrollPolicy;
-	import mx.events.ListEvent;
 	
 	public class Preferences extends IntegraView
 	{
@@ -116,7 +117,7 @@ package components.views.Preferences
 		}
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		override public function getInfoToDisplay( event:Event ):Info 
 		{
 			return InfoMarkupForViews.instance.getInfoForView( "Preferences" );
 		}

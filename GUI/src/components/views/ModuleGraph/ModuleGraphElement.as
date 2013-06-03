@@ -232,7 +232,7 @@ package components.views.ModuleGraph
 		}
 		
 		
-		public function getInfoToDisplay( event:MouseEvent ):Info
+		public function getInfoToDisplay( event:Event ):Info
 		{
 			if( event.target == _liveButton )
 			{

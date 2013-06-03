@@ -100,7 +100,7 @@ package components.views.ModuleManager
 		}
 		
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			if( Utilities.isEqualOrDescendant( event.target, _switchableModuleList ) )
 			{

@@ -124,7 +124,7 @@ package components.views.InfoView
 		}
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			return InfoMarkupForViews.instance.getInfoForView( "Info" );
 		}

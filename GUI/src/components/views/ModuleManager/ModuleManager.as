@@ -21,6 +21,7 @@
 
 package components.views.ModuleManager
 {
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import mx.containers.Canvas;
@@ -80,7 +81,7 @@ package components.views.ModuleManager
 		}
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			if( Utilities.getAncestorByType( event.target, TabBar ) )
 			{

@@ -22,7 +22,9 @@
 package components.utils
 {
 	import flash.display.GradientType;
+	import flash.display.Graphics;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.filters.BevelFilter;
 	import flash.geom.Matrix;
@@ -31,7 +33,6 @@ package components.utils
 	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
-	import mx.controls.Image;
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
@@ -59,8 +60,10 @@ package components.utils
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.userData.ColorScheme;
 	import components.model.userData.LiveViewControl;
+	import components.views.MouseCapture;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.TickButtonSkin;
+	import components.views.viewContainers.IntegraViewEvent;
 	
 	import flexunit.framework.Assert;
 	
@@ -114,7 +117,7 @@ package components.utils
 			setControlWritableFlags();
 			setControlRepositionable();
 			
-			updatePadlockImage();
+			updatePadlock();
 			
 			_controlLabel = new Label;
 			_controlLabel.setStyle( "left", resizeAreaWidth );
@@ -127,6 +130,8 @@ package components.utils
 			addElement( _controlLabel );
 
 			addEventListener( Event.RESIZE, onResize );
+			addEventListener( MouseEvent.ROLL_OVER, onRollOver );
+			addEventListener( MouseEvent.ROLL_OUT, onRollOut );
 			
 			updateBevelFilter();
 			
@@ -349,18 +354,18 @@ package components.utils
         {
        		setControlWritableFlags();
 
-			updatePadlockImage();
+			updatePadlock();
         }
 
 		
-		public function getInfoToDisplay( event:MouseEvent ):Info 						
+		public function getInfoToDisplay( event:Event ):Info 						
 		{
 			if( event.target == _includeInLiveViewButton )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ControlLiveViewButton" );
 			}
 			
-			if( event.target == _padlockImage )
+			if( event.target == _padlock )
 			{
 				return _padlockInfo;
 			}
@@ -369,38 +374,34 @@ package components.utils
 		}
 		
 
-        private function updatePadlockImage():void
+        private function updatePadlock():void
         {
-			if( shouldDisplayPadlock() )
+			if( _shouldShowPadlock )
 			{
-				if( !_padlockImage )
+				if( !_padlock )
 				{
-					_padlockImage = new Image;
-					_padlockImage.source = _padlockImageClass;
-					_padlockImage.x = 2;
-					_padlockImage.y = 2;
-					addElement( _padlockImage );
+					_padlock = new Canvas;
+					addChild( _padlock );
 				}
 
-				Assert.assertNotNull( _padlockExplanation );				
-				
-				_padlockImage.alpha = _padlockAlpha;
+				_padlock.alpha = _padlockAlpha;
+				renderPadlock();
 				
 				buildPadlockInfo();
 			}
 			else
 			{
-				if( _padlockImage )
+				if( _padlock )
 				{
-					removeElement( _padlockImage );
-					_padlockImage = null;
+					removeChild( _padlock );
+					_padlock = null;
 				}
 				
-				_padlockInfo = null;
+				_padlockInfo = null;				
 			}
         }
-
-
+		
+		
 		override public function styleChanged( style:String ):void
 		{
 			if( !style || style == "color" )
@@ -1069,7 +1070,9 @@ package components.utils
 		{
 			_mapWidgetAttributeToWritableFlag = new Object;
 			_padlockExplanation = null;
-			_padlockAlpha = 1; 
+			_shouldShowPadlock = false;
+			_padlockAlpha = 1;
+			
 			var attributeToEndpointMap:Object = _widget.attributeToEndpointMap;
 			
 			for( var widgetAttributeName:String in _mapWidgetAttributeToType )
@@ -1084,17 +1087,19 @@ package components.utils
 				var moduleAttributeName:String = attributeToEndpointMap[ widgetAttributeName ];
 				
 				var explanation:Object = new Object;
-				var writable:Boolean = isModuleAttributeWritable( moduleAttributeName, explanation );
-				_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = writable;
-				if( writable )
+				if( isModuleAttributeWritable( moduleAttributeName, explanation ) )
 				{
+					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = true;
 					_padlockAlpha = 0.3;		//display padlocks as semitransparent when only a subset of the control's attributes are readonly
 				}
 				else
 				{
+					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = _padlockOverride;
+					_shouldShowPadlock = true;
+
 					Assert.assertNotNull( explanation.value );
 					appendPadlockExplanation( explanation.value );
-				} 
+				}
 			}
 			
 			_control.setControlWritableFlags( _mapWidgetAttributeToWritableFlag ); 
@@ -1555,9 +1560,181 @@ package components.utils
 			_padlockInfo = new Info;
 			
 			_padlockInfo.title = "This control is locked";
-			_padlockInfo.markdown = "<!--" + _padlockExplanation + "-->" + _padlockExplanation;			
+
+			var markdown:String = "<!--" + _padlockExplanation + "-->" + _padlockExplanation;
+			
+			if( _padlockOverride )
+			{
+				markdown += "\n\n__You are currently overriding the lock__";	
+			}
+			else
+			{
+				markdown += "\n\n_You can override the lock by pressing <span class=\"mac-only\">Command</span><span class=\"windows-only\">Ctrl</span>_";				
+			}
+			
+			
+			_padlockInfo.markdown = markdown;
+			
 		}
 		
+		
+		private function onRollOver( event:MouseEvent ):void
+		{
+			_mouseIsOver = true;
+			if( _padlockOverride != event.ctrlKey )
+			{
+				_padlockOverride = event.ctrlKey;
+				updateWritableness();
+			}
+
+			if( !_addedStageKeyboardListeners )
+			{
+				_addedStageKeyboardListeners = true;
+				stage.addEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
+				stage.addEventListener( KeyboardEvent.KEY_UP, onKeyUp );
+			}
+		}
+		
+		
+		private function onRollOut( event:MouseEvent ):void
+		{
+			_mouseIsOver = false;
+			var mouseCapture:MouseCapture = MouseCapture.instance;
+			if( mouseCapture.hasCapture ) 
+			{
+				mouseCapture.addEventListener( MouseCapture.MOUSE_CAPTURE_FINISHED, onMouseCaptureFinished );
+				return;
+			}
+			
+			if( _padlockOverride )
+			{
+				_padlockOverride = false;
+				updateWritableness();
+			}
+
+			Assert.assertTrue( _addedStageKeyboardListeners );
+			
+			if( _addedStageKeyboardListeners )
+			{
+				stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
+				stage.removeEventListener( KeyboardEvent.KEY_UP, onKeyUp );
+				_addedStageKeyboardListeners = false;
+			}
+		}
+		
+		
+		private function onMouseCaptureFinished( event:Event ):void
+		{
+			MouseCapture.instance.removeEventListener( MouseCapture.MOUSE_CAPTURE_FINISHED, onMouseCaptureFinished );
+			
+			if( !_mouseIsOver )
+			{
+				if( _padlockOverride )
+				{
+					_padlockOverride = false;
+					updateWritableness();
+				}
+
+				Assert.assertTrue( _addedStageKeyboardListeners );
+				stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
+				stage.removeEventListener( KeyboardEvent.KEY_UP, onKeyUp );
+				_addedStageKeyboardListeners = false;
+			}
+		}
+
+		
+		private function onKeyDown( event:KeyboardEvent ):void
+		{
+			if( _shouldShowPadlock )
+			{
+				if( _padlockOverride != event.ctrlKey )
+				{
+					_padlockOverride = event.ctrlKey;
+					updateWritableness();
+					
+					_padlock.dispatchEvent( new IntegraViewEvent( IntegraViewEvent.EXPLICIT_INFO_UPDATE ) );
+				}
+			}
+		}
+		
+		
+		private function onKeyUp( event:KeyboardEvent ):void
+		{
+			if( _shouldShowPadlock )
+			{
+				if( _padlockOverride != event.ctrlKey )
+				{
+					_padlockOverride = event.ctrlKey;
+					updateWritableness();
+					
+					_padlock.dispatchEvent( new IntegraViewEvent( IntegraViewEvent.EXPLICIT_INFO_UPDATE ) );
+				}			
+			}
+		}		
+		
+		
+		private function renderPadlock():void
+		{
+			Assert.assertNotNull( _padlock );
+			
+			_padlock.graphics.clear();
+			
+			const size:Number = 12;
+			
+			//draw the background
+			_padlock.graphics.beginFill( 0, 0 );
+			_padlock.graphics.drawRect( 0, 0, size, size );
+			_padlock.graphics.endFill();
+			
+			//draw the padlock
+			
+			const lockWidth:Number = 0.55;
+			const lockTopHeight:Number = 0.1;
+			const baseStartHeight:Number = 0.5;
+			const openRotation:Number = 45;
+			const lockColor:uint = 0x808080;
+			
+			_padlock.graphics.beginFill( lockColor );
+			_padlock.graphics.drawRect( 0, size * baseStartHeight, size, size * ( 1 - baseStartHeight ) );
+			_padlock.graphics.endFill();
+			
+			var curvePoints:Vector.<Point> = new Vector.<Point>;
+			
+			curvePoints.push( new Point( size * ( 1 - lockWidth ) / 2, size * baseStartHeight ) );
+			curvePoints.push( new Point( size * ( 1 - lockWidth ) / 2, size * lockTopHeight ) );
+			curvePoints.push( new Point( size /2, size * lockTopHeight ) );
+			curvePoints.push( new Point( size * ( 1 + lockWidth ) / 2, size * baseStartHeight ) );
+			curvePoints.push( new Point( size * ( 1 + lockWidth ) / 2, size * lockTopHeight ) );
+			curvePoints.push( new Point( size / 2, size * lockTopHeight ) );
+			
+			if( _padlockOverride )
+			{
+				var matrix:Matrix = new Matrix;
+				matrix.identity();
+				matrix.translate( -size * ( 1 + lockWidth ) / 2, -size * baseStartHeight );
+				matrix.rotate( openRotation * Math.PI / 180 );
+				matrix.translate( size * ( 1 + lockWidth ) / 2, size * baseStartHeight );
+				
+				for( var i:int = 0; i < curvePoints.length; i++ )
+				{
+					curvePoints[ i ] = matrix.transformPoint( curvePoints[ i ] );
+				}
+			}
+			
+			_padlock.graphics.lineStyle( 3, lockColor );
+			
+			drawCurve( _padlock.graphics, curvePoints.slice( 0, 3 ) );
+			drawCurve( _padlock.graphics, curvePoints.slice( 3, 6 ) );			
+		}
+		
+		
+		private function drawCurve( graphics:Graphics, curve:Vector.<Point> ):void
+		{
+			Assert.assertTrue( curve.length == 3 );
+			
+			graphics.moveTo( curve[ 0 ].x, curve[ 0 ].y );
+			graphics.curveTo( curve[ 1 ].x, curve[ 1 ].y, curve[ 2 ].x, curve[ 2 ].y );
+		}		
 		
 		
 		private var _module:ModuleInstance;
@@ -1574,12 +1751,15 @@ package components.utils
 		
 		private var _controlLabel:Label = null;
 		private var _bottomMoveArea:Canvas = null;  
-		private var _padlockImage:Image = null;
+
+		private var _shouldShowPadlock:Boolean = false;
+		private var _padlockOverride:Boolean = false;
+		
+		private var _padlock:Canvas = null;
 		private var _padlockExplanation:String = null; 
 		private var _padlockAlpha:Number = 0;
-
-		[Embed(source="../../../src/assets/padlock.png")]
-		private var _padlockImageClass:Class;
+		private var _mouseIsOver:Boolean = false;
+		private var _addedStageKeyboardListeners:Boolean = false;
 		
 		private var _myControllerCommandIDs:Object = new Object;
 		
@@ -1606,5 +1786,8 @@ package components.utils
 		private static const liveButtonSize:Number = 12;
 		private static const controlLabelHeight:int = 20;
 		private static const minimumControlLabelWidth:int = 48;
+		
+		private static const PADLOCK_OPEN:String = "padlockOpen";
+		private static const PADLOCK_CLOSED:String = "padlockClosed";
 	}
 }

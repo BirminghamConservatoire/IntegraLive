@@ -169,7 +169,7 @@ package components.views.ArrangeView
 		}	
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		override public function getInfoToDisplay( event:Event ):Info 
 		{ 
 			return model.project.info;
 		}

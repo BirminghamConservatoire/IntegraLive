@@ -134,7 +134,7 @@ package components.views.ModuleProperties
 		}
 		
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			if( !_module )
 			{

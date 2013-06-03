@@ -23,6 +23,16 @@
 
 package components.views.ArrangeViewProperties
 {
+	import flash.events.Event;
+	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
+	import flash.ui.Keyboard;
+	
+	import mx.controls.Button;
+	import mx.controls.TextInput;
+	import mx.core.ScrollPolicy;
+	
 	import components.controller.serverCommands.RemoveScript;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
@@ -32,20 +42,11 @@ package components.views.ArrangeViewProperties
 	import components.model.Script;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
 	
-	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
-	import flash.ui.Keyboard;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.controls.Button;
-	import mx.controls.TextInput;
-	import mx.core.ScrollPolicy;
 	
 	public class ScriptListItem extends IntegraView
 	{
@@ -127,7 +128,7 @@ package components.views.ArrangeViewProperties
 		}
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			if( event.target == _deleteButton )
 			{

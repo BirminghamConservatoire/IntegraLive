@@ -154,7 +154,7 @@ package components.views.Timeline
 		} 
 		
 		
-		public override function getInfoToDisplay( event:MouseEvent ):Info
+		public override function getInfoToDisplay( event:Event ):Info
 		{
 			var viewInfos:InfoMarkupForViews = InfoMarkupForViews.instance;
 			if( mouseY < _markingTop )

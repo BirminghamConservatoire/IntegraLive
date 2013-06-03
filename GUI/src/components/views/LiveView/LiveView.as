@@ -20,6 +20,7 @@
 
 package components.views.LiveView
 {
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import mx.core.ScrollPolicy;
@@ -95,7 +96,7 @@ package components.views.LiveView
 		} 
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			return InfoMarkupForViews.instance.getInfoForView( "LiveView" );
 		}

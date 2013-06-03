@@ -23,6 +23,7 @@ package components.views.ArrangeView
 {
 	import flash.display.GradientType;
 	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
@@ -158,7 +159,7 @@ package components.views.ArrangeView
 		}
 		
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info 
+		override public function getInfoToDisplay( event:Event ):Info 
 		{
 			if( getEnvelopeViewForClick() != null )
 			{

@@ -89,7 +89,7 @@ package components.views.LiveView
 		public function get blockID():int { return _blockID; }
 
 		
-		override public function getInfoToDisplay( event:MouseEvent ):Info
+		override public function getInfoToDisplay( event:Event ):Info
 		{
 			var control:ControlContainer = Utilities.getAncestorByType( event.target, ControlContainer ) as ControlContainer;
 			if( control ) 

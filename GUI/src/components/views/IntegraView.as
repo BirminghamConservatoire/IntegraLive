@@ -145,7 +145,7 @@ package components.views
 		}
 		
 		
-		public function getInfoToDisplay( event:MouseEvent ):Info { return null; }
+		public function getInfoToDisplay( event:Event ):Info { return null; }
 		
 
 		protected function get model():IntegraModel { return IntegraModel.singleInstance; }

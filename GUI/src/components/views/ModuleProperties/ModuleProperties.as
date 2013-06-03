@@ -20,6 +20,9 @@
 
 package components.views.ModuleProperties
 {
+	import flash.display.NativeMenu;
+	import flash.display.NativeMenuItem;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	
@@ -80,6 +83,7 @@ package components.views.ModuleProperties
 			addTitleInvalidatingCommand( RenameObject );
 			addColorChangingCommand( SetColorScheme );
 			
+			addEventListener( MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown );
 			contextMenuDataProvider = contextMenuData;
 		}
 
@@ -332,62 +336,151 @@ package components.views.ModuleProperties
 				
 				_liveViewControlSet[ liveViewControl.controlInstanceName ] = 1;
 			}
-		}			
+		}	
 		
 		
-		private function revertToDefaults():void
+		private function onRightMouseDown( event:MouseEvent ):void
 		{
-			for each( var endpoint:EndpointDefinition in _module.interfaceDefinition.endpoints )
+			_controlUnderMouse = Utilities.getAncestorByType( event.target, ControlContainer ) as ControlContainer;
+		}
+		
+		
+		private function revertAll( event:Event ):void
+		{
+			for each( var control:ControlContainer in _allControls )
 			{
-				if( !_module.attributes.hasOwnProperty( endpoint.name ) )
+				for each( var endpoint:EndpointDefinition in control.unlockedEndpoints )
 				{
-					continue;
-				}
-				
-				Assert.assertTrue( endpoint.isStateful );
-				var stateInfo:StateInfo = endpoint.controlInfo.stateInfo;
+					if( !endpoint.isStateful ) continue; 
+					if( !endpoint.controlInfo.canBeTarget ) continue;
 
-				controller.processCommand( new SetModuleAttribute( _module.id, endpoint.name, stateInfo.defaultValue, stateInfo.type ) );
+					var stateInfo:StateInfo = endpoint.controlInfo.stateInfo;
+					
+					controller.processCommand( new SetModuleAttribute( _module.id, endpoint.name, stateInfo.defaultValue, stateInfo.type ) );
+				}
 			}			
 		}
 		
 		
-		private function onUpdateRevertToDefaultsMenuItem( menuItem:Object ):void
+		private function get enableRevertAllItem():Boolean
 		{
-			menuItem.label = "Revert " + _module.name + " to default settings";
-			for each( var endpoint:EndpointDefinition in _module.interfaceDefinition.endpoints )
+			for each( var control:ControlContainer in _allControls )
 			{
-				if( !_module.attributes.hasOwnProperty( endpoint.name ) )
+				for each( var endpoint:EndpointDefinition in control.unlockedEndpoints )
 				{
-					continue;
-				}
-				
-				Assert.assertTrue( endpoint.isStateful );
-
-				if( _module.attributes[ endpoint.name ] != endpoint.controlInfo.stateInfo.defaultValue )
-				{
-					menuItem.enabled = true;
-					return;
-				}
-			}			
+					if( !endpoint.isStateful ) continue;
+					if( !endpoint.controlInfo.canBeTarget ) continue;
+					
+					if( _module.attributes[ endpoint.name ] != endpoint.controlInfo.stateInfo.defaultValue )
+					{
+						return true;
+					}
+				}			
+			}
 			
-			menuItem.enabled = false;
+			return false;
 		}
 
+		
+		private function revertControl( event:Event ):void
+		{
+			Assert.assertNotNull( _controlUnderMouse );
+			
+			for each( var endpointName:String in _controlUnderMouse.widget.attributeToEndpointMap )
+			{
+				var endpoint:EndpointDefinition = _module.interfaceDefinition.getEndpointDefinition( endpointName );
+				Assert.assertTrue( endpoint );
+				
+				if( !endpoint.isStateful ) continue; 
+				if( !endpoint.controlInfo.canBeTarget ) continue;
 
+				var stateInfo:StateInfo = endpoint.controlInfo.stateInfo;
+				
+				controller.processCommand( new SetModuleAttribute( _module.id, endpoint.name, stateInfo.defaultValue, stateInfo.type ) );
+			}
+		}
 
-
+		
+		private function updateRevertControl( menuItem:NativeMenuItem ):void
+		{
+			menuItem.enabled = false;
+			
+			if( _controlUnderMouse )
+			{
+				var label:String = "";
+				
+				for each( var endpoint:EndpointDefinition in _controlUnderMouse.unlockedEndpoints )
+				{
+					if( !endpoint.isStateful ) continue; 
+					if( !endpoint.controlInfo.canBeTarget ) continue;
+					
+					if( _module.attributes[ endpoint.name ] != endpoint.controlInfo.stateInfo.defaultValue )
+					{
+						menuItem.enabled = true;
+					}
+					
+					if( label.length > 0 ) label += ", ";
+					label += endpoint.label;
+				}
+				menuItem.label = label;
+			}
+		}
+		
+		
+		private function onUpdateRevert( menuItem:Object ):void
+		{
+			var revertSubmenu:NativeMenu = new NativeMenu;
+			
+			if( _controlUnderMouse )
+			{
+				var unlockedEndpoints:Vector.<EndpointDefinition> = _controlUnderMouse.unlockedEndpoints;
+				var canEdit:Boolean = false;
+				
+				for each( var unlockedEndpoint:EndpointDefinition in unlockedEndpoints )
+				{
+					if( !unlockedEndpoint.isStateful ) continue;
+					if( !unlockedEndpoint.controlInfo.canBeTarget ) continue;
+					
+					canEdit = true;
+					break;
+				}
+				
+				if( canEdit )
+				{
+					var revertControlItem:NativeMenuItem = new NativeMenuItem;
+					updateRevertControl( revertControlItem );
+					revertControlItem.addEventListener( Event.SELECT, revertControl ); 
+					revertSubmenu.addItem( revertControlItem );
+					
+					revertSubmenu.addItem( new NativeMenuItem( "", true ) );	//separator
+				}
+			}
+			
+			var revertAllItem:NativeMenuItem = new NativeMenuItem;
+			revertAllItem.label = "All Controls";
+			revertAllItem.enabled = enableRevertAllItem;
+			revertAllItem.addEventListener( Event.SELECT, revertAll ); 
+				
+			revertSubmenu.addItem( revertAllItem );
+			
+			menuItem.submenu = revertSubmenu;
+		}
+		
+		
 		[Bindable] 
         private var contextMenuData:Array = 
         [
-            { label: "Revert to default settings", handler: revertToDefaults, updater: onUpdateRevertToDefaultsMenuItem } 
+			{ label: "Revert to default", updater: onUpdateRevert } 
         ];
+
 		
 		private var _module:ModuleInstance;
 		private var _allControls:Vector.<ControlContainer> = new Vector.<ControlContainer>;
 		private var _endpointNameToWidgetMap:Object = new Object;
 
 		private var _liveViewControlSet:Object = new Object;
+		
+		private var _controlUnderMouse:ControlContainer = null;
 
 		private static const controlMargin:Number = 32;
 	}

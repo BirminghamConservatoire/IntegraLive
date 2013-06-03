@@ -144,6 +144,22 @@ package components.utils
 		public static function get marginSizeWithoutLabel():Point 	{ return new Point( sidePadding * 2, topPadding + bottomPadding ); }
 		public static function get marginSizeWithLabel():Point 		{ return marginSizeWithoutLabel.add( new Point( 0, controlLabelHeight ) ); }
 
+		public function get unlockedEndpoints():Vector.<EndpointDefinition>
+		{
+			var unlockedEndpoints:Vector.<EndpointDefinition> = new Vector.<EndpointDefinition>;
+			
+			for( var widgetAttribute:String in widget.attributeToEndpointMap )
+			{
+				if( _mapWidgetAttributeToWritableFlag[ widgetAttribute ] )
+				{
+					var endpointName:String = widget.attributeToEndpointMap[ widgetAttribute ];
+					unlockedEndpoints.push( module.interfaceDefinition.getEndpointDefinition( endpointName ) );
+				}
+			}
+			
+			return unlockedEndpoints;
+		}
+		
 		
 		public function updateOnModuleAttributeChanged( controllerCommandID:int ):void
 		{

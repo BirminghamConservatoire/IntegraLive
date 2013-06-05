@@ -71,6 +71,7 @@ clean:
 	-@rm -f $(DESCRIPTOR)
 	-@rm -f $(CONFIG)
 	-@rm -rf $(PRODUCT).app
+	-@rm -rf *.tmp
 
 $(DESCRIPTOR): $(DESCRIPTOR).in
 	$(SED)  -e 's|x.x.x.xxxx|$(FULLVERSION)|g' -e 's|x.x.x|$(BASEVERSION)|g' $< > $@

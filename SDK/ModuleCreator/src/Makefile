@@ -1,5 +1,5 @@
 
-# ModuleCreator Integra Interface Creator
+# SHORTNAME Integra Module Creator
 ###################################################
 #
 # rather than modifying this Makefile, create a Make.config file
@@ -8,9 +8,13 @@
 # the variables you most likely will want to adjust are
 # FLEX_SDK_PATH and AIR_SDK_PATH
 
-PRODUCT="ModuleCreator"
+PRODUCT="Module Creator"
 CONFIG=app-config.xml
-DESCRIPTOR=ModuleCreator-app.xml
+SHORTNAME=ModuleCreator
+SWF=$(SHORTNAME).swf
+DESCRIPTOR=$(SHORTNAME)-app.xml
+PASSWORD=integra
+ASSETS=assets
 ARGS=
 
 CERTIFICATE=integraCert.pfx
@@ -34,34 +38,42 @@ AMXMLC=$(FLEX_SDK_PATH)/bin/amxmlc
 SED = sed
 CURL = curl
 
+BASEVERSION = $(shell cat $(SVNROOT)/BASEVERSION)
+FULLVERSION = $(shell cat $(SVNROOT)/FULLVERSION)
+
 .PHONY: $(DESCRIPTOR) clean
 
-all:  ModuleCreator.swf
+all:  $(SWF)
 
 run:
 	$(ADL) $(ADL_FLAGS) $(DESCRIPTOR) -- $(ARGS)
 
-ModuleCreator.swf: $(CONFIG)
-	$(AMXMLC) $(AMXMLC_FLAGS) ModuleCreator.mxml
+$(SWF): $(CONFIG)
+	$(AMXMLC) $(AMXMLC_FLAGS) $(SHORTNAME).mxml
 
 key:
 	if [ ! -e $(CERTIFICATE) ]; then \
-	    $(ADT) -certificate -cn SelfSigned 1024-RSA $(CERTIFICATE) integra;\
+	    $(ADT) -certificate -cn SelfSigned 1024-RSA $(CERTIFICATE) $(PASSWORD);\
 	fi
 
-app: ModuleCreator.swf key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle ModuleCreator.app ModuleCreator-app.xml ModuleCreator.swf assets
+app: $(SWF) key
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass $(PASSWORD) -target bundle $(PRODUCT).app $(DESCRIPTOR) $(SWF) $(ASSETS)
 
 
-air: ModuleCreator.swf key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra ModuleCreator.air ModuleCreator-app.xml ModuleCreator.swf assets
+air: $(SWF) key
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass $(PASSWORD) $(PRODUCT).air $(DESCRIPTOR) $(SWF) $(ASSETS)
 
 clean:
-	-@rm -f ModuleCreator.swf
+	-@rm -f $(SWF)
 	-@rm -f *.bak
 	-@rm -f app-config.xml
 	-@rm -f $(CERTIFICATE)
+	-@rm -f $(DESCRIPTOR)
+	-@rm -f $(CONFIG)
 	-@rm -rf $(PRODUCT).app
+
+$(DESCRIPTOR): $(DESCRIPTOR).in
+	$(SED)  -e 's|x.x.x.xxxx|$(FULLVERSION)|g' -e 's|x.x.x|$(BASEVERSION)|g' $< > $@
 
 $(CONFIG): $(CONFIG).in
 	$(SED) -e "s|@ENVIRONMENT_PATH@|$(shell pwd)/..|g" -e "s|@ADOBE_FLEX_PATH@|$(FLEX_SDK_PATH)|g" $< > $@

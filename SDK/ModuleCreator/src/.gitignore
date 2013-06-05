@@ -4,3 +4,4 @@ app-config.xml
 ModuleCreator-app.xml
 integraCert.pfx
 *.app
+*.tmp

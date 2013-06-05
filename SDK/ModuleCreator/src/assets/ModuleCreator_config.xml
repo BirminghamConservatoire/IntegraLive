@@ -19,8 +19,8 @@
 		<!--			mac-specific paths												-->
 		<mac>
 			<!--		path to template modules directory, relative to Module Creator	-->
-            <templatespath>../../templates/</templatespath>
-			<hostpath>../../../host/bin/pd_integra</hostpath>
+            <templatespath>./templates/</templatespath>
+			<hostpath>./host/bin/pd_integra</hostpath>
 			<fileviewerpath>/usr/bin/open</fileviewerpath>
 			<documentspath>documentation</documentspath>
 		</mac>

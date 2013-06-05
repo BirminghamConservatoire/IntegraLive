@@ -48,7 +48,7 @@ all:  $(SWF)
 run:
 	$(ADL) $(ADL_FLAGS) $(DESCRIPTOR) -- $(ARGS)
 
-$(SWF): $(CONFIG)
+$(SWF): $(CONFIG) $(DESCRIPTOR)
 	$(AMXMLC) $(AMXMLC_FLAGS) $(SHORTNAME).mxml
 
 key:

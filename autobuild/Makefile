@@ -1,12 +1,17 @@
 PRODUCT=Integra\ Live
+CREATORPRODUCT=Module\ Creator
 APPNAME=$(PRODUCT).app
-RESDIR=$(APPNAME)/Contents/Resources
+CREATORAPPNAME=$(CREATORPRODUCT).app
+RESDIR=Contents/Resources
+APPRESDIR=$(APPNAME)/$(RESDIR)
+CREATORRESIDR=$(CREATORAPPNAME)/$(RESDIR)
 NAMESPACE=integra
 PDPATH=
 SVNROOT=..
 MODULES=$(SVNROOT)/modules
 SCHEMADIR=$(MODULES)/XML/schemas
 GUIDIR=$(SVNROOT)/GUI/src
+CREATORDIR=$(SVNROOT)/SDK/ModuleCreator/src
 DOCDIR=$(SVNROOT)/documentation
 LIBINTEGRAPATH=$(SVNROOT)/libIntegra
 DEFAULTBUILD=release
@@ -15,6 +20,8 @@ LIBINTEGRADEPS_DIR=libIntegra-dependencies-OSX
 LIBINTEGRADEPS_FILE=$(LIBINTEGRADEPS_DIR).tar.gz
 LIBINTEGRADEPS_URL=$(INTEGRA_BASE_URL)/$(LIBINTEGRADEPS_FILE)
 DEPENDENCIESDIR=$(PWD)/$(LIBINTEGRADEPS_DIR)/lib
+SDKROOT=$(SVNROOT)/SDK
+TEMPLATESDIR=$(SDKROOT)/templates
 
 SERVERDIR=server
 SERVERBIN=$(SERVERDIR)/bin
@@ -39,10 +46,10 @@ GDB=gdb --args
 all: $(DEFAULTBUILD)
 	
 movedirs:
-	mv server $(RESDIR)
-	mv host $(RESDIR)
-	mv documentation $(RESDIR)
-	mv modules $(RESDIR)
+	mv server $(APPRESDIR)
+	mv host $(APPRESDIR)
+	mv documentation $(APPRESDIR)
+	mv modules $(APPRESDIR)
 
 debug: server-debug host gui modules documentation movedirs
 
@@ -107,6 +114,13 @@ gui:
 	rm -rf $(APPNAME)
 	mv $(GUIDIR)/$(APPNAME) ./
 	touch $(APPNAME)/Contents/Resources/META-INF/AIR/debug
+
+creator: host
+	make -C $(CREATORDIR) app
+	rm -rf $(CREATORAPPNAME)
+	mv $(CREATORDIR)/$(CREATORAPPNAME) ./
+	cp -r $(TEMPLATESDIR) $(CREATORRESIDR)
+	mv host $(CREATORRESIDR)
 
 host:
 	if [ ! -e $(PD_DMG_NAME) ]; then \

@@ -57,8 +57,8 @@ package components.views.ModuleLibrary
 			_library.setStyle( "right", 0 );
 			addChild( _library );
 			
-			_searchBox.setStyle( "left", 0 );
-			_searchBox.setStyle( "right", 0 );
+			_searchBox.setStyle( "left", 2 );
+			_searchBox.setStyle( "right", 2 );
 			_searchBox.setStyle( "top", 0 );
 			_searchBox.addEventListener( SearchBox.SEARCH_CHANGE_EVENT, onSearchChange );
 			addChild( _searchBox );

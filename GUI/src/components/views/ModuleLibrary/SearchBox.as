@@ -32,6 +32,7 @@ package components.views.ModuleLibrary
 	import mx.controls.TextInput;
 	
 	import components.model.Info;
+	import components.model.userData.ColorScheme;
 	import components.utils.Utilities;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
@@ -66,6 +67,7 @@ package components.views.ModuleLibrary
 			showEmptyPrompt = true;
 			
 			addEventListener( Event.RESIZE, onResize );
+			addEventListener( MouseEvent.MOUSE_DOWN, onMouseDown );
 			
 		}
 
@@ -103,16 +105,44 @@ package components.views.ModuleLibrary
 		}
 		
 		
+		override public function styleChanged( style:String ):void
+		{
+			if( !style || style == ColorScheme.STYLENAME )
+			{
+				switch( getStyle( ColorScheme.STYLENAME ) )
+				{
+					default:
+					case ColorScheme.LIGHT:
+						_backgroundColor = 0xD2D2D2;
+						break;
+					
+					case ColorScheme.DARK:
+						_backgroundColor = 0x2E2E2E;
+						break;
+				}
+				
+				invalidateDisplayList();
+			}			
+		}
+		
+		
+		
 		override protected function updateDisplayList( width:Number, height:Number):void
 		{
 			super.updateDisplayList( width, height );
 			
 			graphics.clear();
 			
-			//draw invisible background
+			//draw background
 			
-			graphics.beginFill( 0, 0 );
-			graphics.drawRect( 0, 0, width, height );
+			graphics.beginFill( _backgroundColor, 0 );
+			if( _hasFocus )
+			{
+				graphics.lineStyle( 1, _borderColor, 0.5, true );
+			}
+			
+			var cornerDiameter:Number = height;
+			graphics.drawRoundRect( 0, 0, width - 1, height - 1, cornerDiameter, cornerDiameter );
 
 			//drag magnifying glass
 			var magnifierColor:uint = _input.getStyle( "color" );
@@ -123,7 +153,7 @@ package components.views.ModuleLibrary
 			var circleRadius:Number = magnifierRect.width * 0.33;
 			var circleCenter:Point = new Point( magnifierRect.right - circleRadius, magnifierRect.top + circleRadius );
 			
-			graphics.lineStyle( 2, magnifierColor, showAsFound ? 1 : 0.5 );
+			graphics.lineStyle( 2, magnifierColor );
 			graphics.beginFill( 0, 0 );
 			graphics.drawCircle( circleCenter.x, circleCenter.y, circleRadius );
 			
@@ -165,11 +195,10 @@ package components.views.ModuleLibrary
 		}
 		
 		
-		private function get showAsFound():Boolean
+		private function onMouseDown( event:MouseEvent ):void
 		{
-			return !_showingEmptyPrompt && ( searchText.length > 0 ) && !_filteredEverything;
+			_input.setFocus();
 		}
-		
 		
 		private function onFocusIn( event:Event ):void
 		{
@@ -177,6 +206,9 @@ package components.views.ModuleLibrary
 			{
 				showEmptyPrompt = false;
 			}
+			
+			_hasFocus = true;
+			invalidateDisplayList();
 		}
 
 		
@@ -186,6 +218,9 @@ package components.views.ModuleLibrary
 			{
 				showEmptyPrompt = true;
 			}
+			
+			_hasFocus = false;
+			invalidateDisplayList();
 		}
 
 		
@@ -212,6 +247,10 @@ package components.views.ModuleLibrary
 		private var _clearButton:Button = new Button;
 		
 		private var _filteredEverything:Boolean = false;
+		private var _hasFocus:Boolean = false;
+		
+		private var _backgroundColor:uint;
+		private const _borderColor:uint = 0x808080;
 		
 		private static const _inputMargin:Number = 3;
 		private static const _emptyPrompt:String = "Search Modules...";

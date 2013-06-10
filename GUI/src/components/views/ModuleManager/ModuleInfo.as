@@ -95,7 +95,7 @@ package components.views.ModuleManager
 			
 			graphics.clear();
 			
-			graphics.lineStyle( 2, _borderColor );
+			graphics.lineStyle( 2, _borderColor, 1, true );
 			
 			graphics.drawRoundRect( 0, 0, width, height, ModuleManagerList.cornerRadius * 2, ModuleManagerList.cornerRadius * 2 );  
 		}

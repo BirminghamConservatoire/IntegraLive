@@ -68,7 +68,7 @@ package components.utils
 			
 			graphics.clear();
 			
-			graphics.lineStyle( 2, 0x10a1f0 ); 
+			graphics.lineStyle( 2, 0x10a1f0, 1, true ); 
 			graphics.beginFill( 0xb5d0e1 );
 			graphics.drawRoundRect( 0, 0, width, height, 10, 10 );
 			graphics.endFill();

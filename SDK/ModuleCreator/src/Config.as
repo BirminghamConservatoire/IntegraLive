@@ -44,6 +44,7 @@ package
 		} 		
 
 		public function get hasIntegraDeveloperPrivileges():Boolean { return _hasIntegraDeveloperPrivileges; }
+		public function get standardTags():Vector.<String>			{ return _standardTags; }
 
 		public function get templatesPath():String					{ return _templatesPath; }
 		public function get hostPath():String						{ return _hostPath; }
@@ -77,6 +78,15 @@ package
 			{
 				_hasIntegraDeveloperPrivileges = true;
 			}
+			
+			if( xml.hasOwnProperty( "standardtags" ) )
+			{
+				for each( var standardTag:XML in xml.standardtags.standardtag ) 
+				{ 
+					_standardTags.push( standardTag.toString() );
+				}
+			}
+			
 			
 			if( xml.hasOwnProperty( "paths" ) )
 			{
@@ -124,7 +134,7 @@ package
 			{
 				for each( var hostArg:XML in xml.hostargs.hostarg ) 
 				{ 
-					hostArguments.push( hostArg.toString() );
+					_hostArguments.push( hostArg.toString() );
 				}
 			}
 			
@@ -212,6 +222,8 @@ package
 		private static var _singleInstance:Config = null;
 
 		private var _hasIntegraDeveloperPrivileges:Boolean = false;
+		
+		private var _standardTags:Vector.<String> = new Vector.<String>;
 
 		private var _templatesPath:String = "";
 		private var _hostPath:String = "";

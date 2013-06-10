@@ -33,10 +33,17 @@
 							restrict="{Globals.printableCharacterRestrict}"
 							toolTip="Describe the interface, in plain text or 'markdown'.  The popup-panel displays a preview of how the rendered markdown will look"/>
 		</mx:HBox>
+		<mx:HBox id="_implementedInLibIntegraGroup">
+			<mx:Label text="Implemented in LibIntegra" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:CheckBox id="_iidImplementedInLibIntegra"
+						 click="{onClickImplementedInLibIntegra(); }"
+						 width="{Globals.propertyColumnWidth()}" 
+						 toolTip="module is implemented in libIntegra.  "/>
+		</mx:HBox>
 		<mx:HBox>
 				<mx:Label text="Tags" width="{Globals.labelColumnWidth()}" textAlign="right"/>
 			<mx:VBox verticalGap="0"> 
-				<mx:List id="_iidTags" 
+				<local:TagList id="_iidTags" 
 						 width="{Globals.propertyColumnWidth()}" 
 						 editable="true"
 						 editorHeightOffset="4"
@@ -50,13 +57,6 @@
 					<mx:Button id="_removeTag" label="remove tag" width="{Globals.propertyColumnWidth() / 2 - 4}" click="{ onClickRemoveTag() }"/>
 				</mx:HBox>
 			</mx:VBox>
-		</mx:HBox>
-		<mx:HBox id="_implementedInLibIntegraGroup">
-			<mx:Label text="Implemented in LibIntegra" width="{Globals.labelColumnWidth()}" textAlign="right"/>
-			<mx:CheckBox id="_iidImplementedInLibIntegra"
-						 click="{onClickImplementedInLibIntegra(); }"
-						 width="{Globals.propertyColumnWidth()}" 
-						 toolTip="module is implemented in libIntegra.  "/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label text="Author" width="{Globals.labelColumnWidth()}" textAlign="right"/>
@@ -300,6 +300,8 @@
 				var tags:IList = _iidTags.dataProvider as IList;
 				Assert.assertNotNull( tags );
 				
+				var hasCoreTag:Boolean = false;
+				
 				var tagMap:Object = new Object;
 				for( var i:int = 0; i < tags.length; i++ )
 				{
@@ -313,7 +315,7 @@
 					
 					if( !TagEditor.isTagValid( tag ) )
 					{
-						_iidTags.errorString = "Tags may only contain letters, numbers and spaces";
+						_iidTags.errorString = "Tags may only contain lowercase letters, numbers and spaces";
 						return false;
 					}
 
@@ -325,9 +327,25 @@
 					
 					tagMap[ tag ] = tag;
 					
-					if( tag == _coreTag && !Config.singleInstance.hasIntegraDeveloperPrivileges )
+					if( tag == _coreTag )
+					{
+						hasCoreTag = true;
+					}
+				}
+
+				if( hasCoreTag )
+				{
+					if( !Config.singleInstance.hasIntegraDeveloperPrivileges )
 					{
 						_iidTags.errorString = "The tag '" + _coreTag + "' is reserved for libIntegra developers";
+						return false;
+					}
+				}
+				else
+				{
+					if( _iidImplementedInLibIntegra.selected )
+					{
+						_iidTags.errorString = "If module is implemented in libIntegra, it must also have the tag 'core'";
 						return false;
 					}
 				}
@@ -348,10 +366,11 @@
 				var tags:IList = _iidTags.dataProvider as IList;
 				Assert.assertNotNull( tags );
 
-				tags.addItem( "<new tag #" + _newTagIndex + ">" );
+				tags.addItem( "new tag " + _newTagIndex );
 				_newTagIndex++;
 				
 				_iidTags.selectedIndex = tags.length - 1;
+				_iidTags.editedItemPosition = { columnIndex : 0, rowIndex : _iidTags.selectedIndex };
 				updateTagButtonEnables();
 				interfaceChanged();
 			}
@@ -393,10 +412,9 @@
 
 				Assert.assertTrue( _iidTags.selectedIndex >= 0 && _iidTags.selectedIndex < tags.length );
 				
-				var tag:String = ( _iidTags.itemEditorInstance as TextInput ).text;
+				var tag:String = ( _iidTags.itemEditorInstance as TagEditor ).tag;
 				if( tag.length > 0 )
 				{
-					tag = tag.toLowerCase();
 					tags.setItemAt( tag, _iidTags.selectedIndex );
 					interfaceChanged();
 				}

@@ -1,7 +1,32 @@
 <modulecreatorconfig>
 
 	<!--  integradeveloper is an easter-egg tag which allows the use of 'core' and 'implemented in libIntegra' settings -->
-	<integradeveloper/>
+	 <integradeveloper/> 
+
+	<!-- 		standard tags - these are presented in the combo box control as defaults						-->
+	<standardtags>
+		<standardtag>simple</standardtag>
+		<standardtag>complex</standardtag>
+		<standardtag>processing</standardtag>
+		<standardtag>synthesis</standardtag>
+		<standardtag>analysis</standardtag>
+		<standardtag>delay</standardtag>
+		<standardtag>filter</standardtag>
+		<standardtag>spectral</standardtag>
+		<standardtag>granular</standardtag>
+		<standardtag>distortion</standardtag>
+		<standardtag>dynamics</standardtag>
+		<standardtag>resonance</standardtag>
+		<standardtag>pitch</standardtag>
+		<standardtag>panning</standardtag>
+		<standardtag>reverb</standardtag>
+		<standardtag>soundfile</standardtag>
+		<standardtag>input</standardtag>
+		<standardtag>output</standardtag>
+	</standardtags>	
+	
+
+
 
 	<!--        configuration of paths 													-->
 	<paths>

@@ -33,20 +33,12 @@
 							restrict="{Globals.printableCharacterRestrict}"
 							toolTip="Describe the interface, in plain text or 'markdown'.  The popup-panel displays a preview of how the rendered markdown will look"/>
 		</mx:HBox>
-		<mx:HBox id="_implementedInLibIntegraGroup">
-			<mx:Label text="Implemented in LibIntegra" width="{Globals.labelColumnWidth()}" textAlign="right"/>
-			<mx:CheckBox id="_iidImplementedInLibIntegra"
-						 click="{onClickImplementedInLibIntegra(); }"
-						 width="{Globals.propertyColumnWidth()}" 
-						 toolTip="module is implemented in libIntegra.  "/>
-		</mx:HBox>
 		<mx:HBox>
-				<mx:Label text="Tags" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:Label text="Tags" width="{Globals.labelColumnWidth()}" textAlign="right"/>
 			<mx:VBox verticalGap="0"> 
 				<local:TagList id="_iidTags" 
 						 width="{Globals.propertyColumnWidth()}" 
 						 editable="true"
-						 editorHeightOffset="4"
 						 change="{ onTagSelected(); }"
 						 itemEditor="{ new ClassFactory( TagEditor ) }"
 						 itemEditBeginning="{ onBeginningTagEdit( event ) }"
@@ -57,6 +49,13 @@
 					<mx:Button id="_removeTag" label="remove tag" width="{Globals.propertyColumnWidth() / 2 - 4}" click="{ onClickRemoveTag() }"/>
 				</mx:HBox>
 			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox id="_implementedInLibIntegraGroup">
+			<mx:Label text="Implemented in LibIntegra" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+			<mx:CheckBox id="_iidImplementedInLibIntegra"
+						 click="{onClickImplementedInLibIntegra(); }"
+						 width="{Globals.propertyColumnWidth()}" 
+						 toolTip="module is implemented in libIntegra.  "/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label text="Author" width="{Globals.labelColumnWidth()}" textAlign="right"/>
@@ -370,7 +369,7 @@
 				_newTagIndex++;
 				
 				_iidTags.selectedIndex = tags.length - 1;
-				_iidTags.editedItemPosition = { columnIndex : 0, rowIndex : _iidTags.selectedIndex };
+				_iidTags.editSelection();
 				updateTagButtonEnables();
 				interfaceChanged();
 			}

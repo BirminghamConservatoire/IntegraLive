@@ -15,6 +15,23 @@ package
 		}
 		
 		
+		public function editSelection():void
+		{
+			editedItemPosition = { columnIndex : 0, rowIndex : selectedIndex };
+			
+			callLater( openItemEditor );
+		}
+		
+		
+		private function openItemEditor():void
+		{
+			if( itemEditorInstance is TagEditor )
+			{
+				( itemEditorInstance as TagEditor ).open();
+			}
+		}
+			
+		
 		private function onTagEditorClosed( event:Event ):void
 		{
 			endEdit( ListEventReason.OTHER );

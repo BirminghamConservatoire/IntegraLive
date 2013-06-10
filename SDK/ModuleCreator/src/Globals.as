@@ -24,7 +24,7 @@ package
 
 		static public const externalPadding:Number = 5;
 		
-		static public const descriptionHeight:Number = 240;
+		static public const descriptionHeight:Number = 100;
 		
 		static public const floatType:String = "Float";
 		static public const intType:String = "Integer";

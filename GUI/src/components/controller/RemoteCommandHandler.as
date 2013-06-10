@@ -345,21 +345,8 @@ package components.controller
 			}
 			else if( object is Midi )
 			{
-				const ccTagLength:int = ReceiveMidiInput.CC.length;
-				if( endpointName.substr( 0, ccTagLength ) == ReceiveMidiInput.CC )
-				{
-					var index:int = int( endpointName.substr( ccTagLength ) );
-					command = new ReceiveMidiInput( object.id, ReceiveMidiInput.CC, index, int( value ) );
-				}
-				else
-				{
-					const noteOnTagLength:int = ReceiveMidiInput.NOTE_ON.length;
-					if( endpointName.substr( 0, noteOnTagLength ) == ReceiveMidiInput.NOTE_ON )
-					{
-						index = int( endpointName.substr( noteOnTagLength ) );
-						command = new ReceiveMidiInput( object.id, ReceiveMidiInput.NOTE_ON, index );
-					}
-				}
+				command = new ReceiveMidiInput( object.id, endpointName, int( value ) );
+				if( !( command as ReceiveMidiInput ).valid ) command = null;
 			}
 			else if( object is IntegraContainer )
 			{
@@ -372,7 +359,6 @@ package components.controller
 			}
 				
 
-			
 			/*
 			Note:
 			

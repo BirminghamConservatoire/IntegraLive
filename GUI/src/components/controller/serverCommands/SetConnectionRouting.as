@@ -28,7 +28,6 @@ package components.controller.serverCommands
 	import components.model.IntegraModel;
 	import components.model.Scaler;
 	import components.model.interfaceDefinitions.EndpointDefinition;
-	import components.model.interfaceDefinitions.InterfaceDefinition;
 	
 	import flexunit.framework.Assert;
 	

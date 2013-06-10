@@ -29,7 +29,10 @@ package components.views.ModuleProperties
 	import __AS3__.vec.Vector;
 	
 	import components.controller.ServerCommand;
+	import components.controller.serverCommands.AddConnection;
 	import components.controller.serverCommands.AddEnvelope;
+	import components.controller.serverCommands.AddScaledConnection;
+	import components.controller.serverCommands.ReceiveMidiInput;
 	import components.controller.serverCommands.RemoveEnvelope;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
@@ -43,6 +46,7 @@ package components.views.ModuleProperties
 	import components.model.Block;
 	import components.model.Info;
 	import components.model.ModuleInstance;
+	import components.model.Scaler;
 	import components.model.Track;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
@@ -55,6 +59,7 @@ package components.views.ModuleProperties
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.RibbonBar.MidiInputIndicator;
 	
 	import flexunit.framework.Assert;
 
@@ -78,6 +83,7 @@ package components.views.ModuleProperties
 			addUpdateMethod( RemoveEnvelope, onPadlockStateMightHaveChanged );
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( SwitchModuleVersion, onModuleVersionSwitched );
+			addUpdateMethod( ReceiveMidiInput, onMidiInput );
 
 			addTitleInvalidatingCommand( SetPrimarySelectedChild );			
 			addTitleInvalidatingCommand( RenameObject );
@@ -201,6 +207,7 @@ package components.views.ModuleProperties
 
 				container.hasIncludeInLiveViewButton = true;
 				container.includeInLiveView = _liveViewControlSet.hasOwnProperty( widget.label );
+				container.hasMidiLearn = canAnyBeConnectionSource( widget.attributeToEndpointMap );
 
 				var position:Rectangle = widget.position;
 				Assert.assertNotNull( position );
@@ -219,6 +226,20 @@ package components.views.ModuleProperties
 					_endpointNameToWidgetMap[ endpointName ] = container;
 				}
 			}
+		}
+		
+		
+		private function canAnyBeConnectionSource( attributeToEndpointMap:Object ):Boolean
+		{
+			for each( var endpointName:String in attributeToEndpointMap )
+			{
+				var endpointDefinition:EndpointDefinition = _module.interfaceDefinition.getEndpointDefinition( endpointName );
+				Assert.assertNotNull( endpointDefinition );
+				
+				if( endpointDefinition.canBeConnectionTarget ) return true;
+			}
+			
+			return false;
 		}
 		
 		
@@ -337,6 +358,40 @@ package components.views.ModuleProperties
 				_liveViewControlSet[ liveViewControl.controlInstanceName ] = 1;
 			}
 		}	
+		
+		
+		private function onMidiInput( command:ReceiveMidiInput ):void
+		{
+			if( command.midiID != model.primarySelectedBlock.midi.id ) return;
+
+			for each( var control:ControlContainer in _allControls )
+			{
+				if( control.isInMidiLearnMode )
+				{
+					doMidiLearn( command.midiEndpoint, control.midiLearnEndpoint )
+				}
+			}
+		}
+		
+		
+		private function doMidiLearn( midiEndpointName:String, targetEndpointName:String ):void
+		{
+			var block:Block = model.primarySelectedBlock;
+			var blockID:int = _module.parentID;
+			
+			var addScaledConnection:AddScaledConnection = new AddScaledConnection( blockID );
+			controller.processCommand( addScaledConnection );
+
+			var scalerID:int = addScaledConnection.scalerID;
+			var scaler:Scaler = model.getScaler( scalerID );
+			Assert.assertNotNull( scaler );
+			
+			var upstreamConnectionID:int = scaler.upstreamConnection.id;
+			var downstreamConnectionID:int = scaler.downstreamConnection.id;
+			
+			controller.processCommand( new SetConnectionRouting( upstreamConnectionID, block.midi.id, midiEndpointName, scalerID, "inValue" ) );
+			controller.processCommand( new SetConnectionRouting( downstreamConnectionID, scalerID, "outValue", _module.id, targetEndpointName ) );
+		}
 		
 		
 		private function onRightMouseDown( event:MouseEvent ):void

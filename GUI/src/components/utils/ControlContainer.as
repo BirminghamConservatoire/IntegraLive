@@ -62,6 +62,7 @@ package components.utils
 	import components.model.userData.LiveViewControl;
 	import components.views.MouseCapture;
 	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.MidiButtonSkin;
 	import components.views.Skins.TickButtonSkin;
 	import components.views.viewContainers.IntegraViewEvent;
 	
@@ -144,6 +145,22 @@ package components.utils
 		public static function get marginSizeWithoutLabel():Point 	{ return new Point( sidePadding * 2, topPadding + bottomPadding ); }
 		public static function get marginSizeWithLabel():Point 		{ return marginSizeWithoutLabel.add( new Point( 0, controlLabelHeight ) ); }
 
+		public function get isInMidiLearnMode():Boolean				{ return _isInMidiLearnMode; }
+		
+		
+		public function get midiLearnEndpoint():String
+		{
+			//todo -  properly
+			for each( var endpointName:String in widget.attributeToEndpointMap )
+			{
+				return endpointName;
+			}
+			
+			Assert.assertTrue( false );
+			return null;
+		}
+		
+		
 		public function get unlockedEndpoints():Vector.<EndpointDefinition>
 		{
 			var unlockedEndpoints:Vector.<EndpointDefinition> = new Vector.<EndpointDefinition>;
@@ -186,8 +203,8 @@ package components.utils
 			{
 				_includeInLiveViewButton = new Button;
 				_includeInLiveViewButton.toggle = true;
-				_includeInLiveViewButton.width = liveButtonSize;
-				_includeInLiveViewButton.height = liveButtonSize;
+				_includeInLiveViewButton.width = buttonSize;
+				_includeInLiveViewButton.height = buttonSize;
 				_includeInLiveViewButton.setStyle( "right", 1 );
 				_includeInLiveViewButton.setStyle( "top", 1 );
 				_includeInLiveViewButton.setStyle( "skin", TickButtonSkin );
@@ -358,6 +375,13 @@ package components.utils
 		}
 		
 		
+		public function set hasMidiLearn( hasMidiLearn:Boolean ):void 
+		{
+			_hasMidiLearn = hasMidiLearn;
+			updateMidiLearnButton();
+		}
+		
+		
 		public function set includeInstanceNameInLabel( includeInstanceNameInLabel:Boolean ):void
 		{
 			_includeInstanceNameInLabel = includeInstanceNameInLabel;
@@ -371,11 +395,17 @@ package components.utils
        		setControlWritableFlags();
 
 			updatePadlock();
+			updateMidiLearnButton();
         }
 
-		
+
 		public function getInfoToDisplay( event:Event ):Info 						
 		{
+			if( event.target == _midiLearnButton )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ControlMidiLearnButton" );
+			}
+
 			if( event.target == _includeInLiveViewButton )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ControlLiveViewButton" );
@@ -418,6 +448,36 @@ package components.utils
         }
 		
 		
+		private function updateMidiLearnButton():void
+		{
+			var shouldShowButton:Boolean = _hasMidiLearn && !_shouldShowPadlock;
+			
+			if( shouldShowButton && !_midiLearnButton )
+			{
+				_midiLearnButton = new Button;
+				_midiLearnButton.toggle = true;
+				_midiLearnButton.width = buttonSize;
+				_midiLearnButton.height = buttonSize;
+				_midiLearnButton.setStyle( "left", 1 );
+				_midiLearnButton.setStyle( "top", 1 );
+				_midiLearnButton.setStyle( "skin", MidiButtonSkin );
+				_midiLearnButton.setStyle( "color", _color );
+				_midiLearnButton.addEventListener( MouseEvent.CLICK, onMidiLearnButton );
+				_midiLearnButton.addEventListener( MouseEvent.DOUBLE_CLICK, onMidiLearnButton );
+				addElement( _midiLearnButton );
+			}
+			
+			if( !shouldShowButton && _midiLearnButton )
+			{
+				_midiLearnButton.removeEventListener( MouseEvent.CLICK, onMidiLearnButton );
+				_midiLearnButton.removeEventListener( MouseEvent.DOUBLE_CLICK, onMidiLearnButton );
+				removeElement( _midiLearnButton );
+				_midiLearnButton = null;		
+				_isInMidiLearnMode = false;
+			}
+		}
+		
+		
 		override public function styleChanged( style:String ):void
 		{
 			if( !style || style == "color" )
@@ -428,12 +488,17 @@ package components.utils
 					_color = newColor; 
 				
 					_controlLabel.setStyle( "color", _color );
-				
+					
 					if( _includeInLiveViewButton )
 					{
 						_includeInLiveViewButton.setStyle( "color", _color );
 					}
-				
+					
+					if( _midiLearnButton )
+					{
+						_midiLearnButton.setStyle( "color", _color );
+					}
+					
 					setControlForegroundColor();
 				}
 			}
@@ -727,6 +792,13 @@ package components.utils
 			liveViewControl.moduleID = _module.id;
 			liveViewControl.controlInstanceName = _widget.label;
 			_controller.processCommand( new ToggleLiveViewControl( liveViewControl ) );
+		}
+		
+		
+		private function onMidiLearnButton( event:MouseEvent ):void
+		{
+			_isInMidiLearnMode = !_isInMidiLearnMode;
+			_midiLearnButton.selected = _isInMidiLearnMode;
 		}
 
 		
@@ -1791,6 +1863,10 @@ package components.utils
 		
 		private var _controlInfo:Info = null;
 		private var _padlockInfo:Info = null;
+		
+		private var _hasMidiLearn:Boolean = false;
+		private var _midiLearnButton:Button = null;
+		private var _isInMidiLearnMode:Boolean = false;
 
 		private static const topPadding:Number = 14;
 		private static const sidePadding:Number = 8;
@@ -1799,7 +1875,7 @@ package components.utils
 		private static const cornerHeight:Number = 12;
 		private static const resizeAreaWidth:Number = 4;
 		private static const maximumImplicitNotches:int = 32;
-		private static const liveButtonSize:Number = 12;
+		private static const buttonSize:Number = 12;
 		private static const controlLabelHeight:int = 20;
 		private static const minimumControlLabelWidth:int = 48;
 		

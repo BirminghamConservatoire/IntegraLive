@@ -37,22 +37,50 @@ package components.controller.serverCommands
 	
 	public class ReceiveMidiInput extends ServerCommand
 	{
-		public function ReceiveMidiInput( midiID:int, type:String, index:int, value:int = 0 )
+		public function ReceiveMidiInput( midiID:int, midiEndpoint:String, value:int = 0 )
 		{
 			super();
 
 			_midiID = midiID;
-			_type = type;
-			_index = index;
+			_midiEndpoint = midiEndpoint;
 			_value = value;
+
+			const ccTagLength:int = CC.length;
+			if( midiEndpoint.substr( 0, ccTagLength ) == CC )
+			{
+				_index = int( midiEndpoint.substr( ccTagLength ) );
+				_type = CC;
+				return;
+			}
+
+			const noteOnTagLength:int = NOTE_ON.length;
+			if( midiEndpoint.substr( 0, noteOnTagLength ) == NOTE_ON )
+			{
+				_index = int( midiEndpoint.substr( noteOnTagLength ) );
+				_type = NOTE_ON;
+			}
 		}
 		
 		
-		public function get midiID():int		{ return _midiID; } 
-		public function get type():String 		{ return _type; }
-		public function get index():int 		{ return _index; }
-		public function get value():int 		{ return _value; }
-	
+		public function get midiID():int			{ return _midiID; } 
+		public function get midiEndpoint():String	{ return _midiEndpoint; } 
+		public function get type():String 			{ return _type; }
+		public function get index():int 			{ return _index; }
+		public function get value():int 			{ return _value; }
+		
+		public function get valid():Boolean 			
+		{ 
+			switch( _type )
+			{
+				case CC:
+				case NOTE_ON:
+					return true;
+					
+				default:
+					return false;
+			}
+		}
+		
 		
 		public override function initialize( model:IntegraModel ):Boolean
 		{
@@ -113,6 +141,7 @@ package components.controller.serverCommands
 		
 
 		private var _midiID:int;
+		private var _midiEndpoint:String;
 		private var _type:String;
 		private var _index:int;
 		private var _value:int;

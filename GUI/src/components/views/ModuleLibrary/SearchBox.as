@@ -72,6 +72,14 @@ package components.views.ModuleLibrary
 		
 		public function get searchText():String { return _showingEmptyPrompt ? "" : _input.text; }
 		
+		
+		public function clear():void
+		{
+			showEmptyPrompt = true;
+			_clearButton.visible = false;
+		}
+		
+		
 		public function set filteredEverything( filteredEverything:Boolean ):void
 		{
 			if( filteredEverything != _filteredEverything )
@@ -149,12 +157,11 @@ package components.views.ModuleLibrary
 		}
 		
 		
+		
 		private function onClear( event:MouseEvent ):void
 		{
-			showEmptyPrompt = true;
+			clear();
 			dispatchEvent( new Event( SEARCH_CHANGE_EVENT ) );
-			
-			_clearButton.visible = false;
 		}
 		
 		

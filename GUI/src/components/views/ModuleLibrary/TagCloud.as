@@ -132,10 +132,22 @@ package components.views.ModuleLibrary
 			positionTagButtons();
 		}
 		
-
+		
 		public function get selectedTags():Object 
 		{ 
 			return _selectedTags; 
+		}
+
+		
+		public function deselectAll():void
+		{
+			_selectedTags = new Object;
+			for each( var button:Button in _tagButtons )
+			{
+				button.selected = false;
+			}
+			
+			_clearButton.visible = false;
 		}
 		
 		
@@ -249,13 +261,7 @@ package components.views.ModuleLibrary
 		
 		private function onClear( event:MouseEvent ):void
 		{
-			_selectedTags = new Object;
-			for each( var button:Button in _tagButtons )
-			{
-				button.selected = false;
-			}
-			
-			_clearButton.visible = false;
+			deselectAll();
 			dispatchEvent( new Event( TAG_SELECTION_CHANGED ) );
 		}
 		

@@ -217,11 +217,11 @@ package components.views.ModuleLibrary
 					
 					if( _tagSet.hasOwnProperty( tag ) )
 					{
-						_tagSet[ tag ] = 1;	
+						_tagSet[ tag ] ++;	
 					}
 					else
 					{
-						_tagSet[ tag ] ++;
+						_tagSet[ tag ] = 1;
 					}
 				}
 			}
@@ -252,7 +252,6 @@ package components.views.ModuleLibrary
 		
 			return 0;
 		}
-		
 		
 		
 		private function updateSearchBox():void
@@ -317,8 +316,9 @@ package components.views.ModuleLibrary
 		
 		private function onTagSelectionChanged( event:Event ):void
 		{
+			_searchBox.clear();
+
 			updateLibrary();
-			updateSearchBox();
 		}
 		
 		
@@ -391,7 +391,11 @@ package components.views.ModuleLibrary
 		
 		private function onSearchChange( event:Event ):void
 		{
-			onAllDataChanged();
+			_tagCloud.deselectAll();
+
+			updateLibrary();
+			
+			updateSearchBox();
 		}
 
 		

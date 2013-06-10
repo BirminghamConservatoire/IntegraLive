@@ -5,7 +5,6 @@ package
 	
 	import mx.controls.ComboBox;
 	import mx.events.DropdownEvent;
-	import mx.events.ListEvent;
 	
 	public class TagEditor extends ComboBox
 	{

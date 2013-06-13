@@ -889,14 +889,7 @@ package components.views.viewContainers
 			if( _vuMeter )
 			{
 				_vuMeter.y = _titleControlOffset;
-				if( _activeButton )
-				{
-					_vuMeter.setStyle( "right", _titleControlOffset * 2 + FontSize.getButtonSize( this ) );
-				}
-				else
-				{
-					_vuMeter.setStyle( "right", _titleControlOffset );
-				}
+				_vuMeter.setStyle( "right", _titleControlOffset );
 				_vuMeter.height = _titleHeight - _titleControlOffset * 2;
 				_vuMeter.width = _vuMeterWidth;
 				updateVuMeterBackgroundColors();
@@ -913,7 +906,14 @@ package components.views.viewContainers
 			if( _activeButton )
 			{
 				_activeButton.y = _titleControlOffset;
-				_activeButton.setStyle( "right", _titleControlOffset );
+				if( _vuMeter )
+				{
+					_activeButton.setStyle( "right", _titleControlOffset * 2 + _vuMeter.width );
+				}
+				else
+				{
+					_activeButton.setStyle( "right", _titleControlOffset );
+				}
 				_activeButton.height = FontSize.getButtonSize( this );
 				_activeButton.width = FontSize.getButtonSize( this );
 			}

@@ -42,6 +42,7 @@ package components.views.ModuleGraph
 	import components.controller.serverCommands.RemoveConnection;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.UnloadModule;
 	import components.controller.userDataCommands.SetLiveViewControls;
@@ -115,6 +116,10 @@ package components.views.ModuleGraph
 			addUpdateMethod( SwitchModuleVersion, onModuleVersionChanged );
 			
 			addVuMeterChangingCommand( SetPrimarySelectedChild );
+			addColorChangingCommand( SetTrackColor );
+
+			addActiveChangingCommand( SetPrimarySelectedChild );
+			addActiveChangingCommand( SetContainerActive );
 			
 			contextMenuDataProvider = contextMenuData;
 			
@@ -141,6 +146,38 @@ package components.views.ModuleGraph
 			}
 		}	
 
+		
+		override public function get color():uint
+		{
+			if( model && model.selectedTrack )
+			{
+				return model.selectedTrack.trackUserData.color;			
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		
+		
+		override public function get active():Boolean
+		{
+			if( model && model.primarySelectedBlock )
+			{
+				return model.primarySelectedBlock.active;			
+			}
+			else
+			{
+				return false;
+			}			
+		}
+		
+		
+		override public function set active( active:Boolean ):void 
+		{
+			controller.processCommand( new SetContainerActive( model.primarySelectedBlock.id, active ) );
+		}
+		
 		
 		override public function getInfoToDisplay( event:Event ):Info 
 		{

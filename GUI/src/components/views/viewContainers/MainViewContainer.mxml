@@ -31,40 +31,37 @@
 
 	<states>
 		<s:State name="ArrangeState"/>
-		<s:State name="ArrangeStateWithInfo"/>
 		<s:State name="ModuleGraphState"/>
-		<s:State name="ModuleGraphStateWithInfo"/>
 		<s:State name="LiveState"/>
-		<s:State name="LiveStateWithInfo"/>
 	</states> 
 	
-	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="ArrangeState,ArrangeStateWithInfo">
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="ArrangeState">
 		<mx:HBox width="100%" height="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_arrangeView}" timelineMode="{TimelineMode.EDITABLE}" hasActiveButton="true"/>
 			<viewContainers:ViewHolder view="{_blockLibrary}" changeWidthFromLeft="true"/>
 		</mx:HBox>
-		<mx:HBox width="100%" horizontalGap="2">
+		<mx:HBox id="_arrangeInfoContainer" width="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_arrangeViewProperties}" canCollapse="true" changeHeightFromTop="true"/> 
-			<viewContainers:ViewHolder view="{_arrangeInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true" includeIn="ArrangeStateWithInfo"/>  
+			<viewContainers:ViewHolder id="_arrangeInfoViewHolder" view="{_arrangeInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true"/>  
 		</mx:HBox>
 	</mx:VBox> 
 	
-	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="ModuleGraphState,ModuleGraphStateWithInfo">
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="ModuleGraphState">
 		<mx:HBox width="100%" height="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_moduleGraph}" hasActiveButton="true"/>
 			<viewContainers:ViewHolder view="{_moduleLibrary}" changeWidthFromLeft="true"/>
 		</mx:HBox>
-		<mx:HBox width="100%" horizontalGap="2">
+		<mx:HBox id="_moduleGraphInfoContainer" width="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_moduleProperties}" canCollapse="true" changeHeightFromTop="true"/>
-			<viewContainers:ViewHolder view="{_moduleGraphInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true" includeIn="ModuleGraphStateWithInfo"/>
+			<viewContainers:ViewHolder id="_moduleGraphInfoViewHolder" view="{_moduleGraphInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true"/>
 		</mx:HBox>
 	</mx:VBox>
 	
-	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="LiveState,LiveStateWithInfo">
+	<mx:VBox width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalGap="2" includeIn="LiveState">
 		<viewContainers:ViewHolder view="{_liveView}" height="100%" timelineMode="{TimelineMode.READONLY}" hasActiveButton="true"/>
-		<mx:HBox width="100%" horizontalGap="2">
+		<mx:HBox id="_liveInfoContainer" width="100%" horizontalGap="2">
 			<viewContainers:ViewHolder view="{_keybindingView}" canCollapse="true" changeHeightFromTop="true"/> 
-			<viewContainers:ViewHolder view="{_liveInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true" includeIn="LiveStateWithInfo"/>
+			<viewContainers:ViewHolder id="_liveInfoViewHolder" view="{_liveInfoView}" changeHeightFromTop="true" changeWidthFromLeft="true" hasCloseButton="true"/>
 		</mx:HBox>
 	</mx:VBox>
 
@@ -342,23 +339,30 @@
 			{
 				var viewMode:ViewMode = model.project.projectUserData.viewMode;
 				
-				var newStateString:String;
+				var infoViewHolder:ViewHolder = null;
+				var infoContainer:Container = null;
 				
 				switch( viewMode.mode )
 				{
 					case ViewMode.ARRANGE:
 						if( viewMode.blockPropertiesOpen )
 						{
-							newStateString = "ModuleGraphState";
+							currentState = "ModuleGraphState";
+							infoViewHolder = _moduleGraphInfoViewHolder;
+							infoContainer = _moduleGraphInfoContainer;
 						}
 						else
 						{	
-							newStateString = "ArrangeState";
+							currentState = "ArrangeState";
+							infoViewHolder = _arrangeInfoViewHolder;
+							infoContainer = _arrangeInfoContainer;
 						}
 						break;
 	
 					case ViewMode.LIVE:
-						newStateString = "LiveState";
+						currentState = "LiveState";
+						infoViewHolder = _liveInfoViewHolder;
+						infoContainer = _liveInfoContainer;
 						break;
 						
 					default:
@@ -366,12 +370,22 @@
 						break;
 				}
 				
+				Assert.assertTrue( infoViewHolder && infoContainer );
+				
 				if( model.showInfoView )
 				{
-					newStateString += "WithInfo";
+					if( infoViewHolder.parent != infoContainer )
+					{
+						infoContainer.addChild( infoViewHolder );
+					}
 				}
-				
-				currentState = newStateString;
+				else
+				{
+					if( infoViewHolder.parent == infoContainer )
+					{
+						infoContainer.removeChild( infoViewHolder );
+					}
+				}
 			}
 			
 			

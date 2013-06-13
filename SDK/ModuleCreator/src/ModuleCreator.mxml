@@ -866,21 +866,14 @@
 			
 			private function ensureCorrectExtension( filename:String ):String
 			{
-				var indexOfLastDot:int = filename.lastIndexOf( "." );
-				if( indexOfLastDot < 0 )
+				var file:File = new File( filename );
+				if( file.extension == Globals.moduleFileExtension )
 				{
-					return filename + "." + Globals.moduleFileExtension;
+					return filename;
 				}
 				else
 				{
-					if( filename.substr( indexOfLastDot + 1 ) != Globals.moduleFileExtension )
-					{
-						return filename.substr( 0, indexOfLastDot + 1 ) + Globals.moduleFileExtension;
-					}
-					else
-					{
-						return filename;		
-					}
+					return filename + "." + Globals.moduleFileExtension;
 				}
 			}
 			

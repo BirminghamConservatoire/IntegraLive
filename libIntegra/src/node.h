@@ -247,7 +247,7 @@ ntg_error_code ntg_node_free(ntg_node *node);
 ntg_error_code ntg_node_save( const ntg_node *node, unsigned char **buffer, unsigned int *buffer_length );
 
 /** \brief load from XML under a given node */
-ntg_error_code ntg_node_load( const ntg_node *node, xmlTextReaderPtr reader, const char *top_level_name, ntg_node_list **loaded_nodes);
+ntg_error_code ntg_node_load( const ntg_node *node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes);
 
 /** \brief send node's newly-loaded attributes to host */
 ntg_error_code ntg_node_send_loaded_attributes_to_host( const ntg_node *node, ntg_bridge_interface *bridge ); 

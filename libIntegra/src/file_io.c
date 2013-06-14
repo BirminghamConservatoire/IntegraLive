@@ -43,6 +43,7 @@
 #include "interface.h"
 #include "validate.h"
 #include "node_list.h"
+#include "server_commands.h"
 
 #ifndef _WINDOWS
 #define _S_IFMT S_IFMT
@@ -484,7 +485,6 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 	ntg_node_list *new_nodes_list = NULL;
 	ntg_node_list *new_node_iterator = NULL;
 	ntg_list *loaded_module_ids = NULL;
-	char *top_level_node_name = NULL;
 
 	NTG_COMMAND_STATUS_INIT;
 
@@ -526,9 +526,7 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
     ntg_server_set_host_dsp( server_, 0);
 
     /* actually load the data */
-	top_level_node_name = ntg_get_top_level_node_name( filename );
-
-    command_status.error_code = ntg_node_load( parent, reader, top_level_node_name, &new_nodes_list );
+    command_status.error_code = ntg_node_load( parent, reader, &new_nodes_list );
 	if( command_status.error_code != NTG_NO_ERROR )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "failed to load nodes", filename );
@@ -554,6 +552,21 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 		}
 	}
 
+	/* rename top-level node to filename */
+	if( new_nodes_list )
+	{
+		char *top_level_node_name = ntg_get_top_level_node_name( filename );
+		const ntg_node *top_level_node = ntg_node_list_get_tail( new_nodes_list );
+
+		if( strcmp( top_level_node->name, top_level_node_name ) != 0 )
+		{
+			ntg_rename_( server_, NTG_SOURCE_SYSTEM, ntg_node_list_get_tail( new_nodes_list )->path, top_level_node_name );
+		}
+
+		ntg_free( top_level_node_name );
+	}
+
+
 CLEANUP:
 
 	if( reader )
@@ -564,11 +577,6 @@ CLEANUP:
 	if( ixd_buffer )
 	{
 		ntg_free( ixd_buffer );
-	}
-
-	if( top_level_node_name )
-	{
-		ntg_free( top_level_node_name );
 	}
 
 	ntg_node_list_free( new_nodes_list );

@@ -56,3 +56,13 @@ void ntg_node_list_free( ntg_node_list *node_list )
 		ntg_free( entry_to_free );
 	}
 }
+
+
+const ntg_node *ntg_node_list_get_tail( struct ntg_node_list_ *node_list )
+{
+	assert( node_list );
+
+	for( ;node_list->next; node_list = node_list->next );
+
+	return node_list->node;
+}

@@ -42,6 +42,7 @@ struct ntg_node_list_
 struct ntg_node_list_ *ntg_node_list_push( struct ntg_node_list_ *node_list, const ntg_node *node );
 void ntg_node_list_free( struct ntg_node_list_ *node_list );
 
+const ntg_node *ntg_node_list_get_tail( struct ntg_node_list_ *node_list );
 
 
 

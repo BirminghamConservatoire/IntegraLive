@@ -82,9 +82,9 @@ package components.views.ModuleLibrary
 		{ 
 			switch( _moduleSource )
 			{
-				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return "SYSTEM INSTALLED";
-				case InterfaceDefinition.MODULE_THIRD_PARTY:			return "3RD PARTY";
-				case InterfaceDefinition.MODULE_EMBEDDED:				return "EMBEDDED IN PROJECT";
+				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return "LATEST OFFICIAL";
+				case InterfaceDefinition.MODULE_THIRD_PARTY:			return "THIRD PARTY";
+				case InterfaceDefinition.MODULE_EMBEDDED:				return "EMBEDDED";
 				
 				default:
 					Assert.assertTrue( false );

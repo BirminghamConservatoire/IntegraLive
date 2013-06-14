@@ -23,12 +23,10 @@ package components.controller.serverCommands
 {
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
-	import components.model.Block;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
-	import components.model.Track;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 
 	public class SwitchAllObjectVersions extends ServerCommand
@@ -96,7 +94,6 @@ package components.controller.serverCommands
 				}
 			}
 		}
-
 	
 		
 		private var _fromGuid:String;

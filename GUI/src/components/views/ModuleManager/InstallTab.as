@@ -61,7 +61,7 @@ package components.views.ModuleManager
 			addChild( _3rdPartyModulesLabel );
 			addChild( _embeddedModulesLabel );
 			
-			_3rdPartyModulesLabel.text = "3rd party modules:";
+			_3rdPartyModulesLabel.text = "Installed 3rd party modules:";
 			_3rdPartyModulesList.multiSelection = true;
 			_3rdPartyModulesList.addEventListener( ModuleManagerListItem.SELECT_EVENT, on3rdPartySelected );
 			addChild( _3rdPartyModulesList );
@@ -72,17 +72,17 @@ package components.views.ModuleManager
 			addChild( _embeddedModulesList );
 
 			_installButton.setStyle( "skin", TextButtonSkin );
-			_installButton.label = "Install From Disk";
+			_installButton.label = "Install From File";
 			_installButton.addEventListener( MouseEvent.CLICK, onClickInstallButton );
 			addChild( _installButton );
 
 			_uninstallButton.setStyle( "skin", TextButtonSkin );
-			_uninstallButton.label = "Uninstall Modules";
+			_uninstallButton.label = "Uninstall";
 			_uninstallButton.addEventListener( MouseEvent.CLICK, onClickUninstallButton );
 			addChild( _uninstallButton );
 			
 			_installEmbeddedButton.setStyle( "skin", TextButtonSkin );
-			_installEmbeddedButton.label = "Install Embedded Modules";
+			_installEmbeddedButton.label = "Install To Disk";
 			_installEmbeddedButton.addEventListener( MouseEvent.CLICK, onClickInstallEmbeddedButton );
 			addChild( _installEmbeddedButton );
 			
@@ -194,7 +194,7 @@ package components.views.ModuleManager
 			_3rdPartyModulesList.x = thirdPartyListRectDeflated.x;
 			_3rdPartyModulesList.y = thirdPartyListRectDeflated.y;
 			_3rdPartyModulesList.width = thirdPartyListRectDeflated.width;
-			_3rdPartyModulesList.height = thirdPartyListRectDeflated.height - internalMargin * 4 - FontSize.getTextRowHeight( this ) * 2;
+			_3rdPartyModulesList.height = thirdPartyListRectDeflated.height - internalMargin * 2 - FontSize.getTextRowHeight( this );
 			
 			_3rdPartyModulesLabel.x = internalMargin;
 			_3rdPartyModulesLabel.y = internalMargin;
@@ -202,12 +202,7 @@ package components.views.ModuleManager
 			_uninstallButton.x = thirdPartyListRect.x;
 			_uninstallButton.width = thirdPartyListRect.width;
 			_uninstallButton.height = FontSize.getTextRowHeight( this );
-			_uninstallButton.y = thirdPartyListRect.bottom - internalMargin * 2 - FontSize.getTextRowHeight( this ) * 2;
-			
-			_installButton.x = thirdPartyListRect.x;
-			_installButton.width = thirdPartyListRect.width;
-			_installButton.height = FontSize.getTextRowHeight( this );
-			_installButton.y = thirdPartyListRect.bottom - FontSize.getTextRowHeight( this );
+			_uninstallButton.y = thirdPartyListRect.bottom - FontSize.getTextRowHeight( this );
 			
 			var rightPane:Rectangle = thirdPartyListRect.clone();
 			rightPane.offset( width / 3, 0 );
@@ -217,7 +212,7 @@ package components.views.ModuleManager
 			
 			var embeddedModulesRect:Rectangle = rightPane.clone();
 			embeddedModulesRect.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
-			embeddedModulesRect.height -= FontSize.getTextRowHeight( this ) + internalMargin * 2;
+			embeddedModulesRect.height -= FontSize.getTextRowHeight( this ) * 2 + internalMargin * 4;
 			_embeddedModulesList.x = embeddedModulesRect.x;
 			_embeddedModulesList.y = embeddedModulesRect.y;
 			_embeddedModulesList.width = embeddedModulesRect.width;
@@ -226,7 +221,12 @@ package components.views.ModuleManager
 			_installEmbeddedButton.x = rightPane.x;
 			_installEmbeddedButton.width = rightPane.width;
 			_installEmbeddedButton.height = FontSize.getTextRowHeight( this );
-			_installEmbeddedButton.y = rightPane.bottom - _installEmbeddedButton.height;
+			_installEmbeddedButton.y = rightPane.bottom - internalMargin * 2 - FontSize.getTextRowHeight( this ) * 2;
+
+			_installButton.x = rightPane.x;
+			_installButton.width = rightPane.width;
+			_installButton.height = FontSize.getTextRowHeight( this );
+			_installButton.y = rightPane.bottom - _installEmbeddedButton.height;
 
 			rightPane.offset( width / 3, 0 );
 			_info.x = rightPane.x;

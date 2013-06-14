@@ -64,17 +64,14 @@ package components.views.ModuleManager
 			_titleCloseButton.addEventListener( MouseEvent.CLICK, onClickTitleCloseButton );
 			addChild( _titleCloseButton );
 			
-			_upgradeTab.label = _upgradeLabel;
 			_switchVersionsTab.label = _manageLabel;
 			_installTab.label = _installLabel;
 
-			_tabNavigator.addChild( _upgradeTab );
 			_tabNavigator.addChild( _switchVersionsTab );
 			_tabNavigator.addChild( _installTab );
 			
 			addChild( _tabNavigator );
 			
-			addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
 			addUpdateMethod( SetInstallResult, onSetInstallResult );
 			
 			onStyleChanged( null );
@@ -88,7 +85,6 @@ package components.views.ModuleManager
 				var tabButton:Button = Utilities.getAncestorByType( event.target, Button ) as Button;
 				switch( tabButton.label )
 				{
-					case _upgradeLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerUpgradeTab" );
 					case _manageLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerManageTab" );
 					case _installLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTab" );
 				}
@@ -204,15 +200,6 @@ package components.views.ModuleManager
 		}
 		
 		
-		private function onPollForUpgradableModules( command:PollForUpgradableModules ):void
-		{
-			if( command.foundUpgradableModules )
-			{
-				_tabNavigator.selectedChild = _upgradeTab;
-			}
-		}
-		
-		
 		private function onSetInstallResult( command:SetInstallResult ):void
 		{
 			_tabNavigator.selectedChild = _installTab;
@@ -223,7 +210,6 @@ package components.views.ModuleManager
 		private var _titleCloseButton:Button = new Button;
 		
 		private var _tabNavigator:TabNavigator = new TabNavigator;
-		private var _upgradeTab:UpgradeTab = new UpgradeTab;
 		private var _switchVersionsTab:Canvas = new SwitchVersionsTab;
 		private var _installTab:InstallTab = new InstallTab;
 		
@@ -233,8 +219,7 @@ package components.views.ModuleManager
 		private static const _borderThickness:Number = 4;
 		private static const _cornerRadius:Number = 15;
 		
-		private static const _upgradeLabel:String = "Upgrade";
-		private static const _manageLabel:String = "Manage";
+		private static const _manageLabel:String = "Project Modules";
 		private static const _installLabel:String = "Install / Uninstall";
 	}
 }

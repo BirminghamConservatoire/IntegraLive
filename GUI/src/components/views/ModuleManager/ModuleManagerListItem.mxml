@@ -27,6 +27,7 @@
 			doubleClickEnabled="true"
 			horizontalScrollPolicy="off" verticalScrollPolicy="off">
 
+	<mx:Label id="_sectionHeader" visible="false"/>
 	<mx:Label id="_itemLabel" text="{toString()}"/>
 
 	<fx:Script>
@@ -68,7 +69,23 @@
 			
 			public function set interfaceDefinition( interfaceDefinition:InterfaceDefinition ):void
 			{
-				_interfaceDefinition = interfaceDefinition;	
+				_interfaceDefinition = interfaceDefinition;
+				
+				if( _initialized ) 					
+				{
+					_sectionHeader.text = _interfaceDefinition.moduleSourceLabel.toUpperCase();
+				}
+
+			}
+			
+			
+			public function hasSectionHeading():void
+			{
+				_hasSectionHeading = true;
+				if( _initialized )
+				{
+					_sectionHeader.visible = true;
+				}
 			}
 			
 			
@@ -113,6 +130,8 @@
 					if( _initialized )
 					{
 						positionContent();
+						
+						_sectionHeader.setStyle( FontSize.STYLENAME, getStyle( FontSize.STYLENAME ) * labelHeightFactor ); 
 					}
 				}
 			}
@@ -158,6 +177,14 @@
 	
 	            graphics.clear();
 
+				var bottomOfSectionHeader:Number = sectionHeaderHeight;
+				if( _hasSectionHeading )
+				{
+					graphics.beginFill( _backgroundColor );
+					graphics.drawRect( 0, 0, width, bottomOfSectionHeader );
+					graphics.endFill();					
+				}
+
 				if( _selected )
 				{
 					graphics.beginFill( _selectedBackgroundColor );
@@ -174,7 +201,7 @@
 					}
 				}
 				
-	        	graphics.drawRect( 0, 0, width, height );
+	        	graphics.drawRect( 0, bottomOfSectionHeader, width, height - bottomOfSectionHeader );
 	        	graphics.endFill();
 			}
 			
@@ -186,6 +213,15 @@
 				addEventListener( MouseEvent.ROLL_OVER, onRollOver );
 				addEventListener( MouseEvent.ROLL_OUT, onRollOut );
 				
+				if( _hasSectionHeading )
+				{
+					_sectionHeader.visible = true;
+					if( _interfaceDefinition )
+					{
+						_sectionHeader.text = _interfaceDefinition.moduleSourceLabel.toUpperCase();
+					}
+				}
+				
 				styleChanged( null );
 			}
 			
@@ -196,8 +232,22 @@
 
 				_itemLabel.x = fontSize * 0.25;
 				_itemLabel.y = fontSize * 0.25;
-					
+
 				height = FontSize.getTextRowHeight( this ) + 4;
+				
+				if( _sectionHeader.visible )
+				{
+					_sectionHeader.x = 0;
+					_sectionHeader.y = 0;
+					_itemLabel.y += sectionHeaderHeight;
+					height += sectionHeaderHeight;
+				}
+			}
+			
+			
+			private function get sectionHeaderHeight():Number
+			{
+				return _hasSectionHeading ? getStyle( FontSize.STYLENAME ) * 1.2 : 0;
 			}
 
 			
@@ -236,6 +286,8 @@
 			
 			private var _initialized:Boolean = false;
 			
+			private var _hasSectionHeading:Boolean = false;
+			
 			private var _over:Boolean = false;
 			private var _selected:Boolean = false;
 			private var _useTint:Boolean = false;
@@ -246,8 +298,9 @@
 			private var _selectedBackgroundColor:uint;
 			private var _backgroundColor:uint;
 			
+			private static const labelHeightFactor:Number = 0.75;
+
 			public static const SELECT_EVENT:String = "selectEvent";
-			
 		]]>
 	</fx:Script>
 </mx:Canvas> 

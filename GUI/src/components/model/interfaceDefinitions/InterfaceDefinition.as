@@ -39,9 +39,9 @@ package components.model.interfaceDefinitions
 		{ 
 			switch( moduleSource )
 			{
-				case MODULE_SHIPPED_WITH_INTEGRA: 	return "System Module";
-				case MODULE_THIRD_PARTY:			return "Third Party Module";
-				case MODULE_EMBEDDED:				return "Embedded in Project";
+				case MODULE_SHIPPED_WITH_INTEGRA: 	return "Latest Official";
+				case MODULE_THIRD_PARTY:			return "Third Party";
+				case MODULE_EMBEDDED:				return "Embedded";
 				default:							return "<unknown module source>";
 			}
 		}

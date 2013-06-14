@@ -28,6 +28,7 @@ package components.views.ModuleManager
 	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
+	import mx.controls.CheckBox;
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
 	import mx.events.ScrollEvent;
@@ -43,6 +44,7 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.SwitchObjectVersion;
 	import components.controller.serverCommands.UnloadModule;
+	import components.controller.serverCommands.UpgradeAllModules;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
@@ -76,11 +78,17 @@ package components.views.ModuleManager
 			addEventListener( Event.RESIZE, onResize );
 			
 			addChild( _switchablesLabel );
+			addChild( _alternativeVersionsLabel );
 
 			_switchableModuleList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onSwitchableSelected );
 			_switchableModuleList.addEventListener( ModuleManagerList.SELECTION_FINISHED_EVENT, onSelectionFinished );
 			_switchableModuleList.addEventListener( ScrollEvent.SCROLL, onScrollList );
 			addChild( _switchableModuleList );
+			
+			_upgradeAllButton.setStyle( "skin", TextButtonSkin );
+			_upgradeAllButton.label = "Upgrade All";
+			_upgradeAllButton.addEventListener( MouseEvent.CLICK, onClickUpgradeAllButton );
+			addChild( _upgradeAllButton );
 			
 			_alternativeVersionsList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onAlternativeVersionSelected );
 			_alternativeVersionsList.addEventListener( ModuleManagerList.SELECTION_FINISHED_EVENT, onSelectionFinished );
@@ -91,6 +99,9 @@ package components.views.ModuleManager
 			_switchVersionsButton.label = "Switch Versions";
 			_switchVersionsButton.addEventListener( MouseEvent.CLICK, onClickSwitchVersionsButton );
 			addChild( _switchVersionsButton );
+			
+			_alwaysUpgradeCheckbox.label = "Always Upgrade";
+			addChild( _alwaysUpgradeCheckbox );
 			
 			_arrowCanvas.addChild( _arrowMask );
 			_arrowCanvas.mask = _arrowMask;
@@ -112,6 +123,11 @@ package components.views.ModuleManager
 				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabAlternativeVersionsList" );
 			}
 			
+			if( Utilities.isEqualOrDescendant( event.target, _upgradeAllButton ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsUpgradeAllButton" );
+			}
+
 			if( Utilities.isEqualOrDescendant( event.target, _switchVersionsButton ) )
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabSwitchButton" );
@@ -121,6 +137,13 @@ package components.views.ModuleManager
 			{
 				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabInfo" );
 			}
+
+			if( Utilities.isEqualOrDescendant( event.target, _alwaysUpgradeCheckbox ) )
+			{
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabAlwaysUpgrade" );
+			}
+			
+			
 			
 			return null;
 		}
@@ -136,17 +159,21 @@ package components.views.ModuleManager
 					case ColorScheme.LIGHT:
 						_labelColor = 0x747474;
 						_arrowColor = 0x000000;
+						setButtonTextColor( _upgradeAllButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _switchVersionsButton, 0x6D6D6D, 0x9e9e9e );
 						break;
 					
 					case ColorScheme.DARK:
 						_labelColor = 0x8c8c8c;
 						_arrowColor = 0xffffff;
+						setButtonTextColor( _upgradeAllButton, 0x939393, 0x626262 );
 						setButtonTextColor( _switchVersionsButton, 0x939393, 0x626262 );
 						break;
 				}
 				
 				_switchablesLabel.setStyle( "color", _labelColor );
+				_alternativeVersionsLabel.setStyle( "color", _labelColor );
+				_alwaysUpgradeCheckbox.setStyle( "color", _labelColor );
 			}
 		}
 		
@@ -185,10 +212,14 @@ package components.views.ModuleManager
 			
 			if( switchables.length > 0 )
 			{
-				_switchablesLabel.text = "Alternative versions available:";
+				_switchablesLabel.text = "Modules";
 
+				_alternativeVersionsLabel.text = "Alternative Versions";
+				_alternativeVersionsLabel.visible = true;
+				
 				_switchableModuleList.visible = true;
 				_alternativeVersionsList.visible = true;
+				_upgradeAllButton.visible = true;
 				_switchVersionsButton.visible = true;
 				_info.visible = true;
 				
@@ -199,9 +230,11 @@ package components.views.ModuleManager
 			else
 			{
 				_switchablesLabel.text = "No alternative versions are available";
+				_alternativeVersionsLabel.visible = false;
 
 				_switchableModuleList.visible = false;
 				_alternativeVersionsList.visible = false;
+				_upgradeAllButton.visible = false;
 				_switchVersionsButton.visible = false;
 				_info.visible = false;
 			}
@@ -226,6 +259,9 @@ package components.views.ModuleManager
 		
 		private function onResize( event:Event ):void
 		{
+			_switchablesLabel.x = internalMargin;
+			_switchablesLabel.y = internalMargin;
+
 			var switchableListRect:Rectangle = switchableListRect;
 			var switchableListRectDeflated:Rectangle = switchableListRect.clone();
 			switchableListRectDeflated.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
@@ -233,16 +269,18 @@ package components.views.ModuleManager
 			_switchableModuleList.y = switchableListRectDeflated.y;
 			_switchableModuleList.width = switchableListRectDeflated.width;
 			_switchableModuleList.height = switchableListRectDeflated.height;
-			
-			_switchablesLabel.x = internalMargin;
-			_switchablesLabel.y = internalMargin;
-			
+
 			var rightPane:Rectangle = switchableListRect.clone();
 			rightPane.offset( width / 4 + internalMargin * 1.5, 0 );
+			rightPane.height -= ( FontSize.getTextRowHeight( this ) + internalMargin * 2 );
+
+			_alternativeVersionsLabel.x = rightPane.left;
+			_alternativeVersionsLabel.y = internalMargin;
 			
 			var alternativeVersionsRect:Rectangle = rightPane.clone();
 			alternativeVersionsRect.inflate( -ModuleManagerList.cornerRadius, -ModuleManagerList.cornerRadius );
-			alternativeVersionsRect.height -= FontSize.getTextRowHeight( this ) * 2;
+			alternativeVersionsRect.height;
+			
 			_alternativeVersionsList.x = alternativeVersionsRect.x;
 			_alternativeVersionsList.y = alternativeVersionsRect.y;
 			_alternativeVersionsList.width = alternativeVersionsRect.width;
@@ -251,17 +289,25 @@ package components.views.ModuleManager
 			_switchVersionsButton.x = rightPane.x;
 			_switchVersionsButton.width = rightPane.width;
 			_switchVersionsButton.height = FontSize.getTextRowHeight( this );
-			_switchVersionsButton.y = rightPane.bottom - _switchVersionsButton.height;
+			_switchVersionsButton.y = rightPane.bottom + internalMargin * 2;
 			
 			_info.x = rightPane.right + internalMargin * 2;
 			_info.y = rightPane.top;
 			_info.width = width - _info.x - internalMargin;
-			_info.height = height - _info.y - internalMargin;
+			_info.height = rightPane.height;
 			
+			_upgradeAllButton.x = _info.x;
+			_upgradeAllButton.width = rightPane.width;
+			_upgradeAllButton.height = FontSize.getTextRowHeight( this );
+			_upgradeAllButton.y = rightPane.bottom + internalMargin * 2;
+
 			_arrowMask.graphics.clear();
 			_arrowMask.graphics.beginFill( 0x808080 );
 			_arrowMask.graphics.drawRect( switchableListRect.right, switchableListRect.top, rightPane.left - switchableListRect.right, switchableListRect.height );
 			_arrowMask.graphics.endFill();
+			
+			_alwaysUpgradeCheckbox.setStyle( "right", internalMargin * 2 );
+			_alwaysUpgradeCheckbox.y = rightPane.bottom + internalMargin * 2;
 			
 			drawArrows();
 		}
@@ -355,10 +401,19 @@ package components.views.ModuleManager
 			var versions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( switchableInterface.originGuid );
 			
 			var items:Vector.<ModuleManagerListItem> = new Vector.<ModuleManagerListItem>;
+			var lastModuleSource:String = null;
+			
 			for each( var version:InterfaceDefinition in versions )
 			{
 				var item:ModuleManagerListItem = new ModuleManagerListItem;
 				item.interfaceDefinition = version;
+				
+				if( version.moduleSource != lastModuleSource )
+				{
+					item.hasSectionHeading();
+					lastModuleSource = version.moduleSource;
+				}
+				
 				item.addEventListener( MouseEvent.DOUBLE_CLICK, onDoubleClickAlternativeVersion );
 				item.useTint = true;
 				items.push( item );
@@ -421,6 +476,12 @@ package components.views.ModuleManager
 					controller.processCommand( new SwitchAllObjectVersions( guidToSwitch, targetModuleGuid ) );
 				}
 			}
+		}
+
+		
+		private function onClickUpgradeAllButton( event:MouseEvent ):void
+		{
+			controller.processCommand( new UpgradeAllModules() );
 		}
 		
 		
@@ -562,12 +623,17 @@ package components.views.ModuleManager
 
 		
 		private var _switchablesLabel:Label = new Label;
+		private var _alternativeVersionsLabel:Label = new Label;
 		private var _switchableModuleList:ModuleManagerList = new ModuleManagerList;
 		private var _alternativeVersionsList:ModuleManagerList = new ModuleManagerList;
 
 		private var _info:ModuleInfo = new ModuleInfo;
 		
+		private var _upgradeAllButton:Button = new Button;
 		private var _switchVersionsButton:Button = new Button;
+
+		private var _alwaysUpgradeCheckbox:CheckBox = new CheckBox;
+
 		
 		private var _labelColor:uint;
 		

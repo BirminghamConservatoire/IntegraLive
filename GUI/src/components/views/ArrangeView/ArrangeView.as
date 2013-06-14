@@ -1383,29 +1383,22 @@ package components.views.ArrangeView
  		
  		private function addBlockToBlockLibrary():void
  		{
- 			var directoryName:String = Utilities.getUserBlockLibraryDirectory();
- 			directoryName += "/";
- 			
+ 			var directory:File = new File( Utilities.getUserBlockLibraryDirectory() );
+			Assert.assertTrue( directory.exists && directory.isDirectory );
+			
  			var block:Block = model.primarySelectedBlock;
  			Assert.assertNotNull( block );
  			
- 			var file:File = new File( directoryName + block.name + "." + Utilities.integraFileExtension );
- 			if( !file.exists )
- 			{
- 				controller.exportBlock( file.nativePath );
- 				return;
- 			}
- 			
- 			//if the first choice filename already exists, find a filename which doesn't exist
- 			for( var i:int = 1; ; i++ )
- 			{
- 				file = new File( directoryName + block.name + "_" + String( i ) + "." + Utilities.integraFileExtension );
- 				if( !file.exists )
- 				{
- 					controller.exportBlock( file.nativePath );
- 					return;
- 				}
- 			}
+			var filename:String = block.name;
+			
+			while( directory.resolvePath( filename + "." + Utilities.integraFileExtension ).exists )
+			{
+				filename += "_";
+			}
+				
+ 			var file:File = directory.resolvePath( filename + "." + Utilities.integraFileExtension );
+			Assert.assertFalse( file.exists );
+			controller.exportBlock( file.nativePath );
  		}
  		
 

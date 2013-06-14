@@ -65,7 +65,7 @@ package components.controller.serverCommands
 			
 			if( model.getIDFromPathArray( currentPath ) >= 0 )
 			{
-				return false;	//new name is already in use
+				//return false;	//new name is already in use
 			}
 			
 			return( _newName != object.name );	

@@ -27,6 +27,7 @@ package components.controller
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
+	import flash.utils.flash_proxy;
 	
 	import mx.controls.Alert;
 	
@@ -99,6 +100,8 @@ package components.controller
 
 		public function processCommand( command:Command ):Boolean
 		{
+			RemoteCommandHandler.singleInstance.flushProcessQueue();
+			
 			if( !command.initialize( _model ) )
 			{
 				return false;

@@ -359,87 +359,6 @@ char *ntg_file_find(const char *fn, int envvars)
 
 }
 
-char *ntg_search_for_file(const char *token, char *file_suffix, int envvars)
-{
-
-    char *paths = NULL, *path = NULL, *suffix = NULL;
-    const char suff_delimiter = '.';
-    int access_rv = 0;
-    struct dirent *content;
-    DIR *dir;
-    int ignore_suffix = 0;
-
-    NTG_TRACE_VERBOSE_WITH_STRING("Looking for", token);
-
-	NTG_TRACE_VERBOSE("Building path list");
-
-    paths = ntg_build_path_list(envvars);
-
-    NTG_TRACE_VERBOSE("Checking file suffix");
-
-    if (file_suffix == NULL)
-        ignore_suffix = 1;
-
-    NTG_TRACE_VERBOSE("Traversing path list");
-
-    while ((path = strtok(paths, NTG_MULTI_PATH_SEPARATOR))) {
-
-        char *full_path;
-
-        paths = NULL;
-
-        if (path[0] != '/') {
-            NTG_TRACE_VERBOSE_WITH_STRING("Ignoring relative path", path);
-            continue;
-        }
-
-        NTG_TRACE_VERBOSE_WITH_STRING("Looking in", path);
-
-        full_path = (char *)ntg_malloc(strlen(path) + 265);
-
-        dir = opendir(path);
-        if (dir != NULL) {
-            while ((content = readdir(dir))) {
-
-                /* FIX: added by jb to prevent crash in serializer test.c */
-                if (token == NULL)
-                    break;
-
-                /* Does it match the token? */
-                if (strstr(content->d_name, token) != NULL) {
-                    /* Are we looking at the suffix and does the file have
-                       one? */
-                    if (!ignore_suffix) {
-                        if ((suffix =
-                             strrchr(content->d_name, suff_delimiter))) {
-                            /* Does it match the suffix? */
-                            if (strncmp(suffix + 1, file_suffix, 3) == 0) {
-                                sprintf(full_path, "%s/%s", path,
-                                        content->d_name);
-                                break;
-                            }
-                        }
-                    } else {
-                        sprintf(full_path, "%s/%s", path, content->d_name);
-                        break;
-                    }
-                }
-            }
-        }
-        access_rv = access(full_path, F_OK);
-        if (!access_rv) {
-            NTG_TRACE_VERBOSE_WITH_STRING("found", full_path);
-            return full_path;
-        }
-
-        NTG_TRACE_ERROR_WITH_STRING("failed to find", token);
-
-        ntg_free(full_path);
-    }
-
-    return NULL;
-}
-
 
 char *ntg_ensure_filename_has_suffix( const char *filename, const char *suffix )
 {
@@ -639,6 +558,29 @@ char *ntg_make_node_name(const char *class_name)
     return node_name;
 
 }
+
+
+bool ntg_validate_node_name( const char *name )
+{
+	int i, length;
+
+	assert( name );
+
+	length = strlen( name );
+
+	if( length == 0 ) return false;
+	
+	for( i = 0; i < length; i++ )
+	{
+		if( !strchr( NTG_NODE_NAME_CHARACTER_SET, name[ i ] ) )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 
 bool ntg_string_endswith (const char *string, const char *suffix)
 {

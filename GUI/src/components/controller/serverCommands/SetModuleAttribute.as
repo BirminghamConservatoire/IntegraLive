@@ -31,8 +31,6 @@ package components.controller.serverCommands
 	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.StateInfo;
 	
-	import flash.utils.ByteArray;
-	
 	import flexunit.framework.Assert;
 
 	public class SetModuleAttribute extends ServerCommand

@@ -52,7 +52,6 @@ package components.controller
 	import components.model.preferences.AudioSettings;
 	import components.model.preferences.MidiSettings;
 	import components.utils.ModalState;
-	import components.utils.Trace;
 	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
@@ -136,14 +135,20 @@ package components.controller
 		}
 		
 		
-		private function onProcessQueueTimer( event:TimerEvent ):void
+		public function flushProcessQueue():void
 		{
 			for each( var remoteSetCommand:QueuedRemoteSetCommand in _setCommandQueue )
 			{
 				IntegraController.singleInstance.processRemoteCommand( remoteSetCommand.response );
 			}
 			
-			clearSetCommandQueue();
+			clearSetCommandQueue();			
+		}
+		
+		
+		private function onProcessQueueTimer( event:TimerEvent ):void
+		{
+			flushProcessQueue();
 		}
 
 		

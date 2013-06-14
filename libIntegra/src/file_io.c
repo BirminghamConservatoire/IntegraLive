@@ -433,6 +433,47 @@ ntg_error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_b
 }
 
 
+char *ntg_get_top_level_node_name( const char *filename )
+{
+	const char *last_slash, *last_backslash;
+	int index_after_last_slash = 0;
+	int index_after_last_backslash = 0;
+	int index_of_extension = 0;
+	int i, length;
+	char *name;
+	
+	assert( filename );
+
+	/* strip path from filename */
+	last_slash = strrchr( filename, '/' );
+	last_backslash = strrchr( filename, '\\' );
+
+	if( last_slash ) index_after_last_slash = ( last_slash + 1 - filename );
+	if( last_backslash ) index_after_last_backslash = ( last_backslash + 1 - filename );
+
+	name = ntg_strdup( filename + max( index_after_last_slash, index_after_last_backslash ) );
+
+	/* strip extension */
+	index_of_extension = strlen( name ) - strlen( NTG_FILE_SUFFIX ) - 1;
+	if( index_of_extension > 0 && strcmp( name + index_of_extension, "."NTG_FILE_SUFFIX ) == 0 )
+	{
+		name[ index_of_extension ] = 0;
+	}
+
+	/* remove illegal characters */
+	length = strlen( name );
+	for( i = 0; i < length; i++ )
+	{
+		if( !strchr( NTG_NODE_NAME_CHARACTER_SET, name[ i ] ) )
+		{
+			name[ i ] = '_';
+		}
+	}
+	
+	return name;
+}
+
+
 ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, ntg_module_manager *module_manager )
 {
     ntg_command_status command_status;
@@ -443,6 +484,7 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 	ntg_node_list *new_nodes_list = NULL;
 	ntg_node_list *new_node_iterator = NULL;
 	ntg_list *loaded_module_ids = NULL;
+	char *top_level_node_name = NULL;
 
 	NTG_COMMAND_STATUS_INIT;
 
@@ -484,7 +526,9 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
     ntg_server_set_host_dsp( server_, 0);
 
     /* actually load the data */
-    command_status.error_code = ntg_node_load( parent, reader, &new_nodes_list );
+	top_level_node_name = ntg_get_top_level_node_name( filename );
+
+    command_status.error_code = ntg_node_load( parent, reader, top_level_node_name, &new_nodes_list );
 	if( command_status.error_code != NTG_NO_ERROR )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "failed to load nodes", filename );
@@ -520,6 +564,11 @@ CLEANUP:
 	if( ixd_buffer )
 	{
 		ntg_free( ixd_buffer );
+	}
+
+	if( top_level_node_name )
+	{
+		ntg_free( top_level_node_name );
 	}
 
 	ntg_node_list_free( new_nodes_list );

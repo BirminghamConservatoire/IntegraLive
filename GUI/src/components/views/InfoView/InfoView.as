@@ -284,8 +284,6 @@ package components.views.InfoView
 		
 		private function onAddedToStage( event:Event ):void
 		{
-			trace( "onAddedToStage" );
-			
 			if( _addedToStage )	return;
 			_addedToStage = true;
 			
@@ -477,7 +475,6 @@ package components.views.InfoView
 		
 		private function onStageActivate( event:Event ):void
 		{
-			trace( "onStageActivate" );
 			_stageActive = true;
 			updateContent();
 		}
@@ -485,8 +482,6 @@ package components.views.InfoView
 		
 		private function onStageDeactivate( event:Event ):void
 		{
-			trace( "onStageDeactivate" );
-
 			_stageActive = false;
 			updateContent();
 		}

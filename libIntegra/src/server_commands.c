@@ -338,6 +338,12 @@ ntg_command_status ntg_new_(ntg_server *server,
         my_node_name = ntg_string_append(my_node_name, "_");
 	}
 
+	if( !ntg_validate_node_name( my_node_name ) )
+	{
+        NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", my_node_name );
+        NTG_RETURN_ERROR_CODE( NTG_FAILED );
+	}
+
     node = ntg_node_new();
     
     /* FIX: order is important here -- better to break into separate function */
@@ -534,6 +540,7 @@ ntg_command_status ntg_rename_(ntg_server *server,
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
     ntg_node *node, *root;
+	char *new_name = NULL;
 	char *previous_name = NULL;
 
     assert( path );
@@ -549,24 +556,41 @@ ntg_command_status ntg_rename_(ntg_server *server,
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
+	new_name = ntg_strdup( name );
+
+    /* First check if node name is already taken */
+    while( ntg_node_find_by_name( node->parent, new_name ) ) 
+	{
+        NTG_TRACE_PROGRESS_WITH_STRING("node name is in use; appending underscore", new_name);
+
+        new_name = ntg_string_append(new_name, "_");
+	}
+
+	if( !ntg_validate_node_name( new_name ) )
+	{
+        NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", new_name );
+        NTG_RETURN_ERROR_CODE( NTG_FAILED );
+	}
+
 	previous_name = ntg_strdup( node->name );
 
     /* remove old state table entries for node and children */
 	ntg_node_remove_from_statetable( node, server->state_table );
 
-    ntg_node_rename(node, name);
+    ntg_node_rename(node, new_name);
 
     /* add new state table entries for node and children */
 	ntg_node_add_to_statetable( node, server->state_table );
 
 	ntg_system_class_handle_rename( server, node, previous_name, cmd_source );
 
-	ntg_free( previous_name );
-
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-		ntg_osc_client_send_rename(server->osc_client, cmd_source, path, name);
+		ntg_osc_client_send_rename(server->osc_client, cmd_source, path, new_name );
 	}
+
+	ntg_free( new_name );
+	ntg_free( previous_name );
 
     NTG_RETURN_COMMAND_STATUS;
 }

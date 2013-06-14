@@ -29,8 +29,6 @@ package components.views.BlockLibrary
 	import mx.core.DragSource;
 	
 	import components.model.Info;
-	import components.model.IntegraModel;
-	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.utils.Trace;
 	import components.utils.Utilities;
 	
@@ -46,7 +44,7 @@ package components.views.BlockLibrary
 		{
 			super();
 			
-			_filepath = file.nativePath;
+			_file = file;
 			_modificationDate = file.modificationDate;
 			_isUserBlock = isUserBlock;
 			
@@ -55,7 +53,7 @@ package components.views.BlockLibrary
 		
 		
 		public function get isValid():Boolean 		{ return _info != null; }		
-		public function get filepath():String 		{ return _filepath; }
+		public function get filepath():String 		{ return _file.nativePath; }
 		public function get info():Info 			{ return _info; }
 		public function get isUserBlock():Boolean 	{ return _isUserBlock; }
 		public function get tint():uint 			{ return _isUserBlock ? _userBlockTint : _systemBlockTint; } 
@@ -79,7 +77,10 @@ package components.views.BlockLibrary
 			return ( file.modificationDate.toUTCString() == _modificationDate.toUTCString() );
 		}		
 		
-		public function toString():String { return _info ? _info.title : ""; }
+		public function toString():String 
+		{ 
+			return _file.name.substr( 0, _file.name.length - _file.extension.length - 1 );
+		}
 		
 		
 		private function loadInfo( file:File ):void
@@ -105,15 +106,9 @@ package components.views.BlockLibrary
 			
 			var topLevelObjectXML:XML = ixdXML.children()[ 0 ];
 
-			if( !topLevelObjectXML.hasOwnProperty( "@name" ) )
-			{
-				Trace.error( "Can't find name attribute" );
-				return;
-			}
-
 			_info = new Info;
 			
-			_info.title = topLevelObjectXML.@name;
+			_info.title = toString();
 			var foundInfo:Boolean = false;
 			
 			for each( var child:XML in topLevelObjectXML.child( "attribute" ) )
@@ -134,7 +129,7 @@ package components.views.BlockLibrary
 		
 
 		
-		private var _filepath:String = null;
+		private var _file:File = null;
 		private var _modificationDate:Date = null;
 		
 		private var _info:Info = null;

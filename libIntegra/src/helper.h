@@ -82,6 +82,8 @@ struct tm;
 
 #define NTG_NULL_BYTES 1
 
+#define NTG_NODE_NAME_CHARACTER_SET "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 /*ntg_info *infos_root_node; 
   ntg_node *nodes_root_node; 
   */
@@ -148,23 +150,6 @@ long ntg_file_length(FILE *file_handle);
  * which paths to search.
  */
 char *ntg_file_find(const char *filename, int envvars);
-
-/** \brief Search for files matching the token and suffix and return
- * the path of the first match.
- *
- * \param char *token The file name pattern to search for.
- * \param char *suffix The file name suffix to match or NULL.
- * \param int envvars The sum of the environment variable codes for
- * inclusion in the search e.g. NTG_BRIDGE_PATH+PATH.
- *
- * Note that this method returns the first match which may or may not
- * be what one wants. The main purpose of for this function is to find
- * the local XSD Schema file regardless of its version number.
- *
- * A binary and is performed on the envvars variable to determine which paths 
- * to search.
- */
-char *ntg_search_for_file(const char *token, char *file_suffix, int envvars);
 
 
 /** \brief appends suffix to file_name if not already present
@@ -253,6 +238,10 @@ ntg_error_code ntg_string_to_date( const char *input, struct tm *output );
 
 /* calculate levenshtein distance between two strings.  */
 int ntg_levenshtein_distance( const char *string1, const char *string2 );
+
+
+/* does the node name consist entirely of valid characters? */
+bool ntg_validate_node_name( const char *name );
 
 
 #ifdef __cplusplus

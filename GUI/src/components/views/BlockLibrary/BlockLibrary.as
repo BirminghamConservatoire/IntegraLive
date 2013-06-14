@@ -27,6 +27,8 @@ package components.views.BlockLibrary
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
@@ -41,9 +43,10 @@ package components.views.BlockLibrary
 	import components.controller.serverCommands.ImportBlock;
 	import components.model.Info;
 	import components.model.Track;
+	import components.utils.Trace;
+	import components.utils.Utilities;
 	import components.utils.libraries.Library;
 	import components.utils.libraries.LibraryItem;
-	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
 	
@@ -111,21 +114,44 @@ package components.views.BlockLibrary
 			var systemBlockLibraryDirectory:File = new File( Utilities.getSystemBlockLibraryDirectory() );
 			if( systemBlockLibraryDirectory.exists )
 			{
-				addBlockLibraryDirectory( listData, systemBlockLibraryDirectory.getDirectoryListing(), false );
+				addSystemBlockLibraryDirectory( listData, systemBlockLibraryDirectory );
 			}
 
 			var userBlockLibraryDirectory:File = new File( Utilities.getUserBlockLibraryDirectory() );
 			if( userBlockLibraryDirectory.exists )
 			{
-				addBlockLibraryDirectory( listData, userBlockLibraryDirectory.getDirectoryListing(), true );
+				addUserBlockLibraryDirectory( listData, userBlockLibraryDirectory );
 			}
 			
 			_library.data = listData;
 		}
 		
 		
-		private function addBlockLibraryDirectory( listData:Array, directoryListing:Array, isUserBlock:Boolean ):void
+		private function addSystemBlockLibraryDirectory( listData:Array, directory:File ):void
 		{
+			var indexFile:File = directory.resolvePath( _indexFileName );
+			Assert.assertTrue( indexFile.exists );
+
+			var explicitOrder:Vector.<String> = readIndexFile( indexFile ); 
+
+			for each( var fileName:String in explicitOrder )
+			{
+				var file:File = directory.resolvePath( fileName );
+				if( !file.exists || file.isDirectory || file.extension != Utilities.integraFileExtension )
+				{
+					Trace.error( "unexpected file", fileName );
+					continue;
+				}
+
+				addBlockLibraryFile( listData, file, false );
+			}
+		}
+
+		
+		private function addUserBlockLibraryDirectory( listData:Array, directory:File ):void
+		{
+			var directoryListing:Array = directory.getDirectoryListing();
+			
 			for each( var file:File in directoryListing )
 			{
 				if( file.isDirectory )
@@ -133,20 +159,56 @@ package components.views.BlockLibrary
 					continue;
 				}
 				
-				var listEntry:BlockLibraryListEntry = null;
-				if( _mapFileNameToListEntry.hasOwnProperty( file.nativePath ) )
-				{
-					listEntry = _mapFileNameToListEntry[ file.nativePath ];
-				}
-
-				if( !listEntry || !listEntry.isCurrent( file ) )
-				{
-					listEntry = new BlockLibraryListEntry( file, isUserBlock );
-					_mapFileNameToListEntry[ file.nativePath ] = listEntry;
-				}
+				Assert.assertTrue( file.extension == Utilities.integraFileExtension );
 				
-				listData.push( listEntry );
+				addBlockLibraryFile( listData, file, true );
 			}
+		}
+		
+		
+		private function addBlockLibraryFile( listData:Array, file:File, isUserBlock:Boolean ):void
+		{
+			var listEntry:BlockLibraryListEntry = null;
+			if( _mapFileNameToListEntry.hasOwnProperty( file.nativePath ) )
+			{
+				listEntry = _mapFileNameToListEntry[ file.nativePath ];
+			}
+			
+			if( !listEntry || !listEntry.isCurrent( file ) )
+			{
+				listEntry = new BlockLibraryListEntry( file, isUserBlock );
+				_mapFileNameToListEntry[ file.nativePath ] = listEntry;
+			}
+			
+			listData.push( listEntry );
+		}
+		
+		
+		private function readIndexFile( indexFile:File ):Vector.<String>
+		{
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( indexFile, FileMode.READ );
+			var xmlString:String = fileStream.readUTFBytes( indexFile.size );
+			fileStream.close();
+
+			try
+			{
+				XML.ignoreWhitespace = true;
+				var index:XML = new XML( xmlString );
+			}
+			catch( error:Error )
+			{
+				Trace.error( "Can't parse xml", xmlString );
+			}
+			
+			var order:Vector.<String> = new Vector.<String>;
+			
+			for each( var fileName:XML in index.Block )
+			{
+				order.push( fileName.toString() );
+			}
+
+			return order;
 		}
 
 		
@@ -228,6 +290,8 @@ package components.views.BlockLibrary
         [
             { label: "Remove from Block Library", handler: remove, updater: onUpdateRemove } 
         ];
+		
+		private static const _indexFileName:String = "index.xml";
 	}
 }
 

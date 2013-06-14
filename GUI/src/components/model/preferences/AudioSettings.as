@@ -120,19 +120,26 @@ package components.model.preferences
 			
 			return true; 
 		}
+
+		
+		public static function get defaultObjectName():String
+		{
+			var name:String = Utilities.getClassNameFromClass( AudioSettings ) + "_" + Utilities.integraLiveVersion;
+			name = name.replace( /\./g, "_" );
+			name = name.replace( /\s/g, "_" );
+			return name;
+		}
 		
 		
 		public static function get localFile():File
 		{
-			return File.applicationStorageDirectory.resolvePath( defaultObjectName + " " + Utilities.integraLiveVersion + "." +Utilities.integraFileExtension );
+			return File.applicationStorageDirectory.resolvePath( defaultObjectName + "." +Utilities.integraFileExtension );
 		}
 		
 		
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }
 		public static const _serverInterfaceName:String = "AudioSettings";
 		
-		public static const defaultObjectName:String = "AudioSettings";
-
 		private var _availableDrivers:Vector.<String> = new Vector.<String>;
 		private var _availableInputDevices:Vector.<String> = new Vector.<String>;
 		private var _availableOutputDevices:Vector.<String> = new Vector.<String>;

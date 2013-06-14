@@ -105,9 +105,18 @@ package components.model.preferences
 		}
 		
 		
+		public static function get defaultObjectName():String
+		{
+			var name:String = Utilities.getClassNameFromClass( MidiSettings ) + "_" + Utilities.integraLiveVersion;
+			name = name.replace( /\./g, "_" );
+			name = name.replace( /\s/g, "_" );
+			return name;
+		}
+		
+		
 		public static function get localFile():File
 		{
-			return File.applicationStorageDirectory.resolvePath( defaultObjectName + " " + Utilities.integraLiveVersion + "." +Utilities.integraFileExtension );
+			return File.applicationStorageDirectory.resolvePath( defaultObjectName + "." +Utilities.integraFileExtension );
 		}
 
 		
@@ -115,8 +124,6 @@ package components.model.preferences
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }
 		public static const _serverInterfaceName:String = "MidiSettings";
 		
-		public static const defaultObjectName:String = "MidiSettings";
-	
 		private var _availableDrivers:Vector.<String> = new Vector.<String>;
 		private var _availableInputDevices:Vector.<String> = new Vector.<String>;
 		private var _availableOutputDevices:Vector.<String> = new Vector.<String>;

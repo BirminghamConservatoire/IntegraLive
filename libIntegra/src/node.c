@@ -791,7 +791,7 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 }
 
 
-ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes )
+ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, const char *top_level_name, ntg_node_list **loaded_nodes )
 {
     const ntg_node     *parent;
     ntg_path           *path;
@@ -801,6 +801,7 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, nt
 	const ntg_node_attribute *existing_attribute;
     xmlNodePtr          xml_node;
     xmlChar             *name;
+	const char			*name_to_use;
     const xmlChar       *element;
     xmlChar             *value = NULL;
     unsigned int        attribute_type;
@@ -814,6 +815,7 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, nt
 	const ntg_interface *interface;
 	char				*saved_version;
 	bool				saved_version_is_more_recent;
+	bool				is_first_node = true;
 
     attribute_value = NULL;
     store           = NULL;
@@ -881,9 +883,19 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, nt
 						ntg_free(ntg_path_pop_element(path));
 					}
 
+					if( is_first_node )
+					{
+						name_to_use = top_level_name;
+						is_first_node = false;
+					}
+					else
+					{
+						name_to_use = name;
+					}
+
 					/* add the new node */
 					node = (ntg_node *)
-						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, name, path).data;
+						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, name_to_use, path).data;
 					ntg_path_free(path);
 					xmlFree(name);
 					path = NULL;

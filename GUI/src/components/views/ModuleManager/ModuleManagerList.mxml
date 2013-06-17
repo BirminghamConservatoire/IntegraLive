@@ -53,6 +53,25 @@
 			}
 			
 			
+			public function get selectedItems():Vector.<ModuleManagerListItem>
+			{
+				Assert.assertTrue( _multiSelection );
+				
+				var selectedItems:Vector.<ModuleManagerListItem> = new Vector.<ModuleManagerListItem>;
+				
+				for( var i:int = 0; i < numChildren; i++ )
+				{
+					var item:ModuleManagerListItem = getItemAt( i );
+					if( item.selected ) 
+					{
+						selectedItems.push( item );
+					}
+				}
+				
+				return selectedItems;				
+			}
+			
+			
 			public function get allAreSelected():Boolean
 			{
 				Assert.assertTrue( _multiSelection );
@@ -94,12 +113,20 @@
 			}
 			
 			
-			public function getItemYCenter( item:ModuleManagerListItem ):Number
+			public function getItemArrowPointY( item:ModuleManagerListItem ):Number
 			{
 				Assert.assertNotNull( item );
 				
-				//assume all items are of same height with no gap
-				return getChildIndex( item ) * item.height + item.height / 2 - verticalScrollPosition;
+				var yCentre:Number = 0;  
+				var itemIndex:int = getChildIndex( item );
+				for( var i:int = 0; i < itemIndex; i++ )
+				{
+					yCentre += getChildAt( i ).height;
+				}
+				
+				yCentre += item.getItemArrowPointY();
+
+				return yCentre;
 			}
 			
 			

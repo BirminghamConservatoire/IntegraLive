@@ -31,7 +31,6 @@ package components.views.ModuleManager
 	import mx.controls.TabBar;
 	import mx.core.ScrollPolicy;
 	
-	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.controller.userDataCommands.SetInstallResult;
 	import components.controller.userDataCommands.SetViewMode;
 	import components.model.Info;
@@ -53,6 +52,9 @@ package components.views.ModuleManager
 			
 			horizontalScrollPolicy = ScrollPolicy.OFF; 
 			verticalScrollPolicy = ScrollPolicy.OFF;   
+
+			width = 800;
+			height = 600;
 			
 			_titleLabel.text = "Module Manager";
 			_titleLabel.setStyle( "verticalAlign", "center" );
@@ -137,11 +139,6 @@ package components.views.ModuleManager
 		{
 			Assert.assertNotNull( parentDocument );
 
-			//calculate window size
-			var rowHeight:Number = FontSize.getTextRowHeight( this );
-			width = Math.min( rowHeight * 28, parentDocument.width );
-			height = Math.min( rowHeight * 18, parentDocument.height );
-
 			//position title controls
 			_titleCloseButton.width = FontSize.getButtonSize( this ) * 1.1;
 			_titleCloseButton.height = FontSize.getButtonSize( this ) * 1.1;
@@ -150,7 +147,7 @@ package components.views.ModuleManager
 			
 			_titleLabel.x = titleHeight;
 			_titleLabel.y = titleHeight / 6;
-			_titleLabel.height = rowHeight;
+			_titleLabel.height = FontSize.getTextRowHeight( this );
 
 			//position main controls
 			_tabNavigator.setStyle( "top", titleHeight + _borderThickness );

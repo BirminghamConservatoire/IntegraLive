@@ -21,9 +21,12 @@
 
 package components.views.ModuleManager
 {
+	import flash.filesystem.File;
+	import flash.html.HTMLLoader;
 	import flash.text.StyleSheet;
 	
 	import mx.containers.Canvas;
+	import mx.controls.HTML;
 	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
 	
@@ -49,7 +52,7 @@ package components.views.ModuleManager
 		public function set markdown( markdown:String ):void
 		{
 			_info.markdown = markdown;
-			recreateTextArea();
+			recreateInfo();
 		}
 		
 
@@ -64,18 +67,20 @@ package components.views.ModuleManager
 					default:
 					case ColorScheme.LIGHT:
 						_borderColor = 0xcfcfcf;
+						_backgroundColor ='#ffffff';
 						_textColor ='#6D6D6D';
 						_linkColor = '#0000C0';
 						break;
 					
 					case ColorScheme.DARK:
 						_borderColor = 0x313131;
+						_backgroundColor ='#000000';
 						_textColor = '#939393';
 						_linkColor = '#4080FF';
 						break;
 				}
 				
-				recreateTextArea();
+				recreateInfo();
 				
 				invalidateDisplayList();
 			}
@@ -83,7 +88,7 @@ package components.views.ModuleManager
 			{
 				if( style == FontSize.STYLENAME )
 				{
-					recreateTextArea();
+					recreateInfo();
 				}	
 			}
 		}		
@@ -101,80 +106,67 @@ package components.views.ModuleManager
 		}
 		
 		
-		private function updateTextCSS():void
+		private function get htmlHeader():String
 		{
 			Assert.assertNotNull( _textColor );
+			Assert.assertNotNull( _backgroundColor );
 			Assert.assertNotNull( _linkColor );
 			
 			var fontSize:Number = getStyle( FontSize.STYLENAME );
 			
-			var myStyles:StyleSheet = new StyleSheet();
-			
-			myStyles.setStyle( "body", { fontSize:fontSize, color:_textColor } );
-			myStyles.setStyle( "li", { fontSize:fontSize, color:_textColor } );
-			
-			myStyles.setStyle( "h1", { fontSize:fontSize + 4, fontWeight:'bold', color:_textColor } );
-			myStyles.setStyle( "h2", { fontSize:fontSize + 3, fontWeight:'bold', color:_textColor, fontStyle:'italic' } );
-			myStyles.setStyle( "h3", { fontSize:fontSize + 2, fontWeight:'bold', color:_textColor } );
-			myStyles.setStyle( "h4", { fontSize:fontSize + 1, fontWeight:'bold', color:_textColor, fontStyle:'italic' } );
-			myStyles.setStyle( "h5", { fontSize:fontSize, fontWeight:'bold', color:_textColor } );
-			myStyles.setStyle( "h6", { fontSize:fontSize -1, fontWeight:'bold', color:_textColor, fontStyle:'italic' } );
-			
-			myStyles.setStyle( "a:link", {textDecoration:'none', color:_linkColor } );
-			myStyles.setStyle( "a:hover", {textDecoration:'underline', color:_linkColor } );
-			
-			myStyles.setStyle( "strong", { fontWeight:'bold', display:'inline' } );
-			myStyles.setStyle( "em", { fontStyle:'italic', display:'inline' } );	
-			
-			myStyles.setStyle( "pre", { display:'block' } );
-			myStyles.setStyle( "code", { fontFamily:'courier', color:_textColor } );
-			
-			myStyles.setStyle( ".space", { leading:String( -fontSize / 2 ) } );
-			
-			if( !Utilities.isWindows )
-			{
-				myStyles.setStyle( ".windows-only", { display:'none' } );
-			}
-			
-			if( !Utilities.isMac )
-			{
-				myStyles.setStyle( ".mac-only", { display:'none' } );
-			}
-			
-			
-			_textArea.styleSheet = myStyles;
+			return "<head>" +
+					"<style type='text/css'>" +
+						
+						"body {" +
+							"background-color:" + _backgroundColor + ";" + 
+							"color:" + _textColor + ";" +
+							"font-size:" + fontSize + ";" +
+						"} " +
+
+						"h1 {" +
+							"fontSize:" + String( fontSize + 4 ) + ";" + 
+						"} " +
+
+						"p {" +
+							"fontSize:" + fontSize + ";" + 
+						"} " +
+						
+					"</style>" +
+				"</head>";
 		}
 		
 		
-		private function recreateTextArea():void
+		private function recreateInfo():void
 		{
-			if( _textArea )
+			if( _html )
 			{
-				removeChild( _textArea );
+				removeChild( _html );
 			}
 			
-			_textArea = new TextArea;
-			_textArea.setStyle( "borderStyle", "none" );
-			_textArea.setStyle( "backgroundAlpha", 0 );
-			_textArea.setStyle( "left", ModuleManagerList.cornerRadius );
-			_textArea.setStyle( "right", ModuleManagerList.cornerRadius );
-			_textArea.setStyle( "top", ModuleManagerList.cornerRadius );
-			_textArea.setStyle( "bottom", ModuleManagerList.cornerRadius );
-			_textArea.editable = false;
-			_textArea.condenseWhite = true;
+			_html = new HTML;
 			
-			updateTextCSS();
+			_html.setStyle( "left", ModuleManagerList.cornerRadius );
+			_html.setStyle( "right", ModuleManagerList.cornerRadius );
+			_html.setStyle( "top", ModuleManagerList.cornerRadius );
+			_html.setStyle( "bottom", ModuleManagerList.cornerRadius );
+			
+			var htmlText:String = _info.html;
+			htmlText = "<html>" + htmlHeader + htmlText.substr( 6 );
+			
+			_html.htmlText = htmlText;
+			
+			addChild( _html );
 
-			_textArea.htmlText = _info.html;
-			
-			addChild( _textArea );
+			_html.htmlLoader.placeLoadStringContentInApplicationSandbox = true;
 		}
 
+		
 		private var _info:Info = new Info;
 
-		private var _textArea:TextArea = null;
+		private var _html:HTML = null;
 		
 		private var _borderColor:uint;
+		private var _backgroundColor:String;
 		private var _textColor:String;
 		private var _linkColor:String;
 	

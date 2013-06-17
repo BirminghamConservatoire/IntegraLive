@@ -53,6 +53,8 @@
 			
 			public function get useTint():Boolean { return _useTint; }
 
+			public function getItemArrowPointY():Number { return sectionHeaderHeight + ( height - sectionHeaderHeight ) / 2; }
+			
 			public function set selected( selected:Boolean ):void 
 			{
 				if( selected != _selected )

@@ -37,6 +37,7 @@ package components.views.ModuleManager
 	import components.controller.userDataCommands.SetInstallResult;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.interfaceDefinitions.InterfaceInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
@@ -362,44 +363,55 @@ package components.views.ModuleManager
 		{
 			var markdown:String = null;
 			
-			for each( var thirdPartyModule:ModuleManagerListItem in _3rdPartyModulesList.items ) 
+			var selectedItems:Vector.<ModuleManagerListItem> = _3rdPartyModulesList.selectedItems;
+			if( selectedItems.length > 0 )
 			{
-				if( !thirdPartyModule.selected ) continue;
-				
-				if( !markdown )
+				if( selectedItems.length > 1 )
 				{
-					markdown = "###Modules selected for uninstall:\n";
+					markdown = "More than one module is selected";
 				}
 				else
 				{
-					markdown += "\n\n";
+					markdown = makeInfoMarkdown( selectedItems[ 0 ].interfaceDefinition );
 				}
-				
-				markdown += thirdPartyModule.interfaceDefinition.makeExtendedInfoMarkdown( true );
 			}
+			else
+			{
+				selectedItems = _embeddedModulesList.selectedItems;
 
-			for each( var embeddedModule:ModuleManagerListItem in _embeddedModulesList.items ) 
-			{
-				if( !embeddedModule.selected ) continue;
-				
-				if( !markdown )
+				if( selectedItems.length > 0 )
 				{
-					markdown = "###Embedded modules selected for installation:\n";
+					if( selectedItems.length > 1 )
+					{
+						markdown = "More than one module is selected";
+					}
+					else
+					{
+						markdown = makeInfoMarkdown( selectedItems[ 0 ].interfaceDefinition );
+					}
 				}
 				else
 				{
-					markdown += "\n\n";
+					markdown = "No modules are selected";
 				}
-				
-				markdown += embeddedModule.interfaceDefinition.makeExtendedInfoMarkdown( true );
-			}
-			
-			if( !markdown )
-			{
-				markdown = "No modules are selected"; 
 			}
 			
 			_info.markdown = markdown;
+		}
+		
+		
+		private function makeInfoMarkdown( interfaceDefinition:InterfaceDefinition ):String
+		{
+			var interfaceInfo:InterfaceInfo = interfaceDefinition.interfaceInfo;
+			
+			var markdown:String = "##![](app:/assets/moduleLogo.png) " + interfaceInfo.label + "\n\n";
+			
+			markdown += interfaceInfo.description + "\n\n";
+			
+			markdown += "**Last modified:** " + interfaceInfo.modifiedDateLabel + "\n\n";
+			markdown += "**Author:** " + interfaceInfo.authorLabel + "\n\n";
+			
+			return markdown;			
 		}
 		
 		

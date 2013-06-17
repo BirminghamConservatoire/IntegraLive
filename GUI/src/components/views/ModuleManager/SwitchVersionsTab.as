@@ -23,6 +23,7 @@ package components.views.ModuleManager
 {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -527,13 +528,13 @@ package components.views.ModuleManager
 				var startX:Number = _switchableModuleList.x + _switchableModuleList.width + arrowGap;
 				var endX:Number = _alternativeVersionsList.x - arrowGap;
 
-				var startY:Number = _switchableModuleList.y + _switchableModuleList.getItemYCenter( arrowStartItem ); 
+				var startY:Number = _switchableModuleList.y + _switchableModuleList.getItemArrowPointY( arrowStartItem ); 
 				
 				var arrowStartPoint:Point = new Point( startX, startY );
 				
 				for each( var arrowEndItem:ModuleManagerListItem in _arrowTargets )
 				{
-					var endY:Number = _alternativeVersionsList.y + _alternativeVersionsList.getItemYCenter( arrowEndItem );
+					var endY:Number = _alternativeVersionsList.y + _alternativeVersionsList.getItemArrowPointY( arrowEndItem );
 					var arrowEndPoint:Point = new Point( endX, endY );
 					
 					drawArrow( arrowStartPoint, arrowEndPoint );
@@ -581,19 +582,24 @@ package components.views.ModuleManager
 			var infoGenerator:ModuleManagementInfoGenerator = new ModuleManagementInfoGenerator;
 			
 			var switchableItem:ModuleManagerListItem = _switchableModuleList.selectedItem;
-			var targetVersionItem:ModuleManagerListItem = _alternativeVersionsList.selectedItem;
-			
-			if( !switchableItem || !targetVersionItem )
+			if( !switchableItem )
 			{
-				_info.markdown = "No modules are selected for version-switching";
+				_info.markdown = "No module is selected";
+				return;				
+			}
+
+			var targetVersionItem:ModuleManagerListItem = _alternativeVersionsList.selectedItem;
+			if( !targetVersionItem )
+			{
+				_info.markdown = "No alternative version is selected";
 				return;				
 			}
 			
 			var targetVersion:InterfaceDefinition = targetVersionItem.interfaceDefinition;
 			
-			//var alternativeVersions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( switchableItem.interfaceDefinition.originGuid );
 			var versionsToSwitch:Vector.<InterfaceDefinition> = new Vector.<InterfaceDefinition>; 
-			var instanceNames:String = "";
+			var allInstanceNames:String = "";
+			var instanceNamesPerVersion:Object = new Object;
 
 			for each( var itemInUse:ModuleManagerListItem in _arrowTargets )
 			{
@@ -601,22 +607,42 @@ package components.views.ModuleManager
 				
 				if( versionInUse != targetVersion )
 				{
-					versionsToSwitch.push( versionInUse );
-					instanceNames += infoGenerator.getInstanceNames( versionInUse );
+					var instanceNames:String = infoGenerator.getInstanceNames( versionInUse );
+					if( instanceNames.length > 0 )
+					{
+						versionsToSwitch.push( versionInUse );
+						allInstanceNames += instanceNames;
+						instanceNamesPerVersion[ versionInUse.moduleGuid ] = instanceNames;
+					}
 				}
 			}
 			
-			if( instanceNames.length == 0 )
+			if( allInstanceNames.length == 0 )
 			{
-				_info.markdown = "No modules are selected for version-switching";
+				_info.markdown = "This is the version currently being used";
 				return;
 			}
 			
-			var markdown:String = "##The following modules will be version-switched:\n\n" + instanceNames + "\n\n";
+			var markdown:String = "#Affected Modules:\n\n" + allInstanceNames + "\n\n";
 			
-			markdown += "##Version-switch summary\n\n";
+			markdown += "##Change Details\n\n";
 
-			markdown += infoGenerator.getModuleDifferenceSummary( versionsToSwitch, targetVersion, "Target version" );
+			markdown += "##![](app:/assets/logo.png) " + switchableItem.toString() + "\n\n";
+			
+			Assert.assertTrue( versionsToSwitch.length > 0 );
+			var multipleVersionsInUse:Boolean = ( versionsToSwitch.length > 1 );
+
+			for each( var versionToSwitch:InterfaceDefinition in versionsToSwitch )
+			{
+				if( multipleVersionsInUse )
+				{
+					markdown += instanceNamesPerVersion[ versionToSwitch.moduleGuid ];
+					markdown += "\n";
+				}
+
+				markdown += infoGenerator.getModuleSwitchReport( versionToSwitch, targetVersion );
+				markdown += "\n\n";
+			}
 			
 			_info.markdown = markdown;			
 		}

@@ -100,11 +100,14 @@ package components.controller
 
 		public function processCommand( command:Command ):Boolean
 		{
-			RemoteCommandHandler.singleInstance.flushProcessQueue();
-			
 			if( !command.initialize( _model ) )
 			{
 				return false;
+			}
+
+			if( command is ServerCommand )
+			{
+				RemoteCommandHandler.singleInstance.flushProcessQueue();
 			}
 			
 			command.preChain( _model, this );

@@ -27,58 +27,33 @@ package components.views.ModuleManager
 		}
 
 		
-		public function getModuleDifferenceSummary( versionsInUse:Vector.<InterfaceDefinition>, targetVersion:InterfaceDefinition, targetVersionLabel:String ):String
+		public function getModuleSwitchReport( versionInUse:InterfaceDefinition, targetVersion:InterfaceDefinition ):String
 		{
-			var output:String = "";
+			var output:String = getModuleDifferenceSummary( versionInUse, targetVersion );
 
-			var allComparatives:Vector.<InterfaceDefinition> = versionsInUse.concat();
-			allComparatives.push( targetVersion );
-			
-			output += "###Module source\n\n";
-			output += "* " + targetVersionLabel + ": " + targetVersion.moduleSourceLabel + "\n"; 
-			
-			for each( var versionInUse:InterfaceDefinition in versionsInUse )
-			{
-				output += "* " + getVersionInUseLabel( versionInUse, versionsInUse ) + ": " + versionInUse.moduleSourceLabel + "\n"; 
-			}
-			
-			output += "\n\n###Last modified\n\n";
-			output += "* " + targetVersionLabel + ": " + targetVersion.interfaceInfo.modifiedDateLabel + "\n"; 
-			
-			for each( versionInUse in versionsInUse )
-			{
-				output += "* " + getVersionInUseLabel( versionInUse, versionsInUse ) + ": " + versionInUse.interfaceInfo.modifiedDateLabel + "\n"; 
-			}
+			output += "##Summary of Changes:";
 
-			
-			if( anyDifferences( allComparatives, "interfaceInfo.authorLabel" ) )
-			{
-				output += "\n\n###Author\n\n";
-				output += "* " + targetVersionLabel + ": " + targetVersion.interfaceInfo.authorLabel + "\n"; 
-				
-				for each( versionInUse in versionsInUse )
-				{
-					output += "* " + getVersionInUseLabel( versionInUse, versionsInUse ) + ": " + versionInUse.interfaceInfo.authorLabel + "\n"; 
-				}
-			}
-
-			for each( versionInUse in versionsInUse )
-			{
-				if( versionsInUse.length > 1 )
-				{
-					output += "\n\n### " + getVersionInUseLabel( versionInUse, versionsInUse ) + " -> " + targetVersionLabel;
-				}
-				else
-				{
-					output += "\n\n###Changes:";
-				}
-
-				
-				output += getDifferences( versionInUse, targetVersion );
-			}
-			
+			output += getDifferences( versionInUse, targetVersion );
 			
 			return output;
+		}
+		
+		
+		private function getModuleDifferenceSummary( versionInUse:InterfaceDefinition, targetVersion:InterfaceDefinition ):String
+		{
+			return "The __" 
+						+ versionInUse.moduleSourceLabel 
+						+ "__ version of the __" 
+						+ versionInUse.interfaceInfo.label 
+						+ "__ module (updated " 
+						+ versionInUse.interfaceInfo.modifiedDateLabel 
+						+ ") in the project __"
+						+ IntegraModel.singleInstance.project.name 
+						+ "__ will be swapped for the __"
+						+ targetVersion.moduleSourceLabel 
+						+ "__ version (updated "
+						+ targetVersion.interfaceInfo.modifiedDateLabel
+						+ ")\n\n";
 		}
 		
 		
@@ -95,7 +70,12 @@ package components.views.ModuleManager
 			{
 				output += "\n* Description changed";
 			}
-			
+
+			if( fromVersion.interfaceInfo.author != toVersion.interfaceInfo.author ) 
+			{
+				output += "\n* Author changed";
+			}
+						
 			if( !areArraysEqual( fromVersion.interfaceInfo.tags, toVersion.interfaceInfo.tags ) ) 
 			{
 				output += "\n* Tags changed";

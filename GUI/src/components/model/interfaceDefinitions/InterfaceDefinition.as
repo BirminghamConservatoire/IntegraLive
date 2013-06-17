@@ -21,8 +21,6 @@
 
 package components.model.interfaceDefinitions
 {
-	import components.model.Info;
-
 	public class InterfaceDefinition
 	{
 		public function InterfaceDefinition()

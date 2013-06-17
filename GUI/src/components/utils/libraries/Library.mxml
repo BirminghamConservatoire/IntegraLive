@@ -244,6 +244,10 @@
 						usedEvent = true;
 						break;
 					
+					default:
+						//don't stop the event - it could be an application-level shortcut
+						return;
+					
 				}
 				
 				event.stopImmediatePropagation();

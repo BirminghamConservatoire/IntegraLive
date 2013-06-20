@@ -657,7 +657,7 @@ package components.controller
 
 			processCommand( new SetProjectModified( false ) );
 			
-			processCommand( new PollForUpgradableModules() );
+			processCommand( new PollForUpgradableModules( _model.project.id ) );
 			
 			_undoManager.clear();
 

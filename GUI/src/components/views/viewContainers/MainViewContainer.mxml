@@ -80,6 +80,8 @@
 			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
 			
+			import components.controller.serverCommands.UpgradeModules;
+			import components.controller.userDataCommands.PollForUpgradableModules;
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetContrast;
 			import components.controller.userDataCommands.SetViewMode;
@@ -96,7 +98,10 @@
 			import components.views.LiveView.LiveView;
 			import components.views.ModuleGraph.ModuleGraph;
 			import components.views.ModuleLibrary.ModuleLibrary;
+			import components.views.ModuleManager.ModuleManagementInfoGenerator;
 			import components.views.ModuleManager.ModuleManager;
+			import components.views.ModuleManager.ModuleManagerReport;
+			import components.views.ModuleManager.UpgradeDialog;
 			import components.views.ModuleProperties.ModuleProperties;
 			import components.views.Preferences.Preferences;
 			import components.views.Timeline.TimelineMode;
@@ -127,6 +132,11 @@
 					model.showInfoView = ( xml.child( "infoViewShowing" ).toString() == "true" );
 				}
 				
+				if( xml.hasOwnProperty( "alwaysUpgrade" ) )
+				{
+					model.alwaysUpgrade = ( xml.child( "alwaysUpgrade" ).toString() == "true" );
+				}				
+
 				if( xml.hasOwnProperty( "arrangeViewPropertiesTab" ) )
 				{
 					_arrangeViewProperties.selectedTab = xml.child( "arrangeViewPropertiesTab" ).toString();
@@ -169,6 +179,7 @@
 				xml.appendChild( <liveInfoViewHeight>{ _liveInfoView.height }</liveInfoViewHeight> );
 
 				xml.appendChild( <infoViewShowing>{ model.showInfoView }</infoViewShowing> );
+				xml.appendChild( <alwaysUpgrade>{ model.alwaysUpgrade }</alwaysUpgrade> );
 				
 				xml.appendChild( <arrangeViewPropertiesTab>{ _arrangeViewProperties.selectedTab }</arrangeViewPropertiesTab> );
 				
@@ -241,6 +252,13 @@
 				{
 					_moduleManager.onStyleChanged( style );	
 				}
+
+				if( _isDisplayingUpgradeDialog )
+				{
+					_upgradeDialog.onStyleChanged( style );	
+				}
+				
+				_upgradeReport.styleChanged( style );
 			}
 	
 	
@@ -254,6 +272,7 @@
 				
 				updatePreferences();
 				updateModuleManager();
+				updateUpgradeDialog();
 			}
 
 
@@ -263,6 +282,8 @@
 				addUpdateMethod( SetContrast, onContrastChanged );
 				addUpdateMethod( SetViewMode, onViewModeChanged ); 
 				addUpdateMethod( ShowInfoView, onInfoViewShow );
+				addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
+				addUpdateMethod( UpgradeModules, onUpgradeModules );
 				
 				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER, onModuleGraphTransitionTimer );
 				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onModuleGraphTransitionComplete );
@@ -293,6 +314,7 @@
 			{
 				updatePreferences();
 				updateModuleManager();
+				updateUpgradeDialog();
 
 				var viewMode:ViewMode = model.project.projectUserData.viewMode;
 				if( viewMode.mode == ViewMode.ARRANGE )
@@ -332,6 +354,23 @@
 			private function onInfoViewShow( command:ShowInfoView ):void
 			{
 				updateState();
+			}
+			
+			
+			private function onPollForUpgradableModules( command:PollForUpgradableModules ):void
+			{
+				if( command.foundUpgradableModules )
+				{
+					_upgradeDialog.objectID = command.searchObjectID;
+				}
+			}
+			
+			
+			private function onUpgradeModules( command:UpgradeModules ):void
+			{
+				var infoGenerator:ModuleManagementInfoGenerator = new ModuleManagementInfoGenerator();
+				var upgradeReportMarkdown:String = infoGenerator.getUpgradeReport( command.upgradedObjectIDs, command.upgradedModuleGuids, command.searchObjectID );
+				_upgradeReport.displayReport( "Module Upgrade Report:", upgradeReportMarkdown, this );
 			}
 			
 			
@@ -498,6 +537,30 @@
 					}
 				}
 			}
+
+			
+			private function updateUpgradeDialog():void
+			{
+				if( model.project.projectUserData.viewMode.upgradeDialogOpen )
+				{
+					if( !_isDisplayingUpgradeDialog )
+					{
+						mx.managers.PopUpManager.addPopUp( _upgradeDialog, this );
+						_upgradeDialog.onStyleChanged( null );	
+						mx.managers.PopUpManager.centerPopUp( _upgradeDialog );
+						mx.managers.PopUpManager.bringToFront( _upgradeDialog );
+						_isDisplayingUpgradeDialog = true;
+					}
+				}
+				else
+				{
+					if( _isDisplayingUpgradeDialog )
+					{
+						mx.managers.PopUpManager.removePopUp( _upgradeDialog );
+						_isDisplayingUpgradeDialog = false;
+					}
+				}
+			}
 			
 			
 			private function startModuleGraphTransition():void
@@ -628,12 +691,14 @@
 			[Bindable] private var _keybindingView:KeybindingView = new KeybindingView;
 			[Bindable] private var _preferences:Preferences = new Preferences;
 			[Bindable] private var _moduleManager:ModuleManager = new ModuleManager;
+			[Bindable] private var _upgradeDialog:UpgradeDialog = new UpgradeDialog;
 			[Bindable] private var _arrangeInfoView:InfoView = new InfoView( true );
 			[Bindable] private var _moduleGraphInfoView:InfoView = new InfoView( true );
 			[Bindable] private var _liveInfoView:InfoView = new InfoView( true );
 
 			private var _isDisplayingPreferences:Boolean = false;
 			private var _isDisplayingModuleManager:Boolean = false;
+			private var _isDisplayingUpgradeDialog:Boolean = false;
 
 			private var _moduleGraphTransitionTimer:Timer = new Timer( _moduleGraphTransitionDelay, _moduleGraphTransitionDuration / _moduleGraphTransitionDelay );
 			private var _moduleGraphTransitionCanvas:Canvas = new Canvas;
@@ -642,6 +707,8 @@
 
 			private const _moduleGraphTransitionDelay:Number = 50;
 			private const _moduleGraphTransitionDuration:Number = 300;
+			
+			private var _upgradeReport:ModuleManagerReport = new ModuleManagerReport;
 			
 		]]>
 	</fx:Script>					

@@ -21,19 +21,13 @@
 
 package components.views.ModuleManager
 {
-	import flash.filesystem.File;
-	import flash.html.HTMLLoader;
-	import flash.text.StyleSheet;
-	
 	import mx.containers.Canvas;
 	import mx.controls.HTML;
-	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
 	
 	import components.model.Info;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
 	
@@ -55,7 +49,7 @@ package components.views.ModuleManager
 			recreateInfo();
 		}
 		
-
+		
 		override public function styleChanged( style:String ):void
 		{
 			super.styleChanged( style );
@@ -69,14 +63,12 @@ package components.views.ModuleManager
 						_borderColor = 0xcfcfcf;
 						_backgroundColor ='#ffffff';
 						_textColor ='#6D6D6D';
-						_linkColor = '#0000C0';
 						break;
 					
 					case ColorScheme.DARK:
 						_borderColor = 0x313131;
 						_backgroundColor ='#000000';
 						_textColor = '#939393';
-						_linkColor = '#4080FF';
 						break;
 				}
 				
@@ -100,9 +92,8 @@ package components.views.ModuleManager
 			
 			graphics.clear();
 			
-			graphics.lineStyle( 2, _borderColor, 1, true );
-			
-			graphics.drawRoundRect( 0, 0, width, height, ModuleManagerList.cornerRadius * 2, ModuleManagerList.cornerRadius * 2 );  
+			/*graphics.beginFill( getStyle( ColorScheme.STYLENAME ) == ColorScheme.DARK ? 0x000000 : 0xffffff );
+			graphics.drawRect( 0, 0, width, height );*/
 		}
 		
 		
@@ -110,7 +101,6 @@ package components.views.ModuleManager
 		{
 			Assert.assertNotNull( _textColor );
 			Assert.assertNotNull( _backgroundColor );
-			Assert.assertNotNull( _linkColor );
 			
 			var fontSize:Number = getStyle( FontSize.STYLENAME );
 			
@@ -168,7 +158,5 @@ package components.views.ModuleManager
 		private var _borderColor:uint;
 		private var _backgroundColor:String;
 		private var _textColor:String;
-		private var _linkColor:String;
-	
 	}
 }

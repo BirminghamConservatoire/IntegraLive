@@ -150,7 +150,7 @@ package components.controller.serverCommands
 			controller.processCommand( new SetPrimarySelectedChild( _blockID, _moduleID ) );
 			controller.processCommand( new SetObjectSelection( _moduleID, true ) );
 			
-			controller.dispatchEvent( new ImportEvent( ImportEvent.FINISHED ) );
+			controller.dispatchEvent( new ImportEvent( ImportEvent.FINISHED, _moduleID ) );
 		}
 		
 		

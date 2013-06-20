@@ -69,6 +69,7 @@ package components.model
 		public function get showInfoView():Boolean { return _showInfoView; }
 		public function get projectLength():int { return _projectLength; }
 		
+		public function get alwaysUpgrade():Boolean { return _alwaysUpgrade; }
 		
 		public function getPathStringFromID( id:int ):String
 		{
@@ -1373,6 +1374,7 @@ package components.model
 
 		public function set currentInfo( currentInfo:Info ):void { _currentInfo = currentInfo; }
 		public function set showInfoView( showInfoView:Boolean ):void { _showInfoView = showInfoView; }
+		public function set alwaysUpgrade( alwaysUpgrade:Boolean ):void { _alwaysUpgrade = alwaysUpgrade; }
 		
 		//private helper methods
 
@@ -1593,6 +1595,7 @@ package components.model
 		private var _projectLength:int = 0;
 		private var _currentInfo:Info = null;
 		private var _showInfoView:Boolean = true;
+		private var _alwaysUpgrade:Boolean = false;
 		
 		private var _audioSettings:AudioSettings;
 		private var _midiSettings:MidiSettings;

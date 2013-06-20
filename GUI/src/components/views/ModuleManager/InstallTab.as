@@ -27,7 +27,6 @@ package components.views.ModuleManager
 	
 	import mx.controls.Button;
 	import mx.controls.Label;
-	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
 	import mx.managers.PopUpManager;
 	
@@ -87,6 +86,9 @@ package components.views.ModuleManager
 			_installEmbeddedButton.addEventListener( MouseEvent.CLICK, onClickInstallEmbeddedButton );
 			addChild( _installEmbeddedButton );
 			
+			_info.setStyle( "borderStyle", "solid" );
+			_info.setStyle( "borderThickness", 2 );
+			_info.setStyle( "cornerRadius", ModuleManagerList.cornerRadius );
 			addChild( _info );
 		}
 		
@@ -139,6 +141,7 @@ package components.views.ModuleManager
 						setButtonTextColor( _installButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _uninstallButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _installEmbeddedButton, 0x6D6D6D, 0x9e9e9e );
+						_info.setStyle( "borderColor", 0xcfcfcf );
 						break;
 					
 					case ColorScheme.DARK:
@@ -146,6 +149,7 @@ package components.views.ModuleManager
 						setButtonTextColor( _installButton, 0x939393, 0x626262 );
 						setButtonTextColor( _uninstallButton, 0x939393, 0x626262 );
 						setButtonTextColor( _installEmbeddedButton, 0x939393, 0x626262 );
+						_info.setStyle( "borderColor", 0x313131 );
 						break;
 				}
 				
@@ -355,7 +359,7 @@ package components.views.ModuleManager
 		
 		private function onInstallResult( event:SetInstallResult ):void
 		{
-			_installationReport.displayReport( event.installResult, this );
+			_installationReport.displayReport( "Installation Report:", event.installResult, this );
 		}
 		
 		
@@ -427,7 +431,7 @@ package components.views.ModuleManager
 
 		private var _info:ModuleInfo = new ModuleInfo;
 		
-		private var _installationReport:InstallationReport = new InstallationReport;
+		private var _installationReport:ModuleManagerReport = new ModuleManagerReport;
 		
 		private var _labelColor:uint;
 	}

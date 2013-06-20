@@ -31,19 +31,29 @@ package components.controller.serverCommands
 
 	public class SwitchAllObjectVersions extends ServerCommand
 	{
-		public function SwitchAllObjectVersions( fromGuid:String, toGuid:String )
+		public function SwitchAllObjectVersions( searchObjectID:int, fromGuid:String, toGuid:String )
 		{
 			super();
 	
+			_searchObjectID = searchObjectID;
 			_fromGuid = fromGuid;
 			_toGuid = toGuid;		
 		}
 		
+		
+		public function get searchObjectID():int { return _searchObjectID; }
 		public function get fromGuid():String { return _fromGuid; }
 		public function get toGuid():String { return _toGuid; }
 		
+		public function get switchedObjectIDs():Vector.<int> { return _switchedObjectIDs; }
+		
 		override public function initialize( model:IntegraModel ):Boolean
 		{
+			if( !model.doesObjectExist( _searchObjectID ) ) 
+			{
+				return false;
+			}
+			
 			var fromInterfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _fromGuid );
 			var toInterfaceDefinition:InterfaceDefinition = model.getInterfaceDefinitionByModuleGuid( _toGuid );
 
@@ -68,7 +78,7 @@ package components.controller.serverCommands
 		
 		override public function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
-			switchBranch( model.project, controller );
+			switchBranch( model.getDataObjectByID( _searchObjectID ), controller );
 		}
 		
 		
@@ -84,6 +94,8 @@ package components.controller.serverCommands
 				{
 					controller.processCommand( new SwitchObjectVersion( object.id, _toGuid ) );
 				}
+				
+				_switchedObjectIDs.push( object.id );
 			}
 			
 			if( object is IntegraContainer )
@@ -95,8 +107,11 @@ package components.controller.serverCommands
 			}
 		}
 	
-		
+
+		private var _searchObjectID:int;
 		private var _fromGuid:String;
-		private var _toGuid:String;		
+		private var _toGuid:String;
+		
+		private var _switchedObjectIDs:Vector.<int> = new Vector.<int>;
 	}
 }

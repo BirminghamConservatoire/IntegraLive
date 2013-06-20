@@ -1,3 +1,24 @@
+/* Integra Live graphical user interface
+*
+* Copyright (C) 2009 Birmingham City University
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA   02110-1301,
+* USA.
+*/
+
+
 package components.views.ModuleManager
 {
 	import flash.display.DisplayObject;
@@ -7,16 +28,15 @@ package components.views.ModuleManager
 	import mx.containers.Canvas;
 	import mx.controls.Button;
 	import mx.controls.Label;
-	import mx.controls.TextArea;
 	import mx.managers.PopUpManager;
 	
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
 	import components.views.Skins.TextButtonSkin;
 
-	public class InstallationReport extends Canvas
+	public class ModuleManagerReport extends Canvas
 	{
-		public function InstallationReport() 
+		public function ModuleManagerReport() 
 		{
 			super();
 			
@@ -25,13 +45,9 @@ package components.views.ModuleManager
 			
 			addChild( _label );
 			
-			_report.setStyle( "borderStyle", "none" );
-			_report.setStyle( "focusAlpha", 0 );
-			_report.setStyle( "paddingLeft", 20 );
-			_report.setStyle( "paddingRight", 20 );
-			_report.setStyle( "paddingTop", 20 );
-			_report.setStyle( "paddingBottom", 20 );
 			addChild( _report );
+			_report.setStyle( "borderStyle", "solid" );
+			_report.setStyle( "borderThickness", 1 );
 			
 			_closeButton.setStyle( "skin", TextButtonSkin );
 			_closeButton.label = "OK";
@@ -40,9 +56,10 @@ package components.views.ModuleManager
 		}
 		
 		
-		public function displayReport( text:String, parent:DisplayObject ):void
+		public function displayReport( title:String, markdown:String, parent:DisplayObject ):void
 		{
-			_report.text = text;
+			_label.text = title;
+			_report.markdown = markdown;
 			
 			if( !_showing )
 			{
@@ -64,20 +81,21 @@ package components.views.ModuleManager
 						_backgroundColor = 0xffffff;
 						_borderColor = 0xaaccdf;
 						_label.setStyle( "color", 0x747474 );
+						_report.setStyle( "borderColor", 0xcfcfcf );
 						setButtonTextColor( _closeButton, 0x6D6D6D, 0x9e9e9e );
-						_report.setStyle( "color", 0x747474 );
-						_report.setStyle( "backgroundColor", 0xcfcfcf );
 						break;
 					
 					case ColorScheme.DARK:
 						_backgroundColor = 0x000000;
 						_borderColor = 0x214356;
 						_label.setStyle( "color", 0x8c8c8c );
+						_report.setStyle( "borderColor", 0x313131 );
 						setButtonTextColor( _closeButton, 0x939393, 0x626262 );
-						_report.setStyle( "color", 0x8c8c8c );
-						_report.setStyle( "backgroundColor", 0x313131 );
 						break;
 				}
+
+				
+				invalidateDisplayList();
 			}
 			
 			if( !style || style == FontSize.STYLENAME )
@@ -106,8 +124,8 @@ package components.views.ModuleManager
 			
 			//calculate window size
 			var rowHeight:Number = FontSize.getTextRowHeight( this );
-			width = Math.min( rowHeight * 20, parentDocument.width );
-			height = Math.min( rowHeight * 12, parentDocument.height );
+			width = Math.min( rowHeight * 25, parentDocument.width );
+			height = Math.min( rowHeight * 16, parentDocument.height );
 			
 			var internalMargin:Number = rowHeight / 2;
 			
@@ -141,10 +159,11 @@ package components.views.ModuleManager
 			_showing = false;
 		}
 
+		
 		private var _showing:Boolean = false;
 		
 		private var _label:Label = new Label;
-		private var _report:TextArea = new TextArea;
+		private var _report:ModuleInfo = new ModuleInfo;
 		private var _closeButton:Button = new Button;
 		
 		private var _backgroundColor:uint;

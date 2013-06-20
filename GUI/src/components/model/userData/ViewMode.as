@@ -30,31 +30,35 @@ package components.model.userData
 		
 		public function get mode():String { return _mode; }
 		public function get blockPropertiesOpen():Boolean { return _blockPropertiesOpen; }
-		public function get preferencesOpen():Boolean { return _preferencesOpen; }
-		public function get moduleManagerOpen():Boolean { return _moduleManagerOpen; }
+		public function get preferencesOpen():Boolean { return ( _openPopup == PREFERENCES ); }
+		public function get moduleManagerOpen():Boolean { return ( _openPopup == MODULE_MANAGER ); }
+		public function get upgradeDialogOpen():Boolean { return ( _openPopup == UPGRADE_DIALOG); }
 
 		public function set mode( mode:String ):void { _mode = mode; }
 		public function set blockPropertiesOpen( blockPropertiesOpen:Boolean ):void { _blockPropertiesOpen = blockPropertiesOpen; }
 
 		public function set preferencesOpen( preferencesOpen:Boolean ):void 
 		{ 
-			_preferencesOpen = preferencesOpen;
-			if( _preferencesOpen ) _moduleManagerOpen = false;
+			setOpenPopup( PREFERENCES, preferencesOpen );
 		}
 
 		public function set moduleManagerOpen( moduleManagerOpen:Boolean ):void 
 		{ 
-			_moduleManagerOpen = moduleManagerOpen;
-			if( _moduleManagerOpen ) _preferencesOpen = false;
+			setOpenPopup( MODULE_MANAGER, moduleManagerOpen );
 		}
 
+		
+		public function set upgradeDialogOpen( upgradeDialogOpen:Boolean ):void 
+		{ 
+			setOpenPopup( UPGRADE_DIALOG, upgradeDialogOpen );
+		}
+		
 		
 		public function clear():void
 		{
 			_mode = ARRANGE;
 			_blockPropertiesOpen = false;		
-			_preferencesOpen = false;
-			_moduleManagerOpen = false;
+			_openPopup = null;
 		}
 		
 		
@@ -63,19 +67,40 @@ package components.model.userData
 			var clone:ViewMode = new ViewMode();
 			clone._mode = _mode;
 			clone._blockPropertiesOpen = _blockPropertiesOpen;
-			clone._preferencesOpen = _preferencesOpen; 
-			clone._moduleManagerOpen = _moduleManagerOpen;
+			clone._openPopup = _openPopup; 
 			
 			return clone;
 		}
 		
 		
-	    public static const ARRANGE:String = "arrange";
-	    public static const LIVE:String = "live";
-	    
+		private function setOpenPopup( popup:String, open:Boolean ):void
+		{
+			if( open )
+			{
+				_openPopup = popup;
+			}
+			else
+			{
+				if( _openPopup == popup )
+				{
+					_openPopup = null;
+				}
+			}
+		}
+
+		
+		
 	    private var _mode:String;
 	    private var _blockPropertiesOpen:Boolean;
-	    private var _preferencesOpen:Boolean;
-		private var _moduleManagerOpen:Boolean;
+		
+		private var _openPopup:String = null;
+
+		private static const PREFERENCES:String = "preferences";
+		private static const MODULE_MANAGER:String = "moduleManager";
+		private static const UPGRADE_DIALOG:String = "upgradeDialog";
+		
+		public static const ARRANGE:String = "arrange";
+		public static const LIVE:String = "live";
+		
 	}
 }

@@ -135,7 +135,7 @@ package components.controller.serverCommands
 			{
 				connectPlayerToEnvelopes( model.getTrack( _trackID ), model, controller );
 	
-				controller.dispatchEvent( new ImportEvent( ImportEvent.FINISHED ) );
+				controller.dispatchEvent( new ImportEvent( ImportEvent.FINISHED, _trackID ) );
 	
 				normalizeTrackOrder( model, controller );
 			}

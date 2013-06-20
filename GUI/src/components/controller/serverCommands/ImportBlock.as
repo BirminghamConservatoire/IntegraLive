@@ -281,7 +281,7 @@ package components.controller.serverCommands
 			
 			controller.processCommand( new UpdateProjectLength() );
 
-			controller.dispatchEvent( new ImportEvent( ImportEvent.FINISHED ) );
+			controller.dispatchEvent( new ImportEvent( ImportEvent.FINISHED, _blockID ) );
 		}
 		
 		

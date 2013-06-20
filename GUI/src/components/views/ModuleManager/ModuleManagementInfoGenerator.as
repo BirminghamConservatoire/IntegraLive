@@ -29,7 +29,7 @@ package components.views.ModuleManager
 		
 		public function getModuleSwitchReport( versionInUse:InterfaceDefinition, targetVersion:InterfaceDefinition ):String
 		{
-			var output:String = getModuleDifferenceSummary( versionInUse, targetVersion );
+			var output:String = getModuleSwitchSummary( versionInUse, targetVersion );
 
 			output += "##Summary of Changes:";
 
@@ -39,7 +39,43 @@ package components.views.ModuleManager
 		}
 		
 		
-		private function getModuleDifferenceSummary( versionInUse:InterfaceDefinition, targetVersion:InterfaceDefinition ):String
+		public function getUpgradeReport( upgradedObjectIDs:Vector.<int>, upgradedModuleGuids:Vector.<String>, searchObjectID:int ):String
+		{
+			if( upgradedObjectIDs.length == 0 )
+			{
+				return "Nothing needs to be upgraded."; 
+			}
+			
+			var markdown:String = "The following modules have been upgraded\n\n";
+			
+			for each( var upgradedObjectID:int in upgradedObjectIDs )
+			{
+				markdown += "* "+ _model.getPathStringFromID( upgradedObjectID ) + "\n"; 
+			}
+
+			markdown += "##Upgrade Details\n\n";
+			
+			for each( var upgradedModuleGuid:String in upgradedModuleGuids )
+			{
+				var previousVersion:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( upgradedModuleGuid );
+				markdown += "##![](app:/assets/moduleLogo.png) " + previousVersion.interfaceInfo.label + "\n\n";
+				
+				var upgradedVersion:InterfaceDefinition = _model.getInterfaceDefinitionsByOriginGuid( previousVersion.originGuid )[ 0 ];
+				Assert.assertTrue( previousVersion != upgradedVersion );
+				
+				markdown += getModuleUpgradeSummary( previousVersion, upgradedVersion, searchObjectID );
+				
+				markdown += "###Summary of Changes:\n\n";
+				markdown += getDifferences( previousVersion, upgradedVersion );
+				markdown += "\n\n";
+			}
+			
+			
+			return markdown;
+		}
+		
+		
+		private function getModuleSwitchSummary( versionInUse:InterfaceDefinition, targetVersion:InterfaceDefinition ):String
 		{
 			return "The __" 
 						+ versionInUse.moduleSourceLabel 
@@ -55,6 +91,38 @@ package components.views.ModuleManager
 						+ targetVersion.interfaceInfo.modifiedDateLabel
 						+ ")\n\n";
 		}
+		
+		
+		private function getModuleUpgradeSummary( previousVersion:InterfaceDefinition, upgradedVersion:InterfaceDefinition, searchObjectID:int ):String
+		{
+			var locationDescription:String = "";
+
+			var searchObject:IntegraDataObject = _model.getDataObjectByID( searchObjectID );
+			if( searchObject is IntegraContainer )
+			{
+				locationDescription = "in the ";
+				locationDescription += Utilities.getClassNameFromObject( searchObject ).toLowerCase();
+				locationDescription += " __";
+				locationDescription += _model.getPathStringFromID( searchObjectID );
+				locationDescription += "__ ";
+			}
+			
+			var summary:String = "The __";
+			summary += previousVersion.moduleSourceLabel;
+			summary += "__ version of the __";
+			summary += previousVersion.interfaceInfo.label; 
+			summary += "__ module (updated ";
+			summary += previousVersion.interfaceInfo.modifiedDateLabel;
+			summary += ") "; 
+			summary += locationDescription;
+			summary += "has been upgraded to the __";
+			summary += upgradedVersion.moduleSourceLabel;
+			summary += "__ version (updated "
+			summary += upgradedVersion.interfaceInfo.modifiedDateLabel
+			summary += ")\n\n";	
+			
+			return summary;
+		}		
 		
 		
 		private function getDifferences( fromVersion:InterfaceDefinition, toVersion:InterfaceDefinition ):String

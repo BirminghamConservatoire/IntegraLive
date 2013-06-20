@@ -28,17 +28,25 @@ package components.controller.serverCommands
 	
 	import flexunit.framework.Assert;
 
-	public class UpgradeAllModules extends ServerCommand
+	public class UpgradeModules extends ServerCommand
 	{
-		public function UpgradeAllModules()
+		public function UpgradeModules( searchObjectID:int )
 		{
 			super();
+			
+			_searchObjectID = searchObjectID; 
 		}
+		
+		
+		public function get searchObjectID():int { return _searchObjectID; }
+
+		public function get upgradedObjectIDs():Vector.<int> { return _upgradedObjectIDs; }
+		public function get upgradedModuleGuids():Vector.<String> { return _upgradedModuleGuids; }
 		
 		
 		override public function initialize( model:IntegraModel ):Boolean
 		{
-			return true;				
+			return model.doesObjectExist( _searchObjectID );				
 		}
 		
 		
@@ -56,9 +64,22 @@ package components.controller.serverCommands
 				
 				if( interfaceDefinition != bestVersion )
 				{
-					controller.processCommand( new SwitchAllObjectVersions( interfaceDefinition.moduleGuid, bestVersion.moduleGuid ) );
+					var switchVersionsCommand:SwitchAllObjectVersions = new SwitchAllObjectVersions( _searchObjectID, interfaceDefinition.moduleGuid, bestVersion.moduleGuid ); 
+					controller.processCommand( switchVersionsCommand );
+					
+					var switchedObjectIDs:Vector.<int> = switchVersionsCommand.switchedObjectIDs;
+					if( switchedObjectIDs.length > 0 )
+					{
+						_upgradedObjectIDs = _upgradedObjectIDs.concat( switchVersionsCommand.switchedObjectIDs );
+						upgradedModuleGuids.push( moduleGuid );
+					}
 				}
 			}
 		}
+		
+		private var _searchObjectID:int;
+		
+		private var _upgradedObjectIDs:Vector.<int> = new Vector.<int>;
+		private var _upgradedModuleGuids:Vector.<String> = new Vector.<String>;
 	}
 }

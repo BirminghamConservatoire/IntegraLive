@@ -23,10 +23,10 @@ package components.controller.userDataCommands
 {	
 	import components.controller.IntegraController;
 	import components.controller.UserDataCommand;
-	import components.model.Block;
+	import components.controller.serverCommands.UpgradeModules;
+	import components.model.IntegraContainer;
+	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
-	import components.model.ModuleInstance;
-	import components.model.Track;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ViewMode;
 	
@@ -34,28 +34,45 @@ package components.controller.userDataCommands
 
 	public class PollForUpgradableModules extends UserDataCommand
 	{
-		public function PollForUpgradableModules()
+		public function PollForUpgradableModules( searchObjectID:int )
 		{
 			super();
 			
+			_searchObjectID = searchObjectID;
 			isNewUndoStep = false;
 		}
 		
 		
 		public function get foundUpgradableModules():Boolean { return _foundUpgradableModules; }
+		public function get searchObjectID():int { return _searchObjectID; }
 		
+		
+		public override function initialize( model:IntegraModel ):Boolean
+		{
+			return model.doesObjectExist( _searchObjectID );
+		}
 		
 		public override function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
-			_foundUpgradableModules = pollForUpgradableModules( model );
+			var searchObject:IntegraDataObject = model.getDataObjectByID( _searchObjectID );
+			Assert.assertNotNull( searchObject );
+			
+			_foundUpgradableModules = searchForUpgradableModules( searchObject, model );
 
 			if( _foundUpgradableModules )
 			{
-				var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
-				if( !viewMode.moduleManagerOpen )
+				if( model.alwaysUpgrade )
 				{
-					viewMode.moduleManagerOpen = true;
-					controller.processCommand( new SetViewMode( viewMode ) );
+					controller.processCommand( new UpgradeModules( _searchObjectID ) );
+				}
+				else
+				{
+					var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
+					if( !viewMode.upgradeDialogOpen )
+					{
+						viewMode.upgradeDialogOpen = true;
+						controller.processCommand( new SetViewMode( viewMode ) );
+					}
 				}
 			}
 		}
@@ -66,29 +83,35 @@ package components.controller.userDataCommands
 		}		
 
 		
-		private function pollForUpgradableModules( model:IntegraModel ):Boolean
+		private function searchForUpgradableModules( searchObject:IntegraDataObject, model:IntegraModel ):Boolean
 		{
-			for each( var track:Track in model.project.tracks )
+			if( searchObject is IntegraContainer )
 			{
-				for each( var block:Block in track.blocks )
+				var container:IntegraContainer = searchObject as IntegraContainer;
+				for each( var child:IntegraDataObject in container.children )
 				{
-					for each( var module:ModuleInstance in block.modules )
+					if( searchForUpgradableModules( child, model ) )
 					{
-						var interfaceDefinition:InterfaceDefinition = module.interfaceDefinition;
-						var interfaceDefinitions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
-						Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
-						
-						if( interfaceDefinition != interfaceDefinitions[ 0 ] )
-						{
-							return true;
-						}
+						return true;
 					}
-				}		
+				}
+			}
+			else
+			{
+				var interfaceDefinition:InterfaceDefinition = searchObject.interfaceDefinition;
+				var interfaceDefinitions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
+				Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
+				
+				if( interfaceDefinition != interfaceDefinitions[ 0 ] )
+				{
+					return true;
+				}
 			}
 			
 			return false;
 		}
 		
+		private var _searchObjectID:int;
 		
 		private var _foundUpgradableModules:Boolean = false;
 	}

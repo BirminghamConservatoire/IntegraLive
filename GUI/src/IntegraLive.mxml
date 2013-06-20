@@ -426,7 +426,10 @@
 						hideProgressPopup();
 						_controller.processCommand( new ResetAllBlocks() );
 						_controller.dispatchEvent( new AllDataChangedEvent() );
-						_controller.processCommand( new PollForUpgradableModules() );
+						if( event.importedObjectID >= 0 )
+						{
+							_controller.processCommand( new PollForUpgradableModules( event.importedObjectID ) );
+						}
 						break;
 
 					default:

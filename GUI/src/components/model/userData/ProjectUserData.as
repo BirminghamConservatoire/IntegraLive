@@ -51,6 +51,7 @@ package components.model.userData
 			xml.appendChild( <blockPropertiesOpen>{_viewMode.blockPropertiesOpen}</blockPropertiesOpen> );
 			xml.appendChild( <preferencesOpen>{_viewMode.preferencesOpen}</preferencesOpen> );
 			xml.appendChild( <moduleManagerOpen>{_viewMode.moduleManagerOpen}</moduleManagerOpen> );
+			xml.appendChild( <upgradeDialogOpen>{_viewMode.upgradeDialogOpen}</upgradeDialogOpen> );
 
 			//timeline state
 			xml.appendChild( <timelineScroll>{_timelineState.scroll}</timelineScroll> );
@@ -90,6 +91,10 @@ package components.model.userData
 				_viewMode.moduleManagerOpen = ( xml.moduleManagerOpen == "true" );
 			}
 			
+			if( xml.hasOwnProperty( "upgradeDialogOpen" ) )
+			{
+				_viewMode.upgradeDialogOpen = ( xml.upgradeDialogOpen == "true" );
+			}
 
 			//timeline state
 			if( xml.hasOwnProperty( "timelineScroll" ) )

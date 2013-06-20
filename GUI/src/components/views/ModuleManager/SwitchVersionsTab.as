@@ -23,7 +23,6 @@ package components.views.ModuleManager
 {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.filesystem.File;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -45,7 +44,7 @@ package components.views.ModuleManager
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.SwitchObjectVersion;
 	import components.controller.serverCommands.UnloadModule;
-	import components.controller.serverCommands.UpgradeAllModules;
+	import components.controller.serverCommands.UpgradeModules;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.userData.ColorScheme;
@@ -77,6 +76,7 @@ package components.views.ModuleManager
 			addUpdateMethod( SwitchObjectVersion, onVersionsSwitched );
 			
 			addEventListener( Event.RESIZE, onResize );
+			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			
 			addChild( _switchablesLabel );
 			addChild( _alternativeVersionsLabel );
@@ -102,12 +102,15 @@ package components.views.ModuleManager
 			addChild( _switchVersionsButton );
 			
 			_alwaysUpgradeCheckbox.label = "Always Upgrade";
+			_alwaysUpgradeCheckbox.addEventListener( MouseEvent.CLICK, onClickAlwaysUpgrade );
 			addChild( _alwaysUpgradeCheckbox );
 			
 			_arrowCanvas.addChild( _arrowMask );
 			_arrowCanvas.mask = _arrowMask;
 			addChild( _arrowCanvas );
 			
+			_info.setStyle( "borderStyle", "solid" );
+			_info.setStyle( "borderThickness", 2 );
 			addChild( _info );
 		}
 		
@@ -162,6 +165,7 @@ package components.views.ModuleManager
 						_arrowColor = 0x000000;
 						setButtonTextColor( _upgradeAllButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _switchVersionsButton, 0x6D6D6D, 0x9e9e9e );
+						_info.setStyle( "borderColor", 0xcfcfcf );
 						break;
 					
 					case ColorScheme.DARK:
@@ -169,6 +173,7 @@ package components.views.ModuleManager
 						_arrowColor = 0xffffff;
 						setButtonTextColor( _upgradeAllButton, 0x939393, 0x626262 );
 						setButtonTextColor( _switchVersionsButton, 0x939393, 0x626262 );
+						_info.setStyle( "borderColor", 0x313131 );
 						break;
 				}
 				
@@ -182,6 +187,12 @@ package components.views.ModuleManager
 		override protected function onAllDataChanged():void
 		{
 			updateAll();
+		}
+		
+		
+		private function onAddedToStage( event:Event ):void
+		{
+			_alwaysUpgradeCheckbox.selected = model.alwaysUpgrade;			
 		}
 		
 		
@@ -457,6 +468,12 @@ package components.views.ModuleManager
 		}
 		
 		
+		private function onClickAlwaysUpgrade( event:MouseEvent ):void
+		{
+			model.alwaysUpgrade = _alwaysUpgradeCheckbox.selected;
+		}
+		
+		
 		private function switchVersions():void
 		{
 			var switchableVersion:ModuleManagerListItem = _switchableModuleList.selectedItem;
@@ -474,7 +491,7 @@ package components.views.ModuleManager
 				var guidToSwitch:String = versionToSwitch.moduleGuid;
 				if( guidToSwitch != targetModuleGuid )
 				{
-					controller.processCommand( new SwitchAllObjectVersions( guidToSwitch, targetModuleGuid ) );
+					controller.processCommand( new SwitchAllObjectVersions( model.project.id, guidToSwitch, targetModuleGuid ) );
 				}
 			}
 		}
@@ -482,7 +499,7 @@ package components.views.ModuleManager
 		
 		private function onClickUpgradeAllButton( event:MouseEvent ):void
 		{
-			controller.processCommand( new UpgradeAllModules() );
+			controller.processCommand( new UpgradeModules( model.project.id ) );
 		}
 		
 		
@@ -627,13 +644,13 @@ package components.views.ModuleManager
 			
 			markdown += "##Change Details\n\n";
 
-			markdown += "##![](app:/assets/logo.png) " + switchableItem.toString() + "\n\n";
-			
 			Assert.assertTrue( versionsToSwitch.length > 0 );
 			var multipleVersionsInUse:Boolean = ( versionsToSwitch.length > 1 );
 
 			for each( var versionToSwitch:InterfaceDefinition in versionsToSwitch )
 			{
+				markdown += "##![](app:/assets/moduleLogo.png) " + switchableItem.toString() + "\n\n";
+
 				if( multipleVersionsInUse )
 				{
 					markdown += instanceNamesPerVersion[ versionToSwitch.moduleGuid ];

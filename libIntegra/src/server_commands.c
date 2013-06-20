@@ -559,7 +559,7 @@ ntg_command_status ntg_rename_(ntg_server *server,
 	new_name = ntg_strdup( name );
 
     /* First check if node name is already taken */
-    while( ntg_node_find_by_name( node->parent, new_name ) ) 
+    while( ntg_node_sibling_find_by_name( node, new_name ) ) 
 	{
         NTG_TRACE_PROGRESS_WITH_STRING("node name is in use; appending underscore", new_name);
 

@@ -132,6 +132,15 @@ bool ntg_node_is_root(const ntg_node *node);
 ntg_node *ntg_node_find_by_name(const ntg_node *container, const char *node_name);
 
 
+/** \brief Find an instance by name amongst the node's siblings, excluding the node itself
+  *
+  * Traverses the node list given by node->parent->nodes looking for the string
+  * *node_name
+  */
+
+ntg_node *ntg_node_sibling_find_by_name(const ntg_node *node, const char *sibling_name);
+
+
 /** \brief Find an instance by name inside the given container
   *
   * Traverses the node list given by container->nodes looking for the string

@@ -560,7 +560,7 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 
 		if( strcmp( top_level_node->name, top_level_node_name ) != 0 )
 		{
-			ntg_rename_( server_, NTG_SOURCE_SYSTEM, ntg_node_list_get_tail( new_nodes_list )->path, top_level_node_name );
+			ntg_rename_( server_, NTG_SOURCE_SYSTEM, top_level_node->path, top_level_node_name );
 		}
 
 		ntg_free( top_level_node_name );

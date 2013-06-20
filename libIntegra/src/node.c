@@ -323,6 +323,7 @@ void ntg_node_add_attributes(ntg_node *node, const ntg_endpoint *endpoint_list)
     }
 }
 
+
 static ntg_node *ntg_node_find_by_name_(const ntg_node * root,
                                         const char *name, bool recursive)
 {
@@ -422,20 +423,33 @@ static ntg_node *ntg_node_find_by_id_(const ntg_node * root,
 }
 
 
+ntg_node *ntg_node_sibling_find_by_name( const ntg_node *node, const char *sibling_name )
+{
+	ntg_node *iterator;
+	assert( node && sibling_name );
+
+	for( iterator = node->next; iterator != node; iterator = iterator->next )
+	{
+		if( strcmp( iterator->name, sibling_name ) == 0 )
+		{
+			return iterator;
+		}
+	}
+
+	return NULL;
+}
+
 
 
 ntg_node *ntg_node_find_by_name(const ntg_node * root, const char *name)
 {
-
     return ntg_node_find_by_name_(root, name, false);
-
 }
+
 
 ntg_node *ntg_node_find_by_name_r(const ntg_node * root, const char *name)
 {
-
     return ntg_node_find_by_name_(root, name, true);
-
 }
 
 ntg_node *ntg_node_find_by_id(const ntg_node * root, const ntg_id id)

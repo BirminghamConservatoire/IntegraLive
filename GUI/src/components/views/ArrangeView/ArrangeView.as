@@ -1513,7 +1513,7 @@ package components.views.ArrangeView
 		
 		private function onUpdateChangeTrackColorMenuItem( menuItem:Object ):void
 		{
-			menuItem.enabled = ( model.selectedTrack != null );
+			menuItem.enabled = ( model.selectedTrack != null && model.selectedTrack.active && model.project.active );
 		}
 
 

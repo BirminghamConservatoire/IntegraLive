@@ -22,21 +22,21 @@
 
 package components.views.ArrangeView
 {
+	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	
+	import mx.containers.Canvas;
+	import mx.managers.PopUpManager;
+	
 	import components.controller.IntegraController;
 	import components.controller.userDataCommands.SetTrackColor;
 	import components.model.IntegraModel;
 	import components.model.userData.ColorScheme;
 	import components.views.MouseCapture;
 	
-	import flash.display.BitmapData;
-	import flash.display.DisplayObject;
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.managers.PopUpManager;
 	
 	//import spark.components.Group;
 	
@@ -126,6 +126,10 @@ package components.views.ArrangeView
 		{
 			const greyBrightness:Number = 0.5;
 			const overallBrightness:Number = 0.5;
+			const minimumSaturation:Number = 0.5;
+			
+			const brightnessAdjustmentPhaseShift:Number = Math.PI / 8;
+			const brightnessAdjustmentMagnitude:Number = 0.15;
 			
 			_bitmapData = new BitmapData( diameter, diameter, true, 0x00FFFFFF );
 			
@@ -151,28 +155,29 @@ package components.views.ArrangeView
 					var green:Number = Math.cos( bearing + Math.PI * 2 / 3 ) * 0.5 + 0.5;
 					var blue:Number = Math.cos( bearing + Math.PI * 4 / 3 ) * 0.5 + 0.5;
 					
-					var saturation:Number = myRadius * radiusInverse;
+					var saturation:Number = myRadius * radiusInverse * ( 1 - minimumSaturation ) + minimumSaturation;
 					var saturationOpposite:Number = 1 - saturation;
 					
 					red = red * saturation + greyBrightness * saturationOpposite;
 					green = green * saturation + greyBrightness * saturationOpposite;
 					blue = blue * saturation + greyBrightness * saturationOpposite;
 					
-					if( overallBrightness > 0.5 )
+					var adjustedBrightness:Number = overallBrightness + Math.sin( bearing + brightnessAdjustmentPhaseShift ) * brightnessAdjustmentMagnitude 
+					
+					if( adjustedBrightness > 0.5 )
 					{
-						var lightening:Number = 2 - ( overallBrightness * 2 ); 
+						var lightening:Number = 2 - ( adjustedBrightness * 2 ); 
 						red = 1 - lightening * ( 1 - red );
 						green = 1 - lightening * ( 1 - green );
 						blue = 1 - lightening * ( 1 - blue );
 					}
 					else
 					{
-						var darkening:Number = overallBrightness * 2;
+						var darkening:Number = adjustedBrightness * 2;
 						red *= darkening;
 						green *= darkening;
 						blue *= darkening;
 					}
-					
 					
 					red = Math.max( 0, Math.min( 1, red ) );
 					green = Math.max( 0, Math.min( 1, green ) );

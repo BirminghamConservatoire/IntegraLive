@@ -23,8 +23,6 @@ package components.controller.serverCommands
 {
 	import __AS3__.vec.Vector;
 	
-	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
-	
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
@@ -36,8 +34,6 @@ package components.controller.serverCommands
 	import components.utils.Utilities;
 	import components.views.InfoView.InfoMarkupForViews;
 	
-	import flexunit.framework.Assert;
-
 	public class AddTrack extends ServerCommand
 	{
 		public function AddTrack( trackID:int = -1, trackName:String = null, color:int = -1, zIndex:int = -1 )
@@ -167,7 +163,7 @@ package components.controller.serverCommands
 
 		private function getNewTrackColor( model:IntegraModel ):uint
 		{
-			const defaultColors:Array = [ 0x16a2f1, 0xe95d0e, 0xf116d4, 0xf0f116, 0xf11616, 0x41f116 ];
+			const defaultColors:Array = [ 0x0F8AEB, 0xEE7511, 0xD449D0, 0xAB9800, 0xFF5848, 0x2EB429 ];
 			
 			return defaultColors[ Utilities.getNumberOfProperties( model.project.tracks ) % defaultColors.length ]; 
 		}

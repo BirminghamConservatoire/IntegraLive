@@ -21,12 +21,24 @@
 
 package components.views.ArrangeView
 {
+	import flash.display.DisplayObjectContainer;
+	import flash.events.MouseEvent;
+	import flash.filters.GlowFilter;
+	import flash.geom.Point;
+	
+	import mx.containers.Canvas;
+	import mx.controls.Label;
+	import mx.core.ScrollPolicy;
+	
+	import spark.components.Application;
+	
 	import __AS3__.vec.Vector;
 	
 	import components.controller.serverCommands.AddControlPoint;
 	import components.controller.serverCommands.RemoveControlPoint;
 	import components.controller.serverCommands.RepositionControlPoint;
 	import components.controller.serverCommands.SetConnectionRouting;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetControlPointCurvature;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.controller.userDataCommands.SetTrackColor;
@@ -34,32 +46,17 @@ package components.views.ArrangeView
 	import components.model.Connection;
 	import components.model.ControlPoint;
 	import components.model.Envelope;
-	import components.model.IntegraDataObject;
 	import components.model.ModuleInstance;
-	import components.model.Project;
 	import components.model.Track;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	
-	import flash.display.DisplayObjectContainer;
-	import flash.events.MouseEvent;
-	import flash.filters.GlowFilter;
-	import flash.geom.Point;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.Canvas;
-	import mx.controls.Label;
-	import mx.core.Container;
-	import mx.core.ScrollPolicy;
-	
-	import spark.components.Application;
 
 
 	public class EnvelopeView extends IntegraView
@@ -80,6 +77,7 @@ package components.views.ArrangeView
 			addUpdateMethod( SetControlPointCurvature, onControlPointCurvatureChanged );
 			addUpdateMethod( SetPrimarySelectedChild, onPrimarySelectionChanged );
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
+			addUpdateMethod( SetContainerActive, onContainerActiveChanged );
 
 			_dragLabel.setStyle( "color", 0x808080 );
 			_dragLabel.setStyle( "textAlign", "center" );
@@ -102,6 +100,12 @@ package components.views.ArrangeView
 		public function get envelopeID():int { return _envelopeID; }
 		
 		public function set curvatureMode( curvatureMode:Boolean ):void { _curvatureMode = curvatureMode; }
+
+		
+		override public function get color():uint
+		{
+			return model.getContainerColor( _block.id );
+		}
 		
 		
 		public function getHitTestDistance( x:Number, y:Number ):int
@@ -372,6 +376,16 @@ package components.views.ArrangeView
 		}
 		
 		
+		private function onContainerActiveChanged( command:SetContainerActive ):void
+		{
+			if( model.isEqualOrAncestor( command.containerID, _block.id ) )
+			{
+				invalidateDisplayList();
+				updateGlow();
+			}
+		}
+		
+		
 		private function get isSelected():Boolean
 		{
 			return ( model && model.selectedEnvelope && model.selectedEnvelope.id == _envelopeID );
@@ -425,7 +439,7 @@ package components.views.ArrangeView
 		
 		private function updateGlow():void
 		{
-			var glow:GlowFilter = new GlowFilter( _track.trackUserData.color, 0.5, 10, 10, 2 );
+			var glow:GlowFilter = new GlowFilter( color, 0.5, 10, 10, 2 );
 			var filterArray:Array = new Array;
 			filterArray.push( glow );
 			filters = filterArray;
@@ -436,7 +450,7 @@ package components.views.ArrangeView
 		{
 			if( !isSelected ) return;
 			
-			var color:uint = _track.trackUserData.color;
+			var color:uint = color;
 			var controlPointX:Number = getXPixelsFromTick( controlPointTick );
 			var controlPointY:Number = getYPixelsFromValue( controlPointValue );
 
@@ -453,7 +467,7 @@ package components.views.ArrangeView
 			
 			const xIncrement:Number = 1;
 			
-			var color:uint = _track.trackUserData.color;
+			var color:uint = color;
 			var fromX:Number = getXPixelsFromTick( fromTick );
 			var fromY:Number = getYPixelsFromValue( fromValue );
 			var toX:Number = getXPixelsFromTick( toTick );

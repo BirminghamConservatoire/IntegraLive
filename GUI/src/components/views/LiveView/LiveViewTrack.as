@@ -66,10 +66,12 @@ package components.views.LiveView
 			addUpdateMethod( SetLiveViewControlPosition, onLiveViewControlPositioned );
 			addUpdateMethod( SetLiveViewControls, onLiveViewControlsChanged );
 			addUpdateMethod( ToggleLiveViewControl, onLiveViewControlToggled );
+			addUpdateMethod( SetContainerActive, onSetContainerActive );
 			
 			addTitleInvalidatingCommand( RenameObject );
 			addTitleInvalidatingCommand( SetPlayPosition );
 			addColorChangingCommand( SetTrackColor );
+			addColorChangingCommand( SetContainerActive );
 			addActiveChangingCommand( SetContainerActive );
 
 			addEventListener( Event.RESIZE, onResize );
@@ -114,7 +116,7 @@ package components.views.LiveView
 			if( !model.doesObjectExist( _trackID ) ) return 0;
 			if( !( model.getDataObjectByID( _trackID ) is Track ) ) return 0;
 				
-			return model.getTrack( _trackID ).trackUserData.color;
+			return model.getContainerColor( _trackID );
 		}
 		
 		
@@ -232,12 +234,18 @@ package components.views.LiveView
 		}
 		
 		
+		private function onSetContainerActive( command:SetContainerActive ):void
+		{
+			updateColor();
+		}
+		
+		
 		private function updateColor():void
 		{
 			if( !model.doesObjectExist( _trackID ) ) return;
 			if( !model.getDataObjectByID( _trackID ) is Track ) return;
 				
-			setStyle( "color", model.getTrack( _trackID ).trackUserData.color );
+			setStyle( "color", model.getContainerColor( _trackID ) );
 		}
 		
 		

@@ -112,7 +112,7 @@ package components.views.Skins
 			graphics.endFill();
 			
 			//speaker icon
-			var iconAlpha:Number = isActive ? 1 : 0.7;
+			var iconAlpha:Number = isActive ? 1 : 0.5;
 			var iconColor:uint = isActive ? color : 0x808080;
 			graphics.lineStyle( 0, iconColor, iconAlpha );
 			graphics.beginFill( iconColor, iconAlpha );
@@ -128,7 +128,7 @@ package components.views.Skins
 			if( !isActive )
 			{
 				//inactive strikethrough
-				graphics.lineStyle( 2, color );
+				graphics.lineStyle( 2, 0x808080 );
 				graphics.moveTo( radius * 0.6, radius * 0.4 );
 				graphics.lineTo( radius * 1.4, radius * 1.6 );
 			}

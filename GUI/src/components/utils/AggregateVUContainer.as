@@ -22,12 +22,12 @@
 package components.utils
 {
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	
 	import mx.core.ScrollPolicy;
 	
 	import components.controlSDK.core.ControlManager;
 	import components.controller.serverCommands.SetBlockTrack;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.userDataCommands.SetTrackColor;
 	import components.model.Block;
@@ -90,6 +90,7 @@ package components.utils
 			addUpdateMethod( SetModuleAttribute, onModuleAttributeChanged );
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( SetBlockTrack, onBlockChangedTrack );
+			addUpdateMethod( SetContainerActive, onContainerActiveChanged );
 		}
 		
 		
@@ -104,16 +105,6 @@ package components.utils
 			
 			Assert.assertTrue( false );
 			return null;
-		}
-		
-		
-		override public function set enabled( enabled:Boolean ):void
-		{
-			super.enabled = enabled;
-
-			alpha = enabled ? 1 : 0.3;
-			
-			setControlForegroundColor();
 		}
 		
 		
@@ -235,40 +226,7 @@ package components.utils
 				return;
 			}
 			
-			var color:uint = 0;
-
-			var container:IntegraContainer = model.getContainer( _containerID );
-			Assert.assertNotNull( container );
-			
-			if( container is Project )
-			{	
-				switch( getStyle( ColorScheme.STYLENAME ) )
-				{
-					default:
-					case ColorScheme.LIGHT:
-						color = 0x606060;
-						break;
-						
-					case ColorScheme.DARK:
-						color = 0xFFFFFF;
-						break;
-				}
-			}
-			else
-			{
-				if( container is Track )
-				{
-					color = ( container as Track ).trackUserData.color;
-				}
-				else
-				{
-					Assert.assertTrue( container is Block );
-					
-					color = model.getTrackFromBlock( _containerID ).trackUserData.color;
-				}
-			}
-			
-			if( !enabled ) color = Utilities.makeGreyscale( color );
+			var color:uint = model.getContainerColor( _containerID );
 			
 			_control.setControlForegroundColor( color );
 		}
@@ -367,6 +325,15 @@ package components.utils
 			{
 				setControlForegroundColor();
 			}			
+		}
+		
+		
+		private function onContainerActiveChanged( command:SetContainerActive ):void
+		{
+			if( model.isEqualOrAncestor( command.containerID, _containerID ) )
+			{
+				setControlForegroundColor();
+			}
 		}
 		
 		

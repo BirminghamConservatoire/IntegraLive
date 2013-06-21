@@ -114,9 +114,11 @@ package components.views.ModuleGraph
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( RenameObject, onObjectRenamed );
 			addUpdateMethod( SwitchModuleVersion, onModuleVersionChanged );
+			addUpdateMethod( SetContainerActive, onContainerActiveChanged );
 			
 			addVuMeterChangingCommand( SetPrimarySelectedChild );
 			addColorChangingCommand( SetTrackColor );
+			addColorChangingCommand( SetContainerActive );
 
 			addActiveChangingCommand( SetPrimarySelectedChild );
 			addActiveChangingCommand( SetContainerActive );
@@ -149,9 +151,9 @@ package components.views.ModuleGraph
 		
 		override public function get color():uint
 		{
-			if( model && model.selectedTrack )
+			if( model && model.primarySelectedBlock )
 			{
-				return model.selectedTrack.trackUserData.color;			
+				return model.getContainerColor( model.primarySelectedBlock.id );			
 			}
 			else
 			{
@@ -499,6 +501,17 @@ package components.views.ModuleGraph
 		}
 		
 		
+		private function onContainerActiveChanged( command:SetContainerActive ):void
+		{
+			var block:Block = model.primarySelectedBlock;
+			
+			if( block && model.isEqualOrAncestor( command.containerID, block.id ) )
+			{
+				updateColor();
+			}
+		}
+		
+		
 		private function onClickBackUpButton( event:MouseEvent ):void
 		{
  			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
@@ -536,7 +549,7 @@ package components.views.ModuleGraph
 		
 		private function updateColor():void
 		{
-			var color:uint = model.selectedTrack.trackUserData.color;
+			var color:uint = this.color;
 			setStyle( "color", color );
 			setStyle( "disabledColor", color );
 		}
@@ -1871,7 +1884,7 @@ package components.views.ModuleGraph
 
 		private function onUpdateChangeTrackColorMenuItem( menuItem:Object ):void
 		{
-			menuItem.enabled = ( model.selectedTrack != null );
+			menuItem.enabled = ( model.selectedTrack != null && model.selectedTrack.active && model.project.active );
 		}
 		
 		

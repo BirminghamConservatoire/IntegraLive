@@ -31,6 +31,7 @@ package components.model
 	import components.model.interfaceDefinitions.WidgetDefinition;
 	import components.model.preferences.AudioSettings;
 	import components.model.preferences.MidiSettings;
+	import components.model.userData.ColorScheme;
 	import components.model.userData.LiveViewControl;
 	import components.utils.Trace;
 	import components.utils.Utilities;
@@ -911,6 +912,60 @@ package components.model
 			return true;
 		} 
 
+		
+		public function getContainerColor( containerID:int ):uint
+		{
+			var color:uint = ( project.projectUserData.colorScheme == ColorScheme.DARK ) ? 0xffffff : 0x606060;
+
+			if( !doesObjectExist( containerID ) ) return color;
+			
+			var active:Boolean = true;
+			
+			var container:IntegraContainer = getContainer( containerID );
+				
+			while( true )
+			{
+				if( container is Track )
+				{
+					color = ( container as Track ).trackUserData.color;
+				}
+				
+				if( !container.active )
+				{
+					active = false;
+				}
+				
+				if( container.parentID < 0 ) 
+				{
+					break;
+				}
+				else
+				{
+					container = getContainer( container.parentID );	
+				}
+			}
+			
+			if( active ) 
+			{
+				return color;
+			}
+			else
+			{
+				return Utilities.makeGreyscale( color );
+			}
+		}
+		
+		
+		public function isEqualOrAncestor( candidateAncestorID:int, candidateDescendantID:int ):Boolean
+		{
+			for( var iterator:int = candidateDescendantID; iterator >= 0; iterator = getDataObjectByID( iterator ).parentID )
+			{
+				if( iterator == candidateAncestorID ) return true;
+			}
+			
+			return false;
+		}
+		
 
 		//modification methods 
 		public function clearAll():void

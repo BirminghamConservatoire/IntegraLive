@@ -79,6 +79,7 @@ package components.views.ArrangeView
 			
 			addTitleInvalidatingCommand( RenameObject );
 			addColorChangingCommand( SetTrackColor );
+			addColorChangingCommand( SetContainerActive );
 			addActiveChangingCommand( SetContainerActive );
 			
 			horizontalScrollPolicy = ScrollPolicy.OFF;  
@@ -136,7 +137,7 @@ package components.views.ArrangeView
 
 		override public function get color():uint
 		{
-			return _track.trackUserData.color;
+			return model.getContainerColor( _trackID );
 		}
 		
 		

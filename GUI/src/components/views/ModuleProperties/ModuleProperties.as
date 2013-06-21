@@ -36,6 +36,7 @@ package components.views.ModuleProperties
 	import components.controller.serverCommands.RemoveEnvelope;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.userDataCommands.SetColorScheme;
@@ -47,7 +48,6 @@ package components.views.ModuleProperties
 	import components.model.Info;
 	import components.model.ModuleInstance;
 	import components.model.Scaler;
-	import components.model.Track;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
@@ -59,7 +59,6 @@ package components.views.ModuleProperties
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
-	import components.views.RibbonBar.MidiInputIndicator;
 	
 	import flexunit.framework.Assert;
 
@@ -84,6 +83,7 @@ package components.views.ModuleProperties
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( SwitchModuleVersion, onModuleVersionSwitched );
 			addUpdateMethod( ReceiveMidiInput, onMidiInput );
+			addUpdateMethod( SetContainerActive, onContainerActiveChanged );
 
 			addTitleInvalidatingCommand( SetPrimarySelectedChild );			
 			addTitleInvalidatingCommand( RenameObject );
@@ -194,7 +194,7 @@ package components.views.ModuleProperties
 
 			findLiveViewControls();
 			
-			var color:uint = model.selectedTrack.trackUserData.color;			
+			var color:uint = model.getContainerColor( model.primarySelectedBlock.id );			
 			
 			for each( var widget:WidgetDefinition in widgets )
 			{
@@ -290,6 +290,16 @@ package components.views.ModuleProperties
 		}
 		
 		
+		private function onContainerActiveChanged( command:SetContainerActive ):void
+		{
+			var block:Block = model.primarySelectedBlock;
+			if( block && model.isEqualOrAncestor( command.containerID, block.id ) )
+			{
+				updateColor();
+			}
+		}
+		
+		
 		private function onModuleVersionSwitched( command:SwitchModuleVersion ):void
 		{
 			if( _module && command.objectID == _module.id )
@@ -320,14 +330,14 @@ package components.views.ModuleProperties
 		
 		private function updateColor():void
 		{
-			var track:Track = model.selectedTrack;
-			if( !track ) 
+			var block:Block = model.primarySelectedBlock;
+			if( !block ) 
 			{
 				Assert.assertTrue( _allControls.length == 0 );
 				return;
 			}
 			
-			var color:uint = track.trackUserData.color;
+			var color:uint = model.getContainerColor( block.id );
 			
 			for each( var control:ControlContainer in _allControls )
 			{

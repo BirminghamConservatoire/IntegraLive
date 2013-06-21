@@ -41,6 +41,7 @@ package components.views.ArrangeView
 	import components.controller.serverCommands.AddEnvelope;
 	import components.controller.serverCommands.RemoveEnvelope;
 	import components.controller.serverCommands.RenameObject;
+	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.userDataCommands.SetCurvatureMode;
 	import components.controller.userDataCommands.SetEnvelopeLock;
 	import components.controller.userDataCommands.SetObjectSelection;
@@ -136,6 +137,7 @@ package components.views.ArrangeView
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( SetEnvelopeLock, onSetEnvelopeLock );
 			addUpdateMethod( SetCurvatureMode, onSetCurvatureMode );
+			addUpdateMethod( SetContainerActive, onSetContainerActive );
 
 			if( _blockID >= 0 )
 			{
@@ -189,6 +191,12 @@ package components.views.ArrangeView
 			}
 			
 			return model.getBlock( _blockID ).info; 
+		}
+
+		
+		override public function get color():uint
+		{
+			return model.getContainerColor( _blockID );
 		}
 		
 		
@@ -461,6 +469,16 @@ package components.views.ArrangeView
 		{
 			if( command.blockID == _blockID )
 			{
+				updateCurvatureMode();
+			}
+		}
+		
+		
+		private function onSetContainerActive( command:SetContainerActive ):void
+		{
+			if( model.isEqualOrAncestor( command.containerID, _blockID ) )
+			{
+				updateEnvelopeLock();
 				updateCurvatureMode();
 			}
 		}
@@ -887,7 +905,7 @@ package components.views.ArrangeView
 			var track:Track = model.getTrackFromBlock( _blockID );
 			Assert.assertNotNull( track );
 			
-			_envelopeLockButton.setStyle( "color", track.trackUserData.color );
+			_envelopeLockButton.setStyle( "color", color );
 			_envelopeLockButton.setStyle( LockButtonSkin.glowOverrideStyleName, _envelopeLockOverride );
 			_envelopeLockButton.selected = isEnvelopeLock;
 			
@@ -903,7 +921,7 @@ package components.views.ArrangeView
 			var track:Track = model.getTrackFromBlock( _blockID );
 			Assert.assertNotNull( track );
 			
-			_curvatureModeButton.setStyle( "color", track.trackUserData.color );
+			_curvatureModeButton.setStyle( "color", color );
 			_curvatureModeButton.setStyle( CurveButtonSkin.glowOverrideStyleName, _curvatureModeOverride );
 			_curvatureModeButton.selected = isCurvatureMode;
 			

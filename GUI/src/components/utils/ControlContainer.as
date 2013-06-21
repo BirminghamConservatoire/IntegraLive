@@ -705,7 +705,7 @@ package components.utils
 							var floatValue:Number = Number( newValue );
 							if( isNaN( floatValue ) )
 							{
-								Assert.assertTrue( false );
+								Trace.error( "value from control can't convert to float", newValue ); 
 								return null;
 							}
 							
@@ -716,7 +716,7 @@ package components.utils
 							var intValue:int = Math.round( Number( newValue ) );					
 							if( isNaN( intValue ) )
 							{
-								Assert.assertTrue( false );
+								Trace.error( "value from control can't convert to int", newValue ); 
 								return null;
 							}
 		
@@ -727,7 +727,7 @@ package components.utils
 							var stringValue:String = String( newValue ); 
 							if( stringValue == null )
 							{
-								Assert.assertTrue( false );
+								Trace.error( "value from control can't convert to string", newValue ); 
 								return null;
 							}
 							_mapWidgetAttributeToValue[ widgetAttributeName ] = stringValue;
@@ -993,11 +993,11 @@ package components.utils
 							}
 							else
 							{
-								//number used directly in a number control - use ControlScaler 
-								
-								Assert.assertTrue( _mapWidgetAttributeToType[ widgetAttributeName ] == ControlAttributeType.NUMBER );
-
-								controlValues[ widgetAttributeName ] = ControlScaler.endpointValueToControlUnit( _mapWidgetAttributeToValue[ widgetAttributeName ], endpoint.controlInfo.stateInfo );
+								if(  _mapWidgetAttributeToType[ widgetAttributeName ] == ControlAttributeType.NUMBER )
+								{
+									//number used directly in a number control - use ControlScaler 
+									controlValues[ widgetAttributeName ] = ControlScaler.endpointValueToControlUnit( _mapWidgetAttributeToValue[ widgetAttributeName ], endpoint.controlInfo.stateInfo );
+								}
 							}
 							break;
 							

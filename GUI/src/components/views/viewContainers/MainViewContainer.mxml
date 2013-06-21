@@ -241,6 +241,17 @@
 						comboBoxStyle.setStyle( "selectionColor", comboSelectedBackgroundColor );
 						comboBoxStyle.setStyle( "alternatingItemColors", [ comboBackgroundColor, comboBackgroundColor ] ); 					
 					}
+
+					var menuStyle:CSSStyleDeclaration = FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration( "mx.controls.Menu" );
+					if( menuStyle )
+					{
+						menuStyle.setStyle( "color", comboTextColor );
+						menuStyle.setStyle( "textRollOverColor", comboTextColor );
+						menuStyle.setStyle( "textSelectedColor", comboTextColor );
+						menuStyle.setStyle( "rollOverColor", comboSelectedBackgroundColor );
+						menuStyle.setStyle( "selectionColor", comboSelectedBackgroundColor );
+						menuStyle.setStyle( "backgroundColor", comboBackgroundColor ); 					
+					}				
 				}
 
 				if( _isDisplayingPreferences )

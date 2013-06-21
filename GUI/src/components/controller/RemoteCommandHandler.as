@@ -137,12 +137,18 @@ package components.controller
 		
 		public function flushProcessQueue():void
 		{
+			if( _flushingProcessQueue ) return;
+			
+			_flushingProcessQueue = true;
+			
 			for each( var remoteSetCommand:QueuedRemoteSetCommand in _setCommandQueue )
 			{
 				IntegraController.singleInstance.processRemoteCommand( remoteSetCommand.response );
 			}
 			
-			clearSetCommandQueue();			
+			clearSetCommandQueue();
+			
+			_flushingProcessQueue = false;
 		}
 		
 		
@@ -478,6 +484,7 @@ package components.controller
 		
 		private var _setCommandQueue:Vector.<QueuedRemoteSetCommand> = new Vector.<QueuedRemoteSetCommand>;
 		private var _processQueueTimer:Timer = new Timer( 1, 1 );
+		private var _flushingProcessQueue:Boolean = false;
 
 		private static var _singleInstance:RemoteCommandHandler = null;
 		

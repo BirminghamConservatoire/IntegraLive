@@ -22,20 +22,22 @@
 package components.utils
 {
 	import flash.display.GradientType;
-	import flash.display.Graphics;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.filters.BevelFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
 	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
 	import mx.controls.Label;
+	import mx.controls.Menu;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
+	import mx.events.MenuEvent;
 	
 	import __AS3__.vec.Vector;
 	
@@ -43,6 +45,8 @@ package components.utils
 	import components.controlSDK.core.ControlManager;
 	import components.controlSDK.core.ControlNotificationSink;
 	import components.controller.IntegraController;
+	import components.controller.serverCommands.RemoveEnvelope;
+	import components.controller.serverCommands.RemoveScaledConnection;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.userDataCommands.ToggleLiveViewControl;
 	import components.model.Connection;
@@ -62,6 +66,7 @@ package components.utils
 	import components.model.userData.LiveViewControl;
 	import components.views.MouseCapture;
 	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.LockButtonSkin;
 	import components.views.Skins.MidiButtonSkin;
 	import components.views.Skins.TickButtonSkin;
 	import components.views.viewContainers.IntegraViewEvent;
@@ -106,7 +111,7 @@ package components.utils
 			_control.bottomPadding = bottomPadding;
 
 			_mapWidgetAttributeToType = _control.attributes;
-			
+
 			setControlBackgroundColors();
 			setControlForegroundColor();
 			setControlAttributeLabels();
@@ -426,12 +431,20 @@ package components.utils
 			{
 				if( !_padlock )
 				{
-					_padlock = new Canvas;
+					const size:Number = 12;
+					
+					_padlock = new Button;
+					_padlock.setStyle( "skin", LockButtonSkin );
+					_padlock.setStyle( "fillColor", 0x808080 );
+					_padlock.toggle = true;
+					_padlock.width = size;
+					_padlock.height = size;
 					addChild( _padlock );
+					_padlock.addEventListener( MouseEvent.CLICK, onClickPadlock );
 				}
 
 				_padlock.alpha = _padlockAlpha;
-				renderPadlock();
+				_padlock.selected = !_padlockOverride;
 				
 				buildPadlockInfo();
 			}
@@ -440,12 +453,70 @@ package components.utils
 				if( _padlock )
 				{
 					removeChild( _padlock );
+					_padlock.removeEventListener( MouseEvent.CLICK, onClickPadlock );
 					_padlock = null;
 				}
 				
 				_padlockInfo = null;				
 			}
         }
+		
+		
+		private function onClickPadlock( event:MouseEvent ):void
+		{
+			var menuData:Array = new Array;
+
+			var attributeToEndpointMap:Object = _widget.attributeToEndpointMap;
+
+			for each( var moduleAttributeName:String in attributeToEndpointMap )
+			{
+				var info:Object = new Object;
+				if( !isModuleAttributeWritable( moduleAttributeName, info ) )				
+				{
+					var menuItem:Object = new Object;
+					if( info.connectionSource is Envelope )
+					{
+						menuItem.label = "Delete Envelope";
+					}
+					else
+					{
+						var scaler:Scaler = ( info.connectionSource as Scaler );
+						Assert.assertNotNull( scaler );
+						var upstreamConnection:Connection = scaler.upstreamConnection;
+						var connectionFrom:String = getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName;
+						
+						menuItem.label = "Delete Routing from " + connectionFrom;
+					}
+					
+					menuItem.connectionSource = info.connectionSource;
+					menuData.push( menuItem );
+				}
+			}
+			
+			var menu:Menu = Menu.createMenu( null, menuData, true );
+			var padlockRect:Rectangle = _padlock.getRect( stage );
+			menu.show( padlockRect.right, padlockRect.top );
+			menu.addEventListener( MenuEvent.ITEM_CLICK, onClickPadlockMenuItem );
+			
+			callLater( updatePadlock );
+		}
+		
+		
+		private function onClickPadlockMenuItem( event:MenuEvent ):void
+		{
+			var connectionSource:IntegraDataObject = event.item.connectionSource as IntegraDataObject;
+			Assert.assertNotNull( connectionSource );
+			
+			if( connectionSource is Envelope )
+			{
+				_controller.processCommand( new RemoveEnvelope( connectionSource.id ) );
+			}
+			else
+			{
+				Assert.assertTrue( connectionSource is Scaler );
+				_controller.processCommand( new RemoveScaledConnection( connectionSource.id ) );
+			}
+		}
 		
 		
 		private function updateMidiLearnButton():void
@@ -1174,8 +1245,8 @@ package components.utils
 				
 				var moduleAttributeName:String = attributeToEndpointMap[ widgetAttributeName ];
 				
-				var explanation:Object = new Object;
-				if( isModuleAttributeWritable( moduleAttributeName, explanation ) )
+				var info:Object = new Object;
+				if( isModuleAttributeWritable( moduleAttributeName, info ) )
 				{
 					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = true;
 					_padlockAlpha = 0.3;		//display padlocks as semitransparent when only a subset of the control's attributes are readonly
@@ -1185,8 +1256,8 @@ package components.utils
 					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = _padlockOverride;
 					_shouldShowPadlock = true;
 
-					Assert.assertNotNull( explanation.value );
-					appendPadlockExplanation( explanation.value );
+					Assert.assertNotNull( info.explanation );
+					appendPadlockExplanation( info.explanation );
 				}
 			}
 			
@@ -1536,11 +1607,11 @@ package components.utils
 		}
 		
 		
-		private function isModuleAttributeWritable( moduleAttributeName:String, explanationForNonWritability:Object ):Boolean
+		private function isModuleAttributeWritable( moduleAttributeName:String, info:Object ):Boolean
 		{
-			//if the module attribute is not writable, this method sets explanationForNonWritability's <value> attribute to 
-			//a string containing an explanation for why the module attribute is not writable
-			Assert.assertNotNull( explanationForNonWritability );
+			//if the module attribute is not writable, this method sets:
+			//info.explanation to a string containing an explanation for why the module attribute is not writable 
+			//info.connectionSource type to the source of the connection 
 			
 			var moduleID:int = _module.id;
 			
@@ -1559,12 +1630,15 @@ package components.utils
 						continue;
 					}
 					
-					explanationForNonWritability.value = moduleAttributeName + " is controlled by ";
-					
+					info.explanation = moduleAttributeName + " is controlled by ";
+				
 					var connectionSource:IntegraDataObject = _model.getDataObjectByID( connection.sourceObjectID );
+					
+					info.connectionSource = connectionSource;
+					
 					if( connectionSource is Envelope )
 					{
-						explanationForNonWritability.value += "an envelope"; 
+						info.explanation += "an envelope"; 
 					}
 					else
 					{
@@ -1578,11 +1652,11 @@ package components.utils
 								continue;
 							}
 						
-							explanationForNonWritability.value += ( getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName );
+							info.explanation += ( getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName );
 						}
 						else
 						{
-							explanationForNonWritability.value += ( getRelativeDescription( connectionSource.id ) + connection.sourceAttributeName );
+							info.explanation += ( getRelativeDescription( connectionSource.id ) + connection.sourceAttributeName );
 						}
 					}
 
@@ -1761,7 +1835,7 @@ package components.utils
 		}		
 		
 		
-		private function renderPadlock():void
+		/*private function renderPadlock():void
 		{
 			Assert.assertNotNull( _padlock );
 			
@@ -1813,16 +1887,17 @@ package components.utils
 			
 			drawCurve( _padlock.graphics, curvePoints.slice( 0, 3 ) );
 			drawCurve( _padlock.graphics, curvePoints.slice( 3, 6 ) );			
-		}
+		}*/
 		
 		
+		/*
 		private function drawCurve( graphics:Graphics, curve:Vector.<Point> ):void
 		{
 			Assert.assertTrue( curve.length == 3 );
 			
 			graphics.moveTo( curve[ 0 ].x, curve[ 0 ].y );
 			graphics.curveTo( curve[ 1 ].x, curve[ 1 ].y, curve[ 2 ].x, curve[ 2 ].y );
-		}		
+		}		*/
 		
 		
 		private var _module:ModuleInstance;
@@ -1843,7 +1918,7 @@ package components.utils
 		private var _shouldShowPadlock:Boolean = false;
 		private var _padlockOverride:Boolean = false;
 		
-		private var _padlock:Canvas = null;
+		private var _padlock:Button = null;
 		private var _padlockExplanation:String = null; 
 		private var _padlockAlpha:Number = 0;
 		private var _mouseIsOver:Boolean = false;

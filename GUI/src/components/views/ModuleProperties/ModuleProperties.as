@@ -378,6 +378,7 @@ package components.views.ModuleProperties
 			{
 				if( control.isInMidiLearnMode )
 				{
+					control.endMidiLearnMode();
 					doMidiLearn( command.midiEndpoint, control.midiLearnEndpoint )
 				}
 			}

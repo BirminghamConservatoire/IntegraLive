@@ -138,6 +138,7 @@ package components.utils
 			addEventListener( Event.RESIZE, onResize );
 			addEventListener( MouseEvent.ROLL_OVER, onRollOver );
 			addEventListener( MouseEvent.ROLL_OUT, onRollOut );
+			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
 			
 			updateBevelFilter();
 			
@@ -151,19 +152,7 @@ package components.utils
 		public static function get marginSizeWithLabel():Point 		{ return marginSizeWithoutLabel.add( new Point( 0, controlLabelHeight ) ); }
 
 		public function get isInMidiLearnMode():Boolean				{ return _isInMidiLearnMode; }
-		
-		
-		public function get midiLearnEndpoint():String
-		{
-			//todo -  properly
-			for each( var endpointName:String in widget.attributeToEndpointMap )
-			{
-				return endpointName;
-			}
-			
-			Assert.assertTrue( false );
-			return null;
-		}
+		public function get midiLearnEndpoint():String				{ return _midiLearnEndpoint; }
 		
 		
 		public function get unlockedEndpoints():Vector.<EndpointDefinition>
@@ -180,6 +169,13 @@ package components.utils
 			}
 			
 			return unlockedEndpoints;
+		}
+		
+		
+		public function endMidiLearnMode():void
+		{
+			_isInMidiLearnMode = false;
+			_midiLearnButton.selected = false;
 		}
 		
 		
@@ -443,7 +439,7 @@ package components.utils
 					_padlock.addEventListener( MouseEvent.CLICK, onClickPadlock );
 				}
 
-				_padlock.alpha = _padlockAlpha;
+				_padlock.alpha = _isPadlockPartial ? 0.6 : 1;
 				_padlock.selected = !_padlockOverride;
 				
 				buildPadlockInfo();
@@ -468,37 +464,53 @@ package components.utils
 
 			var attributeToEndpointMap:Object = _widget.attributeToEndpointMap;
 
+			var hasMultipleAttributes:Boolean = ( Utilities.getNumberOfProperties( attributeToEndpointMap ) > 1 );
+			
 			for each( var moduleAttributeName:String in attributeToEndpointMap )
 			{
 				var info:Object = new Object;
 				if( !isModuleAttributeWritable( moduleAttributeName, info ) )				
 				{
-					var menuItem:Object = new Object;
-					if( info.connectionSource is Envelope )
+					var connectionSources:Vector.<IntegraDataObject> = info.connectionSources as Vector.<IntegraDataObject>;
+					Assert.assertNotNull( connectionSources );
+					for each( var connectionSource:IntegraDataObject in connectionSources )
 					{
-						menuItem.label = "Delete Envelope";
-					}
-					else
-					{
-						var scaler:Scaler = ( info.connectionSource as Scaler );
-						Assert.assertNotNull( scaler );
-						var upstreamConnection:Connection = scaler.upstreamConnection;
-						var connectionFrom:String = getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName;
+						var menuItem:Object = new Object;
+						if( connectionSource is Envelope )
+						{
+							menuItem.label = "Delete Envelope";
+							if( hasMultipleAttributes )
+							{
+								menuItem.label += " for " + moduleAttributeName;
+							}
+						}
+						else
+						{
+							var scaler:Scaler = ( connectionSource as Scaler );
+							Assert.assertNotNull( scaler );
+							var upstreamConnection:Connection = scaler.upstreamConnection;
+							var connectionFrom:String = getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName;
+							
+							menuItem.label = "Delete Routing from " + connectionFrom;
+							if( hasMultipleAttributes )
+							{
+								menuItem.label += " to " + moduleAttributeName;
+							}
+						}
 						
-						menuItem.label = "Delete Routing from " + connectionFrom;
+						menuItem.connectionSource = connectionSource;
+						menuData.push( menuItem );
 					}
-					
-					menuItem.connectionSource = info.connectionSource;
-					menuData.push( menuItem );
 				}
 			}
 			
-			var menu:Menu = Menu.createMenu( null, menuData, true );
+			if( _popupMenu ) _popupMenu.hide();
+			_popupMenu = Menu.createMenu( null, menuData, true );
 			var padlockRect:Rectangle = _padlock.getRect( stage );
-			menu.show( padlockRect.right, padlockRect.top );
-			menu.addEventListener( MenuEvent.ITEM_CLICK, onClickPadlockMenuItem );
+			_popupMenu.show( padlockRect.right, padlockRect.top );
+			_popupMenu.addEventListener( MenuEvent.ITEM_CLICK, onClickPadlockMenuItem );
 			
-			callLater( updatePadlock );
+			updatePadlock();
 		}
 		
 		
@@ -521,21 +533,25 @@ package components.utils
 		
 		private function updateMidiLearnButton():void
 		{
-			var shouldShowButton:Boolean = _hasMidiLearn && !_shouldShowPadlock;
+			var shouldShowButton:Boolean = _hasMidiLearn && ( !_shouldShowPadlock || _isPadlockPartial );
 			
-			if( shouldShowButton && !_midiLearnButton )
+			if( shouldShowButton )
 			{
-				_midiLearnButton = new Button;
-				_midiLearnButton.toggle = true;
-				_midiLearnButton.width = buttonSize;
-				_midiLearnButton.height = buttonSize;
-				_midiLearnButton.setStyle( "left", 1 );
-				_midiLearnButton.setStyle( "top", 1 );
-				_midiLearnButton.setStyle( "skin", MidiButtonSkin );
-				_midiLearnButton.setStyle( "color", _color );
-				_midiLearnButton.addEventListener( MouseEvent.CLICK, onMidiLearnButton );
-				_midiLearnButton.addEventListener( MouseEvent.DOUBLE_CLICK, onMidiLearnButton );
-				addElement( _midiLearnButton );
+				if( !_midiLearnButton )
+				{
+					_midiLearnButton = new Button;
+					_midiLearnButton.toggle = true;
+					_midiLearnButton.width = buttonSize;
+					_midiLearnButton.height = buttonSize;
+					_midiLearnButton.setStyle( "top", 1 );
+					_midiLearnButton.setStyle( "skin", MidiButtonSkin );
+					_midiLearnButton.setStyle( "color", _color );
+					_midiLearnButton.addEventListener( MouseEvent.CLICK, onMidiLearnButton );
+					_midiLearnButton.addEventListener( MouseEvent.DOUBLE_CLICK, onMidiLearnButton );
+					addElement( _midiLearnButton );
+				}				
+
+				_midiLearnButton.setStyle( "left", _shouldShowPadlock ? buttonSize + 4 : 1 );
 			}
 			
 			if( !shouldShowButton && _midiLearnButton )
@@ -868,8 +884,54 @@ package components.utils
 		
 		private function onMidiLearnButton( event:MouseEvent ):void
 		{
-			_isInMidiLearnMode = !_isInMidiLearnMode;
-			_midiLearnButton.selected = _isInMidiLearnMode;
+			if( _isInMidiLearnMode )
+			{
+				endMidiLearnMode();
+				return;
+			}
+
+			var unlockedEndpoints:Vector.<EndpointDefinition> = unlockedEndpoints;
+			
+			switch( unlockedEndpoints.length )
+			{
+				case 0:
+					Assert.assertTrue( false );
+					return;
+					
+				case 1:
+					_isInMidiLearnMode = true;
+					_midiLearnButton.selected = true;
+					_midiLearnEndpoint = unlockedEndpoints[ 0 ].name;
+					return;
+					
+				default:
+					
+					var menuData:Array = new Array;
+					
+					for each( var endpoint:EndpointDefinition in unlockedEndpoints )
+					{
+						var menuItem:Object = new Object;
+						menuItem.label = endpoint.label;
+						menuItem.endpointName = endpoint.name;
+						menuData.push( menuItem );
+					}	
+					
+					if( _popupMenu ) _popupMenu.hide();
+					var _popupMenu:Menu = Menu.createMenu( null, menuData, true );
+					var midiButtonRect:Rectangle = _midiLearnButton.getRect( stage );
+					_popupMenu.show( midiButtonRect.right, midiButtonRect.top );
+					_popupMenu.addEventListener( MenuEvent.ITEM_CLICK, onClickMidiLearnMenuItem );
+					_midiLearnButton.selected = false;
+					return;
+			}
+		}
+		
+		
+		private function onClickMidiLearnMenuItem( event:MenuEvent ):void
+		{
+			_isInMidiLearnMode = true;
+			_midiLearnButton.selected = true;
+			_midiLearnEndpoint = event.item.endpointName;
 		}
 
 		
@@ -1230,7 +1292,7 @@ package components.utils
 			_mapWidgetAttributeToWritableFlag = new Object;
 			_padlockExplanation = null;
 			_shouldShowPadlock = false;
-			_padlockAlpha = 1;
+			_isPadlockPartial = false;
 			
 			var attributeToEndpointMap:Object = _widget.attributeToEndpointMap;
 			
@@ -1249,7 +1311,7 @@ package components.utils
 				if( isModuleAttributeWritable( moduleAttributeName, info ) )
 				{
 					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = true;
-					_padlockAlpha = 0.3;		//display padlocks as semitransparent when only a subset of the control's attributes are readonly
+					_isPadlockPartial = true;
 				}
 				else
 				{
@@ -1260,6 +1322,8 @@ package components.utils
 					appendPadlockExplanation( info.explanation );
 				}
 			}
+			
+			if( !_shouldShowPadlock ) _isPadlockPartial = false;
 			
 			_control.setControlWritableFlags( _mapWidgetAttributeToWritableFlag ); 
 		}
@@ -1360,7 +1424,7 @@ package components.utils
 		{
 			if( _padlockExplanation )
 			{
-				_padlockExplanation += "\n";
+				_padlockExplanation += "\n\n";
 			}
 			else
 			{
@@ -1615,6 +1679,9 @@ package components.utils
 			
 			var moduleID:int = _module.id;
 			
+			var isWritable:Boolean = true;
+			var connectionSources:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>;
+			
 			//walk parent chain looking for connections that target this attribute
 			for( var container:IntegraContainer = _model.getBlockFromModuleInstance( moduleID ); container; container = _model.getParent( container.id ) as IntegraContainer )
 			{
@@ -1630,11 +1697,17 @@ package components.utils
 						continue;
 					}
 					
-					info.explanation = moduleAttributeName + " is controlled by ";
+					if( info.hasOwnProperty( "explanation" ) )
+					{
+						info.explanation += " and ";	
+					}
+					else
+					{
+						info.explanation = moduleAttributeName + " is controlled by ";
+						
+					}
 				
 					var connectionSource:IntegraDataObject = _model.getDataObjectByID( connection.sourceObjectID );
-					
-					info.connectionSource = connectionSource;
 					
 					if( connectionSource is Envelope )
 					{
@@ -1660,11 +1733,15 @@ package components.utils
 						}
 					}
 
-					return false;
+					connectionSources.push( connectionSource );
+					isWritable = false;
 				}
 			}
-			
-			return true;			
+
+			Assert.assertTrue( isWritable == ( connectionSources.length == 0 ) );
+			info.connectionSources = connectionSources;
+
+			return isWritable;
 		}
 		
 		
@@ -1721,7 +1798,14 @@ package components.utils
 			
 			_padlockInfo = new Info;
 			
-			_padlockInfo.title = "This control is locked";
+			if( _isPadlockPartial )
+			{
+				_padlockInfo.title = "This control is partially locked";	
+			}
+			else
+			{
+				_padlockInfo.title = "This control is locked";	
+			}
 
 			var markdown:String = "<!--" + _padlockExplanation + "-->" + _padlockExplanation;
 			
@@ -1782,6 +1866,12 @@ package components.utils
 				stage.removeEventListener( KeyboardEvent.KEY_UP, onKeyUp );
 				_addedStageKeyboardListeners = false;
 			}
+		}
+		
+		
+		private function onRemovedFromStage( event:Event ):void
+		{
+			if( _popupMenu ) _popupMenu.hide();
 		}
 		
 		
@@ -1920,7 +2010,7 @@ package components.utils
 		
 		private var _padlock:Button = null;
 		private var _padlockExplanation:String = null; 
-		private var _padlockAlpha:Number = 0;
+		private var _isPadlockPartial:Boolean = false;
 		private var _mouseIsOver:Boolean = false;
 		private var _addedStageKeyboardListeners:Boolean = false;
 		
@@ -1942,6 +2032,9 @@ package components.utils
 		private var _hasMidiLearn:Boolean = false;
 		private var _midiLearnButton:Button = null;
 		private var _isInMidiLearnMode:Boolean = false;
+		private var _midiLearnEndpoint:String = null;
+		
+		private var _popupMenu:Menu;
 
 		private static const topPadding:Number = 14;
 		private static const sidePadding:Number = 8;

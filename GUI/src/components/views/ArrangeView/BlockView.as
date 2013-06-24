@@ -787,22 +787,30 @@ package components.views.ArrangeView
 		}
 		
 		
-		private function onClickEnvelopeLockButton( event:MouseEvent ):void
+		private function toggleEnvelopeLock():void
 		{
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
-
+			
 			controller.processCommand( new SetEnvelopeLock( _blockID, !block.blockUserData.envelopeLock ) );
+		}
+
+		
+		private function onClickEnvelopeLockButton( event:MouseEvent ):void
+		{
+			toggleEnvelopeLock();
 		}
 
 		
 		private function onDoubleClickEnvelopeLockButton( event:MouseEvent ):void
 		{
+			toggleEnvelopeLock();
+
 			event.stopImmediatePropagation();
 		}
 
 		
-		private function onClickCurvatureModeButton( event:MouseEvent ):void
+		private function toggleCurvatureMode():void
 		{
 			var block:Block = model.getBlock( _blockID );
 			Assert.assertNotNull( block );
@@ -810,9 +818,16 @@ package components.views.ArrangeView
 			controller.processCommand( new SetCurvatureMode( _blockID, !block.blockUserData.curvatureMode ) );
 		}
 		
+		private function onClickCurvatureModeButton( event:MouseEvent ):void
+		{
+			toggleCurvatureMode();
+		}
+		
 		
 		private function onDoubleClickCurvatureModeButton( event:MouseEvent ):void
 		{
+			toggleCurvatureMode();
+			
 			event.stopImmediatePropagation();
 		}
 		

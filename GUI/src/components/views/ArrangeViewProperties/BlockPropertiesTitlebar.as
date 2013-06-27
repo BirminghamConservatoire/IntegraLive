@@ -23,6 +23,15 @@
 
 package components.views.ArrangeViewProperties
 {
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	
+	import mx.containers.HBox;
+	import mx.controls.Button;
+	import mx.controls.ComboBox;
+	import mx.controls.Label;
+	import mx.events.ListEvent;
+	
 	import components.controller.serverCommands.AddEnvelope;
 	import components.controller.serverCommands.LoadModule;
 	import components.controller.serverCommands.RemoveEnvelope;
@@ -33,25 +42,18 @@ package components.views.ArrangeViewProperties
 	import components.model.Connection;
 	import components.model.Envelope;
 	import components.model.Info;
+	import components.model.IntegraDataObject;
 	import components.model.ModuleInstance;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.views.InfoView.InfoMarkupForViews;
+	import components.utils.lockableComboBox.LockableComboBox;
 	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
 	
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	
 	import flexunit.framework.Assert;
-	
-	import mx.containers.HBox;
-	import mx.controls.Button;
-	import mx.controls.ComboBox;
-	import mx.controls.Label;
-	import mx.events.ListEvent;
 	
 	public class BlockPropertiesTitlebar extends IntegraView
 	{
@@ -73,10 +75,10 @@ package components.views.ArrangeViewProperties
 			_hbox.setStyle( "horizontalGap", 10 );
 			_hbox.setStyle( "verticalAlign", "middle" );
 			
-			_hbox.addElement( _envelopeLabel );
-			_hbox.addElement( _deleteEnvelopeButton );
+			_hbox.addChild( _envelopeLabel );
+			_hbox.addChild( _deleteEnvelopeButton );
 			
-			addElement( _hbox );
+			addChild( _hbox );
 			
 			_deleteEnvelopeButton.addEventListener( MouseEvent.CLICK, onDeleteEnvelope );
 			addEventListener( Event.RESIZE, onResize ); 
@@ -143,14 +145,8 @@ package components.views.ArrangeViewProperties
 				return;
 			}
 			
-			var connection:Connection = model.getConnection( command.connectionID );
-			Assert.assertNotNull( connection );
-			
-			if( block.envelopes.hasOwnProperty( connection.sourceObjectID ) )
-			{
-				updateModuleEnvelopeCombo();
-				updateAttributeEnvelopeCombo();
-			}
+			updateModuleEnvelopeCombo();
+			updateAttributeEnvelopeCombo();
 		}
 
 		
@@ -179,8 +175,7 @@ package components.views.ArrangeViewProperties
 			_envelopeModuleCombo.prompt = "<module>";
 			_envelopeModuleCombo.addEventListener( ListEvent.CHANGE, onChangeSelectedEnvelopeModule );
 			
-			//_hbox.addChildAt( _envelopeModuleCombo, _hbox.getChildIndex( _envelopeLabel ) + 1 ); // FL4U
-			_hbox.addElementAt( _envelopeModuleCombo, _hbox.getChildIndex( _envelopeLabel ) + 1 );
+			_hbox.addChildAt( _envelopeModuleCombo, _hbox.getChildIndex( _envelopeLabel ) + 1 ); 
 		} 
 
 
@@ -201,7 +196,7 @@ package components.views.ArrangeViewProperties
 			//when they are repopulated by simply assigning a new dataProvider 
 
 			Assert.assertNull( _envelopeEndpointCombo );
-			_envelopeEndpointCombo = new ComboBox;
+			_envelopeEndpointCombo = new LockableComboBox;
 			_envelopeEndpointCombo.rowCount = 10;
 			_envelopeEndpointCombo.height = height;
 			_envelopeEndpointCombo.prompt = "<attribute>";		
@@ -319,20 +314,41 @@ package components.views.ArrangeViewProperties
 					}
 				}
 				
-				comboData.push( endpoint.name ); 
+				var comboItem:Object = new Object;
+				comboItem.label = endpoint.name;
+				var upstreamObjects:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>;
+				if( model.isConnectionTarget( module.id, endpoint.name, upstreamObjects ) )
+				{
+					if( !containsAnEnvelope( upstreamObjects ) )
+					{
+						comboItem.locked = true;
+					}
+				}
+				
+				comboData.push( comboItem ); 
 			}
 			
 			var comboEnabled:Boolean = ( comboData.length > 0 );
 			
 			_envelopeEndpointCombo.visible = true;
 			_envelopeEndpointCombo.dataProvider = comboData;
-			_envelopeEndpointCombo.selectedIndex = selectedIndex;
+			_envelopeEndpointCombo.selectedIndexRegardlessOfLock = selectedIndex;
 			_envelopeEndpointCombo.enabled = comboEnabled;
 				
 			_deleteEnvelopeButton.visible = true;
 			_deleteEnvelopeButton.enabled = ( selectedEnvelope != null );
 		}
 		
+		
+		private function containsAnEnvelope( objects:Vector.<IntegraDataObject> ):Boolean
+		{
+			for each( var object:IntegraDataObject in objects )
+			{
+				if( object is Envelope ) return true;
+			}
+			
+			return false;
+		}
 		
 		private function onChangeSelectedEnvelopeModule( event:ListEvent ):void
 		{
@@ -353,7 +369,7 @@ package components.views.ArrangeViewProperties
 			Assert.assertNotNull( _envelopeModuleCombo.selectedItem );
 			
 			var moduleName:String = String( _envelopeModuleCombo.selectedItem );  
-			var attributeName:String = String( _envelopeEndpointCombo.selectedItem );
+			var attributeName:String = String( _envelopeEndpointCombo.selectedItem.label );
 			
 			var moduleID:int = model.getIDFromPathArray( model.getPathArrayFromID( block.id ).concat( moduleName ) );
 			Assert.assertTrue( moduleID >= 0 );
@@ -399,7 +415,7 @@ package components.views.ArrangeViewProperties
 		
 		private var _envelopeLabel:Label = new Label;
 		private var _envelopeModuleCombo:ComboBox = null;
-		private var _envelopeEndpointCombo:ComboBox = null;
+		private var _envelopeEndpointCombo:LockableComboBox = null;
 		private var _deleteEnvelopeButton:Button = new Button;
 	}
 }

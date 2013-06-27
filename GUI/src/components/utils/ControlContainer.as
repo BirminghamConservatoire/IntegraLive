@@ -468,11 +468,9 @@ package components.utils
 			
 			for each( var moduleAttributeName:String in attributeToEndpointMap )
 			{
-				var info:Object = new Object;
-				if( !isModuleAttributeWritable( moduleAttributeName, info ) )				
+				var connectionSources:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>; 
+				if( _model.isConnectionTarget( _module.id, moduleAttributeName, connectionSources ) )				
 				{
-					var connectionSources:Vector.<IntegraDataObject> = info.connectionSources as Vector.<IntegraDataObject>;
-					Assert.assertNotNull( connectionSources );
 					for each( var connectionSource:IntegraDataObject in connectionSources )
 					{
 						var menuItem:Object = new Object;
@@ -1307,19 +1305,18 @@ package components.utils
 				
 				var moduleAttributeName:String = attributeToEndpointMap[ widgetAttributeName ];
 				
-				var info:Object = new Object;
-				if( isModuleAttributeWritable( moduleAttributeName, info ) )
-				{
-					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = true;
-					_isPadlockPartial = true;
-				}
-				else
+				var upstreamObjects:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>;
+				if( _model.isConnectionTarget( _module.id, moduleAttributeName, upstreamObjects ) )
 				{
 					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = _padlockOverride;
 					_shouldShowPadlock = true;
-
-					Assert.assertNotNull( info.explanation );
-					appendPadlockExplanation( info.explanation );
+					
+					appendPadlockExplanation( getPadlockExplanation( moduleAttributeName, upstreamObjects ) );
+				}
+				else
+				{
+					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = true;
+					_isPadlockPartial = true;
 				}
 			}
 			
@@ -1417,6 +1414,53 @@ package components.utils
 			}
 			
 			_control.setControlAttributeLabels( attributeLabels );
+		}
+		
+		
+		private function getPadlockExplanation( endpointName:String, upstreamObjects:Vector.<IntegraDataObject> ):String
+		{
+			var first:Boolean = true;
+			var explanation:String;
+			
+			for each( var upstreamObject:IntegraDataObject in upstreamObjects )
+			{
+				if( first )
+				{
+					explanation = "* " + endpointName + " is controlled by ";
+					first = false;
+				}
+				else
+				{
+					explanation += " and ";
+				}
+				
+				if( upstreamObject is Envelope )
+				{
+					explanation += "an envelope"; 
+				}
+				else
+				{
+					if( upstreamObject is Scaler )
+					{
+						var scaler:Scaler = upstreamObject as Scaler;
+						var upstreamConnection:Connection = scaler.upstreamConnection;
+						
+						if( upstreamConnection.sourceObjectID < 0 || upstreamConnection.sourceAttributeName == null )
+						{
+							continue;
+						}
+						
+						explanation += ( getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName );
+					}
+					else
+					{
+						explanation += ( getRelativeDescription( upstreamObject.id ) );
+					}
+				}
+				
+			}
+			
+			return explanation;
 		}
 		
 		
@@ -1671,7 +1715,7 @@ package components.utils
 		}
 		
 		
-		private function isModuleAttributeWritable( moduleAttributeName:String, info:Object ):Boolean
+		/*private function isModuleAttributeWritable( moduleAttributeName:String, info:Object ):Boolean
 		{
 			//if the module attribute is not writable, this method sets:
 			//info.explanation to a string containing an explanation for why the module attribute is not writable 
@@ -1742,7 +1786,7 @@ package components.utils
 			info.connectionSources = connectionSources;
 
 			return isWritable;
-		}
+		}*/
 		
 		
 		private function getRelativeDescription( objectID:int ):String

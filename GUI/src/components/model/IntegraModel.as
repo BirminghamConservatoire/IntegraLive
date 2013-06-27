@@ -867,12 +867,12 @@ package components.model
 				return false;		//can't find modules or parent 
 			}
 
-			if( doesScaledConnectionExistInAncestorChain( sourceContainer, sourceObjectID, sourceAttributeName, targetObjectID, targetAttributeName ) )
+			if( doesScaledConnectionExistInAncestorChain( sourceContainer, sourceObjectID, sourceAttributeName, targetObjectID, targetAttributeName, existingScalerID ) )
 			{
 				return false;		//connection already exists
 			}
 
-			if( doesScaledConnectionExistInAncestorChain( targetContainer, sourceObjectID, sourceAttributeName, targetObjectID, targetAttributeName ) )
+			if( doesScaledConnectionExistInAncestorChain( targetContainer, sourceObjectID, sourceAttributeName, targetObjectID, targetAttributeName, existingScalerID ) )
 			{
 				return false;		//connection already exists
 			}
@@ -964,6 +964,39 @@ package components.model
 			}
 			
 			return false;
+		}
+		
+		
+		public function isConnectionTarget( objectID:int, endpointName:String, upstreamObjects:Vector.<IntegraDataObject> = null ):Boolean
+		{
+			var isConnectionTarget:Boolean = false;
+			
+			//walk parent chain looking for connections that target this attribute
+			for( var container:IntegraContainer = getParent( objectID ) as IntegraContainer; container; container = getParent( container.id ) as IntegraContainer )
+			{
+				for each( var connection:Connection in container.connections )
+				{
+					if( connection.targetObjectID != objectID || connection.targetAttributeName != endpointName )
+					{
+						continue;
+					}
+					
+					if( connection.sourceObjectID < 0 || connection.sourceAttributeName == null ) 
+					{
+						continue;
+					}
+					
+					if( upstreamObjects )
+					{
+						var connectionSource:IntegraDataObject = getDataObjectByID( connection.sourceObjectID );
+						upstreamObjects.push( connectionSource );
+					}
+					
+					isConnectionTarget = true;
+				}
+			}
+			
+			return isConnectionTarget;
 		}
 		
 
@@ -1440,10 +1473,15 @@ package components.model
 		}
 
 		
-		private function doesScaledConnectionExistInAncestorChain( container:IntegraContainer, sourceObjectID:int, sourceAttributeName:String, targetObjectID:int, targetAttributeName:String ):Boolean
+		private function doesScaledConnectionExistInAncestorChain( container:IntegraContainer, sourceObjectID:int, sourceAttributeName:String, targetObjectID:int, targetAttributeName:String, scalerIDToIgnore:int ):Boolean
 		{
 			for each( var existingScaler:Scaler in container.scalers )
 			{
+				if( existingScaler.id == scalerIDToIgnore )
+				{
+					continue;
+				}
+				
 				if( existingScaler.upstreamConnection.sourceObjectID == sourceObjectID && 
 					existingScaler.upstreamConnection.sourceAttributeName == sourceAttributeName &&
 					existingScaler.downstreamConnection.targetObjectID == targetObjectID && 
@@ -1456,7 +1494,7 @@ package components.model
 			var parentContainer:IntegraContainer = getParent( container.id ) as IntegraContainer;
 			if( parentContainer )
 			{
-				if( doesScaledConnectionExistInAncestorChain( parentContainer, sourceObjectID, sourceAttributeName, targetObjectID, targetAttributeName ) )
+				if( doesScaledConnectionExistInAncestorChain( parentContainer, sourceObjectID, sourceAttributeName, targetObjectID, targetAttributeName, scalerIDToIgnore ) )
 				{
 					return true;
 				}
@@ -1579,6 +1617,11 @@ package components.model
 				var connectionSourceID:int = scaler.upstreamConnection.sourceObjectID;
 				var connectionSourceAttributeName:String = scaler.upstreamConnection.sourceAttributeName;
 				 
+				if( connectionSourceID < 0 || connectionSourceAttributeName == null )
+				{
+					continue;
+				}
+				
 				if( connectionSourceID == targetObjectID && connectionSourceAttributeName == targetAttributeName )
 				{
 					return true;

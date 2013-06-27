@@ -48,7 +48,6 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
-	import components.controller.serverCommands.SwitchAllObjectVersions;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.serverCommands.SwitchObjectVersion;
 	import components.model.Connection;
@@ -61,6 +60,7 @@ package components.views.ArrangeViewProperties
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.lockableComboBox.LockableComboBox;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.CloseButtonSkin;
@@ -203,13 +203,7 @@ package components.views.ArrangeViewProperties
 
 		private function onConnectionRoutingChanged( command:SetConnectionRouting ):void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
-			Assert.assertNotNull( scaler );
-			
-			if( command.connectionID == scaler.upstreamConnection.id || command.connectionID == scaler.downstreamConnection.id )
-			{
-				updateAll();
-			}
+			updateAll();
 		}
 		
 		
@@ -341,12 +335,12 @@ package components.views.ArrangeViewProperties
 			var upstreamConnection:Connection = scaler.upstreamConnection;
 			var downstreamConnection:Connection = scaler.downstreamConnection;
 
-			populateEndpointCombo( _sourceEndpointCombo, upstreamConnection.sourceObjectID, upstreamConnection.sourceAttributeName, false );
-			populateEndpointCombo( _targetEndpointCombo, downstreamConnection.targetObjectID, downstreamConnection.targetAttributeName, true );
+			populateEndpointCombo( _sourceEndpointCombo, upstreamConnection.sourceObjectID, upstreamConnection.sourceAttributeName, false, scaler );
+			populateEndpointCombo( _targetEndpointCombo, downstreamConnection.targetObjectID, downstreamConnection.targetAttributeName, true, scaler );
 		}
 		
 		
-		private function populateEndpointCombo( combo:ComboBox, objectID:int, selectedEndpointName:String, isTarget:Boolean ):void
+		private function populateEndpointCombo( combo:LockableComboBox, objectID:int, selectedEndpointName:String, isTarget:Boolean, scaler:Scaler ):void
 		{
 			var endpointComboContents:Array = new Array;
 			var selectedIndex:int = -1;
@@ -370,13 +364,57 @@ package components.views.ArrangeViewProperties
 						selectedIndex = endpointComboContents.length; 
 					}
 					
-					endpointComboContents.push( endpoint.name );
+					var comboItem:Object = new Object;
+					comboItem.label = endpoint.name;
+					
+					//decorate combo item
+					if( isTarget )
+					{
+						//is target endpoint disabled?
+						if( !model.canSetScaledConnection( scaler.upstreamConnection.sourceObjectID, scaler.upstreamConnection.sourceAttributeName, objectID, endpoint.name, scaler.id ) )
+						{
+							comboItem.disabled = true;
+						}
+						else
+						{
+							//is target endpoint locked?
+							var upstreamObjects:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>; 
+							if( model.isConnectionTarget( objectID, endpoint.name, upstreamObjects ) )
+							{
+								if( containsAnythingOtherThan( upstreamObjects, scaler ) )
+								{
+									comboItem.locked = true;	
+								}
+							}
+						}
+					}
+					else
+					{
+						//is source endpoint disabled?
+						if( !model.canSetScaledConnection( objectID, endpoint.name, scaler.downstreamConnection.targetObjectID, scaler.downstreamConnection.targetAttributeName, scaler.id ) )
+						{
+							comboItem.disabled = true;
+						}
+					}
+					
+					endpointComboContents.push( comboItem );
 				} 
 			}
 			
 			combo.dataProvider = endpointComboContents;
-			combo.selectedIndex = selectedIndex;
+			combo.selectedIndexRegardlessOfLock = selectedIndex;
 			enableComponent( combo, ( endpointComboContents.length > 0 ) ); 
+		}
+		
+		
+		private function containsAnythingOtherThan( objects:Vector.<IntegraDataObject>, scaler:Scaler ):Boolean
+		{
+			for each( var object:IntegraDataObject in objects )
+			{
+				if( object != scaler ) return true;
+			}
+			
+			return false;
 		}
 		
 		
@@ -484,6 +522,11 @@ package components.views.ArrangeViewProperties
 			var objectID:int = -1;
 			var endpointName:String = null;
 			
+			if( event.target == _sourceObjectCombo ) 
+			{
+				_sourceEndpointCombo.selectedIndexRegardlessOfLock = -1;
+			}
+			
 			if( _sourceObjectCombo.selectedItem )
 			{
 				objectID = model.getIDFromPathString( containerPathString + "." + String( _sourceObjectCombo.selectedItem ) );
@@ -494,7 +537,7 @@ package components.views.ArrangeViewProperties
 					var object:IntegraDataObject = model.getDataObjectByID( objectID );
 					Assert.assertNotNull( object );
 					
-					var endpoint:EndpointDefinition = object.interfaceDefinition.getEndpointDefinition( String( _sourceEndpointCombo.selectedItem ) );
+					var endpoint:EndpointDefinition = object.interfaceDefinition.getEndpointDefinition( String( _sourceEndpointCombo.selectedItem.label ) );
 					if( endpoint )
 					{		
 						endpointName = endpoint.name;
@@ -530,6 +573,11 @@ package components.views.ArrangeViewProperties
 			var objectID:int = -1;
 			var endpointName:String = null;
 			
+			if( event.target == _targetObjectCombo ) 
+			{
+				_targetEndpointCombo.selectedIndexRegardlessOfLock = -1;
+			}
+			
 			if( _targetObjectCombo.selectedItem )
 			{
 				objectID = model.getIDFromPathString( containerPathString + "." + String( _targetObjectCombo.selectedItem ) );
@@ -540,7 +588,7 @@ package components.views.ArrangeViewProperties
 					var object:IntegraDataObject = model.getDataObjectByID( objectID );
 					Assert.assertNotNull( object );
 					
-					var endpoint:EndpointDefinition = object.interfaceDefinition.getEndpointDefinition( String( _targetEndpointCombo.selectedItem ) );
+					var endpoint:EndpointDefinition = object.interfaceDefinition.getEndpointDefinition( String( _targetEndpointCombo.selectedItem.label ) );
 					if( endpoint )
 					{		
 						endpointName = endpoint.name;
@@ -678,7 +726,7 @@ package components.views.ArrangeViewProperties
 		private var _hbox:HBox = new HBox;
 
 		private var _sourceObjectCombo:ComboBox = new ComboBox;
-		private var _sourceEndpointCombo:ComboBox = new ComboBox;
+		private var _sourceEndpointCombo:LockableComboBox = new LockableComboBox;
 
 		private var _inScaleMinimum:RoutingItemScalingControl = new RoutingItemScalingControl;
 		private var _inScaleMaximum:RoutingItemScalingControl = new RoutingItemScalingControl;
@@ -689,7 +737,7 @@ package components.views.ArrangeViewProperties
 		private var _outScaleMaximum:RoutingItemScalingControl = new RoutingItemScalingControl;
 
 		private var _targetObjectCombo:ComboBox = new ComboBox;
-		private var _targetEndpointCombo:ComboBox = new ComboBox;
+		private var _targetEndpointCombo:LockableComboBox = new LockableComboBox;
 
 		private var _deleteButton:Button = new Button;
 		

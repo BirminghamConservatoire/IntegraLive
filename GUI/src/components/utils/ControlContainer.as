@@ -431,6 +431,7 @@ package components.utils
 					
 					_padlock = new Button;
 					_padlock.setStyle( "skin", LockButtonSkin );
+					_padlock.setStyle( LockButtonSkin.lockedDuringClickStyleName, true );
 					_padlock.setStyle( "fillColor", 0x808080 );
 					_padlock.toggle = true;
 					_padlock.width = size;
@@ -1426,7 +1427,7 @@ package components.utils
 			{
 				if( first )
 				{
-					explanation = "* " + endpointName + " is controlled by ";
+					explanation = "\n* " + endpointName + " is controlled by ";
 					first = false;
 				}
 				else
@@ -1851,7 +1852,7 @@ package components.utils
 				_padlockInfo.title = "This control is locked";	
 			}
 
-			var markdown:String = "<!--" + _padlockExplanation + "-->" + _padlockExplanation;
+			var markdown:String = "<!--" + _padlockInfo.title + "-->" + _padlockExplanation;
 			
 			if( _padlockOverride )
 			{

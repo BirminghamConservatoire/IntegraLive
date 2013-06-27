@@ -60,6 +60,7 @@ package components.views.Skins
 				
 				case "overSkin":
 					glow = true;
+					isLocked = getStyle( lockedDuringClickStyleName );
 					break;
 				
 				case "downSkin":
@@ -76,6 +77,7 @@ package components.views.Skins
 					break;
 				
 				case "selectedDownSkin":
+					glow = isLocked = getStyle( lockedDuringClickStyleName );
 					break;
 				
 				case "disabledSkin":
@@ -152,6 +154,10 @@ package components.views.Skins
 		}
 		
 		
-		public static const glowOverrideStyleName:String = "glowOverride"; 
+		public static const glowOverrideStyleName:String = "glowOverride";
+
+		public static const lockedDuringClickStyleName:String = "lockedDuringClick";
+		
+		
 	}
 }

@@ -104,6 +104,19 @@ ntg_command_status ntg_uninstall_module( const GUID *module_id )
 }
 
 
+ntg_command_status ntg_load_module_in_development( const char *file_path )
+{
+    ntg_command_status status;
+
+    ntg_lock_server();
+    status = ntg_load_module_in_development_( server_, NTG_SOURCE_C_API, file_path );
+    ntg_unlock_server();
+
+    return status;
+}
+
+
+
 ntg_command_status ntg_rename(const ntg_path * path,
         const char *name)
 {

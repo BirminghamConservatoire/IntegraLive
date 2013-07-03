@@ -94,6 +94,9 @@
 
 #define HELPSTR_UNINSTALL_MODULE "Uninstall 3rd party module\n\\param <string module guid>\n\\return {'response':'module.uninstallmodule, remainsasembedded:<boolean>'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
+#define HELPSTR_LOAD_MODULE_IN_DEVELOPMENT "Temporarily install module-in-development - only for this lifecycle of libIntegra\n\\param <string module file path>\n\\return {'response':'module.loadmoduleindevelopment', moduleid:<string>, previousmoduleid:<string, optional>, previousremainsasembedded<boolean, optional>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+
+
 #define RESPONSE_LABEL      "response"
 #define NTG_NULL_STRING     "None"
 
@@ -338,6 +341,10 @@ static void *ntg_xmlrpc_interfaceinfo_callback(ntg_server * server,
 
 		case NTG_MODULE_EMBEDDED:
 			xmlrpc_temp = xmlrpc_string_new(env, "embedded" );
+			break;
+
+		case NTG_MODULE_IN_DEVELOPMENT:
+			xmlrpc_temp = xmlrpc_string_new(env, "indevelopment" );
 			break;
 
 		default:
@@ -1248,6 +1255,75 @@ static void *ntg_xmlrpc_install_module_callback( ntg_server * server, const int 
 }
 
 
+
+static void *ntg_xmlrpc_load_module_in_development_callback( ntg_server * server, const int argc, va_list argv)
+{
+    char *file_path;
+    char *module_id_string;
+    char *previous_module_id_string;
+    ntg_command_status command_status;
+    xmlrpc_env *env;
+	ntg_load_module_in_development_result *result;
+    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
+
+	assert( server );
+
+    env = va_arg( argv, xmlrpc_env * );
+    file_path = va_arg( argv, char * );
+
+    struct_ = xmlrpc_struct_new(env);
+    command_status = ntg_load_module_in_development_( server, NTG_SOURCE_XMLRPC_API, file_path );
+
+	if( command_status.error_code != NTG_NO_ERROR )
+	{
+        free( file_path );
+		return ntg_xmlrpc_error( env, command_status.error_code);
+	}
+
+	result = ( ntg_load_module_in_development_result * ) command_status.data;
+	assert( result );
+
+	module_id_string = ntg_guid_to_string( &result->module_id );
+
+	if( !ntg_guid_is_null( &result->previous_module_id ) )
+	{
+		previous_module_id_string = ntg_guid_to_string( &result->previous_module_id );
+	}
+	else
+	{
+		previous_module_id_string = NULL;
+	}
+
+    xmlrpc_temp = xmlrpc_string_new(env, "module.loadmoduleindevelopment");
+    xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+
+    xmlrpc_temp = xmlrpc_string_new(env, module_id_string );
+    xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+
+	if( previous_module_id_string )
+	{
+	    xmlrpc_temp = xmlrpc_string_new(env, previous_module_id_string );
+	    xmlrpc_struct_set_value(env, struct_, "previousmoduleid", xmlrpc_temp );
+	    xmlrpc_DECREF( xmlrpc_temp );
+
+		xmlrpc_temp = xmlrpc_bool_new(env, result->previous_remains_as_embedded );
+	    xmlrpc_struct_set_value(env, struct_, "previousremainsasembedded", xmlrpc_temp );
+	    xmlrpc_DECREF( xmlrpc_temp );
+
+		ntg_free( previous_module_id_string );
+	}
+
+    /* free out-of-place memory */
+	ntg_free( module_id_string );
+	ntg_free( result );
+    free( file_path );
+
+    return struct_;
+}
+
+
 static void *ntg_xmlrpc_install_embedded_module_callback( ntg_server * server, const int argc, va_list argv)
 {
     char *module_id_string;
@@ -1780,6 +1856,26 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module(xmlrpc_env * const env,
 }
 
 
+static xmlrpc_value *ntg_xmlrpc_load_module_in_development(xmlrpc_env * const env,
+        xmlrpc_value * const paramArrayP,
+        void *const userData)
+{
+    const char *file_name;
+    size_t len;
+
+    NTG_TRACE_VERBOSE("");
+
+    xmlrpc_decompose_value(env, paramArrayP, "(s#)", &file_name, &len);
+
+    if (env->fault_occurred)
+        return NULL;
+
+    return ntg_server_do_va(&ntg_xmlrpc_load_module_in_development_callback, 2, (void *)env, file_name );
+}
+
+
+
+
 static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
@@ -1960,6 +2056,9 @@ void *ntg_xmlrpc_server_run(void *portv)
     xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.uninstallmodule",
         &ntg_xmlrpc_uninstall_module, NULL, "S:s",
         HELPSTR_UNINSTALL_MODULE);
+    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.loadmoduleindevelopment",
+        &ntg_xmlrpc_load_module_in_development, NULL, "S:s",
+		HELPSTR_LOAD_MODULE_IN_DEVELOPMENT);
 
     xmlrpc_registry_set_shutdown(registryP, ntg_xmlrpc_shutdown, NULL );
 

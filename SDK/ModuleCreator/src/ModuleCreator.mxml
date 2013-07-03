@@ -71,7 +71,6 @@
 			import mx.core.INavigatorContent;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
-			import mx.events.MenuEvent;
 			import mx.managers.PopUpManager;
 			import mx.managers.ToolTipManager;
 			
@@ -131,6 +130,7 @@
 				
 				//create top-level menus
 				
+				var testMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Test" );
 				var bundlesMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Module Bundles" );
 				var fileMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "File" );
 				var helpMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), _menu.numItems, "Help" );
@@ -203,14 +203,19 @@
 				
 				//Bundles Menu
 				var createModuleBundle:NativeMenuItem = new NativeMenuItem( "Create Module Bundle..." );
-				createModuleBundle.addEventListener(Event.SELECT, _bundleMaker.createModuleBundle ); 
+				createModuleBundle.addEventListener( Event.SELECT, _bundleMaker.createModuleBundle ); 
 				bundlesMenu.submenu.addItem( createModuleBundle );				
 
 				var extractModuleBundle:NativeMenuItem = new NativeMenuItem( "Extract Contents From Module Bundle..." );
 				extractModuleBundle.addEventListener(Event.SELECT, _bundleMaker.extractModuleBundle ); 
 				bundlesMenu.submenu.addItem( extractModuleBundle );				
 				
+				//Test menu
+				var testInIntegraLive:NativeMenuItem = new NativeMenuItem( "Test in Integra Live" );
+				testInIntegraLive.addEventListener( Event.SELECT, onTestInIntegraLive );
+				testMenu.submenu.addItem( testInIntegraLive );
 				
+				//Help menu
 				var config:Config = Config.singleInstance;
 				var helpLinks:Vector.<String> = config.helpLinks;
 				for each( var helpLink:String in helpLinks )
@@ -425,7 +430,7 @@
 			{
 				if( _filename )
 				{
-					saveFile();
+					saveFile( _filename );
 				}
 				else
 				{
@@ -461,6 +466,25 @@
 				file.addEventListener( Event.SELECT, onSelectFileToSave );   				
 			}
 
+			
+			private function onTestInIntegraLive( event:Event ):void
+			{
+				doValidation( doTestInIntegraLive );
+			}
+			
+			
+			private function doTestInIntegraLive():void
+			{
+				regenerateModuleGuid();
+				
+				var directory:File = File.createTempDirectory();
+				var moduleFileName:String = directory.resolvePath( Globals.testingModuleFileName ).nativePath;
+				
+				saveFile( moduleFileName );
+				
+				new TestInIntegraLiveProcess( moduleFileName );
+			}
+			
 			
 			private function quit( event:Event ):void
 			{
@@ -530,9 +554,9 @@
 				
 				loadFile( filename );
 				
-				_moduleGuid = GUID.create();
 				_originGuid = GUID.create();
 				updateStatusBar();
+				regenerateModuleGuid();
 				
 				_interfaceInfo.templateImported();
 			}			
@@ -540,11 +564,11 @@
 			
 			private function onSelectFileToSave( event:Event ):void
 			{
-				_filename = event.target.nativePath;
+				_filename = ensureCorrectExtension( event.target.nativePath );
 
 				DirectoryStore.singleInstance.moduleDirectory = event.target.parent.nativePath;
 				
-				saveFile();
+				saveFile( _filename );
 			}
 			
 			
@@ -634,9 +658,10 @@
 				_widgetLayout.newFile();
 				_implementation.newFile();
 				
-				_moduleGuid = GUID.create();
 				_originGuid = GUID.create();
 				updateStatusBar();
+				
+				regenerateModuleGuid();
 					
 				interfaceChanged = false;
 				
@@ -686,10 +711,9 @@
 			}
 			
 			
-			private function saveFile():void
+			private function saveFile( filename:String ):void
 			{
-				Assert.assertNotNull( _filename );
-				_filename = ensureCorrectExtension( _filename );
+				Assert.assertNotNull( filename );
 				
 				var zipFile:FZip = new FZip();
 				
@@ -697,7 +721,7 @@
 
 				_implementation.storeImplementation( zipFile, Globals.moduleImplementationDirectoryName );
 				
-				var outputFile:File = new File( _filename );
+				var outputFile:File = new File( filename );
 				var outputFileStream:FileStream = new FileStream();
 				outputFileStream.open( outputFile, FileMode.WRITE );
 				zipFile.serialize( outputFileStream );
@@ -826,6 +850,8 @@
 			{
 				_implementation.shutdown();
 				
+				TestInIntegraLiveProcess.deleteTestModuleDirectories();
+				
 				callLater( NativeApplication.nativeApplication.exit, [ 0 ] );
 			}
 	
@@ -833,10 +859,17 @@
 			private function onInterfaceModified( event:Event ):void
 			{
 				_interfaceInfo.updateModificationStamp();
-				_moduleGuid = GUID.create();
-				updateStatusBar();
+				
+				regenerateModuleGuid();
 				
 				interfaceChanged = true;
+			}
+			
+			
+			private function regenerateModuleGuid():void
+			{
+				_moduleGuid = GUID.create();
+				updateStatusBar();
 			}
 			
 			

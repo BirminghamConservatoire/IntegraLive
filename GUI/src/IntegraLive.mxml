@@ -512,6 +512,7 @@
 						case Utilities.moduleFileExtension:
 						case Utilities.bundleFileExtension:
 							InstallModules.installModules( [ _autoLoadFile ] );
+							_autoLoadFile = null;
 							break;
 						
 						default:
@@ -536,7 +537,7 @@
 				_controller.loadProject( _lastFilename );
 			}
 			
-
+			
 			private function displayProgressPopup( message:String = null ):void
 			{
 				Assert.assertFalse( _isDisplayingProgressPopup );
@@ -1329,6 +1330,7 @@
 	    private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
 	    private var _functionToExecuteAfterSave:Function = null;
 		private var _autoLoadFile:File;
+		private var _moduleInDevelopment:File = null
 
 		private var _menuHandlers:MenuHandlers = null;
 		private var _isKeyRepeat:Boolean = false;

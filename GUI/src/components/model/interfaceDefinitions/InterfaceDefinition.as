@@ -40,6 +40,7 @@ package components.model.interfaceDefinitions
 				case MODULE_SHIPPED_WITH_INTEGRA: 	return "Latest Official";
 				case MODULE_THIRD_PARTY:			return "Third Party";
 				case MODULE_EMBEDDED:				return "Embedded";
+				case MODULE_IN_DEVELOPMENT:			return "In Development";
 				default:							return "<unknown module source>";
 			}
 		}
@@ -156,5 +157,6 @@ package components.model.interfaceDefinitions
 		public static const MODULE_SHIPPED_WITH_INTEGRA:String = "shippedwithintegra";
 		public static const MODULE_THIRD_PARTY:String = "thirdparty";
 		public static const MODULE_EMBEDDED:String = "embedded";
+		public static const MODULE_IN_DEVELOPMENT:String = "indevelopment";
 	}
 }

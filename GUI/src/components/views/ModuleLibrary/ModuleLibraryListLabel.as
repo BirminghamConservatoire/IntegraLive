@@ -50,6 +50,7 @@ package components.views.ModuleLibrary
 				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return ModuleLibraryListEntry.shippedWithIntegraTint;
 				case InterfaceDefinition.MODULE_THIRD_PARTY:			return ModuleLibraryListEntry.thirdPartyTint;
 				case InterfaceDefinition.MODULE_EMBEDDED:				return ModuleLibraryListEntry.embeddedTint;
+				case InterfaceDefinition.MODULE_IN_DEVELOPMENT:			return ModuleLibraryListEntry.inDevelopmentTint;
 					
 				default:
 					Assert.assertTrue( false );
@@ -71,6 +72,9 @@ package components.views.ModuleLibrary
 				case InterfaceDefinition.MODULE_EMBEDDED:
 					return InfoMarkupForViews.instance.getInfoForView( "EmbeddedModules" );
 					
+				case InterfaceDefinition.MODULE_IN_DEVELOPMENT:
+					return InfoMarkupForViews.instance.getInfoForView( "InDevelopmentModules" );
+
 				default:
 					Assert.assertTrue( false );
 					return null;
@@ -85,6 +89,7 @@ package components.views.ModuleLibrary
 				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return "LATEST OFFICIAL";
 				case InterfaceDefinition.MODULE_THIRD_PARTY:			return "THIRD PARTY";
 				case InterfaceDefinition.MODULE_EMBEDDED:				return "EMBEDDED";
+				case InterfaceDefinition.MODULE_IN_DEVELOPMENT:			return "IN DEVELOPMENT";
 				
 				default:
 					Assert.assertTrue( false );

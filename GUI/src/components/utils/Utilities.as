@@ -87,7 +87,13 @@ package components.utils
 		}
 		
 		
-		public static function handlePlatformIndependantMenuModifiers( menuItem:Object ):Array
+		static public function get moduleInDevelopmentFileName():String
+		{
+			return "ModuleInDevelopment-4df2725b-f0ba-400a-9899-5f14632dd550." + moduleFileExtension;
+		}
+		
+		
+		static public function handlePlatformIndependantMenuModifiers( menuItem:Object ):Array
 		{
 			var result:Array = new Array;
 

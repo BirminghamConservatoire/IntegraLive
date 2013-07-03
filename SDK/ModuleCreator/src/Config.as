@@ -50,6 +50,7 @@ package
 		public function get hostPath():String						{ return _hostPath; }
 		public function get fileViewerPath():String					{ return _fileViewerPath; }
 		public function get documentationPath():String				{ return _documentationPath; }
+		public function get integraLiveExecutable():File			{ return _integraLiveExecutable; } 
 		public function get hostArguments():Vector.<String>			{ return _hostArguments; }
 		public function get helpLinks():Vector.<String>				{ return _helpLinks; }
 		
@@ -124,6 +125,18 @@ package
 						{
 							trace( "can't find documentation directory", _documentationDirectory.nativePath );
 							_documentationDirectory = null;
+						}
+					}
+					
+					if( osSpecificPaths.hasOwnProperty( "integralivepath" ) )
+					{
+						var integraLivePath:String = osSpecificPaths.integralivepath;
+						applicationDirectory = File.applicationDirectory.nativePath; 
+						_integraLiveExecutable = new File( applicationDirectory ).resolvePath( integraLivePath );
+						if( !_integraLiveExecutable.exists )
+						{
+							trace( "can't find integralive executable", _integraLiveExecutable.nativePath );
+							_integraLiveExecutable = null;
 						}
 					}
 					
@@ -231,6 +244,8 @@ package
 
 		private var _documentationPath:String = "";
 		private var _documentationDirectory:File = null;
+
+		private var _integraLiveExecutable:File = null;
 		
 		private var _hostArguments:Vector.<String> = new Vector.<String>;
 		private var _helpLinks:Vector.<String> = new Vector.<String>;

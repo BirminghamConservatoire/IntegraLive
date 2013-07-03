@@ -450,6 +450,16 @@ LIBINTEGRA_API ntg_command_status ntg_install_embedded_module( const GUID *modul
 
 LIBINTEGRA_API ntg_command_status ntg_uninstall_module( const GUID *module_id );
 
+/** \brief load a 3rd party integra module from disk, as a 'module in development'
+ * \param *file_path: path to the integra-module file to load
+ * \return a struct of type ntg_command_status. If the function succeeded,
+ * this will contain the error_code NTG_NO_ERROR, and the data member will point to 
+ * a struct of type ntg_module_in_development_install_result.  This struct contains the member
+ * module_id (id of the loaded module).  Note: it is the caller's responsibility to free the
+ * ntg_module_in_development_install_result using ntg_free.
+ * \error possible return values for error status are given in integra_error.h *
+ * */
+LIBINTEGRA_API ntg_command_status ntg_load_module_in_development( const char *file_path );
 
 
 

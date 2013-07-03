@@ -44,6 +44,7 @@ typedef struct ntg_interface_ ntg_interface;
 typedef struct ntg_module_manager_ ntg_module_manager;
 typedef struct ntg_module_install_result_ ntg_module_install_result;
 typedef struct ntg_module_uninstall_result_ ntg_module_uninstall_result;
+typedef struct ntg_load_module_in_development_result_ ntg_load_module_in_development_result;
 
 struct ntg_module_manager_
 {
@@ -75,6 +76,14 @@ struct ntg_module_uninstall_result_
 };
 
 
+struct ntg_load_module_in_development_result_
+{
+	GUID module_id;
+	GUID previous_module_id;
+	bool previous_remains_as_embedded;
+};
+
+
 
 ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_root, const char *system_module_directory, const char *third_party_module_directory );
 void ntg_module_manager_free( ntg_module_manager *module_manager );
@@ -85,7 +94,7 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 ntg_error_code ntg_module_manager_install_module( ntg_module_manager *module_manager, const char *module_file, ntg_module_install_result *result );
 ntg_error_code ntg_module_manager_install_embedded_module( ntg_module_manager *module_manager, const GUID *module_id );
 ntg_error_code ntg_module_manager_uninstall_module( ntg_module_manager *module_manager, const GUID *module_id, ntg_module_uninstall_result *module_uninstall_result );
-
+ntg_error_code ntg_module_manager_load_module_in_development( ntg_module_manager *module_manager, const char *module_file, ntg_load_module_in_development_result *result );
 
 const ntg_list *ntg_module_id_list( const ntg_module_manager *module_manager );
 

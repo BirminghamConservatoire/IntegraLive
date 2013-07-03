@@ -108,7 +108,8 @@ typedef enum ntg_module_source_
 {
 	NTG_MODULE_SHIPPED_WITH_INTEGRA = 1,	
 	NTG_MODULE_3RD_PARTY = 2,
-	NTG_MODULE_EMBEDDED = 3
+	NTG_MODULE_EMBEDDED = 3,
+	NTG_MODULE_IN_DEVELOPMENT = 4
 
 } ntg_module_source;
 

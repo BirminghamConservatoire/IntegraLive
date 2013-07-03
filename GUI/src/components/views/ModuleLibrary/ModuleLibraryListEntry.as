@@ -59,6 +59,7 @@ package components.views.ModuleLibrary
 				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return shippedWithIntegraTint;
 				case InterfaceDefinition.MODULE_THIRD_PARTY:			return thirdPartyTint;
 				case InterfaceDefinition.MODULE_EMBEDDED:				return embeddedTint;
+				case InterfaceDefinition.MODULE_IN_DEVELOPMENT:			return inDevelopmentTint;
 					
 				default:
 					Assert.assertTrue( false );
@@ -81,7 +82,7 @@ package components.views.ModuleLibrary
 		public function get dragSource():DragSource
 		{
 			var interfaceDefinition:InterfaceDefinition = IntegraModel.singleInstance.getInterfaceDefinitionByModuleGuid( guid );
-			Assert.assertNotNull( interfaceDefinition );
+			if( !interfaceDefinition ) return null;
 			
 			var dragSource:DragSource = new DragSource();
 			dragSource.addData( interfaceDefinition, Utilities.getClassNameFromClass( InterfaceDefinition ) );
@@ -93,6 +94,7 @@ package components.views.ModuleLibrary
 		{
 			//first compare source
 			var sourcePriority:Object = new Object;
+			sourcePriority[ InterfaceDefinition.MODULE_IN_DEVELOPMENT ] = 3;
 			sourcePriority[ InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA ] = 2;
 			sourcePriority[ InterfaceDefinition.MODULE_THIRD_PARTY ] = 1;
 			sourcePriority[ InterfaceDefinition.MODULE_EMBEDDED ] = 0;
@@ -149,5 +151,6 @@ package components.views.ModuleLibrary
 		public static const shippedWithIntegraTint:uint = 0x000000;
 		public static const thirdPartyTint:uint = 0x000420;
 		public static const embeddedTint:uint = 0x100010;
+		public static const inDevelopmentTint:uint = 0x400000;
 	}
 }

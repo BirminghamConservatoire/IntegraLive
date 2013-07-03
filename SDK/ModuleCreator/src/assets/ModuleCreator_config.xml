@@ -1,7 +1,7 @@
 <modulecreatorconfig>
 
 	<!--  integradeveloper is an easter-egg tag which allows the use of 'core' and 'implemented in libIntegra' settings -->
-	 <integradeveloper/> 
+	<!--  <integradeveloper/>	 --> 
 
 	<!-- 		standard tags - these are presented in the combo box control as defaults						-->
 	<standardtags>
@@ -38,7 +38,7 @@
 			<hostpath>..\..\host\bin\pd.exe</hostpath>
 			<fileviewerpath>Windows\explorer.exe</fileviewerpath>
 			<documentspath>..\..\documentation</documentspath>
-
+			<integralivepath>..\..\gui\Integra Live.exe</integralivepath>
 		</windows>
 		
 		<!--			mac-specific paths												-->
@@ -48,6 +48,9 @@
 			<hostpath>./host/bin/pd_integra</hostpath>
 			<fileviewerpath>/usr/bin/open</fileviewerpath>
 			<documentspath>documentation</documentspath>
+			
+			<!-- TODO: proper IL executable path here									-->
+			<integralivepath>./Integra Live.app/etc</integralivepath>
 		</mac>
 	</paths>
 

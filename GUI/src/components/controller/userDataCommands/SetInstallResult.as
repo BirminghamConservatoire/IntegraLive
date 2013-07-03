@@ -47,17 +47,6 @@ package components.controller.userDataCommands
 		}
 		
 		
-		public override function preChain( model:IntegraModel, controller:IntegraController ):void
-		{
-			if( !model.project.projectUserData.viewMode.moduleManagerOpen )
-			{
-				var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
-				viewMode.moduleManagerOpen = true;
-				controller.processCommand( new SetViewMode( viewMode ) );
-			}
-		}
-		
-		
 		public override function getObjectsWhoseUserDataIsAffected( model:IntegraModel, results:Vector.<int> ):void 
 		{ 	
 		}		

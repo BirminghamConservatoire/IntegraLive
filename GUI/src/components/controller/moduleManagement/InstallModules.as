@@ -113,9 +113,17 @@ package components.controller.moduleManagement
 				}
 				
 				var methodCall:Object = new Object;
-				
-				methodCall.methodName = "module.installintegramodulefile";
-				methodCall.params = [ file.nativePath ];
+
+				if( isModuleInDevelopment( file ) )
+				{
+					methodCall.methodName = "module.loadmoduleindevelopment";
+					methodCall.params = [ file.nativePath ];
+				}
+				else
+				{
+					methodCall.methodName = "module.installintegramodulefile";
+					methodCall.params = [ file.nativePath ];
+				}
 				
 				methodCalls.push( methodCall );
 			}
@@ -139,11 +147,15 @@ package components.controller.moduleManagement
 			
 			var newModuleGuids:Array = [];
 			var previouslyEmbeddedModuleGuids:Array = [];
+			var previouslyInDevelopmentModuleGuids:Array = [];
+			var removedModuleGuids:Array = [];
+			
+			var installedModuleInDevelopment:Boolean = false;
+
 			
 			for( var i:int = 0; i < response.length; i++ )
 			{
-				_resultsString += "\n* ";
-				_resultsString += _fileTitles[ i ];
+				_resultsString += "\n* " + _fileTitles[ i ];
 					
 				var responseNode:Object = response[ i ][ 0 ];
 				
@@ -158,8 +170,24 @@ package components.controller.moduleManagement
 						{
 							newModuleGuids.push( responseNode.moduleid );
 						}
-						_resultsString += " installed OK";  
+
+						break;
 					
+					case "module.loadmoduleindevelopment":
+						newModuleGuids.push( responseNode.moduleid );
+						installedModuleInDevelopment = true;
+						if( responseNode.hasOwnProperty( "previousmoduleid" ) )
+						{
+							if( responseNode.previousremainsasembedded )
+							{
+								previouslyInDevelopmentModuleGuids.push( responseNode.previousmoduleid );
+							}
+							else
+							{
+								removedModuleGuids.push( responseNode.previousmoduleid );
+							}
+						}
+						
 						break;
 					
 					case "error":
@@ -167,14 +195,21 @@ package components.controller.moduleManagement
 						_resultsString += " " + responseNode.errortext;
 						break;
 
-					case "default":
+					default:
 						Trace.error( "unexpected response", responseNode.response );
 						_resultsString += " unexpected response from server";
 						break;
 				}
 			}
 			
+			if( installedModuleInDevelopment )
+			{
+				_resultsString = "##Loaded an in-development module";
+			}
+			
+			IntegraModel.singleInstance.removeInterfaceDefinitions( removedModuleGuids );
 			IntegraModel.singleInstance.handleModuleSourcesChanged( previouslyEmbeddedModuleGuids, InterfaceDefinition.MODULE_EMBEDDED, InterfaceDefinition.MODULE_THIRD_PARTY );
+			IntegraModel.singleInstance.handleModuleSourcesChanged( previouslyInDevelopmentModuleGuids, InterfaceDefinition.MODULE_IN_DEVELOPMENT, InterfaceDefinition.MODULE_EMBEDDED );
 
 			if( newModuleGuids.length > 0 )
 			{
@@ -310,6 +345,12 @@ package components.controller.moduleManagement
 			{
 				file.deleteFile();
 			}
+		}
+		
+		
+		private function isModuleInDevelopment( file:File ):Boolean
+		{
+			return ( file.name == Utilities.moduleInDevelopmentFileName );
 		}
 		
 

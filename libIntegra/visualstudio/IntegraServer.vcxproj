@@ -79,8 +79,8 @@
       </Message>
       <Command>call versioning/StampVer.bat ../../build/Debug/Server/IntegraServer.exe
 call copyDependenciesToDebug.bat
-rem call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
-rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\ModuleCreator
+call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
+call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\ModuleCreator
 </Command>
     </PostBuildEvent>
     <CustomBuildStep>

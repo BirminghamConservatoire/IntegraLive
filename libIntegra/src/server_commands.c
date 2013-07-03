@@ -532,6 +532,35 @@ ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source
 }
 
 
+ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_command_source cmd_source, const char *file_path )
+{
+    ntg_error_code error_code = NTG_NO_ERROR;
+    ntg_command_status command_status;
+	ntg_load_module_in_development_result *result;
+
+	assert( server && file_path );
+	NTG_TRACE_PROGRESS( file_path );
+
+	NTG_COMMAND_STATUS_INIT
+
+	result = ntg_malloc( sizeof( ntg_load_module_in_development_result ) );
+
+	error_code = ntg_module_manager_load_module_in_development( server->module_manager, file_path, result );
+
+	if( error_code == NTG_NO_ERROR )
+	{
+		command_status.data = result;
+	}
+	else
+	{
+		ntg_free( result );
+	}
+
+	NTG_RETURN_COMMAND_STATUS
+}
+
+
+
 ntg_command_status ntg_rename_(ntg_server *server,
         ntg_command_source cmd_source,
         const ntg_path *path,

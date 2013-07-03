@@ -84,6 +84,7 @@
 			import components.controller.userDataCommands.PollForUpgradableModules;
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetContrast;
+			import components.controller.userDataCommands.SetInstallResult;
 			import components.controller.userDataCommands.SetViewMode;
 			import components.controller.userDataCommands.ShowInfoView;
 			import components.model.Project;
@@ -269,7 +270,7 @@
 					_upgradeDialog.onStyleChanged( style );	
 				}
 				
-				_upgradeReport.styleChanged( style );
+				_reportView.styleChanged( style );
 			}
 	
 	
@@ -295,6 +296,7 @@
 				addUpdateMethod( ShowInfoView, onInfoViewShow );
 				addUpdateMethod( PollForUpgradableModules, onPollForUpgradableModules );
 				addUpdateMethod( UpgradeModules, onUpgradeModules );
+				addUpdateMethod( SetInstallResult, onInstallResult );
 				
 				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER, onModuleGraphTransitionTimer );
 				_moduleGraphTransitionTimer.addEventListener( TimerEvent.TIMER_COMPLETE, onModuleGraphTransitionComplete );
@@ -381,7 +383,13 @@
 			{
 				var infoGenerator:ModuleManagementInfoGenerator = new ModuleManagementInfoGenerator();
 				var upgradeReportMarkdown:String = infoGenerator.getUpgradeReport( command.upgradedObjectIDs, command.upgradedModuleGuids, command.searchObjectID );
-				_upgradeReport.displayReport( "Module Upgrade Report:", upgradeReportMarkdown, this );
+				_reportView.displayReport( "Module Upgrade Report:", upgradeReportMarkdown, this );
+			}
+			
+			
+			private function onInstallResult( command:SetInstallResult ):void
+			{
+				_reportView.displayReport( "Installation Report:", command.installResult, this );
 			}
 			
 			
@@ -719,7 +727,7 @@
 			private const _moduleGraphTransitionDelay:Number = 50;
 			private const _moduleGraphTransitionDuration:Number = 300;
 			
-			private var _upgradeReport:ModuleManagerReport = new ModuleManagerReport;
+			private var _reportView:ModuleManagerReport = new ModuleManagerReport;
 			
 		]]>
 	</fx:Script>					

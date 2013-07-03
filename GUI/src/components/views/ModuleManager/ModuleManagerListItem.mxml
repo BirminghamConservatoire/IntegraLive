@@ -275,6 +275,7 @@
 					case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	return ModuleLibraryListEntry.shippedWithIntegraTint;
 					case InterfaceDefinition.MODULE_THIRD_PARTY:			return ModuleLibraryListEntry.thirdPartyTint;
 					case InterfaceDefinition.MODULE_EMBEDDED:				return ModuleLibraryListEntry.embeddedTint;
+					case InterfaceDefinition.MODULE_IN_DEVELOPMENT:			return ModuleLibraryListEntry.inDevelopmentTint;
 						
 					default:
 						Assert.assertTrue( false );

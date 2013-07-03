@@ -18,7 +18,7 @@
 				<mx:ComboBox id="_patchFileName"
 							  editable="false" 
 							  width="{Globals.propertyColumnWidth()}" change="onChangePatchFileName()"/>
-				<mx:Button id="_editPatchInPD" label="Edit" click="onClickEditPatchInPD()"/>
+				<mx:Button id="_editPatchInPD" label="Edit in PD" click="onClickEditPatchInPD()"/>
 			</mx:HBox>
 			<mx:HBox styleName="internalPadding" height="100%">
 				<mx:Label text="Dependencies" width="{Globals.labelColumnWidth()}" textAlign="right"/>

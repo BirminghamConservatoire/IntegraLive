@@ -28,12 +28,10 @@ package components.views.ModuleManager
 	import mx.controls.Button;
 	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
-	import mx.managers.PopUpManager;
 	
 	import components.controller.moduleManagement.InstallEmbeddedModules;
 	import components.controller.moduleManagement.InstallModules;
 	import components.controller.moduleManagement.UninstallModules;
-	import components.controller.userDataCommands.SetInstallResult;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.InterfaceInfo;
@@ -55,8 +53,6 @@ package components.views.ModuleManager
 			verticalScrollPolicy = ScrollPolicy.OFF;    
 
 			addEventListener( Event.RESIZE, onResize );
-
-			addUpdateMethod( SetInstallResult, onInstallResult );
 
 			addChild( _3rdPartyModulesLabel );
 			addChild( _embeddedModulesLabel );
@@ -156,8 +152,6 @@ package components.views.ModuleManager
 				_3rdPartyModulesLabel.setStyle( "color", _labelColor );
 				_embeddedModulesLabel.setStyle( "color", _labelColor );
 			}
-			
-			_installationReport.styleChanged( style );	
 		}
 		
 		
@@ -238,11 +232,6 @@ package components.views.ModuleManager
 			_info.y = rightPane.y;
 			_info.width = rightPane.width;
 			_info.height = rightPane.height;
-			
-			if( _installationReport.parent )
-			{
-				PopUpManager.centerPopUp( _installationReport );
-			}
 		}
 		
 		
@@ -357,12 +346,6 @@ package components.views.ModuleManager
 		}
 		
 		
-		private function onInstallResult( event:SetInstallResult ):void
-		{
-			_installationReport.displayReport( "Installation Report:", event.installResult, this );
-		}
-		
-		
 		private function updateInfo():void
 		{
 			var markdown:String = null;
@@ -430,8 +413,6 @@ package components.views.ModuleManager
 		private var _installEmbeddedButton:Button = new Button;
 
 		private var _info:ModuleInfo = new ModuleInfo;
-		
-		private var _installationReport:ModuleManagerReport = new ModuleManagerReport;
 		
 		private var _labelColor:uint;
 	}

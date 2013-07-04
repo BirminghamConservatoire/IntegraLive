@@ -452,7 +452,7 @@ char *ntg_get_top_level_node_name( const char *filename )
 	if( last_slash ) index_after_last_slash = ( last_slash + 1 - filename );
 	if( last_backslash ) index_after_last_backslash = ( last_backslash + 1 - filename );
 
-	name = ntg_strdup( filename + max( index_after_last_slash, index_after_last_backslash ) );
+	name = ntg_strdup( filename + MAX( index_after_last_slash, index_after_last_backslash ) );
 
 	/* strip extension */
 	index_of_extension = strlen( name ) - strlen( NTG_FILE_SUFFIX ) - 1;

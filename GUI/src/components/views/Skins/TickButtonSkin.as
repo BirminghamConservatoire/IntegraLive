@@ -43,9 +43,13 @@ package components.views.Skins
 			var glow:Boolean = false;
 			var glowStrength:int = 2;
 
+			//treat icons names as skin names in order to reuse skin for both icons and button skins
+			var name:String = this.name.replace( /\Icon/g, "Skin" );
+			
 			switch( name )
 			{
 				case "skin":
+				case "icon":
 					break;
 				
 				case "upSkin":

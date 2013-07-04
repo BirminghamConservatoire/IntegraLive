@@ -42,7 +42,7 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 	
 		<!-- 		arguments to be passed into host executable on startup							-->
 		<hostargs>
-	  		<hostarg>-nogui</hostarg>		   
+	   		<hostarg>-nogui</hostarg>				   
 			<hostarg>-noprefs</hostarg>
 			<hostarg>Integra_Host.pd</hostarg>
 		</hostargs>

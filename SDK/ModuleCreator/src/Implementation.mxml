@@ -71,6 +71,8 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			
 			import deng.fzip.FZip;
 			import deng.fzip.FZipFile;
@@ -873,12 +875,32 @@
 			
 			private function onClickDeleteUnusedFiles():void
 			{
-				var unusedFiles:Array = _unusedFiles.dataProvider.source;
-
-				deleteUnusedFiles( unusedFiles );
+				const maxFileListStringLength:int = 400;
 				
-				scanWorkingDirectory();
-				interfaceChanged();
+				var fileListString:String = buildUnusedFilesString( _unusedFiles.dataProvider.source );
+				if( fileListString.length > maxFileListStringLength )
+				{
+					fileListString = fileListString.substr( 0, maxFileListStringLength );
+					fileListString = fileListString.substr( 0, fileListString.lastIndexOf( "\n" ) );
+					fileListString += "\n...\n<more files>\n";
+				}
+				
+				
+				Alert.show( "The following files will be deleted:\n\n" + fileListString + "\nAre you sure?", "Delete Unused Files", Alert.OK | Alert.CANCEL, this, onCloseDeleteUnusedFileDialog ); 
+			}
+			
+			
+			private function onCloseDeleteUnusedFileDialog( event:CloseEvent ):void
+			{
+				if( event.detail == Alert.OK )
+				{
+					var unusedFiles:Array = _unusedFiles.dataProvider.source;
+
+					deleteUnusedFiles( unusedFiles );
+					
+					scanWorkingDirectory();
+					interfaceChanged();					
+				}
 			}
 			
 			
@@ -891,7 +913,10 @@
 						var file:File = unusedFileItem.file as File;
 						Assert.assertNotNull( file );
 						
-						file.deleteFile();
+						if( file.exists && !file.isDirectory )
+						{
+							file.deleteFile();
+						}
 					}
 					
 					if( unusedFileItem.hasOwnProperty( "children" ) )
@@ -902,6 +927,36 @@
 						deleteUnusedFiles( children );
 					}
 				}
+			}
+			
+			
+			private function buildUnusedFilesString( unusedFileItems:Array ):String
+			{
+				var string:String = "";
+				
+				for each( var unusedFileItem:Object in unusedFileItems )
+				{
+					if( unusedFileItem.hasOwnProperty( "file" ) )
+					{
+						var file:File = unusedFileItem.file as File;
+						Assert.assertNotNull( file );
+			
+						if( file.exists && !file.isDirectory )
+						{
+							string += file.nativePath.substr( workingDirectory.nativePath.length + 1 ) + "\n";
+						}
+					}
+					
+					if( unusedFileItem.hasOwnProperty( "children" ) )
+					{
+						var children:Array = unusedFileItem.children as Array;
+						Assert.assertNotNull( children );
+						
+						string += buildUnusedFilesString( children );
+					}
+				}				
+				
+				return string;
 			}
 			
 

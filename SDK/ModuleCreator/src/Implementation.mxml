@@ -46,6 +46,10 @@
 							 showDataTips="true"
 							 defaultLeafIcon="{null}"
 							 width="{Globals.propertyColumnWidth()}"/>
+					<mx:Button id="_deleteUnusedFilesButton"
+							   label="Delete Unused Files"
+							   click="{onClickDeleteUnusedFiles()}"
+							   width="{Globals.propertyColumnWidth()}"/>
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label id="_oversizedFilesLabel" text="Oversized Files" width="{Globals.labelColumnWidth()}" textAlign="center"/>
@@ -306,6 +310,7 @@
 				var oversizedFileData:Array = getOversizedFiles( workingDirectory );
 				
 				_unusedFiles.dataProvider = unusedFileData;
+				
 				_oversizedFiles.dataProvider = oversizedFileData;
 				
 				expandAllItems( _unusedFiles );   
@@ -582,6 +587,7 @@
 						{
 							var fileItem:Object = new Object;
 							fileItem.label = file.name;
+							fileItem.file = file;
 							results.push( fileItem );
 						}
 					}
@@ -719,6 +725,7 @@
 				
 				_unusedFiles.visible = hasTreeContent( _unusedFiles );
 				_unusedFilesLabel.visible = hasTreeContent( _unusedFiles );
+				_deleteUnusedFilesButton.visible = hasTreeContent( _unusedFiles );
 				
 				_oversizedFiles.visible = hasTreeContent( _oversizedFiles );
 				_oversizedFilesLabel.visible = hasTreeContent( _oversizedFiles );
@@ -861,7 +868,41 @@
 			{
 				_hostStarter.startHost( workingDirectory.resolvePath( _selectedPatchName ), _endpoints );
 				interfaceChanged();
-			}			
+			}		
+			
+			
+			private function onClickDeleteUnusedFiles():void
+			{
+				var unusedFiles:Array = _unusedFiles.dataProvider.source;
+
+				deleteUnusedFiles( unusedFiles );
+				
+				scanWorkingDirectory();
+				interfaceChanged();
+			}
+			
+			
+			private function deleteUnusedFiles( unusedFileItems:Array ):void
+			{
+				for each( var unusedFileItem:Object in unusedFileItems )
+				{
+					if( unusedFileItem.hasOwnProperty( "file" ) )
+					{
+						var file:File = unusedFileItem.file as File;
+						Assert.assertNotNull( file );
+						
+						file.deleteFile();
+					}
+					
+					if( unusedFileItem.hasOwnProperty( "children" ) )
+					{
+						var children:Array = unusedFileItem.children as Array;
+						Assert.assertNotNull( children );
+						
+						deleteUnusedFiles( children );
+					}
+				}
+			}
 			
 
 			private var _endpoints:EndpointList = null;

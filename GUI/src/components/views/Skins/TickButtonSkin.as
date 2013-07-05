@@ -23,9 +23,10 @@
 package components.views.Skins
 {
 	import flash.filters.GlowFilter;
-	import flexunit.framework.Assert;
+	
 	import mx.skins.halo.ButtonSkin;
-
+	
+	import components.model.userData.ColorScheme;
 	
 	public class TickButtonSkin extends ButtonSkin
 	{
@@ -37,79 +38,59 @@ package components.views.Skins
 		override protected function updateDisplayList( unscaledWidth:Number, unscaledHeight:Number ):void
 		{
 			graphics.clear();
-
-			var edgeThickness:int = 1;
-			var isLit:Boolean = false;
-			var glow:Boolean = false;
-			var glowStrength:int = 2;
-
-			//treat icons names as skin names in order to reuse skin for both icons and button skins
-			var name:String = this.name.replace( /\Icon/g, "Skin" );
 			
-			switch( name )
+			var nameLower:String = name.toLowerCase();
+			
+			var over:Boolean = ( nameLower.indexOf( "over" ) >= 0 );
+			var selected:Boolean = ( nameLower.indexOf( "selected" ) >= 0 );
+			var down:Boolean = ( nameLower.indexOf( "down" ) >= 0 );
+			var disabled:Boolean = ( nameLower.indexOf( "disabled" ) >= 0 );
+
+			var borderColor:uint;
+			var selectedColor:uint;
+			
+			switch( getStyle( ColorScheme.STYLENAME ) )
 			{
-				case "skin":
-				case "icon":
-					break;
-				
-				case "upSkin":
-					break;
-					
-				case "overSkin":
-					edgeThickness = 2;
-					break;
-					
-				case "downSkin":
-					isLit = true;
-					glow = true;
-					break;
-					
-				case "selectedUpSkin":
-					isLit = true;
-					glow = true;
+				default:
+				case ColorScheme.LIGHT:
+					borderColor = 0x747474;
+					selectedColor = 0x313131;
 					break;
 
-				case "selectedOverSkin":
-					isLit = true;
-					glow = true;
-					glowStrength++;
-					break;
-					
-				case "selectedDownSkin":
-					edgeThickness = 2;
-					break;
-					
-				case "disabledSkin":
-				case "selectedDisabledSkin":
-				default:
-					Assert.assertTrue( false );
-					break;
-			}			
+				case ColorScheme.DARK:
+					borderColor = 0x8c8c8c;
+					selectedColor = 0xcfcfcf;
+				break;
+			}
 			
 			var color:uint = getStyle( "color" );
-			var radius:Number = Math.min( width, height ) / 2;
-
-			graphics.lineStyle( edgeThickness, isLit ? color : borderColor );
-
-			graphics.beginFill( color, isLit ? 1 : 0 );
+			if( color == 0 ) color = borderColor;
+			
+			var diameter:Number = Math.min( width, height );
+			var radius:Number = diameter / 2;
+			
+			graphics.lineStyle( 1, ( over || down ) ? selectedColor : borderColor, disabled ? 0.5 : 1 );
+			
+			graphics.beginFill( disabled ? borderColor : color, 0.2 );
 			graphics.drawCircle( radius, radius, radius );
 			graphics.endFill();
 			
 			//draw the tick
-			graphics.lineStyle( 2, borderColor );
-			graphics.moveTo( radius * 0.5, radius );
-			graphics.lineTo( radius, radius * 1.5 );
-			graphics.lineTo( radius * 1.5, radius * 0.5 );
-
+			if( selected )
+			{
+				graphics.lineStyle( 2, selectedColor );
+				graphics.moveTo( radius * 0.5, radius );
+				graphics.lineTo( radius, radius * 1.5 );
+				graphics.lineTo( radius * 1.5, radius * 0.5 );
+			}
+			
 			//update the glow
 			var filterArray:Array = new Array;
-			if( glow )
+			if( down )
 			{
-				filterArray.push( new GlowFilter( color, 0.6, 10, 10, glowStrength ) );
+				filterArray.push( new GlowFilter( color, 0.6, 10, 10, 3 ) );
 			}	
 			filters = filterArray;
 		}
-
-		private static const borderColor:uint = 0x505050;
 	}
 }

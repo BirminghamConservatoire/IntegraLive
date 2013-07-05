@@ -86,7 +86,7 @@ package components.utils
 			
 			//clamp to min/max to fix rounding errors
 			if( endpointValue < minimum ) endpointValue = minimum;
-			if( endpointValue > minimum ) endpointValue = maximum;
+			if( endpointValue > maximum ) endpointValue = maximum;
 			
 			return endpointValue;
 		}

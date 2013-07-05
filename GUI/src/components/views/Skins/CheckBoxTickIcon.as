@@ -22,6 +22,7 @@
  
 package components.views.Skins
 {
+	import flash.display.Graphics;
 	import flash.filters.GlowFilter;
 	
 	import mx.skins.halo.CheckBoxIcon;
@@ -35,6 +36,7 @@ package components.views.Skins
 		{
 			super();
 		}
+		
 		
 		override protected function updateDisplayList( unscaledWidth:Number, unscaledHeight:Number ):void
 		{
@@ -57,7 +59,7 @@ package components.views.Skins
 			var radius:Number = diameter / 2;
 			var xOffset:Number = width - diameter;
 
-			graphics.lineStyle( 1, ( over || down ) ? selectedColor : color, disabled ? 0.5 : 1, true );
+			graphics.lineStyle( 1, ( over || down ) ? selectedColor : color, disabled ? 0.5 : 1 );
 
 			graphics.beginFill( disabled ? color : backgroundColor, disabled ? 0.5 : 1 );
 			graphics.drawCircle( xOffset + radius, radius, radius );

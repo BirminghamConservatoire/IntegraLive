@@ -143,11 +143,6 @@
 			
 			public function retrieveImplementation( zipFile:FZip, implementationDirectory:String ):void
 			{
-				if( !hasImplementation )
-				{
-					return;
-				}
-				
 				clearWorkingDirectory();
 				var workingDirectory:File = workingDirectory;
 
@@ -334,6 +329,11 @@
 				var directoryContents:Array = searchDirectory.getDirectoryListing();
 				for each( var content:File in directoryContents )
 				{
+					if( content.isHidden )
+					{
+						continue;
+					}
+					
 					if( content.isDirectory )
 					{
 						buildDirectoryMap( content, content.name + "/", results );
@@ -354,6 +354,7 @@
 				for each( var file:File in directoryContents )
 				{
 					if( file.isDirectory ) continue;
+					if( file.isHidden ) continue;
 					
 					if( file.extension.toLowerCase() != _pdExtension ) continue;
 					
@@ -559,6 +560,11 @@
 				
 				for each( var file:File in searchDirectory.getDirectoryListing() )
 				{
+					if( file.isHidden ) 
+					{
+						continue;
+					}
+
 					if( file.isDirectory )
 					{
 						var directoryObjects:Array = getUnusedFiles( file, usedPdFileMap );
@@ -591,6 +597,11 @@
 				
 				for each( var file:File in searchDirectory.getDirectoryListing() )
 				{
+					if( file.isHidden )
+					{
+						continue;
+					}
+
 					if( file.isDirectory )
 					{
 						var directoryObjects:Array = getOversizedFiles( file );
@@ -624,6 +635,11 @@
 				var files:Array = branch.getDirectoryListing();
 				for each( var file:File in files )
 				{
+					if( file.isHidden )
+					{
+						continue;
+					}
+
 					var zipPath:String = outputDirectoryName + "/" + file.name;
 					
 					if( file.isDirectory )

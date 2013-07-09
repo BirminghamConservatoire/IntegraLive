@@ -209,6 +209,10 @@
 					var comboBackgroundColor:uint;
 					var comboSelectedBackgroundColor:uint;
 					
+					var checkBoxTextColor:uint;
+					var checkBoxSelectedTextColor:uint;
+					var checkBoxBackgroundColor:uint;
+					
 					switch( getStyle( ColorScheme.STYLENAME ) )
 					{
 						default:
@@ -219,6 +223,10 @@
 							comboTextColor = 0xcfcfcf;
 							comboBackgroundColor = 0x747474;
 							comboSelectedBackgroundColor = 0x848484;
+
+							checkBoxTextColor = 0x747474;
+							checkBoxSelectedTextColor = 0x313131;
+							checkBoxBackgroundColor = 0xffffff;
 							
 							break;
 							
@@ -229,6 +237,11 @@
 							comboTextColor = 0x313131;
 							comboBackgroundColor = 0x8c8c8c;
 							comboSelectedBackgroundColor = 0x7c7c7c;
+
+							checkBoxTextColor = 0x8c8c8c;
+							checkBoxSelectedTextColor = 0xcfcfcf;
+							checkBoxBackgroundColor = 0x000000;
+							
 							break;
 					}
 
@@ -252,7 +265,17 @@
 						menuStyle.setStyle( "rollOverColor", comboSelectedBackgroundColor );
 						menuStyle.setStyle( "selectionColor", comboSelectedBackgroundColor );
 						menuStyle.setStyle( "backgroundColor", comboBackgroundColor ); 					
+					}
+					
+					var checkBoxStyle:CSSStyleDeclaration = FlexGlobals.topLevelApplication.styleManager.getStyleDeclaration( "mx.controls.CheckBox" );
+					if( checkBoxStyle )
+					{
+						checkBoxStyle.setStyle( "color", checkBoxTextColor );
+						checkBoxStyle.setStyle( "textRollOverColor", checkBoxSelectedTextColor );
+						checkBoxStyle.setStyle( "textSelectedColor", checkBoxSelectedTextColor );
+						checkBoxStyle.setStyle( "backgroundColor", checkBoxBackgroundColor ); 					
 					}				
+					
 				}
 
 				if( _isDisplayingPreferences )
@@ -267,6 +290,7 @@
 
 				if( _isDisplayingUpgradeDialog )
 				{
+					_upgradeDialog.setStyle( style, getStyle( "style" ) );
 					_upgradeDialog.onStyleChanged( style );	
 				}
 				

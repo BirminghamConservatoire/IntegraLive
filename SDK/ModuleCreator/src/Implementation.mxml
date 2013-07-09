@@ -46,6 +46,10 @@
 							 showDataTips="true"
 							 defaultLeafIcon="{null}"
 							 width="{Globals.propertyColumnWidth()}"/>
+					<mx:Button id="_deleteUnusedFilesButton"
+							   label="Delete Unused Files"
+							   click="{onClickDeleteUnusedFiles()}"
+							   width="{Globals.propertyColumnWidth()}"/>
 				</mx:VBox>
 				<mx:VBox>
 					<mx:Label id="_oversizedFilesLabel" text="Oversized Files" width="{Globals.labelColumnWidth()}" textAlign="center"/>
@@ -67,6 +71,8 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			
 			import deng.fzip.FZip;
 			import deng.fzip.FZipFile;
@@ -143,11 +149,6 @@
 			
 			public function retrieveImplementation( zipFile:FZip, implementationDirectory:String ):void
 			{
-				if( !hasImplementation )
-				{
-					return;
-				}
-				
 				clearWorkingDirectory();
 				var workingDirectory:File = workingDirectory;
 
@@ -311,6 +312,7 @@
 				var oversizedFileData:Array = getOversizedFiles( workingDirectory );
 				
 				_unusedFiles.dataProvider = unusedFileData;
+				
 				_oversizedFiles.dataProvider = oversizedFileData;
 				
 				expandAllItems( _unusedFiles );   
@@ -334,6 +336,11 @@
 				var directoryContents:Array = searchDirectory.getDirectoryListing();
 				for each( var content:File in directoryContents )
 				{
+					if( content.isHidden )
+					{
+						continue;
+					}
+					
 					if( content.isDirectory )
 					{
 						buildDirectoryMap( content, content.name + "/", results );
@@ -354,6 +361,7 @@
 				for each( var file:File in directoryContents )
 				{
 					if( file.isDirectory ) continue;
+					if( file.isHidden ) continue;
 					
 					if( file.extension.toLowerCase() != _pdExtension ) continue;
 					
@@ -559,6 +567,11 @@
 				
 				for each( var file:File in searchDirectory.getDirectoryListing() )
 				{
+					if( file.isHidden ) 
+					{
+						continue;
+					}
+
 					if( file.isDirectory )
 					{
 						var directoryObjects:Array = getUnusedFiles( file, usedPdFileMap );
@@ -576,6 +589,7 @@
 						{
 							var fileItem:Object = new Object;
 							fileItem.label = file.name;
+							fileItem.file = file;
 							results.push( fileItem );
 						}
 					}
@@ -591,6 +605,11 @@
 				
 				for each( var file:File in searchDirectory.getDirectoryListing() )
 				{
+					if( file.isHidden )
+					{
+						continue;
+					}
+
 					if( file.isDirectory )
 					{
 						var directoryObjects:Array = getOversizedFiles( file );
@@ -624,6 +643,11 @@
 				var files:Array = branch.getDirectoryListing();
 				for each( var file:File in files )
 				{
+					if( file.isHidden )
+					{
+						continue;
+					}
+
 					var zipPath:String = outputDirectoryName + "/" + file.name;
 					
 					if( file.isDirectory )
@@ -703,6 +727,7 @@
 				
 				_unusedFiles.visible = hasTreeContent( _unusedFiles );
 				_unusedFilesLabel.visible = hasTreeContent( _unusedFiles );
+				_deleteUnusedFilesButton.visible = hasTreeContent( _unusedFiles );
 				
 				_oversizedFiles.visible = hasTreeContent( _oversizedFiles );
 				_oversizedFilesLabel.visible = hasTreeContent( _oversizedFiles );
@@ -845,7 +870,94 @@
 			{
 				_hostStarter.startHost( workingDirectory.resolvePath( _selectedPatchName ), _endpoints );
 				interfaceChanged();
-			}			
+			}		
+			
+			
+			private function onClickDeleteUnusedFiles():void
+			{
+				const maxFileListStringLength:int = 400;
+				
+				var fileListString:String = buildUnusedFilesString( _unusedFiles.dataProvider.source );
+				if( fileListString.length > maxFileListStringLength )
+				{
+					fileListString = fileListString.substr( 0, maxFileListStringLength );
+					fileListString = fileListString.substr( 0, fileListString.lastIndexOf( "\n" ) );
+					fileListString += "\n...\n<more files>\n";
+				}
+				
+				
+				Alert.show( "The following files will be deleted:\n\n" + fileListString + "\nAre you sure?", "Delete Unused Files", Alert.OK | Alert.CANCEL, this, onCloseDeleteUnusedFileDialog ); 
+			}
+			
+			
+			private function onCloseDeleteUnusedFileDialog( event:CloseEvent ):void
+			{
+				if( event.detail == Alert.OK )
+				{
+					var unusedFiles:Array = _unusedFiles.dataProvider.source;
+
+					deleteUnusedFiles( unusedFiles );
+					
+					scanWorkingDirectory();
+					interfaceChanged();					
+				}
+			}
+			
+			
+			private function deleteUnusedFiles( unusedFileItems:Array ):void
+			{
+				for each( var unusedFileItem:Object in unusedFileItems )
+				{
+					if( unusedFileItem.hasOwnProperty( "file" ) )
+					{
+						var file:File = unusedFileItem.file as File;
+						Assert.assertNotNull( file );
+						
+						if( file.exists && !file.isDirectory )
+						{
+							file.deleteFile();
+						}
+					}
+					
+					if( unusedFileItem.hasOwnProperty( "children" ) )
+					{
+						var children:Array = unusedFileItem.children as Array;
+						Assert.assertNotNull( children );
+						
+						deleteUnusedFiles( children );
+					}
+				}
+			}
+			
+			
+			private function buildUnusedFilesString( unusedFileItems:Array ):String
+			{
+				var string:String = "";
+				
+				for each( var unusedFileItem:Object in unusedFileItems )
+				{
+					if( unusedFileItem.hasOwnProperty( "file" ) )
+					{
+						var file:File = unusedFileItem.file as File;
+						Assert.assertNotNull( file );
+			
+						if( file.exists && !file.isDirectory )
+						{
+							string += file.nativePath.substr( workingDirectory.nativePath.length + 1 ) + "\n";
+						}
+					}
+					
+					if( unusedFileItem.hasOwnProperty( "children" ) )
+					{
+						var children:Array = unusedFileItem.children as Array;
+						Assert.assertNotNull( children );
+						
+						string += buildUnusedFilesString( children );
+					}
+				}				
+				
+				return string;
+			}
 			
 
 			private var _endpoints:EndpointList = null;

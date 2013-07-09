@@ -1393,6 +1393,11 @@
 			color:#ff0000;
 		}  
 		
+		mx|CheckBox
+		{
+			icon: ClassReference( "components.views.Skins.CheckBoxTickIcon" );
+		}
+		
 		.tabStyle 
 		{
 			fontWeight:normal;

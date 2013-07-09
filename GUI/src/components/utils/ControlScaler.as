@@ -63,16 +63,32 @@ package components.utils
 			var minimum:Number = constraint.minimum;
 			var maximum:Number = constraint.maximum;
 		
+			var endpointValue:Number = 0;
+			
 			switch( stateInfo.scale.type )
 			{
-				case ControlScale.LINEAR:		return linearUnitToEndpointValue( controlUnit, minimum, maximum );
-				case ControlScale.EXPONENTIAL:	return exponentialUnitToEndpointValue( controlUnit, minimum, maximum, stateInfo.scale.exponentRoot );
-				case ControlScale.DECIBEL:		return decibelUnitToEndpointValue( controlUnit, minimum, maximum );
+				case ControlScale.LINEAR:		
+					endpointValue = linearUnitToEndpointValue( controlUnit, minimum, maximum );
+					break;
+
+				case ControlScale.EXPONENTIAL:	
+					endpointValue = exponentialUnitToEndpointValue( controlUnit, minimum, maximum, stateInfo.scale.exponentRoot );
+					break;
+
+				case ControlScale.DECIBEL:
+					endpointValue = decibelUnitToEndpointValue( controlUnit, minimum, maximum );
+					break;
 					
 				default:
 					Assert.assertTrue( false );
-					return 0;
+					break;
 			}
+			
+			//clamp to min/max to fix rounding errors
+			if( endpointValue < minimum ) endpointValue = minimum;
+			if( endpointValue > maximum ) endpointValue = maximum;
+			
+			return endpointValue;
 		}
 		
 		

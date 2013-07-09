@@ -22,23 +22,26 @@
  
 package components.views.Skins
 {
+	import flash.display.Graphics;
 	import flash.filters.GlowFilter;
 	
-	import mx.skins.halo.ButtonSkin;
+	import mx.skins.halo.CheckBoxIcon;
 	
-	import components.model.userData.ColorScheme;
+	import components.utils.FontSize;
 	
-	public class TickButtonSkin extends ButtonSkin
+	
+	public class CheckBoxTickIcon extends CheckBoxIcon
 	{
-		public function TickButtonSkin()
+		public function CheckBoxTickIcon()
 		{
 			super();
 		}
 		
+		
 		override protected function updateDisplayList( unscaledWidth:Number, unscaledHeight:Number ):void
 		{
 			graphics.clear();
-			
+
 			var nameLower:String = name.toLowerCase();
 			
 			var over:Boolean = ( nameLower.indexOf( "over" ) >= 0 );
@@ -46,51 +49,41 @@ package components.views.Skins
 			var down:Boolean = ( nameLower.indexOf( "down" ) >= 0 );
 			var disabled:Boolean = ( nameLower.indexOf( "disabled" ) >= 0 );
 
-			var borderColor:uint;
-			var selectedColor:uint;
-			
-			switch( getStyle( ColorScheme.STYLENAME ) )
-			{
-				default:
-				case ColorScheme.LIGHT:
-					borderColor = 0x747474;
-					selectedColor = 0x313131;
-					break;
-
-				case ColorScheme.DARK:
-					borderColor = 0x8c8c8c;
-					selectedColor = 0xcfcfcf;
-				break;
-			}
-			
 			var color:uint = getStyle( "color" );
-			if( color == 0 ) color = borderColor;
+			var selectedColor:uint = getStyle( "textSelectedColor" );
+			var backgroundColor:uint = getStyle( "backgroundColor" );
+			var glowColor:uint = getStyle( GLOWCOLOR_STYLENAME );
+			if( glowColor == 0 ) glowColor = color;
 			
-			var diameter:Number = Math.min( width, height );
+			var diameter:Number = getStyle( FontSize.STYLENAME );
 			var radius:Number = diameter / 2;
-			
-			graphics.lineStyle( 1, ( over || down ) ? selectedColor : borderColor, disabled ? 0.5 : 1 );
-			
-			graphics.beginFill( disabled ? borderColor : color, 0.2 );
-			graphics.drawCircle( radius, radius, radius );
+			var xOffset:Number = width - diameter;
+
+			graphics.lineStyle( 1, ( over || down ) ? selectedColor : color, disabled ? 0.5 : 1 );
+
+			graphics.beginFill( disabled ? color : backgroundColor, disabled ? 0.5 : 1 );
+			graphics.drawCircle( xOffset + radius, radius, radius );
 			graphics.endFill();
 			
 			//draw the tick
 			if( selected )
 			{
 				graphics.lineStyle( 2, selectedColor );
-				graphics.moveTo( radius * 0.5, radius );
-				graphics.lineTo( radius, radius * 1.5 );
-				graphics.lineTo( radius * 1.5, radius * 0.5 );
+				graphics.moveTo( xOffset + radius * 0.5, radius );
+				graphics.lineTo( xOffset + radius, radius * 1.5 );
+				graphics.lineTo( xOffset + radius * 1.5, radius * 0.5 );
 			}
-			
+
 			//update the glow
 			var filterArray:Array = new Array;
-			if( down )
+			if( down || selected )
 			{
-				filterArray.push( new GlowFilter( color, 0.6, 10, 10, 3 ) );
+				var glowAlpha:Number = down ? 0.8 : 0.5;
+				filterArray.push( new GlowFilter( glowColor, glowAlpha, 16, 16, 4 ) );
 			}	
 			filters = filterArray;
 		}
+		
+		public static const GLOWCOLOR_STYLENAME:String = "glowColor";
 	}
 }

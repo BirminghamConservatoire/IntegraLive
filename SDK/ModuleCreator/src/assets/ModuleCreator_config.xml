@@ -47,7 +47,7 @@
             <templatespath>./templates/</templatespath>
 			<hostpath>./host/bin/pd_integra</hostpath>
 			<fileviewerpath>/usr/bin/open</fileviewerpath>
-			<documentspath>documentation</documentspath>
+			<documentspath>./documentation</documentspath>
 			
 			<!-- TODO: proper IL executable path here									-->
 			<integralivepath>./Integra Live.app/etc</integralivepath>

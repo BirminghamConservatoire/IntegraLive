@@ -31,6 +31,7 @@ package components.views.ModuleManager
 	import mx.controls.CheckBox;
 	import mx.controls.Label;
 	import mx.controls.TextArea;
+	import mx.core.ScrollPolicy;
 	
 	import components.controller.IntegraController;
 	import components.controller.serverCommands.UpgradeModules;
@@ -45,6 +46,7 @@ package components.views.ModuleManager
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.CheckBoxTickIcon;
 	import components.views.Skins.CloseButtonSkin;
 	import components.views.Skins.TextButtonSkin;
 	
@@ -55,6 +57,10 @@ package components.views.ModuleManager
 		public function UpgradeDialog() 
 		{
 			super();
+			
+			verticalScrollPolicy = ScrollPolicy.OFF;
+			horizontalScrollPolicy = ScrollPolicy.OFF;
+			
 			
 			_titleLabel.text = "Upgrade Modules";
 			_titleLabel.setStyle( "verticalAlign", "center" );
@@ -89,6 +95,7 @@ package components.views.ModuleManager
 			_upgradeButton.addEventListener( MouseEvent.CLICK, onUpgrade );
 			_moduleManagerButton.addEventListener( MouseEvent.CLICK, onModuleManager );
 			_closeButton.addEventListener( MouseEvent.CLICK, onClose );
+
 			_alwaysUpgradeCheckbox.addEventListener( MouseEvent.CLICK, toggleAlwaysUpgrade );
 			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
@@ -181,7 +188,7 @@ package components.views.ModuleManager
 						setButtonTextColor( _upgradeButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _moduleManagerButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _closeButton, 0x6D6D6D, 0x9e9e9e );
-						_alwaysUpgradeCheckbox.setStyle( "color", 0x747474 );
+						_alwaysUpgradeCheckbox.setStyle( CheckBoxTickIcon.GLOWCOLOR_STYLENAME, 0xaaccdf );
 						break;
 					
 					case ColorScheme.DARK:
@@ -195,7 +202,7 @@ package components.views.ModuleManager
 						setButtonTextColor( _upgradeButton, 0x939393, 0x626262 );
 						setButtonTextColor( _moduleManagerButton, 0x939393, 0x626262 );
 						setButtonTextColor( _closeButton, 0x939393, 0x626262 );
-						_alwaysUpgradeCheckbox.setStyle( "color", 0x8c8c8c );
+						_alwaysUpgradeCheckbox.setStyle( CheckBoxTickIcon.GLOWCOLOR_STYLENAME, 0x214356 );
 						break;
 				}
 			}
@@ -271,8 +278,12 @@ package components.views.ModuleManager
 			_moduleManagerButton.x = width / 3 + internalMargin;
 			_closeButton.x = width * 2/3 + internalMargin;
 			
-			_alwaysUpgradeCheckbox.setStyle( "right", internalMargin );
+			_alwaysUpgradeCheckbox.x = _closeButton.x;
 			_alwaysUpgradeCheckbox.setStyle( "bottom", internalMargin );
+			
+			_upgradeButton.invalidateDisplayList();
+			_moduleManagerButton.invalidateDisplayList();
+			_closeButton.invalidateDisplayList();
 		}
 		
 

@@ -52,6 +52,7 @@ package components.views.ModuleManager
 	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.CheckBoxTickIcon;
 	import components.views.Skins.TextButtonSkin;
 	
 	import flexunit.framework.Assert;
@@ -166,6 +167,7 @@ package components.views.ModuleManager
 						setButtonTextColor( _upgradeAllButton, 0x6D6D6D, 0x9e9e9e );
 						setButtonTextColor( _switchVersionsButton, 0x6D6D6D, 0x9e9e9e );
 						_info.setStyle( "borderColor", 0xcfcfcf );
+						_alwaysUpgradeCheckbox.setStyle( CheckBoxTickIcon.GLOWCOLOR_STYLENAME, 0xaaccdf );
 						break;
 					
 					case ColorScheme.DARK:
@@ -174,12 +176,12 @@ package components.views.ModuleManager
 						setButtonTextColor( _upgradeAllButton, 0x939393, 0x626262 );
 						setButtonTextColor( _switchVersionsButton, 0x939393, 0x626262 );
 						_info.setStyle( "borderColor", 0x313131 );
+						_alwaysUpgradeCheckbox.setStyle( CheckBoxTickIcon.GLOWCOLOR_STYLENAME, 0x214356 );
 						break;
 				}
 				
 				_switchablesLabel.setStyle( "color", _labelColor );
 				_alternativeVersionsLabel.setStyle( "color", _labelColor );
-				_alwaysUpgradeCheckbox.setStyle( "color", _labelColor );
 			}
 		}
 		

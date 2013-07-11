@@ -236,6 +236,7 @@
 				_widgetLayout.onRemovedEndpoint( endpoint );
 				
 				_accordion.removeChildAt( _accordion.selectedIndex );
+				onChangeSelectedEndpoint();
 				
 				updateButtonEnables();
 				updateControlsWithoutWidgets();
@@ -243,6 +244,7 @@
 				interfaceChanged();
 			}
 
+			
 			private function onClickMoveUp():void
 			{
 				Assert.assertTrue( _accordion.selectedIndex >= 1 );
@@ -360,18 +362,21 @@
 				_accordion.validateNow();
 			}
 			
-			private function onChangeSelectedEndpoint( event:IndexChangedEvent ):void
+			
+			private function onChangeSelectedEndpoint( event:IndexChangedEvent = null ):void
 			{
-				var newEndpoint:Endpoint = _accordion.getChildAt( event.newIndex ) as Endpoint;
-				Assert.assertNotNull( newEndpoint );
-				
-				if( newEndpoint.hasStoredXML )
+				var newEndpoint:Endpoint = _accordion.selectedChild as Endpoint;
+				if( newEndpoint )
 				{
-					lazyLoadEndpoint( newEndpoint );
+					if( newEndpoint.hasStoredXML )
+					{
+						lazyLoadEndpoint( newEndpoint );
+					}
 				}
 
 				updateButtonEnables();
 			}
+			
 			
 			private function onChangeControlsWithoutWidgets():void
 			{

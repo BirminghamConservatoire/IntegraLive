@@ -116,12 +116,15 @@ gui:
 	mv $(GUIDIR)/$(APPNAME) ./
 	touch $(APPNAME)/Contents/Resources/META-INF/AIR/debug
 
-creator: host
+creator: 
+	@if test ! -d $(APPNAME); \
+	then echo $(APPNAME) does not exist. Run 'make release' first. && exit 2; \
+	fi
 	make -C $(CREATORDIR) app
 	rm -rf $(CREATORAPPNAME)
 	mv $(CREATORDIR)/$(CREATORAPPNAME) ./
 	cp -r $(TEMPLATESDIR) $(CREATORRESIDR)
-	mv host $(CREATORRESIDR)
+	cp -r $(APPNAME) $(CREATORRESIDR)
 
 host:
 	if [ ! -e $(PD_DMG_NAME) ]; then \

@@ -45,12 +45,10 @@
 		<mac>
 			<!--		path to template modules directory, relative to Module Creator	-->
             <templatespath>./templates/</templatespath>
-			<hostpath>./host/bin/pd_integra</hostpath>
+			<hostpath>./Integra Live.app/Contents/Resources/host/bin/pd_integra</hostpath>
 			<fileviewerpath>/usr/bin/open</fileviewerpath>
-			<documentspath>./documentation</documentspath>
-			
-			<!-- TODO: proper IL executable path here									-->
-			<integralivepath>./Integra Live.app/etc</integralivepath>
+			<documentspath>./documentation</documentspath>			
+			<integralivepath>./Integra Live.app/Contents/MacOS/Integra Live</integralivepath>
 		</mac>
 	</paths>
 

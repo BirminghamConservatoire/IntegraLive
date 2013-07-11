@@ -14,13 +14,15 @@ On Windows, the Module Creator is bundled with the main Integra Live installer. 
 
 Integra modules consist of two stored components: *interface* and *implementation*. A module's *interface* defines all of the **external** characteristics of the module such as its name, description, tags, endpoints, widgets and widget layout. A module's *implementation* defines the **internal** audio and control processing algorithms. 
 
-The *interface* is defined using the Integra Module Creator tool, and written to a file, which is read by Integra Live to discover information about the module. The information included in the *interface definition* allows Integra Live to determine such things as which modules are included in the module library and what to show in the Info panel.
+The *interface* is defined using the Integra Module Creator tool, and written to a file. This file, called an Integra Interface Definition (IID) is a type of [XML](http://en.wikipedia.org/wiki/Xml) file, which is read by Integra Live to discover information about the module at runtime. The information included in the IID enables Integra Live to determine such things as which modules are included in the module library and what to show in the module's Info panel.
 
-The *implementation* is defined using the [Pure Data patching environment](http://puredata.info), and loaded in Pure Data on request when Integra Live is running.
+The *implementation* for the module is defined using the [Pure Data patching environment](http://puredata.info) (Pd), and saved as a set of Pd patches. These patches are loaded in Pure Data on request when Integra Live is running. 
+
+When a module is saved by the Module Creator, the *interface* (IID file) and *implementation* (Pd patches) are bundled up together in a <a href="http://en.wikipedia.org/wiki/ZIP_(file_format)">ZIP</a> archive with the suffix `.integra-module`.
 
 #### Module Endpoints
 
-The module *interface* contains a schematic description of one or more *endpoints*. An *endpoint* is a connectable attribute that can be of type Control or Stream. Control *endpoints* define parameters such as “delay time” or “frequency”. Stream *endpoints* define audio inputs and outputs. The information included in the *endpoint* definitions allows Integra Live to determine such things as which parameters to show in the routing view menus and which control widgets to show in the Module Properties panel. 
+The module *interface* contains a schematic description of one or more *endpoints*. An *endpoint* is a connectable attribute that can be of type Control or Stream. Control *endpoints* define parameters such as “delay time” or “frequency”. Stream *endpoints* define audio inputs and outputs. The information included in the *endpoint* definitions enables Integra Live to determine such things as which parameters to show in the routing view menus and which control widgets to show in the Module Properties panel. 
 
 Control *endpoints* can of type State or Bang. State *endpoints* are associated with a value that represents the current state of a parameter. This value changes in response to live interaction, internal timers and control processing or as a result of two or more *endpoints* being connected. Endpoint state is saved by Integra Live when *projects* are saved, or *tracks*, *blocks* or *modules* are exported and is restored when they are loaded.
 
@@ -42,6 +44,8 @@ The Module Creator comes with a selection of templates covering the most common 
 > We encourage module developers to start from an existing template rather than starting from scratch
 
 Templates provide a base-level interface for performing audio input and / or output and endpoints for “active”, “bypass”, “mix”, “inLevel”, “outLevel” and “mute” where appropriate. Most of the modules in the Integra Live Module Library are based on one of these templates.
+
+> In addition to the Templates provided with the Module Creator, developers can import any other module as a Template by selecting Import Template -> Browse...
 
 #### Interface Info
 
@@ -73,11 +77,11 @@ A completed Interface Info definition is shown below along with a preview of the
 
 **Tags** should define a set of tags that can be used to categorise the module. These are used to construct the Tags filter box in the Module List in Integra Live.
 
-A number of pre-defined tags are provided in the module creator. To use your own non-listed tag, click “add tag” and type directly at the cursor.
+A number of pre-defined tags are provided in the module creator. To use non-listed tags, click “add tag” and type directly at the cursor.
 
 #### Endpoints
 
-Clicking the Endpoints tab in the Module Creator allows interface info for one or more endpoints to be added. To add an endpoint, click the Add Endpoint button
+Clicking the Endpoints tab in the Module Creator enables interface info for one or more endpoints to be added. To add an endpoint, click the Add Endpoint button
 
 ![](../../page-images/add_endpoint.png)
 
@@ -103,13 +107,13 @@ A completed Endpoint Info definition is shown below.
 
 ![](../../page-images/q.png)
 
-**Endpoint Type** determines whether the Endpoint is a Control parameter such as “delay time” or “frequency” or a Stream such as a module audio input or output. If Stream is selected, then the Stream Direction must be specified as Input or Output in the Stream Info box. If Control is selected then many other options are available as explained below.
+**Endpoint Type** defines whether the Endpoint is a Control parameter such as “delay time” or “frequency” or a Stream such as a module audio input or output. When Stream is selected, the Stream Direction must be specified as Input or Output in the Stream Info box. When Control is selected then many other options are available as explained below.
 
 **Widget** is used to optionally define a Widget that is assigned to a Control endpoint. Each Endpoint may only have one widget, however, one widget can be assigned to multiple endpoints. For example an XYScratchPad widget has an “x” and “y” axis, and these axes can be assigned to different endpoints such as “pitch” and ”position”. In order to associate a single widget with multiple endpoints the Label field must be completed, and assigned the same value for each endpoint. Following the previous example, the Label “scrubWidget” could be given to the XYScratchPad “x” assigned to “position” and also to the XYScratchPad “y” assigned to “pitch”.
 
 **Control Info** is used to define a more detailed definition of Control Endpoints. 
 
-**Control Type** can either be State or Bang. Bang should be selected for endpoints that correspond to trigger parameters such as “play” or “stop”.  State should be selected for parameters that have a value associated with them such as “delayTime” or “frequency”. If State is selected then the State Info box will be displayed.
+**Control Type** can either be State or Bang. Bang should be selected for endpoints that correspond to trigger parameters such as “play” or “stop”.  State should be selected for parameters that have a value associated with them such as “delayTime” or “frequency”. When State is selected then the State Info box will be displayed.
 
 **State Info ⇒ State Type** is used to define the type of value that can be stored by the endpoint. Types supported by Integra are Float (32-bit), Integer (32-bit) and String.
 
@@ -129,25 +133,106 @@ A completed Endpoint Info definition is shown below.
 
 #### Widget Layout
 
-Clicking the Widget Layout tab in the Module Creator allows Widgets for Endpoints to be resized and arranged graphically. This will determine the layout of Control Widgets in Integra Live's Module Properties panel. 
+Clicking the Widget Layout tab in the Module Creator enables Widgets for Endpoints to be resized and arranged graphically. This will determine the layout of Control Widgets in Integra Live's Module Properties panel. 
 
 ![](../../page-images/widget_layout.png)
 
 #### Implementation
 
-Clicking the Implementation tab in the Module Creator allows the module implementation to be added or edited using a dummy host in Pure Data (Pd). 
+Clicking the Implementation tab in the Module Creator enables the module implementation to be added or edited using Pure Data (Pd). 
+
+![](../../page-images/implementation.png)
+
+Your module implementation's files will be unpacked into a temporary working directory (`~/Documents/Integra Module Creator` on Mac). This can be relocated by clicking the Relocate... button.
+
+Missing Pd ‘objects’ (externals or abstractions) will be listed in a Missing Objects box, and unused files listed in an Unused Files box. 
+
+> Developers are encouraged to delete all Unused Files before saving unless they are explicitly required (e.g. in the case of a README or data file)
 
 ### Editing the Pd Patch
 
+The Pd patch for module *implementations* can be edited by clicking the Edit In Pd button in the Implementation tab of the Module Creator. This will open up a Pd window some controls for module *endpoints* under the heading Test Module Parameters.
 
-> Range checking and constraints are enforced by libIntegra using Constraints specified in the Interface Definition, adding such constraints to the Pd implementation of the module is therefore strongly discouraged
+The patch that opens when Edit In Pd is clicked is a **host** patch. To open a module implementation, click the toggle under Show / Hide Module. This will open the top-level Pd patch for the module.
+
+![](../../page-images/implementation_pd.png)
+
+Your module is required to provide audio inlets and outlets for each Audio Stream Endpoint, and to respond to messages from libIntegra using the receive symbol `integra-broadcast-receive`. Followed by a `[route $1]` to route only messages designated for this instance. When using one of the Templates included with the Module Creator, this boilerplate is provided by the `[handlers/ntg_receive]` abstraction.
+
+> Developers are strongly encouraged to use one of the provided templates rather than starting their module from scratch
+
+The `[handlers/ntg_receive]` abstraction provides three outlets:
+
+- The right-most outlet passes messages with selectors corresponding to Endpoint names, and values corresponding to Endpoint values, e.g. ‘frequency 300’, ‘delayTime 1.2’
+- The centre outlet passes a ‘fini’ `bang` directly before the object is deleted
+- The left-most outlet passes a ‘init’ `bang` immediately after the object is added to the canvas
+
+The messages from the outlet should be handled by a `[route]` object, e.g. `[route frequency delayTime]` to pass control messages into the DSP. The ‘init‘ and ‘fini’ `bang` messages should be used for any initialisation or cleanup that needs to be done on the patch.
+
+The actual implementation of the module's functionality should be as minimal as feasibly possible. 
+
+> Developers should not add range checking and checks for legal values to their modules as these are enforced by libIntegra using Constraints specified in the Interface Definition
+
+> Developers are discouraged from adding high-level documentation in the comments of their Pd patch especially when it duplicates aspects of the *interface definition*
 
 #### Sending Values to libIntegra
 
-#### Saving Files
+Sometimes a module implementation will need to send values back to libIntegra, for example so that the current value of a VU meter can be displayed, or so that the state of a “playPosition” endpoint can be updated. In order to send values back to libIntegra, messages must be sent to the `integra` receive symbol using `[s integra]`. The message format for sending these values is:
+
+```
+<source module id> <endpoint name> scalar <value>
+```
+
+e.g.
+
+```
+21 vu1 scalar -32
+```
+
+If using one of the implementation Templates provided with  the Module Creator, it is sufficient to simply pass `<endpoint name> <value>` pairs to the `[handlers/ntg_send $1]` abstraction instance.
+
+Values sent to libIntegra will be posted to the Pd console for debugging purposes.
+
+> Developers are encouraged to use one of the provided templates rather than starting their module from scratch
+
+### Saving Files
+
+If the module implementation loads files, and this file loading is exposed to the user, the module is responsible for persisting these files. For example, if a soundfile player supports a ‘openFile’ String Endpoint, which gets passed a string representing a path to a soundfile by a SoundFileLoadDialog Widget, then the implementation must ensure the loaded file is available next time the module instance is loaded.
+
+In order to achieve this the module implementation must do three things:
+
+1. The special endpoint “dataDirectory” must be included in the Interface Definition. It must be defined as a Control endpoint with Control Type: State; State Type: String; and Range: 0...1024. Can Be Source and Can Be Target must also be unchecked under “show advanced controls” in the bottom right of the “dataDirectory” Endpoint panel under the Endpoints tab.
+
+2. The endpoint used to pass the file path must have Is Input File checked under “show advanced controls”. For example if an *endpoint* named “openFile” is used to store the path, this endpoint must have Is Input File checked
+
+3. The *implementation* must provide the necessary logic to restore the saved file from the *data directory* when the module instance is created
+
+#### Saving Files from Pd
+
+If a “dataDirectory” endpoint has been correctly defined in the Interface Definition of a module, libIntegra will set the value of this endpoint to the path to a temporary directory at runtime.
+
+This *data directory* should be used by the module implementation for saving files.
+
+> Developers should only use the provided *data directory* for saving files used by the module. No other location should be used as this will result in data not being included in Integra Project files.
+
+When a Project is saved (or a Track, Block or Module) is exported in Integra Live, libIntegra bundles up the contents of each module's *data directory* (if there is one), and saves it inside the “.integra” file. When the “.integra” file is next loaded, the data directory gets unpacked to a temporary location and the value of the “dataDirectory” Endpoint for the corresponding module gets set to this location.
+
+Therefore if a module instance saves and audio file to `<dataDirectory>/audio.wav`, the Integra Live Project is saved and then reloaded on a different computer, the module instance can expect to find `audio.wav` in the path its “dataDirectory” Endpoint is set to.
+
+> For a working example of how to implement file save / load for a module developers should inspect the StereoSoundfileTrigger module distributed with Integra Live
 
 ### Advanced Controls
 
+The Endpoint schema for Integra Interface Definitions has a number of advanced fields, which can be accessed through each Endpoint's panel in the Endpoints tab of the Module Creator.
 
+**Is Saved to File** defines whether the state of the Endpoint is saved to file when a save operation is performed by libIntegra. The default is for Is Saved to File to be checked. However, if your Endpoint is storing transient data that shouldn't be persisted between saves, Is Saved to File should be unchecked. An example would be a “currentPitch” on a pitch detector module where the value of “currentPitch” could be obsolete if a live input is connected to the pitch detector.
+
+**Is Input File** should be checked if the Endpoint is used to pass the path of a file to be loaded by the implementation. When Is Input File is checked, libIntegra creates a temporary *data directory* for the module, copies the file into this directory, and passes the new path of the file inside the *data directory* to the implementation. An example would be an “openFile” endpoint on a soundfile player — usually this would also be assigned a SoundFileDialog Widget.
+
+**Can Be Source / Can Be Target** define whether the Endpoint can be the source and / or target of a connection. Both of these options are checked by default enabling the Endpoint to be connected to other endpoints by libIntegra. Integra Live also uses this field to construct the contents of the dropdown menus in the Routing panel. If Can Be Source is unchecked, the Endpoint will not be  available as a source in the Routing panel, if Can Be Target is unchecked, the Endpoint will not be available as a target. 
+
+**Is Sent To Host** defines whether the value of the Endpoint is forwarded to the module host (implemented in Pd) by libIntegra. The default is for Is Sent To Host to be checked. An example when Is Sent To Host should be unchecked is if the Endpoint  
+
+### Debugging
 
 

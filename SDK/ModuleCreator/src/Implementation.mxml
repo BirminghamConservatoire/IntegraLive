@@ -4,24 +4,24 @@
 	<mx:VBox top="0" bottom="0">
 		<mx:VBox height="100%">
 			<mx:HBox styleName="internalPadding">
-				<mx:Label text="Working Directory" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:Label text="Working Directory" width="{Globals.propertyColumnWidth()}" textAlign="right"/>
 				<mx:TextInput id="_workingDirectoryDisplay"
 							  editable="false" 
 							  width="{Globals.propertyColumnWidth()}"/>
-				<mx:HBox width="{Globals.labelColumnWidth()}">
+				<mx:HBox width="{Globals.propertyColumnWidth()}">
 					<mx:Button id="_openWorkingDirectory" label="Open" click="onClickOpenWorkingDirectory()"/>
 					<mx:Button id="_changeWorkingDirectory" label="Relocate..." click="onClickChangeWorkingDirectory()"/>
 				</mx:HBox>
 			</mx:HBox>
 			<mx:HBox styleName="internalPadding">
-				<mx:Label text="Main Patch File" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:Label text="Main Patch File" width="{Globals.propertyColumnWidth()}" textAlign="right"/>
 				<mx:ComboBox id="_patchFileName"
 							  editable="false" 
 							  width="{Globals.propertyColumnWidth()}" change="onChangePatchFileName()"/>
 				<mx:Button id="_editPatchInPD" label="Edit in PD" click="onClickEditPatchInPD()"/>
 			</mx:HBox>
 			<mx:HBox styleName="internalPadding" height="100%">
-				<mx:Label text="Dependencies" width="{Globals.labelColumnWidth()}" textAlign="right"/>
+				<mx:Label text="Dependencies" width="{Globals.propertyColumnWidth()}" textAlign="right"/>
 				<mx:Tree id="_dependencyTree" height="100%" 
 						 showDataTips="true"
 						 defaultLeafIcon="{null}"
@@ -761,7 +761,14 @@
 			
 			private function removeWorkingDirectory():void
 			{
-				workingDirectory.deleteDirectory( true );
+				try
+				{
+					workingDirectory.deleteDirectory( true );
+				}
+				catch( error:Error )
+				{
+					trace( "Failed to delete working directory:" + error.message );
+				}
 			}
 			
 			

@@ -1,6 +1,6 @@
-## Integra Module Development
+## Integra Module Development Guide
 
-This tutorial will explain how to create modules that can be used in the [Integra Live](http://integralive.org) software. 
+This guide will explain how to create modules that can be used in [Integra Live](http://integralive.org). 
 
 ### Requirements
 
@@ -241,3 +241,11 @@ The module will then be accessible via the Module Library in Module View (access
 ![](../../page-images/in_development_module.png)
 
 Modules can iteratively be tested in Integra Live by making changes in the Module Creator with the embedded version of Integra Live open and repeatedly selecting Test In Integra Live. Note that each time a new in-development module is installed in the running application, the update module must be dragged from the Module Library to the Module View canvas.
+
+### Further support
+
+If you have any further questions, feature requests or bug reports, please use our [online forum](http://integralive.org/forum).
+
+
+<link rel="stylesheet" type="text/css" href="../../page-images/style.css" media="screen" />
+

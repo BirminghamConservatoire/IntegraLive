@@ -38,7 +38,6 @@ Developers should normally develop their *interface* first, later [refactoring](
 
 The Module Creator comes with a selection of templates covering the most common types of module. Templates can be imported via **File > Import Template...**. 
 
-
 ![](../../page-images/import_menu.png)
 
 > We encourage module developers to start from an existing template rather than starting from scratch
@@ -143,7 +142,7 @@ Clicking the Implementation tab in the Module Creator enables the module impleme
 
 ![](../../page-images/implementation.png)
 
-Your module implementation's files will be unpacked into a temporary working directory (`~/Documents/Integra Module Creator` on Mac). This can be relocated by clicking the Relocate... button.
+The module implementation's files will be unpacked into a temporary working directory (`~/Documents/Integra Module Creator` on Mac). This can be relocated by clicking the Relocate... button.
 
 Missing Pd ‘objects’ (externals or abstractions) will be listed in a Missing Objects box, and unused files listed in an Unused Files box. 
 
@@ -157,7 +156,7 @@ The patch that opens when Edit In Pd is clicked is a **host** patch. To open a m
 
 ![](../../page-images/implementation_pd.png)
 
-Your module is required to provide audio inlets and outlets for each Audio Stream Endpoint, and to respond to messages from libIntegra using the receive symbol `integra-broadcast-receive`. Followed by a `[route $1]` to route only messages designated for this instance. When using one of the Templates included with the Module Creator, this boilerplate is provided by the `[handlers/ntg_receive]` abstraction.
+The module is required to provide audio inlets and outlets for each Audio Stream Endpoint, and to respond to messages from libIntegra using the receive symbol `integra-broadcast-receive`. Followed by a `[route $1]` to route only messages designated for this instance. When using one of the Templates included with the Module Creator, this boilerplate is provided by the `[handlers/ntg_receive]` abstraction.
 
 > Developers are strongly encouraged to use one of the provided templates rather than starting their module from scratch
 
@@ -221,18 +220,24 @@ Therefore if a module instance saves and audio file to `<dataDirectory>/audio.wa
 
 > For a working example of how to implement file save / load for a module developers should inspect the StereoSoundfileTrigger module distributed with Integra Live
 
+**NOTE: the value of a “dataDirectory” Endpoint will not get set by libIntegra in the Pd module host provided by the Module Creator (i.e. when Edit In Pd is clicked) in order to test file saving functionality, the module must be tested in Integra Live**
+
 ### Advanced Controls
 
 The Endpoint schema for Integra Interface Definitions has a number of advanced fields, which can be accessed through each Endpoint's panel in the Endpoints tab of the Module Creator.
 
-**Is Saved to File** defines whether the state of the Endpoint is saved to file when a save operation is performed by libIntegra. The default is for Is Saved to File to be checked. However, if your Endpoint is storing transient data that shouldn't be persisted between saves, Is Saved to File should be unchecked. An example would be a “currentPitch” on a pitch detector module where the value of “currentPitch” could be obsolete if a live input is connected to the pitch detector.
+**Is Saved to File** defines whether the state of the Endpoint is saved to file when a save operation is performed by libIntegra. The default is for Is Saved to File to be checked. However, if the Endpoint is storing transient data that shouldn't be persisted between saves, Is Saved to File should be unchecked. An example would be a “currentPitch” on a pitch detector module where the value of “currentPitch” could be obsolete if a live input is connected to the pitch detector.
 
 **Is Input File** should be checked if the Endpoint is used to pass the path of a file to be loaded by the implementation. When Is Input File is checked, libIntegra creates a temporary *data directory* for the module, copies the file into this directory, and passes the new path of the file inside the *data directory* to the implementation. An example would be an “openFile” endpoint on a soundfile player — usually this would also be assigned a SoundFileDialog Widget.
 
 **Can Be Source / Can Be Target** define whether the Endpoint can be the source and / or target of a connection. Both of these options are checked by default enabling the Endpoint to be connected to other endpoints by libIntegra. Integra Live also uses this field to construct the contents of the dropdown menus in the Routing panel. If Can Be Source is unchecked, the Endpoint will not be  available as a source in the Routing panel, if Can Be Target is unchecked, the Endpoint will not be available as a target. 
 
-**Is Sent To Host** defines whether the value of the Endpoint is forwarded to the module host (implemented in Pd) by libIntegra. The default is for Is Sent To Host to be checked. An example when Is Sent To Host should be unchecked is if the Endpoint  
+### Testing in Integra Live
 
-### Debugging
+Modules can be tested in Integra Live without separately loading Integra Live and installing the module. To test a module in Integra Live from the Module Creator, select Test In Integra Live from the Module Creator's Test menu. This will open a copy of Integra Live and temporarily install your module.
 
+The module will then be accessible via the Module Library in Module View (accessible by double-clicking Block1). In-development modules appear at the top of the Module List, highlighted in red. 
 
+![](../../page-images/in_development_module.png)
+
+Modules can iteratively be tested in Integra Live by making changes in the Module Creator with the embedded version of Integra Live open and repeatedly selecting Test In Integra Live. Note that each time a new in-development module is installed in the running application, the update module must be dragged from the Module Library to the Module View canvas.

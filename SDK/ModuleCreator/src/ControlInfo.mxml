@@ -32,7 +32,7 @@
 							 change="{interfaceChanged()}"
 							 toolTip="Tick if this Endpoint can be a target, EG for Connections or Scripts"/>
 			</mx:HBox>
-			<mx:HBox>
+			<mx:HBox id="_isSentToHostGroup">
 				<mx:Label text="Is Sent To Host" width="{Globals.labelColumnWidth( 1 )}" textAlign="right"/>
 				<mx:CheckBox id="_isSentToHost" 
 							 change="{interfaceChanged()}"
@@ -62,6 +62,8 @@
 				_isSentToHost.selected = true;
 				_canBeSource.selected = true;
 				_canBeTarget.selected = true;
+				
+				_isSentToHostGroup.visible = Config.singleInstance.hasIntegraDeveloperPrivileges;
 			}
 			
 			

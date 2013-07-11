@@ -83,6 +83,8 @@ package components.utils
 		
 		public function get upgradeInformationUrl():String 	{ return _upgradeInformationUrl; }
 		
+		public function get hasModuleBundles():Boolean		{ return _hasModuleBundles; }
+		
 		
 		private function loadConfig():void
 		{
@@ -277,6 +279,8 @@ package components.utils
 					_upgradeInformationUrl = upgrades.child( "upgradeinformationurl" ).toString();
 				}
 			}	
+			
+			_hasModuleBundles = xml.hasOwnProperty( "hasModuleBundles" );
 		}
 
 		
@@ -377,6 +381,8 @@ package components.utils
 		private var _showDebugMenu:Boolean = false;
 
 		private var _upgradeInformationUrl:String = null;
+		
+		private var _hasModuleBundles:Boolean = false;
 
 		private const _configFileName:String = "assets/IntegraLiveConfig.xml";
 	}

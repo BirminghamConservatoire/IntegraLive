@@ -44,6 +44,8 @@ package
 		} 		
 
 		public function get hasIntegraDeveloperPrivileges():Boolean { return _hasIntegraDeveloperPrivileges; }
+		public function get hasBundleMaker():Boolean 				{ return _hasBundleMaker; }
+
 		public function get standardTags():Vector.<String>			{ return _standardTags; }
 
 		public function get templatesPath():String					{ return _templatesPath; }
@@ -78,6 +80,11 @@ package
 			if( xml.hasOwnProperty( "integradeveloper" ) )
 			{
 				_hasIntegraDeveloperPrivileges = true;
+			}
+
+			if( xml.hasOwnProperty( "bundlemaker" ) )
+			{
+				_hasBundleMaker = true;
 			}
 			
 			if( xml.hasOwnProperty( "standardtags" ) )
@@ -235,6 +242,8 @@ package
 		private static var _singleInstance:Config = null;
 
 		private var _hasIntegraDeveloperPrivileges:Boolean = false;
+
+		private var _hasBundleMaker:Boolean = false;
 		
 		private var _standardTags:Vector.<String> = new Vector.<String>;
 

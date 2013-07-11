@@ -149,5 +149,8 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 	<upgrades>
 		<upgradeinformationurl>http://integralive.org/upgrade_information.xml</upgradeinformationurl>
 	</upgrades>
+	
+	<!--  hasModuleBundles is an easter-egg tag which allows installation of bundles   -->
+	<!--  <hasModuleBundles/>	 --> 
 
 </integraliveconfig>

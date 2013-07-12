@@ -27,9 +27,6 @@
 #include "module_manager.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #ifndef ntg_module_manager
 //typedef struct ntg_module_manager_ ntg_module_manager;
@@ -47,8 +44,5 @@ void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_pa
 ntg_error_code ntg_copy_file( const char *source_path, const char *target_path );
 ntg_error_code ntg_delete_file( const char *file_name );
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*INTEGRA_FILE_IO_H*/

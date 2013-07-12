@@ -29,9 +29,6 @@
 
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 char *ntg_node_data_directory_create( const ntg_node *node, const ntg_server *server );
 void ntg_node_data_directory_change( const char *previous_directory_name, const char *new_directory_name );
@@ -46,8 +43,5 @@ const char *ntg_copy_file_to_data_directory( const ntg_node_attribute *attribute
 const char *ntg_extract_filename_from_path( const char *path );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*INTEGRA_DATA_DIRECTORY_H*/

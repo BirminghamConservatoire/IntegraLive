@@ -32,9 +32,6 @@ This will ensure that all class-specific implementation is encapsulated within t
 #ifndef INTEGRA_SYSTEM_CLASS_LITERALS
 #define INTEGRA_SYSTEM_CLASS_LITERALS
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 #define NTG_CLASS_CONTAINER "Container"
@@ -85,8 +82,5 @@ extern "C" {
 
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*INTEGRA_SYSTEM_CLASS_LITERALS*/

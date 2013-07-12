@@ -61,7 +61,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;liblo_d.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;lua52.lib;Ws2_32.lib;Version.lib;%(AdditionalDependencies);Iphlpapi.lib</AdditionalDependencies>
@@ -148,43 +148,46 @@
     <ClCompile Include="..\externals\minizip\iowin32.c" />
     <ClCompile Include="..\externals\minizip\mztools.c" />
     <ClCompile Include="..\externals\minizip\unzip.c" />
-    <ClCompile Include="..\externals\minizip\zip.c" />
-    <ClCompile Include="..\src\attribute.c" />
-    <ClCompile Include="..\src\bridge_host.c" />
-    <ClCompile Include="..\src\command.c" />
-    <ClCompile Include="..\src\data_directory.c" />
-    <ClCompile Include="..\src\error.c" />
-    <ClCompile Include="..\src\file_io.c" />
-    <ClCompile Include="..\src\hashtable.c" />
-    <ClCompile Include="..\src\helper.c" />
-    <ClCompile Include="..\src\id.c" />
-    <ClCompile Include="..\src\init.c" />
-    <ClCompile Include="..\src\interface.c" />
-    <ClCompile Include="..\src\list.c" />
-    <ClCompile Include="..\src\luascripting.c" />
-    <ClCompile Include="..\src\memory.c" />
-    <ClCompile Include="..\src\module_manager.c" />
-    <ClCompile Include="..\src\MurmurHash2.c" />
-    <ClCompile Include="..\src\node.c" />
-    <ClCompile Include="..\src\node_list.c" />
-    <ClCompile Include="..\src\osc.c" />
-    <ClCompile Include="..\src\osc_client.c" />
-    <ClCompile Include="..\src\path.c" />
-    <ClCompile Include="..\src\platform_specifics.c" />
-    <ClCompile Include="..\src\player_handler.c" />
-    <ClCompile Include="..\src\queue.c" />
-    <ClCompile Include="..\src\reentrance_checker.c" />
-    <ClCompile Include="..\src\scratch_directory.c" />
-    <ClCompile Include="..\src\server.c" />
-    <ClCompile Include="..\src\server_commands.c" />
-    <ClCompile Include="..\src\server_public.c" />
-    <ClCompile Include="..\src\signals.c" />
-    <ClCompile Include="..\src\system_class_handlers.c" />
-    <ClCompile Include="..\src\trace.c" />
-    <ClCompile Include="..\src\validate.c" />
-    <ClCompile Include="..\src\value.c" />
-    <ClCompile Include="..\src\xmlrpc_common.c" />
-    <ClCompile Include="..\src\xmlrpc_server.c" />
+    <ClCompile Include="..\externals\minizip\zip.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\src\atomic.cpp" />
+    <ClCompile Include="..\src\attribute.cpp" />
+    <ClCompile Include="..\src\bridge_host.cpp" />
+    <ClCompile Include="..\src\command.cpp" />
+    <ClCompile Include="..\src\data_directory.cpp" />
+    <ClCompile Include="..\src\error.cpp" />
+    <ClCompile Include="..\src\file_io.cpp" />
+    <ClCompile Include="..\src\hashtable.cpp" />
+    <ClCompile Include="..\src\helper.cpp" />
+    <ClCompile Include="..\src\id.cpp" />
+    <ClCompile Include="..\src\init.cpp" />
+    <ClCompile Include="..\src\interface.cpp" />
+    <ClCompile Include="..\src\list.cpp" />
+    <ClCompile Include="..\src\luascripting.cpp" />
+    <ClCompile Include="..\src\memory.cpp" />
+    <ClCompile Include="..\src\module_manager.cpp" />
+    <ClCompile Include="..\src\MurmurHash2.cpp" />
+    <ClCompile Include="..\src\node.cpp" />
+    <ClCompile Include="..\src\node_list.cpp" />
+    <ClCompile Include="..\src\osc.cpp" />
+    <ClCompile Include="..\src\osc_client.cpp" />
+    <ClCompile Include="..\src\path.cpp" />
+    <ClCompile Include="..\src\platform_specifics.cpp" />
+    <ClCompile Include="..\src\player_handler.cpp" />
+    <ClCompile Include="..\src\queue.cpp" />
+    <ClCompile Include="..\src\reentrance_checker.cpp" />
+    <ClCompile Include="..\src\scratch_directory.cpp" />
+    <ClCompile Include="..\src\server.cpp" />
+    <ClCompile Include="..\src\server_commands.cpp" />
+    <ClCompile Include="..\src\server_public.cpp" />
+    <ClCompile Include="..\src\signals.cpp" />
+    <ClCompile Include="..\src\system_class_handlers.cpp" />
+    <ClCompile Include="..\src\trace.cpp" />
+    <ClCompile Include="..\src\validate.cpp" />
+    <ClCompile Include="..\src\value.cpp" />
+    <ClCompile Include="..\src\xmlrpc_common.cpp" />
+    <ClCompile Include="..\src\xmlrpc_server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externals\minizip\crypt.h" />
@@ -193,10 +196,12 @@
     <ClInclude Include="..\externals\minizip\mztools.h" />
     <ClInclude Include="..\externals\minizip\unzip.h" />
     <ClInclude Include="..\externals\minizip\zip.h" />
+    <ClInclude Include="..\src\atomic.h" />
     <ClInclude Include="..\src\attribute.h" />
     <ClInclude Include="..\src\bridge_host.h" />
     <ClInclude Include="..\src\command.h" />
     <ClInclude Include="..\src\data_directory.h" />
+    <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\file_io.h" />
     <ClInclude Include="..\src\globals.h" />
     <ClInclude Include="..\src\hashtable.h" />
@@ -225,6 +230,7 @@
     <ClInclude Include="..\src\signals.h" />
     <ClInclude Include="..\src\system_class_handlers.h" />
     <ClInclude Include="..\src\system_class_literals.h" />
+    <ClInclude Include="..\src\trace.h" />
     <ClInclude Include="..\src\validate.h" />
     <ClInclude Include="..\src\value.h" />
     <ClInclude Include="..\src\xmlrpc_common.h" />

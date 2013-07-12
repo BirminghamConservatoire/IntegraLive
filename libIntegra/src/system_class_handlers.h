@@ -25,9 +25,6 @@
 #include "command.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 struct ntg_system_class_data_ 
@@ -62,8 +59,5 @@ const char *ntg_node_get_data_directory( const ntg_node *node );
 bool ntg_should_copy_input_file( const ntg_value *value, ntg_command_source cmd_source );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*INTEGRA_SYSTEM_CLASS_HANDLERS_H*/

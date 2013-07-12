@@ -21,9 +21,6 @@
 #ifndef INTEGRA_ID_PRIVATE_H
 #define INTEGRA_ID_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * \file id.h 
@@ -39,19 +36,8 @@ extern "C" {
  */
 ntg_id ntg_id_new(void);
 
-/** 
- * \brief Utility method to cast an ntg_id to a unsigned long
- */
-unsigned long ntg_id_get_as_long(ntg_id id);
 
-/** 
- * \brief Utility method to cast an ntg_id to a string
- */
-char * ntg_id_get_as_string(ntg_id id, const char *prefix);
 
 /** @} */
-#ifdef __cplusplus
-}
-#endif
 
 #endif

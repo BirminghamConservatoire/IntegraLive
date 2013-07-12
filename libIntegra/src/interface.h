@@ -28,9 +28,6 @@
 #ifndef INTEGRA_INTERFACE_PRIVATE_H
 #define INTEGRA_INTERFACE_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "../externals/guiddef.h"
 #include <time.h>
@@ -270,9 +267,6 @@ bool ntg_endpoint_should_load_from_ixd( const ntg_endpoint *endpoint, ntg_value_
 bool ntg_endpoint_is_audio_stream( const ntg_endpoint *endpoint );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

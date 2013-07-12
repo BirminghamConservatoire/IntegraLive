@@ -21,9 +21,6 @@
 #ifndef INTEGRA_VALIDATE_H
 #define INTEGRA_VALIDATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*! \addtogroup serialize 
  * @{
@@ -133,8 +130,5 @@ FILE *ntg_xml_dump_schema(const ntg_xml_sac *sac,
 ntg_error_code ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length );
 
 /*! @} */
-#ifdef __cplusplus
-}
-#endif
 
 #endif

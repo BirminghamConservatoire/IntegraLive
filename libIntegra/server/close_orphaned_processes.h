@@ -5,9 +5,6 @@
 #ifndef INTEGRA_CLOSE_ORPHANED_PROCESSES_H
 #define INTEGRA_CLOSE_ORPHANED_PROCESSES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 /* 

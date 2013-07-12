@@ -24,9 +24,6 @@
 #include "server.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct ntg_reentrance_checker_state_ ntg_reentrance_checker_state;
 
@@ -41,8 +38,5 @@ bool ntg_reentrance_push( ntg_server *server, ntg_node_attribute *attribute, ntg
 void ntg_reentrance_pop( ntg_server *server, ntg_command_source cmd_source );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*INTEGRA_REENTRANCE_CHECKER_H*/

@@ -21,9 +21,6 @@
 #ifndef INTEGRA_MODULE_MANAGER_PRIVATE_H
 #define INTEGRA_MODULE_MANAGER_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "Integra/integra.h"
 #include "hashtable.h"
@@ -112,8 +109,5 @@ ntg_error_code ntg_interpret_legacy_module_id( const ntg_module_manager *module_
 
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

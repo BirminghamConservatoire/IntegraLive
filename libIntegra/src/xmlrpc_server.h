@@ -21,18 +21,12 @@ _resolve * USA.
 #ifndef NTG_XMLRPC_SERVER_PRIVATE_H
 #define NTG_XMLRPC_SERVER_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #define NTG_NULL_STRING "None"
 
 void *ntg_xmlrpc_server_run(void *port);
 void ntg_xmlrpc_server_terminate(void);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

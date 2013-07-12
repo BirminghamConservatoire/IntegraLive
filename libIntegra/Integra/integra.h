@@ -21,9 +21,6 @@
 #ifndef INTEGRA_H
 #define INTEGRA_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #ifdef _WINDOWS
 	#ifdef LIBINTEGRA_EXPORTS	
@@ -44,111 +41,10 @@ extern "C" {
 #include <string.h>
 #include "../externals/guiddef.h"
 
+#include "../src/error.h"
+
 /* Maximum audio inputs or outputs per module */
 #define NTG_AUDIO_PORTS_MAX 16
-
-/*
- * Error handling
- */
-typedef enum ntg_error_code_ {
-    NTG_ERROR = -1,
-    NTG_NO_ERROR = 0,
-    NTG_FAILED = 1,
-    NTG_MEMORY_ALLOCATION_ERROR = 2,
-    NTG_MEMORY_FREE_ERROR = 3,
-    NTG_TYPE_ERROR = 4,
-    NTG_PATH_ERROR = 5,
-	NTG_CONSTRAINT_ERROR = 6,
-	NTG_REENTRANCE_ERROR = 7,
-	NTG_FILE_VALIDATION_ERROR = 8,
-	NTG_FILE_MORE_RECENT_ERROR = 9,
-	NTG_MODULE_ALREADY_INSTALLED = 10
-} ntg_error_code;
-
-/** \brief returns a textual description of a given error code */
-LIBINTEGRA_API const char *ntg_error_text(ntg_error_code error_code);
-
-/*
- * Tracing System
- */
-
-typedef enum ntg_trace_category_bits_ {
-	/* no trace category bits */
-	NO_TRACE_CATEGORY_BITS = 0,
-
-	/* Something unexpected happened, indicating a likely bug */
-	TRACE_ERROR_BITS = 1,
-	/* nothing unexpected happened, just useful information */
-	TRACE_PROGRESS_BITS = 2,
-	/* nothing unexpected happened, useful information which is expected to occur in large quantities*/
-	TRACE_VERBOSE_BITS = 4,
-
-	/*all trace category bits */
-	ALL_TRACE_CATEGORY_BITS = TRACE_ERROR_BITS | TRACE_PROGRESS_BITS | TRACE_VERBOSE_BITS
-} ntg_trace_category_bits;
-
-
-typedef enum ntg_trace_options_bits_ {
-	/* no trace options bits */
-	NO_TRACE_OPTIONS_BITS = 0,
-
-	/* trace the system time at which the trace occurred*/
-	TRACE_TIMESTAMP_BITS = 1,
-	/* trace the filename, line number, and function in which the trace occurred*/
-	TRACE_LOCATION_BITS = 2,
-	/* trace the id of the thread in which the trace occurred*/
-	TRACE_THREADSTAMP_BITS = 4,
-
-	/*all trace option bits */
-	ALL_TRACE_OPTION_BITS = TRACE_TIMESTAMP_BITS | TRACE_LOCATION_BITS | TRACE_THREADSTAMP_BITS
-} ntg_trace_options_bits;
-
-
-/*! \def TOSTRING(x)
- * Macro to convert an integer to a string at compile time
- */
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#ifdef _WINDOWS
-#define NTG_FUNCTION __FUNCTION__
-#else 
-#define NTG_FUNCTION TOSTRING(__FUNCTION__)
-#endif /*_WINDOWS*/
-
-#define NTG_LOCATION __FILE__ ": " TOSTRING(__LINE__) "(" NTG_FUNCTION ")"
-
-/*these tracing functions should not be called directly - use the tracing macros below*/
-
-LIBINTEGRA_API void ntg_trace(ntg_trace_category_bits trace_category, const char *location, const char *message);
-LIBINTEGRA_API void ntg_trace_with_int(ntg_trace_category_bits trace_category, const char *location, const char *message, int int_value);
-LIBINTEGRA_API void ntg_trace_with_float(ntg_trace_category_bits trace_category, const char *location, const char *message, float float_value);
-LIBINTEGRA_API void ntg_trace_with_string(ntg_trace_category_bits trace_category, const char *location, const char *message, const char *string_value);
-
-/*
- * use ntg_set_trace_options at during startup to specify what should be traced, and how it should be traced.  
- * NOTE! ntg_set_trace_options is not thread-safe!  It should only be called before ntg_server_run is called, and the trace macros should 
- * not be used until after ntg_set_trace_options has been called.
- */
-
-LIBINTEGRA_API void ntg_set_trace_options(ntg_trace_category_bits categories_to_trace, ntg_trace_options_bits trace_options);
-
-/*these are the set of tracing macros used to report erros or progress*/
-#define NTG_TRACE_ERROR(message) ntg_trace(TRACE_ERROR_BITS, NTG_LOCATION, message);
-#define NTG_TRACE_ERROR_WITH_INT(message, int_value) ntg_trace_with_int(TRACE_ERROR_BITS, NTG_LOCATION, message, int_value);
-#define NTG_TRACE_ERROR_WITH_FLOAT(message, float_value) ntg_trace_with_string(TRACE_ERROR_BITS, NTG_LOCATION, message, float_value);
-#define NTG_TRACE_ERROR_WITH_STRING(message, string_value) ntg_trace_with_string(TRACE_ERROR_BITS, NTG_LOCATION, message, string_value);
-#define NTG_TRACE_ERROR_WITH_ERRNO(message) ntg_trace_with_string(TRACE_ERROR_BITS, NTG_LOCATION, message, strerror(errno) );
-
-#define NTG_TRACE_PROGRESS(message) ntg_trace(TRACE_PROGRESS_BITS, NTG_LOCATION, message);
-#define NTG_TRACE_PROGRESS_WITH_INT(message, int_value) ntg_trace_with_int(TRACE_PROGRESS_BITS, NTG_LOCATION, message, int_value);
-#define NTG_TRACE_PROGRESS_WITH_FLOAT(message, float_value) ntg_trace_with_float(TRACE_PROGRESS_BITS, NTG_LOCATION, message, float_value);
-#define NTG_TRACE_PROGRESS_WITH_STRING(message, string_value) ntg_trace_with_string(TRACE_PROGRESS_BITS, NTG_LOCATION, message, string_value);
-
-#define NTG_TRACE_VERBOSE(message) ntg_trace(TRACE_VERBOSE_BITS, NTG_LOCATION, message);
-#define NTG_TRACE_VERBOSE_WITH_INT(message, int_value) ntg_trace_with_int(TRACE_VERBOSE_BITS, NTG_LOCATION, message, int_value);
-#define NTG_TRACE_VERBOSE_WITH_FLOAT(message, float_value) ntg_trace_with_float(TRACE_VERBOSE_BITS, NTG_LOCATION, message, float_value);
-#define NTG_TRACE_VERBOSE_WITH_STRING(message, string_value) ntg_trace_with_string(TRACE_VERBOSE_BITS, NTG_LOCATION, message, string_value);
-
 
 
 /*
@@ -168,60 +64,6 @@ typedef struct ntg_path_  ntg_path;
 typedef struct ntg_value_ ntg_value;
 typedef struct ntg_node_attribute_ ntg_node_attribute;
 
-/** \brief create an ntg_path from a '.' delimited string */
-LIBINTEGRA_API ntg_path *ntg_path_from_string(const char *path_string);
-
-/** \brief create a '.' delimited string from a '.' delimited path */
-LIBINTEGRA_API char *ntg_path_to_string(const ntg_path *path);
-
-/* \brief pop an element from a path, returning that element as a string.
- * The returned string is a copy and must be freed with ntg_free() after usage. */
-LIBINTEGRA_API char *ntg_path_pop_element(ntg_path *path);
-
-/* paths */
-/* \brief append an element to the end of a path. 
- * ntg_path *path is modified to hold the new path */
-LIBINTEGRA_API ntg_path *ntg_path_append_element(ntg_path *path, const char *element);
-
-/* Create a new path struct containing the contents of source */
-LIBINTEGRA_API ntg_path *ntg_path_copy(const ntg_path *source);
-
-/* Compare two paths returning true if they are the same */
-LIBINTEGRA_API bool ntg_path_compare(const ntg_path *path1, const ntg_path *path2);
-
-/* \brief Join two paths to create a new path */
-LIBINTEGRA_API ntg_path *ntg_path_join(const ntg_path *start, const ntg_path *end);
-
-/* \brief prints the contents of a path. Used for debugging */
-LIBINTEGRA_API void ntg_print_path(const ntg_path *path);
-
-/* \brief Check that a path is valid */
-LIBINTEGRA_API ntg_error_code ntg_path_validate(const ntg_path *path);
-
-LIBINTEGRA_API ntg_path *ntg_path_new(void);
-LIBINTEGRA_API ntg_error_code ntg_path_free(ntg_path *path);
-
-/** \brief Split a path at splitpoint
-   \param *path a pointer to the path to be split
-   \param splitpoint the splitpoint
-   \return The splitted off elements
-   This function modifies the passed in path, reducing it to splitpoint elements*/
-LIBINTEGRA_API ntg_path *ntg_path_split(ntg_path *path, int splitpoint);
-
-/* values */
-LIBINTEGRA_API ntg_value_type ntg_value_get_type(const ntg_value *value);
-LIBINTEGRA_API float ntg_value_get_float(const ntg_value *value);
-LIBINTEGRA_API int ntg_value_get_int(const ntg_value *value);
-LIBINTEGRA_API char *ntg_value_get_string(const ntg_value *value);
-
-
-/** \brief Returns a pointer to a newly allocated value
-  * \param void *v a pointer to the value initialiser
-  * \param ... optional parameter of type size_t specifying byte array length for value of type NTG_BLOB */
-LIBINTEGRA_API ntg_value *ntg_value_new(ntg_value_type type, const void *v, ...);
-
-/** \brief Free ntg_value previously allocated with ntg_value_new() */
-LIBINTEGRA_API ntg_error_code ntg_value_free(ntg_value *value) ;
 
 /*
  * server API
@@ -463,9 +305,6 @@ LIBINTEGRA_API ntg_command_status ntg_load_module_in_development( const char *fi
 
 
 
-/** \brief Terminate the server and cleanup */
-LIBINTEGRA_API void ntg_terminate(void);
-
 /** \brief Print out info about the state of the server to stdout.
  */
 LIBINTEGRA_API void ntg_print_state(void);
@@ -517,8 +356,5 @@ LIBINTEGRA_API ntg_bridge_callback ntg_server_get_bridge_callback(void);
 LIBINTEGRA_API char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -21,9 +21,6 @@
 #ifndef INTEGRA_VALUE_PRIVATE_H
 #define INTEGRA_VALUE_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 #include "Integra/integra.h"
@@ -33,6 +30,7 @@ extern "C" {
 
 #define NTG_NIL_REPR "(nil)"
 
+
 struct ntg_value_ {
     ntg_value_type type;
     union ctype_ {
@@ -41,6 +39,24 @@ struct ntg_value_ {
         int i;
     } ctype;
 };
+
+
+/* values */
+LIBINTEGRA_API ntg_value_type ntg_value_get_type(const ntg_value *value);
+LIBINTEGRA_API float ntg_value_get_float(const ntg_value *value);
+LIBINTEGRA_API int ntg_value_get_int(const ntg_value *value);
+LIBINTEGRA_API char *ntg_value_get_string(const ntg_value *value);
+
+
+/** \brief Returns a pointer to a newly allocated value
+  * \param void *v a pointer to the value initialiser
+  * \param ... optional parameter of type size_t specifying byte array length for value of type NTG_BLOB */
+LIBINTEGRA_API ntg_value *ntg_value_new(ntg_value_type type, const void *v, ...);
+
+/** \brief Free ntg_value previously allocated with ntg_value_new() */
+LIBINTEGRA_API ntg_error_code ntg_value_free(ntg_value *value) ;
+
+
 
 /** \brief Returns a pointer to a newly allocated value and takes the
  *   value as a string, regardless of type.
@@ -90,8 +106,5 @@ ntg_value *ntg_value_from_string(ntg_value_type type, const char *string);
 ntg_value *ntg_value_change_type(const ntg_value *value, ntg_value_type newType);
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -29,9 +29,36 @@
 struct ntg_path_ {
     char **elems;
     unsigned int n_elems;
-    const char *string;
+    char *string;
 };
 
-ntg_path *ntg_path_filter(const ntg_path *path1, const ntg_path *path2);
+
+/** \brief create an ntg_path from a '.' delimited string */
+LIBINTEGRA_API ntg_path *ntg_path_from_string(const char *path_string);
+
+/* \brief pop an element from a path, returning that element as a string.
+ * The returned string is a copy and must be freed with ntg_free() after usage. */
+LIBINTEGRA_API char *ntg_path_pop_element(ntg_path *path);
+
+/* paths */
+/* \brief append an element to the end of a path. 
+ * ntg_path *path is modified to hold the new path */
+LIBINTEGRA_API void ntg_path_append_element(ntg_path *path, const char *element);
+
+/* Create a new path struct containing the contents of source */
+LIBINTEGRA_API ntg_path *ntg_path_copy(const ntg_path *source);
+
+/* \brief Check that a path is valid */
+LIBINTEGRA_API ntg_error_code ntg_path_validate(const ntg_path *path);
+
+LIBINTEGRA_API ntg_path *ntg_path_new(void);
+LIBINTEGRA_API ntg_error_code ntg_path_free( ntg_path *path);
+
+
+/** \brief in place path reversal
+  */
+void ntg_path_reverse_elements(ntg_path *path);
+
+
 
 #endif

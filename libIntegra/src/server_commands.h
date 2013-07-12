@@ -23,16 +23,14 @@
 #include "server.h"
 #include "command.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /* this is also the order the arguments should be passed */
 typedef struct ntg_args_set_ {
-    unsigned int source;
+    ntg_command_source source;
     const ntg_path *path;
     const ntg_value *value;
 } ntg_args_set;
+
 
 ntg_command_status ntg_set_(ntg_server *server,
         ntg_command_source cmd_source,
@@ -82,8 +80,5 @@ ntg_value *ntg_get_(ntg_server *server, const ntg_path * path);
 
 void ntg_print_state_();
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

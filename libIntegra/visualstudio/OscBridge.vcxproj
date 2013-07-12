@@ -57,6 +57,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;INTEGRA_BRIDGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/liblo-master;../../libIntegra_dependencies/include;../../libIntegra_dependencies/pthreads-win32/include</AdditionalIncludeDirectories>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -95,10 +96,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\bridges\OSC\integra_osc_bridge.c" />
+    <ResourceCompile Include="OscBridge.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="OscBridge.rc" />
+    <ClCompile Include="..\bridges\OSC\integra_osc_bridge.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

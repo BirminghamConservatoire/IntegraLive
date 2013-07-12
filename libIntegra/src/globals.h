@@ -21,9 +21,6 @@
 #ifndef INTEGRA_GLOBALS_H
 #define INTEGRA_GLOBALS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #ifdef HAVE_CONFIG_H
 #    include <config.h>
@@ -35,6 +32,7 @@ extern "C" {
 #include "lo_ansi.h"
 #include "id.h"
 #include "memory.h"
+#include "trace.h"
 
 
 #ifdef DEFINE_GLOBALS
@@ -96,8 +94,5 @@ GLOBAL sem_t sem_system_shutdown;
 #endif
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

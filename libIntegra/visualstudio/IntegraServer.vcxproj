@@ -64,6 +64,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libIntegra.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -79,8 +80,8 @@
       </Message>
       <Command>call versioning/StampVer.bat ../../build/Debug/Server/IntegraServer.exe
 call copyDependenciesToDebug.bat
-call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
-call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\ModuleCreator
+rem call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
+rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\ModuleCreator
 </Command>
     </PostBuildEvent>
     <CustomBuildStep>
@@ -138,15 +139,15 @@ call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk\Mod
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\server\close_orphaned_processes.c" />
-    <ClCompile Include="..\server\integra_server.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\server\close_orphaned_processes.h" />
     <ClInclude Include="..\server\spawn.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IntegraServer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\server\close_orphaned_processes.cpp" />
+    <ClCompile Include="..\server\integra_server.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

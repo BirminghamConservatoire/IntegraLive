@@ -25,9 +25,19 @@
 
 #include "Integra/integra.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
+/* 
+ ntg_make_string_longer is a short-term solution to the absense of an equivalent to realloc within the new/delete paradigm
+ eventually, we should switch to using std::string instead of char * 
+ memory allocation would then be encapsulated within the string implementation
+*/
+
+char *ntg_change_string_length( char *string, int new_length );
+
+
+
+/* the following methods are deprecated by the switch to c++ and new/delete */
+#if 0
 
 /**
  * \file memory.h 
@@ -91,8 +101,6 @@ void ntg_free_debug(void *ptr, char *file, const char *function, int line);
 void *ntg_realloc(void *ptr, size_t size);
 
 
-#ifdef __cplusplus
-}
-#endif
+#endif  /* deprecated functions */
 
 #endif

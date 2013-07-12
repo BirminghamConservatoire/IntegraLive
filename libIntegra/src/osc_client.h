@@ -29,9 +29,6 @@ _resolve * USA.
 #include "command.h"
 #include "integra/integra.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct ntg_osc_client_ {
 
@@ -75,9 +72,6 @@ ntg_error_code ntg_osc_client_send_rename(ntg_osc_client *client,
         const char *name);
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

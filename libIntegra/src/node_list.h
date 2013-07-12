@@ -23,9 +23,6 @@
 
 #include "node.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 /** \struct ntg_node_list 
@@ -46,8 +43,5 @@ const ntg_node *ntg_node_list_get_tail( struct ntg_node_list_ *node_list );
 
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*INTEGRA_NODE_LIST_H*/

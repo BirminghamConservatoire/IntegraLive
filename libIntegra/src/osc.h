@@ -21,9 +21,6 @@ _resolve * USA.
 #ifndef NTG_OSC_H
 #define NTG_OSC_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "lo/lo.h"
 
@@ -33,9 +30,6 @@ int handler_namespace_method(const char *address, const char *types,
                              lo_arg ** argv, int argc, void *data,
                              void *user_data);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

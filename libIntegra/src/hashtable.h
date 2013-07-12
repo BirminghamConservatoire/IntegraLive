@@ -21,9 +21,6 @@
 #ifndef INTEGRA_HASHTABLE_PRIVATE_H
 #define INTEGRA_HASHTABLE_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "../externals/guiddef.h"
 
@@ -42,8 +39,5 @@ const void *ntg_hashtable_lookup_string( NTG_HASHTABLE *hashtable, const char *k
 const void *ntg_hashtable_lookup_guid( NTG_HASHTABLE *hashtable, const GUID *key );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

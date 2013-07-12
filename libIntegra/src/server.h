@@ -25,9 +25,6 @@
 #define NTG_RETURN_ERROR_CODE( ERROR_CODE ) command_status.error_code = ERROR_CODE;return command_status;
 #define NTG_COMMAND_STATUS_INIT command_status.data = NULL, command_status.error_code = NTG_NO_ERROR;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "Integra/integra_bridge.h"
 #include "node.h"
@@ -133,8 +130,9 @@ void ntg_lock_server(void);
 void ntg_unlock_server(void);
 void ntg_command_enqueue(ntg_command_id command_id, const int argc, ...);
 
-#ifdef __cplusplus
-}
-#endif
+
+/** \brief Terminate the server and cleanup */
+LIBINTEGRA_API void ntg_terminate(void);
+
 
 #endif

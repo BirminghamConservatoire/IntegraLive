@@ -21,12 +21,6 @@
 #ifndef INTEGRA_ATTRIBUTE_PRIVATE_H
 #define INTEGRA_ATTRIBUTE_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "id.h"
-#include "value.h"
 
 #ifndef NTG_ENDPOINT_TYPEDEF
 typedef struct ntg_endpoint_ ntg_endpoint;
@@ -78,8 +72,5 @@ void ntg_node_attributes_free(ntg_node_attribute *list_node);
 /** \brief Send attribute value to module host */
 void ntg_node_attribute_send_value(const ntg_node_attribute *attribute, ntg_bridge_interface *bridge);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -33,15 +33,9 @@
 #define INTEGRA_BRIDGE_HOST_PRIVATE_H
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \brief function to load a bridge and return either a pointer to the bridge interface, or a NULL pointer */
 void *ntg_bridge_load(const char *so_name);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

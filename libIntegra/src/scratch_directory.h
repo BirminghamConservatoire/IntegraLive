@@ -24,9 +24,6 @@
 #include "server.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 void ntg_scratch_directory_initialize( ntg_server *server );
 void ntg_scratch_directory_free( ntg_server *server );
@@ -39,8 +36,5 @@ char *ntg_extract_first_directory( const char *path );
 void ntg_construct_subdirectories( const char *root_directory, const char *relative_file_path );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* INTEGRA_SCRATCH_DIRECTORY_H */

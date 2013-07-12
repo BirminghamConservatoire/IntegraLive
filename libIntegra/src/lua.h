@@ -21,17 +21,11 @@
 #ifndef INTEGRA_LUA_PRIVATE_H
 #define INTEGRA_LUA_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <stdbool.h>
 #include "path.h"
 #include "server.h"
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

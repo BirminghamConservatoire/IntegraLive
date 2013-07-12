@@ -21,9 +21,6 @@
 #ifndef INTEGRA_INSTANCE_PRIVATE_H
 #define INTEGRA_INSTANCE_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "attribute.h"
 #include "hashtable.h"
@@ -243,9 +240,6 @@ ntg_path *ntg_node_get_path(const ntg_node *node);
   */
 ntg_path *ntg_node_update_path(ntg_node *node);
 
-/** \brief in place path reversal
-  */
-ntg_path *ntg_path_reverse_elements(ntg_path *path);
 
 /** \brief free a node
   */
@@ -305,8 +299,5 @@ bool ntg_node_is_module_in_use( const ntg_node *node, const GUID *module_id );
 void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

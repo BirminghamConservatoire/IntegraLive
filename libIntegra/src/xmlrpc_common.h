@@ -23,18 +23,11 @@ _resolve * USA.
 
 #include <xmlrpc-c/base.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 xmlrpc_value *ntg_xmlrpc_value_new (const ntg_value *value, xmlrpc_env *env);
 xmlrpc_value *ntg_xmlrpc_value_from_path(const ntg_path *path, xmlrpc_env *env);
-ntg_value *ntg_xmlrpc_get_value (xmlrpc_env *env,
-        const xmlrpc_value *value_xmlrpc);
+ntg_value *ntg_xmlrpc_get_value (xmlrpc_env *env, xmlrpc_value *value_xmlrpc);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

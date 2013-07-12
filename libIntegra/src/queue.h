@@ -22,26 +22,21 @@
 #define INTEGRA_QUEUE_PRIVATE_H
 
 #include <stdbool.h>
+#include "command.h"
 
 typedef struct ntg_queue_ {
   int n_elements;
   int read_pos;
   int write_pos;
   int used;
-  void *data[];
+  ntg_command **data;
 } ntg_queue;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-void *ntg_queue_new(int n_elements);
-void *ntg_queue_pop(ntg_queue *rb);
+ntg_queue *ntg_queue_new(int n_elements);
+ntg_command *ntg_queue_pop(ntg_queue *rb);
 void ntg_queue_free(ntg_queue *rb);
-bool ntg_queue_push(ntg_queue *rb, void *data);
+bool ntg_queue_push(ntg_queue *rb, ntg_command *data);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

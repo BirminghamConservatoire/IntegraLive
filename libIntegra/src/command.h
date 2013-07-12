@@ -22,9 +22,6 @@ _resolve * USA.
 #ifndef NTG_COMMAND_PRIVATE_H
 #define NTG_COMMAND_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include <stdarg.h>
 
@@ -58,9 +55,6 @@ ntg_command *ntg_command_new(ntg_command_id command_id, unsigned int argc,
         va_list argv);
 void ntg_command_free(ntg_command *command);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

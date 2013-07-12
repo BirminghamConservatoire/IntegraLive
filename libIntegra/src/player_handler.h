@@ -24,9 +24,6 @@
 #include "server.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*typedef struct ntg_player_state_ ntg_player_state; */
 
@@ -39,8 +36,5 @@ void ntg_player_handle_path_change( ntg_server *server, const ntg_node *player_n
 void ntg_player_handle_delete( ntg_server *server, const ntg_node *player_node );
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*INTEGRA_PLAYER_HANDLER_H*/

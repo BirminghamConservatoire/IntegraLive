@@ -49,22 +49,6 @@ typedef struct ntg_interface_ ntg_interface;
 	#endif
 #endif
 
-typedef struct ntg_node_list_ ntg_node_list;
-
-/* standard library container typedefs go here for now */
-
-struct GuidHash {
-  size_t operator()(const GUID& x) const { return MurmurHash2( &x, sizeof( GUID ), 53 ); }
-};
-
-
-typedef std::ostringstream ostringstream;
-typedef std::string string;
-typedef std::unordered_map<string, const ntg_node_attribute *> map_string_to_attribute;
-typedef std::unordered_set<GUID, GuidHash> guid_set;
-typedef std::unordered_map<GUID, ntg_interface *, GuidHash> map_guid_to_interface;
-typedef std::unordered_map<string, ntg_interface *> map_string_to_interface;
-
 
 
 /** \struct ntg_node "integra_node.h"
@@ -124,6 +108,29 @@ typedef struct ntg_node_ {
     ntg_path *path;
 
 } ntg_node;
+
+
+
+/* 
+ standard library container typedefs go here for now 
+
+ TODO - move them somewhere better
+*/
+
+struct GuidHash {
+  size_t operator()(const GUID& x) const { return MurmurHash2( &x, sizeof( GUID ), 53 ); }
+};
+
+
+typedef std::ostringstream ostringstream;
+typedef std::string string;
+typedef std::unordered_map<string, const ntg_node_attribute *> map_string_to_attribute;
+typedef std::unordered_set<GUID, GuidHash> guid_set;
+typedef std::unordered_map<GUID, ntg_interface *, GuidHash> map_guid_to_interface;
+typedef std::unordered_map<string, ntg_interface *> map_string_to_interface;
+
+typedef std::list<const ntg_node *> node_list;
+
 
 /** \brief Allocate a new empty node, and return a pointer to it 
  *
@@ -270,7 +277,7 @@ ntg_error_code ntg_node_free(ntg_node *node);
 ntg_error_code ntg_node_save( const ntg_node *node, unsigned char **buffer, unsigned int *buffer_length );
 
 /** \brief load from XML under a given node */
-ntg_error_code ntg_node_load( const ntg_node *node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes);
+ntg_error_code ntg_node_load( const ntg_node *node, xmlTextReaderPtr reader, node_list &loaded_nodes);
 
 /** \brief send node's newly-loaded attributes to host */
 ntg_error_code ntg_node_send_loaded_attributes_to_host( const ntg_node *node, ntg_bridge_interface *bridge ); 

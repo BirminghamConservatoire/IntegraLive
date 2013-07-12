@@ -42,7 +42,6 @@
 #include "module_manager.h"
 #include "interface.h"
 #include "validate.h"
-#include "node_list.h"
 #include "server_commands.h"
 
 #ifndef _WINDOWS
@@ -479,8 +478,8 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 	bool is_zip_file;
 	unsigned int ixd_buffer_length;
     xmlTextReaderPtr reader = NULL;
-	ntg_node_list *new_nodes_list = NULL;
-	ntg_node_list *new_node_iterator = NULL;
+	node_list new_nodes;
+	node_list::const_iterator new_node_iterator;
 	ntg_list *loaded_module_ids = NULL;
 
 	NTG_COMMAND_STATUS_INIT;
@@ -523,7 +522,7 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
     ntg_server_set_host_dsp( server_, 0);
 
     /* actually load the data */
-    command_status.error_code = ntg_node_load( parent, reader, &new_nodes_list );
+    command_status.error_code = ntg_node_load( parent, reader, new_nodes );
 	if( command_status.error_code != NTG_NO_ERROR )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "failed to load nodes", filename );
@@ -540,9 +539,9 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 	}
 
 	/* send the loaded attributes to the host */
-	for( new_node_iterator = new_nodes_list; new_node_iterator; new_node_iterator = new_node_iterator->next )
+	for( new_node_iterator = new_nodes.begin(); new_node_iterator != new_nodes.end(); new_node_iterator++ )
 	{
-		if( ntg_node_send_loaded_attributes_to_host( new_node_iterator->node, server_->bridge ) != NTG_NO_ERROR)
+		if( ntg_node_send_loaded_attributes_to_host( *new_node_iterator, server_->bridge ) != NTG_NO_ERROR)
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "failed to send loaded attributes to host", filename );
 			continue;
@@ -550,10 +549,10 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 	}
 
 	/* rename top-level node to filename */
-	if( new_nodes_list )
+	if( !new_nodes.empty() )
 	{
 		char *top_level_node_name = ntg_get_top_level_node_name( filename );
-		const ntg_node *top_level_node = ntg_node_list_get_tail( new_nodes_list );
+		const ntg_node *top_level_node = *new_nodes.begin();
 
 		if( strcmp( top_level_node->name, top_level_node_name ) != 0 )
 		{
@@ -575,8 +574,6 @@ CLEANUP:
 	{
 		delete[] ixd_buffer;
 	}
-
-	ntg_node_list_free( new_nodes_list );
 
 	if( command_status.error_code == NTG_NO_ERROR )
 	{

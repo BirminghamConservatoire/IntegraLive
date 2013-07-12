@@ -40,7 +40,6 @@
 #include "server.h"
 #include "command.h"
 #include "list.h"
-#include "node_list.h"
 #include "server_commands.h"
 #include "module_manager.h"
 #include "interface.h"
@@ -804,7 +803,7 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 }
 
 
-ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, ntg_node_list **loaded_nodes )
+ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, node_list &loaded_nodes )
 {
     const ntg_node     *parent;
     ntg_path           *path;
@@ -901,7 +900,7 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, nt
 					xmlFree(name);
 					path = NULL;
 
-					*loaded_nodes = ntg_node_list_push( *loaded_nodes, node );
+					loaded_nodes.push_back( node );
 				}
 				else
 				{

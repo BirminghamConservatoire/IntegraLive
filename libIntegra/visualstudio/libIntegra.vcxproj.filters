@@ -87,9 +87,6 @@
     <ClCompile Include="..\src\node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\node_list.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\osc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -252,9 +249,6 @@
       <Filter>Externals\minizip</Filter>
     </ClInclude>
     <ClInclude Include="..\src\data_directory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\node_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\interface.h">

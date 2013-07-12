@@ -69,11 +69,9 @@ xmlChar *ConvertInput(const char *in, const char *encoding);
 
 char *ntg_make_node_name(const char *class_name);
 
-/* replace hashes in a string with dots. modifies the string in place */
-void ntg_slash_to_dot(char *string);
-
 /* test guids for equality*/
 bool ntg_guids_are_equal( const GUID *guid1, const GUID *guid2 );
+
 
 /* nullify guid */
 void ntg_guid_set_null( GUID *guid );

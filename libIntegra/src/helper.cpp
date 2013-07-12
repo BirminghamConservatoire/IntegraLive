@@ -209,21 +209,6 @@ bool ntg_validate_node_name( const char *name )
 }
 
 
-void ntg_slash_to_dot(char *string)
-{
-    size_t length;
-
-    length = strlen(string);
-
-    while(length--) {
-        if(string[length] == '/'){
-            string[length] = '.';
-        }
-    }
-
-}
-
-
 /* helper to read a single hexadecimal character */
 ntg_error_code ntg_read_hex_char( char input, unsigned char *output )
 {

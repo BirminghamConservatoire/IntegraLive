@@ -34,34 +34,40 @@
 #include "server.h"
 #include "value.h"
 
+#include <algorithm>
+
 
 ntg_value *get_value_from_osc(char osc_type, lo_arg *arg);
 
 void osc_receive(const char *address, const ntg_value *value)
 {
-    char *path_s = NULL;
-    const ntg_node_attribute *attribute = NULL;
+	/* 
+	TODO - this is not thread-safe!  
+	We should not lock the server at all here, we should feed commands onto input queue asynchronously!
+	*/
 
-    /* copy the address without the leading "/" */
-    path_s = ntg_strdup(&address[1]);
-    ntg_slash_to_dot(path_s);
+    const ntg_node_attribute *attribute = NULL;
 
     ntg_lock_server();
 
-	attribute = static_cast<const ntg_node_attribute *> ( ntg_hashtable_lookup_string( server_->state_table, path_s) );
+    /* copy the address without the leading "/" */
+	string path( &address[ 1 ] );
+
+	/* replace dashes with dots */
+	std::replace( path.begin(), path.end(), '/', '.' );
 
     ntg_unlock_server();
 
-    delete[] path_s;
-
-    if (attribute == NULL) {
+	map_string_to_attribute::const_iterator lookup = server_->state_table.find( path );
+	if( lookup == server_->state_table.end() )
+	{
         NTG_TRACE_ERROR_WITH_STRING("received set request for invalid path", address);
-        return;
-    }
+        return;		
+	}
 
-    ntg_server_receive_( server_, NTG_SOURCE_OSC_API, attribute, value);
-
+	ntg_server_receive_( server_, NTG_SOURCE_OSC_API, lookup->second, value );
 }
+
 
 int handler_namespace_method(const char *address, const char *types,
                              lo_arg ** argv, int argc, void *data,

@@ -28,7 +28,6 @@
 #include "attribute.h"
 #include "memory.h"
 #include "value.h"
-#include "hashtable.h"
 #include "server.h"
 #include "globals.h"
 #include "helper.h"

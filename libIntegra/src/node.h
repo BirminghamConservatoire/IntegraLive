@@ -23,7 +23,12 @@
 
 
 #include "attribute.h"
-#include "hashtable.h"
+
+#include "MurmurHash2.h"
+#include <string>
+#include <sstream>
+#include <unordered_map>
+#include <unordered_set>
 
 #ifndef __XML_XMLREADER_H__
 #ifndef NTG_TEXTREADER_TYPEDEF
@@ -44,8 +49,23 @@ typedef struct ntg_interface_ ntg_interface;
 	#endif
 #endif
 
-
 typedef struct ntg_node_list_ ntg_node_list;
+
+/* standard library container typedefs go here for now */
+
+struct GuidHash {
+  size_t operator()(const GUID& x) const { return MurmurHash2( &x, sizeof( GUID ), 53 ); }
+};
+
+
+typedef std::ostringstream ostringstream;
+typedef std::string string;
+typedef std::unordered_map<string, const ntg_node_attribute *> map_string_to_attribute;
+typedef std::unordered_set<GUID, GuidHash> guid_set;
+typedef std::unordered_map<GUID, ntg_interface *, GuidHash> map_guid_to_interface;
+typedef std::unordered_map<string, ntg_interface *> map_string_to_interface;
+
+
 
 /** \struct ntg_node "integra_node.h"
  * \brief Linked list node for nodes 
@@ -277,8 +297,8 @@ void ntg_node_update_children(ntg_node *node);
 /** \brief get root node from any node */
 const ntg_node *ntg_node_get_root(const ntg_node *node);
 
-void ntg_node_add_to_statetable( const ntg_node *node, NTG_HASHTABLE *statetable );
-void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *statetable );
+void ntg_node_add_to_statetable( const ntg_node *node, map_string_to_attribute &statetable );
+void ntg_node_remove_from_statetable( const ntg_node *node, map_string_to_attribute &statetable );
 
 
 /** \brief test whether module is in use
@@ -296,7 +316,7 @@ bool ntg_node_is_module_in_use( const ntg_node *node, const GUID *module_id );
  *
  * */
 
-void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable );
+void ntg_node_remove_in_use_module_ids_from_set( const ntg_node &node, guid_set &set );
 
 
 

@@ -326,7 +326,7 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 
 	*module_guid = interface->module_guid;
 
-	if( ntg_hashtable_lookup_guid( module_manager->module_id_map, &interface->module_guid ) )
+	if( module_manager->module_id_map.count( interface->module_guid ) > 0 )
 	{
 		NTG_TRACE_VERBOSE_WITH_STRING( "Module already loaded", interface->info->name );
 		ntg_interface_free( interface );
@@ -345,26 +345,26 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 	interface->file_path = ntg_strdup( filename );
 	interface->module_source = module_source;
 
-	ntg_hashtable_add_guid_key( module_manager->module_id_map, &interface->module_guid, interface );
+	module_manager->module_id_map[ interface->module_guid ] = interface;
 
-	if( ntg_hashtable_lookup_guid( module_manager->origin_id_map, &interface->origin_guid ) )
+	if( module_manager->origin_id_map.count( interface->origin_guid ) > 0 )
 	{
 		NTG_TRACE_VERBOSE_WITH_STRING( "Two modules with same origin!  Leaving original in origin->interface table", interface->info->name );
 	}
 	else
 	{
-		ntg_hashtable_add_guid_key( module_manager->origin_id_map, &interface->origin_guid, interface );
+		module_manager->origin_id_map[ interface->origin_guid ] = interface;
 	}
 
 	if( ntg_interface_is_core( interface ) )
 	{
-		if( ntg_hashtable_lookup_string( module_manager->core_name_map, interface->info->name ) )
+		if( module_manager->core_name_map.count( interface->info->name ) > 0 )
 		{
 			NTG_TRACE_VERBOSE_WITH_STRING( "Two core modules with same name!  Leaving original in name->interface table", interface->info->name );
 		}
 		else
 		{
-			ntg_hashtable_add_string_key( module_manager->core_name_map, interface->info->name, interface );
+			module_manager->core_name_map[ interface->info->name ] = interface;
 		}
 	}
 	
@@ -527,20 +527,25 @@ void ntg_unload_module( ntg_module_manager *module_manager, ntg_interface *inter
 		ntg_delete_file( interface->file_path );
 	}
 
-	ntg_hashtable_remove_guid_key( module_manager->module_id_map, &interface->module_guid );
+	module_manager->module_id_map.erase( interface->module_guid );
 
 	/* only remove origin id keys if the entry points to this interface */
-	if( ntg_hashtable_lookup_guid( module_manager->origin_id_map, &interface->origin_guid ) == interface )
+	map_guid_to_interface::const_iterator lookup = module_manager->origin_id_map.find( interface->origin_guid );
+	if( lookup != module_manager->origin_id_map.end() )
 	{
-		ntg_hashtable_remove_guid_key( module_manager->origin_id_map, &interface->origin_guid );
+		if( lookup->second == interface )
+		{
+			module_manager->origin_id_map.erase( interface->origin_guid );
+		}
 	}
 
 	if( ntg_interface_is_core( interface ) )
 	{
 		/* only remove from core name map if the entry points to this interface */
-		if( ntg_hashtable_lookup_string( module_manager->core_name_map, interface->info->name ) == interface )
+		assert( module_manager->core_name_map.count( interface->info->name ) > 0 );
+		if( module_manager->core_name_map.at( interface->info->name ) == interface )
 		{
-			ntg_hashtable_remove_string_key( module_manager->core_name_map, interface->info->name );
+			module_manager->core_name_map.erase( interface->info->name );
 		}
 	}
 
@@ -618,25 +623,49 @@ const ntg_list *ntg_module_id_list( const ntg_module_manager *module_manager )
 
 const ntg_interface *ntg_get_interface_by_module_id( const ntg_module_manager *module_manager, const GUID *module_id )
 {
-	assert( module_manager && module_manager->module_id_map );
+	assert( module_manager );
 
-	return ( const ntg_interface * ) ntg_hashtable_lookup_guid( module_manager->module_id_map, module_id );
+	map_guid_to_interface::const_iterator lookup = module_manager->module_id_map.find( *module_id );
+	if( lookup == module_manager->module_id_map.end() ) 
+	{
+		return NULL;
+	}
+	else
+	{
+		return lookup->second;
+	}
 }
 
 
 const ntg_interface *ntg_get_interface_by_origin_id( const ntg_module_manager *module_manager, const GUID *origin_id )
 {
-	assert( module_manager && module_manager->origin_id_map );
+	assert( module_manager );
 
-	return ( const ntg_interface * ) ntg_hashtable_lookup_guid( module_manager->origin_id_map, origin_id );
+	map_guid_to_interface::const_iterator lookup = module_manager->origin_id_map.find( *origin_id );
+	if( lookup == module_manager->origin_id_map.end() ) 
+	{
+		return NULL;
+	}
+	else
+	{
+		return lookup->second;
+	}
 }
 
 
 const ntg_interface *ntg_get_core_interface_by_name( const ntg_module_manager *module_manager, const char *name )
 {
-	assert( module_manager && module_manager->core_name_map );
+	assert( module_manager );
 
-	return ( const ntg_interface * ) ntg_hashtable_lookup_string( module_manager->core_name_map, name );
+	map_string_to_interface::const_iterator lookup = module_manager->core_name_map.find( name );
+	if( lookup == module_manager->core_name_map.end() ) 
+	{
+		return NULL;
+	}
+	else
+	{
+		return lookup->second;
+	}
 }
 
 
@@ -668,9 +697,6 @@ ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_roo
 	assert( scratch_directory_root && system_module_directory && third_party_module_directory );
 
 	module_manager = new ntg_module_manager;
-	module_manager->module_id_map = ntg_hashtable_new();
-	module_manager->origin_id_map = ntg_hashtable_new();
-	module_manager->core_name_map = ntg_hashtable_new();
 	module_manager->module_id_list = ntg_list_new( NTG_LIST_GUIDS );
 	
 	ntg_module_manager_load_legacy_module_id_file( module_manager );
@@ -710,10 +736,6 @@ void ntg_module_manager_free( ntg_module_manager *module_manager )
 	assert( module_manager );
 
 	ntg_free_all_modules( module_manager );
-
-	ntg_hashtable_free( module_manager->module_id_map );
-	ntg_hashtable_free( module_manager->origin_id_map );
-	ntg_hashtable_free( module_manager->core_name_map );
 
 	ntg_list_free( module_manager->module_id_list );
 
@@ -1022,18 +1044,16 @@ void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, cons
 }
 
 
-ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node *root_node )
+ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node &root_node )
 {
-	NTG_HASHTABLE *embedded_modules;
+	guid_set embedded_modules;
 	const ntg_interface *interface;
 	int number_of_module_ids;
 	const GUID *module_ids;
 	ntg_list *orphaned_embedded_modules;
 	int i;
 
-	assert( module_manager && root_node );
-
-	embedded_modules = ntg_hashtable_new();
+	assert( module_manager );
 
 	number_of_module_ids = module_manager->module_id_list->n_elems;
 	module_ids = ( const GUID * ) module_manager->module_id_list->elems;
@@ -1050,25 +1070,23 @@ ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_man
 
 		if( interface->module_source == NTG_MODULE_EMBEDDED )
 		{
-			ntg_hashtable_add_guid_key( embedded_modules, &interface->module_guid, ( const void * ) 1 );
+			embedded_modules.insert( interface->module_guid );
 		}
 	}
 
 	/* second pass - walk node tree pruning any modules still in use */
-	ntg_node_remove_in_use_module_ids_from_hashtable( root_node, embedded_modules );
+	ntg_node_remove_in_use_module_ids_from_set( root_node, embedded_modules );
 
 	/* third pass - build list of orphaned embedded module ids */
 	orphaned_embedded_modules = ntg_list_new( NTG_LIST_GUIDS );
 
 	for( i = 0; i < number_of_module_ids; i++ )
 	{
-		if( ntg_hashtable_lookup_guid( embedded_modules, &module_ids[ i ] ) )
+		if( embedded_modules.count( module_ids[ i ] ) > 0 )
 		{
 			ntg_list_push_guid( orphaned_embedded_modules, &module_ids[ i ] );
 		}
 	}
-
-	ntg_hashtable_free( embedded_modules );
 
 	if( orphaned_embedded_modules->n_elems == 0 )
 	{

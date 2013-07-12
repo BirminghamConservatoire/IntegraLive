@@ -28,7 +28,6 @@
 
 #include "Integra/integra_bridge.h"
 #include "node.h"
-#include "hashtable.h"
 #include "path.h"
 #include "command.h"
 
@@ -50,7 +49,7 @@ typedef struct ntg_server_ {
     ntg_node *root;
     ntg_bridge_interface *bridge;
     struct ntg_osc_client_ *osc_client;
-    NTG_HASHTABLE *state_table; /* resolves path-as-string to node attribute */
+    map_string_to_attribute state_table; /* resolves path-as-string to node attribute */
     struct ntg_system_class_data_ *system_class_data;
     char *scratch_directory_root;
 	struct ntg_module_manager_ *module_manager;

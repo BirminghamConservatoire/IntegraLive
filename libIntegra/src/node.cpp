@@ -1050,18 +1050,20 @@ void ntg_node_rename(ntg_node *node, const char *name)
 
 const ntg_node_attribute *ntg_find_attribute( const ntg_node *node, const char *attribute_name )
 {
-    char *path;
-	const ntg_node_attribute *attribute;
+	ostringstream path;
+	path << node->path->string << "." << attribute_name;
 
-	path = new char[ strlen( node->path->string ) + strlen( attribute_name ) + 2 ];
-	sprintf( path, "%s.%s", node->path->string, attribute_name );
-
-	attribute = ( const ntg_node_attribute * ) ntg_hashtable_lookup_string( server_->state_table, path );
-
-    delete[] path;
-
-    return attribute;
+	map_string_to_attribute::const_iterator lookup = server_->state_table.find( path.str() );
+	if( lookup == server_->state_table.end() )
+	{
+		return NULL;
+	}
+	else
+	{
+		return lookup->second;
+	}
 }
+
 
 const ntg_node *ntg_node_get_root(const ntg_node *node) {
 
@@ -1076,7 +1078,7 @@ const ntg_node *ntg_node_get_root(const ntg_node *node) {
 }
 
 
-void ntg_node_add_to_statetable( const ntg_node *node, NTG_HASHTABLE *statetable )
+void ntg_node_add_to_statetable( const ntg_node *node, map_string_to_attribute &statetable )
 {
 	const ntg_node_attribute *attribute;
 	const ntg_node *child_node;
@@ -1086,7 +1088,7 @@ void ntg_node_add_to_statetable( const ntg_node *node, NTG_HASHTABLE *statetable
 	attribute = node->attributes;
 	do
 	{
-		ntg_hashtable_add_string_key( statetable, attribute->path->string, attribute );
+		statetable[ attribute->path->string ] = attribute;
 
 		attribute = attribute->next;
 	}
@@ -1108,7 +1110,7 @@ void ntg_node_add_to_statetable( const ntg_node *node, NTG_HASHTABLE *statetable
 }
 
 
-void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *statetable )
+void ntg_node_remove_from_statetable( const ntg_node *node, map_string_to_attribute &statetable )
 {
 	const ntg_node_attribute *attribute;
 	const ntg_node *child_node;
@@ -1118,7 +1120,7 @@ void ntg_node_remove_from_statetable( const ntg_node *node, NTG_HASHTABLE *state
 	attribute = node->attributes;
 	do
 	{
-		ntg_hashtable_remove_string_key( statetable, attribute->path->string );
+		statetable.erase( attribute->path->string );
 
 		attribute = attribute->next;
 	}
@@ -1174,31 +1176,25 @@ bool ntg_node_is_module_in_use( const ntg_node *node, const GUID *module_id )
 }
 
 
-void ntg_node_remove_in_use_module_ids_from_hashtable( const ntg_node *node, NTG_HASHTABLE *hashtable )
+void ntg_node_remove_in_use_module_ids_from_set( const ntg_node &node, guid_set &set )
 {
 	const ntg_node *child_node;
 
-	assert( node && hashtable );
-
-	if( node->interface )
+	if( node.interface )
 	{
-		if( ntg_hashtable_lookup_guid( hashtable, &node->interface->module_guid ) )
-		{
-			ntg_hashtable_remove_guid_key( hashtable, &node->interface->module_guid );
-		}
+		set.erase( node.interface->module_guid );
 	}
 
 	/* recurse child nodes */
-
-	child_node = node->nodes;
+	child_node = node.nodes;
 	if( child_node )
 	{
 		do
 		{
-			ntg_node_remove_in_use_module_ids_from_hashtable( child_node, hashtable );
+			ntg_node_remove_in_use_module_ids_from_set( *child_node, set );
 
 			child_node = child_node->next;
 		}
-		while( child_node != node->nodes );
+		while( child_node != node.nodes );
 	}
 }

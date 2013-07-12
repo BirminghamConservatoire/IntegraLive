@@ -448,7 +448,7 @@ ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, nt
 
 	NTG_COMMAND_STATUS_INIT;
 
-	orphaned_embedded_modules = ntg_module_manager_get_orphaned_embedded_modules( server->module_manager, server->root );
+	orphaned_embedded_modules = ntg_module_manager_get_orphaned_embedded_modules( server->module_manager, *server->root );
 
 	if( orphaned_embedded_modules )
 	{

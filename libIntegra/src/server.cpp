@@ -101,22 +101,20 @@ void ntg_unlock_server(void)
 }
 
 
-const ntg_node_attribute *ntg_server_resolve_relative_path( 
-        const ntg_server *server,
-		const ntg_node *root,
-        const char *path)
+const ntg_node_attribute *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const char *path )
 {
-	char *composite_path = NULL;
-	const ntg_node_attribute *attribute = NULL;
+	ostringstream composite_path;
+	composite_path << root->path->string << "." << path;
 
-	composite_path = new char[ strlen( root->path->string ) + strlen( path ) + 2 ];
-	sprintf( composite_path, "%s.%s", root->path->string, path );
-
-    attribute = static_cast<const ntg_node_attribute *>( ntg_hashtable_lookup_string( server->state_table, composite_path ) );
-
-	delete[] composite_path;
-
-	return attribute;
+	map_string_to_attribute::const_iterator lookup = server->state_table.find( composite_path.str() );
+	if( lookup == server->state_table.end() )
+	{
+		return NULL;
+	}
+	else
+	{
+		return lookup->second;
+	}
 }
 
 
@@ -395,7 +393,6 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 
 	server->module_manager = ntg_module_manager_create( server->scratch_directory_root, system_module_directory, third_party_module_directory );
 
-    server->state_table				= ntg_hashtable_new();
     server->osc_client				= ntg_osc_client_new(osc_client_url, osc_client_port);
     server->terminate				= false;
     server->loading					= false;
@@ -432,8 +429,6 @@ void ntg_server_free(ntg_server *server)
 //    server->bridge = NULL;
 
 	ntg_module_manager_free( server->module_manager );
-
-	ntg_hashtable_free(server->state_table);
 
 	ntg_scratch_directory_free(server);
 

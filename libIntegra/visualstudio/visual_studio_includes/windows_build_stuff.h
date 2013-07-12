@@ -25,7 +25,9 @@
 	#pragma warning(disable : 4018)		//disable warnings about signed/unsigned mismatch
 	#pragma warning(disable : 4244)		//disable warnings about type conversion
 	#pragma warning(disable : 4267)		//disable warnings about type conversion
-	//#pragma warning(disable : 4047)		//disable warnings about differing levels of indirection
+	#pragma warning(disable : 4800)		//disable warnings about forcing value to bool
+
+//#pragma warning(disable : 4047)		//disable warnings about differing levels of indirection
 
 	#define snprintf _snprintf
 

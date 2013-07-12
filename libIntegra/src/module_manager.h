@@ -23,7 +23,6 @@
 
 
 #include "Integra/integra.h"
-#include "hashtable.h"
 #include "node.h"
 #include "../externals/guiddef.h"
 
@@ -46,9 +45,9 @@ typedef struct ntg_load_module_in_development_result_ ntg_load_module_in_develop
 struct ntg_module_manager_
 {
 	ntg_list *module_id_list;
-	NTG_HASHTABLE *module_id_map;
-	NTG_HASHTABLE *origin_id_map;
-	NTG_HASHTABLE *core_name_map;
+	map_guid_to_interface module_id_map;
+	map_guid_to_interface origin_id_map;
+	map_string_to_interface core_name_map;
 
 	GUID *legacy_module_id_table;
 	int legacy_module_id_table_elems;
@@ -102,7 +101,7 @@ const ntg_interface *ntg_get_core_interface_by_name( const ntg_module_manager *m
 char *ntg_module_manager_get_unique_interface_name( const ntg_interface *interface );
 char *ntg_module_manager_get_patch_path( const ntg_module_manager *module_manager, const ntg_interface *interface );
 
-ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node *root_node );
+ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node &root_node );
 void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, const ntg_list *module_ids );
 
 ntg_error_code ntg_interpret_legacy_module_id( const ntg_module_manager *module_manager, ntg_id old_id, GUID *output );

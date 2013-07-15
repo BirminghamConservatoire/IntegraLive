@@ -163,7 +163,6 @@
     <ClCompile Include="..\src\init.cpp" />
     <ClCompile Include="..\src\interface.cpp" />
     <ClCompile Include="..\src\luascripting.cpp" />
-    <ClCompile Include="..\src\memory.cpp" />
     <ClCompile Include="..\src\module_manager.cpp" />
     <ClCompile Include="..\src\MurmurHash2.cpp" />
     <ClCompile Include="..\src\node.cpp" />
@@ -206,9 +205,7 @@
     <ClInclude Include="..\Integra\integra.h" />
     <ClInclude Include="..\src\interface.h" />
     <ClInclude Include="..\src\lo_ansi.h" />
-    <ClInclude Include="..\src\lua.h" />
     <ClInclude Include="..\src\luascripting.h" />
-    <ClInclude Include="..\src\memory.h" />
     <ClInclude Include="..\src\module_manager.h" />
     <ClInclude Include="..\src\MurmurHash2.h" />
     <ClInclude Include="..\src\node.h" />

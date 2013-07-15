@@ -38,6 +38,8 @@
 #include "globals.h"
 #include "Integra/integra.h"
 
+using namespace ntg_api;
+
 
 char *ntg_strdup(const char *string)
 {
@@ -67,22 +69,20 @@ int ntg_count_digits(int num)
 /* dest must have been allocated with new, or be NULL */
 char *ntg_string_append( char *dest, const char *source )
 {
-    if (source != NULL) {
+	if( !source )
+	{
+		return dest;
+	}
 
-        size_t source_length = strlen(source);
-        size_t dest_length   = dest!=NULL?strlen(dest):0;
-        size_t final_length  = dest_length + source_length;
+	if( !dest )
+	{
+		return ntg_strdup( source );
+	}
 
-		dest = ntg_change_string_length( dest, final_length );
+	ostringstream composite;
+	composite << dest << source;
 
-        if(dest_length) {
-            strncat(dest, source, source_length);
-        } else {
-            strncpy(dest, source, source_length + 1);
-        }
-    }
-
-    return dest;
+	return ntg_strdup( composite.str().c_str() );
 }
 
 

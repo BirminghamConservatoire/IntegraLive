@@ -75,9 +75,6 @@
     <ClCompile Include="..\src\luascripting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\memory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\MurmurHash2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -161,13 +158,7 @@
     <ClInclude Include="..\Integra\integra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\lua.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\luascripting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\node.h">

@@ -55,8 +55,7 @@
 
 #include "attribute.h"
 #include "helper.h"
-#include "list.h"
-
+#include "common_typedefs.h"
 
 #define HELPSTR_VERSION "Return the current version of libIntegra\n\\return {'response':'system.version', 'version':<string>\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
 
@@ -109,7 +108,7 @@ static TServer abyssServer;
 typedef xmlrpc_value *(* ntg_server_callback_va)(ntg_server *, int, va_list);
 
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 /* run server command -- blocking version
@@ -193,9 +192,6 @@ static CPath ntg_xmlrpc_get_path( xmlrpc_env *env, xmlrpc_value *xmlrpc_path )
 static xmlrpc_value *ntg_xmlrpc_interfacelist_callback(ntg_server * server,
         const int argc, va_list argv)
 {
-    const ntg_list *module_id_list;
-	int number_of_modules, i;
-	GUID *module_ids;
 	char *module_id_string;
     xmlrpc_value *array_ = NULL,
                  *array_item = NULL, *xmlrpc_name = NULL, *struct_ = NULL;
@@ -203,14 +199,12 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist_callback(ntg_server * server,
 
     env = va_arg(argv, xmlrpc_env *);
 
-	module_id_list = ntg_module_id_list( server->module_manager );
-    number_of_modules = module_id_list->n_elems;
-    module_ids = (GUID *)module_id_list->elems;
+	const guid_set &module_ids = ntg_module_id_set( server->module_manager );
 
     array_ = xmlrpc_array_new(env);
-    for( i = 0; i < number_of_modules; i++ ) 
+	for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ ) 
 	{
-		module_id_string = ntg_guid_to_string( &module_ids[ i ] );
+		module_id_string = ntg_guid_to_string( &( *i ) );
         array_item = xmlrpc_string_new( env, module_id_string );
         xmlrpc_array_append_item(env, array_, array_item);
         xmlrpc_DECREF(array_item);
@@ -219,7 +213,6 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist_callback(ntg_server * server,
 
     if (env->fault_occurred)
         return NULL;
-
 
     struct_ = xmlrpc_struct_new(env);
     xmlrpc_name = xmlrpc_string_new(env, "query.interfacelist");
@@ -828,48 +821,41 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback(ntg_server * server,
                  *xmlrpc_elem = NULL,
                  *xmlrpc_guid = NULL,
                  *xmlrpc_temp = NULL, *struct_ = NULL, *node_struct = NULL;
-    ntg_list *nodelist = NULL;
-    CPath *path = NULL;
     ntg_node *node = NULL;
     ntg_node *root = NULL;
-    int n, m;
     char *module_id_string = NULL;
 
     env = va_arg(argv, xmlrpc_env *);
-    path = va_arg(argv, CPath *);
+    const CPath *path = va_arg(argv, CPath *);
 
     xmlrpc_nodes = xmlrpc_array_new(env);
     struct_ = xmlrpc_struct_new(env);
 
-    nodelist = ntg_nodelist_(server, *path );
-
-    if (nodelist == NULL) {
-        return ntg_xmlrpc_error(env, NTG_FAILED);
-    }
+	path_list paths;
+    ntg_nodelist_(server, *path, paths );
 
     /* each node is a ntg_path */
-
-    for (n = 0; n < nodelist->n_elems; n++) {
-
+	for( path_list::const_iterator path_iterator = paths.begin(); path_iterator != paths.end(); path_iterator++ )
+	{
         xmlrpc_path = xmlrpc_array_new(env);
-        path = ((ntg_api::CPath **)nodelist->elems)[n];
 
-		for (m = 0; m < path->get_number_of_elements(); m++) {
+		const CPath &path = *path_iterator;
 
-			xmlrpc_elem = xmlrpc_string_new( env, (*path)[m].c_str() );
+		for( int i = 0; i < path.get_number_of_elements(); i++ )
+		{
+			xmlrpc_elem = xmlrpc_string_new( env, path[ i ].c_str() );
 
             xmlrpc_array_append_item(env, xmlrpc_path, xmlrpc_elem);
             xmlrpc_DECREF(xmlrpc_elem);
-
         }
 
         /* get the class id */
         root = ntg_server_get_root(server);
-        node = ntg_node_find_by_path( *path, root );
+        node = ntg_node_find_by_path( path, root );
         
         if (node == NULL) 
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "path not found: ", path->get_string().c_str() );
+			NTG_TRACE_ERROR_WITH_STRING( "path not found: ", path.get_string().c_str() );
             return ntg_xmlrpc_error(env, NTG_FAILED);
         }
 
@@ -896,9 +882,6 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback(ntg_server * server,
 
     xmlrpc_struct_set_value(env, struct_, "nodelist", xmlrpc_nodes);
     xmlrpc_DECREF(xmlrpc_nodes);
-
-    /* free out-of-place memory */
-    ntg_list_free(nodelist);
 
     return struct_;
 
@@ -1074,9 +1057,6 @@ static xmlrpc_value *ntg_xmlrpc_load_callback(ntg_server * server, const int arg
     ntg_command_status command_status;
     CPath *path;
     char *file_path;
-	ntg_list *embedded_module_ids;
-	GUID *guids;
-	int i;
 	char *module_id_string;
 
     env = va_arg(argv, xmlrpc_env *);
@@ -1108,19 +1088,18 @@ static xmlrpc_value *ntg_xmlrpc_load_callback(ntg_server * server, const int arg
 	xmlrpc_array = xmlrpc_array_new( env );
 	if( command_status.data )
 	{
-		embedded_module_ids = ( ntg_list * ) command_status.data;
-		guids = ( GUID * ) embedded_module_ids->elems;
+		guid_set *embedded_module_ids = ( guid_set * ) command_status.data;
 
-		for( i = 0; i < embedded_module_ids->n_elems; i++ ) 
+		for( guid_set::const_iterator i = embedded_module_ids->begin(); i != embedded_module_ids->end(); i++ )
 		{
-			module_id_string = ntg_guid_to_string( &guids[ i ] );
+			module_id_string = ntg_guid_to_string( &( *i ) );
 			xmlrpc_temp = xmlrpc_string_new( env, module_id_string );
 			xmlrpc_array_append_item( env, xmlrpc_array, xmlrpc_temp);
 			xmlrpc_DECREF( xmlrpc_temp );
 			delete[] module_id_string;
 		}
 
-		ntg_list_free( embedded_module_ids );
+		delete embedded_module_ids;
 	}
 
     xmlrpc_struct_set_value(env, struct_, "embeddedmodules", xmlrpc_array );

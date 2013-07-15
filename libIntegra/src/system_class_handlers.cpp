@@ -41,11 +41,10 @@
 #include "helper.h"
 #include "module_manager.h"
 #include "interface.h"
-#include "list.h"
 #include "value.h"
 #include "trace.h"
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 /*
 typedefs
@@ -263,7 +262,7 @@ bool ntg_node_are_all_ancestors_active( const ntg_node *node )
 }
 
 
-void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activate, ntg_list *activated_nodes )
+void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activate, path_list &activated_nodes )
 {
 	/*
 	sets 'active' attribute on any descendants that are not containers
@@ -282,7 +281,6 @@ void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activ
 
 	assert( server );
 	assert( node );
-	assert( activated_nodes );
 
 	if( ntg_interface_is_core_name_match( node->interface, NTG_CLASS_CONTAINER ) )
 	{
@@ -306,7 +304,7 @@ void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activ
 
 				if( activate )
 				{
-					ntg_list_push_node( activated_nodes, node->path );
+					activated_nodes.push_back( node->path );
 				}
 			}
 
@@ -330,14 +328,12 @@ void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activ
 
 void ntg_container_active_handler( ntg_server *server, const ntg_node *node, bool active )
 {
-	const ntg_node *child = NULL;
-	ntg_list *activated_nodes = ntg_list_new( NTG_LIST_NODES );
-	int i;
-
 	assert( server );
 	assert( node );
 
-	child = node->nodes;
+	path_list activated_nodes;
+
+	const ntg_node *child = node->nodes;
 	if( child )
 	{
 		do{
@@ -351,13 +347,13 @@ void ntg_container_active_handler( ntg_server *server, const ntg_node *node, boo
 	/* 
 	Now we explicitly update some system classes which were activated by this operation.
 	This needs to be done here, instead of via a normal set handler, in order to ensure that subsequent
-	business logic happens after	everything else has become active
+	business logic happens after everything else has become active
 	*/
 
-	for( i = 0; i < activated_nodes->n_elems; i++ )
+	for( path_list::const_iterator i = activated_nodes.begin(); i != activated_nodes.end(); i++ )
 	{
-		const CPath *path = ( ( CPath ** ) activated_nodes->elems )[ i ];
-		const ntg_node *activated_node = ntg_node_find_by_path( *path, server->root );
+		const CPath &path = *i;
+		const ntg_node *activated_node = ntg_node_find_by_path( path, server->root );
 		assert( activated_node );
 
 		if( ntg_interface_is_core_name_match( activated_node->interface, NTG_CLASS_ENVELOPE ) )
@@ -373,8 +369,6 @@ void ntg_container_active_handler( ntg_server *server, const ntg_node *node, boo
 			ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->path, player_tick->value );
 		}
 	}
-
-	ntg_list_free( activated_nodes );
 }
 
 

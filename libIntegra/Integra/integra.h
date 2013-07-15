@@ -39,9 +39,13 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
-#include "../externals/guiddef.h"
+
+#include <unordered_map>
 
 #include "../src/error.h"
+#include "../src/common_typedefs.h"
+#include "../src/path.h"
+
 
 /* Maximum audio inputs or outputs per module */
 #define NTG_AUDIO_PORTS_MAX 16
@@ -68,12 +72,12 @@ typedef enum ntg_value_type_ {
 typedef unsigned long ntg_id;
 typedef struct ntg_value_ ntg_value;
 typedef struct ntg_node_attribute_ ntg_node_attribute;
+typedef std::unordered_map<ntg_api::string, const ntg_node_attribute *> map_string_to_attribute;
 
 
 /*
  * server API
  */
-typedef struct ntg_list_ ntg_list;
 typedef struct ntg_command_queue_  ntg_command_queue;
 
 /** \brief Definition of the type ntg_command_status @see
@@ -83,10 +87,6 @@ typedef struct ntg_command_status_ {
     ntg_error_code error_code;
 } ntg_command_status;
 
-/** \brief ntg_list memory management
- */
-void ntg_list_free_as_nodelist(ntg_list *);
-void ntg_list_free_as_attributes(ntg_list *);
 
 /** \brief Callback function that gets passed to the module host when the 
   * server is started.
@@ -101,11 +101,11 @@ typedef void (*ntg_bridge_callback)(int argc, void *argv);
 
 
 /** \brief Get the list of available interfaces from the server
-  * \return a pointer to an ntg_list containing a list of guids
+  * \return a reference to a guid_set 
   * \error a pointer to NULL is returned if an error occurs 
   *
   */
-LIBINTEGRA_API const ntg_list *ntg_interfacelist(void);
+LIBINTEGRA_API const ntg_api::guid_set &ntg_interfacelist(void);
 
 
 
@@ -176,8 +176,8 @@ LIBINTEGRA_API ntg_command_status ntg_save( const ntg_api::CPath &, const char *
  under the server root node
  * \return a struct of type ntg_command_status. If the function succeeded,
  * this will contain the error_code NTG_NO_ERROR, and ntg_command_status.data 
- * will contain an ntg_list of all embedded modules ids that were loaded.  This 
- * list is allocated on the heap, and the caller should free it with ntg_list_free
+ * will contain a guid_set  of all embedded modules ids that were loaded.  This 
+ * guid_set is allocated on the heap, and the caller should delete it 
  * \error possible return values for error status are given in integra_error.h
  * */
 LIBINTEGRA_API ntg_command_status ntg_load(const char *file_path, const ntg_api::CPath &path);
@@ -231,13 +231,13 @@ LIBINTEGRA_API const ntg_value *ntg_get( const ntg_api::CPath &path );
  the path to the given parent. The path gives the root of the nodelist, so if
  we want ALL nodes on the server, an empty path should be given. For all nodes
  under the container: Project1, the path array should be ['Project1']
- * \return a pointer to a struct of type ntg_list, which gives all of the
+ * \return a pointer to a path_list, which gives all of the
  * paths under a given node as n_nodes CPath arrays. The returned pointer
- * must be passed to ntg_list_free_as_nodelist() when done.
+ * must be deleted when done.
  * \error a pointer to NULL is returned if an error occurs
  *
  * */
-LIBINTEGRA_API const ntg_list *ntg_nodelist( const ntg_api::CPath &path );
+LIBINTEGRA_API ntg_error_code ntg_nodelist( const ntg_api::CPath &path, ntg_api::path_list &results );
 
 
 /** \brief Unloads embedded modules that are not in use

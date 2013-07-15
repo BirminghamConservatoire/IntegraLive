@@ -64,7 +64,7 @@ extern "C"
 #define NTG_GET_COLOR		0xc08000
 #define NTG_PRINT_COLOR		0x6060ff
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 typedef struct ntg_lua_context_stack_

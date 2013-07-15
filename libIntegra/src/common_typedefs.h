@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *
+ /* libIntegra multimedia module interface
+ *  
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,34 +18,39 @@
  * USA.
  */
 
-#ifndef INTEGRA_LIST_PRIVATE_H
-#define INTEGRA_LIST_PRIVATE_H
+
+#ifndef INTEGRA_COMMON_TYPEDEFS
+#define INTEGRA_COMMON_TYPEDEFS
+
+#include <sstream>
+#include <string>
+#include <string>
+#include <unordered_set>
+
+#include "../externals/guiddef.h"
+
+#include "MurmurHash2.h"
+
+
 
 namespace ntg_api
 {
-	class CPath;
+	/* Strings */
+	typedef std::ostringstream ostringstream;
+	typedef std::string string;
+	typedef std::vector<string> string_vector;
+
+
+	/* Guids */ 
+	struct GuidHash 
+	{
+	  size_t operator()(const GUID& x) const { return MurmurHash2( &x, sizeof( GUID ), 53 ); }
+	};
+
+
+	typedef std::unordered_set<GUID, GuidHash> guid_set;
 }
 
 
-typedef enum ntg_list_type_ {
-    NTG_LIST_NODES,
-	NTG_LIST_GUIDS
-} ntg_list_type;
 
-struct ntg_list_ {
-    ntg_list_type type;
-    void *elems;
-    unsigned long n_elems;
-};
-
-#include "Integra/integra.h"
-
-ntg_list *ntg_list_new(ntg_list_type);
-void ntg_list_free(ntg_list *);
-
-void ntg_list_push_node( ntg_list *list, const ntg_api::CPath &path );
-void ntg_list_push_guid( ntg_list *list, const GUID *guid );
-
-
-#endif
-
+#endif /* INTEGRA_COMMON_TYPEDEFS */

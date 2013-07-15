@@ -162,7 +162,6 @@
     <ClCompile Include="..\src\id.cpp" />
     <ClCompile Include="..\src\init.cpp" />
     <ClCompile Include="..\src\interface.cpp" />
-    <ClCompile Include="..\src\list.cpp" />
     <ClCompile Include="..\src\luascripting.cpp" />
     <ClCompile Include="..\src\memory.cpp" />
     <ClCompile Include="..\src\module_manager.cpp" />
@@ -206,7 +205,6 @@
     <ClInclude Include="..\src\id.h" />
     <ClInclude Include="..\Integra\integra.h" />
     <ClInclude Include="..\src\interface.h" />
-    <ClInclude Include="..\src\list.h" />
     <ClInclude Include="..\src\lo_ansi.h" />
     <ClInclude Include="..\src\lua.h" />
     <ClInclude Include="..\src\luascripting.h" />
@@ -225,6 +223,7 @@
     <ClInclude Include="..\src\server.h" />
     <ClInclude Include="..\src\server_commands.h" />
     <ClInclude Include="..\src\signals.h" />
+    <ClInclude Include="..\src\common_typedefs.h" />
     <ClInclude Include="..\src\system_class_handlers.h" />
     <ClInclude Include="..\src\system_class_literals.h" />
     <ClInclude Include="..\src\trace.h" />

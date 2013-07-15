@@ -30,7 +30,6 @@
 #include "server.h"
 #include "path.h"
 #include "memory.h"
-#include "list.h"
 #include "osc_client.h"
 #include "system_class_handlers.h"
 #include "reentrance_checker.h"
@@ -41,7 +40,7 @@
 
 #include "Integra/integra.h"
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 
@@ -415,7 +414,6 @@ ntg_command_status  ntg_delete_(ntg_server *server, ntg_command_source cmd_sourc
 
 ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, ntg_command_source cmd_source )
 {
-	ntg_list *orphaned_embedded_modules;
 	ntg_command_status command_status;
 	ntg_error_code error_code = NTG_NO_ERROR;
 
@@ -423,13 +421,10 @@ ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, nt
 
 	NTG_COMMAND_STATUS_INIT;
 
-	orphaned_embedded_modules = ntg_module_manager_get_orphaned_embedded_modules( server->module_manager, *server->root );
+	guid_set orphaned_embedded_modules;
+	ntg_module_manager_get_orphaned_embedded_modules( server->module_manager, *server->root, orphaned_embedded_modules );
 
-	if( orphaned_embedded_modules )
-	{
-		ntg_module_manager_unload_modules( server->module_manager, orphaned_embedded_modules );
-		ntg_list_free( orphaned_embedded_modules );
-	}
+	ntg_module_manager_unload_modules( server->module_manager, orphaned_embedded_modules );
 
 	NTG_RETURN_COMMAND_STATUS;
 }
@@ -723,30 +718,23 @@ ntg_value *ntg_get_(ntg_server *server, const CPath &path )
 }
 
 
-ntg_list *ntg_nodelist_(ntg_server *server, const CPath &path )
+ntg_error_code ntg_nodelist_(ntg_server *server, const CPath &path, path_list &results )
 {
-    ntg_node *parent   = NULL;
-    ntg_node *root     = NULL;
+    assert( server );
 
-    assert(server != NULL);
+    ntg_node *root = ntg_server_get_root( server );
+    ntg_node *parent = ntg_node_find_by_path( path, root );
 
-    root = ntg_server_get_root( server );
-    parent = ntg_node_find_by_path( path, root );
-
-    if (parent == NULL) 
+    if( !parent ) 
 	{
         NTG_TRACE_ERROR("parent is NULL, returning NULL");
-        return NULL;
+        return NTG_ERROR;
     }
 
-    /* FIX: refactor into ntg_server_get_nodelist */
-    if (parent->nodes == NULL) 
-	{
-        return ntg_list_new(NTG_LIST_NODES);
-    }
-
-    return ntg_server_get_nodelist( server_, parent, NULL);
+    ntg_server_get_nodelist( server_, parent, results);
+	return NTG_NO_ERROR;
 }
+
 
 ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char *file_path  )
 {

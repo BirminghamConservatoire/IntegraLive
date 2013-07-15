@@ -42,6 +42,9 @@ struct ntg_node_attribute_ {
     ntg_api::CPath path;
 };
 
+
+
+
 /** \brief Create a new attribute */
 ntg_node_attribute *ntg_node_attribute_new(void);
 

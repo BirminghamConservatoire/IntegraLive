@@ -44,10 +44,10 @@
 #include "interface.h"
 #include "memory.h"
 #include "helper.h"
-#include "list.h"
 #include "globals.h"
 #include "file_io.h"
 
+using namespace ntg_api;
 
 /* 
  whilst dealing with zipped files, we always use linux-style path separators, 
@@ -72,7 +72,6 @@
 
 #define NTG_LEGACY_CLASS_ID_FILENAME "id2guid.csv"
 
-unsigned int MurmurHash2( const void * key, int len, unsigned int seed );
 
 
 
@@ -368,7 +367,7 @@ bool ntg_module_manager_load_module( ntg_module_manager *module_manager, const c
 		}
 	}
 	
-	ntg_list_push_guid( module_manager->module_id_list, &interface->module_guid );
+	module_manager->module_ids.insert( interface->module_guid );
 
 	if( ntg_interface_has_implementation( interface ) )
 	{
@@ -510,11 +509,6 @@ void ntg_module_manager_load_modules_from_directory( ntg_module_manager *module_
 
 void ntg_unload_module( ntg_module_manager *module_manager, ntg_interface *interface )
 {
-	ntg_list *module_id_list;
-	GUID *ids;
-	int i;
-	bool found;
-
 	assert( module_manager && interface );
 
 	if( ntg_interface_has_implementation( interface ) )
@@ -549,34 +543,8 @@ void ntg_unload_module( ntg_module_manager *module_manager, ntg_interface *inter
 		}
 	}
 
-	/* remove from id list */
-	module_id_list = module_manager->module_id_list;
-	ids = ( GUID * ) module_id_list->elems;
-	found = false;
-
-	for( i = 0; i < module_id_list->n_elems; i++ )
-	{
-		if( found )
-		{
-			ids[ i - 1 ] = ids[ i ];
-		}
-		else
-		{
-			if( ntg_guids_are_equal( &ids[ i ], &interface->module_guid ) )
-			{
-				found = true;
-			}
-		}
-	}
-
-	if( found )
-	{
-		module_id_list->n_elems--;
-	}
-	else
-	{
-		NTG_TRACE_ERROR( "Failed to find guid in id list" );
-	}
+	/* remove from id set */
+	module_manager->module_ids.erase( interface->module_guid );
 
 	ntg_interface_free( interface );
 }
@@ -584,40 +552,31 @@ void ntg_unload_module( ntg_module_manager *module_manager, ntg_interface *inter
 
 void ntg_free_all_modules( ntg_module_manager *module_manager )
 {
-	ntg_interface *interface;
-	ntg_list *module_id_list;
-	GUID *ids;
-	const GUID *id;
-	int number_of_modules;
-	int i;
-
 	assert( module_manager );
 
-	module_id_list = module_manager->module_id_list;
+	/* take a copy, as the original will change as we delete */
+	guid_set module_ids( module_manager->module_ids );
 
-	number_of_modules = module_id_list->n_elems;
-	ids = new GUID[ number_of_modules ];
-	memcpy( ids, module_id_list->elems, sizeof( GUID ) * number_of_modules );
-		
-	for( i = 0; i < number_of_modules; i++ )
+	for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ )
 	{
-		id = &ids[ i ];
-
-		interface = (ntg_interface *) ntg_get_interface_by_module_id( module_manager, id );
+		ntg_interface *interface = (ntg_interface *) ntg_get_interface_by_module_id( module_manager, &( *i ) );
 		assert( interface );
 
 		ntg_unload_module( module_manager, interface );
 	}
 
-	delete[] ids;
+	assert( module_manager->module_ids.empty() );
+	assert( module_manager->module_id_map.empty() );
+	assert( module_manager->origin_id_map.empty() );
+	assert( module_manager->core_name_map.empty() );
 }
 
 
-const ntg_list *ntg_module_id_list( const ntg_module_manager *module_manager )
+const guid_set &ntg_module_id_set( const ntg_module_manager *module_manager )
 {
-	assert( module_manager->module_id_list );
+	assert( module_manager );
 
-	return module_manager->module_id_list;
+	return module_manager->module_ids;
 }
 
 
@@ -697,8 +656,7 @@ ntg_module_manager *ntg_module_manager_create( const char *scratch_directory_roo
 	assert( scratch_directory_root && system_module_directory && third_party_module_directory );
 
 	module_manager = new ntg_module_manager;
-	module_manager->module_id_list = ntg_list_new( NTG_LIST_GUIDS );
-	
+
 	ntg_module_manager_load_legacy_module_id_file( module_manager );
 
 	implementation_directory_root = ntg_strdup( scratch_directory_root );
@@ -736,8 +694,6 @@ void ntg_module_manager_free( ntg_module_manager *module_manager )
 	assert( module_manager );
 
 	ntg_free_all_modules( module_manager );
-
-	ntg_list_free( module_manager->module_id_list );
 
 	if( module_manager->legacy_module_id_table )
 	{
@@ -896,7 +852,7 @@ ntg_error_code ntg_module_manager_store_module( ntg_module_manager *module_manag
 }
 
 
-ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_manager, const char *integra_file )
+ntg_error_code ntg_module_manager_load_from_integra_file( ntg_module_manager *module_manager, const char *integra_file, guid_set &new_embedded_modules )
 {
 	unzFile unzip_file;
 	unz_file_info file_info;
@@ -909,15 +865,17 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 	int total_bytes_read;
 	int bytes_remaining;
 	GUID loaded_module_id;
-	ntg_list *embedded_module_ids;
+	ntg_error_code error_code = NTG_NO_ERROR;
 
 	assert( module_manager && integra_file );
+
+	new_embedded_modules.clear();
 
 	unzip_file = unzOpen( integra_file );
 	if( !unzip_file )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Couldn't open zip file", integra_file );
-		return NULL;
+		return NTG_FAILED;
 	}
 
 	implementation_directory_length = strlen( NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME );
@@ -926,12 +884,10 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Couldn't iterate contents", integra_file );
 		unzClose( unzip_file );
-		return NULL;
+		return NTG_FAILED;
 	}
 
 	copy_buffer = new unsigned char[ NTG_DATA_COPY_BUFFER_SIZE ];
-
-	embedded_module_ids = ntg_list_new( NTG_LIST_GUIDS );
 
 	do
 	{
@@ -954,6 +910,7 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 		if( !temporary_file_name )
 		{
 			NTG_TRACE_ERROR( "couldn't generate temporary filename" );
+			error_code = NTG_FAILED;
 			continue;
 		}
 
@@ -961,12 +918,14 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 		if( !temporary_file )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "couldn't open temporary file", temporary_file_name );
+			error_code = NTG_FAILED;
 			goto CLEANUP;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "couldn't open zip contents", file_name );
+			error_code = NTG_FAILED;
 			goto CLEANUP;
 		}
 
@@ -980,6 +939,7 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 			if( bytes_read <= 0 )
 			{
 				NTG_TRACE_ERROR( "Error decompressing file" );
+				error_code = NTG_FAILED;
 				goto CLEANUP;
 			}
 
@@ -993,7 +953,7 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 
 		if( ntg_module_manager_load_module( module_manager, temporary_file_name, NTG_MODULE_EMBEDDED, &loaded_module_id ) )
 		{
-			ntg_list_push_guid( embedded_module_ids, &loaded_module_id );
+			new_embedded_modules.insert( loaded_module_id );
 
 			ntg_module_manager_store_module( module_manager, &loaded_module_id );
 		}
@@ -1019,24 +979,18 @@ ntg_list *ntg_module_manager_load_from_integra_file( ntg_module_manager *module_
 
 	delete[] copy_buffer;
 
-	return embedded_module_ids;
+	return error_code;
 }
 
 
 
-void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, const ntg_list *module_ids )
+void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, const guid_set &module_ids )
 {
-	ntg_interface *interface;
-	const GUID *ids;
-	int i;
+	assert( module_manager );
 
-	assert( module_manager && module_ids );
-
-	ids = ( const GUID * ) module_ids->elems;
-		
-	for( i = 0; i < module_ids->n_elems; i++ )
+	for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ )
 	{
-		interface = (ntg_interface *) ntg_get_interface_by_module_id( module_manager, &( ids[ i ] ) );
+		ntg_interface *interface = (ntg_interface *) ntg_get_interface_by_module_id( module_manager, &( *i ) );
 		assert( interface );
 
 		ntg_unload_module( module_manager, interface );
@@ -1044,57 +998,23 @@ void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, cons
 }
 
 
-ntg_list *ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node &root_node )
+void ntg_module_manager_get_orphaned_embedded_modules( const ntg_module_manager *module_manager, const ntg_node &root_node, guid_set &results )
 {
-	guid_set embedded_modules;
-	const ntg_interface *interface;
-	int number_of_module_ids;
-	const GUID *module_ids;
-	ntg_list *orphaned_embedded_modules;
-	int i;
-
 	assert( module_manager );
 
-	number_of_module_ids = module_manager->module_id_list->n_elems;
-	module_ids = ( const GUID * ) module_manager->module_id_list->elems;
-
 	/* first pass - collect ids of all embedded modules */
-	for( i = 0; i < number_of_module_ids; i++ )
+	for( map_guid_to_interface::const_iterator i = module_manager->module_id_map.begin(); i != module_manager->module_id_map.end(); i++ )
 	{
-		interface = ntg_get_interface_by_module_id( module_manager, &module_ids[ i ] );
-		if( !interface )
-		{
-			NTG_TRACE_ERROR( "Failed to lookup module" );
-			continue;
-		}
+		const ntg_interface *interface = i->second;
 
 		if( interface->module_source == NTG_MODULE_EMBEDDED )
 		{
-			embedded_modules.insert( interface->module_guid );
+			results.insert( interface->module_guid );
 		}
 	}
 
 	/* second pass - walk node tree pruning any modules still in use */
-	ntg_node_remove_in_use_module_ids_from_set( root_node, embedded_modules );
-
-	/* third pass - build list of orphaned embedded module ids */
-	orphaned_embedded_modules = ntg_list_new( NTG_LIST_GUIDS );
-
-	for( i = 0; i < number_of_module_ids; i++ )
-	{
-		if( embedded_modules.count( module_ids[ i ] ) > 0 )
-		{
-			ntg_list_push_guid( orphaned_embedded_modules, &module_ids[ i ] );
-		}
-	}
-
-	if( orphaned_embedded_modules->n_elems == 0 )
-	{
-		ntg_list_free( orphaned_embedded_modules );
-		orphaned_embedded_modules = NULL;
-	}
-
-	return orphaned_embedded_modules;
+	ntg_node_remove_in_use_module_ids_from_set( root_node, results );
 }
 
 
@@ -1245,23 +1165,11 @@ ntg_error_code ntg_module_manager_uninstall_module( ntg_module_manager *module_m
 
 ntg_error_code ntg_module_manager_unload_in_development_module( ntg_module_manager *module_manager, ntg_load_module_in_development_result *result )
 {
-	ntg_list *module_id_list;
-	GUID *ids;
-	int i;
-	ntg_interface *interface;
-
 	assert( module_manager && result );
 
-	module_id_list = module_manager->module_id_list;
-	ids = ( GUID * ) module_id_list->elems;
-
-	for( i = 0; i < module_id_list->n_elems; i++ )
+	for( map_guid_to_interface::const_iterator i = module_manager->module_id_map.begin(); i != module_manager->module_id_map.end(); i++ )
 	{
-		interface = ( ntg_interface * ) ntg_get_interface_by_module_id( module_manager, &ids[ i ] );
-		if( !interface )
-		{
-			NTG_TRACE_ERROR( "Can't find interface" );
-		}
+		ntg_interface *interface = i->second;
 
 		if( interface->module_source != NTG_MODULE_IN_DEVELOPMENT )
 		{

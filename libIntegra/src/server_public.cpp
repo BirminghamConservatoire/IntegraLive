@@ -31,7 +31,7 @@
 #include "signals.h"
 #include "module_manager.h"
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 ntg_command_status ntg_new( const GUID *module_id, const char *node_name, const CPath &path )
@@ -192,24 +192,22 @@ const ntg_value *ntg_get( const CPath &path )
 }
 
 
-const ntg_list *ntg_interfacelist(void)
+const guid_set &ntg_interfacelist(void)
 {
 	/* no need to lock, as the set of interfaces does not change at runtime */
 	/* NOTE - this assumption will become invalid once we load modules from .integra files! */
 
-	return ntg_module_id_list( server_->module_manager );
+	return ntg_module_id_set( server_->module_manager );
 }
 
 
-const ntg_list *ntg_nodelist( const CPath &path )
+ntg_error_code ntg_nodelist( const ntg_api::CPath &path, ntg_api::path_list &results )
 {
-    ntg_list *list = NULL;
-
     ntg_lock_server();
-    list = ntg_nodelist_( server_, path );
+    ntg_error_code result = ntg_nodelist_( server_, path, results );
     ntg_unlock_server();
 
-    return list;
+    return result;
 }
 
 void ntg_terminate(void)

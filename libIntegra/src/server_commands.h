@@ -70,7 +70,7 @@ ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source
 ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_command_source cmd_source, const char *file_path );
 
 
-ntg_list *ntg_nodelist_(ntg_server *server, const ntg_api::CPath &path );
+ntg_error_code ntg_nodelist_( ntg_server *server, const ntg_api::CPath &path, ntg_api::path_list &results );
 
 
 ntg_command_status ntg_save_(ntg_server *server, const ntg_api::CPath &path, const char *file_path );

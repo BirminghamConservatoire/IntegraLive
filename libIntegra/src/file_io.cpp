@@ -37,7 +37,6 @@
 #include "file_io.h"
 #include "globals.h"
 #include "helper.h"
-#include "list.h"
 #include "data_directory.h"
 #include "module_manager.h"
 #include "interface.h"
@@ -47,6 +46,8 @@
 #ifndef _WINDOWS
 #define _S_IFMT S_IFMT
 #endif
+
+using namespace ntg_api;
 
 
 #define NTG_DATA_COPY_BUFFER_SIZE 16384
@@ -249,42 +250,22 @@ void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_pa
 }
 
 
-void ntg_find_module_guids_to_embed( ntg_list *module_guids_to_embed, const ntg_node *node )
+void ntg_find_module_guids_to_embed( const ntg_node *node, guid_set &module_guids_to_embed )
 {
-	int i;
-	bool already_found;
-	GUID *guids;
-	const ntg_node *child_iterator;
-
-	assert( module_guids_to_embed && node );
+	assert( node );
 
 	if( ntg_interface_should_embed_module( node->interface ) )
 	{
-		already_found = false;
-		guids = ( GUID * ) module_guids_to_embed->elems;
-
-		for( i = 0; i < module_guids_to_embed->n_elems; i++ )
-		{
-			if( ntg_guids_are_equal( &guids[ i ], &node->interface->module_guid ) )
-			{
-				already_found = true;
-				break;
-			}
-		}
-
-		if( !already_found )
-		{
-			ntg_list_push_guid( module_guids_to_embed, &node->interface->module_guid );
-		}
+		module_guids_to_embed.insert( node->interface->module_guid );
 	}
 
 	/* walk subtree */
-    child_iterator = node->nodes;
+    const ntg_node *child_iterator = node->nodes;
 	if( child_iterator )
 	{
 		do 
 		{
-			ntg_find_module_guids_to_embed( module_guids_to_embed, child_iterator );
+			ntg_find_module_guids_to_embed( child_iterator, module_guids_to_embed );
 			child_iterator = child_iterator->next;
 
 		} 
@@ -295,23 +276,18 @@ void ntg_find_module_guids_to_embed( ntg_list *module_guids_to_embed, const ntg_
 
 void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const ntg_module_manager *module_manager )
 {
-	ntg_list *module_guids_to_embed;
-	int i;
-	const GUID *guids;
 	const ntg_interface *interface;
 	char *unique_interface_name;
 	char *target_path;
 
 	assert( zip_file && node );
 
-	module_guids_to_embed = ntg_list_new( NTG_LIST_GUIDS );
+	guid_set module_guids_to_embed;
+	ntg_find_module_guids_to_embed( node, module_guids_to_embed );
 
-	ntg_find_module_guids_to_embed( module_guids_to_embed, node );
-	guids = (const GUID *) module_guids_to_embed->elems;
-
-	for( i = 0; i < module_guids_to_embed->n_elems; i++ )
+	for( guid_set::const_iterator i = module_guids_to_embed.begin(); i != module_guids_to_embed.end(); i++ )
 	{
-		interface = ntg_get_interface_by_module_id( module_manager, &guids[ i ] );
+		interface = ntg_get_interface_by_module_id( module_manager, &( *i ) );
 		if( !interface )
 		{
 			NTG_TRACE_ERROR( "Failed to retrieve interface" );
@@ -334,8 +310,6 @@ void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const
 		delete[] target_path;
 		delete[] unique_interface_name;
 	}
-
-	ntg_list_free( module_guids_to_embed );
 }
 
 
@@ -480,7 +454,6 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
     xmlTextReaderPtr reader = NULL;
 	node_list new_nodes;
 	node_list::const_iterator new_node_iterator;
-	ntg_list *loaded_module_ids = NULL;
 
 	NTG_COMMAND_STATUS_INIT;
 
@@ -488,8 +461,13 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
 
     server_->loading = true;
 
-	loaded_module_ids = ntg_module_manager_load_from_integra_file( module_manager, filename );
-
+	guid_set *new_embedded_modules = new guid_set;
+	command_status.error_code = ntg_module_manager_load_from_integra_file( module_manager, filename, *new_embedded_modules );
+	if( command_status.error_code != NTG_NO_ERROR ) 
+	{
+		NTG_TRACE_ERROR_WITH_STRING("couldn't load modules", filename );
+		goto CLEANUP;
+	}
 
 	/* pull ixd data out of file */
 	command_status.error_code = ntg_load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
@@ -577,15 +555,15 @@ CLEANUP:
 
 	if( command_status.error_code == NTG_NO_ERROR )
 	{
-		command_status.data = loaded_module_ids;
+		command_status.data = new_embedded_modules;
 	}
 	else
 	{
 		/* load failed - unload modules */
-		if( loaded_module_ids )
+		if( new_embedded_modules )
 		{
-			ntg_module_manager_unload_modules( module_manager, loaded_module_ids );
-			ntg_list_free( loaded_module_ids );
+			ntg_module_manager_unload_modules( module_manager, *new_embedded_modules );
+			delete new_embedded_modules;
 		}
 	}
 

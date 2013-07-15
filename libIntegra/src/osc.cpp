@@ -36,6 +36,8 @@
 
 #include <algorithm>
 
+using namespace ntg_api;
+
 
 ntg_value *get_value_from_osc(char osc_type, lo_arg *arg);
 

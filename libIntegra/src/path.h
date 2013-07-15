@@ -21,15 +21,11 @@
 #ifndef INTEGRA_PATH_PRIVATE_H
 #define INTEGRA_PATH_PRIVATE_H
 
-#include <string>
-#include <vector>
+#include "common_typedefs.h"
 
 
 namespace ntg_api
 {
-	typedef std::string string;
-	typedef std::vector<string> string_list;
-
 	class CPath
 	{
 		public:
@@ -55,12 +51,16 @@ namespace ntg_api
 
 			void rebuild_string();
 
-			string_list m_elements;
+			string_vector m_elements;
 			
 			string m_string;
 			bool m_string_is_valid;
 	};
+
+
+	typedef std::list<ntg_api::CPath> path_list;
 }
+
 
 
 #endif

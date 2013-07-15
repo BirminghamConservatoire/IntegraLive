@@ -39,7 +39,6 @@
 #include "attribute.h"
 #include "server.h"
 #include "command.h"
-#include "list.h"
 #include "server_commands.h"
 #include "module_manager.h"
 #include "interface.h"
@@ -57,7 +56,7 @@
 #define NTG_STR_INSTANCEID "instanceId"
 #define NTG_STR_CLASSID "classId"
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 

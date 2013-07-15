@@ -80,7 +80,7 @@ void receive_callback(ntg_id id, const char *attribute_name, const ntg_value *va
 ntg_node *ntg_server_get_root(const ntg_server *server);
 
 /** \brief Get the list of nodes under a container node as an array */
-ntg_list *ntg_server_get_nodelist( const ntg_server * server, const ntg_node *container, ntg_list *nodelist );
+void ntg_server_get_nodelist( const ntg_server *server, const ntg_node *container, ntg_api::path_list &results );
 
 /** \brief Update a connection 
     \param do_connect Toggles the connection 0 = disconnect 1 = connec

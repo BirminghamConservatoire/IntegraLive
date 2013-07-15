@@ -34,6 +34,7 @@
 #include <stdbool.h>
 
 #include "Integra/integra.h"
+#include "common_typedefs.h"
 
 #ifndef NTG_ENDPOINT_TYPEDEF
 typedef struct ntg_endpoint_ ntg_endpoint;
@@ -59,6 +60,10 @@ typedef struct ntg_widget_position_ ntg_widget_position;
 typedef struct ntg_widget_attribute_mapping_ ntg_widget_attribute_mapping;
 typedef struct ntg_tag_ ntg_tag;
 typedef struct ntg_implementation_info_ ntg_implementation_info;
+
+
+typedef std::unordered_map<GUID, ntg_interface *, ntg_api::GuidHash> map_guid_to_interface;
+typedef std::unordered_map<ntg_api::string, ntg_interface *> map_string_to_interface;
 
 
 typedef enum ntg_endpoint_type_ 

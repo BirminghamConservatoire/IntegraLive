@@ -67,7 +67,6 @@ extern "C"
 #include "signals.h"
 #include "osc.h"
 #include "server_commands.h"
-#include "list.h"
 #include "system_class_handlers.h"
 #include "module_manager.h"
 #include "data_directory.h"
@@ -82,7 +81,7 @@ extern "C"
 	#endif
 #endif
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 #define NTG_SERVER_WAIT_TIME 1000000 * 20 /* == 20 ms */
@@ -188,44 +187,23 @@ void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 }
 
 
-ntg_list *ntg_server_get_nodelist( const ntg_server * server, const ntg_node *container, ntg_list *nodelist )
+void ntg_server_get_nodelist( const ntg_server *server, const ntg_node *container, path_list &results )
 {
     const CPath **nodes = NULL;
-    const ntg_node *current, *marker;
 
-    if (nodelist == NULL) {
-        nodelist = ntg_list_new(NTG_LIST_NODES);
-    }
+	assert( container );
 
-    if (container != NULL) {
-        current = container;
-    } else {
-        current = ntg_server_get_root(server);
-    }
-
-    if (current->nodes != NULL) {
-        current = current->nodes;
-    } else {
-        /* we're in an empty container */
-        return nodelist;        /* no nodes to add */
-    }
-
-    marker = current;
-
-    do {
-
-        /* add the path to the node list */
-		ntg_list_push_node( nodelist, current->path );
-
-        if (current->nodes != NULL) {
-            nodelist = ntg_server_get_nodelist(server, current, nodelist);
-        }
-
-        current = current->next;
-
-    } while (current != marker);
-
-    return nodelist;
+    const ntg_node *node = container->nodes;
+	if( node )
+	{
+		do
+		{
+			results.push_back( node->path );
+			ntg_server_get_nodelist( server, node, results );
+			node = node->next;
+		}
+		while( node != container->nodes );
+	}
 }
 
 

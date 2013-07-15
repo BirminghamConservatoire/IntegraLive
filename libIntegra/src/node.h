@@ -21,14 +21,15 @@
 #ifndef INTEGRA_INSTANCE_PRIVATE_H
 #define INTEGRA_INSTANCE_PRIVATE_H
 
-
-#include "attribute.h"
-
-#include "MurmurHash2.h"
 #include <string>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "attribute.h"
+#include "path.h"
+
+#include "MurmurHash2.h"
 
 #ifndef __XML_XMLREADER_H__
 #ifndef NTG_TEXTREADER_TYPEDEF
@@ -105,7 +106,7 @@ typedef struct ntg_node_ {
     ntg_node_attribute *attribute_last;
 
     /** Pointer to the absolute path to the node */
-    ntg_path *path;
+    ntg_api::CPath path;
 
 } ntg_node;
 
@@ -171,7 +172,7 @@ ntg_node *ntg_node_sibling_find_by_name(const ntg_node *node, const char *siblin
   * *node_name
   *
   */
-ntg_node *ntg_node_find_by_path(const ntg_path * path, ntg_node *root );
+ntg_node *ntg_node_find_by_path( const ntg_api::CPath &path, ntg_node *root );
 
 /** \brief recursive version of ntg_node_find_by_name()
   */
@@ -250,8 +251,6 @@ ntg_node_attribute *ntg_node_attribute_find_by_name(
 /** \brief Add attributes to node */
 void ntg_node_add_attributes(ntg_node *node, const ntg_endpoint *endpoint_list);
 
-char *ntg_node_name_from_path(const ntg_node *node, const ntg_path *path);
-
 /** \brief A check that 'node' and 'sibling' share the same parent
   */
 bool ntg_node_is_sibling(const ntg_node *node, 
@@ -260,12 +259,12 @@ bool ntg_node_is_sibling(const ntg_node *node,
 /** \brief get the full path for a node
   * This function works out the path by traversing the node graph
   */
-ntg_path *ntg_node_get_path(const ntg_node *node);
+ntg_api::CPath ntg_node_get_path(const ntg_node *node);
 
 /** \brief update and get the full path for a node
   * As ntg_node_get_path() but additionally sets node->path
   */
-ntg_path *ntg_node_update_path(ntg_node *node);
+ntg_api::CPath ntg_node_update_path(ntg_node *node);
 
 
 /** \brief free a node

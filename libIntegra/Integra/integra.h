@@ -47,6 +47,12 @@
 #define NTG_AUDIO_PORTS_MAX 16
 
 
+namespace ntg_api
+{
+	class CPath;
+}
+
+
 /*
  * class instance (node) API
  */
@@ -60,7 +66,6 @@ typedef enum ntg_value_type_ {
 } ntg_value_type;
 
 typedef unsigned long ntg_id;
-typedef struct ntg_path_  ntg_path;
 typedef struct ntg_value_ ntg_value;
 typedef struct ntg_node_attribute_ ntg_node_attribute;
 
@@ -94,7 +99,6 @@ void ntg_list_free_as_attributes(ntg_list *);
  */
 typedef void (*ntg_bridge_callback)(int argc, void *argv);
 
-LIBINTEGRA_API unsigned long ntg_list_get_n_elems(ntg_list *);
 
 /** \brief Get the list of available interfaces from the server
   * \return a pointer to an ntg_list containing a list of guids
@@ -104,13 +108,6 @@ LIBINTEGRA_API unsigned long ntg_list_get_n_elems(ntg_list *);
 LIBINTEGRA_API const ntg_list *ntg_interfacelist(void);
 
 
-/** \brief Get the current version of libIntegra 
- * \param *destination: a pointer to a string into which the 
- * version number is written
- * \param *destination_size: the maximum number of characters 
- * which may be written to destination
- */
-LIBINTEGRA_API void ntg_version(char *destination, int destination_size);
 
 
 /** \brief Create a new node on the server
@@ -127,10 +124,10 @@ LIBINTEGRA_API void ntg_version(char *destination, int destination_size);
  * \return a pointer to the new node 
  * \error a pointer to NULL is returned if an error occurs */
 LIBINTEGRA_API ntg_command_status ntg_new(const GUID *module_id,
-        const char *node_name, const ntg_path *path);
+        const char *node_name, const ntg_api::CPath &path);
 
 /** \brief Delete a node on the server
- * \param *path: a pointer to a struct of type ntg_path giving the elements in
+ * \param *path: a reference to a class of type ntg_api::CPath giving the elements in
    the path to the given node. The path array must include the node 
    itself, i.e. if we are deleting a node called 'FooBar1', the path array
    might be ['Project1', 'Block1', 'FooBar1']
@@ -138,10 +135,10 @@ LIBINTEGRA_API ntg_command_status ntg_new(const GUID *module_id,
  * this will contain the error_code NTG_NO_ERROR
  * \error possible return values for error status are given in integra_error.h 
  * */
-LIBINTEGRA_API ntg_command_status ntg_delete(const ntg_path *path);
+LIBINTEGRA_API ntg_command_status ntg_delete(const ntg_api::CPath &path);
 
 /** \brief Rename a node on the server
- * \param *path: a pointer to a struct of type ntg_path giving the elements in
+ * \param *path: a reference to a class of type ntg_api::CPath giving the elements in
  the path to the given node. The path array must include the node
  itself, i.e. if we are renaming a node called 'FooBar1', the path array
  might be ['Project1', 'Block1', 'FooBar1']
@@ -151,13 +148,12 @@ LIBINTEGRA_API ntg_command_status ntg_delete(const ntg_path *path);
  * this will contain the error_code NTG_NO_ERROR
  * \error possible return values for error status are given in integra_error.h
  * */
-LIBINTEGRA_API ntg_command_status ntg_rename(const ntg_path *path,
-        const char *name);
+LIBINTEGRA_API ntg_command_status ntg_rename( const ntg_api::CPath &path, const char *name);
 
 /** \brief Save all nodes including and below a given node on the server to a
     path on the filesystem
  * \param *server: a pointer to a struct of type ntg_server
- * \param *path: a pointer to a struct of type ntg_path giving the elements in
+ * \param *path: a reference to a class of type CPath giving the elements in
    the path to the given node. The path array must include the node
    itself, i.e. if we are saving a node called 'FooBar1', the path array
    might be ['Project1', 'Block1', 'FooBar1']
@@ -167,14 +163,13 @@ LIBINTEGRA_API ntg_command_status ntg_rename(const ntg_path *path,
  * this will contain the error_code NTG_NO_ERROR
  * \error possible return values for error status are given in integra_error.h
  * */
-LIBINTEGRA_API ntg_command_status ntg_save(const ntg_path *path,
-        const char *file_path);
+LIBINTEGRA_API ntg_command_status ntg_save( const ntg_api::CPath &, const char *file_path );
 
 /** \brief Load all nodes including and below a given node from the filesystem
  beneath the path given to the given node on the server
  * \param *file_path: a pointer to a string representing the path to the file
  * on the filesystem
- * \param *path: a pointer to a struct of type ntg_path giving the elements in
+ * \param *path: a reference to a class of type CPath giving the elements in
  the path to the parent node under which the new node will be
  loaded. i.e. if we are loading a node inside Project1 the path would be
  ['Project1']. A NULL value indicates that the new node will be loaded
@@ -185,11 +180,10 @@ LIBINTEGRA_API ntg_command_status ntg_save(const ntg_path *path,
  * list is allocated on the heap, and the caller should free it with ntg_list_free
  * \error possible return values for error status are given in integra_error.h
  * */
-LIBINTEGRA_API ntg_command_status ntg_load(const char *file_path,
-        const ntg_path *path);
+LIBINTEGRA_API ntg_command_status ntg_load(const char *file_path, const ntg_api::CPath &path);
 
 /** \brief Move a node of a class on the server
- * \param *node_path: a pointer to a struct of type ntg_path giving the
+ * \param *node_path: a reference to a class of type CPath giving the
  elements in the path to the given node. The path array must include the
  node itself, i.e. if we are deleting a node called 'FooBar1', the
  path array might be ['Project1', 'Block1', 'FooBar1']
@@ -199,11 +193,10 @@ LIBINTEGRA_API ntg_command_status ntg_load(const char *file_path,
  * this will contain the error_code NTG_NO_ERROR
  * \error possible return values for error status are given in integra_error.h
  * */
-LIBINTEGRA_API ntg_command_status ntg_move(const ntg_path *node_path,
-        const ntg_path *parent_path);
+LIBINTEGRA_API ntg_command_status ntg_move( const ntg_api::CPath &node_path, const ntg_api::CPath &parent_path);
 
 /** \brief Set the value of an attribute of a node on the server
- * \param *path: a pointer to a struct of type ntg_path giving the elements in
+ * \param *path: a reference to a class of type CPath giving the elements in
  the path to the given attribute. The path array must include the attribute
  itself, i.e. if we are setting the value of an attribute called 'blah' in an
  node called 'FooBar1', the path array might be ['Project1', 'Block1',
@@ -218,11 +211,10 @@ LIBINTEGRA_API ntg_command_status ntg_move(const ntg_path *node_path,
  * this will contain the error_code NTG_NO_ERROR
  * \error possible return values for error status are given in integra_error.h
  */
-LIBINTEGRA_API ntg_command_status ntg_set(const ntg_path *attribute_path,
-        const ntg_value *value);
+LIBINTEGRA_API ntg_command_status ntg_set(const ntg_api::CPath &attribute_path, const ntg_value *value);
 
 /** \brief Get the value of an attribute of a node on the server
- * \param *path: a pointer to a struct of type ntg_path giving the elements in
+ * \param *path: a reference to a class of type CPath giving the elements in
  the path to the given attribute. The path array must include the attribute
  itself, i.e. if we are getting the value of an attribute called 'blah' in an
  node called 'FooBar1', the path array might be ['Project1', 'Block1',
@@ -232,20 +224,20 @@ LIBINTEGRA_API ntg_command_status ntg_set(const ntg_path *attribute_path,
  * the value returned is guaranteed to match the type of the attribute as
  * given in the attribute info. The ntg_value must be free'd using ntg_value_free()
  * \error a pointer to NULL is returned if an error occurs */
-LIBINTEGRA_API const ntg_value *ntg_get(const ntg_path *path);
+LIBINTEGRA_API const ntg_value *ntg_get( const ntg_api::CPath &path );
 
 /** \brief Get the list of paths to nodes on the server under a given node
- * \param *path: a pointer to a struct of type ntg_path giving the elements in
+ * \param *path: a reference to a class of type CPath giving the elements in
  the path to the given parent. The path gives the root of the nodelist, so if
  we want ALL nodes on the server, an empty path should be given. For all nodes
  under the container: Project1, the path array should be ['Project1']
  * \return a pointer to a struct of type ntg_list, which gives all of the
- * paths under a given node as n_nodes ntg_path arrays. The returned pointer
+ * paths under a given node as n_nodes CPath arrays. The returned pointer
  * must be passed to ntg_list_free_as_nodelist() when done.
  * \error a pointer to NULL is returned if an error occurs
  *
  * */
-LIBINTEGRA_API const ntg_list *ntg_nodelist(const ntg_path *path);
+LIBINTEGRA_API const ntg_list *ntg_nodelist( const ntg_api::CPath &path );
 
 
 /** \brief Unloads embedded modules that are not in use
@@ -353,7 +345,17 @@ LIBINTEGRA_API ntg_bridge_callback ntg_server_get_bridge_callback(void);
  *  The string can contain several lines separated by lineshifts.
  *
  */
-LIBINTEGRA_API char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string );
+LIBINTEGRA_API char *ntg_lua_eval( const ntg_api::CPath &parent_path, const char *script_string );
+
+
+
+/** \brief Get the current version of libIntegra 
+ * \param *destination: a pointer to a string into which the 
+ * version number is written
+ * \param *destination_size: the maximum number of characters 
+ * which may be written to destination
+ */
+LIBINTEGRA_API void ntg_version(char *destination, int destination_size);
 
 
 

@@ -51,6 +51,8 @@
 #define NTG_NODE_DIRECTORY "node_data"
 
 
+using ntg_api::CPath;
+
 
 char *ntg_make_up_node_data_directory_name( const ntg_node *node, const ntg_server *server )
 {
@@ -98,16 +100,16 @@ const char *ntg_get_relative_node_path( const ntg_node *node, const ntg_node *ro
 
 	assert( node && root );
 
-	node_path_length = strlen( node->path->string );
-	root_path_length = strlen( root->path->string );
+	node_path_length = node->path.get_string().length();
+	root_path_length = root->path.get_string().length();
 
-	if( node_path_length <= root_path_length || memcmp( node->path->string, root->path->string, root_path_length ) != 0 )
+	if( node_path_length <= root_path_length || memcmp( node->path.get_string().c_str(), root->path.get_string().c_str(), root_path_length ) != 0 )
 	{
 		NTG_TRACE_ERROR( "node is not a descendant of root" );
 		return NULL;
 	}
 
-	relative_node_path = node->path->string + root_path_length;
+	relative_node_path = node->path.get_string().c_str() + root_path_length;
 
 	if( ntg_node_get_root( root ) != root )
 	{
@@ -146,14 +148,14 @@ void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *no
 			}
 			else
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Couldn't get data directory name", node->path->string );
+				NTG_TRACE_ERROR_WITH_STRING( "Couldn't get data directory name", node->path.get_string().c_str() );
 			}
 
 			delete[] target_path;
 		}
 		else
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't build relative node path to", node->path->string );
+			NTG_TRACE_ERROR_WITH_STRING( "Couldn't build relative node path to", node->path.get_string().c_str() );
 		}
 	}
 
@@ -294,7 +296,6 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 	char file_name[ NTG_LONG_STRLEN ];
 	const char *node_directory;
 	char *relative_node_path_string;
-	ntg_path *relative_node_path;
 	const char *relative_file_path;
 	const ntg_node *node;
 	int node_directory_length;
@@ -340,9 +341,8 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 			continue;
 		}
 
-		relative_node_path = ntg_path_from_string( relative_node_path_string );
+		CPath relative_node_path = CPath( relative_node_path_string );
 		node = ntg_node_find_by_path( relative_node_path, ( ntg_node * ) parent_node );
-		ntg_path_free( relative_node_path );
 
 		if( !node )
 		{

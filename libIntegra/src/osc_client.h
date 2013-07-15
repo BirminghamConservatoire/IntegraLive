@@ -30,6 +30,13 @@ _resolve * USA.
 #include "integra/integra.h"
 
 
+namespace ntg_api
+{
+	class CPath;
+}
+
+
+
 typedef struct ntg_osc_client_ {
 
     lo_address address;
@@ -45,30 +52,30 @@ ntg_error_code ntg_osc_client_send_new(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const GUID *module_id,
         const char *node_name,
-        const ntg_path *path);
+        const ntg_api::CPath &path);
 
 ntg_error_code ntg_osc_client_send_load(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const char *file_path,
-        const ntg_path *path);
+        const ntg_api::CPath &path);
 
 ntg_error_code ntg_osc_client_send_delete(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *path);
+        const ntg_api::CPath &path);
 
 ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *path,
+        const ntg_api::CPath &path,
         const ntg_value *value);
 
 ntg_error_code ntg_osc_client_send_move(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *node_path,
-        const ntg_path *parent_path);
+        const ntg_api::CPath &node_path,
+        const ntg_api::CPath &parent_path);
 
 ntg_error_code ntg_osc_client_send_rename(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *path,
+        const ntg_api::CPath &path,
         const char *name);
 
 

@@ -57,6 +57,7 @@
 #include "helper.h"
 #include "list.h"
 
+
 #define HELPSTR_VERSION "Return the current version of libIntegra\n\\return {'response':'system.version', 'version':<string>\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
 
 #define HELPSTR_PRINTSTATE "Dump the entire node and attribute state to stdout for testing purposes\n\\return {'response':'system.printstate'\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
@@ -106,6 +107,10 @@
 
 static TServer abyssServer;
 typedef xmlrpc_value *(* ntg_server_callback_va)(ntg_server *, int, va_list);
+
+
+using ntg_api::CPath;
+
 
 /* run server command -- blocking version
  * call this if you want a return value -- e.g. to XMLRPC interface */
@@ -162,30 +167,26 @@ static xmlrpc_value *ntg_xmlrpc_error(xmlrpc_env * env,
 
 }
 
-static ntg_path *ntg_xmlrpc_get_path(xmlrpc_env * env,
-        xmlrpc_value * xmlrpc_path)
+static CPath ntg_xmlrpc_get_path( xmlrpc_env *env, xmlrpc_value *xmlrpc_path )
 {
-
     int n;
     char *elem;
     int n_elems = 0;
-    ntg_path *path;
     xmlrpc_value *xmlrpc_elem;
 
-    path = ntg_path_new();
+	CPath path;
     n_elems = xmlrpc_array_size(env, xmlrpc_path);
 
     for (n = 0; n < n_elems; n++) {
         xmlrpc_array_read_item(env, xmlrpc_path, n, &xmlrpc_elem);
         xmlrpc_read_string(env, xmlrpc_elem, (const char **)&elem);
         xmlrpc_DECREF(xmlrpc_elem);
-        ntg_path_append_element(path, elem);
+		path.append_element( elem );
         assert(elem != NULL);
         free(elem);
     }
 
     return path;
-
 }
 
 
@@ -828,19 +829,19 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback(ntg_server * server,
                  *xmlrpc_guid = NULL,
                  *xmlrpc_temp = NULL, *struct_ = NULL, *node_struct = NULL;
     ntg_list *nodelist = NULL;
-    ntg_path *path     = NULL;
+    CPath *path = NULL;
     ntg_node *node = NULL;
     ntg_node *root = NULL;
     int n, m;
     char *module_id_string = NULL;
 
     env = va_arg(argv, xmlrpc_env *);
-    path = va_arg(argv, ntg_path *);
+    path = va_arg(argv, CPath *);
 
     xmlrpc_nodes = xmlrpc_array_new(env);
     struct_ = xmlrpc_struct_new(env);
 
-    nodelist = ntg_nodelist_(server, path);
+    nodelist = ntg_nodelist_(server, *path );
 
     if (nodelist == NULL) {
         return ntg_xmlrpc_error(env, NTG_FAILED);
@@ -851,11 +852,11 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback(ntg_server * server,
     for (n = 0; n < nodelist->n_elems; n++) {
 
         xmlrpc_path = xmlrpc_array_new(env);
-        path = ((ntg_path **)nodelist->elems)[n];
+        path = ((ntg_api::CPath **)nodelist->elems)[n];
 
-        for (m = 0; m < path->n_elems; m++) {
+		for (m = 0; m < path->get_number_of_elements(); m++) {
 
-            xmlrpc_elem = xmlrpc_string_new(env, path->elems[m]);
+			xmlrpc_elem = xmlrpc_string_new( env, (*path)[m].c_str() );
 
             xmlrpc_array_append_item(env, xmlrpc_path, xmlrpc_elem);
             xmlrpc_DECREF(xmlrpc_elem);
@@ -864,17 +865,11 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback(ntg_server * server,
 
         /* get the class id */
         root = ntg_server_get_root(server);
-        /* FIX */
-        node = ntg_node_find_by_path(path, root);
-        if (node == NULL) {
-            node =
-                ntg_node_find_by_name_r(root, path->elems[path->n_elems - 1]);
-        }
-        if (node == NULL) {
-            NTG_TRACE_ERROR("path not found: " );
-            for (n = 0; n < path->n_elems; n++) {
-                NTG_TRACE_ERROR(path->elems[n] );
-            }
+        node = ntg_node_find_by_path( *path, root );
+        
+        if (node == NULL) 
+		{
+			NTG_TRACE_ERROR_WITH_STRING( "path not found: ", path->get_string().c_str() );
             return ntg_xmlrpc_error(env, NTG_FAILED);
         }
 
@@ -963,20 +958,20 @@ static xmlrpc_value *ntg_xmlrpc_delete_callback(ntg_server * server, const int a
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
     ntg_command_status command_status;
     ntg_error_code error_code;
-    ntg_path *path;
+    CPath *path;
 
     env = va_arg(argv, xmlrpc_env *);
-    path = va_arg(argv, ntg_path *);
+    path = va_arg(argv, CPath *);
 
     struct_ = xmlrpc_struct_new(env);
-    command_status = ntg_delete_(server, NTG_SOURCE_XMLRPC_API, path);
+    command_status = ntg_delete_(server, NTG_SOURCE_XMLRPC_API, *path);
     error_code = command_status.error_code;
 
     if (error_code != NTG_NO_ERROR) {
         return ntg_xmlrpc_error(env, error_code);
     }
 
-    xmlrpc_path = ntg_xmlrpc_value_from_path(path, env);
+    xmlrpc_path = ntg_xmlrpc_value_from_path( *path, env );
 
     xmlrpc_temp = xmlrpc_string_new(env, "command.delete");
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
@@ -997,23 +992,23 @@ static xmlrpc_value *ntg_xmlrpc_rename_callback(ntg_server * server, const int a
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
     ntg_error_code error_code;
     ntg_command_status command_status;
-    ntg_path *path;
+    CPath *path;
     char *name;
 
     env = va_arg(argv, xmlrpc_env *);
 
     struct_ = xmlrpc_struct_new(env);
-    path = va_arg(argv, ntg_path *);
+    path = va_arg(argv, CPath *);
     name = va_arg(argv, char *);
 
-    command_status = ntg_rename_(server, NTG_SOURCE_XMLRPC_API, path, name);
+    command_status = ntg_rename_(server, NTG_SOURCE_XMLRPC_API, *path, name);
     error_code = command_status.error_code;
 
     if (error_code != NTG_NO_ERROR) {
         return ntg_xmlrpc_error(env, error_code);
     }
 
-    xmlrpc_path = ntg_xmlrpc_value_from_path(path, env);
+    xmlrpc_path = ntg_xmlrpc_value_from_path( *path, env );
 
     xmlrpc_temp = xmlrpc_string_new(env, "command.rename");
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
@@ -1038,16 +1033,16 @@ static xmlrpc_value *ntg_xmlrpc_save_callback(ntg_server * server, const int arg
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
     ntg_error_code error_code;
     ntg_command_status command_status;
-    ntg_path *path;
+    CPath *path;
     char *file_path;
 
     env = va_arg(argv, xmlrpc_env *);
 
     struct_ = xmlrpc_struct_new(env);
-    path = va_arg(argv, ntg_path *);
+    path = va_arg(argv, CPath  *);
     file_path = va_arg(argv, char *);
 
-    command_status = ntg_save_(server, path, file_path);
+    command_status = ntg_save_(server, *path, file_path);
     error_code = command_status.error_code;
 
     if (error_code != NTG_NO_ERROR) {
@@ -1058,7 +1053,7 @@ static xmlrpc_value *ntg_xmlrpc_save_callback(ntg_server * server, const int arg
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_path = ntg_xmlrpc_value_from_path(path, env);
+    xmlrpc_path = ntg_xmlrpc_value_from_path( *path, env);
     xmlrpc_struct_set_value(env, struct_, "instancepath", xmlrpc_path);
     xmlrpc_DECREF(xmlrpc_path);
 
@@ -1077,7 +1072,7 @@ static xmlrpc_value *ntg_xmlrpc_load_callback(ntg_server * server, const int arg
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL, *xmlrpc_array = NULL;
     ntg_error_code error_code;
     ntg_command_status command_status;
-    ntg_path *path;
+    CPath *path;
     char *file_path;
 	ntg_list *embedded_module_ids;
 	GUID *guids;
@@ -1088,9 +1083,9 @@ static xmlrpc_value *ntg_xmlrpc_load_callback(ntg_server * server, const int arg
 
     struct_ = xmlrpc_struct_new(env);
     file_path = va_arg(argv, char *);
-    path = va_arg(argv, ntg_path *);
+    path = va_arg(argv, CPath *);
 
-    command_status = ntg_load_(server, NTG_SOURCE_XMLRPC_API, file_path, path);
+    command_status = ntg_load_(server, NTG_SOURCE_XMLRPC_API, file_path, *path );
     error_code = command_status.error_code;
 
     if (error_code != NTG_NO_ERROR) {
@@ -1106,7 +1101,7 @@ static xmlrpc_value *ntg_xmlrpc_load_callback(ntg_server * server, const int arg
     xmlrpc_struct_set_value(env, struct_, "filepath", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_path = ntg_xmlrpc_value_from_path(path, env);
+    xmlrpc_path = ntg_xmlrpc_value_from_path( *path, env );
     xmlrpc_struct_set_value(env, struct_, "parentpath", xmlrpc_path);
     xmlrpc_DECREF(xmlrpc_path);
 
@@ -1146,24 +1141,23 @@ static xmlrpc_value *ntg_xmlrpc_move_callback(ntg_server * server, const int arg
                  *xmlrpc_temp = NULL, *xmlrpc_parent_path = NULL;
     ntg_error_code error_code;
     ntg_command_status command_status;
-    ntg_path *node_path, *parent_path;
+    CPath *node_path, *parent_path;
 
     env = va_arg(argv, xmlrpc_env *);
 
     struct_ = xmlrpc_struct_new(env);
-    node_path = va_arg(argv, ntg_path *);
-    parent_path = va_arg(argv, ntg_path *);
+    node_path = va_arg(argv, CPath *);
+    parent_path = va_arg(argv, CPath *);
 
-    command_status = ntg_move_(server, NTG_SOURCE_XMLRPC_API, node_path,
-            parent_path);
+    command_status = ntg_move_( server, NTG_SOURCE_XMLRPC_API, *node_path, *parent_path );
     error_code = command_status.error_code;
 
     if (error_code != NTG_NO_ERROR) {
         return ntg_xmlrpc_error(env, error_code);
     }
 
-    xmlrpc_node_path = ntg_xmlrpc_value_from_path(node_path, env);
-    xmlrpc_parent_path = ntg_xmlrpc_value_from_path(parent_path, env);
+    xmlrpc_node_path = ntg_xmlrpc_value_from_path( *node_path, env );
+    xmlrpc_parent_path = ntg_xmlrpc_value_from_path( *parent_path, env );
 
     xmlrpc_temp = xmlrpc_string_new(env, "command.move");
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
@@ -1415,7 +1409,7 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(ntg_server * server, const int argc
 
     char *module_id_string, *node_name;
 	GUID module_id;
-    ntg_path *path;
+    CPath *path;
     ntg_command_status command_status;
     ntg_node *node;
     xmlrpc_env *env;
@@ -1424,20 +1418,17 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(ntg_server * server, const int argc
     env = va_arg(argv, xmlrpc_env *);
     module_id_string = va_arg(argv, char *);
     node_name = va_arg(argv, char *);
-    path = va_arg(argv, ntg_path *);
-
-    assert(path->string != NULL);
+    path = va_arg(argv, CPath *);
 
 	ntg_string_to_guid( module_id_string, &module_id );
 
     struct_ = xmlrpc_struct_new(env);
-    command_status = ntg_new_(server, NTG_SOURCE_XMLRPC_API, &module_id, node_name, path);
+    command_status = ntg_new_(server, NTG_SOURCE_XMLRPC_API, &module_id, node_name, *path );
 
     node = static_cast<ntg_node *>( command_status.data );
 
     if (node == NULL) {
         /* free out-of-place memory */
-        ntg_path_free(path);
         free(module_id_string);
         free(node_name);
         return ntg_xmlrpc_error(env, NTG_ERROR);
@@ -1455,13 +1446,11 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(ntg_server * server, const int argc
     xmlrpc_struct_set_value(env, struct_, "instancename", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_path = ntg_xmlrpc_value_from_path(path, env);
+    xmlrpc_path = ntg_xmlrpc_value_from_path( *path, env);
     xmlrpc_struct_set_value(env, struct_, "path", xmlrpc_path);
     xmlrpc_DECREF(xmlrpc_path);
 
-
     /* free out-of-place memory */
-    ntg_path_free(path);
     free(module_id_string);
     free(node_name);
 
@@ -1501,18 +1490,18 @@ static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc
 
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL;
-    ntg_path *path;
+    CPath *path;
     ntg_value *value = NULL;
     xmlrpc_value *value_xmlrpc = NULL, *xmlrpc_temp = NULL, *xmlrpc_path;
 
     env = va_arg(argv, xmlrpc_env *);
-    path = va_arg(argv, ntg_path *);
+    path = va_arg(argv, CPath *);
 
     struct_ = xmlrpc_struct_new(env);
 
-    NTG_TRACE_VERBOSE_WITH_STRING( "getting value", path->string);
+	NTG_TRACE_VERBOSE_WITH_STRING( "getting value", path->get_string().c_str() );
 
-    value = ntg_get_(server, path);
+    value = ntg_get_( server, *path );
 
 	if( value )
 	{
@@ -1545,7 +1534,7 @@ static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_path = ntg_xmlrpc_value_from_path(path, env);
+    xmlrpc_path = ntg_xmlrpc_value_from_path( *path, env);
     xmlrpc_struct_set_value(env, struct_, "path", xmlrpc_path);
     xmlrpc_DECREF(xmlrpc_path);
 
@@ -1553,8 +1542,6 @@ static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc
     xmlrpc_DECREF(value_xmlrpc);
 
     /* free out-of-place memory */
-    ntg_path_free(path);
-
 	if( value )
 	{
 		ntg_value_free(value);
@@ -1664,20 +1651,18 @@ static xmlrpc_value *ntg_xmlrpc_nodelist(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
-
-    ntg_path *path;
     xmlrpc_value *xmlrpc_path;
 
     NTG_TRACE_VERBOSE("");
 
     xmlrpc_decompose_value(env, paramArrayP, "(A)", &xmlrpc_path);
 
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_nodelist_callback, 2, (void *)env, path);
+    return ntg_server_do_va(&ntg_xmlrpc_nodelist_callback, 2, (void *)env, &path);
 
 }
 
@@ -1685,19 +1670,17 @@ static xmlrpc_value *ntg_xmlrpc_delete(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
-
-    ntg_path *path;
     xmlrpc_value *xmlrpc_path;
 
     NTG_TRACE_VERBOSE("");
 
     xmlrpc_decompose_value(env, paramArrayP, "(A)", &xmlrpc_path);
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_delete_callback, 2, (void *)env, path);
+    return ntg_server_do_va(&ntg_xmlrpc_delete_callback, 2, (void *)env, &path);
 
 }
 
@@ -1705,20 +1688,18 @@ static xmlrpc_value *ntg_xmlrpc_rename(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
-
-    ntg_path *path;
     xmlrpc_value *xmlrpc_path;
     const char *name;
 
     NTG_TRACE_VERBOSE("");
 
     xmlrpc_decompose_value(env, paramArrayP, "(As)", &xmlrpc_path, &name);
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_rename_callback, 3, (void *)env, path,
+    return ntg_server_do_va(&ntg_xmlrpc_rename_callback, 3, (void *)env, &path,
             name);
 
 }
@@ -1727,42 +1708,36 @@ static xmlrpc_value *ntg_xmlrpc_save(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
-
-    ntg_path *path;
     xmlrpc_value *xmlrpc_path;
     const char *file_path;
 
     NTG_TRACE_VERBOSE("");
 
     xmlrpc_decompose_value(env, paramArrayP, "(As)", &xmlrpc_path, &file_path);
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_save_callback, 3, (void *)env, path,
-            file_path);
+    return ntg_server_do_va(&ntg_xmlrpc_save_callback, 3, (void *)env, &path, file_path);
 }
 
 static xmlrpc_value *ntg_xmlrpc_load(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
-
-    ntg_path *path;
     xmlrpc_value *xmlrpc_path;
     const char *file_path;
 
     NTG_TRACE_VERBOSE("");
 
     xmlrpc_decompose_value(env, paramArrayP, "(sA)", &file_path, &xmlrpc_path);
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_load_callback, 3,
-            (void *)env, file_path, path);
+    return ntg_server_do_va(&ntg_xmlrpc_load_callback, 3, (void *)env, file_path, &path);
 
 }
 
@@ -1770,8 +1745,6 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
         void *const userData)
 {
-
-    ntg_path *node_path, *parent_path;
     xmlrpc_value *xmlrpc_node_path, *xmlrpc_parent_path;
 
     NTG_TRACE_VERBOSE("");
@@ -1779,14 +1752,13 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
     xmlrpc_decompose_value(env, paramArrayP, "(AA)", &xmlrpc_node_path,
             &xmlrpc_parent_path);
 
-    node_path = ntg_xmlrpc_get_path(env, xmlrpc_node_path);
-    parent_path = ntg_xmlrpc_get_path(env, xmlrpc_parent_path);
+    CPath node_path = ntg_xmlrpc_get_path(env, xmlrpc_node_path);
+    CPath parent_path = ntg_xmlrpc_get_path(env, xmlrpc_parent_path);
 
     if (env->fault_occurred)
         return NULL;
 
-    return ntg_server_do_va(&ntg_xmlrpc_move_callback, 3, (void *)env, node_path,
-            parent_path);
+    return ntg_server_do_va(&ntg_xmlrpc_move_callback, 3, (void *)env, &node_path, &parent_path);
 
 }
 
@@ -1883,7 +1855,6 @@ static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
 {
 
     const char *name, *node_name;
-    ntg_path *path;
     xmlrpc_value *xmlrpc_path;
 
     NTG_TRACE_VERBOSE("");
@@ -1891,17 +1862,14 @@ static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
     xmlrpc_decompose_value(env, paramArrayP, "(ssA)", &name, &node_name,
             &xmlrpc_path);
 
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     xmlrpc_DECREF(xmlrpc_path);
 
     if (env->fault_occurred)
         return NULL;
 
-    assert(path->string != NULL);
-
-    return ntg_server_do_va(&ntg_xmlrpc_new_callback, 4, (void *)env, name,
-            node_name, path);
+    return ntg_server_do_va(&ntg_xmlrpc_new_callback, 4, (void *)env, name, node_name, &path );
 }
 
 
@@ -1911,7 +1879,6 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 {
     xmlrpc_value *xmlrpc_value_, *xmlrpc_path;
     xmlrpc_value *xmlrpc_rv;
-    ntg_path *path;
     ntg_value *value;
 	int number_of_elements;
 
@@ -1936,17 +1903,15 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 			return NULL;
 	}
 
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
-    ntg_command_enqueue(NTG_SET, 3, NTG_SOURCE_XMLRPC_API, path, value );
+    ntg_command_enqueue(NTG_SET, 3, NTG_SOURCE_XMLRPC_API, &path, value );
     xmlrpc_rv = ntg_xmlrpc_return_set(env, xmlrpc_path, xmlrpc_value_);
 
 	if( value )
 	{
 		ntg_value_free(value);
 	}
-
-    ntg_path_free(path);
 
     return xmlrpc_rv;
 }
@@ -1957,17 +1922,16 @@ static xmlrpc_value *ntg_xmlrpc_get(xmlrpc_env * const env,
 {
 
     xmlrpc_value *xmlrpc_path;
-    ntg_path *path;
 
     NTG_TRACE_VERBOSE("");
 
     xmlrpc_decompose_value(env, paramArrayP, "(A)", &xmlrpc_path);
 
-    path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+    CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     xmlrpc_DECREF(xmlrpc_path);
 
-    return ntg_server_do_va(&ntg_xmlrpc_get_callback, 2, (void *)env, path);
+    return ntg_server_do_va(&ntg_xmlrpc_get_callback, 2, (void *)env, &path);
 
 }
 

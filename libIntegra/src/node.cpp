@@ -57,6 +57,9 @@
 #define NTG_STR_INSTANCEID "instanceId"
 #define NTG_STR_CLASSID "classId"
 
+using ntg_api::CPath;
+
+
 
 ntg_node *ntg_node_new(void)
 {
@@ -73,7 +76,6 @@ ntg_node *ntg_node_new(void)
     node->nodes             = NULL;
     node->attributes        = NULL;
     node->attribute_last    = NULL;
-    node->path              = NULL;
 
     return node;
 
@@ -109,14 +111,6 @@ ntg_error_code ntg_node_free(ntg_node * node)
 
     ntg_node_unlink(node);
     ntg_node_attributes_free(node->attributes);
-    if(node->path==NULL)
-	{
-		NTG_TRACE_ERROR("node->path is null");
-    }
-	else
-	{
-		ntg_path_free(node->path);
-    }
     delete[] node->name;
     delete node;
 
@@ -136,7 +130,7 @@ void ntg_node_set_interface(ntg_node * node, const ntg_interface *interface)
 	node->interface = interface;
 }
 
-ntg_error_code ntg_node_add(ntg_node * container, ntg_node * node)
+ntg_error_code ntg_node_add( ntg_node *container, ntg_node * node )
 {
 
     if (container == NULL) {
@@ -170,43 +164,34 @@ ntg_error_code ntg_node_add(ntg_node * container, ntg_node * node)
 }
 
 
-ntg_node *ntg_node_find_by_path(const ntg_path * path, ntg_node * root)
+ntg_node *ntg_node_find_by_path( const CPath &path, ntg_node *root )
 {
     int n;
-    const ntg_node *node;
-    const ntg_node *parent;
+    ntg_node *node;
 
-    if (root == NULL) {
-        NTG_TRACE_ERROR("root is NULL");
-        assert(0);
-        return NULL;
-    }
+	assert( root );
 
-    if(ntg_path_validate(path) != NTG_NO_ERROR){
-        NTG_TRACE_ERROR("path is invalid");
-        return NULL;
-    }
-
-    if (path->n_elems == 0) {
+	if( path.get_number_of_elements() == 0) 
+	{
         return root;
     }
 
     node = root;
 
-    for (n = 0; n < path->n_elems; n++) {
+	for( n = 0; n < path.get_number_of_elements(); n++ ) 
+	{
         /* step down the node graph until we reach the end node */
 
-        parent = node;
-        node = ntg_node_find_by_name(parent, path->elems[n]);
+        node = ntg_node_find_by_name( node, path[ n ].c_str() );
 
         if (node == NULL) {
-            NTG_TRACE_ERROR_WITH_STRING("node not found.  Path", path->string);
+			NTG_TRACE_ERROR_WITH_STRING( "node not found. Path", path.get_string().c_str() );
             return NULL;
         }
     }
 
     if (node == NULL) {
-        NTG_TRACE_ERROR_WITH_STRING("node not found.  Path", path->string);
+        NTG_TRACE_ERROR_WITH_STRING( "node not found. Path", path.get_string().c_str() );
         return NULL;
     }
 
@@ -252,9 +237,9 @@ ntg_node_attribute *ntg_node_attribute_find_by_name(const ntg_node * node,
     return NULL;
 }
 
-void ntg_node_update_attribute_paths(ntg_node * node)
-{
 
+void ntg_node_update_attribute_paths( ntg_node * node )
+{
     ntg_node_attribute *current;
     ntg_node_attribute *marker;
 
@@ -264,10 +249,8 @@ void ntg_node_update_attribute_paths(ntg_node * node)
     /* make sure the node path is correct */
 
     do {
-        ntg_path_free(current->path);
-
-        current->path = ntg_path_copy(node->path);
-        ntg_path_append_element(current->path, current->endpoint->name);
+        current->path = node->path;
+        current->path.append_element( current->endpoint->name );
 
         current = current->next;
 
@@ -289,8 +272,8 @@ void ntg_node_add_attribute(ntg_node *node, const ntg_endpoint *endpoint)
 		attribute->value = ntg_value_new( endpoint->control_info->state_info->type, NULL );
 	}
 
-	attribute->path = ntg_path_copy(node->path);
-    ntg_path_append_element(attribute->path, endpoint->name);
+	attribute->path = node->path;
+	attribute->path.append_element( endpoint->name );
 
     if( node->attributes ) 
 	{
@@ -451,38 +434,19 @@ ntg_node *ntg_node_find_by_name_r(const ntg_node * root, const char *name)
     return ntg_node_find_by_name_(root, name, true);
 }
 
+
 ntg_node *ntg_node_find_by_id(const ntg_node * root, const ntg_id id)
 {
-
     return ntg_node_find_by_id_(root, id, false);
 
 }
 
 ntg_node *ntg_node_find_by_id_r(const ntg_node * root, const ntg_id id)
 {
-
     return ntg_node_find_by_id_(root, id, true);
 
 }
 
-
-char *ntg_node_name_from_path(const ntg_node * node, const ntg_path * path)
-{
-
-    char *name = NULL;
-    int n;
-
-    for (n = 0; n < path->n_elems; n++) {
-        name = ntg_string_append(name, path->elems[n]);
-        name = ntg_string_append(name, ".");
-    }
-
-    name = ntg_string_append(name, node->name);
-    name = ntg_string_append(name, "");
-
-    return name;
-
-}
 
 void ntg_node_set_name( ntg_node * node, const char *name )
 {
@@ -496,51 +460,27 @@ void ntg_node_set_name( ntg_node * node, const char *name )
 }
 
 
-bool ntg_node_is_current(const ntg_node * node, const ntg_node * current)
+CPath ntg_node_get_path( const ntg_node *node)
 {
+	CPath path;
+	if( node->parent )
+	{
+		path = node->parent->path; 
+	}
 
-    return (node->parent == current->parent);
-
-}
-
-void ntg_node_get_path_helper(const ntg_node * node, ntg_path * path)
-{
-    ntg_path_append_element( path, node->name );
-
-    if (!strcmp(node->name, "root")) {
-        return;
-    }
-    if (!strcmp(node->parent->name, "root")) {
-        return;
-    }
-    ntg_node_get_path_helper(node->parent, path);
-}
-
-
-ntg_path *ntg_node_get_path(const ntg_node * node)
-{
-    ntg_path *path;
-
-    path = ntg_path_new();
-    ntg_node_get_path_helper(node, path);
-    ntg_path_reverse_elements(path);
+	path.append_element( node->name );
 
     return path;
-
 }
 
-ntg_path *ntg_node_update_path(ntg_node * node)
-{
 
-    if (node->path) {
-        ntg_path_free(node->path);
-    }
+CPath ntg_node_update_path(ntg_node * node)
+{
     node->path = ntg_node_get_path(node);
 
     ntg_node_update_attribute_paths(node);
 
     return node->path;
-
 }
 
 
@@ -806,7 +746,6 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, node_list &loaded_nodes )
 {
     const ntg_node     *parent;
-    ntg_path           *path;
     ntg_value          *attribute_value;
     ntg_node_attribute *store;
     ntg_node_attribute *marker;
@@ -885,20 +824,11 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
 				{
 					name = xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_NAME);
 
-					path = ntg_node_get_path(parent);
-
-					if(parent->parent == NULL)
-					{
-						/* if we're at the root node pass an empty path to new() */
-						delete[] ntg_path_pop_element(path);
-					}
-
 					/* add the new node */
 					node = (ntg_node *)
-						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, (char * ) name, path).data;
-					ntg_path_free(path);
+						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, (char * ) name, parent->path).data;
+
 					xmlFree(name);
-					path = NULL;
 
 					loaded_nodes.push_back( node );
 				}
@@ -962,11 +892,9 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
 					(could've been removed or changed from interface since ixd was written) 
 					*/
 
-					path = ntg_node_get_path(node);
-					ntg_path_append_element(path, (char *)name);
-					store = ntg_node_attribute_insert_in_list( store, existing_attribute->endpoint, path, attribute_value );
-
-					ntg_path_free(path);
+					CPath attribute_path( node->path );
+					attribute_path.append_element( (char *)name );
+					store = ntg_node_attribute_insert_in_list( store, existing_attribute->endpoint, attribute_path, attribute_value );
 				}
 
                 ntg_value_free(attribute_value);
@@ -1047,10 +975,11 @@ void ntg_node_rename(ntg_node *node, const char *name)
     ntg_node_update_children(node);
 }
 
+
 const ntg_node_attribute *ntg_find_attribute( const ntg_node *node, const char *attribute_name )
 {
 	ostringstream path;
-	path << node->path->string << "." << attribute_name;
+	path << node->path.get_string() << "." << attribute_name;
 
 	map_string_to_attribute::const_iterator lookup = server_->state_table.find( path.str() );
 	if( lookup == server_->state_table.end() )
@@ -1083,18 +1012,16 @@ void ntg_node_add_to_statetable( const ntg_node *node, map_string_to_attribute &
 	const ntg_node *child_node;
 
 	/* add attributes to statetable */
-
 	attribute = node->attributes;
 	do
 	{
-		statetable[ attribute->path->string ] = attribute;
+		statetable[ attribute->path.get_string() ] = attribute;
 
 		attribute = attribute->next;
 	}
 	while( attribute != node->attributes );
 
 	/* recurse child nodes */
-
 	child_node = node->nodes;
 	if( child_node )
 	{
@@ -1115,11 +1042,10 @@ void ntg_node_remove_from_statetable( const ntg_node *node, map_string_to_attrib
 	const ntg_node *child_node;
 
 	/* remove attributes from statetable */
-
 	attribute = node->attributes;
 	do
 	{
-		statetable.erase( attribute->path->string );
+		statetable.erase( attribute->path.get_string() );
 
 		attribute = attribute->next;
 	}

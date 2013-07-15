@@ -21,6 +21,10 @@
 #ifndef INTEGRA_LIST_PRIVATE_H
 #define INTEGRA_LIST_PRIVATE_H
 
+namespace ntg_api
+{
+	class CPath;
+}
 
 
 typedef enum ntg_list_type_ {
@@ -39,8 +43,9 @@ struct ntg_list_ {
 ntg_list *ntg_list_new(ntg_list_type);
 void ntg_list_free(ntg_list *);
 
-void ntg_list_push_node( ntg_list *list, const ntg_path *path );
+void ntg_list_push_node( ntg_list *list, const ntg_api::CPath &path );
 void ntg_list_push_guid( ntg_list *list, const GUID *guid );
+
 
 #endif
 

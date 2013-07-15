@@ -21,10 +21,6 @@
 #ifndef INTEGRA_BRIDGE_H
 #define INTEGRA_BRIDGE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \file integra_bridge.h Integra bridge API */
 
 #include <Integra/integra.h>
@@ -139,8 +135,5 @@ INTEGRA_BRIDGE_API const ntg_bridge_interface *ntg_bridge_interface_new(void);
 
 typedef const ntg_bridge_interface *(*ntg_bridge_interface_generator)(void); 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

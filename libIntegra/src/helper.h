@@ -29,9 +29,6 @@
 
 #include "integra/integra.h"
 
-#define NTG_NODE_NAME_CHARACTER_SET "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-
 /** \brief uses new char internally */
 char *ntg_strdup(const char *string);
 

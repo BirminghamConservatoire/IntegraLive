@@ -21,6 +21,7 @@ static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
     "osc_api",
     "c_api" };
 
+using ntg_api::CPath;
 
 
 /* sure there must be a more elegant way to do this, but lo_message_add_varargs
@@ -103,7 +104,7 @@ void ntg_osc_client_destroy(ntg_osc_client *client)
 
 ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *path,
+        const CPath &path,
         const ntg_value *value)
 {
 	const char *methodName = "/command.set";
@@ -113,9 +114,10 @@ ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
     char *value_s = NULL;
 
     assert(client != NULL);
-    assert(path != NULL);
 
     cmd_source_s = ntg_command_source_text[cmd_source];
+
+	const char *path_s = path.get_string().c_str();
 
 	if( value )
 	{
@@ -123,18 +125,15 @@ ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
 		{
 			case NTG_INTEGER:
 				value_i = ntg_value_get_int(value);
-				ntg_osc_send_ssi(client->address, methodName, cmd_source_s,
-						path->string, value_i);
+				ntg_osc_send_ssi(client->address, methodName, cmd_source_s, path_s, value_i);
 				break;
 			case NTG_FLOAT:
 				value_f = ntg_value_get_float(value);
-				ntg_osc_send_ssf(client->address, methodName, cmd_source_s,
-						path->string, value_f);
+				ntg_osc_send_ssf(client->address, methodName, cmd_source_s, path_s, value_f);
 				break;
 			case NTG_STRING:
 				value_s = ntg_value_get_string(value);
-				ntg_osc_send_sss(client->address, methodName, cmd_source_s,
-						path->string, value_s);
+				ntg_osc_send_sss(client->address, methodName, cmd_source_s, path_s, value_s);
 				break;
 
 			default:
@@ -144,18 +143,18 @@ ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
 	}
 	else
 	{
-		ntg_osc_send_ssN(client->address, methodName, cmd_source_s,
-						path->string);
+		ntg_osc_send_ssN(client->address, methodName, cmd_source_s, path_s);
 	}
 
     return NTG_NO_ERROR;
 }
 
+
 ntg_error_code ntg_osc_client_send_new(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const GUID *module_id,
         const char *node_name,
-        const ntg_path *path)
+        const CPath &path)
 {
     const char *methodName = "/command.new";
     const char *cmd_source_s = NULL;
@@ -164,15 +163,13 @@ ntg_error_code ntg_osc_client_send_new(ntg_osc_client *client,
 	assert(client != NULL);
     assert(module_id != NULL);
     assert(node_name != NULL);
-    assert(path != NULL);
-    assert(path->string != NULL);
 
     cmd_source_s = ntg_command_source_text[cmd_source];
 
 	module_id_string = ntg_guid_to_string( module_id );
 
     ntg_osc_send_ssss(client->address, methodName, cmd_source_s,
-            module_id_string, node_name, path->string);
+			module_id_string, node_name, path.get_string().c_str() );
 
 	delete[] module_id_string;
 
@@ -182,64 +179,56 @@ ntg_error_code ntg_osc_client_send_new(ntg_osc_client *client,
 ntg_error_code ntg_osc_client_send_load(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const char *file_path,
-        const ntg_path *path)
+        const CPath &path)
 {
     char *const methodName = "/command.load";
     const char *cmd_source_s = ntg_command_source_text[cmd_source];
 
     assert(client != NULL);
     assert(file_path != NULL);
-    assert(path != NULL);
 
     return ntg_osc_send_sss(client->address, methodName, cmd_source_s,
-            file_path, path->string);
+            file_path, path.get_string().c_str() );
 }
 
 ntg_error_code ntg_osc_client_send_delete(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *path)
+        const CPath &path)
 {
     char *const methodName = "/command.delete";
     const char *cmd_source_s = ntg_command_source_text[cmd_source];
 
     assert(client != NULL);
-    assert(path != NULL);
 
-    return ntg_osc_send_ss(client->address, methodName, cmd_source_s,
-            path->string);
+    return ntg_osc_send_ss(client->address, methodName, cmd_source_s, path.get_string().c_str() );
 }
    
 ntg_error_code ntg_osc_client_send_move(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *node_path,
-        const ntg_path *parent_path)
+        const CPath &node_path,
+        const CPath &parent_path)
 {
     char *const methodName = "/command.move";
     const char *cmd_source_s = ntg_command_source_text[cmd_source];
 
     assert(client != NULL);
-    assert(node_path != NULL);
-    assert(parent_path != NULL);
 
-	return ntg_osc_send_sss(client->address, methodName, cmd_source_s,
-            node_path->string, parent_path->string);
+	return ntg_osc_send_sss(client->address, methodName, cmd_source_s, node_path.get_string().c_str(), parent_path.get_string().c_str() );
 
 }
 
 ntg_error_code ntg_osc_client_send_rename(ntg_osc_client *client,
         ntg_command_source cmd_source,
-        const ntg_path *path,
+        const CPath &path,
         const char *name)
 {
     char *const methodName = "/command.rename";
     const char *cmd_source_s = ntg_command_source_text[cmd_source];
 
     assert(client != NULL);
-    assert(path != NULL);
     assert(name != NULL);
 
-    return ntg_osc_send_sss(client->address, methodName, cmd_source_s,
-            path->string, name);
+    return ntg_osc_send_sss(client->address, methodName, cmd_source_s, path.get_string().c_str(), name);
 
 }
 

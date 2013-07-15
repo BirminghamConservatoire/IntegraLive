@@ -30,6 +30,8 @@
 #include "trace.h"
 
 
+using ntg_api::CPath;
+
 
 ntg_command *ntg_command_new(ntg_command_id command_id, unsigned int argc,
         va_list argv)
@@ -49,7 +51,7 @@ ntg_command *ntg_command_new(ntg_command_id command_id, unsigned int argc,
 			args_set = new ntg_args_set;
 
 			args_set->source = va_arg(argv, ntg_command_source);
-			args_set->path   = ntg_path_copy(va_arg(argv, ntg_path *));
+			args_set->path = *va_arg( argv, CPath * );
 
 			value = va_arg(argv, ntg_value *);
 			if( value )
@@ -80,7 +82,6 @@ void ntg_command_free(ntg_command *command)
     if(command_id == NTG_SET){
         ntg_args_set *args = (ntg_args_set *)command->argv;
 
-        ntg_path_free((ntg_path *)args->path);
         ntg_value_free((ntg_value*)args->value);
 
     }

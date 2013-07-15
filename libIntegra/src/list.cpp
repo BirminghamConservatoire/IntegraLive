@@ -26,7 +26,7 @@
 #include "path.h"
 #include "trace.h"
 
-
+using ntg_api::CPath;
 
 
 ntg_list *ntg_list_new(ntg_list_type type)
@@ -58,8 +58,9 @@ void ntg_list_free_as_nodelist(ntg_list *list)
 
     unsigned int i;
 
-    for(i = 0; i < list->n_elems; ++i) {
-        ntg_path_free(((ntg_path **)list->elems)[i]);
+    for(i = 0; i < list->n_elems; ++i) 
+	{
+		delete (((CPath **)list->elems)[i]);
     }
     if(list->n_elems != 0) {
         delete[] list->elems;
@@ -84,10 +85,6 @@ void ntg_list_free_as_guids(ntg_list *list)
     ntg_list_free_(list);
 }
 
-unsigned long ntg_list_get_n_elems(ntg_list *list)
-{
-    return list->n_elems;
-}
 
 void ntg_list_free(ntg_list *list)
 {
@@ -111,13 +108,13 @@ void ntg_list_free(ntg_list *list)
 }
 
 
-void ntg_list_push_node( ntg_list *list, const ntg_path *path )
+void ntg_list_push_node( ntg_list *list, const CPath &path )
 {
-	assert( list && path );
+	assert( list );
 
-	ntg_path **paths = new ntg_path *[ list->n_elems + 1 ];
-	memcpy( paths, list->elems, list->n_elems * sizeof( ntg_path * ) );
-	paths[ list->n_elems ] = ntg_path_copy( path );
+	CPath **paths = new CPath *[ list->n_elems + 1 ];
+	memcpy( paths, list->elems, list->n_elems * sizeof( CPath * ) );
+	paths[ list->n_elems ] = new CPath( path );
 
 	delete[] list->elems;
 	list->elems = paths;

@@ -59,11 +59,12 @@
 #define NTG_PLAYER_SANITY_CHECK_SECONDS 30
 
 
+
 typedef struct ntg_player_state_ 
 {
 	ntg_id id;
-	ntg_path *tick_path;
-	ntg_path *play_path;
+	ntg_api::CPath tick_path;
+	ntg_api::CPath play_path;
 	int rate;
 	int initial_ticks;
 	int previous_ticks;
@@ -94,10 +95,8 @@ typedef struct ntg_player_data_
 } ntg_player_data;
 
 
-void ntg_player_state_free(ntg_player_state *state)
+void ntg_player_state_free( ntg_player_state *state )
 {
-	ntg_path_free( state->tick_path );
-	ntg_path_free( state->play_path );
 	delete state;
 }
 
@@ -141,7 +140,7 @@ void ntg_player_stop( ntg_server *server, ntg_id player_id, int final_tick )
 			if( final_tick != iterator->previous_ticks )
 			{
 				value = ntg_value_new( NTG_INTEGER, &final_tick );
-				ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, iterator->tick_path, value );
+				ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, &iterator->tick_path, value );
 				ntg_value_free( value );
 			}
 
@@ -232,7 +231,7 @@ void *ntg_player_thread( void *context )
 				else
 				{
 					value = ntg_value_new( NTG_INTEGER, &zero );
-					ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, player->play_path, value );
+					ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, &player->play_path, value );
 					ntg_value_free( value );
 					continue;
 				}
@@ -241,7 +240,7 @@ void *ntg_player_thread( void *context )
 			if( new_tick_value != player->previous_ticks )
 			{
 				value = ntg_value_new( NTG_INTEGER, &new_tick_value );
-				ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, player->tick_path, value );
+				ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, &player->tick_path, value );
 				ntg_value_free( value );
 				player->previous_ticks = new_tick_value;
 			}
@@ -360,13 +359,7 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 		}
 	}
 
-	if( player_state )
-	{
-		/* updating pre-existing player state - free & recreate paths, in case they have changed */
-		ntg_path_free( player_state->tick_path );
-		ntg_path_free( player_state->play_path );
-	}
-	else
+	if( !player_state )
 	{
 		/* create new player if not already playing */
 		player_state = new ntg_player_state;
@@ -376,11 +369,11 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	}
 
 	/* recreate paths, in case they have changed */
-	player_state->tick_path = ntg_path_copy( player_node->path );
-	ntg_path_append_element( player_state->tick_path, NTG_ATTRIBUTE_TICK );
+	player_state->tick_path = player_node->path;
+	player_state->tick_path.append_element( NTG_ATTRIBUTE_TICK );
 
-	player_state->play_path = ntg_path_copy( player_node->path );
-	ntg_path_append_element( player_state->play_path, NTG_ATTRIBUTE_PLAY );
+	player_state->play_path = player_node->path;
+	player_state->play_path.append_element( NTG_ATTRIBUTE_PLAY );
 
 	/*
 	setup all other player state fields
@@ -413,14 +406,11 @@ void ntg_player_handle_path_change( ntg_server *server, const ntg_node *player_n
 	{
 		if( player_state->id == player_node->id )
 		{
-			ntg_path_free( player_state->tick_path );
-			ntg_path_free( player_state->play_path );
+			player_state->tick_path = player_node->path;
+			player_state->tick_path.append_element( NTG_ATTRIBUTE_TICK );
 
-			player_state->tick_path = ntg_path_copy( player_node->path );
-			ntg_path_append_element( player_state->tick_path, NTG_ATTRIBUTE_TICK );
-
-			player_state->play_path = ntg_path_copy( player_node->path );
-			ntg_path_append_element( player_state->play_path, NTG_ATTRIBUTE_PLAY );
+			player_state->play_path = player_node->path;
+			player_state->play_path.append_element( NTG_ATTRIBUTE_PLAY );
 		}
 	}
 

@@ -31,9 +31,15 @@
 #include "path.h"
 #include "command.h"
 
+
 #define NTG_COMMAND_QUEUE_ELEMENTS 1024
 
-#define NTG_HASHTABLE struct ntg_hash_node_ *
+namespace ntg_api
+{
+	class CPath;
+
+}
+
 
 #ifndef ntg_system_class_data 
 typedef struct ntg_system_class_data_ ntg_system_class_data;
@@ -62,6 +68,9 @@ void ntg_server_halt(ntg_server *server);
 ntg_server *ntg_server_new(const char *osc_client_url, unsigned short osc_client_port, const char *system_module_directory, const char *third_party_module_directory );
 void ntg_server_free(ntg_server *server);
 
+
+
+
 /** \brief Callback function corresponing to ih_callback in the bridge interface (see integra_bridge.h ntg_bridge_interface->ih_callback */
 void receive_callback(ntg_id id, const char *attribute_name, const ntg_value *value);
 
@@ -71,9 +80,7 @@ void receive_callback(ntg_id id, const char *attribute_name, const ntg_value *va
 ntg_node *ntg_server_get_root(const ntg_server *server);
 
 /** \brief Get the list of nodes under a container node as an array */
-ntg_list *ntg_server_get_nodelist(const ntg_server *server, 
-        ntg_node *container, ntg_path *parent_path, 
-        ntg_list *nodelist);
+ntg_list *ntg_server_get_nodelist( const ntg_server * server, const ntg_node *container, ntg_list *nodelist );
 
 /** \brief Update a connection 
     \param do_connect Toggles the connection 0 = disconnect 1 = connec
@@ -91,15 +98,12 @@ ntg_error_code ntg_server_node_delete(ntg_server *server, ntg_node *node);
 
 
 /** \brief shortcut for making/removing connections 
- *  \param *parent_path, a pointer to the path of the parent we want to make the connection inside, e.g. ["Track1", "Block1"]
+ *  \param *parent_path, a reference to the path of the parent we want to make the connection inside, e.g. ["Track1", "Block1"]
  *  \param *source_path_s a string representing the *relative* path to the source attribute in dot-separated notation, e.g. "TapDelay1.out1"
  *  \param *target_path_s a string representing the *relative* path to the target attribute in dot-separated notation, e.g. "AudioOut1.in1"
     \return a pointer to a struct of type ntg_node, containing the new Connection node 
     */
-ntg_node *ntg_server_connect(ntg_server * server,
-                                      const ntg_path * parent_path,
-                                      const char * source_path_s,
-                                      const char * target_path_s);
+ntg_node *ntg_server_connect(ntg_server * server, const ntg_api::CPath &parent_path, const char *source_path_s, const char *target_path_s );
 
 
 
@@ -128,6 +132,7 @@ bool ntg_saved_version_is_newer_than_current( const char *saved_version );
 void ntg_lock_server(void);
 void ntg_unlock_server(void);
 void ntg_command_enqueue(ntg_command_id command_id, const int argc, ...);
+
 
 
 /** \brief Terminate the server and cleanup */

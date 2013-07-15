@@ -21,44 +21,46 @@
 #ifndef INTEGRA_PATH_PRIVATE_H
 #define INTEGRA_PATH_PRIVATE_H
 
-#include "Integra/integra.h"
-
-#define NTG_EMPTY_PATH "."
-#define NTG_PATH_MAX_ELEMS 255
-
-struct ntg_path_ {
-    char **elems;
-    unsigned int n_elems;
-    char *string;
-};
+#include <string>
+#include <vector>
 
 
-/** \brief create an ntg_path from a '.' delimited string */
-LIBINTEGRA_API ntg_path *ntg_path_from_string(const char *path_string);
+namespace ntg_api
+{
+	typedef std::string string;
+	typedef std::vector<string> string_list;
 
-/* \brief pop an element from a path, returning that element as a string.
- * The returned string is a copy and must be freed with ntg_free() after usage. */
-LIBINTEGRA_API char *ntg_path_pop_element(ntg_path *path);
+	class CPath
+	{
+		public:
 
-/* paths */
-/* \brief append an element to the end of a path. 
- * ntg_path *path is modified to hold the new path */
-LIBINTEGRA_API void ntg_path_append_element(ntg_path *path, const char *element);
+			CPath();
+			CPath( const string &path_string );
+			CPath( const CPath &to_copy );
+			~CPath();
 
-/* Create a new path struct containing the contents of source */
-LIBINTEGRA_API ntg_path *ntg_path_copy(const ntg_path *source);
+			const CPath &operator=( const CPath &to_copy );
 
-/* \brief Check that a path is valid */
-LIBINTEGRA_API ntg_error_code ntg_path_validate(const ntg_path *path);
+			int get_number_of_elements() const;			
+			const string &operator[]( int index ) const;
 
-LIBINTEGRA_API ntg_path *ntg_path_new(void);
-LIBINTEGRA_API ntg_error_code ntg_path_free( ntg_path *path);
+			const string &get_string() const;
 
+			string pop_element();
+			void append_element( const string &element );
 
-/** \brief in place path reversal
-  */
-void ntg_path_reverse_elements(ntg_path *path);
+		private:
 
+			void copy_from( const CPath &to_copy );
+
+			void rebuild_string();
+
+			string_list m_elements;
+			
+			string m_string;
+			bool m_string_is_valid;
+	};
+}
 
 
 #endif

@@ -25,6 +25,11 @@
 #include "command.h"
 
 
+namespace ntg_api
+{
+	class CPath;
+}
+
 
 
 struct ntg_system_class_data_ 
@@ -49,7 +54,7 @@ void ntg_system_class_handlers_shutdown(ntg_server *server);
 void ntg_system_class_handle_new(ntg_server *server, const ntg_node *node, ntg_command_source cmd_source );
 void ntg_system_class_handle_set(ntg_server *server, const ntg_node_attribute *attribute, const ntg_value *previous_value, ntg_command_source cmd_source );
 void ntg_system_class_handle_rename(ntg_server *server, const ntg_node *node, const char *previous_name, ntg_command_source cmd_source );
-void ntg_system_class_handle_move(ntg_server *server, const ntg_node *node, const ntg_path *previous_path, ntg_command_source cmd_source );
+void ntg_system_class_handle_move(ntg_server *server, const ntg_node *node, const ntg_api::CPath &previous_path, ntg_command_source cmd_source );
 void ntg_system_class_handle_delete(ntg_server *server, const ntg_node *node, ntg_command_source cmd_source );
 
 bool ntg_node_is_active( const ntg_node *node );

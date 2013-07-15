@@ -33,6 +33,8 @@
 #include "helper.h"
 #include "interface.h"
 
+using ntg_api::CPath;
+
 
 ntg_node_attribute *ntg_node_attribute_new(void)
 {
@@ -53,9 +55,6 @@ ntg_error_code ntg_node_attribute_free(ntg_node_attribute *node_attribute)
 		ntg_value_free( node_attribute->value );
 	}
 
-    assert(node_attribute->path);
-    ntg_path_free(node_attribute->path);
-
     delete node_attribute;
 
     return NTG_NO_ERROR;
@@ -64,13 +63,13 @@ ntg_error_code ntg_node_attribute_free(ntg_node_attribute *node_attribute)
 
 ntg_node_attribute *ntg_node_attribute_insert_in_list(	ntg_node_attribute *attribute_list,
 											const ntg_endpoint *endpoint,
-											const ntg_path *path,
+											const CPath &path,
 											const ntg_value * value)
 {
     ntg_node_attribute *new_node;
 	ntg_node_attribute *attribute_iterator;
 
-	assert( endpoint && path );
+	assert( endpoint );
 
     new_node = ntg_node_attribute_new();
 	new_node->endpoint = endpoint;
@@ -79,7 +78,7 @@ ntg_node_attribute *ntg_node_attribute_insert_in_list(	ntg_node_attribute *attri
 		new_node->value = ntg_value_duplicate(value);
 	}
 
-    new_node->path = ntg_path_copy(path);
+    new_node->path = path;
 
 	/* find correct insertion position in attribute list */
 

@@ -82,6 +82,9 @@ extern "C"
 	#endif
 #endif
 
+using ntg_api::CPath;
+
+
 #define NTG_SERVER_WAIT_TIME 1000000 * 20 /* == 20 ms */
 #define NTG_DEQUEUE_WAIT_TIME 0
 
@@ -104,7 +107,7 @@ void ntg_unlock_server(void)
 const ntg_node_attribute *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const char *path )
 {
 	ostringstream composite_path;
-	composite_path << root->path->string << "." << path;
+	composite_path << root->path.get_string() << "." << path;
 
 	map_string_to_attribute::const_iterator lookup = server->state_table.find( composite_path.str() );
 	if( lookup == server->state_table.end() )
@@ -128,25 +131,6 @@ void ntg_server_set_host_dsp(const ntg_server *server, bool status)
 }
 
 
-ntg_path *ntg_server_path_from_id(ntg_server * server, ntg_id id)
-{
-
-    ntg_node *root, *found;
-    ntg_path *path;
-
-    root = ntg_server_get_root(server);
-    found = ntg_node_find_by_id_r(root, id);
-
-    if (!found) {
-        return NULL;
-    }
-
-    path = ntg_node_get_path(found);
-
-    return path;
-
-}
-
 void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 {
     ntg_node *current = first;
@@ -169,7 +153,7 @@ void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
             printf("  |");
 
 		module_id_string = ntg_guid_to_string( &current->interface->module_guid );
-		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n",current->name,current->interface->info->name, module_id_string, current->path->string);
+		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n",current->name,current->interface->info->name, module_id_string, current->path.get_string().c_str() );
 		delete[] module_id_string;
 
 		has_children = (current->nodes!=NULL);
@@ -204,23 +188,13 @@ void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 }
 
 
-ntg_list *ntg_server_get_nodelist(const ntg_server * server,
-        ntg_node *container,
-        ntg_path *parent_path,
-        ntg_list *nodelist)
+ntg_list *ntg_server_get_nodelist( const ntg_server * server, const ntg_node *container, ntg_list *nodelist )
 {
-
-    int parent_n_elems = 0;
-    ntg_path *path = NULL;
-    ntg_path **nodes = NULL;
-    ntg_node *current, *marker;
+    const CPath **nodes = NULL;
+    const ntg_node *current, *marker;
 
     if (nodelist == NULL) {
         nodelist = ntg_list_new(NTG_LIST_NODES);
-    }
-
-    if (parent_path != NULL) {
-        parent_n_elems = parent_path->n_elems;
     }
 
     if (container != NULL) {
@@ -240,18 +214,11 @@ ntg_list *ntg_server_get_nodelist(const ntg_server * server,
 
     do {
 
-        /* get path from node */
-        if (ntg_path_validate(current->path) == NTG_NO_ERROR) {
-            path = current->path;
-        } else {
-            path = ntg_node_update_path(current);
-        }
-
         /* add the path to the node list */
-		ntg_list_push_node( nodelist, path );
+		ntg_list_push_node( nodelist, current->path );
 
         if (current->nodes != NULL) {
-            nodelist = ntg_server_get_nodelist(server, current, path, nodelist);
+            nodelist = ntg_server_get_nodelist(server, current, nodelist);
         }
 
         current = current->next;
@@ -535,7 +502,7 @@ void ntg_server_receive_(ntg_server * server,
     }
 
     ntg_lock_server();
-    ntg_command_enqueue(NTG_SET, 3, source, node_attribute->path, value);
+    ntg_command_enqueue( NTG_SET, 3, source, &node_attribute->path, value);
     ntg_unlock_server();
 }
 
@@ -795,8 +762,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
     server_->bridge = p;
 
     root = ntg_node_new();
-
-    root->path = ntg_path_new();
     /* not sure we need to set an interface for the root node?
 	ntg_node_set_interface(root, ??? );
 	*/

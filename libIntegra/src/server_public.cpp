@@ -31,19 +31,21 @@
 #include "signals.h"
 #include "module_manager.h"
 
-ntg_command_status ntg_new(const GUID *module_id,
-        const char *node_name, const ntg_path * path)
+using ntg_api::CPath;
+
+
+ntg_command_status ntg_new( const GUID *module_id, const char *node_name, const CPath &path )
 {
     ntg_command_status status;
 
     ntg_lock_server();
-    status = ntg_new_(server_, NTG_SOURCE_C_API, module_id, node_name, path);
+    status = ntg_new_(server_, NTG_SOURCE_C_API, module_id, node_name, path );
     ntg_unlock_server();
 
     return status;
 }
 
-ntg_command_status ntg_delete(const ntg_path * path)
+ntg_command_status ntg_delete( const CPath &path )
 {
     ntg_command_status status;
 
@@ -117,8 +119,7 @@ ntg_command_status ntg_load_module_in_development( const char *file_path )
 
 
 
-ntg_command_status ntg_rename(const ntg_path * path,
-        const char *name)
+ntg_command_status ntg_rename( const CPath &path, const char *name)
 {
     
     ntg_command_status status;
@@ -131,8 +132,7 @@ ntg_command_status ntg_rename(const ntg_path * path,
 }
 
 
-/* FIX: refactor to have one return path */
-ntg_command_status ntg_save(const ntg_path * path, const char *file_path) 
+ntg_command_status ntg_save( const CPath &path, const char *file_path ) 
 {
     ntg_command_status status;
 
@@ -144,8 +144,7 @@ ntg_command_status ntg_save(const ntg_path * path, const char *file_path)
 }
 
 
-ntg_command_status ntg_load(const char *file_path,
-        const ntg_path * path)
+ntg_command_status ntg_load(const char *file_path, const CPath &path )
 {
     ntg_command_status status;
 
@@ -156,22 +155,18 @@ ntg_command_status ntg_load(const char *file_path,
     return status;
 }
 
-ntg_command_status ntg_move(
-        const ntg_path * node_path,
-        const ntg_path * parent_path)
+ntg_command_status ntg_move( const CPath &node_path, const CPath &parent_path )
 {
     ntg_command_status status;
 
     ntg_lock_server();
-    status = ntg_move_(server_, NTG_SOURCE_C_API, node_path, parent_path);
+    status = ntg_move_(server_, NTG_SOURCE_C_API, node_path, parent_path );
     ntg_unlock_server();
 
     return status;
 }
 
-ntg_command_status ntg_set(
-        const ntg_path *path, 
-        const ntg_value *value)
+ntg_command_status ntg_set( const CPath &path, const ntg_value *value )
 {
     ntg_command_status status;
     
@@ -185,12 +180,12 @@ ntg_command_status ntg_set(
 }
 
 
-const ntg_value *ntg_get(const ntg_path *path)
+const ntg_value *ntg_get( const CPath &path )
 {
     const ntg_value *value;
 
     ntg_lock_server();
-    value = ntg_get_(server_, path);
+    value = ntg_get_( server_, path );
     ntg_unlock_server();
 
     return value;
@@ -205,13 +200,13 @@ const ntg_list *ntg_interfacelist(void)
 	return ntg_module_id_list( server_->module_manager );
 }
 
-const ntg_list *ntg_nodelist(const ntg_path * path)
-{
 
-    ntg_list *list     = NULL;
+const ntg_list *ntg_nodelist( const CPath &path )
+{
+    ntg_list *list = NULL;
 
     ntg_lock_server();
-    list = ntg_nodelist_(server_, path);
+    list = ntg_nodelist_( server_, path );
     ntg_unlock_server();
 
     return list;

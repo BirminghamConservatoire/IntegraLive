@@ -64,11 +64,12 @@ extern "C"
 #define NTG_GET_COLOR		0xc08000
 #define NTG_PRINT_COLOR		0x6060ff
 
+using ntg_api::CPath;
 
 
 typedef struct ntg_lua_context_stack_
 {
-	const ntg_path *parent_path;
+	const CPath *parent_path;
 	char *output;
 
 	struct ntg_lua_context_stack_ *next;
@@ -166,10 +167,7 @@ static float ntg_lua_get_double(lua_State * L, int argnum)
 
 static int ntg_lua_set( lua_State * L )
 {
-    ntg_path *path = NULL;
-	ntg_path *node_path = NULL;
     ntg_value *value = NULL;
-	char *attribute_name = NULL;
 	const ntg_node *node = NULL;
 	const ntg_node_attribute *attribute = NULL;
 	ntg_value *converted_value = NULL;
@@ -177,6 +175,8 @@ static int ntg_lua_set( lua_State * L )
 	int num_arguments;
 	int i;
     float value_f;
+	CPath path, node_path;
+	string attribute_name;
     const char *value_s;
 
 	assert( context_stack && context_stack->parent_path );
@@ -188,39 +188,38 @@ static int ntg_lua_set( lua_State * L )
 		goto CLEANUP;
 	}
 
-    path = ntg_path_copy( context_stack->parent_path );
+    path = *context_stack->parent_path;
     for( i = 1; i <= num_arguments - 1; i++) 
 	{
-        ntg_path_append_element( path, ntg_lua_get_string( L, i ) );
+        path.append_element( ntg_lua_get_string( L, i ) );
     }
 	
-	node_path = ntg_path_copy( path );
-	attribute_name = ntg_path_pop_element( node_path );
-	assert( attribute_name );
+	node_path = path;
+	attribute_name = node_path.pop_element();
 
 	node = ntg_node_find_by_path( node_path, ntg_server_get_root( server_ ) );
 	if( !node )
 	{
-		ntg_lua_error_handler( "Can't find node: %s", node_path->string );
+		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
 		goto CLEANUP;
 	}
 
-	attribute = ntg_find_attribute( node, attribute_name );
+	attribute = ntg_find_attribute( node, attribute_name.c_str() );
 	if( !attribute )
 	{
-		ntg_lua_error_handler( "Can't find endpoint: %s", path->string );
+		ntg_lua_error_handler( "Can't find endpoint: %s", path.get_string().c_str() );
 		goto CLEANUP;
 	}
 
 	if( attribute->endpoint->type != NTG_CONTROL )
 	{
-		ntg_lua_error_handler( "Endpoint is not a control: %s", path->string );
+		ntg_lua_error_handler( "Endpoint is not a control: %s", path.get_string().c_str() );
 		goto CLEANUP;
 	}
 
 	if( !attribute->endpoint->control_info->can_be_target )
 	{
-		ntg_lua_error_handler( "Endpoint is not a legal script target: %s", path->string );
+		ntg_lua_error_handler( "Endpoint is not a legal script target: %s", path.get_string().c_str() );
 		goto CLEANUP;
 	}
 
@@ -243,14 +242,14 @@ static int ntg_lua_set( lua_State * L )
 				break;
 
 			default:
-				ntg_lua_error_handler( "%s received illegal value (\"%s\")\n", path->string, lua_typename( L, lua_type( L, num_arguments ) ) );
+				ntg_lua_error_handler( "%s received illegal value (\"%s\")\n", path.get_string().c_str(), lua_typename( L, lua_type( L, num_arguments ) ) );
 				goto CLEANUP;
 		}
 
 		converted_value = ntg_value_change_type( value, attribute->value->type );
 
 		ntg_value_sprintf( value_string, NTG_LONG_STRLEN, converted_value );
-		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path->string, value_string );
+		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path.get_string().c_str(), value_string );
 
 		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, converted_value );
 
@@ -260,7 +259,7 @@ static int ntg_lua_set( lua_State * L )
 	{
 		assert( attribute->endpoint->control_info->type == NTG_BANG );
 
-		ntg_lua_output_handler( NTG_SET_COLOR, "Sending bang to %s...", path->string );
+		ntg_lua_output_handler( NTG_SET_COLOR, "Sending bang to %s...", path.get_string().c_str() );
 		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, NULL );
 	}
 
@@ -271,10 +270,7 @@ static int ntg_lua_set( lua_State * L )
 
 	CLEANUP:
 
-	if( node_path ) ntg_path_free( node_path );
-	if( attribute_name ) delete[] attribute_name;
 	if( value ) ntg_value_free(value);
-	if( path ) ntg_path_free(path);
 
     return 0;
 }
@@ -284,97 +280,85 @@ static int ntg_lua_get(lua_State * L)
 {
     const ntg_value *value = NULL;
 	const ntg_node *node = NULL;
-	ntg_path *node_path = NULL;
-	char *attribute_name = NULL;
 	const ntg_node_attribute *attribute = NULL;
     int i;
-	int return_value = 0;
     int num_arguments = 0;
-	ntg_path *path = NULL;
 	char value_string[ NTG_LONG_STRLEN ];
 
 	assert( context_stack && context_stack->parent_path );
 
 	num_arguments = lua_gettop( L );
 
-    path = ntg_path_copy( context_stack->parent_path );
+    CPath path( *context_stack->parent_path );
     for(i = 1; i <= num_arguments; i++) 
 	{
-        ntg_path_append_element( path, ntg_lua_get_string( L, i ) );
+        path.append_element( ntg_lua_get_string( L, i ) );
     }
 
-	node_path = ntg_path_copy( path );
-	attribute_name = ntg_path_pop_element( node_path );
+	CPath node_path( path );
+	string attribute_name = node_path.pop_element();
 
 	node = ntg_node_find_by_path( node_path, ntg_server_get_root( server_ ) );
 	if( !node )
 	{
-		ntg_lua_error_handler( "Can't find node: %s", node_path->string );
-		goto CLEANUP;
+		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
+		return 0;
 	}
 
-	attribute = ntg_find_attribute( node, attribute_name );
+	attribute = ntg_find_attribute( node, attribute_name.c_str() );
 	if( !attribute )
 	{
-		ntg_lua_error_handler( "Can't find endpoint: %s", path->string );
-		goto CLEANUP;
+		ntg_lua_error_handler( "Can't find endpoint: %s", node_path.get_string().c_str() );
+		return 0;
 	}
 
 	if( attribute->endpoint->type != NTG_CONTROL )
 	{
-		ntg_lua_error_handler( "Endpoint is not a control: %s", path->string );
-		goto CLEANUP;
+		ntg_lua_error_handler( "Endpoint is not a control: %s", node_path.get_string().c_str() );
+		return 0;
 	}
 
 	if( attribute->endpoint->control_info->type != NTG_STATE )
 	{
-		ntg_lua_error_handler( "Endpoint is not stateful: %s", path->string );
-		goto CLEANUP;
+		ntg_lua_error_handler( "Endpoint is not stateful: %s", node_path.get_string().c_str() );
+		return 0;
 	}
 
 	if( !attribute->endpoint->control_info->can_be_source )
 	{
-		ntg_lua_error_handler( "Endpoint is not a valid script input: %s", path->string );
-		goto CLEANUP;
+		ntg_lua_error_handler( "Endpoint is not a valid script input: %s", node_path.get_string().c_str() );
+		return 0;
 	}
 
     value = ntg_get_( server_, path );
 
     if( !value ) 
 	{
-		ntg_lua_error_handler( "Can't read attribute value at %s", path->string );
-		goto CLEANUP;
+		ntg_lua_error_handler( "Can't read attribute value at %s", node_path.get_string().c_str() );
+		return 0;
 	}
 
 	ntg_value_sprintf( value_string, NTG_LONG_STRLEN, value );
-	ntg_lua_output_handler( NTG_GET_COLOR, "Queried %s, value = %s", path->string, value_string );
+	ntg_lua_output_handler( NTG_GET_COLOR, "Queried %s, value = %s", node_path.get_string().c_str(), value_string );
 
 	switch (ntg_value_get_type(value)) 
 	{
         case NTG_INTEGER:
             lua_pushnumber(L, (lua_Number) ntg_value_get_int( value ) );
-			return_value = 1;
             break;
         case NTG_FLOAT:
             lua_pushnumber(L, (lua_Number) ntg_value_get_float( value ) );
-			return_value = 1;
             break;
         case NTG_STRING:
             lua_pushstring(L, ntg_value_get_string( value ) );
-			return_value = 1;
             break;
         default:
             ntg_lua_error_handler( "Internal error. ntg_get_()->type has unknown value: %d", ntg_value_get_type( value ) );
+			return 0;
             break;
     }
 
-	CLEANUP:
-
-	if( path ) ntg_path_free( path );
-	if( node_path ) ntg_path_free( node_path );
-	if( attribute_name ) delete[] attribute_name;
-
-    return return_value;
+    return 1;
 }
 
 
@@ -425,18 +409,21 @@ static const luaL_Reg ilua_funcreg[] =
 };
 
 
-char *get_lua_object_name( const ntg_path *child_path, const ntg_path *parent_path )
+char *get_lua_object_name( const CPath &child_path, const CPath &parent_path )
 {
 	int i;
 	const char *path_element;
 	char *object_name = NULL;
 	char *new_object_name;
 
-	assert( child_path && parent_path && child_path->n_elems > parent_path->n_elems );
+	int child_elements = child_path.get_number_of_elements();
+	int parent_elements = parent_path.get_number_of_elements();
 
-	for( i = parent_path->n_elems; i < child_path->n_elems; i++ )
+	assert( child_elements > parent_elements );
+
+	for( i = parent_elements; i < child_elements; i++ )
 	{
-		path_element = child_path->elems[ i ];
+		path_element = child_path[ i ].c_str();
 		if( !object_name )
 		{
 			object_name = ntg_strdup( path_element );
@@ -454,20 +441,22 @@ char *get_lua_object_name( const ntg_path *child_path, const ntg_path *parent_pa
 }
 
 
-char *ntg_lua_get_parameter_string( const ntg_path *child_path, const ntg_path *parent_path )
+char *ntg_lua_get_parameter_string( const CPath &child_path, const CPath &parent_path )
 {
-	int i;
 	const char *path_element;
 	char *parameter_string;
 	char *new_parameter_string;
 
-	assert( child_path && parent_path && child_path->n_elems > parent_path->n_elems );
+	int child_elements = child_path.get_number_of_elements();
+	int parent_elements = parent_path.get_number_of_elements();
+
+	assert( child_elements > parent_elements );
 
 	parameter_string = ntg_strdup( "" );
 
-	for( i = parent_path->n_elems; i < child_path->n_elems; i++ )
+	for( int i = parent_elements; i < child_elements; i++ )
 	{
-		path_element = child_path->elems[ i ];
+		path_element = child_path[ i ].c_str();
 
 		new_parameter_string = new char[ strlen( parameter_string ) + strlen( path_element ) + 5 ];
 		sprintf( new_parameter_string, "%s\"%s\", ", parameter_string, path_element );
@@ -479,13 +468,13 @@ char *ntg_lua_get_parameter_string( const ntg_path *child_path, const ntg_path *
 }
 
 
-char *ntg_lua_declare_child_objects( char *init_script, const ntg_node *node, const ntg_path *parent_path )
+char *ntg_lua_declare_child_objects( char *init_script, const ntg_node *node, const CPath &parent_path )
 {
 	const ntg_node *child_iterator;
 	char *child_declaration;
 	const char *child_initializer = "={}\n";
 
-	assert( node && parent_path && parent_path->n_elems <= node->path->n_elems );
+	assert( node && parent_path.get_number_of_elements() <= node->path.get_number_of_elements() );
 
 	child_iterator = node->nodes;
 	if( child_iterator )
@@ -513,7 +502,7 @@ char *ntg_lua_declare_child_objects( char *init_script, const ntg_node *node, co
 }
 
 
-char *ntg_lua_get_child_metatable( const ntg_node *node, const ntg_path *parent_path )
+char *ntg_lua_get_child_metatable( const ntg_node *node, const CPath &parent_path )
 {
 	char *object_name;
 	char *parameter_string;
@@ -529,7 +518,7 @@ char *ntg_lua_get_child_metatable( const ntg_node *node, const ntg_path *parent_
 		"	end\n"
 		"})\n";
 
-	assert( node && parent_path && parent_path->n_elems < node->path->n_elems );
+	assert( node && parent_path.get_number_of_elements() < node->path.get_number_of_elements() );
 
 	object_name = get_lua_object_name( node->path, parent_path );
 	parameter_string = ntg_lua_get_parameter_string( node->path, parent_path );
@@ -542,12 +531,12 @@ char *ntg_lua_get_child_metatable( const ntg_node *node, const ntg_path *parent_
 }
 
 
-char *ntg_lua_declare_child_metatables( char *init_script, const ntg_node *node, const ntg_path *parent_path )
+char *ntg_lua_declare_child_metatables( char *init_script, const ntg_node *node, const CPath &parent_path )
 {
 	const ntg_node *child_iterator;
 	char *child_metatable;
 
-	assert( node && parent_path && parent_path->n_elems <= node->path->n_elems );
+	assert( node && parent_path.get_number_of_elements() <= node->path.get_number_of_elements() );
 
 	child_iterator = node->nodes;
 	if( child_iterator )
@@ -572,7 +561,7 @@ char *ntg_lua_declare_child_metatables( char *init_script, const ntg_node *node,
 }
 
 
-char *ntg_lua_build_init_script( const ntg_path *parent_path )
+char *ntg_lua_build_init_script( const CPath &parent_path )
 {
 	const char *helper_functions[] = 
 	{
@@ -615,8 +604,6 @@ char *ntg_lua_build_init_script( const ntg_path *parent_path )
 	ntg_node *parent_node;
 	int i;
 
-	assert( parent_path );
-
 	for( i = 0; *helper_functions[ i ] != 0; i++ )
 	{
 		init_script = ntg_string_append( init_script, helper_functions[ i ] );
@@ -626,7 +613,7 @@ char *ntg_lua_build_init_script( const ntg_path *parent_path )
 	parent_node = ntg_node_find_by_path( parent_path, ntg_server_get_root( server_ ) );
 	if( !parent_node )
 	{
-		NTG_TRACE_ERROR_WITH_STRING( "Can't find node", parent_path->string );
+		NTG_TRACE_ERROR_WITH_STRING( "Can't find node", parent_path.get_string().c_str() );
 		return NULL;
 	}
 
@@ -638,12 +625,10 @@ char *ntg_lua_build_init_script( const ntg_path *parent_path )
 }
 
 
-lua_State *ntg_lua_create_state( const ntg_path *parent_path )
+lua_State *ntg_lua_create_state( const CPath &parent_path )
 {
 	lua_State *state;
 	char *init_script = NULL;
-
-	assert( parent_path );
 
 	init_script = ntg_lua_build_init_script( parent_path );
 	if( !init_script ) return NULL;
@@ -672,7 +657,7 @@ lua_State *ntg_lua_create_state( const ntg_path *parent_path )
  *
  * returns textual output from operation, returned string should be freed by caller
  */
-char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
+char *ntg_lua_eval( const CPath &parent_path, const char *script_string )
 {
 	lua_State *state;
 	ntg_lua_context_stack *context;
@@ -681,7 +666,7 @@ char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 	const char *timestamp_format = "_executing script at %H:%M:%S..._";
 	int timestamp_format_length = strlen( timestamp_format ) + 1;
 	
-	assert( parent_path && script_string );
+	assert( script_string );
 
 	/* initialize the state */
 
@@ -693,7 +678,7 @@ char *ntg_lua_eval( const ntg_path *parent_path, const char *script_string )
 
 	context = new ntg_lua_context_stack;
 
-	context->parent_path = parent_path;
+	context->parent_path = &parent_path;
 
 	context->output = new char[ timestamp_format_length ];
 	strftime( context->output, timestamp_format_length, timestamp_format, localtime( &raw_time_stamp ) );

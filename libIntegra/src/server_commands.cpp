@@ -41,6 +41,9 @@
 
 #include "Integra/integra.h"
 
+using ntg_api::CPath;
+
+
 
 bool ntg_should_send_set_to_host( const ntg_server *server, const ntg_node_attribute *attribute, const ntg_interface *interface, ntg_command_source cmd_source )
 {
@@ -99,21 +102,19 @@ bool ntg_should_send_to_client( ntg_command_source cmd_source )
 
 ntg_command_status ntg_set_(ntg_server *server,
         ntg_command_source cmd_source,
-        const ntg_path *path,
+        const CPath &path,
         const ntg_value *value)
 {
     ntg_node *node = NULL;
     ntg_node *root = NULL;
-    ntg_path *my_path = NULL;
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
     ntg_node_attribute *attribute;
-    char *attribute_name;
+    string attribute_name;
     ntg_bridge_interface *bridge = NULL;
 	ntg_value *previous_value = NULL;
 
     assert(server != NULL);
-    assert(path != NULL);
 
     NTG_COMMAND_STATUS_INIT;
 
@@ -121,43 +122,34 @@ ntg_command_status ntg_set_(ntg_server *server,
 
 	/* get node from path */
     root       = ntg_server_get_root(server);
-    error_code = ntg_path_validate(path);
 
-    if (error_code != NTG_NO_ERROR) {
+	if( path.get_number_of_elements() <= 1) 
+	{
+		NTG_TRACE_ERROR_WITH_STRING("attribute has too few elements", path.get_string().c_str() );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-    if (path->n_elems <= 1) {
-        NTG_TRACE_ERROR_WITH_INT("attribute has too few elements", 
-                path->n_elems);
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
-
-    my_path = ntg_path_copy(path);
-    attribute_name = ntg_path_pop_element(my_path);
+    CPath my_path( path );
+	attribute_name = my_path.pop_element();
     node = ntg_node_find_by_path(my_path, root);
 
-    if (node == NULL) {
-        NTG_TRACE_ERROR_WITH_STRING("node not found; set request ignored",
-                my_path->elems[my_path->n_elems - 1]);
-        ntg_path_free(my_path);
-        delete[] attribute_name;
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
-    ntg_path_free(my_path);
-
-    attribute = ntg_node_attribute_find_by_name(node, attribute_name);
-    if (attribute == NULL) {
-        NTG_TRACE_ERROR_WITH_STRING("attribute not found", attribute_name );
-        delete[] attribute_name;
+    if (node == NULL) 
+	{
+		NTG_TRACE_ERROR_WITH_STRING("node not found; set request ignored",my_path.get_string().c_str() );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
+	attribute = ntg_node_attribute_find_by_name( node, attribute_name.c_str() );
+    if (attribute == NULL) 
+	{
+        NTG_TRACE_ERROR_WITH_STRING("attribute not found", attribute_name.c_str() );
+        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
+    }
 
 	switch( attribute->endpoint->type )
 	{
 		case NTG_STREAM:
-			NTG_TRACE_ERROR_WITH_STRING( "can't call set for a stream attribute!", attribute->path->string );
+			NTG_TRACE_ERROR_WITH_STRING( "can't call set for a stream attribute!", path.get_string().c_str() );
 			NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
 
 		case NTG_CONTROL:
@@ -166,7 +158,7 @@ ntg_command_status ntg_set_(ntg_server *server,
 				case NTG_STATE:
 					if( !value )
 					{
-						NTG_TRACE_ERROR_WITH_STRING( "called set without a value for a stateful endpoint", attribute->path->string );
+						NTG_TRACE_ERROR_WITH_STRING( "called set without a value for a stateful endpoint", path.get_string().c_str() );
 						NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
 					}
 
@@ -176,7 +168,7 @@ ntg_command_status ntg_set_(ntg_server *server,
 						/* we allow passing integers to float attributes and vice-versa, but no other mismatched types */
 						if( ( value->type != NTG_INTEGER && value->type != NTG_FLOAT ) || ( attribute->endpoint->control_info->state_info->type != NTG_INTEGER && attribute->endpoint->control_info->state_info->type != NTG_FLOAT ) )
 						{
-							NTG_TRACE_ERROR_WITH_STRING( "called set with incorrect value type", attribute->path->string );
+							NTG_TRACE_ERROR_WITH_STRING( "called set with incorrect value type", path.get_string().c_str() );
 							NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
 						}
 					} 
@@ -186,7 +178,7 @@ ntg_command_status ntg_set_(ntg_server *server,
 				case NTG_BANG:
 					if( value )
 					{
-						NTG_TRACE_ERROR_WITH_STRING( "called set with a value for a stateless endpoint", attribute->path->string );
+						NTG_TRACE_ERROR_WITH_STRING( "called set with a value for a stateless endpoint", path.get_string().c_str() );
 						NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
 					}
 					break;
@@ -212,7 +204,7 @@ ntg_command_status ntg_set_(ntg_server *server,
 	{
 		if( !ntg_node_attribute_test_constraint( attribute, value ) )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "attempting to set value which doesn't conform to constraint - aborting set command", path->string );
+			NTG_TRACE_ERROR_WITH_STRING( "attempting to set value which doesn't conform to constraint - aborting set command", path.get_string().c_str() );
 			NTG_RETURN_ERROR_CODE( NTG_CONSTRAINT_ERROR );
 		}
 	}
@@ -220,7 +212,7 @@ ntg_command_status ntg_set_(ntg_server *server,
 
 	if( ntg_reentrance_push( server, attribute, cmd_source ) )
 	{
-		NTG_TRACE_ERROR_WITH_STRING("detected reentry - aborting set command", path->string );
+		NTG_TRACE_ERROR_WITH_STRING( "detected reentry - aborting set command", path.get_string().c_str() );
 		NTG_RETURN_ERROR_CODE( NTG_REENTRANCE_ERROR );
 	}
 
@@ -242,8 +234,6 @@ ntg_command_status ntg_set_(ntg_server *server,
 	{
 		ntg_value_free( previous_value );
 	}
-
-	delete[]  attribute_name;
 
     /* send the attribute value to the host if needed */
 	if( ntg_should_send_set_to_host( server, attribute, node->interface, cmd_source ) ) 
@@ -268,13 +258,8 @@ ntg_command_status ntg_set_(ntg_server *server,
 }
 
 
-ntg_command_status ntg_new_(ntg_server *server,
-        ntg_command_source cmd_source,
-        const GUID *module_id,
-        const char *node_name,
-        const ntg_path *path)
+ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, const GUID *module_id, const char *node_name, const CPath &path )
 {
-
     char *my_node_name = NULL;
     ntg_bridge_interface *bridge		= NULL;
 	const ntg_interface *interface		= NULL;
@@ -287,11 +272,6 @@ ntg_command_status ntg_new_(ntg_server *server,
     ntg_value *value					= NULL;
 	char *implementation_path			= NULL;
 
-    if (path == NULL) {
-        NTG_TRACE_ERROR("path is NULL, giving up...");
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
-
     bridge = server->bridge;
 
     if (bridge == NULL) {
@@ -299,18 +279,15 @@ ntg_command_status ntg_new_(ntg_server *server,
         assert(0);
     }
 
-    assert(path != NULL);
     assert(server != NULL);
 
-    root = ntg_server_get_root((ntg_server *) server);
-    parent = ntg_node_find_by_path(path, root);
-
+    root = ntg_server_get_root( server );
+    parent = ntg_node_find_by_path( path, root );
 
     if (parent == NULL) {
         NTG_TRACE_ERROR("parent is NULL, returning NULL");
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
-
 
     /* get interface */
 	interface = ntg_get_interface_by_module_id( server->module_manager, module_id );
@@ -403,9 +380,7 @@ ntg_command_status ntg_new_(ntg_server *server,
     return command_status;
 }
 
-ntg_command_status  ntg_delete_(ntg_server *server,
-        ntg_command_source cmd_source,
-        const ntg_path *path)
+ntg_command_status  ntg_delete_(ntg_server *server, ntg_command_source cmd_source, const CPath &path)
 {
     ntg_bridge_interface *bridge;
     ntg_node *node, *root;
@@ -562,10 +537,7 @@ ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_comm
 
 
 
-ntg_command_status ntg_rename_(ntg_server *server,
-        ntg_command_source cmd_source,
-        const ntg_path *path,
-        const char *name)
+ntg_command_status ntg_rename_(ntg_server *server, ntg_command_source cmd_source, const CPath &path, const char *name)
 {
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
@@ -573,7 +545,6 @@ ntg_command_status ntg_rename_(ntg_server *server,
 	char *new_name = NULL;
 	char *previous_name = NULL;
 
-    assert( path );
     assert( name ) ;
 
     NTG_COMMAND_STATUS_INIT;
@@ -625,10 +596,7 @@ ntg_command_status ntg_rename_(ntg_server *server,
     NTG_RETURN_COMMAND_STATUS;
 }
 
-ntg_command_status ntg_move_(ntg_server *server,
-        ntg_command_source cmd_source,
-        const ntg_path *node_path,
-        const ntg_path *parent_path)
+ntg_command_status ntg_move_(ntg_server *server, ntg_command_source cmd_source, const CPath &node_path, const CPath &parent_path )
 {
     ntg_error_code      error_code = NTG_NO_ERROR;
     ntg_command_status  command_status;
@@ -642,8 +610,9 @@ ntg_command_status ntg_move_(ntg_server *server,
     root = ntg_server_get_root(server);
     node = ntg_node_find_by_path(node_path, root);
 
-    if (node==NULL) {
-        NTG_TRACE_ERROR_WITH_STRING("unable to find node given by path", node->path->string);
+    if( node==NULL ) 
+	{
+		NTG_TRACE_ERROR_WITH_STRING( "unable to find node given by path", node_path.get_string().c_str() );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
@@ -664,18 +633,20 @@ ntg_command_status ntg_move_(ntg_server *server,
     ntg_node_unlink(node);
     new_parent = ntg_node_find_by_path(parent_path, root);
 
-    if (new_parent == NULL) {
-        NTG_TRACE_ERROR_WITH_STRING("unable to find node given by path", parent_path->string);
+    if (new_parent == NULL) 
+	{
+        NTG_TRACE_ERROR_WITH_STRING( "unable to find node given by path", parent_path.get_string().c_str() );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
     /* add node to new parent */
-    ntg_node_add(new_parent, node);
+    ntg_node_add( new_parent, node );
 
     /* update stored path */
     ntg_node_update_path(node);
 
-    if (error_code != NTG_NO_ERROR) {
+    if( error_code != NTG_NO_ERROR ) 
+	{
         NTG_TRACE_ERROR("failed to update vertices");
         NTG_RETURN_ERROR_CODE( NTG_FAILED );
     }
@@ -697,17 +668,13 @@ ntg_command_status ntg_move_(ntg_server *server,
 }
 
 
-ntg_command_status ntg_load_(ntg_server * server,
-        ntg_command_source cmd_source,
-        const char *file_path,
-        const ntg_path * path)
+ntg_command_status ntg_load_(ntg_server * server, ntg_command_source cmd_source, const char *file_path, const CPath &path )
 {
     ntg_node *node, *root;
 	ntg_command_status command_status;
 
     assert(server != NULL);
     assert(file_path != NULL);
-    assert(path != NULL);
 
 	NTG_COMMAND_STATUS_INIT
 
@@ -725,82 +692,63 @@ ntg_command_status ntg_load_(ntg_server * server,
 }
 
 
-ntg_value *ntg_get_(ntg_server *server, const ntg_path * path)
+ntg_value *ntg_get_(ntg_server *server, const CPath &path )
 {
-
     ntg_node_attribute *node_attribute = NULL;
-    ntg_node           *node           = NULL;
-    ntg_node           *root           = NULL;
-    char               *attribute_name;
-    ntg_error_code      error_code;
+    ntg_node *node = NULL;
+    ntg_node *root = NULL;
 
-    error_code     = ntg_path_validate(path);
+    root = ntg_server_get_root(server);
 
-    if (error_code != NTG_NO_ERROR) {
-        return NULL;
-    }
+    CPath my_path( path );
+	string attribute_name = my_path.pop_element();
+    node = ntg_node_find_by_path( my_path, root );
 
-    root           = ntg_server_get_root(server);
-
-    {
-        ntg_path *my_path = ntg_path_copy(path);
-
-        /* get the attribute name */
-        attribute_name = ntg_path_pop_element(my_path);
-        node           = ntg_node_find_by_path(my_path, root);
-
-        ntg_path_free(my_path);
-    }
-
-    if (node == NULL) 
+    if( !node ) 
 	{
-        NTG_TRACE_ERROR_WITH_STRING("node not found; get request ignored", path->elems[path->n_elems - 1]);
-        delete[] attribute_name;
+		NTG_TRACE_ERROR_WITH_STRING( "node not found; get request ignored", path.get_string().c_str() );
         return NULL;
     }
 
-    node_attribute = ntg_node_attribute_find_by_name(node, attribute_name);
+    node_attribute = ntg_node_attribute_find_by_name(node, attribute_name.c_str() );
 
-    if (node_attribute == NULL) 
+    if( !node_attribute ) 
 	{
-        NTG_TRACE_ERROR_WITH_STRING("attribute not found; get request ignored", attribute_name);
-        delete[] attribute_name;
+        NTG_TRACE_ERROR_WITH_STRING("attribute not found; get request ignored", path.get_string().c_str() );
         return NULL;
     }
-
-    delete[] attribute_name;
 
     return ntg_value_duplicate( node_attribute->value );
 
 }
 
 
-ntg_list *ntg_nodelist_(ntg_server *server, const ntg_path * path)
+ntg_list *ntg_nodelist_(ntg_server *server, const CPath &path )
 {
     ntg_node *parent   = NULL;
     ntg_node *root     = NULL;
 
-    assert(path != NULL);
     assert(server != NULL);
 
     root = ntg_server_get_root( server );
-    parent = ntg_node_find_by_path(path, root);
+    parent = ntg_node_find_by_path( path, root );
 
-    if (parent == NULL) {
+    if (parent == NULL) 
+	{
         NTG_TRACE_ERROR("parent is NULL, returning NULL");
         return NULL;
     }
 
     /* FIX: refactor into ntg_server_get_nodelist */
-    if (parent->nodes == NULL) {
+    if (parent->nodes == NULL) 
+	{
         return ntg_list_new(NTG_LIST_NODES);
     }
 
-    return ntg_server_get_nodelist(server_, parent, NULL, NULL);
+    return ntg_server_get_nodelist( server_, parent, NULL);
 }
 
-ntg_command_status ntg_save_(ntg_server *server, const ntg_path *path,
-        const char *file_path)
+ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char *file_path  )
 {
     ntg_error_code error_code;
     ntg_command_status command_status;

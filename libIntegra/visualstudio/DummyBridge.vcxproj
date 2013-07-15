@@ -97,10 +97,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\bridges\dummy\integra_dummy_bridge.c" />
+    <ResourceCompile Include="DummyBridge.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DummyBridge.rc" />
+    <ClCompile Include="..\bridges\dummy\integra_dummy_bridge.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

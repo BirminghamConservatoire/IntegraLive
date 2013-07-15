@@ -28,6 +28,8 @@ typedef struct ntg_endpoint_ ntg_endpoint;
 #endif
 
 #include "Integra/integra_bridge.h"
+#include "path.h"
+
 
 /** \brief Linked list node for (node) attributes */
 struct ntg_node_attribute_ {
@@ -37,8 +39,7 @@ struct ntg_node_attribute_ {
     struct ntg_node_attribute_ *next;
 
     ntg_value *value;
-    ntg_path *path;
-
+    ntg_api::CPath path;
 };
 
 /** \brief Create a new attribute */
@@ -50,7 +51,7 @@ ntg_error_code ntg_node_attribute_free(ntg_node_attribute *node_attribute);
 /** \brief Insert an attribute into a list of attributes.  Insertion position determined by endpoint index */
 ntg_node_attribute *ntg_node_attribute_insert_in_list(ntg_node_attribute * attribute_list,
 											const ntg_endpoint *endpoint,
-											const ntg_path *path,
+											const ntg_api::CPath &path,
 											const ntg_value *value );
 
 

@@ -45,6 +45,7 @@
 #include "value.h"
 #include "trace.h"
 
+using ntg_api::CPath;
 
 /*
 typedefs
@@ -53,7 +54,7 @@ typedefs
 typedef void (*ntg_system_class_new_handler_function)(ntg_server *server, const ntg_node *node, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_set_handler_function)(ntg_server *server, const ntg_node_attribute *attribute, const ntg_value *previous_value, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_rename_handler_function)(ntg_server *server, const ntg_node *node, const char *previous_name, ntg_command_source cmd_source);
-typedef void (*ntg_system_class_move_handler_function)(ntg_server *server, const ntg_node *node, const ntg_path *previous_path, ntg_command_source cmd_source);
+typedef void (*ntg_system_class_move_handler_function)(ntg_server *server, const ntg_node *node, const CPath &previous_path, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_delete_handler_function)(ntg_server *server, const ntg_node *node, ntg_command_source cmd_source);
 
 typedef struct ntg_system_class_handler_ 
@@ -355,8 +356,8 @@ void ntg_container_active_handler( ntg_server *server, const ntg_node *node, boo
 
 	for( i = 0; i < activated_nodes->n_elems; i++ )
 	{
-		const ntg_path *path = ( ( ntg_path ** ) activated_nodes->elems )[ i ];
-		const ntg_node *activated_node = ntg_node_find_by_path( path, server->root );
+		const CPath *path = ( ( CPath ** ) activated_nodes->elems )[ i ];
+		const ntg_node *activated_node = ntg_node_find_by_path( *path, server->root );
 		assert( activated_node );
 
 		if( ntg_interface_is_core_name_match( activated_node->interface, NTG_CLASS_ENVELOPE ) )
@@ -574,10 +575,10 @@ void ntg_handle_connections( ntg_server *server, const ntg_node *search_node, co
     }
 
 	/* build attribute path relative to search_node */
-	relative_attribute_path = changed_attribute->path->string;
+	relative_attribute_path = changed_attribute->path.get_string().c_str();
 	if( parent != ntg_server_get_root( server ) )
 	{
-		relative_attribute_path += ( strlen( parent->path->string ) + 1 );
+		relative_attribute_path += ( parent->path.get_string().length() + 1 );
 	}
 
 
@@ -736,7 +737,7 @@ void ntg_update_connections_on_object_rename( ntg_server *server, const ntg_node
 }
 
 
-void ntg_update_connection_path_on_move( ntg_server *server, const ntg_node_attribute *connection_path, const ntg_path *previous_path, const ntg_path *new_path )
+void ntg_update_connection_path_on_move( ntg_server *server, const ntg_node_attribute *connection_path, const CPath &previous_path, const CPath &new_path )
 {
 	const char *connection_path_string;
 	char *absolute_path;
@@ -745,28 +746,27 @@ void ntg_update_connection_path_on_move( ntg_server *server, const ntg_node_attr
 	int absolute_path_length;
 	int characters_after_old_path;
 	int i;
-	ntg_path *new_relative_path;
 	char *new_connection_path;
 	ntg_value *new_connection_path_value;
 
 	parent = connection_path->node->parent;
 	connection_path_string = ntg_value_get_string( connection_path->value );
 
-	absolute_path = new char[ strlen( parent->path->string ) + strlen( connection_path_string ) + 2 ];
-	sprintf( absolute_path, "%s.%s", parent->path->string, connection_path_string );
+	absolute_path = new char[ parent->path.get_string().length() + strlen( connection_path_string ) + 2 ];
+	sprintf( absolute_path, "%s.%s", parent->path.get_string().c_str(), connection_path_string );
 
-	previous_path_length = strlen( previous_path->string );
+	previous_path_length = previous_path.get_string().length();
 	absolute_path_length = strlen( absolute_path );
-	if( previous_path_length > absolute_path_length || memcmp( previous_path->string, absolute_path, previous_path_length ) != 0 )
+	if( previous_path_length > absolute_path_length || memcmp( previous_path.get_string().c_str(), absolute_path, previous_path_length ) != 0 )
 	{
 		/* connection_path isn't affected by this move */
 		delete[] absolute_path;
 		return;
 	}
 
-	for( i = 0; i < parent->path->n_elems; i++ )
+	for( i = 0; i < parent->path.get_number_of_elements(); i++ )
 	{
-		if( i >= new_path->n_elems || strcmp( new_path->elems[ i ], parent->path->elems[ i ] ) != 0 )
+		if( i >= new_path.get_number_of_elements() || new_path[ i ] != parent->path[ i ] )
 		{
 			/* new_path can't be targetted by this connection */
 			delete[] absolute_path;
@@ -774,29 +774,28 @@ void ntg_update_connection_path_on_move( ntg_server *server, const ntg_node_attr
 		}
 	}
 
-	new_relative_path = ntg_path_new();
-	for( i = parent->path->n_elems; i < new_path->n_elems; i++ )
+	CPath new_relative_path;
+	for( i = parent->path.get_number_of_elements(); i < new_path.get_number_of_elements(); i++ )
 	{
-		ntg_path_append_element( new_relative_path, new_path->elems[ i ] );
+		new_relative_path.append_element( new_path[ i ] );
 	}
 	
 	characters_after_old_path = absolute_path_length - previous_path_length;
 	
-	new_connection_path = new char[ strlen( new_relative_path->string ) + characters_after_old_path + 1 ];
-	sprintf( new_connection_path, "%s%s", new_relative_path->string, absolute_path + previous_path_length );
+	new_connection_path = new char[ new_relative_path.get_string().length() + characters_after_old_path + 1 ];
+	sprintf( new_connection_path, "%s%s", new_relative_path.get_string().c_str(), absolute_path + previous_path_length );
 
 	new_connection_path_value = ntg_value_new( NTG_STRING, new_connection_path );
 
 	ntg_set_( server, NTG_SOURCE_SYSTEM, connection_path->path, new_connection_path_value );
 
 	ntg_value_free( new_connection_path_value );
-	ntg_path_free( new_relative_path );
 	delete[] new_connection_path;
 	delete[] absolute_path;
 }
 
 
-void ntg_update_connections_on_object_move( ntg_server *server, const ntg_node *search_node, const ntg_path *previous_path, const ntg_path *new_path )
+void ntg_update_connections_on_object_move( ntg_server *server, const ntg_node *search_node, const CPath &previous_path, const CPath &new_path )
 {
     const ntg_node *current;
 	const ntg_node *parent;
@@ -1629,19 +1628,19 @@ They must all conform the correct the method signature ntg_system_class_move_han
 */
 
 
-void ntg_container_move_handler( ntg_server *server, const ntg_node *node, const ntg_path *previous_path, ntg_command_source cmd_source )
+void ntg_container_move_handler( ntg_server *server, const ntg_node *node, const CPath &previous_path, ntg_command_source cmd_source )
 {
 	ntg_container_update_path_of_players( server, node );
 }
 
 
-void ntg_player_move_handler( ntg_server *server, const ntg_node *node, const ntg_path *previous_path, ntg_command_source cmd_source )
+void ntg_player_move_handler( ntg_server *server, const ntg_node *node, const CPath &previous_path, ntg_command_source cmd_source )
 {
 	ntg_player_handle_path_change( server, node );
 }
 
 
-void ntg_generic_move_handler( ntg_server *server, const ntg_node *node, const ntg_path *previous_path, ntg_command_source cmd_source )
+void ntg_generic_move_handler( ntg_server *server, const ntg_node *node, const CPath &previous_path, ntg_command_source cmd_source )
 {
 	ntg_update_connections_on_object_move( server, node, previous_path, node->path );
 }
@@ -2119,7 +2118,7 @@ void ntg_system_class_handle_rename(ntg_server *server, const ntg_node *node, co
 }
 
 
-void ntg_system_class_handle_move(ntg_server *server, const ntg_node *node, const ntg_path *previous_path, ntg_command_source cmd_source )
+void ntg_system_class_handle_move(ntg_server *server, const ntg_node *node, const CPath &previous_path, ntg_command_source cmd_source )
 {
 	ntg_system_class_handler *handler = NULL;
 	ntg_system_class_move_handler_function function = NULL;

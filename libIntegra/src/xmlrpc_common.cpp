@@ -7,22 +7,24 @@
 #include "trace.h"
 
 
-xmlrpc_value *ntg_xmlrpc_value_from_path(const ntg_path *path, xmlrpc_env *env)
-{
+using ntg_api::CPath;
 
+
+
+xmlrpc_value *ntg_xmlrpc_value_from_path( const CPath &path, xmlrpc_env *env)
+{
     xmlrpc_value *xmlrpc_path, *path_item;
-    int n;
 
     xmlrpc_path = xmlrpc_array_new(env);
 
-    for (n = 0; n < path->n_elems; n++) {
-        path_item = xmlrpc_string_new(env, path->elems[n]);
-        xmlrpc_array_append_item(env, xmlrpc_path, path_item);
+	for( int n = 0; n < path.get_number_of_elements(); n++) 
+	{
+        path_item = xmlrpc_string_new(env, path[n].c_str() );
+        xmlrpc_array_append_item( env, xmlrpc_path, path_item );
         xmlrpc_DECREF(path_item);
     }
 
     return xmlrpc_path;
-
 }
 
 

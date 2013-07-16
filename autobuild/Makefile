@@ -88,10 +88,10 @@ server-dependencies:
 	fi
 
 server-configure-release: server-dependencies
-	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGRELEASE) && cd -
+	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGRELEASE) $(SERVERCONFIGSUFFIX) PATH=$(PATH):$(PWD)/$(LIBINTEGRADEPS_DIR)/bin && cd -
 
 server-configure-debug: server-dependencies
-	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGDEBUG) && cd -
+	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGDEBUG) $(SERVERCONFIGSUFFIX) PATH=$(PATH):$(PWD)/$(LIBINTEGRADEPS_DIR)/bin && cd -
 
 server:
 	make -C $(LIBINTEGRAPATH) $(SERVERMAKESUFFIX)

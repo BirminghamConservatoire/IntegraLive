@@ -151,10 +151,8 @@
     <ClCompile Include="..\externals\minizip\zip.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\src\atomic.cpp" />
     <ClCompile Include="..\src\attribute.cpp" />
     <ClCompile Include="..\src\bridge_host.cpp" />
-    <ClCompile Include="..\src\command.cpp" />
     <ClCompile Include="..\src\data_directory.cpp" />
     <ClCompile Include="..\src\error.cpp" />
     <ClCompile Include="..\src\file_io.cpp" />
@@ -171,7 +169,6 @@
     <ClCompile Include="..\src\path.cpp" />
     <ClCompile Include="..\src\platform_specifics.cpp" />
     <ClCompile Include="..\src\player_handler.cpp" />
-    <ClCompile Include="..\src\queue.cpp" />
     <ClCompile Include="..\src\reentrance_checker.cpp" />
     <ClCompile Include="..\src\scratch_directory.cpp" />
     <ClCompile Include="..\src\server.cpp" />
@@ -192,10 +189,8 @@
     <ClInclude Include="..\externals\minizip\mztools.h" />
     <ClInclude Include="..\externals\minizip\unzip.h" />
     <ClInclude Include="..\externals\minizip\zip.h" />
-    <ClInclude Include="..\src\atomic.h" />
     <ClInclude Include="..\src\attribute.h" />
     <ClInclude Include="..\src\bridge_host.h" />
-    <ClInclude Include="..\src\command.h" />
     <ClInclude Include="..\src\data_directory.h" />
     <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\file_io.h" />
@@ -214,7 +209,6 @@
     <ClInclude Include="..\src\path.h" />
     <ClInclude Include="..\src\platform_specifics.h" />
     <ClInclude Include="..\src\player_handler.h" />
-    <ClInclude Include="..\src\queue.h" />
     <ClInclude Include="..\src\reentrance_checker.h" />
     <ClInclude Include="..\src\scratch_directory.h" />
     <ClInclude Include="..\src\server.h" />

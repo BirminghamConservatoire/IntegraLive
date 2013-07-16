@@ -35,9 +35,10 @@
 #include "system_class_literals.h"
 #include "system_class_handlers.h"
 #include "memory.h"
-#include "command.h"
 #include "trace.h"
-
+#include "globals.h"
+#include "path.h"
+#include "server_commands.h"
 
 
 #ifdef _WINDOWS
@@ -46,6 +47,8 @@
 #include <sys/time.h> /* for gettimeofday() */
 #endif
 
+using namespace ntg_api;
+using namespace ntg_internal;
 
 /* 
  hardcoded player update rate of 40hz 
@@ -111,6 +114,14 @@ sem_t *ntg_player_data_get_thread_shutdown_semaphore( ntg_player_data *player_da
 }
 
 
+void ntg_player_set_value( ntg_server *server, const CPath &attribute, const ntg_value *value )
+{
+	ntg_lock_server();
+	ntg_set_( server, NTG_SOURCE_SYSTEM, attribute, value );
+	ntg_unlock_server();
+}
+
+
 void ntg_player_stop( ntg_server *server, ntg_id player_id, int final_tick )
 {
 	/*
@@ -140,7 +151,8 @@ void ntg_player_stop( ntg_server *server, ntg_id player_id, int final_tick )
 			if( final_tick != iterator->previous_ticks )
 			{
 				value = ntg_value_new( NTG_INTEGER, &final_tick );
-				ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, &iterator->tick_path, value );
+
+				ntg_player_set_value( server, iterator->tick_path, value );
 				ntg_value_free( value );
 			}
 
@@ -231,7 +243,7 @@ void *ntg_player_thread( void *context )
 				else
 				{
 					value = ntg_value_new( NTG_INTEGER, &zero );
-					ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, &player->play_path, value );
+					ntg_player_set_value( server_, player->play_path, value );
 					ntg_value_free( value );
 					continue;
 				}
@@ -240,7 +252,7 @@ void *ntg_player_thread( void *context )
 			if( new_tick_value != player->previous_ticks )
 			{
 				value = ntg_value_new( NTG_INTEGER, &new_tick_value );
-				ntg_command_enqueue( NTG_SET, 3, NTG_SOURCE_SYSTEM, &player->tick_path, value );
+				ntg_player_set_value( server_, player->tick_path, value );
 				ntg_value_free( value );
 				player->previous_ticks = new_tick_value;
 			}
@@ -299,6 +311,10 @@ void ntg_player_free(ntg_server *server)
 	}
 
 	pthread_mutex_unlock(&player_data->player_state_mutex);
+
+	pthread_mutex_destroy( &player_data->player_state_mutex );
+
+	delete player_data;
 }
 
 

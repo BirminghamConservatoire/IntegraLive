@@ -39,16 +39,10 @@
     <ClCompile Include="..\src\module_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\atomic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\attribute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\bridge_host.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\data_directory.cpp">
@@ -96,9 +90,6 @@
     <ClCompile Include="..\src\player_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\queue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\reentrance_checker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -143,9 +134,6 @@
     <ClInclude Include="..\src\bridge_host.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -171,9 +159,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\server.h">
@@ -246,9 +231,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\file_io.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\atomic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\trace.h">

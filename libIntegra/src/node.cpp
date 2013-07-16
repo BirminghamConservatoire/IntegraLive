@@ -38,7 +38,6 @@
 #include "node.h"
 #include "attribute.h"
 #include "server.h"
-#include "command.h"
 #include "server_commands.h"
 #include "module_manager.h"
 #include "interface.h"
@@ -57,7 +56,7 @@
 #define NTG_STR_CLASSID "classId"
 
 using namespace ntg_api;
-
+using namespace ntg_internal;
 
 
 ntg_node *ntg_node_new(void)
@@ -980,7 +979,13 @@ const ntg_node_attribute *ntg_find_attribute( const ntg_node *node, const char *
 	ostringstream path;
 	path << node->path.get_string() << "." << attribute_name;
 
-	map_string_to_attribute::const_iterator lookup = server_->state_table.find( path.str() );
+	return ntg_find_attribute( path.str() );
+}
+
+
+const ntg_node_attribute *ntg_find_attribute( const string &attribute_path )
+{
+	map_string_to_attribute::const_iterator lookup = server_->state_table.find( attribute_path );
 	if( lookup == server_->state_table.end() )
 	{
 		return NULL;
@@ -990,6 +995,7 @@ const ntg_node_attribute *ntg_find_attribute( const ntg_node *node, const char *
 		return lookup->second;
 	}
 }
+
 
 
 const ntg_node *ntg_node_get_root(const ntg_node *node) {

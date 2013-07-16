@@ -37,37 +37,20 @@
 #include <algorithm>
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 
 ntg_value *get_value_from_osc(char osc_type, lo_arg *arg);
 
 void osc_receive(const char *address, const ntg_value *value)
 {
-	/* 
-	TODO - this is not thread-safe!  
-	We should not lock the server at all here, we should feed commands onto input queue asynchronously!
-	*/
-
-    const ntg_node_attribute *attribute = NULL;
-
-    ntg_lock_server();
-
     /* copy the address without the leading "/" */
 	string path( &address[ 1 ] );
 
 	/* replace dashes with dots */
 	std::replace( path.begin(), path.end(), '/', '.' );
 
-    ntg_unlock_server();
-
-	map_string_to_attribute::const_iterator lookup = server_->state_table.find( path );
-	if( lookup == server_->state_table.end() )
-	{
-        NTG_TRACE_ERROR_WITH_STRING("received set request for invalid path", address);
-        return;		
-	}
-
-	ntg_server_receive_( server_, NTG_SOURCE_OSC_API, lookup->second, value );
+	ntg_server_receive_from_osc( server_, path, value );
 }
 
 

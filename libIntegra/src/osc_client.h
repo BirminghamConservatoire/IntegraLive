@@ -26,7 +26,6 @@ _resolve * USA.
 #include "lo_ansi.h"
 #include "path.h"
 #include "value.h"
-#include "command.h"
 #include "integra/integra.h"
 
 
@@ -49,32 +48,32 @@ ntg_osc_client *ntg_osc_client_new(const char *url, unsigned short port);
 void ntg_osc_client_destroy(ntg_osc_client *client);
 
 ntg_error_code ntg_osc_client_send_new(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        ntg_internal::ntg_command_source cmd_source,
         const GUID *module_id,
         const char *node_name,
         const ntg_api::CPath &path);
 
 ntg_error_code ntg_osc_client_send_load(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        ntg_internal::ntg_command_source cmd_source,
         const char *file_path,
         const ntg_api::CPath &path);
 
 ntg_error_code ntg_osc_client_send_delete(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &path);
 
 ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &path,
         const ntg_value *value);
 
 ntg_error_code ntg_osc_client_send_move(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &node_path,
         const ntg_api::CPath &parent_path);
 
 ntg_error_code ntg_osc_client_send_rename(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &path,
         const char *name);
 

@@ -48,9 +48,8 @@
 #endif
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
-
-#define NTG_DATA_COPY_BUFFER_SIZE 16384
 
 
 void ntg_init_zip_file_info( zip_fileinfo *info )

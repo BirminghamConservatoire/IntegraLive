@@ -59,10 +59,8 @@ extern "C"
 #include "value.h"
 #include "validate.h"
 #include "server.h"
-#include "command.h"
 #include "node.h"
 #include "attribute.h"
-#include "queue.h"
 #include "bridge_host.h"
 #include "signals.h"
 #include "osc.h"
@@ -82,15 +80,11 @@ extern "C"
 #endif
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 
-#define NTG_SERVER_WAIT_TIME 1000000 * 20 /* == 20 ms */
-#define NTG_DEQUEUE_WAIT_TIME 0
-
-
-static pthread_mutex_t queue_mutex  = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t server_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t  server_cond  = PTHREAD_COND_INITIALIZER;
+
 
 void ntg_lock_server(void)
 {
@@ -347,8 +341,6 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 
     server_ = server;
 
-    command_queue_ = ntg_queue_new(NTG_COMMAND_QUEUE_ELEMENTS);
-	
     return server_;
 
 }
@@ -383,84 +375,10 @@ void ntg_server_free(ntg_server *server)
 
 }
 
-/* run server command -- non-blocking version
- * command is queued and any return value is discarded */
-void ntg_command_enqueue(ntg_command_id command_id, const int argc, ...)
-{
-
-    ntg_command *command = NULL;
-    va_list argv;
-
-    /* check command is valid */
-    if(command_id <= NTG_COMMAND_ID_begin || command_id >= NTG_COMMAND_ID_end) {
-        NTG_TRACE_ERROR_WITH_INT("erroneous command_id id", command_id);
-        return;
-    }
-    /* don't queue any more commands if termination has been requested */
-    if(server_->terminate) {
-        return;
-    }
-
-    va_start(argv, argc);
-    command = ntg_command_new(command_id, argc, argv);
-    va_end(argv);
-
-    pthread_mutex_lock(&queue_mutex);
-    if(!ntg_queue_push(command_queue_, command)) {
-        NTG_TRACE_ERROR("command queue is full, cannot execute command");
-        ntg_command_free(command);
-    } else {
-        pthread_cond_signal(&server_cond);
-    }
-    pthread_mutex_unlock(&queue_mutex);
-}
 
 ntg_bridge_callback ntg_server_get_bridge_callback(void)
 {
     return server_->bridge->bridge_callback;
-}
-
-static void *ntg_server_dequeue_commands(void *argv)
-{
-    ntg_command *command = NULL;
-    ntg_args_set *args_set = NULL;
-
-#ifndef _WINDOWS
-    ntg_sig_unblock(&signal_sigset);
-#endif
-
-    while (1) 
-	{
-        pthread_mutex_lock(&server_mutex);
-        /* we don't use timedwait, because there are no circumstances
-         * under which messages can get added to the queue without a wakeup
-         * signal being sent */
-        pthread_cond_wait(&server_cond, &server_mutex);
-
-        while((command = ntg_queue_pop(command_queue_)) != NULL) 
-		{
-            switch(command->command_id) 
-			{
-                case NTG_SET:
-                    args_set = (ntg_args_set *)command->argv;
-                    ntg_set_( server_, args_set->source, args_set->path, args_set->value);
-                    break;
-                default:
-                    NTG_TRACE_VERBOSE_WITH_INT("unhandled server command: ", command->command_id);
-                    break;
-            }
-
-            ntg_command_free(command);
-            usleep (NTG_DEQUEUE_WAIT_TIME);
-        }
-        pthread_mutex_unlock(&server_mutex);
-        if (server_->terminate) {
-            pthread_exit(NULL);
-            break;
-        }
-    }
-
-    return NULL;
 }
 
 
@@ -469,49 +387,45 @@ ntg_node *ntg_server_get_root(const ntg_server * server)
     return server->root;
 }
 
-void ntg_server_receive_(ntg_server * server,
-        ntg_command_source source,
-        const ntg_node_attribute *node_attribute,
-        const ntg_value * value)
+
+void ntg_server_receive_from_osc( ntg_server *server, const ntg_api::CPath &path, const ntg_value *value )
 {
-    if (server->loading) 
+    if( server->loading ) 
+	{
+        return;
+    }
+
+	ntg_lock_server();
+	ntg_set_( server, NTG_SOURCE_OSC_API, path, value );
+	ntg_unlock_server();
+}
+
+
+void ntg_server_receive_from_host( ntg_id id, const char *attribute_name, const ntg_value *value )
+{
+    if( server_->loading || server_->terminate ) 
 	{
         return;
     }
 
     ntg_lock_server();
-    ntg_command_enqueue( NTG_SET, 3, source, &node_attribute->path, value);
-    ntg_unlock_server();
-}
 
+	ntg_node *root = ntg_server_get_root( server_ );
+    ntg_node *target = ntg_node_find_by_id_r( root, id );
 
-void receive_callback(ntg_id id, const char *attribute_name,
-        const ntg_value * value)
-{
-    const ntg_node_attribute *attribute = NULL;
-    ntg_node *target                    = NULL;
-    ntg_node *root                      = NULL;
-
-    ntg_lock_server();
-    root = ntg_server_get_root(server_);
-    target = ntg_node_find_by_id_r(root, id);
-
-    if (target == NULL) {
-        NTG_TRACE_ERROR_WITH_INT("couldn't find node with id", id);
+    if( !target ) 
+	{
+        NTG_TRACE_ERROR_WITH_INT("couldn't find node with id", id );
         ntg_unlock_server();
         return;
     }
 
-    attribute = ntg_find_attribute(target, attribute_name);
+	CPath path( target->path );
+	path.append_element( attribute_name );
 
-    if (attribute == NULL) {
-        NTG_TRACE_ERROR_WITH_STRING("couldn't find attribute", attribute_name);
-        ntg_unlock_server();
-        return;
-    }
+	ntg_set_( server_, NTG_SOURCE_HOST, path, value );
+
     ntg_unlock_server();
-
-    ntg_server_receive_(server_, NTG_SOURCE_HOST, attribute, value);
 }
 
 
@@ -618,8 +532,6 @@ void ntg_server_halt(ntg_server * server)
     ntg_lock_server();
     server->terminate = true; /* FIX: use a semaphore or condition */
 
-    pthread_cond_signal(&server_cond); /* wake the server thread up */
-
     NTG_TRACE_PROGRESS("shutting down OSC client");
     ntg_server_destroy_osc_client(server);
     NTG_TRACE_PROGRESS("shutting down XMLRPC interface");
@@ -645,13 +557,10 @@ void ntg_server_halt(ntg_server * server)
     dlclose(bridge_handle);
     */
 
-    NTG_TRACE_PROGRESS("freeing command queue");
-    ntg_queue_free(command_queue_);
     NTG_TRACE_PROGRESS("cleaning up XML parser");
     xmlCleanupParser();
 
 	server_ = NULL;
-    command_queue_ = NULL;
 
     NTG_TRACE_PROGRESS("done!");
 }
@@ -683,10 +592,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
 #else
     sem_init(&sem_abyss_init, 0, 0);
     sem_init(&sem_system_shutdown, 0, 0);
-#endif
-
-#ifndef _WINDOWS
-    ntg_sig_block(&signal_sigset);
 #endif
 
     if (bridge_path == NULL) 
@@ -735,7 +640,7 @@ ntg_error_code ntg_server_run(const char *bridge_path,
     }
 
     /* Add the server receive callback to the bridge's methods */
-    p->server_receive_callback = receive_callback;
+    p->server_receive_callback = ntg_server_receive_from_host;
 
     server_->bridge = p;
 
@@ -755,9 +660,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
 	{
         NTG_TRACE_ERROR_WITH_INT("failed to start OSC interface on port", osc_server_port);
     }
-
-    /* 'consumer' thread */
-    pthread_create(&server_thread, NULL, ntg_server_dequeue_commands, server_);
 
     xmlport = new unsigned short;
     *xmlport = xmlrpc_server_port;

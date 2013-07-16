@@ -31,6 +31,8 @@
 #include "reentrance_checker.h"
 #include "system_class_handlers.h"
 
+using namespace ntg_internal;
+
 
 struct ntg_reentrance_checker_state_ 
 {

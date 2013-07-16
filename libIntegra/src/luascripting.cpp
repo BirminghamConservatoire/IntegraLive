@@ -51,8 +51,6 @@ extern "C"
 #include "memory.h"
 #include "value.h"
 #include "helper.h"
-#include "queue.h"
-#include "command.h"
 #include "globals.h"
 #include "interface.h"
 #include "helper.h"
@@ -65,6 +63,8 @@ extern "C"
 #define NTG_PRINT_COLOR		0x6060ff
 
 using namespace ntg_api;
+using namespace ntg_internal;
+
 
 
 typedef struct ntg_lua_context_stack_

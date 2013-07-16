@@ -32,10 +32,10 @@ void ntg_reentrance_checker_initialize( ntg_server *server );
 void ntg_reentrance_checker_free( ntg_server *server );
 
 /**\brief push reentrance stack, returns true if rentrance detected */
-bool ntg_reentrance_push( ntg_server *server, ntg_node_attribute *attribute, ntg_command_source cmd_source );
+bool ntg_reentrance_push( ntg_server *server, ntg_node_attribute *attribute, ntg_internal::ntg_command_source cmd_source );
 
 /**\brief pop reentrance stack.  must be called once for every ntg_reentrance_push */
-void ntg_reentrance_pop( ntg_server *server, ntg_command_source cmd_source );
+void ntg_reentrance_pop( ntg_server *server, ntg_internal::ntg_command_source cmd_source );
 
 
 

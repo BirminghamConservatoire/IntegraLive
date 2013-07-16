@@ -271,6 +271,7 @@ void ntg_node_rename(ntg_node *node, const char *name);
  * */
 
 const ntg_node_attribute *ntg_find_attribute( const ntg_node *node, const char *attribute_name );
+const ntg_node_attribute *ntg_find_attribute( const ntg_api::string &attribute_path );
 
 /** \brief recursively update paths for children */
 void ntg_node_update_children(ntg_node *node);

@@ -26,7 +26,6 @@
 
 #include "helper.h"
 #include "globals.h"
-#include "command.h"
 #include "server.h"
 #include "path.h"
 #include "memory.h"
@@ -41,6 +40,7 @@
 #include "Integra/integra.h"
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 
 

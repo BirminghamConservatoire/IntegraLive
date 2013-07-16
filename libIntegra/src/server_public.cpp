@@ -24,7 +24,6 @@
 
 #include "platform_specifics.h"
 
-#include "command.h"
 #include "server.h"
 #include "server_commands.h"
 #include "globals.h"
@@ -32,6 +31,7 @@
 #include "module_manager.h"
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 
 ntg_command_status ntg_new( const GUID *module_id, const char *node_name, const CPath &path )

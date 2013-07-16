@@ -46,7 +46,6 @@
 #include "memory.h"
 #include "path.h"
 #include "globals.h"
-#include "command.h"
 #include "node.h"
 #include "server_commands.h"
 #include "xmlrpc_common.h"
@@ -109,6 +108,7 @@ typedef xmlrpc_value *(* ntg_server_callback_va)(ntg_server *, int, va_list);
 
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 
 /* run server command -- blocking version
@@ -1463,6 +1463,37 @@ static xmlrpc_value *ntg_xmlrpc_return_set(xmlrpc_env *env,
 }
 
 
+static xmlrpc_value *ntg_xmlrpc_set_callback(ntg_server * server, const int argc,
+        va_list argv)
+{
+    xmlrpc_env *env;
+    xmlrpc_value *struct_ = NULL;
+    CPath *path;
+    ntg_value *value = NULL;
+    xmlrpc_value *value_xmlrpc = NULL, *xmlrpc_temp = NULL, *xmlrpc_path;
+
+    env = va_arg(argv, xmlrpc_env *);
+    path = va_arg(argv, CPath *);
+	value = va_arg(argv, ntg_value *);
+
+    struct_ = xmlrpc_struct_new(env);
+
+	NTG_TRACE_VERBOSE_WITH_STRING( "setting value", path->get_string().c_str() );
+
+    ntg_command_status result = ntg_set_( server, NTG_SOURCE_XMLRPC_API, *path, value );
+
+    xmlrpc_temp = xmlrpc_string_new(env, "command.set");
+    xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+
+    xmlrpc_path = ntg_xmlrpc_value_from_path( *path, env);
+    xmlrpc_struct_set_value(env, struct_, "path", xmlrpc_path);
+    xmlrpc_DECREF(xmlrpc_path);
+
+    return struct_;
+}
+
+
 static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc,
         va_list argv)
 {
@@ -1527,8 +1558,8 @@ static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc
 	}
 
     return struct_;
-
 }
+
 
 static xmlrpc_value *ntg_xmlrpc_version(xmlrpc_env * const env,
         xmlrpc_value * const paramArrayP,
@@ -1884,12 +1915,11 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
-    ntg_command_enqueue(NTG_SET, 3, NTG_SOURCE_XMLRPC_API, &path, value );
-    xmlrpc_rv = ntg_xmlrpc_return_set(env, xmlrpc_path, xmlrpc_value_);
+	xmlrpc_rv = ntg_server_do_va( &ntg_xmlrpc_set_callback, 3, (void *)env, &path, value );
 
 	if( value )
 	{
-		ntg_value_free(value);
+		ntg_value_free( value );
 	}
 
     return xmlrpc_rv;

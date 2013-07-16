@@ -29,7 +29,6 @@
 #include "Integra/integra_bridge.h"
 #include "node.h"
 #include "path.h"
-#include "command.h"
 
 
 #define NTG_COMMAND_QUEUE_ELEMENTS 1024
@@ -37,8 +36,9 @@
 namespace ntg_api
 {
 	class CPath;
-
 }
+
+
 
 
 #ifndef ntg_system_class_data 
@@ -72,7 +72,7 @@ void ntg_server_free(ntg_server *server);
 
 
 /** \brief Callback function corresponing to ih_callback in the bridge interface (see integra_bridge.h ntg_bridge_interface->ih_callback */
-void receive_callback(ntg_id id, const char *attribute_name, const ntg_value *value);
+void ntg_server_receive_from_host(ntg_id id, const char *attribute_name, const ntg_value *value);
 
 
 /**
@@ -114,24 +114,16 @@ const ntg_node_attribute *ntg_server_resolve_relative_path (
         const char *path);
 
 
-/* this function is for receiving set messages back from the module host or
-   the osc interface.  It is identical to ntg_set_() except that it avoids 
-   the need to pass in an ntg_path * struct (we already have node/attribute) */
-
-void ntg_server_receive_(ntg_server * server,
-        ntg_command_source source,
-        const ntg_node_attribute *node_attribute,
-        const ntg_value * value);
+void ntg_server_receive_from_osc(ntg_server *server, const ntg_api::CPath &path, const ntg_value *value );
 
 void ntg_server_set_host_dsp(const ntg_server *server, bool status);
 
-void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation);
+void ntg_print_node_state( ntg_server *server, ntg_node *first,int indentation );
 
 bool ntg_saved_version_is_newer_than_current( const char *saved_version );
 
 void ntg_lock_server(void);
 void ntg_unlock_server(void);
-void ntg_command_enqueue(ntg_command_id command_id, const int argc, ...);
 
 
 

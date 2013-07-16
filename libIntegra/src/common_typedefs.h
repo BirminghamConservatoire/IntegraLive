@@ -49,7 +49,32 @@ namespace ntg_api
 
 
 	typedef std::unordered_set<GUID, GuidHash> guid_set;
+};
+
+
+
+
+namespace ntg_internal
+{
+	typedef enum ntg_command_source_ {
+		NTG_SOURCE_NONE = -1,
+		NTG_SOURCE_INITIALIZATION,
+		NTG_SOURCE_LOAD,
+		NTG_SOURCE_SYSTEM,
+		NTG_SOURCE_CONNECTION,
+		NTG_SOURCE_HOST,
+		NTG_SOURCE_SCRIPT,
+		NTG_SOURCE_XMLRPC_API,
+		NTG_SOURCE_OSC_API,
+		NTG_SOURCE_C_API,
+		NTG_COMMAND_SOURCE_end
+	} ntg_command_source;
+
+
+
+
 }
+
 
 
 

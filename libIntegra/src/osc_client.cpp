@@ -1,13 +1,15 @@
 #include "platform_specifics.h"
 
 #include "osc_client.h"
-#include "command.h"
 #include "helper.h"
 #include "memory.h"
 #include "globals.h"
 #include "server.h"
 
 #include <assert.h>
+
+using namespace ntg_api;
+using namespace ntg_internal;
 
 
 static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
@@ -21,7 +23,6 @@ static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
     "osc_api",
     "c_api" };
 
-using ntg_api::CPath;
 
 
 /* sure there must be a more elegant way to do this, but lo_message_add_varargs

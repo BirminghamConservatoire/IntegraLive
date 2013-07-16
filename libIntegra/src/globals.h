@@ -66,16 +66,13 @@
 #define NTG_NODE_NAME_CHARACTER_SET "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 GLOBAL struct ntg_server_ *server_;
-GLOBAL struct ntg_queue_ *command_queue_;
 GLOBAL void *bridge_handle;
 
 GLOBAL ntg_id id_counter_; 
 GLOBAL pthread_t xmlrpc_thread;
 GLOBAL pthread_t server_thread;
 GLOBAL pthread_t signal_thread;
-#ifndef _WINDOWS
-GLOBAL sigset_t signal_sigset;
-#endif
+
 GLOBAL lo_server_thread osc_interface;
 
 GLOBAL ntg_trace_category_bits trace_category_bits;

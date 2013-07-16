@@ -36,7 +36,6 @@
 #include "system_class_literals.h"
 #include "reentrance_checker.h"
 #include "server_commands.h"
-#include "command.h"
 #include "memory.h"
 #include "helper.h"
 #include "module_manager.h"
@@ -45,6 +44,7 @@
 #include "trace.h"
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 /*
 typedefs

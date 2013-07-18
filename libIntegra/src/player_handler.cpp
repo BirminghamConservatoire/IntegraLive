@@ -114,7 +114,7 @@ sem_t *ntg_player_data_get_thread_shutdown_semaphore( ntg_player_data *player_da
 }
 
 
-void ntg_player_set_value( ntg_server *server, const CPath &attribute, const ntg_value *value )
+void ntg_player_set_value( ntg_server *server, const CPath &attribute, const CValue *value )
 {
 	ntg_lock_server();
 	ntg_set_( server, NTG_SOURCE_SYSTEM, attribute, value );
@@ -132,7 +132,6 @@ void ntg_player_stop( ntg_server *server, ntg_id player_id, int final_tick )
 	ntg_player_data *player_data = NULL;
 	ntg_player_state *iterator = NULL;
 	ntg_player_state **previous = NULL; 
-	ntg_value *value;
 
 	assert( server );
 
@@ -146,14 +145,11 @@ void ntg_player_stop( ntg_server *server, ntg_id player_id, int final_tick )
 	{
 		if( iterator->id == player_id )
 		{
-			/* push final tick onto queue */
+			/* set final tick */
 
 			if( final_tick != iterator->previous_ticks )
 			{
-				value = ntg_value_new( NTG_INTEGER, &final_tick );
-
-				ntg_player_set_value( server, iterator->tick_path, value );
-				ntg_value_free( value );
+				ntg_player_set_value( server, iterator->tick_path, &CIntegerValue( final_tick ) );
 			}
 
 			/* remove and free the player state */
@@ -203,8 +199,6 @@ void *ntg_player_thread( void *context )
 	int elapsed_ticks;
 	int new_tick_value;
 	int loop_duration;
-	const int zero = 0;
-	ntg_value *value;
 
 	ntg_player_data *player_data = static_cast< ntg_player_data * > ( context );
 
@@ -242,18 +236,14 @@ void *ntg_player_thread( void *context )
 				}
 				else
 				{
-					value = ntg_value_new( NTG_INTEGER, &zero );
-					ntg_player_set_value( server_, player->play_path, value );
-					ntg_value_free( value );
+					ntg_player_set_value( server_, player->play_path, &CIntegerValue( 0 ) );
 					continue;
 				}
 			}
 
 			if( new_tick_value != player->previous_ticks )
 			{
-				value = ntg_value_new( NTG_INTEGER, &new_tick_value );
-				ntg_player_set_value( server_, player->tick_path, value );
-				ntg_value_free( value );
+				ntg_player_set_value( server_, player->tick_path, &CIntegerValue( new_tick_value ) );
 				player->previous_ticks = new_tick_value;
 			}
 		}
@@ -344,9 +334,12 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	tick_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_TICK );
 	assert( play_attribute && active_attribute && tick_attribute );
 
-	if( ntg_value_get_int( play_attribute->value ) == 0 || ntg_value_get_int( active_attribute->value ) == 0 )
+	int play_value = *play_attribute->value;
+	int active_value = *active_attribute->value;
+
+	if( play_value == 0 || active_value == 0 )
 	{
-		ntg_player_stop( server, player_id, ntg_value_get_int( tick_attribute->value ) );
+		ntg_player_stop( server, player_id, *tick_attribute->value );
 		return;
 	}
 
@@ -395,14 +388,15 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	setup all other player state fields
 	*/
 
-	player_state->initial_ticks = ntg_value_get_int( tick_attribute->value ); 
+	player_state->initial_ticks = *tick_attribute->value; 
 	player_state->previous_ticks = player_state->initial_ticks; 
-	player_state->rate = ntg_value_get_int( rate_attribute->value );
+	player_state->rate = *rate_attribute->value;
 	player_state->start_msecs = ntg_get_current_msecs();
 
-	player_state->loop = ( ntg_value_get_int( loop_attribute->value ) != 0 );
-	player_state->loop_start_ticks = ntg_value_get_int( start_attribute->value );
-	player_state->loop_end_ticks = ntg_value_get_int( end_attribute->value );
+	int loop_value = *loop_attribute->value;
+	player_state->loop = ( loop_value != 0 );
+	player_state->loop_start_ticks = *start_attribute->value;
+	player_state->loop_end_ticks = *end_attribute->value;
 
 	pthread_mutex_unlock(&player_data->player_state_mutex);
 }

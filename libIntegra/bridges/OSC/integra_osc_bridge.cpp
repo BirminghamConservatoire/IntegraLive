@@ -46,6 +46,8 @@ void lo_address_set_flags(lo_address t, int flags);
 #include "src/trace.h"
 #include "src/value.h"
 
+using namespace ntg_api;
+
 #define NTG_OSC_ERROR -1
 #define NTG_BRIDGE_LISTEN_PORT "7772"
 #define NTG_BRIDGE_SEND_PORT "7773"
@@ -72,38 +74,32 @@ void handler_osc_error(int num, const char *msg, const char *path){
     NTG_TRACE_ERROR_WITH_STRING("liblo server error", msg);
 }
 
-ntg_value *new_value_from_lo_typed(const char lo_type, lo_arg *lo_value)
+CValue *new_value_from_lo_typed(const char lo_type, lo_arg *lo_value)
 {
-    ntg_value *value = NULL;
-
     switch(lo_type){
 
         case 'f':
-            value = ntg_value_new(NTG_FLOAT, &lo_value->f);
-            break;
-        case 'i':
-			value = ntg_value_new(NTG_INTEGER, &lo_value->i);
-            break;
-        case 's':
-            value = ntg_value_new(NTG_STRING, &lo_value->s);
-            break;
-        case 'N':
-            value = NULL;
-            break;
-        default:
-            NTG_TRACE_ERROR_WITH_INT("unsupported type", lo_type);
-            break;
+            return new CFloatValue( lo_value->f );
 
+        case 'i':
+            return new CIntegerValue( lo_value->i );
+
+		case 's':
+            return new CStringValue( &lo_value->s );
+
+		case 'N':
+            return NULL;
+
+		default:
+            NTG_TRACE_ERROR_WITH_INT("unsupported type", lo_type);
+			return NULL;
     }
-    return value;
 }
 
 
 int handler_bridge_callback(const char *path, const char *types, lo_arg **argv,
         int argc, void *data, void *user_data)
 {
-
-    ntg_value *value = NULL;
     int id;
     char *attribute_name = NULL;
     char *dim = NULL;
@@ -113,7 +109,7 @@ int handler_bridge_callback(const char *path, const char *types, lo_arg **argv,
     attribute_name = &argv[1]->s;
     dim = &argv[2]->s;
 
-    value = new_value_from_lo_typed (types[3], argv[3]);
+    CValue *value = new_value_from_lo_typed (types[3], argv[3]);
 
 	if( bridge_interface->server_receive_callback )
 	{
@@ -124,10 +120,9 @@ int handler_bridge_callback(const char *path, const char *types, lo_arg **argv,
 		NTG_TRACE_ERROR( "server_receive_callback not set" );
 	}
 
-
 	if( value )
 	{
-		ntg_value_free(value);
+		delete value;
 	}
 
     return 0;
@@ -253,30 +248,29 @@ static void osc_send_value(const ntg_node_attribute *attribute)
 {
     int module_id;
     const char *attribute_name;
-	const ntg_value *value;
 
 	assert( attribute );
 
 	module_id = attribute->node->id;
 	attribute_name = attribute->endpoint->name;
-	value = attribute->value;
+	const CValue *value = attribute->value;
 
 	if( value )
 	{
-		switch( ntg_value_get_type(value) )
+		switch( value->get_type() )
 		{
-			case NTG_FLOAT:
-				lo_send(module_host, "/send", "isf", module_id, attribute_name,
-						ntg_value_get_float(value));
+			case CValue::FLOAT:
+				lo_send(module_host, "/send", "isf", module_id, attribute_name, ( float ) *value );
 				break;
-			case NTG_INTEGER:
-				lo_send(module_host, "/send", "isi", module_id, attribute_name,
-						ntg_value_get_int(value));
+
+			case CValue::INTEGER:
+				lo_send(module_host, "/send", "isi", module_id, attribute_name, ( int ) *value );
 				break;
-			case NTG_STRING:
-				lo_send(module_host, "/send", "iss", module_id, attribute_name,
-						ntg_value_get_string(value));
+
+			case CValue::STRING:
+				lo_send(module_host, "/send", "iss", module_id, attribute_name, ( ( const string & ) *value ).c_str() );
 				break;
+
 			default:
 				NTG_TRACE_ERROR("invalid type");
 				break;

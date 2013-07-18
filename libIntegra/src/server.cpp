@@ -63,7 +63,6 @@ extern "C"
 #include "attribute.h"
 #include "bridge_host.h"
 #include "signals.h"
-#include "osc.h"
 #include "server_commands.h"
 #include "system_class_handlers.h"
 #include "module_manager.h"
@@ -97,7 +96,7 @@ void ntg_unlock_server(void)
 }
 
 
-const ntg_node_attribute *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const char *path )
+const ntg_node_attribute *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const string &path )
 {
 	ostringstream composite_path;
 	composite_path << root->path.get_string() << "." << path;
@@ -131,7 +130,6 @@ void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 	ntg_node_attribute *attribute = NULL;
     int i;
 	bool has_children;
-	char value_buffer[ NTG_LONG_STRLEN ];
 	char *module_id_string;
 
     if(first==NULL){
@@ -160,12 +158,9 @@ void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 
 				printf( has_children ? "  |" : "   ");
 
-				if( ntg_value_sprintf( value_buffer, NTG_LONG_STRLEN, attribute->value ) != NTG_NO_ERROR )
-				{
-					strcpy( value_buffer, "Error printing attribute - buffer too short?" );
-				}
+				string value_string = attribute->value->get_as_string();
 
-				printf("   -Attribute:  %s = %s\n", attribute->endpoint->name, value_buffer );
+				printf("   -Attribute:  %s = %s\n", attribute->endpoint->name, value_string.c_str() );
 			}
 
 			if( attribute == current->attribute_last )
@@ -269,27 +264,6 @@ bool ntg_saved_version_is_newer_than_current( const char *saved_version )
 }
 
 
-static int ntg_server_add_osc_interface(ntg_server *server, unsigned short port) 
-{
-
-    char sport[6];
-    sport[5]=0;
-    snprintf(sport, 5, "%d", port);
-
-    osc_interface = lo_server_thread_new(sport, ntg_osc_error);
-
-    if(osc_interface) {
-        /* catch all */
-        lo_server_thread_add_method(osc_interface, NULL, NULL,
-                handler_namespace_method, server);
-
-        lo_server_thread_start(osc_interface);
-
-        return 1;
-    }
-    return 0;
-}
-
 static void ntg_server_destroy_osc_client(ntg_server *server)
 {
     ntg_osc_client_destroy(server->osc_client);
@@ -388,20 +362,7 @@ ntg_node *ntg_server_get_root(const ntg_server * server)
 }
 
 
-void ntg_server_receive_from_osc( ntg_server *server, const ntg_api::CPath &path, const ntg_value *value )
-{
-    if( server->loading ) 
-	{
-        return;
-    }
-
-	ntg_lock_server();
-	ntg_set_( server, NTG_SOURCE_OSC_API, path, value );
-	ntg_unlock_server();
-}
-
-
-void ntg_server_receive_from_host( ntg_id id, const char *attribute_name, const ntg_value *value )
+void ntg_server_receive_from_host( ntg_id id, const char *attribute_name, const CValue *value )
 {
     if( server_->loading || server_->terminate ) 
 	{
@@ -569,7 +530,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
 		const char *system_module_directory,
 		const char *third_party_module_directory,
         unsigned short xmlrpc_server_port,
-        unsigned short osc_server_port,
         const char *osc_client_url,
         unsigned short osc_client_port)
 {
@@ -651,15 +611,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
 
     ntg_node_set_name(root, "root");
     server_->root = root;
-
-    if(ntg_server_add_osc_interface(server_, osc_server_port)) 
-	{
-        NTG_TRACE_PROGRESS_WITH_INT("running OSC interface on port", osc_server_port);
-    } 
-	else 
-	{
-        NTG_TRACE_ERROR_WITH_INT("failed to start OSC interface on port", osc_server_port);
-    }
 
     xmlport = new unsigned short;
     *xmlport = xmlrpc_server_port;

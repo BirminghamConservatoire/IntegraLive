@@ -31,6 +31,7 @@ typedef struct ntg_endpoint_ ntg_endpoint;
 #include "path.h"
 
 
+
 /** \brief Linked list node for (node) attributes */
 struct ntg_node_attribute_ {
 
@@ -38,7 +39,7 @@ struct ntg_node_attribute_ {
 	const ntg_endpoint *endpoint;
     struct ntg_node_attribute_ *next;
 
-    ntg_value *value;
+    ntg_api::CValue *value;
     ntg_api::CPath path;
 };
 
@@ -55,18 +56,11 @@ ntg_error_code ntg_node_attribute_free(ntg_node_attribute *node_attribute);
 ntg_node_attribute *ntg_node_attribute_insert_in_list(ntg_node_attribute * attribute_list,
 											const ntg_endpoint *endpoint,
 											const ntg_api::CPath &path,
-											const ntg_value *value );
+											const ntg_api::CValue *value );
 
 
 
-/** \brief Set the value of an attribute  */
-void ntg_node_attribute_set_value(ntg_node_attribute *node, const ntg_value *value);
-
-/** \brief Get the value of an attribute  */
-const ntg_value *ntg_node_attribute_get_value(
-        const ntg_node_attribute *list_node);
-
-bool ntg_node_attribute_test_constraint( const ntg_node_attribute *attribute, const ntg_value *value);
+bool ntg_node_attribute_test_constraint( const ntg_node_attribute *attribute, const ntg_api::CValue &value );
 
 
 /** \brief Free an attribute list */

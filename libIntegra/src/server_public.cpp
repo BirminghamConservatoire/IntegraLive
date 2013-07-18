@@ -166,7 +166,7 @@ ntg_command_status ntg_move( const CPath &node_path, const CPath &parent_path )
     return status;
 }
 
-ntg_command_status ntg_set( const CPath &path, const ntg_value *value )
+ntg_command_status ntg_set( const CPath &path, const CValue *value )
 {
     ntg_command_status status;
     
@@ -180,15 +180,17 @@ ntg_command_status ntg_set( const CPath &path, const ntg_value *value )
 }
 
 
-const ntg_value *ntg_get( const CPath &path )
+CValue *ntg_get( const CPath &path )
 {
-    const ntg_value *value;
-
     ntg_lock_server();
-    value = ntg_get_( server_, path );
+
+    const CValue *value = ntg_get_( server_, path );
+
+	CValue *copy = value ? value->clone() : NULL;
+
     ntg_unlock_server();
 
-    return value;
+	return copy;
 }
 
 

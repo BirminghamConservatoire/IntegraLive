@@ -347,7 +347,7 @@ char *ntg_date_to_string( const struct tm *date )
 }
 
 
-ntg_error_code ntg_string_to_date( const char *input, struct tm *output )
+ntg_error_code ntg_string_to_date( const char *input, struct tm &output )
 {
 	if( strlen( input ) < 16 )
 	{
@@ -355,14 +355,14 @@ ntg_error_code ntg_string_to_date( const char *input, struct tm *output )
 		return NTG_ERROR;
 	}
 
-	output->tm_year = atoi( input ) - 1900;
-	output->tm_mon = atoi( input + 5 ) - 1;
-	output->tm_mday = atoi( input + 8 );
-	output->tm_hour = atoi( input + 11 );
-	output->tm_min = atoi( input + 14 );
-	output->tm_sec = atoi( input + 17 );
-	output->tm_isdst = -1;
-	if( mktime( output ) == -1 )
+	output.tm_year = atoi( input ) - 1900;
+	output.tm_mon = atoi( input + 5 ) - 1;
+	output.tm_mday = atoi( input + 8 );
+	output.tm_hour = atoi( input + 11 );
+	output.tm_min = atoi( input + 14 );
+	output.tm_sec = atoi( input + 17 );
+	output.tm_isdst = -1;
+	if( mktime( &output ) == -1 )
 	{
 		return NTG_ERROR;
 	}

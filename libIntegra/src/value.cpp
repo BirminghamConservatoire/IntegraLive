@@ -36,408 +36,459 @@
 #include "globals.h"
 
 
-static const char *ntg_type_as_string[NTG_n_types] = {
-    "undefined",
-    "integer",
-    "float",
-    "string"
-};
 
-ntg_error_code ntg_value_sprintf( char *output, int chars_available, const ntg_value * value )
+namespace ntg_api
 {
-    unsigned int n;
-    int rv = 0;
-    size_t len_float;
-    ntg_error_code error_code = NTG_NO_ERROR;
-
-    if(value == NULL)
+	CValue::CValue()
 	{
-        NTG_TRACE_ERROR("value was NULL");
-        return NTG_ERROR;
-    }
-
-    if( chars_available < 0 )
-	{
-        NTG_TRACE_ERROR( "chars_available less than 1" );
-        return NTG_ERROR;
-    }
-
-    switch (value->type) 
-	{
-        case NTG_FLOAT:
-            rv = sprintf_s( output, chars_available, "%.6f", value->ctype.f);
-            len_float = strlen( output );
-            for( n = len_float - 1; n >= 0; n-- ) 
-			{
-                if( output[ n ] != '0') 
-				{
-                    break;
-                }
-            }
-            output[ n + 1 ] = '\0';
-            break;
-        case NTG_STRING:
-            rv = sprintf_s( output, chars_available, "%s", value->ctype.s);
-            break;
-        case NTG_INTEGER:
-            rv = sprintf_s( output, chars_available, "%d", value->ctype.i);
-            break;
-        default:
-            NTG_TRACE_ERROR_WITH_INT( "invalid value type", value->type );
-            break;
-    }
-
-    if(rv == -1)
-	{
-        error_code = NTG_ERROR;
-    }
-
-    return error_code;
-
-}
-
-
-ntg_value *ntg_value_duplicate(const ntg_value * value)
-{
-    ntg_value *dup;
-
-    if (value == NULL) {
-        NTG_TRACE_ERROR("attempt to duplicate a NULL value");
-        return NULL;
-    }
-
-    dup = ntg_value_new(value->type, NULL);
-
-    ntg_value_copy(dup, value);
-
-    return dup;
-}
-
-
-ntg_value *ntg_value_change_type(const ntg_value *value, ntg_value_type newType)
-{
-    ntg_value *value_with_changed_type;
-
-	assert( value );
-
-    value_with_changed_type = ntg_value_new( newType, NULL);
-
-    ntg_value_copy( value_with_changed_type, value );
-
-    return value_with_changed_type;
-}
-
-
-void ntg_value_copy(ntg_value * target, const ntg_value * source)
-{
-    assert(target);
-    assert(source);
-    assert(source->type < NTG_n_types);
-    assert(target->type < NTG_n_types);
-
-    switch(source->type) 
-	{
-		case NTG_STRING:
-			switch(target->type) 
-			{
-				case NTG_STRING:
-					ntg_value_set(target, source->ctype.s);
-					return;
-
-				case NTG_INTEGER:
-					target->ctype.i = atoi( source->ctype.s );
-					return;
-
-				case NTG_FLOAT:
-					target->ctype.f = atof( source->ctype.s );
-					return;
-
-				default:
-					assert( false );
-					return;
-			}
-
-		case NTG_INTEGER:
-			switch(target->type) 
-			{
-				case NTG_STRING:
-					if (target->ctype.s) delete[] target->ctype.s;
-			        target->ctype.s = new char[ NTG_LONG_STRLEN ];
-					ntg_value_sprintf( target->ctype.s, NTG_LONG_STRLEN, source );
-					return;
-
-				case NTG_INTEGER:
-					ntg_value_set(target, &source->ctype.i);
-					return;
-
-				case NTG_FLOAT:
-					target->ctype.f = (float)source->ctype.i;
-					return;
-
-				default:
-					assert( false );
-					return;
-			}
-
-		case NTG_FLOAT:
-			switch(target->type) 
-			{
-				case NTG_STRING:
-					if (target->ctype.s) delete [] target->ctype.s;
-			        target->ctype.s = new char[ NTG_LONG_STRLEN ];
-					ntg_value_sprintf( target->ctype.s, NTG_LONG_STRLEN, source );
-					return;
-
-				case NTG_INTEGER:
-					target->ctype.i = (int)source->ctype.f;
-					return;
-
-				case NTG_FLOAT:
-	                ntg_value_set(target, &source->ctype.f);
-					return;
-
-				default:
-					assert( false );
-					return;
-			}
-
-		default:
-			assert( false );
 	}
-}
-
-void ntg_value_set(ntg_value *value, const void *v, ...)
-{
-
-    va_list argv;
-    size_t length = 0;
-
-    va_start(argv, v);
-    length = va_arg(argv, size_t);
-    va_end(argv);
-
-    assert(value != NULL);
-    assert(value->type < NTG_n_types);
-
-    switch (value->type) {
-        case NTG_STRING:
-            if (value->ctype.s != NULL) {
-                delete[] value->ctype.s;
-            }
-            if (v != NULL) {
-                value->ctype.s = ntg_strdup( static_cast<const char *>( v ) );
-            } else {
-                /* we can't use a string literal because ntg_free() will
-                 * fail to find it in the allocation table */
-              value->ctype.s = new char[ 1 ];
-              *value->ctype.s = 0;
-            }
-            break;
-        case NTG_FLOAT:
-            if (v != NULL) {
-                value->ctype.f = *(float *)v;
-            } else {
-                value->ctype.f = 0.f;
-            }
-            break;
-        case NTG_INTEGER:
-            if (v != NULL) {
-                value->ctype.i = *(int *)v;
-            } else {
-                value->ctype.i = 0;
-            }
-            break;
-        default:
-            assert( false );;
-            break;
-    }
-}
-
-ntg_value *ntg_value_new(ntg_value_type type, const void *v, ...)
-{
-
-    ntg_value *value = NULL;
-    va_list argv;
-    size_t length = 0;
-
-    va_start(argv, v);
-    length = va_arg(argv, size_t);
-    va_end(argv);
-
-    value = new ntg_value;
-
-    value->ctype.s = NULL;
-    value->type    = type;
-
-    ntg_value_set(value, v, length);
-
-    return value;
-
-}
-
-ntg_error_code ntg_value_free(ntg_value * value)
-{
-    if (value == NULL) {
-        return NTG_ERROR;
-    }
-
-    switch(value->type){
-        case NTG_STRING:
-            if (value->ctype.s != NULL) {
-                delete[] value->ctype.s;
-            }
-            break;
-        case NTG_INTEGER:
-        case NTG_FLOAT:
-            break;
-        default:
-            assert(0);
-    }
-
-	delete value;
-
-    return NTG_NO_ERROR;
-
-}
-
-float ntg_value_get_float(const ntg_value * value)
-{
-    if (value->type != NTG_FLOAT) {
-        NTG_TRACE_ERROR_WITH_STRING("invalid type", 
-                ntg_type_as_string[value->type]);
-        return 0.f;
-    } else {
-        return value->ctype.f;
-    }
-}
-
-int ntg_value_get_int(const ntg_value * value)
-{
-    if (value->type != NTG_INTEGER) {
-        NTG_TRACE_ERROR_WITH_STRING("invalid type",
-                ntg_type_as_string[value->type]);
-        return 0;
-    } else {
-        return value->ctype.i;
-    }
-}
 
 
-char *ntg_value_get_string(const ntg_value * value)
-{
-    assert(value != NULL);
-    assert(value->type < NTG_n_types);
-
-    if (value->type != NTG_STRING) {
-        NTG_TRACE_ERROR_WITH_STRING("invalid type",
-                ntg_type_as_string[value->type]);
-        return NULL;
-    } else {
-        return value->ctype.s;
-    }
-}
-
-ntg_error_code ntg_value_compare(const ntg_value * value,
-                                 const ntg_value * comparable)
-{
-
-    ntg_error_code error_code = NTG_ERROR;
-
-    if (value->type != comparable->type) {
-        return NTG_ERROR;
-    }
-
-    switch (value->type) {
-        case NTG_STRING:
-            if (!strcmp(value->ctype.s, comparable->ctype.s)) {
-                error_code = NTG_NO_ERROR;
-            }
-            break;
-        case NTG_FLOAT:
-            if (value->ctype.f == comparable->ctype.f) {
-                error_code = NTG_NO_ERROR;
-            }
-            break;
-        case NTG_INTEGER:
-            if (value->ctype.i == comparable->ctype.i) {
-                error_code = NTG_NO_ERROR;
-            }
-            break;
-        default:
-            error_code = NTG_FAILED;
-	        NTG_TRACE_ERROR_WITH_STRING("unsupported value type:",
-		            ntg_type_as_string[value->type]);
-            break;
-    }
-
-    return error_code;
-
-}
-
-
-float ntg_value_get_difference( const ntg_value *value1, const ntg_value *value2 )
-{
-	assert( value1 && value2 );
-
-	if( value1->type != value2->type )
+	CValue::~CValue()
 	{
-		NTG_TRACE_ERROR( "value type mismatch" );
+	}
+
+
+	CValue::operator int() const
+	{
+		handle_incorrect_cast( INTEGER );
 		return 0;
 	}
 
-	switch( value1->type )
+
+	CValue::operator float() const
 	{
-		case NTG_FLOAT:		
-			return value1->ctype.f - value2->ctype.f;
-
-		case NTG_INTEGER:	
-			return value1->ctype.i - value2->ctype.i;
-
-		case NTG_STRING:
-			return ntg_levenshtein_distance( value1->ctype.s, value2->ctype.s );
-
-		default:
-			NTG_TRACE_ERROR( "unhandled value type" );
-			return 0;
+		handle_incorrect_cast( FLOAT );
+		return 0;
 	}
-}
-
-
-
-ntg_value_type ntg_value_get_type(const ntg_value * value)
-{
-    return value->type;
-}
-
-ntg_value *ntg_value_from_string(ntg_value_type type, const char *string)
-{
-    float value_f = 0.f;
-    int value_i = 0;
-
-    assert (string != NULL);
-
-    switch(type) 
+	
+	
+	CValue::operator const string &() const
 	{
-        case NTG_INTEGER:
-            value_i = strtol( string, NULL, 0 );
-			if( errno == ERANGE )
-			{
-				NTG_TRACE_ERROR_WITH_STRING( "value too large to convert to int - truncating", string );
-				value_i = string[ 0 ] == '-' ? INT_MIN : INT_MAX;
-			}
-            return ntg_value_new(NTG_INTEGER, &value_i );
+		handle_incorrect_cast( STRING );
+		static string dummy;
+		return dummy;
+	}
 
-        case NTG_FLOAT:
-            value_f = strtod( string, NULL );
-            return ntg_value_new(NTG_FLOAT, &value_f );
 
-        case NTG_STRING:
-            return ntg_value_new(NTG_STRING, string );
+	void CValue::handle_incorrect_cast( type cast_target ) const
+	{
+		ostringstream error;
+		error << "Attempt to cast" << get_type_name( type() ) << " to " << get_type_name( cast_target );
+		NTG_TRACE_ERROR( error.str().c_str() );
 
-        default:
-            return NULL;
-    }
+		assert( false );
+	}
 
-    return NULL;
+
+	const char *CValue::get_type_name( type value_type )
+	{
+		switch( value_type )
+		{
+			case INTEGER:	return "integer";
+			case FLOAT:		return "float";
+			case STRING:	return "string";
+			default:		return "error - unknown type";
+		}
+	}
+
+
+	CValue *CValue::transmogrify( type new_type ) const
+	{
+		CValue *new_value = factory( new_type );
+		convert( *new_value );
+
+		return new_value;
+	}
+
+
+	CValue *CValue::factory( type new_type )
+	{
+		switch( new_type )
+		{
+			case INTEGER:	return new CIntegerValue();
+			case FLOAT:		return new CFloatValue();
+			case STRING:	return new CStringValue();
+
+			default:		
+				assert( false );
+				return NULL;
+		}
+	}
+
+
+	int CValue::type_to_ixd_code( type value_type )
+	{
+		switch( value_type )
+		{
+			case INTEGER:	return 1;
+			case FLOAT:		return 2;
+			case STRING:	return 3;
+
+			default:		
+				assert( false );
+				return 0;
+		}
+	}
+
+
+	CValue::type CValue::ixd_code_to_type( int ixd_code )
+	{
+		switch( ixd_code )
+		{
+			case 1:		return INTEGER;
+			case 2:		return FLOAT;
+			case 3:		return STRING;
+
+			default:		
+				assert( false );
+				return INTEGER;
+		}
+	}
+
+
+	/* INTEGER VALUES */ 
+
+	CIntegerValue::CIntegerValue()
+	{
+		m_value = 0;
+	}
+
+
+	CIntegerValue::CIntegerValue( int value )
+	{
+		m_value = value;
+	}
+
+
+	CIntegerValue::~CIntegerValue()
+	{
+	}
+
+	
+	CValue::type CIntegerValue::get_type() const
+	{
+		return INTEGER;
+	}
+
+	CIntegerValue::operator int() const
+	{
+		return m_value;
+	}
+
+
+	const CIntegerValue &CIntegerValue::operator= ( const CIntegerValue &to_copy )
+	{
+		m_value = to_copy.m_value;
+		return *this;
+	}
+
+
+	CValue *CIntegerValue::clone() const
+	{
+		return new CIntegerValue( m_value );
+	}
+
+
+	void CIntegerValue::convert( CValue &conversion_target ) const
+	{
+		switch( conversion_target.get_type() )
+		{
+			case INTEGER:		
+				dynamic_cast<CIntegerValue &>( conversion_target ) = m_value;
+				break;
+
+			case FLOAT:			
+				dynamic_cast<CFloatValue &>( conversion_target ) = m_value;
+				break;
+
+			case STRING:		
+				dynamic_cast<CStringValue &>( conversion_target ) = get_as_string();
+				break;
+
+			default:
+				NTG_TRACE_ERROR( "unhandled value type" );
+				break;
+		}
+	}
+
+
+	bool CIntegerValue::is_equal( const CValue &other ) const
+	{
+		const CIntegerValue *other_int = dynamic_cast<const CIntegerValue *>( &other );
+		if( !other_int ) return false;
+
+		return ( m_value == other_int->m_value );
+	}
+
+
+	float CIntegerValue::get_difference( const CValue &other ) const
+	{
+		const CIntegerValue *other_int = dynamic_cast<const CIntegerValue *>( &other );
+		if( !other_int ) 
+		{
+			NTG_TRACE_ERROR( "type mismatch" );
+		}
+
+		return m_value - other_int->m_value;
+	}
+
+
+	string CIntegerValue::get_as_string() const
+	{
+		ostringstream stream;
+		stream << m_value;
+		return stream.str();
+	}
+
+
+	void CIntegerValue::set_from_string( const string &source )
+	{
+        m_value = strtol( source.c_str(), NULL, 0 );
+		if( errno == ERANGE )
+		{
+			NTG_TRACE_ERROR_WITH_STRING( "value too large to convert to int - truncating", source.c_str() );
+			m_value = source[ 0 ] == '-' ? INT_MIN : INT_MAX;
+		}
+	}
+
+
+	/* FLOAT VALUES */ 
+
+	CFloatValue::CFloatValue()
+	{
+		m_value = 0;
+	}
+
+
+	CFloatValue::CFloatValue( float value )
+	{
+		m_value = value;
+	}
+
+
+	CFloatValue::~CFloatValue()
+	{
+	}
+
+	
+	CValue::type CFloatValue::get_type() const
+	{
+		return FLOAT;
+	}
+
+	CFloatValue::operator float() const
+	{
+		return m_value;
+	}
+
+
+	const CFloatValue &CFloatValue::operator= ( const CFloatValue &to_copy )
+	{
+		m_value = to_copy.m_value;
+		return *this;
+	}
+
+
+	CValue *CFloatValue::clone() const
+	{
+		return new CFloatValue( m_value );
+	}
+
+
+	void CFloatValue::convert( CValue &conversion_target ) const
+	{
+		switch( conversion_target.get_type() )
+		{
+			case INTEGER:		
+				dynamic_cast<CIntegerValue &>( conversion_target ) = ( int ) m_value;
+				break;
+
+			case FLOAT:			
+				dynamic_cast<CFloatValue &>( conversion_target ) = m_value;
+				break;
+
+			case STRING:		
+				dynamic_cast<CStringValue &>( conversion_target ) = get_as_string();
+				break;
+
+			default:
+				NTG_TRACE_ERROR( "unhandled value type" );
+				break;
+		}
+	}
+
+
+	bool CFloatValue::is_equal( const CValue &other ) const
+	{
+		const CFloatValue *other_float = dynamic_cast<const CFloatValue *>( &other );
+		if( !other_float ) return false;
+
+		return ( m_value == other_float->m_value );
+	}
+
+
+	float CFloatValue::get_difference( const CValue &other ) const
+	{
+		const CFloatValue *other_float = dynamic_cast<const CFloatValue *>( &other );
+		if( !other_float ) 
+		{
+			NTG_TRACE_ERROR( "type mismatch" );
+		}
+
+		return m_value - other_float->m_value;
+	}
+
+
+	string CFloatValue::get_as_string() const
+	{
+		ostringstream stream;
+		stream.precision( 6 );
+		stream << ostringstream::fixed << m_value;
+		string value = stream.str();
+
+		//remove trailing zeros
+		if( value.find( "." ) != string::npos )
+		{
+			int new_length = value.find_last_not_of( '0' );
+			value = value.substr( 0, new_length );
+		}
+
+		return value;
+	}
+
+
+	void CFloatValue::set_from_string( const string &source )
+	{
+        m_value = strtod( source.c_str(), NULL );
+	}
+
+
+	/* STRING VALUES */ 
+
+	CStringValue::CStringValue()
+	{
+		m_value = "";
+	}
+
+
+	CStringValue::CStringValue( const string &value )
+	{
+		m_value = value;
+	}
+
+
+	CStringValue::~CStringValue()
+	{
+	}
+
+	
+	CValue::type CStringValue::get_type() const
+	{
+		return STRING;
+	}
+
+
+	CStringValue::operator const string &() const
+	{
+		return m_value;
+	}
+
+
+	CValue *CStringValue::clone() const
+	{
+		return new CStringValue( m_value );
+	}
+
+
+	const CStringValue &CStringValue::operator= ( const CStringValue &to_copy )
+	{
+		m_value = to_copy.m_value;
+		return *this;
+	}
+
+
+	void CStringValue::convert( CValue &conversion_target ) const
+	{
+		switch( conversion_target.get_type() )
+		{
+			case INTEGER:		
+				dynamic_cast<CIntegerValue &>( conversion_target ).set_from_string( m_value );
+				break;
+
+			case FLOAT:			
+				dynamic_cast<CFloatValue &>( conversion_target ).set_from_string( m_value );
+				break;
+
+			case STRING:		
+				dynamic_cast<CStringValue &>( conversion_target ).m_value = m_value;
+				break;
+
+			default:
+				NTG_TRACE_ERROR( "unhandled value type" );
+				break;
+		}
+	}
+
+
+	bool CStringValue::is_equal( const CValue &other ) const
+	{
+		const CStringValue *other_string = dynamic_cast<const CStringValue *>( &other );
+		if( !other_string ) return false;
+
+		return ( m_value == other_string->m_value );
+	}
+
+
+	float CStringValue::get_difference( const CValue &other ) const
+	{
+		const CStringValue *other_string = dynamic_cast<const CStringValue *>( &other );
+		if( !other_string ) 
+		{
+			NTG_TRACE_ERROR( "type mismatch" );
+		}
+
+		return levenshtein_distance( m_value.c_str(), other_string->m_value.c_str() );
+	}
+
+
+	string CStringValue::get_as_string() const
+	{
+		return m_value;
+	}
+
+
+	void CStringValue::set_from_string( const string &source )
+	{
+        m_value = source;
+	}
+
+
+	int CStringValue::levenshtein_distance( const char *string1, const char *string2 )
+	{
+		int length1, length2;
+		int cost = 0;
+
+		assert( string1 && string2 );
+
+		length1 = strlen( string1 );
+		length2 = strlen( string2 );
+
+		if( length1 == 0 ) return length2;
+		if( length2 == 0 ) return length1;
+
+		if( string1[ 0 ] != string2[ 0 ] ) 
+		{
+			cost = 1;
+		}
+
+		return MIN( MIN(
+			levenshtein_distance( string1 + 1, string2 ) + 1,
+			levenshtein_distance( string1, string2 + 1 ) + 1 ), 
+			levenshtein_distance( string1 + 1, string2 + 1 ) + cost );
+	}
+
 }
+
+
 

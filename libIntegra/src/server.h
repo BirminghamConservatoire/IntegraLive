@@ -72,7 +72,7 @@ void ntg_server_free(ntg_server *server);
 
 
 /** \brief Callback function corresponing to ih_callback in the bridge interface (see integra_bridge.h ntg_bridge_interface->ih_callback */
-void ntg_server_receive_from_host(ntg_id id, const char *attribute_name, const ntg_value *value);
+void ntg_server_receive_from_host(ntg_id id, const char *attribute_name, const ntg_api::CValue *value);
 
 
 /**
@@ -108,13 +108,8 @@ ntg_node *ntg_server_connect(ntg_server * server, const ntg_api::CPath &parent_p
 
 
 /** \brief return an ntg_node_attribute from a path relative to a base node */
-const ntg_node_attribute *ntg_server_resolve_relative_path ( 
-        const ntg_server *server,
-		const ntg_node *root,
-        const char *path);
+const ntg_node_attribute *ntg_server_resolve_relative_path ( const ntg_server *server, const ntg_node *root, const ntg_api::string &path );
 
-
-void ntg_server_receive_from_osc(ntg_server *server, const ntg_api::CPath &path, const ntg_value *value );
 
 void ntg_server_set_host_dsp(const ntg_server *server, bool status);
 

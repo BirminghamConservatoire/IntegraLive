@@ -267,7 +267,7 @@ void ntg_node_add_attribute(ntg_node *node, const ntg_endpoint *endpoint)
 
 	if( endpoint->type == NTG_CONTROL && endpoint->control_info->type == NTG_STATE )
 	{
-		attribute->value = ntg_value_new( endpoint->control_info->state_info->type, NULL );
+		attribute->value = CValue::factory( endpoint->control_info->state_info->type );
 	}
 
 	attribute->path = node->path;
@@ -488,9 +488,6 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
     ntg_node_attribute *attribute;
     ntg_node *child_iterator;
     xmlChar *tmp;
-	int valuestr_size;
-    char *valuestr;
-    ntg_value_type type;
 
     if (node == NULL) 
 	{
@@ -501,18 +498,18 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
     xmlTextWriterStartElement(writer, BAD_CAST NTG_STR_OBJECT);
 
     /* write out node->interface->module_guid */
-	valuestr = ntg_guid_to_string( &node->interface->module_guid );
-    tmp = ConvertInput(valuestr, XML_ENCODING);
+	char *guid_string = ntg_guid_to_string( &node->interface->module_guid );
+    tmp = ConvertInput( guid_string, XML_ENCODING);
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_MODULEID, (char * ) tmp );
 	free( tmp );
-	delete[] valuestr;
+	delete[] guid_string;
 
     /* write out node->interface->origin_guid */
-	valuestr = ntg_guid_to_string( &node->interface->origin_guid );
-    tmp = ConvertInput(valuestr, XML_ENCODING);
+	guid_string = ntg_guid_to_string( &node->interface->origin_guid );
+    tmp = ConvertInput(guid_string, XML_ENCODING);
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_ORIGINID, (char * ) tmp );
 	free( tmp );
-	delete[] valuestr;
+	delete[] guid_string;
 
     /* write out node->name */
     tmp = ConvertInput(node->name, XML_ENCODING);
@@ -533,7 +530,7 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
 		}
 
         /* write attribute->name */
-		type = ntg_value_get_type(attribute->value);
+		CValue::type type = attribute->value->get_type();
 
 		tmp = ConvertInput(attribute->endpoint->name, XML_ENCODING);
         xmlTextWriterStartElement(writer, BAD_CAST NTG_STR_ATTRIBUTE);
@@ -542,23 +539,11 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
 		free( tmp );
 
         /* write type */
-        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_TYPECODE, "%d", type);
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_TYPECODE, "%d", CValue::type_to_ixd_code( type ) );
 
         /* write attribute->value */
-        if (type == NTG_STRING) 
-		{
-			valuestr_size = ( strlen(attribute->value->ctype.s) + 1 );
-        } 
-		else 
-		{
-            /* allocate enough memory for a very long number */
-			valuestr_size = 1024;
-        }
-
-		valuestr = new char[ valuestr_size ]; 
-        ntg_value_sprintf( valuestr, valuestr_size, attribute->value );
-        tmp = ConvertInput( valuestr, XML_ENCODING );
-        delete[] valuestr ;
+		string value_string = attribute->value->get_as_string();
+        tmp = ConvertInput( value_string.c_str(), XML_ENCODING );
         xmlTextWriterWriteString( writer, BAD_CAST tmp );
         xmlTextWriterEndElement( writer );
 		free( tmp );
@@ -744,27 +729,21 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, node_list &loaded_nodes )
 {
     const ntg_node     *parent;
-    ntg_value          *attribute_value;
     ntg_node_attribute *store;
     ntg_node_attribute *marker;
 	const ntg_node_attribute *existing_attribute;
     xmlNodePtr          xml_node;
     xmlChar             *name;
     const xmlChar       *element;
-    xmlChar             *value = NULL;
-    unsigned int        attribute_type;
+    xmlChar             *content = NULL;
     unsigned int        depth;
     unsigned int        type;
     unsigned int        prev_depth;
-    int                 value_i;
     int                 rv;
-    float               value_f;
-    char               *valuestr;
 	const ntg_interface *interface;
 	char				*saved_version;
 	bool				saved_version_is_more_recent;
 
-    attribute_value = NULL;
     store           = NULL;
     marker          = NULL;
     prev_depth      = 0;
@@ -839,51 +818,29 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
             prev_depth = depth;
         }
 
-        if (!strncmp((char *)element, NTG_STR_ATTRIBUTE,
-                     strlen(NTG_STR_ATTRIBUTE))) {
-
-            if (type == XML_READER_TYPE_ELEMENT) {
+        if(!strncmp( (char * ) element, NTG_STR_ATTRIBUTE, strlen( NTG_STR_ATTRIBUTE ) ) ) 
+		{
+            if (type == XML_READER_TYPE_ELEMENT) 
+			{
                 xml_node = xmlTextReaderExpand(reader);
-                value = xmlNodeGetContent(xml_node);
-                name = xmlTextReaderGetAttribute(reader,
-                                                 BAD_CAST NTG_STR_NAME);
-                valuestr = (char *)xmlTextReaderGetAttribute(reader,
-                                                             BAD_CAST
-                                                             NTG_STR_TYPECODE);
-                attribute_type = atoi(valuestr);
-                xmlFree( valuestr );
+                content = xmlNodeGetContent(xml_node);
+                name = xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_NAME);
+                char *type_code_string = (char *)xmlTextReaderGetAttribute( reader, BAD_CAST NTG_STR_TYPECODE );
+                int type_code = atoi( type_code_string );
+                xmlFree( type_code_string );
 
-                switch (attribute_type) {
-                    case NTG_FLOAT:
-                        if (!value) {
-                            value_f = 0.f;
-                        } else {
-                            value_f = strtof((char *)value, NULL);
-                        }
-                        attribute_value = ntg_value_new(NTG_FLOAT, &value_f);
-                        break;
-                    case NTG_STRING:
-                        attribute_value = ntg_value_new(NTG_STRING,
-                                (char *)value);
-                        break;
-                    case NTG_INTEGER:
-                        if (!value) {
-                            value_i = 0;
-                        } else {
-                            value_i = strtol((char *)value, NULL, 10);
-                        }
-                        attribute_value = ntg_value_new(NTG_INTEGER, &value_i);
-                        break;
-                }
+				CValue *value = CValue::factory( CValue::ixd_code_to_type( type_code ) );
+				assert( value );
 
-                if (value != NULL) 
+				if( content )
 				{
-                    xmlFree(value);
-                    value = NULL;
-                }
+					value->set_from_string( ( char * ) content );
+                    xmlFree( content );
+					content = NULL;
+				}
 
 				existing_attribute = ntg_find_attribute( node, ( char * ) name );
-				if( existing_attribute && ntg_endpoint_should_load_from_ixd( existing_attribute->endpoint, attribute_value->type ) )
+				if( existing_attribute && ntg_endpoint_should_load_from_ixd( existing_attribute->endpoint, value->get_type() ) )
 				{
 					/* 
 					only store attribute if it exists and is of reasonable type 
@@ -891,12 +848,12 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
 					*/
 
 					CPath attribute_path( node->path );
-					attribute_path.append_element( (char *)name );
-					store = ntg_node_attribute_insert_in_list( store, existing_attribute->endpoint, attribute_path, attribute_value );
+					attribute_path.append_element( (char *) name );
+					store = ntg_node_attribute_insert_in_list( store, existing_attribute->endpoint, attribute_path, value );
 				}
 
-                ntg_value_free(attribute_value);
-                xmlFree(name);
+                delete value;
+                xmlFree( name );
             }
         }
 

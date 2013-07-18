@@ -8,6 +8,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "src/platform_specifics.h"
+
 #include "Integra/integra.h"
 #include "src/trace.h"
 
@@ -141,7 +143,6 @@ void post_help(const char *command_name) {
 
             "\nNetwork port options:\n"
             "  -xmlrpc_server_port=[integer]\tlibIntegra xmlrpc port\n"
-            "  -osc_server_port=[integer]\tlibIntegra osc server port\n"
             "  -osc_client_url=[string]\tlibIntegra osc client url\n"
             "  -osc_client_port=[integer]\tlibIntegra osc client port\n"
 
@@ -169,7 +170,6 @@ int main( int argc, char *argv[] )
     ntg_trace_category_bits trace_category_bits = NO_TRACE_CATEGORY_BITS;
     ntg_trace_options_bits trace_option_bits = NO_TRACE_OPTIONS_BITS;
     unsigned short xmlrpc_server_port = 0;
-    unsigned short osc_server_port = 0;	
     const char *osc_client_url = NULL;
     unsigned short osc_client_port = 0;	
     unsigned short number_of_processes_to_close = 0;
@@ -242,12 +242,6 @@ int main( int argc, char *argv[] )
             if( memcmp( argument, "-xmlrpc_server_port", flag_length ) == 0 )
             {
                 xmlrpc_server_port = atoi( equals + 1 );
-                continue;
-            }
-
-            if( memcmp( argument, "-osc_server_port", flag_length ) == 0 )
-            {
-                osc_server_port = atoi( equals + 1 );
                 continue;
             }
 
@@ -358,7 +352,7 @@ int main( int argc, char *argv[] )
 
     /*run the server */
     ntg_server_run( bridge_path, system_module_directory, third_party_module_directory, 
-					xmlrpc_server_port, osc_server_port, osc_client_url, osc_client_port);
+					xmlrpc_server_port, osc_client_url, osc_client_port);
 
     if( host_process_handle > 0 )
     {

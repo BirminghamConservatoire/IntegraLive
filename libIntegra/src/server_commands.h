@@ -24,18 +24,10 @@
 #include "path.h"
 
 
-/* this is also the order the arguments should be passed */
-typedef struct ntg_args_set_ {
-    ntg_internal::ntg_command_source source;
-    ntg_api::CPath path;
-    const ntg_value *value;
-} ntg_args_set;
-
-
 ntg_command_status ntg_set_(ntg_server *server, 
         ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &attribute_path,
-        const ntg_value *value);
+        const ntg_api::CValue *value);
 
 ntg_command_status ntg_new_(ntg_server *server,
         ntg_internal::ntg_command_source cmd_source,
@@ -74,7 +66,7 @@ ntg_error_code ntg_nodelist_( ntg_server *server, const ntg_api::CPath &path, nt
 
 ntg_command_status ntg_save_(ntg_server *server, const ntg_api::CPath &path, const char *file_path );
 
-ntg_value *ntg_get_(ntg_server *server, const ntg_api::CPath &path );
+const ntg_api::CValue *ntg_get_(ntg_server *server, const ntg_api::CPath &path );
 
 
 void ntg_print_state_();

@@ -21,90 +21,140 @@
 #ifndef INTEGRA_VALUE_PRIVATE_H
 #define INTEGRA_VALUE_PRIVATE_H
 
+#include "common_typedefs.h"
 
 
-#include "Integra/integra.h"
+namespace ntg_api
+{
+	class LIBINTEGRA_API CValue
+	{
+		public:
+
+			CValue();
+			virtual ~CValue();
+
+			typedef enum type 
+			{
+				INTEGER,
+				FLOAT,
+				STRING,
+			};
+
+			virtual type get_type() const = 0;
+
+			virtual operator int() const;
+			virtual operator float() const;
+			virtual operator const string &() const;
+
+			virtual CValue *clone() const = 0;
+			virtual void convert( CValue &conversion_target ) const = 0;
+
+			virtual bool is_equal( const CValue &other ) const = 0;
+			virtual float get_difference( const CValue &other ) const = 0;
+
+			virtual string get_as_string() const = 0;
+			virtual void set_from_string( const string &source ) = 0;
+
+			CValue *transmogrify( type new_type ) const;
+
+			static CValue *factory( type new_type ); 
+			static const char *get_type_name( type value_type ); 
+
+			static int type_to_ixd_code( type value_type );
+			static type ixd_code_to_type( int ixd_code );
+
+		private:
+
+			void handle_incorrect_cast( type cast_target ) const;
+	};
 
 
-#include <stdlib.h>
+	class LIBINTEGRA_API CIntegerValue : public CValue
+	{
+		public:
 
-#define NTG_NIL_REPR "(nil)"
+			CIntegerValue();
+			CIntegerValue( int value );
+			~CIntegerValue();
 
+			type get_type() const;
 
-struct ntg_value_ {
-    ntg_value_type type;
-    union ctype_ {
-        char *s;
-        float f;
-        int i;
-    } ctype;
-};
+			operator int() const;
+			const CIntegerValue &operator= ( const CIntegerValue &to_copy );
 
+			CValue *clone() const;
+			void convert( CValue &conversion_target ) const;
 
-/* values */
-LIBINTEGRA_API ntg_value_type ntg_value_get_type(const ntg_value *value);
-LIBINTEGRA_API float ntg_value_get_float(const ntg_value *value);
-LIBINTEGRA_API int ntg_value_get_int(const ntg_value *value);
-LIBINTEGRA_API char *ntg_value_get_string(const ntg_value *value);
+			bool is_equal( const CValue &other )  const;
+			float get_difference( const CValue &other ) const;
 
+			string get_as_string() const;
+			void set_from_string( const string &source );
 
-/** \brief Returns a pointer to a newly allocated value
-  * \param void *v a pointer to the value initialiser
-  * \param ... optional parameter of type size_t specifying byte array length for value of type NTG_BLOB */
-LIBINTEGRA_API ntg_value *ntg_value_new(ntg_value_type type, const void *v, ...);
+		private:
 
-/** \brief Free ntg_value previously allocated with ntg_value_new() */
-LIBINTEGRA_API ntg_error_code ntg_value_free(ntg_value *value) ;
+			int m_value;
+	};
 
 
+	class LIBINTEGRA_API CFloatValue : public CValue
+	{
+		public:
 
-/** \brief Returns a pointer to a newly allocated value and takes the
- *   value as a string, regardless of type.
- */
-ntg_value *ntg_xml_value_new(int type, const char *v);
+			CFloatValue();
+			CFloatValue( float value );
+			~CFloatValue();
 
-/** \brief Copies the source value into target converting type if possible
- *
- * \param ntg_value *target A pointer to an ntg_value struct that will b used to store the value
- * \param ntg_value *source A pointer to an ntg_value struct that contains the source value 
- *
- * */
-void ntg_value_copy(ntg_value *target, const ntg_value *source); 
+			type get_type() const;
 
-/** \brief duplicate a value by allocating a new one and copying in
-  * Analogous to strdup()
-  */
-ntg_value *ntg_value_duplicate(const ntg_value *value);
+			operator float() const;
+			const CFloatValue &operator= ( const CFloatValue &to_copy );
 
-/** \brief Set an ntg_value as given by type 
- *
- * \param ntg_value *target A pointer to an ntg_value struct that will b used to store the value
- * \param void *v A pointer to the actual value
- * \param ... optional fourth parameter specifying the length of a byte array
- *
- * */
-void ntg_value_set(ntg_value *value, const void *v, ...);
+			CValue *clone() const;
+			void convert( CValue &conversion_target ) const;
 
-/** \brief Prints a ntg_value to a C string */
-ntg_error_code ntg_value_sprintf(char *output, int chars_available, const ntg_value *value);
+			bool is_equal( const CValue &other )  const;
+			float get_difference( const CValue &other ) const;
 
-/**\brief Compares two values for equality 
-  * Currently only compares values of same type otherwise returns error */
-ntg_error_code ntg_value_compare(const ntg_value *value,
-        const ntg_value *comparable);
+			string get_as_string() const;
+			void set_from_string( const string &source );
 
-/**\return a type-agnostic scalar subtraction between two values.
-  * both values must be of same type */
-float ntg_value_get_difference( const ntg_value *value1, const ntg_value *value2 );
+		private:
+
+			float m_value;
+	};
 
 
-/* \brief convert a string representation of a value to a value */
-ntg_value *ntg_value_from_string(ntg_value_type type, const char *string);
+	class LIBINTEGRA_API CStringValue : public CValue
+	{
+		public:
 
-/* \brief attempt to convert a value from one type to another
- */
-ntg_value *ntg_value_change_type(const ntg_value *value, ntg_value_type newType);
+			CStringValue();
+			CStringValue( const string &value );
+			~CStringValue();
 
+			type get_type() const;
+
+			operator const string &() const;
+			const CStringValue &operator= ( const CStringValue &to_copy );
+
+			CValue *clone() const;
+			void convert( CValue &conversion_target ) const;
+
+			bool is_equal( const CValue &other )  const;
+			float get_difference( const CValue &other ) const;
+
+			string get_as_string() const;
+			void set_from_string( const string &source );
+
+		private:
+
+			/* calculate levenshtein distance between two strings.  */
+			static int levenshtein_distance( const char *string1, const char *string2 );
+
+			string m_value;
+	};
+}
 
 
 #endif

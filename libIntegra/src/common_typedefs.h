@@ -32,6 +32,18 @@
 #include "MurmurHash2.h"
 
 
+#ifdef _WINDOWS
+	#ifdef LIBINTEGRA_EXPORTS	
+		#define LIBINTEGRA_API __declspec(dllexport)
+	#else
+		#define LIBINTEGRA_API __declspec(dllimport)
+	#endif
+#else
+	#define LIBINTEGRA_API 
+#endif
+
+
+
 
 namespace ntg_api
 {
@@ -56,7 +68,8 @@ namespace ntg_api
 
 namespace ntg_internal
 {
-	typedef enum ntg_command_source_ {
+	typedef enum ntg_command_source_ 
+	{
 		NTG_SOURCE_NONE = -1,
 		NTG_SOURCE_INITIALIZATION,
 		NTG_SOURCE_LOAD,

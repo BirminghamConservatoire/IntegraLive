@@ -27,7 +27,6 @@ package components.controller
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
-	import flash.utils.flash_proxy;
 	
 	import mx.controls.Alert;
 	

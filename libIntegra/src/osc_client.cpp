@@ -1,3 +1,23 @@
+/** libIntegra multimedia module interface
+ *  
+ * Copyright (C) 2007 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+ * USA.
+ */
+
 #include "platform_specifics.h"
 
 #include "osc_client.h"
@@ -106,13 +126,10 @@ void ntg_osc_client_destroy(ntg_osc_client *client)
 ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &path,
-        const ntg_value *value)
+        const CValue *value)
 {
 	const char *methodName = "/command.set";
 	const char *cmd_source_s = NULL;
-    int value_i   = 0;
-    float value_f = 0.f;
-    char *value_s = NULL;
 
     assert(client != NULL);
 
@@ -122,19 +139,19 @@ ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
 
 	if( value )
 	{
-		switch( ntg_value_get_type(value) ) 
+		switch( value->get_type() ) 
 		{
-			case NTG_INTEGER:
-				value_i = ntg_value_get_int(value);
-				ntg_osc_send_ssi(client->address, methodName, cmd_source_s, path_s, value_i);
+			case CValue::INTEGER:
+				ntg_osc_send_ssi(client->address, methodName, cmd_source_s, path_s, *value );
 				break;
-			case NTG_FLOAT:
-				value_f = ntg_value_get_float(value);
-				ntg_osc_send_ssf(client->address, methodName, cmd_source_s, path_s, value_f);
+			case CValue::FLOAT:
+				ntg_osc_send_ssf(client->address, methodName, cmd_source_s, path_s, *value );
 				break;
-			case NTG_STRING:
-				value_s = ntg_value_get_string(value);
-				ntg_osc_send_sss(client->address, methodName, cmd_source_s, path_s, value_s);
+			case CValue::STRING:
+				{
+					const string &value_string = *value;
+					ntg_osc_send_sss(client->address, methodName, cmd_source_s, path_s, value_string.c_str() );
+				}
 				break;
 
 			default:

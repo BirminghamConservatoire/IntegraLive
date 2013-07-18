@@ -18,15 +18,16 @@
  * USA.
  */
 
-#ifndef INTEGRA_PATH_PRIVATE_H
-#define INTEGRA_PATH_PRIVATE_H
+
+#ifndef INTEGRA_PATH_H
+#define INTEGRA_PATH_H
 
 #include "common_typedefs.h"
 
 
 namespace ntg_api
 {
-	class CPath
+	class LIBINTEGRA_API CPath
 	{
 		public:
 

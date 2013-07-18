@@ -22,16 +22,6 @@
 #define INTEGRA_H
 
 
-#ifdef _WINDOWS
-	#ifdef LIBINTEGRA_EXPORTS	
-		#define LIBINTEGRA_API __declspec(dllexport)
-	#else
-		#define LIBINTEGRA_API __declspec(dllimport)
-	#endif
-#else
-	#define LIBINTEGRA_API 
-#endif
-
 /** \file integra.h libIntegra public API */
 
 /* system includes*/
@@ -54,6 +44,7 @@
 namespace ntg_api
 {
 	class CPath;
+	class CValue;
 }
 
 
@@ -62,15 +53,8 @@ namespace ntg_api
  */
 
 /* value types */
-typedef enum ntg_value_type_ {
-    NTG_INTEGER = 1,
-    NTG_FLOAT,
-    NTG_STRING,
-    NTG_n_types
-} ntg_value_type;
 
 typedef unsigned long ntg_id;
-typedef struct ntg_value_ ntg_value;
 typedef struct ntg_node_attribute_ ntg_node_attribute;
 typedef std::unordered_map<ntg_api::string, const ntg_node_attribute *> map_string_to_attribute;
 
@@ -202,16 +186,13 @@ LIBINTEGRA_API ntg_command_status ntg_move( const ntg_api::CPath &node_path, con
  node called 'FooBar1', the path array might be ['Project1', 'Block1',
  'FooBar1', 'blah']. If the path is invalid, or the final element doesn't
  correspond to an attribute an error code of NTG_PATH_ERROR will be returned
- * \param *value: a pointer to a struct of type ntg_value containing the value
- * we are setting the attribute to. The supported types for value are given in
- * integra_model.h however, the type of *value must match the type of the
- * attribute being set as given by the attribute info. Otherwise an
- * NTG_TYPE_ERROR will be returned
+ * \param *value: a pointer to a class of type CValue containing the value
+ * we are setting the attribute to.
  * \return a struct of type ntg_command_status. If the function succeeded,
  * this will contain the error_code NTG_NO_ERROR
  * \error possible return values for error status are given in integra_error.h
  */
-LIBINTEGRA_API ntg_command_status ntg_set(const ntg_api::CPath &attribute_path, const ntg_value *value);
+LIBINTEGRA_API ntg_command_status ntg_set(const ntg_api::CPath &attribute_path, const ntg_api::CValue *value );
 
 /** \brief Get the value of an attribute of a node on the server
  * \param *path: a reference to a class of type CPath giving the elements in
@@ -220,11 +201,10 @@ LIBINTEGRA_API ntg_command_status ntg_set(const ntg_api::CPath &attribute_path, 
  node called 'FooBar1', the path array might be ['Project1', 'Block1',
  'FooBar1', 'blah']. If the path is invalid, or the final element doesn't
  correspond to an attribute an error code of NTG_PATH_ERROR will be returned
- * \return a pointer to a struct of type ntg_value. The type (see types.h) of
- * the value returned is guaranteed to match the type of the attribute as
- * given in the attribute info. The ntg_value must be free'd using ntg_value_free()
+ * \return a pointer to a class of type CValue.  The CValue must be deleted by 
+ the caller
  * \error a pointer to NULL is returned if an error occurs */
-LIBINTEGRA_API const ntg_value *ntg_get( const ntg_api::CPath &path );
+LIBINTEGRA_API ntg_api::CValue *ntg_get( const ntg_api::CPath &path );
 
 /** \brief Get the list of paths to nodes on the server under a given node
  * \param *path: a reference to a class of type CPath giving the elements in
@@ -325,7 +305,6 @@ LIBINTEGRA_API ntg_error_code ntg_server_run(const char *bridge_file,
 							const char *system_module_directory,
 							const char *third_party_module_directory,
 							unsigned short xmlrpc_server_port, 
-							unsigned short osc_server_port, 
 							const char *osc_client_url, 
 							unsigned short osc_client_port);
 

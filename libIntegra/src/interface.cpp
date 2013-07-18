@@ -36,6 +36,7 @@
 #include "value.h"
 #include "trace.h"
 
+using namespace ntg_api;
 
 
 #define INTERFACE					"InterfaceDeclaration"
@@ -202,14 +203,14 @@ ntg_error_code ntg_integer_converter( const char *input, int *output );
 ntg_error_code ntg_float_converter( const char *input, float *output );
 ntg_error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type *output );
 ntg_error_code ntg_control_type_converter( const char *input, ntg_control_type *output );
-ntg_error_code ntg_value_type_converter( const char *input, ntg_value_type *output );
+ntg_error_code ntg_type_converter( const char *input, CValue::type &output );
 ntg_error_code ntg_stream_type_converter( const char *input, ntg_stream_type *output );
 ntg_error_code ntg_stream_direction_converter( const char *input, ntg_stream_direction *output );
 
-	/* this subset converts to ntg_value objects for each supported type */
-ntg_error_code ntg_value_float_converter( const char *input, ntg_value **output );
-ntg_error_code ntg_value_integer_converter( const char *input, ntg_value **output );
-ntg_error_code ntg_value_string_converter( const char *input, ntg_value **output );
+/* this subset converts to ntg_value objects for each supported type */
+ntg_error_code ntg_value_float_converter( const char *input, CValue **output );
+ntg_error_code ntg_value_integer_converter( const char *input, CValue **output );
+ntg_error_code ntg_value_string_converter( const char *input, CValue **output );
 
 /* 
  the following macros handle reading of xml properties into specified locations, and are 
@@ -235,7 +236,7 @@ ntg_error_code ntg_value_string_converter( const char *input, ntg_value **output
 #define NTG_READ_NON_POINTER( ELEMENT, STORAGE_LOCATION, CONVERTER )						\
 	if( !strcmp( element, ELEMENT ) )														\
 	{																						\
-		return( CONVERTER( value, &STORAGE_LOCATION ) );									\
+		return( CONVERTER( value, STORAGE_LOCATION ) );										\
 	}																						
 
 #define NTG_READ_STRING( ELEMENT, STORAGE_LOCATION )										\
@@ -260,7 +261,7 @@ ntg_error_code ntg_value_string_converter( const char *input, ntg_value **output
 	NTG_READ_NON_POINTER( ELEMENT, STORAGE_LOCATION, ntg_control_type_converter )
 
 #define NTG_READ_STATE_TYPE( ELEMENT, STORAGE_LOCATION )									\
-	NTG_READ_NON_POINTER( ELEMENT, STORAGE_LOCATION, ntg_value_type_converter )
+	NTG_READ_NON_POINTER( ELEMENT, STORAGE_LOCATION, ntg_type_converter )
 
 #define NTG_READ_SCALE_TYPE( ELEMENT, STORAGE_LOCATION )									\
 	NTG_READ_NON_POINTER( ELEMENT, STORAGE_LOCATION, ntg_scale_type_converter )
@@ -276,13 +277,13 @@ ntg_error_code ntg_value_string_converter( const char *input, ntg_value **output
 	{																						\
 		switch( VALUE_GETTER )																\
 		{																					\
-			case NTG_FLOAT:																	\
+			case CValue::FLOAT:																\
 				NTG_READ_POINTER( ELEMENT, STORAGE_LOCATION, ntg_value_float_converter )	\
 				break;																		\
-			case NTG_INTEGER:																\
+			case CValue::INTEGER:															\
 				NTG_READ_POINTER( ELEMENT, STORAGE_LOCATION, ntg_value_integer_converter )	\
 				break;																		\
-			case NTG_STRING:																\
+			case CValue::STRING:															\
 				NTG_READ_POINTER( ELEMENT, STORAGE_LOCATION, ntg_value_string_converter )	\
 				break;																		\
 			default:																		\
@@ -300,8 +301,8 @@ void ntg_range_free( ntg_range *range )
 {
 	assert( range );
 
-	if( range->minimum ) ntg_value_free( range->minimum );
-	if( range->maximum ) ntg_value_free( range->maximum );
+	if( range->minimum ) delete range->minimum;
+	if( range->maximum ) delete range->maximum;
 
 	delete range;
 }
@@ -316,7 +317,7 @@ void ntg_allowed_states_list_free( ntg_allowed_state *allowed_states_list )
 		ntg_allowed_states_list_free( allowed_states_list->next );
 	}
 
-	if( allowed_states_list->value ) ntg_value_free( allowed_states_list->value );
+	if( allowed_states_list->value ) delete allowed_states_list->value;
 
 	delete allowed_states_list;
 }
@@ -339,7 +340,7 @@ void ntg_state_label_list_free( ntg_state_label *state_label_list )
 		ntg_state_label_list_free( state_label_list->next );
 	}
 
-	if( state_label_list->value )	ntg_value_free( state_label_list->value );
+	if( state_label_list->value )	delete state_label_list->value;
 	if( state_label_list->text )	delete[] state_label_list->text;
 
 	delete state_label_list;
@@ -362,7 +363,7 @@ void ntg_state_info_free( ntg_state_info *state_info )
 
 	if( state_info->default_value )
 	{
-		ntg_value_free( state_info->default_value );
+		delete state_info->default_value;
 	}
 
 	if( state_info->scale )
@@ -519,17 +520,17 @@ ntg_error_code ntg_string_converter( const char *input, char **output )
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_boolean_converter( const char *input, bool *output )
+ntg_error_code ntg_boolean_converter( const char *input, bool &output )
 {
 	if( !strcmp( input, NTG_STR_FALSE ) )
 	{
-		*output = false;
+		output = false;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_TRUE ) )
 	{
-		*output = true;
+		output = true;
 		return NTG_NO_ERROR;
 	}
 
@@ -537,30 +538,30 @@ ntg_error_code ntg_boolean_converter( const char *input, bool *output )
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_integer_converter( const char *input, int *output )
+ntg_error_code ntg_integer_converter( const char *input, int &output )
 {
-	*output = atoi( input );
+	output = atoi( input );
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_float_converter( const char *input, float *output )
+ntg_error_code ntg_float_converter( const char *input, float &output )
 {
-	*output = atof( input );
+	output = atof( input );
 	return NTG_NO_ERROR;
 }
 
 
-ntg_error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type *output )
+ntg_error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type &output )
 {
 	if( !strcmp( input, NTG_STR_CONTROL ) )
 	{
-		*output = NTG_CONTROL;
+		output = NTG_CONTROL;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_STREAM ) )
 	{
-		*output = NTG_STREAM;
+		output = NTG_STREAM;
 		return NTG_NO_ERROR;
 	}
 
@@ -568,17 +569,17 @@ ntg_error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_control_type_converter( const char *input, ntg_control_type *output )
+ntg_error_code ntg_control_type_converter( const char *input, ntg_control_type &output )
 {
 	if( !strcmp( input, NTG_STR_STATE ) )
 	{
-		*output = NTG_STATE;
+		output = NTG_STATE;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_BANG ) )
 	{
-		*output = NTG_BANG;
+		output = NTG_BANG;
 		return NTG_NO_ERROR;
 	}
 
@@ -586,23 +587,24 @@ ntg_error_code ntg_control_type_converter( const char *input, ntg_control_type *
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_value_type_converter( const char *input, ntg_value_type *output )
+
+ntg_error_code ntg_type_converter( const char *input, CValue::type &output )
 {
 	if( !strcmp( input, NTG_STR_FLOAT ) )
 	{
-		*output = NTG_FLOAT;
+		output = CValue::FLOAT;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_INTEGER ) )
 	{
-		*output = NTG_INTEGER;
+		output = CValue::INTEGER;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_STRING ) )
 	{
-		*output = NTG_STRING;
+		output = CValue::STRING;
 		return NTG_NO_ERROR;
 	}
 
@@ -610,23 +612,23 @@ ntg_error_code ntg_value_type_converter( const char *input, ntg_value_type *outp
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_scale_type_converter( const char *input, ntg_scale_type *output )
+ntg_error_code ntg_scale_type_converter( const char *input, ntg_scale_type &output )
 {
 	if( !strcmp( input, NTG_STR_LINEAR ) )
 	{
-		*output = NTG_LINEAR;
+		output = NTG_LINEAR;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_EXPONENTIAL ) )
 	{
-		*output = NTG_EXPONENTIAL;
+		output = NTG_EXPONENTIAL;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_DECIBEL ) )
 	{
-		*output = NTG_DECIBEL;
+		output = NTG_DECIBEL;
 		return NTG_NO_ERROR;
 	}
 
@@ -634,11 +636,12 @@ ntg_error_code ntg_scale_type_converter( const char *input, ntg_scale_type *outp
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_stream_type_converter( const char *input, ntg_stream_type *output )
+
+ntg_error_code ntg_stream_type_converter( const char *input, ntg_stream_type &output )
 {
 	if( !strcmp( input, NTG_STR_AUDIO ) )
 	{
-		*output = NTG_AUDIO_STREAM;
+		output = NTG_AUDIO_STREAM;
 		return NTG_NO_ERROR;
 	}
 
@@ -646,17 +649,17 @@ ntg_error_code ntg_stream_type_converter( const char *input, ntg_stream_type *ou
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_stream_direction_converter( const char *input, ntg_stream_direction *output )
+ntg_error_code ntg_stream_direction_converter( const char *input, ntg_stream_direction &output )
 {
 	if( !strcmp( input, NTG_STR_INPUT ) )
 	{
-		*output = NTG_STREAM_INPUT;
+		output = NTG_STREAM_INPUT;
 		return NTG_NO_ERROR;
 	}
 
 	if( !strcmp( input, NTG_STR_OUTPUT ) )
 	{
-		*output = NTG_STREAM_OUTPUT;
+		output = NTG_STREAM_OUTPUT;
 		return NTG_NO_ERROR;
 	}
 
@@ -665,21 +668,23 @@ ntg_error_code ntg_stream_direction_converter( const char *input, ntg_stream_dir
 }
 
 
-ntg_error_code ntg_value_float_converter( const char *input, ntg_value **output )
+ntg_error_code ntg_value_float_converter( const char *input, CValue **output )
 {
-	*output = ntg_value_from_string( NTG_FLOAT, input );
+	*output = new CFloatValue();
+	(*output)->set_from_string( input );
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_value_integer_converter( const char *input, ntg_value **output )
+ntg_error_code ntg_value_integer_converter( const char *input, CValue **output )
 {
-	*output = ntg_value_from_string( NTG_INTEGER, input );
+	*output = new CIntegerValue();
+	(*output)->set_from_string( input );
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_value_string_converter( const char *input, ntg_value **output )
+ntg_error_code ntg_value_string_converter( const char *input, CValue **output )
 {
-	*output = ntg_value_from_string( NTG_STRING, input );
+	*output = new CStringValue( input );
 	return NTG_NO_ERROR;
 }
 
@@ -729,18 +734,18 @@ void ntg_pop_element_name( char *element_path )
 }
 
 
-ntg_value_type ntg_get_range_type( ntg_interface *interface )
+CValue::type ntg_get_range_type( ntg_interface *interface )
 {
-	ntg_value_type type;
+	CValue::type type;
 
 	assert( interface && interface->endpoint_list );
 
 	type = interface->endpoint_list->control_info->state_info->type;
 
-	if( type == NTG_STRING )
+	if( type == CValue::STRING )
 	{
 		/* special case - strings have integer for their range - defines length limits */
-		return NTG_INTEGER;
+		return CValue::INTEGER;
 	}
 	else
 	{
@@ -749,7 +754,7 @@ ntg_value_type ntg_get_range_type( ntg_interface *interface )
 }
 
 
-ntg_value_type ntg_get_state_type( ntg_interface *interface )
+CValue::type ntg_get_state_type( ntg_interface *interface )
 {
 	assert( interface && interface->endpoint_list );
 
@@ -1426,7 +1431,7 @@ bool ntg_endpoint_should_send_to_host( const ntg_endpoint *endpoint )
 }
 
 
-bool ntg_endpoint_should_load_from_ixd( const ntg_endpoint *endpoint, ntg_value_type loaded_type )
+bool ntg_endpoint_should_load_from_ixd( const ntg_endpoint *endpoint, CValue::type loaded_type )
 {
 	/* 
 	Just because a value is in an ixd file, doesn't mean we want to load it.  

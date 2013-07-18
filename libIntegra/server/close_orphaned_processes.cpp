@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "src/platform_specifics.h"
+
 #include "Integra/integra.h"
 #include "src/trace.h"
 

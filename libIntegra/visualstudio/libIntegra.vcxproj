@@ -164,7 +164,6 @@
     <ClCompile Include="..\src\module_manager.cpp" />
     <ClCompile Include="..\src\MurmurHash2.cpp" />
     <ClCompile Include="..\src\node.cpp" />
-    <ClCompile Include="..\src\osc.cpp" />
     <ClCompile Include="..\src\osc_client.cpp" />
     <ClCompile Include="..\src\path.cpp" />
     <ClCompile Include="..\src\platform_specifics.cpp" />
@@ -204,7 +203,6 @@
     <ClInclude Include="..\src\module_manager.h" />
     <ClInclude Include="..\src\MurmurHash2.h" />
     <ClInclude Include="..\src\node.h" />
-    <ClInclude Include="..\src\osc.h" />
     <ClInclude Include="..\src\osc_client.h" />
     <ClInclude Include="..\src\path.h" />
     <ClInclude Include="..\src\platform_specifics.h" />

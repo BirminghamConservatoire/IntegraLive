@@ -167,17 +167,12 @@ static float ntg_lua_get_double(lua_State * L, int argnum)
 
 static int ntg_lua_set( lua_State * L )
 {
-    ntg_value *value = NULL;
 	const ntg_node *node = NULL;
 	const ntg_node_attribute *attribute = NULL;
-	ntg_value *converted_value = NULL;
 	ntg_command_status set_result;
 	int num_arguments;
-	int i;
-    float value_f;
 	CPath path, node_path;
 	string attribute_name;
-    const char *value_s;
 
 	assert( context_stack && context_stack->parent_path );
 
@@ -185,11 +180,11 @@ static int ntg_lua_set( lua_State * L )
 	if( num_arguments < 2 )
 	{
 		ntg_lua_error_handler( "Insufficient arguments passed to ntg_lua_set" );
-		goto CLEANUP;
+		return 0;
 	}
 
     path = *context_stack->parent_path;
-    for( i = 1; i <= num_arguments - 1; i++) 
+    for( int i = 1; i <= num_arguments - 1; i++) 
 	{
         path.append_element( ntg_lua_get_string( L, i ) );
     }
@@ -201,59 +196,58 @@ static int ntg_lua_set( lua_State * L )
 	if( !node )
 	{
 		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
-		goto CLEANUP;
+		return 0;
 	}
 
 	attribute = ntg_find_attribute( node, attribute_name.c_str() );
 	if( !attribute )
 	{
 		ntg_lua_error_handler( "Can't find endpoint: %s", path.get_string().c_str() );
-		goto CLEANUP;
+		return 0;
 	}
 
 	if( attribute->endpoint->type != NTG_CONTROL )
 	{
 		ntg_lua_error_handler( "Endpoint is not a control: %s", path.get_string().c_str() );
-		goto CLEANUP;
+		return 0;
 	}
 
 	if( !attribute->endpoint->control_info->can_be_target )
 	{
 		ntg_lua_error_handler( "Endpoint is not a legal script target: %s", path.get_string().c_str() );
-		goto CLEANUP;
+		return 0;
 	}
 
 	if( attribute->value )
 	{	
-		char value_string[ NTG_LONG_STRLEN ];
-
 		assert( attribute->endpoint->control_info->type == NTG_STATE );
+
+		CValue *new_value( NULL );
 
 		switch( lua_type( L, num_arguments ) ) 
 		{
 			case LUA_TNUMBER:
-				value_f = ntg_lua_get_float(L, num_arguments);
-				value = ntg_value_new( NTG_FLOAT, &value_f );
+				new_value = new CFloatValue( ntg_lua_get_float( L, num_arguments ) );
 				break;
 
 			case LUA_TSTRING:
-				value_s = ntg_lua_get_string(L, num_arguments);
-				value = ntg_value_new(NTG_STRING, value_s);
+				new_value = new CStringValue( ntg_lua_get_string( L, num_arguments ) );
 				break;
 
 			default:
 				ntg_lua_error_handler( "%s received illegal value (\"%s\")\n", path.get_string().c_str(), lua_typename( L, lua_type( L, num_arguments ) ) );
-				goto CLEANUP;
+				return 0;
 		}
 
-		converted_value = ntg_value_change_type( value, attribute->value->type );
+		assert( new_value );
+		CValue *converted_value = new_value->transmogrify( attribute->endpoint->control_info->state_info->type );
 
-		ntg_value_sprintf( value_string, NTG_LONG_STRLEN, converted_value );
-		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path.get_string().c_str(), value_string );
+		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
 		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, converted_value );
 
-		ntg_value_free(converted_value);
+		delete new_value;
+		delete converted_value;
 	}
 	else
 	{
@@ -268,22 +262,16 @@ static int ntg_lua_set( lua_State * L )
 		ntg_lua_error_handler( "%s", ntg_error_text( set_result.error_code ) );
 	}
 
-	CLEANUP:
-
-	if( value ) ntg_value_free(value);
-
     return 0;
 }
 
 
 static int ntg_lua_get(lua_State * L)
 {
-    const ntg_value *value = NULL;
 	const ntg_node *node = NULL;
 	const ntg_node_attribute *attribute = NULL;
     int i;
     int num_arguments = 0;
-	char value_string[ NTG_LONG_STRLEN ];
 
 	assert( context_stack && context_stack->parent_path );
 
@@ -330,32 +318,30 @@ static int ntg_lua_get(lua_State * L)
 		return 0;
 	}
 
-    value = ntg_get_( server_, path );
-
+    const CValue *value = ntg_get_( server_, path );
     if( !value ) 
 	{
 		ntg_lua_error_handler( "Can't read attribute value at %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	ntg_value_sprintf( value_string, NTG_LONG_STRLEN, value );
-	ntg_lua_output_handler( NTG_GET_COLOR, "Queried %s, value = %s", node_path.get_string().c_str(), value_string );
+	string value_string = value->get_as_string();
+	ntg_lua_output_handler( NTG_GET_COLOR, "Queried %s, value = %s", node_path.get_string().c_str(), value_string.c_str() );
 
-	switch (ntg_value_get_type(value)) 
+	switch( value->get_type() ) 
 	{
-        case NTG_INTEGER:
-            lua_pushnumber(L, (lua_Number) ntg_value_get_int( value ) );
+		case CValue::INTEGER:
+            lua_pushnumber( L, (lua_Number) ( int ) *value );
             break;
-        case NTG_FLOAT:
-            lua_pushnumber(L, (lua_Number) ntg_value_get_float( value ) );
+        case CValue::FLOAT:
+            lua_pushnumber( L, (lua_Number) ( float ) *value );
             break;
-        case NTG_STRING:
-            lua_pushstring(L, ntg_value_get_string( value ) );
+        case CValue::STRING:
+            lua_pushstring( L, ( ( const string & ) *value ).c_str() );
             break;
         default:
-            ntg_lua_error_handler( "Internal error. ntg_get_()->type has unknown value: %d", ntg_value_get_type( value ) );
+            ntg_lua_error_handler( "Internal error. attribute value of unknown type" );
 			return 0;
-            break;
     }
 
     return 1;

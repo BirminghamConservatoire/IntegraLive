@@ -65,7 +65,7 @@ ntg_error_code ntg_osc_client_send_delete(ntg_osc_client *client,
 ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
         ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &path,
-        const ntg_value *value);
+        const ntg_api::CValue *value);
 
 ntg_error_code ntg_osc_client_send_move(ntg_osc_client *client,
         ntg_internal::ntg_command_source cmd_source,

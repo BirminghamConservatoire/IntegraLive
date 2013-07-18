@@ -61,7 +61,7 @@ bool ntg_should_send_set_to_host( const ntg_server *server, const ntg_node_attri
 			break;		
 	}
 
-	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( attribute->value, cmd_source ) )
+	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( *attribute->value, cmd_source ) )
 	{
 		return false;
 	}
@@ -99,10 +99,7 @@ bool ntg_should_send_to_client( ntg_command_source cmd_source )
 
 
 
-ntg_command_status ntg_set_(ntg_server *server,
-        ntg_command_source cmd_source,
-        const CPath &path,
-        const ntg_value *value)
+ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, const CPath &path, const CValue *value )
 {
     ntg_node *node = NULL;
     ntg_node *root = NULL;
@@ -111,7 +108,6 @@ ntg_command_status ntg_set_(ntg_server *server,
     ntg_node_attribute *attribute;
     string attribute_name;
     ntg_bridge_interface *bridge = NULL;
-	ntg_value *previous_value = NULL;
 
     assert(server != NULL);
 
@@ -162,10 +158,10 @@ ntg_command_status ntg_set_(ntg_server *server,
 					}
 
 					/* test that new value is of correct type */
-					if( value->type != attribute->endpoint->control_info->state_info->type )
+					if( value->get_type() != attribute->endpoint->control_info->state_info->type )
 					{
 						/* we allow passing integers to float attributes and vice-versa, but no other mismatched types */
-						if( ( value->type != NTG_INTEGER && value->type != NTG_FLOAT ) || ( attribute->endpoint->control_info->state_info->type != NTG_INTEGER && attribute->endpoint->control_info->state_info->type != NTG_FLOAT ) )
+						if( ( value->get_type() != CValue::INTEGER && value->get_type() != CValue::FLOAT ) || ( attribute->endpoint->control_info->state_info->type != CValue::INTEGER && attribute->endpoint->control_info->state_info->type != CValue::FLOAT ) )
 						{
 							NTG_TRACE_ERROR_WITH_STRING( "called set with incorrect value type", path.get_string().c_str() );
 							NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
@@ -201,7 +197,7 @@ ntg_command_status ntg_set_(ntg_server *server,
     /* test constraint */
 	if( value )
 	{
-		if( !ntg_node_attribute_test_constraint( attribute, value ) )
+		if( !ntg_node_attribute_test_constraint( attribute, *value ) )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "attempting to set value which doesn't conform to constraint - aborting set command", path.get_string().c_str() );
 			NTG_RETURN_ERROR_CODE( NTG_CONSTRAINT_ERROR );
@@ -215,23 +211,26 @@ ntg_command_status ntg_set_(ntg_server *server,
 		NTG_RETURN_ERROR_CODE( NTG_REENTRANCE_ERROR );
 	}
 
+	CValue *previous_value( NULL );
 	if( attribute->value )
 	{
-		previous_value = ntg_value_duplicate( attribute->value );
+		previous_value = attribute->value->clone();
 	}
 
     /* set the attribute value */
 	if( value )
 	{
-		ntg_node_attribute_set_value( attribute, value );
+		assert( attribute->value );
+		value->convert( *attribute->value );
 	}
+
 
     /* handle any system class logic */
 	ntg_system_class_handle_set( server, attribute, previous_value, cmd_source );
 
 	if( previous_value )
 	{
-		ntg_value_free( previous_value );
+		delete previous_value;
 	}
 
     /* send the attribute value to the host if needed */
@@ -268,7 +267,6 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
     ntg_node *root						= NULL;
     ntg_node *parent					= NULL;
     ntg_node *node						= NULL;
-    ntg_value *value					= NULL;
 	char *implementation_path			= NULL;
 
     bridge = server->bridge;
@@ -355,10 +353,7 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
         node_attribute = ntg_node_attribute_find_by_name( node, endpoint->name );
         assert( node_attribute );
 
-		value = ntg_value_duplicate( endpoint->control_info->state_info->default_value );
-		ntg_set_( server_, NTG_SOURCE_INITIALIZATION, node_attribute->path, value );
-	    ntg_value_free(value);
-
+		ntg_set_( server_, NTG_SOURCE_INITIALIZATION, node_attribute->path, endpoint->control_info->state_info->default_value );
 	}
 
     /* handle any system class logic */
@@ -687,7 +682,7 @@ ntg_command_status ntg_load_(ntg_server * server, ntg_command_source cmd_source,
 }
 
 
-ntg_value *ntg_get_(ntg_server *server, const CPath &path )
+const CValue *ntg_get_(ntg_server *server, const CPath &path )
 {
     ntg_node_attribute *node_attribute = NULL;
     ntg_node *node = NULL;
@@ -713,8 +708,13 @@ ntg_value *ntg_get_(ntg_server *server, const CPath &path )
         return NULL;
     }
 
-    return ntg_value_duplicate( node_attribute->value );
+	if( !node_attribute->value )
+	{
+		assert( node_attribute->endpoint->type == NTG_STREAM || node_attribute->endpoint->control_info->type == NTG_BANG );
+		return NULL;
+	}
 
+    return node_attribute->value;
 }
 
 

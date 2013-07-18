@@ -88,11 +88,7 @@ ntg_error_code ntg_string_to_guid( const char *string, GUID *output );
 char *ntg_date_to_string( const struct tm *date );
 
 /* converts string to date/time.  expects string in ISO 8601 form eg 2012-07-20T14:42 */
-ntg_error_code ntg_string_to_date( const char *input, struct tm *output );
-
-
-/* calculate levenshtein distance between two strings.  */
-int ntg_levenshtein_distance( const char *string1, const char *string2 );
+ntg_error_code ntg_string_to_date( const char *input, struct tm &output );
 
 
 /* does the node name consist entirely of valid characters? */

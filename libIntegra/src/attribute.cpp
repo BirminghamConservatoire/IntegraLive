@@ -33,7 +33,7 @@
 #include "helper.h"
 #include "interface.h"
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 ntg_node_attribute *ntg_node_attribute_new(void)
@@ -52,7 +52,7 @@ ntg_error_code ntg_node_attribute_free(ntg_node_attribute *node_attribute)
 
 	if( node_attribute->value )
 	{
-		ntg_value_free( node_attribute->value );
+		delete node_attribute->value;
 	}
 
     delete node_attribute;
@@ -64,36 +64,37 @@ ntg_error_code ntg_node_attribute_free(ntg_node_attribute *node_attribute)
 ntg_node_attribute *ntg_node_attribute_insert_in_list(	ntg_node_attribute *attribute_list,
 											const ntg_endpoint *endpoint,
 											const CPath &path,
-											const ntg_value * value)
+											const CValue *value)
 {
-    ntg_node_attribute *new_node;
+    ntg_node_attribute *new_node_attribute;
 	ntg_node_attribute *attribute_iterator;
 
 	assert( endpoint );
 
-    new_node = ntg_node_attribute_new();
-	new_node->endpoint = endpoint;
+    new_node_attribute = ntg_node_attribute_new();
+	new_node_attribute->endpoint = endpoint;
+
 	if( value )
 	{
-		new_node->value = ntg_value_duplicate(value);
+		new_node_attribute->value = value->clone();
 	}
 
-    new_node->path = path;
+    new_node_attribute->path = path;
 
 	/* find correct insertion position in attribute list */
 
 	if( !attribute_list || endpoint->endpoint_index < attribute_list->endpoint->endpoint_index )
 	{
-		new_node->next = attribute_list;
-		return new_node;
+		new_node_attribute->next = attribute_list;
+		return new_node_attribute;
 	}
     
 	for( attribute_iterator = attribute_list; attribute_iterator; attribute_iterator = attribute_iterator->next )
 	{
 		if( !attribute_iterator->next || endpoint->endpoint_index < attribute_iterator->next->endpoint->endpoint_index )
 		{
-			new_node->next = attribute_iterator->next;
-			attribute_iterator->next = new_node;
+			new_node_attribute->next = attribute_iterator->next;
+			attribute_iterator->next = new_node_attribute;
 			return attribute_list;
 		}
 	}
@@ -103,80 +104,67 @@ ntg_node_attribute *ntg_node_attribute_insert_in_list(	ntg_node_attribute *attri
 }
 
 
-void ntg_node_attribute_set_value(ntg_node_attribute * attribute,
-                                  const ntg_value * value)
+bool ntg_node_attribute_test_constraint( const ntg_node_attribute *attribute, const CValue &value )
 {
+	assert( attribute );
 
-    assert(attribute->value);
-    assert(value);
-
-    ntg_value_copy(attribute->value, value);
-
-}
-
-
-bool ntg_node_attribute_test_constraint( const ntg_node_attribute *attribute, const ntg_value *value )
-{
-	const ntg_endpoint *endpoint;
-	const ntg_constraint *constraint;
-	const ntg_range *range;
-	const ntg_allowed_state *allowed_state;
-
-	int string_length;
-	int int_value;
-	float float_value;
-
-	assert( attribute && value );
-
-	if( value->type != attribute->value->type )
-	{
-		bool test_result;
-		ntg_value *fixed_type = ntg_value_change_type( value, attribute->value->type );
-
-		test_result = ntg_node_attribute_test_constraint( attribute, fixed_type );
-		ntg_value_free( fixed_type );
-		return test_result;
-	}
-
-	endpoint = attribute->endpoint;
+	const ntg_endpoint *endpoint = attribute->endpoint;
 	if( !endpoint->control_info || !endpoint->control_info->state_info )
 	{
 		return false;
 	}
 
-	constraint = &endpoint->control_info->state_info->constraint;
+	CValue::type endpoint_type = endpoint->control_info->state_info->type;
 
-	range = constraint->range;
+	if( value.get_type() != endpoint_type )
+	{
+		CValue *fixed_type = value.transmogrify( endpoint_type );
+
+		bool test_result = ntg_node_attribute_test_constraint( attribute, *fixed_type );
+		delete fixed_type;
+		return test_result;
+	}
+
+	const ntg_constraint *constraint = &endpoint->control_info->state_info->constraint;
+
+	const ntg_range *range = constraint->range;
 	if( range )
 	{
-		switch( value->type )
+		switch( value.get_type() )
 		{
-			case NTG_STRING:
-				/* for strings, range constraint defines min/max length */
-				string_length = strlen( ntg_value_get_string( value ) );
+			case CValue::STRING:
+				{
+					/* for strings, range constraint defines min/max length */
+					const string &string_value = value;
+					int string_length = string_value.length();
 			
-				if( string_length < ntg_value_get_int( range->minimum ) ) return false;
-				if( string_length > ntg_value_get_int( range->maximum ) ) return false;
+					if( string_length < ( int ) *range->minimum ) return false;
+					if( string_length > ( int ) *range->maximum ) return false;
 
-				return true;
+					return true;
+				}
 
-			case NTG_INTEGER:
-				/* for integers, range constraint defines min/max value */
-				int_value = ntg_value_get_int( value );
+			case CValue::INTEGER:
+				{
+					/* for integers, range constraint defines min/max value */
+					int int_value = value;
 
-				if( int_value < ntg_value_get_int( range->minimum ) ) return false;
-				if( int_value > ntg_value_get_int( range->maximum ) ) return false;
+					if( int_value < ( int ) *range->minimum ) return false;
+					if( int_value > ( int ) *range->maximum ) return false;
 
-				return true;
+					return true;
+				}
 
-			case NTG_FLOAT:
-				/* for floats, range constraint defines min/max value */
-				float_value = ntg_value_get_float( value );
+			case CValue::FLOAT:
+				{
+					/* for floats, range constraint defines min/max value */
+					float float_value = value;
 
-				if( float_value < ntg_value_get_float( range->minimum ) ) return false;
-				if( float_value > ntg_value_get_float( range->maximum ) ) return false;
+					if( float_value < ( float ) *range->minimum ) return false;
+					if( float_value > ( float ) *range->maximum ) return false;
 
-				return true;
+					return true;
+				}
 
 			default:
 				NTG_TRACE_ERROR( "unhandled value type" );
@@ -185,9 +173,10 @@ bool ntg_node_attribute_test_constraint( const ntg_node_attribute *attribute, co
 	}
 	else	/* allowed value constraint */
 	{
+		const ntg_allowed_state *allowed_state;
 		for( allowed_state = constraint->allowed_states; allowed_state; allowed_state = allowed_state->next )
 		{
-			if( ntg_value_compare( value, allowed_state->value ) == NTG_NO_ERROR )
+			if( value.is_equal( *allowed_state->value ) ) 
 			{
 				return true;
 			}
@@ -195,14 +184,6 @@ bool ntg_node_attribute_test_constraint( const ntg_node_attribute *attribute, co
 
 		return false;	//not found
 	}
-}
-
-
-const ntg_value *ntg_node_attribute_get_value( const ntg_node_attribute *attribute)
-{
-
-    return attribute->value;
-
 }
 
 

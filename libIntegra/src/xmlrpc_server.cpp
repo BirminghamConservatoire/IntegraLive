@@ -471,15 +471,15 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 
 				switch( state_info->type )
 				{
-					case NTG_INTEGER:
+					case CValue::INTEGER:
 						xmlrpc_temp = xmlrpc_string_new(env, "integer" );
 						break;
 
-					case NTG_FLOAT:
+					case CValue::FLOAT:
 						xmlrpc_temp = xmlrpc_string_new(env, "float" );
 						break;
 
-					case NTG_STRING:
+					case CValue::STRING:
 						xmlrpc_temp = xmlrpc_string_new(env, "string" );
 						break;
 
@@ -497,11 +497,11 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 				{
 					xmlrpc_range = xmlrpc_struct_new( env );
 
-					xmlrpc_temp = ntg_xmlrpc_value_new( state_info->constraint.range->minimum, env );
+					xmlrpc_temp = ntg_xmlrpc_value_new( *state_info->constraint.range->minimum, env );
 					xmlrpc_struct_set_value( env, xmlrpc_range, "minimum", xmlrpc_temp);
 					xmlrpc_DECREF(xmlrpc_temp);
 
-					xmlrpc_temp = ntg_xmlrpc_value_new( state_info->constraint.range->maximum, env );
+					xmlrpc_temp = ntg_xmlrpc_value_new( *state_info->constraint.range->maximum, env );
 					xmlrpc_struct_set_value( env, xmlrpc_range, "maximum", xmlrpc_temp);
 					xmlrpc_DECREF(xmlrpc_temp);
 
@@ -515,7 +515,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 
 					for( allowed_state = state_info->constraint.allowed_states; allowed_state; allowed_state = allowed_state->next )
 					{
-						xmlrpc_temp = ntg_xmlrpc_value_new( allowed_state->value, env );
+						xmlrpc_temp = ntg_xmlrpc_value_new( *allowed_state->value, env );
 						xmlrpc_array_append_item( env, xmlrpc_allowed_states, xmlrpc_temp );
 						xmlrpc_DECREF(xmlrpc_temp);
 					}
@@ -527,21 +527,16 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 				xmlrpc_struct_set_value(env, xmlrpc_state_info, "constraint", xmlrpc_constraint );
 				xmlrpc_DECREF(xmlrpc_constraint);
 
-				if( !state_info->default_value || state_info->default_value->type != state_info->type )
+				if( !state_info->default_value || state_info->default_value->get_type() != state_info->type )
 				{
-					ntg_value *morph;
-					morph = ntg_value_new( state_info->type, NULL );
-					
 					NTG_TRACE_ERROR_WITH_STRING( "default value missing or of incorrect type", endpoint->name );
-					xmlrpc_temp = ntg_xmlrpc_value_new( morph, env );
-					ntg_value_free( morph );
 				}
 				else
 				{
-					xmlrpc_temp = ntg_xmlrpc_value_new( state_info->default_value, env );
+					xmlrpc_temp = ntg_xmlrpc_value_new( *state_info->default_value, env );
+					xmlrpc_struct_set_value( env, xmlrpc_state_info, "defaultvalue", xmlrpc_temp );
+					xmlrpc_DECREF(xmlrpc_temp);
 				}
-				xmlrpc_struct_set_value( env, xmlrpc_state_info, "defaultvalue", xmlrpc_temp );
-				xmlrpc_DECREF(xmlrpc_temp);
 
 				if( state_info->scale )
 				{
@@ -586,7 +581,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 				{
 					xmlrpc_state_label = xmlrpc_struct_new( env );
 
-					xmlrpc_temp = ntg_xmlrpc_value_new( state_label->value, env );
+					xmlrpc_temp = ntg_xmlrpc_value_new( *state_label->value, env );
 					xmlrpc_struct_set_value( env, xmlrpc_state_label, "value", xmlrpc_temp );
 					xmlrpc_DECREF(xmlrpc_temp);
 
@@ -1469,12 +1464,12 @@ static xmlrpc_value *ntg_xmlrpc_set_callback(ntg_server * server, const int argc
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL;
     CPath *path;
-    ntg_value *value = NULL;
+    CValue *value = NULL;
     xmlrpc_value *value_xmlrpc = NULL, *xmlrpc_temp = NULL, *xmlrpc_path;
 
     env = va_arg(argv, xmlrpc_env *);
     path = va_arg(argv, CPath *);
-	value = va_arg(argv, ntg_value *);
+	value = va_arg(argv, CValue *);
 
     struct_ = xmlrpc_struct_new(env);
 
@@ -1501,7 +1496,7 @@ static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL;
     CPath *path;
-    ntg_value *value = NULL;
+    const CValue *value = NULL;
     xmlrpc_value *value_xmlrpc = NULL, *xmlrpc_temp = NULL, *xmlrpc_path;
 
     env = va_arg(argv, xmlrpc_env *);
@@ -1515,29 +1510,11 @@ static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc
 
 	if( value )
 	{
-		switch (value->type) 
-		{
-			case NTG_STRING:
-				if (value->ctype.s) {
-					value_xmlrpc = xmlrpc_string_new(env, value->ctype.s);
-				} else {
-					value_xmlrpc = xmlrpc_string_new(env, "");
-				}
-				break;
-			case NTG_FLOAT:
-				value_xmlrpc = xmlrpc_double_new(env, (double)value->ctype.f);
-				break;
-			case NTG_INTEGER:
-				value_xmlrpc = xmlrpc_int_new(env, value->ctype.i);
-				break;
-			default:
-				value_xmlrpc = xmlrpc_nil_new(env);
-				NTG_TRACE_ERROR_WITH_INT("value set to nil due to unexpected value type", value->type);
-		}
+		value_xmlrpc = ntg_xmlrpc_value_new( *value, env );
 	}
 	else
 	{
-		value_xmlrpc = xmlrpc_nil_new(env);
+		value_xmlrpc = xmlrpc_nil_new( env );
 	}
  
     xmlrpc_temp = xmlrpc_string_new(env, "query.get");
@@ -1550,12 +1527,6 @@ static xmlrpc_value *ntg_xmlrpc_get_callback(ntg_server * server, const int argc
 
     xmlrpc_struct_set_value(env, struct_, "value", value_xmlrpc);
     xmlrpc_DECREF(value_xmlrpc);
-
-    /* free out-of-place memory */
-	if( value )
-	{
-		ntg_value_free(value);
-	}
 
     return struct_;
 }
@@ -1889,7 +1860,7 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 {
     xmlrpc_value *xmlrpc_value_, *xmlrpc_path;
     xmlrpc_value *xmlrpc_rv;
-    ntg_value *value;
+    CValue *value;
 	int number_of_elements;
 
     NTG_TRACE_VERBOSE("");
@@ -1905,7 +1876,7 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 
 		case 2:
 			xmlrpc_decompose_value(env, paramArrayP, "(AV)", &xmlrpc_path, &xmlrpc_value_ );
-		    value = ntg_xmlrpc_get_value(env, xmlrpc_value_);
+		    value = ntg_xmlrpc_get_value( env, xmlrpc_value_ );
 			break;
 
 		default:
@@ -1917,10 +1888,7 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 
 	xmlrpc_rv = ntg_server_do_va( &ntg_xmlrpc_set_callback, 3, (void *)env, &path, value );
 
-	if( value )
-	{
-		ntg_value_free( value );
-	}
+	delete value;
 
     return xmlrpc_rv;
 }

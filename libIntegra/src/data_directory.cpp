@@ -51,7 +51,7 @@
 #define NTG_NODE_DIRECTORY "node_data"
 
 
-using ntg_api::CPath;
+using namespace ntg_api;
 
 
 char *ntg_make_up_node_data_directory_name( const ntg_node *node, const ntg_server *server )
@@ -125,7 +125,6 @@ const char *ntg_get_relative_node_path( const ntg_node *node, const ntg_node *ro
 
 void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *node, const ntg_node *path_root )
 {
-	const char *data_directory_name;
 	const char *relative_node_path;
 	char *target_path;
 	const ntg_node *child_node;
@@ -141,10 +140,10 @@ void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *no
 			target_path = new char[ strlen( NTG_NODE_DIRECTORY ) + strlen( NTG_PATH_SEPARATOR ) + strlen( relative_node_path ) + 1 ];
 			sprintf( target_path, "%s%s%s", NTG_NODE_DIRECTORY, NTG_PATH_SEPARATOR, relative_node_path );
 			
-			data_directory_name = ntg_node_get_data_directory( node );
+			const string *data_directory_name = ntg_node_get_data_directory( node );
 			if( data_directory_name )
 			{
-				ntg_copy_directory_contents_to_zip( zip_file, target_path, data_directory_name );
+				ntg_copy_directory_contents_to_zip( zip_file, target_path, data_directory_name->c_str() );
 			}
 			else
 			{
@@ -176,7 +175,6 @@ void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *no
 
 void ntg_extract_to_data_directory( unzFile unzip_file, unz_file_info *file_info, const ntg_node *node, const char *relative_file_path )
 {
-	const char *data_directory;
 	char *target_path;
 	FILE *output_file;
 	unsigned char *output_buffer;
@@ -184,13 +182,13 @@ void ntg_extract_to_data_directory( unzFile unzip_file, unz_file_info *file_info
 
 	assert( unzip_file && file_info && node && relative_file_path );
 
-	data_directory = ntg_node_get_data_directory( node );
+	const string *data_directory = ntg_node_get_data_directory( node );
 	assert( data_directory );
 
-	ntg_construct_subdirectories( data_directory, relative_file_path );
+	ntg_construct_subdirectories( data_directory->c_str(), relative_file_path );
 
-	target_path = new char[ strlen( data_directory ) + strlen( relative_file_path ) + 1 ];
-	sprintf( target_path, "%s%s", data_directory, relative_file_path );
+	target_path = new char[ data_directory->length() + strlen( relative_file_path ) + 1 ];
+	sprintf( target_path, "%s%s", data_directory->c_str(), relative_file_path );
 
 	output_file = fopen( target_path, "wb" );
 	if( !output_file )
@@ -402,34 +400,27 @@ const char *ntg_extract_filename_from_path( const char *path )
 
 const char *ntg_copy_file_to_data_directory( const ntg_node_attribute *attribute )
 {
-	const char *data_directory = NULL;
-	const char *input_path = NULL;
-	const char *copied_file = NULL;
-	char *output_filename = NULL;
-	
 	assert( attribute );
 
-	data_directory = ntg_node_get_data_directory( attribute->node );
+	const string *data_directory = ntg_node_get_data_directory( attribute->node );
 	if( !data_directory )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", attribute->node->name );
 		return NULL;
 	}
 
-	input_path = ntg_value_get_string( attribute->value );
-	copied_file = ntg_extract_filename_from_path( input_path );
+	const string &input_path = *attribute->value;
+	const char *copied_file = ntg_extract_filename_from_path( input_path.c_str() );
 	if( !copied_file )
 	{
-		NTG_TRACE_ERROR_WITH_STRING( "can't extract filename from path", input_path );
+		NTG_TRACE_ERROR_WITH_STRING( "can't extract filename from path", input_path.c_str() );
 		return NULL;
 	}
 
-	output_filename = ntg_strdup( data_directory );
-	output_filename = ntg_string_append( output_filename, copied_file );
+	string output_filename( *data_directory );
+	output_filename += copied_file;
 
-	ntg_copy_file( input_path, output_filename );
-
-	delete[] output_filename;
+	ntg_copy_file( input_path.c_str(), output_filename.c_str() );
 
 	return copied_file;
 }

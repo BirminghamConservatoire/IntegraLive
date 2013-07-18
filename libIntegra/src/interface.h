@@ -35,6 +35,7 @@
 
 #include "Integra/integra.h"
 #include "common_typedefs.h"
+#include "value.h"
 
 #ifndef NTG_ENDPOINT_TYPEDEF
 typedef struct ntg_endpoint_ ntg_endpoint;
@@ -181,9 +182,9 @@ struct ntg_constraint_
 
 struct ntg_state_info_
 {
-	ntg_value_type type;
+	ntg_api::CValue::type type;
 	ntg_constraint constraint;
-	ntg_value *default_value;
+	ntg_api::CValue *default_value;
 	ntg_scale *scale;
 	ntg_state_label *state_labels;
 	bool is_saved_to_file;
@@ -192,13 +193,13 @@ struct ntg_state_info_
 
 struct ntg_range_
 {
-	ntg_value *minimum;
-	ntg_value *maximum;
+	ntg_api::CValue *minimum;
+	ntg_api::CValue *maximum;
 };
 
 struct ntg_allowed_state_
 {
-	ntg_value *value;
+	ntg_api::CValue *value;
 	
 	ntg_allowed_state *next;
 };
@@ -211,7 +212,7 @@ struct ntg_scale_
 
 struct ntg_state_label_
 {
-	ntg_value *value;
+	ntg_api::CValue *value;
 	char *text;
 
 	ntg_state_label *next;
@@ -268,7 +269,7 @@ bool ntg_interface_should_embed_module( const ntg_interface *interface );
 
 bool ntg_endpoint_should_send_to_host( const ntg_endpoint *endpoint );
 bool ntg_endpoint_is_input_file( const ntg_endpoint *endpoint );
-bool ntg_endpoint_should_load_from_ixd( const ntg_endpoint *endpoint, ntg_value_type loaded_type );
+bool ntg_endpoint_should_load_from_ixd( const ntg_endpoint *endpoint, ntg_api::CValue::type loaded_type );
 bool ntg_endpoint_is_audio_stream( const ntg_endpoint *endpoint );
 
 

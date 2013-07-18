@@ -25,6 +25,11 @@
 
 #include <Integra/integra.h>
 
+namespace ntg_api
+{
+	class CValue;
+}
+
 #ifdef _WIN32
 	#ifdef INTEGRA_BRIDGE_EXPORTS	
 		#define INTEGRA_BRIDGE_API __declspec(dllexport)
@@ -123,7 +128,7 @@ typedef struct ntg_bridge_interface_
      *
      * */
     void (*server_receive_callback)(ntg_id id, const char *attribute_name, 
-            const ntg_value *value);
+            const ntg_api::CValue *value);
 
 } ntg_bridge_interface;
 

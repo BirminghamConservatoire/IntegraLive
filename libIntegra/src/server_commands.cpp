@@ -28,7 +28,6 @@
 #include "globals.h"
 #include "server.h"
 #include "path.h"
-#include "memory.h"
 #include "osc_client.h"
 #include "system_class_handlers.h"
 #include "reentrance_checker.h"
@@ -44,11 +43,8 @@ using namespace ntg_internal;
 
 
 
-bool ntg_should_send_set_to_host( const ntg_server *server, const ntg_node_attribute *attribute, const ntg_interface *interface, ntg_command_source cmd_source )
+bool ntg_should_send_set_to_host( const CNodeEndpoint &endpoint, const ntg_interface &interface, ntg_command_source cmd_source )
 {
-    assert( attribute );
-	assert( interface );
-
 	switch( cmd_source )
 	{
 		case NTG_SOURCE_HOST:
@@ -61,17 +57,17 @@ bool ntg_should_send_set_to_host( const ntg_server *server, const ntg_node_attri
 			break;		
 	}
 
-	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( *attribute->value, cmd_source ) )
+	if( ntg_endpoint_is_input_file( endpoint.get_endpoint() ) && ntg_should_copy_input_file( *endpoint.get_value(), cmd_source ) )
 	{
 		return false;
 	}
 
-	if( !ntg_interface_has_implementation( interface ) )
+	if( !ntg_interface_has_implementation( &interface ) )
 	{
 		return false;
 	}
 
-	if( !ntg_endpoint_should_send_to_host( attribute->endpoint ) )
+	if( !ntg_endpoint_should_send_to_host( endpoint.get_endpoint() ) )
 	{
 		return false;
 	}
@@ -101,54 +97,37 @@ bool ntg_should_send_to_client( ntg_command_source cmd_source )
 
 ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, const CPath &path, const CValue *value )
 {
-    ntg_node *node = NULL;
-    ntg_node *root = NULL;
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
-    ntg_node_attribute *attribute;
-    string attribute_name;
-    ntg_bridge_interface *bridge = NULL;
 
-    assert(server != NULL);
+    assert( server );
 
     NTG_COMMAND_STATUS_INIT;
 
-    bridge = server->bridge;
-
 	/* get node from path */
-    root       = ntg_server_get_root(server);
-
 	if( path.get_number_of_elements() <= 1) 
 	{
 		NTG_TRACE_ERROR_WITH_STRING("attribute has too few elements", path.get_string().c_str() );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-    CPath my_path( path );
-	attribute_name = my_path.pop_element();
-    node = ntg_node_find_by_path(my_path, root);
-
-    if (node == NULL) 
+	CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( path.get_string() );
+    if( node_endpoint == NULL) 
 	{
-		NTG_TRACE_ERROR_WITH_STRING("node not found; set request ignored",my_path.get_string().c_str() );
+        NTG_TRACE_ERROR_WITH_STRING( "endpoint not found", path.get_string().c_str() );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-	attribute = ntg_node_attribute_find_by_name( node, attribute_name.c_str() );
-    if (attribute == NULL) 
-	{
-        NTG_TRACE_ERROR_WITH_STRING("attribute not found", attribute_name.c_str() );
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
+	const ntg_endpoint *endpoint = node_endpoint->get_endpoint();
 
-	switch( attribute->endpoint->type )
+	switch( endpoint->type )
 	{
 		case NTG_STREAM:
 			NTG_TRACE_ERROR_WITH_STRING( "can't call set for a stream attribute!", path.get_string().c_str() );
 			NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
 
 		case NTG_CONTROL:
-			switch( attribute->endpoint->control_info->type )
+			switch( endpoint->control_info->type )
 			{
 				case NTG_STATE:
 					if( !value )
@@ -158,10 +137,10 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 					}
 
 					/* test that new value is of correct type */
-					if( value->get_type() != attribute->endpoint->control_info->state_info->type )
+					if( value->get_type() != endpoint->control_info->state_info->type )
 					{
 						/* we allow passing integers to float attributes and vice-versa, but no other mismatched types */
-						if( ( value->get_type() != CValue::INTEGER && value->get_type() != CValue::FLOAT ) || ( attribute->endpoint->control_info->state_info->type != CValue::INTEGER && attribute->endpoint->control_info->state_info->type != CValue::FLOAT ) )
+						if( ( value->get_type() != CValue::INTEGER && value->get_type() != CValue::FLOAT ) || ( endpoint->control_info->state_info->type != CValue::INTEGER && endpoint->control_info->state_info->type != CValue::FLOAT ) )
 						{
 							NTG_TRACE_ERROR_WITH_STRING( "called set with incorrect value type", path.get_string().c_str() );
 							NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
@@ -189,7 +168,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 			break;
 	}
 
-	if( cmd_source == NTG_SOURCE_HOST && !ntg_node_is_active( node ) )
+	if( cmd_source == NTG_SOURCE_HOST && !ntg_node_is_active( node_endpoint->get_node() ) )
 	{
 		return command_status;
 	}
@@ -197,7 +176,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
     /* test constraint */
 	if( value )
 	{
-		if( !ntg_node_attribute_test_constraint( attribute, *value ) )
+		if( !node_endpoint->test_constraint( *value ) )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "attempting to set value which doesn't conform to constraint - aborting set command", path.get_string().c_str() );
 			NTG_RETURN_ERROR_CODE( NTG_CONSTRAINT_ERROR );
@@ -205,28 +184,28 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
 
-	if( ntg_reentrance_push( server, attribute, cmd_source ) )
+	if( ntg_reentrance_push( server, node_endpoint, cmd_source ) )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "detected reentry - aborting set command", path.get_string().c_str() );
 		NTG_RETURN_ERROR_CODE( NTG_REENTRANCE_ERROR );
 	}
 
 	CValue *previous_value( NULL );
-	if( attribute->value )
+	if( node_endpoint->get_value() )
 	{
-		previous_value = attribute->value->clone();
+		previous_value = node_endpoint->get_value()->clone();
 	}
 
     /* set the attribute value */
 	if( value )
 	{
-		assert( attribute->value );
-		value->convert( *attribute->value );
+		assert( node_endpoint->get_value() );
+		value->convert( *node_endpoint->get_value_writable() );
 	}
 
 
     /* handle any system class logic */
-	ntg_system_class_handle_set( server, attribute, previous_value, cmd_source );
+	ntg_system_class_handle_set( server, node_endpoint, previous_value, cmd_source );
 
 	if( previous_value )
 	{
@@ -234,9 +213,9 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
     /* send the attribute value to the host if needed */
-	if( ntg_should_send_set_to_host( server, attribute, node->interface, cmd_source ) ) 
+	if( ntg_should_send_set_to_host( *node_endpoint, *node_endpoint->get_node()->interface, cmd_source ) ) 
 	{
-        ntg_node_attribute_send_value(attribute, bridge);
+		server->bridge->send_value( node_endpoint );
     }
 
     if( error_code != NTG_NO_ERROR ) 
@@ -247,7 +226,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-		ntg_osc_client_send_set(server->osc_client, cmd_source, path, attribute->value );
+		ntg_osc_client_send_set( server->osc_client, cmd_source, path, node_endpoint->get_value() );
     }
 
 	ntg_reentrance_pop( server, cmd_source );
@@ -256,84 +235,66 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 }
 
 
-ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, const GUID *module_id, const char *node_name, const CPath &path )
+ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, const GUID *module_id, string node_name, const CPath &path )
 {
-    char *my_node_name = NULL;
-    ntg_bridge_interface *bridge		= NULL;
-	const ntg_interface *interface		= NULL;
-	const ntg_endpoint *endpoint		= NULL;
-    ntg_command_status command_status	= { NULL, NTG_NO_ERROR };
-    ntg_node_attribute *node_attribute	= NULL;
-    ntg_node *root						= NULL;
-    ntg_node *parent					= NULL;
-    ntg_node *node						= NULL;
-	char *implementation_path			= NULL;
+    ntg_error_code error_code = NTG_NO_ERROR;
+    ntg_command_status command_status;
 
-    bridge = server->bridge;
+    assert( server );
 
-    if (bridge == NULL) {
-        NTG_TRACE_ERROR("there's no bridge. Aborting.");
-        assert(0);
-    }
+    ntg_node *root = ntg_server_get_root( server );
+    ntg_node *parent = ntg_node_find_by_path( path, root );
 
-    assert(server != NULL);
-
-    root = ntg_server_get_root( server );
-    parent = ntg_node_find_by_path( path, root );
-
-    if (parent == NULL) {
-        NTG_TRACE_ERROR("parent is NULL, returning NULL");
+    if( !parent ) 
+	{
+        NTG_TRACE_ERROR( "parent is NULL, returning NULL" );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
     /* get interface */
-	interface = ntg_get_interface_by_module_id( server->module_manager, module_id );
+	const ntg_interface *interface = ntg_get_interface_by_module_id( server->module_manager, module_id );
     if( !interface ) 
 	{
-        NTG_TRACE_ERROR("unable to find interface" );
+        NTG_TRACE_ERROR( "unable to find interface" );
         NTG_RETURN_ERROR_CODE( NTG_FAILED );
     }
 
     /* if node name is NULL, create one */
-    if( node_name )
+    if( node_name.empty() )
 	{
-		my_node_name = ntg_strdup( node_name );
+		node_name = ntg_make_node_name( interface->info->name );
 	}
-	else
-	{
-		my_node_name = ntg_make_node_name( interface->info->name );
-    }
 
     /* First check if node name is already taken */
-    while( ntg_node_find_by_name( parent, my_node_name ) ) 
+    while( ntg_node_find_by_name( parent, node_name.c_str() ) ) 
 	{
-        NTG_TRACE_PROGRESS_WITH_STRING("node name is in use; appending underscore", my_node_name);
+        NTG_TRACE_PROGRESS_WITH_STRING("node name is in use; appending underscore", node_name.c_str() );
 
-        my_node_name = ntg_string_append(my_node_name, "_");
+        node_name += "_";
 	}
 
-	if( !ntg_validate_node_name( my_node_name ) )
+	if( !ntg_validate_node_name( node_name.c_str() ) )
 	{
-        NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", my_node_name );
+        NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", node_name.c_str() );
         NTG_RETURN_ERROR_CODE( NTG_FAILED );
 	}
 
-    node = ntg_node_new();
+    ntg_node *node = ntg_node_new();
     
     /* FIX: order is important here -- better to break into separate function */
     ntg_node_set_interface( node, interface );
-    ntg_node_set_name(node, my_node_name);
-    ntg_node_add(parent, node);
-	ntg_node_add_attributes(node, interface->endpoint_list);
-	ntg_node_add_to_statetable(node, server->state_table);
+    ntg_node_set_name( node, node_name.c_str() );
+    ntg_node_add( parent, node );
+	ntg_node_add_node_endpoints( node, interface->endpoint_list );
+	ntg_node_add_to_statetable( node, server->state_table );
 
 	if( ntg_interface_has_implementation( interface ) )
 	{
 		/* load implementation in module host */
-		implementation_path = ntg_module_manager_get_patch_path( server->module_manager, interface );
+		char *implementation_path = ntg_module_manager_get_patch_path( server->module_manager, interface );
 		if( implementation_path )
 		{
-			bridge->module_load(node->id, implementation_path );
+			server->bridge->module_load( node->id, implementation_path );
 			delete[] implementation_path;
 		}
 		else
@@ -343,17 +304,17 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
     /* set attribute defaults */
-	for( endpoint = interface->endpoint_list; endpoint; endpoint = endpoint->next )
+	for( const ntg_endpoint *endpoint = interface->endpoint_list; endpoint; endpoint = endpoint->next )
 	{
 		if( endpoint->type != NTG_CONTROL || endpoint->control_info->type != NTG_STATE )
 		{
 			continue;
 		}
 
-        node_attribute = ntg_node_attribute_find_by_name( node, endpoint->name );
-        assert( node_attribute );
+        const CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( node, endpoint->name );
+        assert( node_endpoint );
 
-		ntg_set_( server_, NTG_SOURCE_INITIALIZATION, node_attribute->path, endpoint->control_info->state_info->default_value );
+		ntg_set_( server_, NTG_SOURCE_INITIALIZATION, node_endpoint->get_path(), endpoint->control_info->state_info->default_value );
 	}
 
     /* handle any system class logic */
@@ -366,15 +327,14 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-	    ntg_osc_client_send_new(server->osc_client, cmd_source, module_id, my_node_name, parent->path);
+	    ntg_osc_client_send_new( server->osc_client, cmd_source, module_id, node_name.c_str(), parent->path );
 	}
-
-    delete[] my_node_name;
 
     return command_status;
 }
 
-ntg_command_status  ntg_delete_(ntg_server *server, ntg_command_source cmd_source, const CPath &path)
+
+ntg_command_status ntg_delete_( ntg_server *server, ntg_command_source cmd_source, const CPath &path )
 {
     ntg_bridge_interface *bridge;
     ntg_node *node, *root;
@@ -642,7 +602,7 @@ ntg_command_status ntg_move_(ntg_server *server, ntg_command_source cmd_source, 
     }
 
     /* update child paths and vertices */
-    ntg_node_update_children(node);
+    ntg_node_update_path( node );
 
     /* add new state table entries for node and children */
 	ntg_node_add_to_statetable( node, server->state_table );
@@ -682,39 +642,24 @@ ntg_command_status ntg_load_(ntg_server * server, ntg_command_source cmd_source,
 }
 
 
-const CValue *ntg_get_(ntg_server *server, const CPath &path )
+const CValue *ntg_get_( ntg_server *server, const CPath &path )
 {
-    ntg_node_attribute *node_attribute = NULL;
-    ntg_node *node = NULL;
-    ntg_node *root = NULL;
-
-    root = ntg_server_get_root(server);
-
-    CPath my_path( path );
-	string attribute_name = my_path.pop_element();
-    node = ntg_node_find_by_path( my_path, root );
-
-    if( !node ) 
+	const CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( path.get_string() );
+    if( !node_endpoint ) 
 	{
-		NTG_TRACE_ERROR_WITH_STRING( "node not found; get request ignored", path.get_string().c_str() );
+        NTG_TRACE_ERROR_WITH_STRING( "endpoint not found; get request ignored", path.get_string().c_str() );
         return NULL;
     }
 
-    node_attribute = ntg_node_attribute_find_by_name(node, attribute_name.c_str() );
-
-    if( !node_attribute ) 
+	const CValue *value = node_endpoint->get_value();
+	if( !value )
 	{
-        NTG_TRACE_ERROR_WITH_STRING("attribute not found; get request ignored", path.get_string().c_str() );
-        return NULL;
-    }
-
-	if( !node_attribute->value )
-	{
-		assert( node_attribute->endpoint->type == NTG_STREAM || node_attribute->endpoint->control_info->type == NTG_BANG );
+		const ntg_endpoint *endpoint = node_endpoint->get_endpoint();
+		assert( endpoint->type == NTG_STREAM || endpoint->control_info->type == NTG_BANG );
 		return NULL;
 	}
 
-    return node_attribute->value;
+    return value;
 }
 
 

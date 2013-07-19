@@ -53,14 +53,12 @@ extern "C"
 #include "lua.h"
 #include "xmlrpc_server.h"
 #include "helper.h"
-#include "memory.h"
 #include "globals.h"
 #include "luascripting.h"
 #include "value.h"
 #include "validate.h"
 #include "server.h"
 #include "node.h"
-#include "attribute.h"
 #include "bridge_host.h"
 #include "signals.h"
 #include "server_commands.h"
@@ -96,12 +94,12 @@ void ntg_unlock_server(void)
 }
 
 
-const ntg_node_attribute *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const string &path )
+const CNodeEndpoint *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const string &path )
 {
 	ostringstream composite_path;
 	composite_path << root->path.get_string() << "." << path;
 
-	map_string_to_attribute::const_iterator lookup = server->state_table.find( composite_path.str() );
+	node_endpoint_map::const_iterator lookup = server->state_table.find( composite_path.str() );
 	if( lookup == server->state_table.end() )
 	{
 		return NULL;
@@ -123,12 +121,10 @@ void ntg_server_set_host_dsp(const ntg_server *server, bool status)
 }
 
 
-void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
+void ntg_print_node_state( ntg_server *server, ntg_node *first, int indentation)
 {
     ntg_node *current = first;
     ntg_node *next;
-	ntg_node_attribute *attribute = NULL;
-    int i;
 	bool has_children;
 	char *module_id_string;
 
@@ -140,8 +136,10 @@ void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 	do{
         assert(current != NULL);
         next = current->next;
-        for(i=0;i<indentation;i++)
+        for( int i = 0; i < indentation; i++ )
+		{
             printf("  |");
+		}
 
 		module_id_string = ntg_guid_to_string( &current->interface->module_guid );
 		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n",current->name,current->interface->info->name, module_id_string, current->path.get_string().c_str() );
@@ -149,30 +147,34 @@ void ntg_print_node_state(ntg_server *server, ntg_node *first,int indentation)
 
 		has_children = (current->nodes!=NULL);
 
-		for( attribute = current->attributes; attribute != NULL; attribute = attribute->next )
+		node_endpoint_map &node_endpoints = current->node_endpoints;
+		for( node_endpoint_map::const_iterator node_endpoint_iterator = node_endpoints.begin(); node_endpoint_iterator != node_endpoints.end(); node_endpoint_iterator++ )
 		{
-			if( attribute->value )
+			const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
+			const CValue *value = node_endpoint->get_value();
+			if( !value ) continue;
+
+			for( int i = 0; i < indentation; i++ )
 			{
-				for(i=0;i<indentation;i++)
-					printf("  |");
-
-				printf( has_children ? "  |" : "   ");
-
-				string value_string = attribute->value->get_as_string();
-
-				printf("   -Attribute:  %s = %s\n", attribute->endpoint->name, value_string.c_str() );
+				printf("  |");
 			}
 
-			if( attribute == current->attribute_last )
-			{
-				break;
-			}
+			printf( has_children ? "  |" : "   ");
+
+			string value_string = value->get_as_string();
+
+			printf("   -Attribute:  %s = %s\n", node_endpoint->get_endpoint()->name, value_string.c_str() );
+		}
+		
+        if( has_children )
+		{
+            ntg_print_node_state( server, current->nodes, indentation + 1 );
 		}
 
-        if(has_children)
-            ntg_print_node_state(server,current->nodes,indentation+1);
         current = next;
-    }while(current!=first);
+
+    }
+	while(current!=first);
 }
 
 
@@ -390,17 +392,20 @@ void ntg_server_receive_from_host( ntg_id id, const char *attribute_name, const 
 }
 
 
-ntg_error_code ntg_server_connect_in_host( ntg_server *server, const ntg_node_attribute *source, const ntg_node_attribute *target, bool connect )
+ntg_error_code ntg_server_connect_in_host( ntg_server *server, const CNodeEndpoint *source, const CNodeEndpoint *target, bool connect )
 {
 	assert( server && source && target );
 	
-	if( !ntg_endpoint_is_audio_stream( source->endpoint ) || source->endpoint->stream_info->direction != NTG_STREAM_OUTPUT )
+	const ntg_endpoint *source_endpoint = source->get_endpoint();
+	const ntg_endpoint *target_endpoint = target->get_endpoint();
+
+	if( !ntg_endpoint_is_audio_stream( source_endpoint ) || source_endpoint->stream_info->direction != NTG_STREAM_OUTPUT )
 	{
 		NTG_TRACE_ERROR( "trying to make incorrect connection in host - source isn't an audio output" );
 		return NTG_ERROR;
 	}
 
-	if( !ntg_endpoint_is_audio_stream( target->endpoint ) || target->endpoint->stream_info->direction != NTG_STREAM_INPUT )
+	if( !ntg_endpoint_is_audio_stream( target_endpoint ) || target_endpoint->stream_info->direction != NTG_STREAM_INPUT )
 	{
 		NTG_TRACE_ERROR( "trying to make incorrect connection in host - target isn't an audio output" );
 		return NTG_ERROR;

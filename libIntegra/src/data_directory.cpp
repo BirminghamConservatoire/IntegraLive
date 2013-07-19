@@ -45,6 +45,7 @@
 #include "helper.h"
 #include "globals.h"
 #include "system_class_handlers.h"
+#include "node_endpoint.h"
 #include "value.h"
 
 
@@ -52,6 +53,7 @@
 
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 
 char *ntg_make_up_node_data_directory_name( const ntg_node *node, const ntg_server *server )
@@ -398,18 +400,18 @@ const char *ntg_extract_filename_from_path( const char *path )
 }
 
 
-const char *ntg_copy_file_to_data_directory( const ntg_node_attribute *attribute )
+const char *ntg_copy_file_to_data_directory( const CNodeEndpoint *endpoint )
 {
-	assert( attribute );
+	assert( endpoint );
 
-	const string *data_directory = ntg_node_get_data_directory( attribute->node );
+	const string *data_directory = ntg_node_get_data_directory( endpoint->get_node() );
 	if( !data_directory )
 	{
-		NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", attribute->node->name );
+		NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", endpoint->get_node()->name );
 		return NULL;
 	}
 
-	const string &input_path = *attribute->value;
+	const string &input_path = *endpoint->get_value();
 	const char *copied_file = ntg_extract_filename_from_path( input_path.c_str() );
 	if( !copied_file )
 	{

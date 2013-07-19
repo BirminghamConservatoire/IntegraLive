@@ -56,7 +56,7 @@ static int dummy_module_remove(const ntg_id id){
 
 }
 
-static int dummy_module_connect(const ntg_node_attribute *source, const ntg_node_attribute *target)
+static int dummy_module_connect(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target)
 {
     fprintf(stderr, "%s()\n", __FUNCTION__);
 
@@ -64,7 +64,7 @@ static int dummy_module_connect(const ntg_node_attribute *source, const ntg_node
 
 }
 
-static int dummy_module_disconnect(const ntg_node_attribute *source, const ntg_node_attribute *target)
+static int dummy_module_disconnect(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target)
 {
     fprintf(stderr, "%s()\n", __FUNCTION__);
 
@@ -72,7 +72,7 @@ static int dummy_module_disconnect(const ntg_node_attribute *source, const ntg_n
 
 }
 
-static void dummy_send_value(const ntg_node_attribute *target)
+static void dummy_send_value(const ntg_internal::CNodeEndpoint *target)
 {
 
     fprintf(stderr, "%s()\n", __FUNCTION__);

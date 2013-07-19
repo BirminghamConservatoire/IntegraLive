@@ -18,8 +18,6 @@
  * USA.
  */
 
-#include "platform_specifics.h"
-
 
 #ifdef HAVE_CONFIG_H
 #    include <config.h>
@@ -40,10 +38,10 @@
 #include <xmlrpc-c/server_abyss.h>
 
 
+#include "platform_specifics.h"
 #include "error.h"
 #include "value.h"
 #include "server.h"
-#include "memory.h"
 #include "path.h"
 #include "globals.h"
 #include "node.h"
@@ -52,7 +50,6 @@
 #include "module_manager.h"
 #include "interface.h"
 
-#include "attribute.h"
 #include "helper.h"
 #include "common_typedefs.h"
 

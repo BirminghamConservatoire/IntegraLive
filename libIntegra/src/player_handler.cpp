@@ -34,7 +34,6 @@
 #include "player_handler.h"
 #include "system_class_literals.h"
 #include "system_class_handlers.h"
-#include "memory.h"
 #include "trace.h"
 #include "globals.h"
 #include "path.h"
@@ -313,13 +312,13 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	ntg_player_data *player_data = NULL;
 	ntg_player_state *player_state = NULL;
 	ntg_node *player_node = NULL;
-	const ntg_node_attribute *play_attribute = NULL;
-	const ntg_node_attribute *active_attribute = NULL;
-	const ntg_node_attribute *rate_attribute = NULL;
-	const ntg_node_attribute *tick_attribute = NULL;
-	const ntg_node_attribute *loop_attribute = NULL;
-	const ntg_node_attribute *start_attribute = NULL;
-	const ntg_node_attribute *end_attribute = NULL;
+	const CNodeEndpoint *play_endpoint = NULL;
+	const CNodeEndpoint *active_endpoint = NULL;
+	const CNodeEndpoint *rate_endpoint = NULL;
+	const CNodeEndpoint *tick_endpoint = NULL;
+	const CNodeEndpoint *loop_endpoint = NULL;
+	const CNodeEndpoint *start_endpoint = NULL;
+	const CNodeEndpoint *end_endpoint = NULL;
 
 	assert( server );
 
@@ -329,29 +328,29 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	player_node = ntg_node_find_by_id_r(ntg_server_get_root( server ), player_id );
 	assert( player_node );
 
-	play_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_PLAY );
-	active_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_ACTIVE );
-	tick_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_TICK );
-	assert( play_attribute && active_attribute && tick_attribute );
+	play_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_PLAY );
+	active_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_ACTIVE );
+	tick_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_TICK );
+	assert( play_endpoint && active_endpoint && tick_endpoint );
 
-	int play_value = *play_attribute->value;
-	int active_value = *active_attribute->value;
+	int play_value = *play_endpoint->get_value();
+	int active_value = *active_endpoint->get_value();
 
 	if( play_value == 0 || active_value == 0 )
 	{
-		ntg_player_stop( server, player_id, *tick_attribute->value );
+		ntg_player_stop( server, player_id, *tick_endpoint->get_value() );
 		return;
 	}
 
 	/*
 	lookup player attributes
 	*/
-	rate_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_RATE );
-	loop_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_LOOP );
-	start_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_START );
-	end_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_END );
+	rate_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_RATE );
+	loop_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_LOOP );
+	start_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_START );
+	end_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_END );
 
-	assert( rate_attribute && loop_attribute && start_attribute && end_attribute );
+	assert( rate_endpoint && loop_endpoint && start_endpoint && end_endpoint );
 
 	pthread_mutex_lock(&player_data->player_state_mutex);
 
@@ -379,24 +378,24 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 
 	/* recreate paths, in case they have changed */
 	player_state->tick_path = player_node->path;
-	player_state->tick_path.append_element( NTG_ATTRIBUTE_TICK );
+	player_state->tick_path.append_element( NTG_ENDPOINT_TICK );
 
 	player_state->play_path = player_node->path;
-	player_state->play_path.append_element( NTG_ATTRIBUTE_PLAY );
+	player_state->play_path.append_element( NTG_ENDPOINT_PLAY );
 
 	/*
 	setup all other player state fields
 	*/
 
-	player_state->initial_ticks = *tick_attribute->value; 
+	player_state->initial_ticks = *tick_endpoint->get_value(); 
 	player_state->previous_ticks = player_state->initial_ticks; 
-	player_state->rate = *rate_attribute->value;
+	player_state->rate = *rate_endpoint->get_value();
 	player_state->start_msecs = ntg_get_current_msecs();
 
-	int loop_value = *loop_attribute->value;
+	int loop_value = *loop_endpoint->get_value();
 	player_state->loop = ( loop_value != 0 );
-	player_state->loop_start_ticks = *start_attribute->value;
-	player_state->loop_end_ticks = *end_attribute->value;
+	player_state->loop_start_ticks = *start_endpoint->get_value();
+	player_state->loop_end_ticks = *end_endpoint->get_value();
 
 	pthread_mutex_unlock(&player_data->player_state_mutex);
 }
@@ -417,10 +416,10 @@ void ntg_player_handle_path_change( ntg_server *server, const ntg_node *player_n
 		if( player_state->id == player_node->id )
 		{
 			player_state->tick_path = player_node->path;
-			player_state->tick_path.append_element( NTG_ATTRIBUTE_TICK );
+			player_state->tick_path.append_element( NTG_ENDPOINT_TICK );
 
 			player_state->play_path = player_node->path;
-			player_state->play_path.append_element( NTG_ATTRIBUTE_PLAY );
+			player_state->play_path.append_element( NTG_ENDPOINT_PLAY );
 		}
 	}
 

@@ -55,8 +55,6 @@ namespace ntg_api
 /* value types */
 
 typedef unsigned long ntg_id;
-typedef struct ntg_node_attribute_ ntg_node_attribute;
-typedef std::unordered_map<ntg_api::string, const ntg_node_attribute *> map_string_to_attribute;
 
 
 /*
@@ -107,8 +105,7 @@ LIBINTEGRA_API const ntg_api::guid_set &ntg_interfacelist(void);
  * node. e.g. ['Project1', 'Block1']
  * \return a pointer to the new node 
  * \error a pointer to NULL is returned if an error occurs */
-LIBINTEGRA_API ntg_command_status ntg_new(const GUID *module_id,
-        const char *node_name, const ntg_api::CPath &path);
+LIBINTEGRA_API ntg_command_status ntg_new(const GUID *module_id, ntg_api::string node_name, const ntg_api::CPath &path);
 
 /** \brief Delete a node on the server
  * \param *path: a reference to a class of type ntg_api::CPath giving the elements in

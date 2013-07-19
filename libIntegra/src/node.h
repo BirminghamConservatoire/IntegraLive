@@ -22,7 +22,7 @@
 #define INTEGRA_INSTANCE_PRIVATE_H
 
 
-#include "attribute.h"
+#include "node_endpoint.h"
 #include "path.h"
 
 #ifndef __XML_XMLREADER_H__
@@ -88,16 +88,9 @@ typedef struct ntg_node_ {
      * at an end node in the node graph */
     struct ntg_node_ *nodes; 
 
-    /** Linked list of attributes. These actually hold the state data for
-     * the node. The pointer *attributes always points to the root 
-     * node of the list */
-    /* FIX: maybe this should be an array, so we don't need to search 
-     * the list for index match */
-    ntg_node_attribute *attributes;
-
-    /* Pointer to the last attribute in the list. Used as a marker for creating
-     * the 'circular' link back to the root of the list */
-    ntg_node_attribute *attribute_last;
+    /** List of node endpoint. These actually hold the state data for
+     * the node. */
+	ntg_internal::node_endpoint_map node_endpoints;
 
     /** Pointer to the absolute path to the node */
     ntg_api::CPath path;
@@ -201,45 +194,14 @@ unsigned long ntg_node_get_id(ntg_node *node);
  */
 ntg_error_code ntg_node_add(ntg_node *collection, ntg_node *node);
 
-/** \brief Get the attribute root from a node */
-ntg_node_attribute *ntg_node_get_attribute_root(
-        const ntg_node *node);
-
-/** \brief Find an attribute by name
- *
- * \param ntg_node *node A pointer to the node we want to get the attribute from
- * \param char *name The name of the given attribute
- *
- * */
-
-/*FIX: 
-ntg_find_attribute has same signature as ntg_node_attribute_find_by_name, 
-and might be more efficient due to its use of a hash table.
-we should try to test which is more efficient and deprecate the less efficient method!
-*/
-
-ntg_node_attribute *ntg_node_attribute_find_by_name(
-        const ntg_node *node,
-        const char *name);
-
 
 /** \brief Add attributes to node */
-void ntg_node_add_attributes(ntg_node *node, const ntg_endpoint *endpoint_list);
+void ntg_node_add_node_endpoints( ntg_node *node, const ntg_endpoint *endpoint_list );
 
-/** \brief A check that 'node' and 'sibling' share the same parent
-  */
-bool ntg_node_is_sibling(const ntg_node *node, 
-        const ntg_node *sibling);
-
-/** \brief get the full path for a node
-  * This function works out the path by traversing the node graph
-  */
-ntg_api::CPath ntg_node_get_path(const ntg_node *node);
-
-/** \brief update and get the full path for a node
+/** \brief updates the full path for a node, and children, and all owned node endpoints
   * As ntg_node_get_path() but additionally sets node->path
   */
-ntg_api::CPath ntg_node_update_path(ntg_node *node);
+void ntg_node_update_path( ntg_node *node );
 
 
 /** \brief free a node
@@ -256,9 +218,6 @@ ntg_error_code ntg_node_load( const ntg_node *node, xmlTextReaderPtr reader, nod
 /** \brief send node's newly-loaded attributes to host */
 ntg_error_code ntg_node_send_loaded_attributes_to_host( const ntg_node *node, ntg_bridge_interface *bridge ); 
 
-/** \brief update all attribute paths */
-void ntg_node_update_attribute_paths(ntg_node *node);
-
 
 /** \brief rename a node */
 void ntg_node_rename(ntg_node *node, const char *name);
@@ -270,17 +229,15 @@ void ntg_node_rename(ntg_node *node, const char *name);
  *
  * */
 
-const ntg_node_attribute *ntg_find_attribute( const ntg_node *node, const char *attribute_name );
-const ntg_node_attribute *ntg_find_attribute( const ntg_api::string &attribute_path );
+ntg_internal::CNodeEndpoint *ntg_find_node_endpoint( const ntg_node *node, const char *attribute_name );
+ntg_internal::CNodeEndpoint *ntg_find_node_endpoint( const ntg_api::string &attribute_path );
 
-/** \brief recursively update paths for children */
-void ntg_node_update_children(ntg_node *node);
 
 /** \brief get root node from any node */
 const ntg_node *ntg_node_get_root(const ntg_node *node);
 
-void ntg_node_add_to_statetable( const ntg_node *node, map_string_to_attribute &statetable );
-void ntg_node_remove_from_statetable( const ntg_node *node, map_string_to_attribute &statetable );
+void ntg_node_add_to_statetable( const ntg_node *node, ntg_internal::node_endpoint_map &statetable );
+void ntg_node_remove_from_statetable( const ntg_node *node, ntg_internal::node_endpoint_map &statetable );
 
 
 /** \brief test whether module is in use

@@ -42,7 +42,6 @@
 #include "module_manager.h"
 #include "scratch_directory.h"
 #include "interface.h"
-#include "memory.h"
 #include "helper.h"
 #include "globals.h"
 #include "file_io.h"

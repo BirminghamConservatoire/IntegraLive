@@ -22,7 +22,6 @@
 
 #include "osc_client.h"
 #include "helper.h"
-#include "memory.h"
 #include "globals.h"
 #include "server.h"
 

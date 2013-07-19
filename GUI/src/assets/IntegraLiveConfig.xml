@@ -120,7 +120,7 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<traceprogress>true</traceprogress>
 
 		<!-- 		enable tracing of normal progress (things that occur very often)				-->
-		<traceverbose>true</traceverbose>
+		<traceverbose>false</traceverbose>
 	
 		<!-- 		stamp all logged output with current date/time									-->
 		<timestamptrace>true</timestamptrace>

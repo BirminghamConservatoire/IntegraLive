@@ -55,7 +55,7 @@ typedef struct ntg_server_ {
     ntg_node *root;
     ntg_bridge_interface *bridge;
     struct ntg_osc_client_ *osc_client;
-    map_string_to_attribute state_table; /* resolves path-as-string to node attribute */
+	ntg_internal::node_endpoint_map state_table; /* resolves path-as-string to node endpoint */
     struct ntg_system_class_data_ *system_class_data;
     char *scratch_directory_root;
 	struct ntg_module_manager_ *module_manager;
@@ -85,8 +85,8 @@ void ntg_server_get_nodelist( const ntg_server *server, const ntg_node *containe
 /** \brief Update a connection 
     \param do_connect Toggles the connection 0 = disconnect 1 = connec
  */
-ntg_error_code ntg_server_connect_in_host( ntg_server *server, const ntg_node_attribute *source, 
-											const ntg_node_attribute *target, bool connect );
+ntg_error_code ntg_server_connect_in_host( ntg_server *server, const ntg_internal::CNodeEndpoint *source, 
+											const ntg_internal::CNodeEndpoint *target, bool connect );
 
 /** \brief Remove a node from the server
  *
@@ -108,7 +108,7 @@ ntg_node *ntg_server_connect(ntg_server * server, const ntg_api::CPath &parent_p
 
 
 /** \brief return an ntg_node_attribute from a path relative to a base node */
-const ntg_node_attribute *ntg_server_resolve_relative_path ( const ntg_server *server, const ntg_node *root, const ntg_api::string &path );
+const ntg_internal::CNodeEndpoint *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const ntg_api::string &path );
 
 
 void ntg_server_set_host_dsp(const ntg_server *server, bool status);

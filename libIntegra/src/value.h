@@ -21,6 +21,8 @@
 #ifndef INTEGRA_VALUE_PRIVATE_H
 #define INTEGRA_VALUE_PRIVATE_H
 
+#include <unordered_map>
+
 #include "common_typedefs.h"
 
 
@@ -154,6 +156,9 @@ namespace ntg_api
 
 			string m_value;
 	};
+
+
+	typedef std::unordered_map<string, CValue *> value_map;
 }
 
 

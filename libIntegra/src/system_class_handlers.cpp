@@ -36,7 +36,7 @@
 #include "system_class_literals.h"
 #include "reentrance_checker.h"
 #include "server_commands.h"
-#include "memory.h"
+#include "node_endpoint.h"
 #include "helper.h"
 #include "module_manager.h"
 #include "interface.h"
@@ -51,7 +51,7 @@ typedefs
 */
 
 typedef void (*ntg_system_class_new_handler_function)(ntg_server *server, const ntg_node *node, ntg_command_source cmd_source);
-typedef void (*ntg_system_class_set_handler_function)(ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source);
+typedef void (*ntg_system_class_set_handler_function)(ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_rename_handler_function)(ntg_server *server, const ntg_node *node, const char *previous_name, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_move_handler_function)(ntg_server *server, const ntg_node *node, const CPath &previous_path, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_delete_handler_function)(ntg_server *server, const ntg_node *node, ntg_command_source cmd_source);
@@ -73,7 +73,7 @@ typedef struct ntg_system_class_handler_
 
 
 /*
-The following methods are helpers used by the system class attribute handlers
+The following methods are helpers used by the system class endpoint handlers
 */
 
 
@@ -82,7 +82,7 @@ void ntg_envelope_update_value(ntg_server *server, const ntg_node *envelope_node
 	float previous_value, next_value;
 	bool found_previous_tick = false, found_next_tick = false;
 	int latest_previous_tick, earliest_next_tick;
-	const ntg_node_attribute *start_tick_attribute, *current_tick_attribute, *current_value_attribute, *control_point_tick_attribute, *control_point_value_attribute, *control_point_curvature_attribute;
+	const CNodeEndpoint *start_tick_endpoint, *current_tick_endpoint, *current_value_endpoint, *control_point_tick_endpoint, *control_point_value_endpoint, *control_point_curvature_endpoint;
 	int control_point_tick;
 	float control_point_value;
 	float previous_control_point_curvature;
@@ -101,26 +101,26 @@ void ntg_envelope_update_value(ntg_server *server, const ntg_node *envelope_node
 		return;
 	}
 
-	current_value_attribute = ntg_find_attribute(envelope_node, NTG_ATTRIBUTE_CURRENT_VALUE);
-	assert( current_value_attribute );
+	current_value_endpoint = ntg_find_node_endpoint(envelope_node, NTG_ENDPOINT_CURRENT_VALUE);
+	assert( current_value_endpoint );
 
 	/*
 	lookup envelope current tick 
 	*/
 
-	current_tick_attribute = ntg_find_attribute(envelope_node, NTG_ATTRIBUTE_CURRENT_TICK);
-	assert( current_tick_attribute );
+	current_tick_endpoint = ntg_find_node_endpoint(envelope_node, NTG_ENDPOINT_CURRENT_TICK);
+	assert( current_tick_endpoint );
 
-	envelope_current_tick = *current_tick_attribute->value;
+	envelope_current_tick = *current_tick_endpoint->get_value();
 
 
 	/*
 	lookup and apply envelope start tick
 	*/
 
-	start_tick_attribute = ntg_find_attribute(envelope_node, NTG_ATTRIBUTE_START_TICK);
-	assert( start_tick_attribute );
-	envelope_start_tick = *start_tick_attribute->value;
+	start_tick_endpoint = ntg_find_node_endpoint(envelope_node, NTG_ENDPOINT_START_TICK);
+	assert( start_tick_endpoint );
+	envelope_start_tick = *start_tick_endpoint->get_value();
 
 	envelope_current_tick -= envelope_start_tick;
 
@@ -131,24 +131,24 @@ void ntg_envelope_update_value(ntg_server *server, const ntg_node *envelope_node
 	control_point_iterator = envelope_node->nodes;
 	while( control_point_iterator )
 	{
-		control_point_tick_attribute = ntg_find_attribute( control_point_iterator, NTG_ATTRIBUTE_TICK );
-		control_point_value_attribute = ntg_find_attribute( control_point_iterator, NTG_ATTRIBUTE_VALUE );
+		control_point_tick_endpoint = ntg_find_node_endpoint( control_point_iterator, NTG_ENDPOINT_TICK );
+		control_point_value_endpoint = ntg_find_node_endpoint( control_point_iterator, NTG_ENDPOINT_VALUE );
 
-		assert( control_point_tick_attribute );
-		assert( control_point_value_attribute );
+		assert( control_point_tick_endpoint );
+		assert( control_point_value_endpoint );
 
-		control_point_tick = *control_point_tick_attribute->value;
-		control_point_value = *control_point_value_attribute->value;
+		control_point_tick = *control_point_tick_endpoint->get_value();
+		control_point_value = *control_point_value_endpoint->get_value();
 
 		if( control_point_tick <= envelope_current_tick && ( !found_previous_tick || control_point_tick > latest_previous_tick ) )
 		{
 			latest_previous_tick = control_point_tick;
 			previous_value = control_point_value;
 
-			control_point_curvature_attribute = ntg_find_attribute( control_point_iterator, NTG_ATTRIBUTE_CURVATURE );
-			assert( control_point_curvature_attribute );
+			control_point_curvature_endpoint = ntg_find_node_endpoint( control_point_iterator, NTG_ENDPOINT_CURVATURE );
+			assert( control_point_curvature_endpoint );
 
-			previous_control_point_curvature = *control_point_curvature_attribute->value;
+			previous_control_point_curvature = *control_point_curvature_endpoint->get_value();
 
 			found_previous_tick = true;
 		}
@@ -226,25 +226,25 @@ void ntg_envelope_update_value(ntg_server *server, const ntg_node *envelope_node
 	*/
 	CFloatValue output_value( output );
 
-	if( !current_value_attribute->value->is_equal( output_value ) )
+	if( !current_value_endpoint->get_value()->is_equal( output_value ) )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, current_value_attribute->path, &output_value );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, current_value_endpoint->get_path(), &output_value );
 	}
 }
 
 
 bool ntg_node_are_all_ancestors_active( const ntg_node *node )
 {
-	const ntg_node_attribute *parent_active = NULL;
+	const CNodeEndpoint *parent_active = NULL;
 
 	assert( node );
 
 	if( node->parent && !ntg_node_is_root( node->parent ) )
 	{
-		parent_active = ntg_find_attribute( node->parent, NTG_ATTRIBUTE_ACTIVE );
+		parent_active = ntg_find_node_endpoint( node->parent, NTG_ENDPOINT_ACTIVE );
 		assert( parent_active );
 
-		if( ( int ) *parent_active->value == 0 )
+		if( ( int ) *parent_active->get_value() == 0 )
 		{
 			return false;
 		}
@@ -263,7 +263,7 @@ bool ntg_node_are_all_ancestors_active( const ntg_node *node )
 void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activate, path_list &activated_nodes )
 {
 	/*
-	sets 'active' attribute on any descendants that are not containers
+	sets 'active' endpoint on any descendants that are not containers
 	If any node in ancestor chain are not active, sets descendants to not active
 	If all node in ancestor chain are active, sets descendants to active
 
@@ -272,31 +272,30 @@ void ntg_node_activate_tree(ntg_server *server, const ntg_node *node, bool activ
 	The caller can use this list to perform additional logic
 	*/
 
-	const ntg_node_attribute *active_attribute = NULL;
 	ntg_node *child = NULL;
 	int value_i = 0;
 
 	assert( server );
 	assert( node );
 
+	const CNodeEndpoint *active_endpoint = ntg_find_node_endpoint( node, NTG_ENDPOINT_ACTIVE );
+
 	if( ntg_interface_is_core_name_match( node->interface, NTG_CLASS_CONTAINER ) )
 	{
 		/* if node is a container, update 'activate' according to it's active flag */
-		active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
-		assert( active_attribute );
-		activate &= ( ( int ) *active_attribute->value != 0 );
+		assert( active_endpoint );
+		activate &= ( ( int ) *active_endpoint->get_value() != 0 );
 	}
 	else
 	{
 		/* if node is not a container, update it's active flag (if it has one) according to 'activate' */
-		active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
-		if( active_attribute )
+		if( active_endpoint )
 		{
 			CIntegerValue value( activate ? 1 : 0 );
 
-			if( !active_attribute->value->is_equal( value ) )
+			if( !active_endpoint->get_value()->is_equal( value ) )
 			{
-				ntg_set_( server, NTG_SOURCE_SYSTEM, active_attribute->path, &value );
+				ntg_set_( server, NTG_SOURCE_SYSTEM, active_endpoint->get_path(), &value );
 
 				if( activate )
 				{
@@ -357,10 +356,10 @@ void ntg_container_active_handler( ntg_server *server, const ntg_node *node, boo
 
 		if( ntg_interface_is_core_name_match( activated_node->interface, NTG_CLASS_PLAYER ) )
 		{
-			const ntg_node_attribute *player_tick = ntg_find_attribute( activated_node, NTG_ATTRIBUTE_TICK );
+			const CNodeEndpoint *player_tick = ntg_find_node_endpoint( activated_node, NTG_ENDPOINT_TICK );
 			assert( player_tick );
 
-			ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->path, player_tick->value );
+			ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->get_path(), player_tick->get_value() );
 		}
 	}
 }
@@ -369,10 +368,8 @@ void ntg_container_active_handler( ntg_server *server, const ntg_node *node, boo
 void ntg_non_container_active_initializer( ntg_server *server, const ntg_node * node)
 {
 	/*
-	sets 'active' attribute to false if node is leaf and any ancestor's active attribute is false
+	sets 'active' endpoint to false if node is leaf and any ancestor's active endpoint is false
 	*/
-
-	const ntg_node_attribute *active_attribute = NULL;
 
 	assert( server );
 	assert( node );
@@ -383,13 +380,13 @@ void ntg_non_container_active_initializer( ntg_server *server, const ntg_node * 
 		return;
 	}
 	
-	active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
-	assert( active_attribute );
+	const CNodeEndpoint *active_endpoint = ntg_find_node_endpoint( node, NTG_ENDPOINT_ACTIVE );
+	assert( active_endpoint );
 
 	if( !ntg_node_are_all_ancestors_active( node ) )
 	{
 		CIntegerValue value( 0 );
-		ntg_set_( server, NTG_SOURCE_SYSTEM, active_attribute->path, &value );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, active_endpoint->get_path(), &value );
 	}
 }
 
@@ -400,16 +397,16 @@ void ntg_player_set_state(ntg_server *server, const ntg_node *player_node, int t
 	updates player state.  ignores tick when < 0
 	*/
 
-	const ntg_node_attribute *player_tick_attribute, *player_play_attribute, *player_loop_attribute, *player_start_attribute, *player_end_attribute;
+	const CNodeEndpoint *player_tick_endpoint, *player_play_endpoint, *player_loop_endpoint, *player_start_endpoint, *player_end_endpoint;
 
-	/* look up the player attributes to set */
-	player_tick_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_TICK );
-	player_play_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_PLAY );
-	player_loop_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_LOOP );
-	player_start_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_START );
-	player_end_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_END );
+	/* look up the player endpoints to set */
+	player_tick_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_TICK );
+	player_play_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_PLAY );
+	player_loop_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_LOOP );
+	player_start_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_START );
+	player_end_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_END );
 
-	assert( player_tick_attribute && player_play_attribute && player_loop_attribute && player_start_attribute && player_end_attribute );
+	assert( player_tick_endpoint && player_play_endpoint && player_loop_endpoint && player_start_endpoint && player_end_endpoint );
 
 	/* 
 	Set the new values.  
@@ -417,32 +414,32 @@ void ntg_player_set_state(ntg_server *server, const ntg_node *player_node, int t
 	We can prevent this from being a problem by setting tick after start & end, and setting play last
 	*/
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_loop_attribute->path, &CIntegerValue( loop ) );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_start_attribute->path, &CIntegerValue( start ) );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_end_attribute->path, &CIntegerValue( play ) );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_loop_endpoint->get_path(), &CIntegerValue( loop ) );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_start_endpoint->get_path(), &CIntegerValue( start ) );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_end_endpoint->get_path(), &CIntegerValue( play ) );
 
 	/* don't set tick unless >= 0.  Allows calling functions to skip setting tick */
 	if( tick >= 0 )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick_attribute->path, &CIntegerValue( tick ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick_endpoint->get_path(), &CIntegerValue( tick ) );
 	}
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_play_attribute->path, &CIntegerValue( play ) );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_play_endpoint->get_path(), &CIntegerValue( play ) );
 }
 
 
 bool ntg_scene_is_selected( const ntg_node *scene_node )
 {
 	ntg_node *player_node;
-	const ntg_node_attribute *scene_attribute;
+	const CNodeEndpoint *scene_endpoint;
 
 	player_node = scene_node->parent;
-	scene_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_SCENE );
-	assert( scene_attribute );
+	scene_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_SCENE );
+	assert( scene_endpoint );
 
 	CStringValue test;
 
-	return ( (const string &) *scene_attribute->value == scene_node->name );
+	return ( (const string &) *scene_endpoint->get_value() == scene_node->name );
 }
 
 
@@ -523,12 +520,12 @@ void ntg_quantize_to_allowed_states( CValue &value, const ntg_allowed_state *all
 }
 
 
-void ntg_handle_connections( ntg_server *server, const ntg_node *search_node, const ntg_node_attribute *changed_attribute )
+void ntg_handle_connections( ntg_server *server, const ntg_node *search_node, const CNodeEndpoint *changed_endpoint )
 {
     const ntg_node *current;
     const ntg_node *parent;
-    const ntg_node_attribute *source_attribute, *target_attribute;
-	const ntg_node_attribute *destination_attribute;
+    const CNodeEndpoint *source_endpoint, *target_endpoint;
+	const CNodeEndpoint *destination_endpoint;
 	CValue *converted_value;
 
 	parent = search_node->parent;
@@ -536,14 +533,14 @@ void ntg_handle_connections( ntg_server *server, const ntg_node *search_node, co
     /* recurse up the tree first, so that higher-level connections are evaluated first */
     if( parent != ntg_server_get_root( server ) ) 
 	{
-        ntg_handle_connections( server, parent, changed_attribute );
+        ntg_handle_connections( server, parent, changed_endpoint );
     }
 
-	/* build attribute path relative to search_node */
-	string relative_attribute_path = changed_attribute->path.get_string();
+	/* build endpoint path relative to search_node */
+	string relative_endpoint_path = changed_endpoint->get_path().get_string();
 	if( parent != ntg_server_get_root( server ) )
 	{
-		relative_attribute_path = relative_attribute_path.substr( parent->path.get_string().length() + 1 );
+		relative_endpoint_path = relative_endpoint_path.substr( parent->path.get_string().length() + 1 );
 	}
 
 
@@ -562,58 +559,58 @@ void ntg_handle_connections( ntg_server *server, const ntg_node *search_node, co
 			continue;
 		}
 
-		source_attribute = ntg_find_attribute( current, NTG_ATTRIBUTE_SOURCE_PATH );
-		assert( source_attribute );
+		source_endpoint = ntg_find_node_endpoint( current, NTG_ENDPOINT_SOURCE_PATH );
+		assert( source_endpoint );
 
-		if( ( const string & ) *source_attribute->value == relative_attribute_path )
+		if( ( const string & ) *source_endpoint->get_value() == relative_endpoint_path )
 		{
-			if( changed_attribute->endpoint->type != NTG_CONTROL || !changed_attribute->endpoint->control_info->can_be_source )
+			if( changed_endpoint->get_endpoint()->type != NTG_CONTROL || !changed_endpoint->get_endpoint()->control_info->can_be_source )
 			{
 				NTG_TRACE_ERROR( "aborting handling of connection from endpoint which cannot be a connection source" );
 				continue;
 			}
 
 			/* found a connection! */
-			target_attribute = ntg_find_attribute( current, NTG_ATTRIBUTE_TARGET_PATH );
-			assert( target_attribute );
+			target_endpoint = ntg_find_node_endpoint( current, NTG_ENDPOINT_TARGET_PATH );
+			assert( target_endpoint );
 
-			destination_attribute = ntg_server_resolve_relative_path( server, search_node->parent, *target_attribute->value );
+			destination_endpoint = ntg_server_resolve_relative_path( server, search_node->parent, *target_endpoint->get_value() );
 
-			if( destination_attribute )
+			if( destination_endpoint )
 			{
 				/* found a destination! */
 
-				if( destination_attribute->endpoint->type != NTG_CONTROL || !destination_attribute->endpoint->control_info->can_be_target )
+				if( destination_endpoint->get_endpoint()->type != NTG_CONTROL || !destination_endpoint->get_endpoint()->control_info->can_be_target )
 				{
 					NTG_TRACE_ERROR( "aborting handling of connection to endpoint which cannot be a connection target" );
 					continue;
 				}
 
-				if( destination_attribute->endpoint->control_info->type == NTG_STATE )
+				if( destination_endpoint->get_endpoint()->control_info->type == NTG_STATE )
 				{
-					if( changed_attribute->value )
+					if( changed_endpoint->get_value() )
 					{
-						converted_value = changed_attribute->value->transmogrify( destination_attribute->value->get_type() );
+						converted_value = changed_endpoint->get_value()->transmogrify( destination_endpoint->get_value()->get_type() );
 
-						if( destination_attribute->endpoint->control_info->state_info->constraint.allowed_states )
+						if( destination_endpoint->get_endpoint()->control_info->state_info->constraint.allowed_states )
 						{
 							/* if destination has set of allowed states, quantize to nearest allowed state */
-							ntg_quantize_to_allowed_states( *converted_value, destination_attribute->endpoint->control_info->state_info->constraint.allowed_states );
+							ntg_quantize_to_allowed_states( *converted_value, destination_endpoint->get_endpoint()->control_info->state_info->constraint.allowed_states );
 						}
 					}
 					else
 					{
 						/* if source is a bang, reset target to it's current value */
-						converted_value = destination_attribute->value->clone();
+						converted_value = destination_endpoint->get_value()->clone();
 					}
 				}
 				else
 				{
-					assert( destination_attribute->endpoint->control_info->type == NTG_BANG );
+					assert( destination_endpoint->get_endpoint()->control_info->type == NTG_BANG );
 					converted_value = NULL;
 				}
 
-				ntg_set_( server, NTG_SOURCE_CONNECTION, destination_attribute->path, converted_value );
+				ntg_set_( server, NTG_SOURCE_CONNECTION, destination_endpoint->get_path(), converted_value );
 				
 				if( converted_value )
 				{
@@ -625,7 +622,7 @@ void ntg_handle_connections( ntg_server *server, const ntg_node *search_node, co
 }
 
 
-void ntg_update_connection_path_on_rename( ntg_server *server, const ntg_node_attribute *connection_path, const char *previous_name, const char *new_name )
+void ntg_update_connection_path_on_rename( ntg_server *server, const CNodeEndpoint *connection_path, const char *previous_name, const char *new_name )
 {
 	const char *old_connection_path;
 	int previous_name_length;
@@ -634,7 +631,7 @@ void ntg_update_connection_path_on_rename( ntg_server *server, const ntg_node_at
 	const char *path_after_renamed_node;
 	char *new_connection_path;
 
-	old_connection_path = ( ( const string & ) *connection_path->value ).c_str();
+	old_connection_path = ( ( const string & ) *connection_path->get_value() ).c_str();
 
 	previous_name_length = strlen( previous_name );
 	old_connection_path_length = strlen( old_connection_path );
@@ -649,7 +646,7 @@ void ntg_update_connection_path_on_rename( ntg_server *server, const ntg_node_at
 	new_connection_path = new char[ strlen( new_name ) + strlen( path_after_renamed_node ) + 1 ];
 	sprintf( new_connection_path, "%s%s", new_name, path_after_renamed_node );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, connection_path->path, &CStringValue( new_connection_path ) );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, connection_path->get_path(), &CStringValue( new_connection_path ) );
 
 	delete [] new_connection_path;
 }
@@ -661,7 +658,7 @@ void ntg_update_connections_on_object_rename( ntg_server *server, const ntg_node
 	const ntg_node *parent;
 	char *previous_name_in_parent_scope;
 	char *new_name_in_parent_scope;
-	const ntg_node_attribute *source_attribute, *target_attribute;
+	const CNodeEndpoint *source_endpoint, *target_endpoint;
 
     /* search amongst sibling nodes */
     for( current = search_node->next; current != search_node; current = current->next )
@@ -672,12 +669,12 @@ void ntg_update_connections_on_object_rename( ntg_server *server, const ntg_node
             continue;
         }
 
-		source_attribute = ntg_find_attribute( current, NTG_ATTRIBUTE_SOURCE_PATH );
-		target_attribute = ntg_find_attribute( current, NTG_ATTRIBUTE_TARGET_PATH );
-		assert( source_attribute && target_attribute );
+		source_endpoint = ntg_find_node_endpoint( current, NTG_ENDPOINT_SOURCE_PATH );
+		target_endpoint = ntg_find_node_endpoint( current, NTG_ENDPOINT_TARGET_PATH );
+		assert( source_endpoint && target_endpoint );
 
-		ntg_update_connection_path_on_rename( server, source_attribute, previous_name, new_name );
-		ntg_update_connection_path_on_rename( server, target_attribute, previous_name, new_name );
+		ntg_update_connection_path_on_rename( server, source_endpoint, previous_name, new_name );
+		ntg_update_connection_path_on_rename( server, target_endpoint, previous_name, new_name );
 	}
 	
     /* recurse up the tree */
@@ -698,15 +695,15 @@ void ntg_update_connections_on_object_rename( ntg_server *server, const ntg_node
 }
 
 
-void ntg_update_connection_path_on_move( ntg_server *server, const ntg_node_attribute *connection_path, const CPath &previous_path, const CPath &new_path )
+void ntg_update_connection_path_on_move( ntg_server *server, const CNodeEndpoint *connection_path, const CPath &previous_path, const CPath &new_path )
 {
 	ntg_node *parent;
 	int previous_path_length;
 	int absolute_path_length;
 	int characters_after_old_path;
 
-	parent = connection_path->node->parent;
-	const string &connection_path_string = *connection_path->value;
+	parent = connection_path->get_node()->parent;
+	const string &connection_path_string = *connection_path->get_value();
 
 	ostringstream absolute_path_stream;
 	absolute_path_stream << parent->path.get_string() << "." << connection_path_string;
@@ -740,7 +737,7 @@ void ntg_update_connection_path_on_move( ntg_server *server, const ntg_node_attr
 	ostringstream new_connection_path;
 	new_connection_path << new_relative_path.get_string() << absolute_path.substr( previous_path_length );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, connection_path->path, &CStringValue( new_connection_path.str() ) );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, connection_path->get_path(), &CStringValue( new_connection_path.str() ) );
 }
 
 
@@ -748,7 +745,7 @@ void ntg_update_connections_on_object_move( ntg_server *server, const ntg_node *
 {
     const ntg_node *current;
 	const ntg_node *parent;
-	const ntg_node_attribute *source_attribute, *target_attribute;
+	const CNodeEndpoint *source_endpoint, *target_endpoint;
 
     /* search amongst sibling nodes */
     for( current = search_node->next; current != search_node; current = current->next )
@@ -759,12 +756,12 @@ void ntg_update_connections_on_object_move( ntg_server *server, const ntg_node *
             continue;
         }
 
-		source_attribute = ntg_find_attribute( current, NTG_ATTRIBUTE_SOURCE_PATH );
-		target_attribute = ntg_find_attribute( current, NTG_ATTRIBUTE_TARGET_PATH );
-		assert( source_attribute && target_attribute );
+		source_endpoint = ntg_find_node_endpoint( current, NTG_ENDPOINT_SOURCE_PATH );
+		target_endpoint = ntg_find_node_endpoint( current, NTG_ENDPOINT_TARGET_PATH );
+		assert( source_endpoint && target_endpoint );
 
-		ntg_update_connection_path_on_move( server, source_attribute, previous_path, new_path );
-		ntg_update_connection_path_on_move( server, target_attribute, previous_path, new_path );
+		ntg_update_connection_path_on_move( server, source_endpoint, previous_path, new_path );
+		ntg_update_connection_path_on_move( server, target_endpoint, previous_path, new_path );
 	}
 	
     /* recurse up the tree */
@@ -809,17 +806,17 @@ bool ntg_should_copy_input_file( const CValue &value, ntg_command_source cmd_sou
 }
 
 
-void ntg_handle_input_file( ntg_server *server, const ntg_node_attribute *attribute, ntg_command_source cmd_source )
+void ntg_handle_input_file( ntg_server *server, const CNodeEndpoint *endpoint, ntg_command_source cmd_source )
 {
 	const char *filename;
 
-	assert( server && attribute );
-	assert( ntg_node_has_data_directory( attribute->node ) );
+	assert( server && endpoint );
+	assert( ntg_node_has_data_directory( endpoint->get_node() ) );
 
-	filename = ntg_copy_file_to_data_directory( attribute );
+	filename = ntg_copy_file_to_data_directory( endpoint );
 	if( filename )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, attribute->path, &CStringValue( filename ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, endpoint->get_path(), &CStringValue( filename ) );
 	}
 }
 
@@ -831,35 +828,35 @@ They must all conform the correct the method signature ntg_system_class_set_hand
 */
 
 
-void ntg_generic_active_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_generic_active_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	assert( attribute );
+	assert( endpoint );
 
-	if( ntg_interface_is_core_name_match( attribute->node->interface, NTG_CLASS_CONTAINER ) )
+	if( ntg_interface_is_core_name_match( endpoint->get_node()->interface, NTG_CLASS_CONTAINER ) )
 	{
-		ntg_container_active_handler( server, attribute->node, ( int ) *attribute->value != 0 );
+		ntg_container_active_handler( server, endpoint->get_node(), ( int ) *endpoint->get_value() != 0 );
 	}
 	else
 	{
 		if( cmd_source == NTG_SOURCE_INITIALIZATION )
 		{
-			ntg_non_container_active_initializer( server, attribute->node );
+			ntg_non_container_active_initializer( server, endpoint->get_node() );
 		}
 	}
 }
 
 
-void ntg_generic_data_directory_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_generic_data_directory_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	char *data_directory;
 
 	switch( cmd_source )
 	{
 		case NTG_SOURCE_INITIALIZATION:
-			/* create and set data directory when the attribute is initialized */
+			/* create and set data directory when the endpoint is initialized */
 
-			data_directory = ntg_node_data_directory_create( attribute->node, server );
-			ntg_set_( server, NTG_SOURCE_SYSTEM, attribute->path, &CStringValue( data_directory ) );
+			data_directory = ntg_node_data_directory_create( endpoint->get_node(), server );
+			ntg_set_( server, NTG_SOURCE_SYSTEM, endpoint->get_path(), &CStringValue( data_directory ) );
 			delete[] data_directory;
 			break;
 
@@ -874,7 +871,7 @@ void ntg_generic_data_directory_handler( ntg_server *server, const ntg_node_attr
 	    case NTG_SOURCE_OSC_API:
 	    case NTG_SOURCE_C_API:
 			/* external command is trying to reset the data directory - should delete the old one and create a new one */
-			ntg_node_data_directory_change( ( ( const string & ) *previous_value ).c_str(), ( ( const string & ) *attribute->value ).c_str() );
+			ntg_node_data_directory_change( ( ( const string & ) *previous_value ).c_str(), ( ( const string & ) *endpoint->get_value() ).c_str() );
 			break;		
 
 		case NTG_SOURCE_HOST:
@@ -890,23 +887,23 @@ void ntg_generic_data_directory_handler( ntg_server *server, const ntg_node_attr
 }
 
 
-void ntg_script_trigger_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_script_trigger_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-    const ntg_node_attribute *text_attribute;
+    const CNodeEndpoint *text_endpoint;
     const char *script = NULL;
 	char *script_output = NULL;
 
-    text_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_TEXT );
-    assert(text_attribute);
+    text_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_TEXT );
+    assert( text_endpoint );
 
-    script = ( ( const string & ) *text_attribute->value ).c_str();
+    script = ( ( const string & ) *text_endpoint->get_value() ).c_str();
 
     NTG_TRACE_VERBOSE_WITH_STRING("running script...", script);
 
-    script_output = ntg_lua_eval( attribute->node->parent->path, script );
+    script_output = ntg_lua_eval( endpoint->get_node()->parent->path, script );
 	if( script_output )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_INFO )->path, &CStringValue( script_output ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) );
 		delete[] script_output;
 	}
 
@@ -914,30 +911,30 @@ void ntg_script_trigger_handler( ntg_server *server, const ntg_node_attribute *a
 }
 
 
-void ntg_scaler_in_value_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_scaler_in_value_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	if( !ntg_node_is_active( attribute->node ) )
+	if( !ntg_node_is_active( endpoint->get_node() ) )
 	{
 		return;
 	}
 
-	const ntg_node_attribute *in_range_min_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_IN_RANGE_MIN );
-	const ntg_node_attribute *in_range_max_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_IN_RANGE_MAX );
-	const ntg_node_attribute *out_range_min_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_OUT_RANGE_MIN );
-	const ntg_node_attribute *out_range_max_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_OUT_RANGE_MAX );
-	const ntg_node_attribute *out_value_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_OUT_VALUE);
-	assert( in_range_min_attribute && in_range_max_attribute && out_range_min_attribute && out_range_max_attribute && out_value_attribute);
+	const CNodeEndpoint *in_range_min_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_IN_RANGE_MIN );
+	const CNodeEndpoint *in_range_max_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_IN_RANGE_MAX );
+	const CNodeEndpoint *out_range_min_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_OUT_RANGE_MIN );
+	const CNodeEndpoint *out_range_max_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_OUT_RANGE_MAX );
+	const CNodeEndpoint *out_value_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_OUT_VALUE);
+	assert( in_range_min_endpoint && in_range_max_endpoint && out_range_min_endpoint && out_range_max_endpoint && out_value_endpoint);
 
-	assert( attribute->value->get_type() == CValue::FLOAT );
-	assert( in_range_min_attribute->value && in_range_min_attribute->value->get_type() == CValue::FLOAT );
-	assert( in_range_max_attribute->value && in_range_max_attribute->value->get_type() == CValue::FLOAT );
-	assert( out_range_min_attribute->value && out_range_min_attribute->value->get_type() == CValue::FLOAT );
-	assert( out_range_max_attribute->value && out_range_max_attribute->value->get_type() == CValue::FLOAT );
+	assert( endpoint->get_value()->get_type() == CValue::FLOAT );
+	assert( in_range_min_endpoint->get_value() && in_range_min_endpoint->get_value()->get_type() == CValue::FLOAT );
+	assert( in_range_max_endpoint->get_value() && in_range_max_endpoint->get_value()->get_type() == CValue::FLOAT );
+	assert( out_range_min_endpoint->get_value() && out_range_min_endpoint->get_value()->get_type() == CValue::FLOAT );
+	assert( out_range_max_endpoint->get_value() && out_range_max_endpoint->get_value()->get_type() == CValue::FLOAT );
 
-	float in_range_min = *in_range_min_attribute->value;
-	float in_range_max = *in_range_max_attribute->value;
-	float out_range_min = *out_range_min_attribute->value;
-	float out_range_max = *out_range_max_attribute->value;
+	float in_range_min = *in_range_min_endpoint->get_value();
+	float in_range_max = *in_range_max_endpoint->get_value();
+	float out_range_min = *out_range_min_endpoint->get_value();
+	float out_range_max = *out_range_max_endpoint->get_value();
 
 	float in_range_total = in_range_max - in_range_min;
 	float out_range_total = out_range_max - out_range_min;
@@ -954,7 +951,7 @@ void ntg_scaler_in_value_handler( ntg_server *server, const ntg_node_attribute *
 	}
 
 	/*restrict to input range*/
-	float scaled_value = *attribute->value;
+	float scaled_value = *endpoint->get_value();
 	scaled_value = MAX( scaled_value, MIN( in_range_min, in_range_max ) );
 	scaled_value = MIN( scaled_value, MAX( in_range_min, in_range_max ) );
 
@@ -962,76 +959,76 @@ void ntg_scaler_in_value_handler( ntg_server *server, const ntg_node_attribute *
 	scaled_value = ( scaled_value - in_range_min ) * out_range_total / in_range_total + out_range_min;
 
 	/*store result*/
-	ntg_set_( server, NTG_SOURCE_SYSTEM, out_value_attribute->path, &CFloatValue( scaled_value ) );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, out_value_endpoint->get_path(), &CFloatValue( scaled_value ) );
 }
 
 
-void ntg_control_point_value_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_control_point_value_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_envelope_update_value(server, attribute->node->parent );
+	ntg_envelope_update_value(server, endpoint->get_node()->parent );
 }
 
 
-void ntg_control_point_tick_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_control_point_tick_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_envelope_update_value(server, attribute->node->parent );
+	ntg_envelope_update_value(server, endpoint->get_node()->parent );
 }
 
 
-void ntg_envelope_start_tick_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_envelope_start_tick_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_envelope_update_value(server, attribute->node );
+	ntg_envelope_update_value(server, endpoint->get_node() );
 }
 
 
-void ntg_envelope_current_tick_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_envelope_current_tick_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_envelope_update_value(server, attribute->node );
+	ntg_envelope_update_value(server, endpoint->get_node() );
 }
 
 
-void ntg_player_active_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_active_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, attribute->node->id );
+	ntg_player_update(server, endpoint->get_node()->id );
 }
 
 
-void ntg_player_play_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_play_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, attribute->node->id );
+	ntg_player_update(server, endpoint->get_node()->id );
 }
 
 
-void ntg_player_tick_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_tick_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	if( cmd_source != NTG_SOURCE_SYSTEM )
 	{
-		ntg_player_update(server, attribute->node->id );
+		ntg_player_update(server, endpoint->get_node()->id );
 	}
 }
 
 
-void ntg_player_loop_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_loop_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, attribute->node->id );
+	ntg_player_update(server, endpoint->get_node()->id );
 }
 
 
-void ntg_player_start_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_start_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, attribute->node->id );
+	ntg_player_update(server, endpoint->get_node()->id );
 }
 
 
-void ntg_player_end_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_end_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, attribute->node->id );
+	ntg_player_update(server, endpoint->get_node()->id );
 }
 
 
-void ntg_player_scene_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_scene_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const ntg_node_attribute *scene_start_attribute, *scene_length_attribute, *scene_mode_attribute;
+	const CNodeEndpoint *scene_start_endpoint, *scene_length_endpoint, *scene_mode_endpoint;
 
 	/* defaults for values to copy into the player.  The logic below updates these variables */
 
@@ -1043,9 +1040,9 @@ void ntg_player_scene_handler( ntg_server *server, const ntg_node_attribute *att
 
 	/* handle scene selection */
 
-	string scene_name = *attribute->value;
+	string scene_name = *endpoint->get_value();
 
-	const ntg_node *scene_node = ntg_node_find_by_name( attribute->node, scene_name.c_str() );
+	const ntg_node *scene_node = ntg_node_find_by_name( endpoint->get_node(), scene_name.c_str() );
 	if( !scene_node )	
 	{
 		if( !scene_name.empty() )
@@ -1055,15 +1052,15 @@ void ntg_player_scene_handler( ntg_server *server, const ntg_node_attribute *att
 	}
 	else
 	{
-		scene_start_attribute = ntg_find_attribute( scene_node, NTG_ATTRIBUTE_START );
-		scene_length_attribute = ntg_find_attribute( scene_node, NTG_ATTRIBUTE_LENGTH );
-		scene_mode_attribute = ntg_find_attribute( scene_node, NTG_ATTRIBUTE_MODE );
-		assert( scene_start_attribute && scene_length_attribute && scene_mode_attribute );
+		scene_start_endpoint = ntg_find_node_endpoint( scene_node, NTG_ENDPOINT_START );
+		scene_length_endpoint = ntg_find_node_endpoint( scene_node, NTG_ENDPOINT_LENGTH );
+		scene_mode_endpoint = ntg_find_node_endpoint( scene_node, NTG_ENDPOINT_MODE );
+		assert( scene_start_endpoint && scene_length_endpoint && scene_mode_endpoint );
 
-		string scene_mode = *scene_mode_attribute->value;
+		string scene_mode = *scene_mode_endpoint->get_value();
 
-		start = *scene_start_attribute->value;
-		int length = *scene_length_attribute->value;
+		start = *scene_start_endpoint->get_value();
+		int length = *scene_length_endpoint->get_value();
 		end = start + length;
 		tick = start;
 
@@ -1085,43 +1082,43 @@ void ntg_player_scene_handler( ntg_server *server, const ntg_node_attribute *att
 		}
 	}
 
-	ntg_player_set_state( server, attribute->node, tick, play, loop, start, end );
+	ntg_player_set_state( server, endpoint->get_node(), tick, play, loop, start, end );
 }
 
 
-void ntg_scene_activate_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_scene_activate_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	const ntg_node *player_node;
-	const ntg_node_attribute *player_scene_attribute;
+	const CNodeEndpoint *player_scene_endpoint;
 	
-	player_node = attribute->node->parent;
+	player_node = endpoint->get_node()->parent;
 	assert( player_node );
 
-	player_scene_attribute = ntg_find_attribute( player_node, NTG_ATTRIBUTE_SCENE );
-	assert( player_scene_attribute );
+	player_scene_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_SCENE );
+	assert( player_scene_endpoint );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_scene_attribute->path, &CStringValue( attribute->node->name ) ); 
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_scene_endpoint->get_path(), &CStringValue( endpoint->get_node()->name ) ); 
 }
 
 
-void ntg_scene_mode_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_scene_mode_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const ntg_node_attribute *scene_start_attribute, *scene_length_attribute;
+	const CNodeEndpoint *scene_start_endpoint, *scene_length_endpoint;
 
-	const ntg_node *scene_node = attribute->node;
+	const ntg_node *scene_node = endpoint->get_node();
 
 	if( !ntg_scene_is_selected( scene_node ) )
 	{
 		return;
 	}
 
-	scene_start_attribute = ntg_find_attribute( scene_node, NTG_ATTRIBUTE_START );
-	scene_length_attribute = ntg_find_attribute( scene_node, NTG_ATTRIBUTE_LENGTH );
-	assert( scene_start_attribute && scene_length_attribute );
+	scene_start_endpoint = ntg_find_node_endpoint( scene_node, NTG_ENDPOINT_START );
+	scene_length_endpoint = ntg_find_node_endpoint( scene_node, NTG_ENDPOINT_LENGTH );
+	assert( scene_start_endpoint && scene_length_endpoint );
 
-	string scene_mode = *attribute->value;
-	int start = *scene_start_attribute->value;
-	int length = *scene_length_attribute->value;
+	string scene_mode = *endpoint->get_value();
+	int start = *scene_start_endpoint->get_value();
+	int length = *scene_length_endpoint->get_value();
 	int end = start + length;
 	int tick = 0;
 	int play = 0;
@@ -1154,80 +1151,80 @@ void ntg_scene_mode_handler( ntg_server *server, const ntg_node_attribute *attri
 }
 
 
-void ntg_scene_start_and_length_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_scene_start_and_length_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	const ntg_node *scene_node;
-	const ntg_node_attribute *scene_start, *scene_length, *player_tick, *player_start, *player_end;
+	const CNodeEndpoint *scene_start, *scene_length, *player_tick, *player_start, *player_end;
 
-	scene_node = attribute->node;
+	scene_node = endpoint->get_node();
 
 	if( !ntg_scene_is_selected( scene_node ) )
 	{
 		return;
 	}
 
-	scene_start = ntg_find_attribute( scene_node, NTG_ATTRIBUTE_START );
-	scene_length = ntg_find_attribute( scene_node, NTG_ATTRIBUTE_LENGTH );
-	player_tick = ntg_find_attribute( scene_node->parent, NTG_ATTRIBUTE_TICK );
-	player_start = ntg_find_attribute( scene_node->parent, NTG_ATTRIBUTE_START );
-	player_end = ntg_find_attribute( scene_node->parent, NTG_ATTRIBUTE_END );
+	scene_start = ntg_find_node_endpoint( scene_node, NTG_ENDPOINT_START );
+	scene_length = ntg_find_node_endpoint( scene_node, NTG_ENDPOINT_LENGTH );
+	player_tick = ntg_find_node_endpoint( scene_node->parent, NTG_ENDPOINT_TICK );
+	player_start = ntg_find_node_endpoint( scene_node->parent, NTG_ENDPOINT_START );
+	player_end = ntg_find_node_endpoint( scene_node->parent, NTG_ENDPOINT_END );
 	assert( scene_start && scene_length && player_tick && player_start && player_end );
 
-	int start = *scene_start->value;
-	int length = *scene_length->value;
+	int start = *scene_start->get_value();
+	int length = *scene_length->get_value();
 	int end = start + length;
 
 	CIntegerValue player_start_value( start );
 	CIntegerValue player_end_value( end );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->path, &player_start_value );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_start->path, &player_start_value );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_end->path, &player_end_value );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->get_path(), &player_start_value );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_start->get_path(), &player_start_value );
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_end->get_path(), &player_end_value );
 }
 
 
-void ntg_player_next_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_next_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	const ntg_node *selected_scene;
 	const ntg_node *search_scene;
-	const ntg_node_attribute *scene_attribute;
-	const ntg_node_attribute *tick_attribute;
-	const ntg_node_attribute *start_attribute;
+	const CNodeEndpoint *scene_endpoint;
+	const CNodeEndpoint *tick_endpoint;
+	const CNodeEndpoint *start_endpoint;
 	int best_scene_start;
 	int search_scene_start;
 
 	/* find selected scene start*/
-	scene_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_SCENE );
-	tick_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_TICK );
-	assert( scene_attribute && tick_attribute );
+	scene_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_SCENE );
+	tick_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_TICK );
+	assert( scene_endpoint && tick_endpoint );
 
-	int player_tick = *tick_attribute->value;
+	int player_tick = *tick_endpoint->get_value();
 
-	const string &selected_scene_name = *scene_attribute->value;
+	const string &selected_scene_name = *scene_endpoint->get_value();
 	if( selected_scene_name.empty() )
 	{
 		selected_scene = NULL;
 	}
 	else
 	{
-		selected_scene = ntg_node_find_by_name( attribute->node, selected_scene_name.c_str() );
+		selected_scene = ntg_node_find_by_name( endpoint->get_node(), selected_scene_name.c_str() );
 		assert( selected_scene );
 
-		start_attribute = ntg_find_attribute( selected_scene, NTG_ATTRIBUTE_START );
-		assert( start_attribute );
+		start_endpoint = ntg_find_node_endpoint( selected_scene, NTG_ENDPOINT_START );
+		assert( start_endpoint );
 	}
 
 	/* iterate through scenes looking for next scene */
-	search_scene = attribute->node->nodes;
+	search_scene = endpoint->get_node()->nodes;
 	const char *next_scene_name = NULL;
 
 	do
 	{
 		if( search_scene != selected_scene )
 		{
-			start_attribute = ntg_find_attribute( search_scene, NTG_ATTRIBUTE_START );
-			assert( start_attribute );
-			search_scene_start = *start_attribute->value;
+			start_endpoint = ntg_find_node_endpoint( search_scene, NTG_ENDPOINT_START );
+			assert( start_endpoint );
+			search_scene_start = *start_endpoint->get_value();
 
 			if( search_scene_start >= player_tick )
 			{
@@ -1241,58 +1238,58 @@ void ntg_player_next_handler( ntg_server *server, const ntg_node_attribute *attr
 
 		search_scene = search_scene->next;
 	}
-	while( search_scene != attribute->node->nodes );
+	while( search_scene != endpoint->get_node()->nodes );
 
 	if( next_scene_name )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_attribute->path, &CStringValue( next_scene_name ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( next_scene_name ) );
 	}
 }
 
 
-void ntg_player_prev_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_player_prev_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	const ntg_node *selected_scene;
 	const ntg_node *search_scene;
-	const ntg_node_attribute *scene_attribute;
-	const ntg_node_attribute *tick_attribute;
-	const ntg_node_attribute *start_attribute;
+	const CNodeEndpoint *scene_endpoint;
+	const CNodeEndpoint *tick_endpoint;
+	const CNodeEndpoint *start_endpoint;
 	int best_scene_start;
 	int search_scene_start;
 
 	/* find selected scene start*/
-	scene_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_SCENE );
-	tick_attribute = ntg_find_attribute( attribute->node, NTG_ATTRIBUTE_TICK );
-	assert( scene_attribute && tick_attribute );
+	scene_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_SCENE );
+	tick_endpoint = ntg_find_node_endpoint( endpoint->get_node(), NTG_ENDPOINT_TICK );
+	assert( scene_endpoint && tick_endpoint );
 
-	int player_tick = *tick_attribute->value;
+	int player_tick = *tick_endpoint->get_value();
 
-	const string &selected_scene_name = *scene_attribute->value;
+	const string &selected_scene_name = *scene_endpoint->get_value();
 	if( selected_scene_name.empty() )
 	{
 		selected_scene = NULL;
 	}
 	else
 	{
-		selected_scene = ntg_node_find_by_name( attribute->node, selected_scene_name.c_str() );
+		selected_scene = ntg_node_find_by_name( endpoint->get_node(), selected_scene_name.c_str() );
 		assert( selected_scene );
 
-		start_attribute = ntg_find_attribute( selected_scene, NTG_ATTRIBUTE_START );
-		assert( start_attribute );
+		start_endpoint = ntg_find_node_endpoint( selected_scene, NTG_ENDPOINT_START );
+		assert( start_endpoint );
 	}
 
 
 	/* iterate through scenes looking for next scene */
-	search_scene = attribute->node->nodes;
+	search_scene = endpoint->get_node()->nodes;
 	const char *prev_scene_name = NULL;
 
 	do
 	{
 		if( search_scene != selected_scene )
 		{
-			start_attribute = ntg_find_attribute( search_scene, NTG_ATTRIBUTE_START );
-			assert( start_attribute );
-			search_scene_start = *start_attribute->value;
+			start_endpoint = ntg_find_node_endpoint( search_scene, NTG_ENDPOINT_START );
+			assert( start_endpoint );
+			search_scene_start = *start_endpoint->get_value();
 
 			if( search_scene_start < player_tick )
 			{
@@ -1306,151 +1303,151 @@ void ntg_player_prev_handler( ntg_server *server, const ntg_node_attribute *attr
 
 		search_scene = search_scene->next;
 	}
-	while( search_scene != attribute->node->nodes );
+	while( search_scene != endpoint->get_node()->nodes );
 
 	if( prev_scene_name )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_attribute->path, &CStringValue( prev_scene_name ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( prev_scene_name ) );
 	}
 }
 
 
-void ntg_connection_source_path_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_connection_source_path_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	/* remove and/or add in host if needed */ 
 
 	const ntg_node *connection_node = NULL, *connection_owner = NULL;
-	const ntg_node_attribute *source_path = NULL, *target_path = NULL;
-	const ntg_node_attribute *old_source_attribute = NULL, *new_source_attribute = NULL, *target_attribute = NULL;
+	const CNodeEndpoint *source_path = NULL, *target_path = NULL;
+	const CNodeEndpoint *old_source_endpoint = NULL, *new_source_endpoint = NULL, *target_endpoint = NULL;
 
-	assert( attribute );
-	connection_node = attribute->node;
+	assert( endpoint );
+	connection_node = endpoint->get_node();
 	assert( connection_node );
 	connection_owner = connection_node->parent;
 	assert( connection_owner );
 
 	if( cmd_source == NTG_SOURCE_SYSTEM )
 	{
-		/* the connection source changed due to the connected attribute being moved or renamed - no need to do anything in the host */
+		/* the connection source changed due to the connected endpoint being moved or renamed - no need to do anything in the host */
 		return;
 	}
 
-	source_path = ntg_find_attribute( connection_node, NTG_ATTRIBUTE_SOURCE_PATH );
-	target_path = ntg_find_attribute( connection_node, NTG_ATTRIBUTE_TARGET_PATH );
+	source_path = ntg_find_node_endpoint( connection_node, NTG_ENDPOINT_SOURCE_PATH );
+	target_path = ntg_find_node_endpoint( connection_node, NTG_ENDPOINT_TARGET_PATH );
 	assert( source_path && target_path );
 
-	old_source_attribute = ntg_server_resolve_relative_path( server, connection_owner, *previous_value );
-	new_source_attribute = ntg_server_resolve_relative_path( server, connection_owner, *source_path->value );
-	target_attribute = ntg_server_resolve_relative_path( server, connection_owner, *target_path->value );
+	old_source_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *previous_value );
+	new_source_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *source_path->get_value ());
+	target_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *target_path->get_value ());
 
-	if( new_source_attribute && new_source_attribute->endpoint->type == NTG_CONTROL && !new_source_attribute->endpoint->control_info->can_be_source )
+	if( new_source_endpoint && new_source_endpoint->get_endpoint()->type == NTG_CONTROL && !new_source_endpoint->get_endpoint()->control_info->can_be_source )
 	{
 		NTG_TRACE_ERROR( "Setting connection source to an endpoint which should not be a connection source!" );
 	}
 
-	if( !target_attribute || !ntg_endpoint_is_audio_stream( target_attribute->endpoint ) )
+	if( !target_endpoint || !ntg_endpoint_is_audio_stream( target_endpoint->get_endpoint() ) )
 	{
 		/* early exit - wasn't an audio connection before and still isn't */
 		return;
 	}
 
-	if( target_attribute->endpoint->stream_info->direction != NTG_STREAM_INPUT )
+	if( target_endpoint->get_endpoint()->stream_info->direction != NTG_STREAM_INPUT )
 	{
 		/* early exit - target isn't an input */
 		return;
 	}
 
-	if( old_source_attribute && ntg_endpoint_is_audio_stream( old_source_attribute->endpoint ) )
+	if( old_source_endpoint && ntg_endpoint_is_audio_stream( old_source_endpoint->get_endpoint() ) )
 	{
-		if( old_source_attribute->endpoint->stream_info->direction == NTG_STREAM_OUTPUT )
+		if( old_source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
 		{
 			/* remove previous connection in host */
-			ntg_server_connect_in_host( server, old_source_attribute, target_attribute, false );
+			ntg_server_connect_in_host( server, old_source_endpoint, target_endpoint, false );
 		}
 	}
 
-	if( new_source_attribute && ntg_endpoint_is_audio_stream( new_source_attribute->endpoint ) )
+	if( new_source_endpoint && ntg_endpoint_is_audio_stream( new_source_endpoint->get_endpoint() ) )
 	{
-		if( new_source_attribute->endpoint->stream_info->direction == NTG_STREAM_OUTPUT )
+		if( new_source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
 		{
 			/* create new connection in host */
-			ntg_server_connect_in_host( server, new_source_attribute, target_attribute, true );
+			ntg_server_connect_in_host( server, new_source_endpoint, target_endpoint, true );
 		}
 	}
 }
 
 
-void ntg_connection_target_path_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_connection_target_path_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
 	/* remove and/or add in host if needed */ 
 
 	const ntg_node *connection_node = NULL, *connection_owner = NULL;
-	const ntg_node_attribute *source_path = NULL, *target_path = NULL;
-	const ntg_node_attribute *source_attribute = NULL, *old_target_attribute = NULL, *new_target_attribute = NULL;
+	const CNodeEndpoint *source_path = NULL, *target_path = NULL;
+	const CNodeEndpoint *source_endpoint = NULL, *old_target_endpoint = NULL, *new_target_endpoint = NULL;
 
-	assert( attribute );
-	connection_node = attribute->node;
+	assert( endpoint );
+	connection_node = endpoint->get_node();
 	assert( connection_node );
 	connection_owner = connection_node->parent;
 	assert( connection_owner );
 
 	if( cmd_source == NTG_SOURCE_SYSTEM )
 	{
-		/* the connection target changed due to the connected attribute being moved or renamed - no need to do anything in the host */
+		/* the connection target changed due to the connected endpoint being moved or renamed - no need to do anything in the host */
 		return;
 	}
 
-	source_path = ntg_find_attribute( connection_node, NTG_ATTRIBUTE_SOURCE_PATH );
-	target_path = ntg_find_attribute( connection_node, NTG_ATTRIBUTE_TARGET_PATH );
+	source_path = ntg_find_node_endpoint( connection_node, NTG_ENDPOINT_SOURCE_PATH );
+	target_path = ntg_find_node_endpoint( connection_node, NTG_ENDPOINT_TARGET_PATH );
 	assert( source_path && target_path );
 
-	source_attribute = ntg_server_resolve_relative_path( server, connection_owner, *source_path->value );
-	old_target_attribute = ntg_server_resolve_relative_path( server, connection_owner, *previous_value );
-	new_target_attribute = ntg_server_resolve_relative_path( server, connection_owner, *target_path->value );
+	source_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *source_path->get_value() );
+	old_target_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *previous_value );
+	new_target_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *target_path->get_value() );
 
-	if( new_target_attribute && new_target_attribute->endpoint->type == NTG_CONTROL && !new_target_attribute->endpoint->control_info->can_be_target )
+	if( new_target_endpoint && new_target_endpoint->get_endpoint()->type == NTG_CONTROL && !new_target_endpoint->get_endpoint()->control_info->can_be_target )
 	{
 		NTG_TRACE_ERROR( "Setting connection target to an endpoint which should not be a connection target!" );
 	}
 
 
-	if( !source_attribute || !ntg_endpoint_is_audio_stream( source_attribute->endpoint ) )
+	if( !source_endpoint || !ntg_endpoint_is_audio_stream( source_endpoint->get_endpoint() ) )
 	{
 		/* early exit - wasn't an audio connection before and still isn't */
 		return;
 	}
 
-	if( source_attribute->endpoint->stream_info->direction != NTG_STREAM_OUTPUT )
+	if( source_endpoint->get_endpoint()->stream_info->direction != NTG_STREAM_OUTPUT )
 	{
 		/* early exit - source isn't an output */
 		return;
 	}
 
-	if( old_target_attribute && ntg_endpoint_is_audio_stream( old_target_attribute->endpoint ) )
+	if( old_target_endpoint && ntg_endpoint_is_audio_stream( old_target_endpoint->get_endpoint() ) )
 	{
-		if( old_target_attribute->endpoint->stream_info->direction == NTG_STREAM_INPUT )
+		if( old_target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
 		{
 			/* remove previous connection in host */
-			ntg_server_connect_in_host( server, source_attribute, old_target_attribute, false );
+			ntg_server_connect_in_host( server, source_endpoint, old_target_endpoint, false );
 		}
 	}
 
-	if( new_target_attribute && ntg_endpoint_is_audio_stream( new_target_attribute->endpoint ) )
+	if( new_target_endpoint && ntg_endpoint_is_audio_stream( new_target_endpoint->get_endpoint() ) )
 	{
-		if( new_target_attribute->endpoint->stream_info->direction == NTG_STREAM_INPUT )
+		if( new_target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
 		{
 			/* create new connection in host */
-			ntg_server_connect_in_host( server, source_attribute, new_target_attribute, true );
+			ntg_server_connect_in_host( server, source_endpoint, new_target_endpoint, true );
 		}
 	}
 }
 
 
-void ntg_generic_set_handler( ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source )
+void ntg_generic_set_handler( ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	if( ntg_endpoint_is_input_file( attribute->endpoint ) && ntg_should_copy_input_file( *attribute->value, cmd_source ) )
+	if( ntg_endpoint_is_input_file( endpoint->get_endpoint() ) && ntg_should_copy_input_file( *endpoint->get_value(), cmd_source ) )
 	{
-		ntg_handle_input_file( server, attribute, cmd_source );
+		ntg_handle_input_file( server, endpoint, cmd_source );
 	}
 
 	switch( cmd_source )
@@ -1460,7 +1457,7 @@ void ntg_generic_set_handler( ntg_server *server, const ntg_node_attribute *attr
 			break;
 
 		default:
-			ntg_handle_connections( server, attribute->node, attribute );
+			ntg_handle_connections( server, endpoint->get_node(), endpoint );
 	}
 }
 
@@ -1486,10 +1483,10 @@ void ntg_player_rename_handler( ntg_server *server, const ntg_node *node, const 
 
 void ntg_scene_rename_handler( ntg_server *server, const ntg_node *node, const char *previous_name, ntg_command_source cmd_source )
 {
-	/* if this is the selected scene, need to update the player's scene attribute */
+	/* if this is the selected scene, need to update the player's scene endpoint */
 
 	const ntg_node *player;
-	const ntg_node_attribute *scene_attribute;
+	const CNodeEndpoint *scene_endpoint;
 
 	player = node->parent;
 	assert( player );
@@ -1500,12 +1497,12 @@ void ntg_scene_rename_handler( ntg_server *server, const ntg_node *node, const c
 		return;
 	}
 
-	scene_attribute = ntg_find_attribute( player, NTG_ATTRIBUTE_SCENE );
-	assert( scene_attribute );
+	scene_endpoint = ntg_find_node_endpoint( player, NTG_ENDPOINT_SCENE );
+	assert( scene_endpoint );
 
-	if( ( const string & ) *scene_attribute->value == previous_name )
+	if( ( const string & ) *scene_endpoint->get_value() == previous_name )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_attribute->path, &CStringValue( node->name ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( node->name ) );
 	}
 }
 
@@ -1555,10 +1552,10 @@ void ntg_generic_new_handler( ntg_server *server, const ntg_node *new_node, ntg_
 
 	const ntg_node *ancestor;
 	const ntg_node *sibling;
-	const ntg_node_attribute *source_path;
-	const ntg_node_attribute *target_path;
-	const ntg_node_attribute *source_attribute;
-	const ntg_node_attribute *target_attribute;
+	const CNodeEndpoint *source_path;
+	const CNodeEndpoint *target_path;
+	const CNodeEndpoint *source_endpoint;
+	const CNodeEndpoint *target_endpoint;
 
 	assert( server && new_node );
 
@@ -1571,23 +1568,23 @@ void ntg_generic_new_handler( ntg_server *server, const ntg_node *new_node, ntg_
 			{
 				/* found a connection which might target the new node */
 
-				source_path = ntg_find_attribute( sibling, NTG_ATTRIBUTE_SOURCE_PATH );
-				target_path = ntg_find_attribute( sibling, NTG_ATTRIBUTE_TARGET_PATH );
+				source_path = ntg_find_node_endpoint( sibling, NTG_ENDPOINT_SOURCE_PATH );
+				target_path = ntg_find_node_endpoint( sibling, NTG_ENDPOINT_TARGET_PATH );
 				assert( source_path && target_path );
 
-				source_attribute = ntg_server_resolve_relative_path( server, ancestor->parent, *source_path->value );
-				target_attribute = ntg_server_resolve_relative_path( server, ancestor->parent, *target_path->value );
+				source_endpoint = ntg_server_resolve_relative_path( server, ancestor->parent, *source_path->get_value() );
+				target_endpoint = ntg_server_resolve_relative_path( server, ancestor->parent, *target_path->get_value() );
 	
-				if( source_attribute && target_attribute )
+				if( source_endpoint && target_endpoint )
 				{
-					if( source_attribute->node == new_node || target_attribute->node == new_node )
+					if( source_endpoint->get_node() == new_node || target_endpoint->get_node() == new_node )
 					{
-						if( ntg_endpoint_is_audio_stream( source_attribute->endpoint ) && source_attribute->endpoint->stream_info->direction == NTG_STREAM_OUTPUT )
+						if( ntg_endpoint_is_audio_stream( source_endpoint->get_endpoint() ) && source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
 						{
-							if( ntg_endpoint_is_audio_stream( target_attribute->endpoint ) && target_attribute->endpoint->stream_info->direction == NTG_STREAM_INPUT )
+							if( ntg_endpoint_is_audio_stream( target_endpoint->get_endpoint()) && target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
 							{
 								/* create connection in host */
-								ntg_server_connect_in_host( server, source_attribute, target_attribute, true );
+								ntg_server_connect_in_host( server, source_endpoint, target_endpoint, true );
 							}
 						}
 					}
@@ -1640,10 +1637,10 @@ void ntg_player_delete_handler( ntg_server *server, const ntg_node *node, ntg_co
 
 void ntg_scene_delete_handler( ntg_server *server, const ntg_node *node, ntg_command_source cmd_source )
 {
-	/* if this is the selected scene, need to clear the player's scene attribute */
+	/* if this is the selected scene, need to clear the player's scene endpoint */
 
 	const ntg_node *player;
-	const ntg_node_attribute *scene_attribute;
+	const CNodeEndpoint *scene_endpoint;
 
 	player = node->parent;
 	assert( player );
@@ -1654,12 +1651,12 @@ void ntg_scene_delete_handler( ntg_server *server, const ntg_node *node, ntg_com
 		return;
 	}
 
-	scene_attribute = ntg_find_attribute( player, NTG_ATTRIBUTE_SCENE );
-	assert( scene_attribute );
+	scene_endpoint = ntg_find_node_endpoint( player, NTG_ENDPOINT_SCENE );
+	assert( scene_endpoint );
 
-	if( ( const string & ) *scene_attribute->value == node->name ) 
+	if( ( const string & ) *scene_endpoint->get_value() == node->name ) 
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_attribute->path, &CStringValue( "" ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( "" ) );
 	}
 }
 
@@ -1669,26 +1666,26 @@ void ntg_connection_delete_handler( ntg_server *server, const ntg_node *node, nt
 	/* remove in host if needed */ 
 
 	const ntg_node *connection_owner = NULL;
-	const ntg_node_attribute *source_path = NULL, *target_path = NULL;
-	const ntg_node_attribute *source_attribute = NULL, *target_attribute = NULL;
+	const CNodeEndpoint *source_path = NULL, *target_path = NULL;
+	const CNodeEndpoint *source_endpoint = NULL, *target_endpoint = NULL;
 
 	assert( node );
 	connection_owner = node->parent;
 	assert( connection_owner );
 
-	source_path = ntg_find_attribute( node, NTG_ATTRIBUTE_SOURCE_PATH );
-	target_path = ntg_find_attribute( node, NTG_ATTRIBUTE_TARGET_PATH );
+	source_path = ntg_find_node_endpoint( node, NTG_ENDPOINT_SOURCE_PATH );
+	target_path = ntg_find_node_endpoint( node, NTG_ENDPOINT_TARGET_PATH );
 	assert( source_path && target_path );
 
-	source_attribute = ntg_server_resolve_relative_path( server, connection_owner, *source_path->value );
-	target_attribute = ntg_server_resolve_relative_path( server, connection_owner, *target_path->value );
+	source_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *source_path->get_value() );
+	target_endpoint = ntg_server_resolve_relative_path( server, connection_owner, *target_path->get_value() );
 	
-	if( source_attribute && ntg_endpoint_is_audio_stream( source_attribute->endpoint ) && source_attribute->endpoint->stream_info->direction == NTG_STREAM_OUTPUT )
+	if( source_endpoint && ntg_endpoint_is_audio_stream( source_endpoint->get_endpoint() ) && source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
 	{
-		if( target_attribute && ntg_endpoint_is_audio_stream( target_attribute->endpoint ) && target_attribute->endpoint->stream_info->direction == NTG_STREAM_INPUT )
+		if( target_endpoint && ntg_endpoint_is_audio_stream( target_endpoint->get_endpoint() ) && target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
 		{
 			/* remove connection in host */
-			ntg_server_connect_in_host( server, source_attribute, target_attribute, false );
+			ntg_server_connect_in_host( server, source_endpoint, target_endpoint, false );
 		}
 	}
 }
@@ -1782,36 +1779,36 @@ ntg_system_class_handler *ntg_set_handlers_create(const ntg_server *server)
 	NTG_TRACE_PROGRESS("creating set handlers");
 
 	ntg_system_class_handlers_add( &set_handlers, server, NULL, NULL, ntg_generic_set_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NULL, NTG_ATTRIBUTE_ACTIVE, ntg_generic_active_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NULL, NTG_ATTRIBUTE_DATA_DIRECTORY, ntg_generic_data_directory_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NULL, NTG_ENDPOINT_ACTIVE, ntg_generic_active_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NULL, NTG_ENDPOINT_DATA_DIRECTORY, ntg_generic_data_directory_handler );
 
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCRIPT, NTG_ATTRIBUTE_TRIGGER, ntg_script_trigger_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCRIPT, NTG_ENDPOINT_TRIGGER, ntg_script_trigger_handler );
 
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCALER, NTG_ATTRIBUTE_IN_VALUE, ntg_scaler_in_value_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCALER, NTG_ENDPOINT_IN_VALUE, ntg_scaler_in_value_handler );
 
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONTROL_POINT, NTG_ATTRIBUTE_TICK, ntg_control_point_tick_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONTROL_POINT, NTG_ATTRIBUTE_VALUE, ntg_control_point_value_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONTROL_POINT, NTG_ENDPOINT_TICK, ntg_control_point_tick_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONTROL_POINT, NTG_ENDPOINT_VALUE, ntg_control_point_value_handler );
 
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_ENVELOPE, NTG_ATTRIBUTE_START_TICK, ntg_envelope_start_tick_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_ENVELOPE, NTG_ATTRIBUTE_CURRENT_TICK, ntg_envelope_current_tick_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_ENVELOPE, NTG_ENDPOINT_START_TICK, ntg_envelope_start_tick_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_ENVELOPE, NTG_ENDPOINT_CURRENT_TICK, ntg_envelope_current_tick_handler );
 
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_ACTIVE, ntg_player_active_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_PLAY, ntg_player_play_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_TICK, ntg_player_tick_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_LOOP, ntg_player_loop_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_START, ntg_player_start_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_END, ntg_player_end_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_SCENE, ntg_player_scene_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_NEXT, ntg_player_next_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ATTRIBUTE_PREV, ntg_player_prev_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_ACTIVE, ntg_player_active_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_PLAY, ntg_player_play_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_TICK, ntg_player_tick_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_LOOP, ntg_player_loop_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_START, ntg_player_start_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_END, ntg_player_end_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_SCENE, ntg_player_scene_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_NEXT, ntg_player_next_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_PLAYER, NTG_ENDPOINT_PREV, ntg_player_prev_handler );
 
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ATTRIBUTE_ACTIVATE, ntg_scene_activate_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ATTRIBUTE_MODE, ntg_scene_mode_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ATTRIBUTE_START, ntg_scene_start_and_length_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ATTRIBUTE_LENGTH, ntg_scene_start_and_length_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ENDPOINT_ACTIVATE, ntg_scene_activate_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ENDPOINT_MODE, ntg_scene_mode_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ENDPOINT_START, ntg_scene_start_and_length_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_SCENE, NTG_ENDPOINT_LENGTH, ntg_scene_start_and_length_handler );
 
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONNECTION, NTG_ATTRIBUTE_SOURCE_PATH, ntg_connection_source_path_handler );
-	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONNECTION, NTG_ATTRIBUTE_TARGET_PATH, ntg_connection_target_path_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONNECTION, NTG_ENDPOINT_SOURCE_PATH, ntg_connection_source_path_handler );
+	ntg_system_class_handlers_add( &set_handlers, server, NTG_CLASS_CONNECTION, NTG_ENDPOINT_TARGET_PATH, ntg_connection_target_path_handler );
 
 	return set_handlers;
 }
@@ -1962,29 +1959,29 @@ void ntg_system_class_handle_new( ntg_server *server, const ntg_node *node, ntg_
 }
 
 
-void ntg_system_class_handle_set(ntg_server *server, const ntg_node_attribute *attribute, const CValue *previous_value, ntg_command_source cmd_source)
+void ntg_system_class_handle_set(ntg_server *server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source)
 {
 	ntg_system_class_handler *handler = NULL;
 	ntg_system_class_set_handler_function function = NULL;
 
 	assert( server );
-	assert( attribute );
+	assert( endpoint );
 
 	for( handler = server->system_class_data->set_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &attribute->node->interface->module_guid ) )
+		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &endpoint->get_node()->interface->module_guid ) )
 		{
 			continue;
 		}
 
-		if( handler->attribute_name && attribute && strcmp( handler->attribute_name, attribute->endpoint->name ) != 0 )
+		if( handler->attribute_name && endpoint && strcmp( handler->attribute_name, endpoint->get_endpoint()->name ) != 0 )
 		{
 			continue;
 		}
 
 		assert( handler->function );
 		function = ( ntg_system_class_set_handler_function ) handler->function;
-		function( server, attribute, previous_value, cmd_source );
+		function( server, endpoint, previous_value, cmd_source );
 	}
 }
 
@@ -2057,10 +2054,10 @@ void ntg_system_class_handle_delete(ntg_server *server, const ntg_node *node, nt
 
 bool ntg_node_is_active( const ntg_node *node )
 {
-	const ntg_node_attribute *active_attribute = ntg_find_attribute( node, NTG_ATTRIBUTE_ACTIVE );
-	if( active_attribute )
+	const CNodeEndpoint *active_endpoint = ntg_find_node_endpoint( node, NTG_ENDPOINT_ACTIVE );
+	if( active_endpoint )
 	{
-		int active = *active_attribute->value;
+		int active = *active_endpoint->get_value();
 		return ( active != 0 );
 	}
 	else
@@ -2072,23 +2069,23 @@ bool ntg_node_is_active( const ntg_node *node )
 
 bool ntg_node_has_data_directory( const ntg_node *node )
 {
-	return ( ntg_find_attribute( node, NTG_ATTRIBUTE_DATA_DIRECTORY ) != NULL );
+	return ( ntg_find_node_endpoint( node, NTG_ENDPOINT_DATA_DIRECTORY ) != NULL );
 }
 
 
 const string *ntg_node_get_data_directory( const ntg_node *node )
 {
-	const ntg_node_attribute *data_directory;
+	const CNodeEndpoint *data_directory;
 
 	assert( node );
 
-	data_directory = ntg_find_attribute( node, NTG_ATTRIBUTE_DATA_DIRECTORY );
+	data_directory = ntg_find_node_endpoint( node, NTG_ENDPOINT_DATA_DIRECTORY );
 	if( !data_directory )
 	{
 		return NULL;
 	}
 
-	const string &value = *data_directory->value;
+	const string &value = *data_directory->get_value();
 	return &value;
 }
 

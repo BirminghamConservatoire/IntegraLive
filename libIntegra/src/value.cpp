@@ -30,7 +30,6 @@
 
 #include <libxml/xmlmemory.h>
 
-#include "memory.h"
 #include "helper.h"
 #include "value.h"
 #include "globals.h"

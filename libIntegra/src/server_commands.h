@@ -32,7 +32,7 @@ ntg_command_status ntg_set_(ntg_server *server,
 ntg_command_status ntg_new_(ntg_server *server,
         ntg_internal::ntg_command_source cmd_source,
         const GUID *module_id,
-        const char *node_name,
+        ntg_api::string node_name,
         const ntg_api::CPath &path);
 
 ntg_command_status  ntg_delete_(ntg_server *server,

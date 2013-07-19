@@ -59,7 +59,7 @@ namespace ntg_api
 	};
 
 
-	typedef std::list<ntg_api::CPath> path_list;
+	typedef std::list<CPath> path_list;
 }
 
 

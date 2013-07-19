@@ -38,7 +38,7 @@ void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *no
 
 ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node *parent_node );
 
-const char *ntg_copy_file_to_data_directory( const ntg_node_attribute *attribute );
+const char *ntg_copy_file_to_data_directory( const ntg_internal::CNodeEndpoint *node_endpoint );
 
 const char *ntg_extract_filename_from_path( const char *path );
 

@@ -30,13 +30,11 @@
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
 
-#include "memory.h"
 #include "helper.h"
 #include "value.h"
 #include "path.h"
 #include "globals.h"
 #include "node.h"
-#include "attribute.h"
 #include "server.h"
 #include "server_commands.h"
 #include "module_manager.h"
@@ -72,8 +70,6 @@ ntg_node *ntg_node_new(void)
     node->prev              = node;
     node->parent            = NULL;
     node->nodes             = NULL;
-    node->attributes        = NULL;
-    node->attribute_last    = NULL;
 
     return node;
 
@@ -108,7 +104,12 @@ ntg_error_code ntg_node_free(ntg_node * node)
     NTG_TRACE_VERBOSE_WITH_STRING("freeing node", node->name);
 
     ntg_node_unlink(node);
-    ntg_node_attributes_free(node->attributes);
+
+	for( node_endpoint_map::iterator i = node->node_endpoints.begin(); i != node->node_endpoints.end(); i++ )
+	{
+		delete i->second;
+	}
+
     delete[] node->name;
     delete node;
 
@@ -127,6 +128,7 @@ void ntg_node_set_interface(ntg_node * node, const ntg_interface *interface)
 
 	node->interface = interface;
 }
+
 
 ntg_error_code ntg_node_add( ntg_node *container, ntg_node * node )
 {
@@ -155,7 +157,7 @@ ntg_error_code ntg_node_add( ntg_node *container, ntg_node * node )
     }
 
     node->parent = container;
-    node->path = ntg_node_get_path(node);
+	ntg_node_update_path( node );
 
     return NTG_NO_ERROR;
 
@@ -198,108 +200,56 @@ ntg_node *ntg_node_find_by_path( const CPath &path, ntg_node *root )
 }
 
 
-ntg_node_attribute *ntg_node_get_attribute_root(const ntg_node * node)
+void ntg_node_update_path( ntg_node *node )
 {
-
-    if (node == NULL) {
-        NTG_TRACE_ERROR("node was NULL");
-        return NULL;
-    }
-
-    return node->attributes;
-
-}
-
-
-ntg_node_attribute *ntg_node_attribute_find_by_name(const ntg_node * node,
-                                                    const char *name)
-{
-    ntg_node_attribute *current;
-
-    /* All instances should have >=1 attributes. not valid to pass in root */
-    assert(node->attributes);
-    assert(name);
-
-    current = node->attributes;
-
-    do {
-
-		if (!strcmp(current->endpoint->name, name)) {
-            return current;
-        }
-
-        current = current->next;
-
-    } while (current != node->attributes);
-
-    return NULL;
-}
-
-
-void ntg_node_update_attribute_paths( ntg_node * node )
-{
-    ntg_node_attribute *current;
-    ntg_node_attribute *marker;
-
-    current = node->attributes;
-    marker = current;
-
-    /* make sure the node path is correct */
-
-    do {
-        current->path = node->path;
-        current->path.append_element( current->endpoint->name );
-
-        current = current->next;
-
-    } while (current != marker);
-
-}
-
-void ntg_node_add_attribute(ntg_node *node, const ntg_endpoint *endpoint)
-{
-    ntg_node_attribute *attribute;
-
-    attribute = ntg_node_attribute_new();
-
-    attribute->node  = node;
-	attribute->endpoint = endpoint;
-
-	if( endpoint->type == NTG_CONTROL && endpoint->control_info->type == NTG_STATE )
+	if( node->parent )
 	{
-		attribute->value = CValue::factory( endpoint->control_info->state_info->type );
-	}
-
-	attribute->path = node->path;
-	attribute->path.append_element( endpoint->name );
-
-    if( node->attributes ) 
-	{
-		assert( node->attribute_last );
-
-		attribute->next = node->attributes;
-		node->attribute_last->next = attribute;
-		node->attribute_last = attribute;
+		node->path = node->parent->path;
 	}
 	else
 	{
-		assert( !node->attribute_last );
+		node->path = CPath();
+	}
 
-		attribute->next = attribute;
-		node->attribute_last = attribute;
-		node->attributes = attribute;
+	node->path.append_element( node->name );
+
+	node_endpoint_map &node_endpoints = node->node_endpoints;
+	for( node_endpoint_map::iterator i = node_endpoints.begin(); i != node_endpoints.end(); i++ )
+	{
+		i->second->update_path();
+	}
+
+	if( node->nodes )
+	{
+		ntg_node *child_iterator = node->nodes;
+		do
+		{
+			ntg_node_update_path( child_iterator );
+			child_iterator = child_iterator->next;
+		}
+		while( child_iterator != node->nodes );
 	}
 }
 
-void ntg_node_add_attributes(ntg_node *node, const ntg_endpoint *endpoint_list)
-{
-	const ntg_endpoint *endpoint;
 
+void ntg_node_add_node_endpoint( ntg_node *node, const ntg_endpoint *endpoint )
+{
+	assert( node && endpoint );
+
+    CNodeEndpoint *node_endpoint = new CNodeEndpoint;
+	node_endpoint->initialize( *node, *endpoint );
+
+	node->node_endpoints[ endpoint->name ] = node_endpoint;
+}
+
+
+void ntg_node_add_node_endpoints( ntg_node *node, const ntg_endpoint *endpoint_list )
+{
 	assert( node && endpoint_list );
 
-	for( endpoint = endpoint_list; endpoint; endpoint = endpoint->next )
+	for( const ntg_endpoint *endpoint = endpoint_list; endpoint; endpoint = endpoint->next )
 	{
-        ntg_node_add_attribute(node, endpoint);
+        ntg_node_add_node_endpoint( node, endpoint );
     }
 }
 
@@ -458,34 +408,8 @@ void ntg_node_set_name( ntg_node * node, const char *name )
 }
 
 
-CPath ntg_node_get_path( const ntg_node *node)
-{
-	CPath path;
-	if( node->parent )
-	{
-		path = node->parent->path; 
-	}
-
-	path.append_element( node->name );
-
-    return path;
-}
-
-
-CPath ntg_node_update_path(ntg_node * node)
-{
-    node->path = ntg_node_get_path(node);
-
-    ntg_node_update_attribute_paths(node);
-
-    return node->path;
-}
-
-
 ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr writer)
 {
-    ntg_node_attribute *attribute_root;
-    ntg_node_attribute *attribute;
     ntg_node *child_iterator;
     xmlChar *tmp;
 
@@ -516,23 +440,21 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
     xmlTextWriterWriteAttribute(writer, BAD_CAST NTG_STR_NAME, BAD_CAST tmp);
 	free( tmp );
 
-    /* get attribute root */
-    attribute_root = ntg_node_get_attribute_root(node);
-    attribute = attribute_root;
-
-    /* write out attribute list */
-    do 
+	const node_endpoint_map &node_endpoints = node->node_endpoints;
+	for( node_endpoint_map::const_iterator node_endpoint_iterator = node_endpoints.begin(); node_endpoint_iterator != node_endpoints.end(); node_endpoint_iterator++ )
 	{
-		if( !attribute->value || !attribute->endpoint->control_info->state_info->is_saved_to_file ) 
+		const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
+		const CValue *value = node_endpoint->get_value();
+		const ntg_endpoint *endpoint = node_endpoint->get_endpoint();
+		if( !value || !endpoint->control_info->state_info->is_saved_to_file ) 
 		{
-			attribute = attribute->next;
 			continue;
 		}
 
         /* write attribute->name */
-		CValue::type type = attribute->value->get_type();
+		CValue::type type = value->get_type();
 
-		tmp = ConvertInput(attribute->endpoint->name, XML_ENCODING);
+		tmp = ConvertInput( endpoint->name, XML_ENCODING);
         xmlTextWriterStartElement(writer, BAD_CAST NTG_STR_ATTRIBUTE);
         xmlTextWriterWriteAttribute(writer, BAD_CAST NTG_STR_NAME,
                                     BAD_CAST tmp);
@@ -542,15 +464,12 @@ ntg_error_code ntg_node_save_tree( const ntg_node * node, xmlTextWriterPtr write
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_TYPECODE, "%d", CValue::type_to_ixd_code( type ) );
 
         /* write attribute->value */
-		string value_string = attribute->value->get_as_string();
+		string value_string = value->get_as_string();
         tmp = ConvertInput( value_string.c_str(), XML_ENCODING );
         xmlTextWriterWriteString( writer, BAD_CAST tmp );
         xmlTextWriterEndElement( writer );
 		free( tmp );
-
-        attribute = attribute->next;
-
-    } while (attribute != attribute_root);
+    }
 
     /* traverse children */
     child_iterator = node->nodes;
@@ -729,9 +648,6 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, node_list &loaded_nodes )
 {
     const ntg_node     *parent;
-    ntg_node_attribute *store;
-    ntg_node_attribute *marker;
-	const ntg_node_attribute *existing_attribute;
     xmlNodePtr          xml_node;
     xmlChar             *name;
     const xmlChar       *element;
@@ -744,10 +660,10 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
 	char				*saved_version;
 	bool				saved_version_is_more_recent;
 
-    store           = NULL;
-    marker          = NULL;
     prev_depth      = 0;
     rv              = xmlTextReaderRead(reader);
+	
+	value_map loaded_values;
 
     if (!rv) 
 	{
@@ -755,7 +671,7 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
     }
 
     NTG_TRACE_VERBOSE("loading... ");
-    while (rv == 1) 
+    while( rv == 1 ) 
 	{
         element = xmlTextReaderConstName(reader);
         depth = xmlTextReaderDepth(reader);
@@ -839,20 +755,24 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
 					content = NULL;
 				}
 
-				existing_attribute = ntg_find_attribute( node, ( char * ) name );
-				if( existing_attribute && ntg_endpoint_should_load_from_ixd( existing_attribute->endpoint, value->get_type() ) )
+				const CNodeEndpoint *existing_node_endpoint = ntg_find_node_endpoint( node, ( char * ) name );
+				if( existing_node_endpoint && ntg_endpoint_should_load_from_ixd( existing_node_endpoint->get_endpoint(), value->get_type() ) )
 				{
 					/* 
 					only store attribute if it exists and is of reasonable type 
 					(could've been removed or changed from interface since ixd was written) 
 					*/
 
-					CPath attribute_path( node->path );
-					attribute_path.append_element( (char *) name );
-					store = ntg_node_attribute_insert_in_list( store, existing_attribute->endpoint, attribute_path, value );
+					CPath path( node->path );
+					path.append_element( existing_node_endpoint->get_endpoint()->name );
+
+					loaded_values[ path.get_string() ] = value;
+				}
+				else
+				{
+	                delete value;
 				}
 
-                delete value;
                 xmlFree( name );
             }
         }
@@ -860,16 +780,16 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
         rv = xmlTextReaderRead(reader);
     }
 
-	NTG_TRACE_VERBOSE("done!");
+	NTG_TRACE_VERBOSE( "done!" );
 
-    NTG_TRACE_VERBOSE("Setting values...");
-    while(store != NULL) 
+    NTG_TRACE_VERBOSE( "Setting values..." );
+
+	for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
 	{
-		ntg_set_( server_, NTG_SOURCE_LOAD, store->path, store->value );
-        marker = store;
-        store = store->next;
-        ntg_node_attribute_free(marker);
-    }
+		CPath path( value_iterator->first );
+		ntg_set_( server_, NTG_SOURCE_LOAD, path, value_iterator->second );
+		delete value_iterator->second;
+	}
 
     NTG_TRACE_VERBOSE("done!");
 
@@ -879,45 +799,28 @@ ntg_error_code ntg_node_load( const ntg_node * node, xmlTextReaderPtr reader, no
 
 ntg_error_code ntg_node_send_loaded_attributes_to_host( const ntg_node *node, ntg_bridge_interface *bridge )
 {
-	ntg_node_attribute *attribute;
+	const ntg_interface *interface = node->interface;
 
-	assert( node );
-
-	if( ntg_interface_has_implementation( node->interface ) )
+	if( !ntg_interface_has_implementation( interface ) )
 	{
-		attribute = node->attributes;
-		if( attribute )
-		{
-			do
-			{
-				if( ntg_endpoint_should_send_to_host( attribute->endpoint ) && attribute->endpoint->control_info->type == NTG_STATE )
-				{
-					ntg_node_attribute_send_value( attribute, bridge );
-				}
+		return NTG_NO_ERROR;
+	}
 
-				attribute = attribute->next;
-			}
-			while( attribute != node->attributes );
+	for( const ntg_endpoint *endpoint = interface->endpoint_list; endpoint; endpoint = endpoint->next )
+	{
+		if( !ntg_endpoint_should_send_to_host( endpoint ) || endpoint->control_info->type != NTG_STATE )
+		{
+			continue;
 		}
+
+		assert( node->node_endpoints.count( endpoint->name ) == 1 );
+
+		bridge->send_value( node->node_endpoints.at( endpoint->name ) );
 	}
 
 	return NTG_NO_ERROR;
 }
 
-
-void ntg_node_update_children(ntg_node *node)
-{
-    ntg_node *current;
-
-    if(node->nodes){
-        current = node->nodes;
-        do {
-            ntg_node_update_path(current);
-            ntg_node_update_children(current);
-            current = current->next;
-        } while (current != node->nodes);
-    }
-}
 
 void ntg_node_rename(ntg_node *node, const char *name)
 {
@@ -925,24 +828,21 @@ void ntg_node_rename(ntg_node *node, const char *name)
     delete[] node->name;
     node->name = ntg_strdup(name);
     ntg_node_update_path(node);
-
-    /* update child paths */
-    ntg_node_update_children(node);
 }
 
 
-const ntg_node_attribute *ntg_find_attribute( const ntg_node *node, const char *attribute_name )
+CNodeEndpoint *ntg_find_node_endpoint( const ntg_node *node, const char *attribute_name )
 {
 	ostringstream path;
 	path << node->path.get_string() << "." << attribute_name;
 
-	return ntg_find_attribute( path.str() );
+	return ntg_find_node_endpoint( path.str() );
 }
 
 
-const ntg_node_attribute *ntg_find_attribute( const string &attribute_path )
+CNodeEndpoint *ntg_find_node_endpoint( const string &attribute_path )
 {
-	map_string_to_attribute::const_iterator lookup = server_->state_table.find( attribute_path );
+	node_endpoint_map::const_iterator lookup = server_->state_table.find( attribute_path );
 	if( lookup == server_->state_table.end() )
 	{
 		return NULL;
@@ -968,23 +868,16 @@ const ntg_node *ntg_node_get_root(const ntg_node *node) {
 }
 
 
-void ntg_node_add_to_statetable( const ntg_node *node, map_string_to_attribute &statetable )
+void ntg_node_add_to_statetable( const ntg_node *node, node_endpoint_map &statetable )
 {
-	const ntg_node_attribute *attribute;
-	const ntg_node *child_node;
-
-	/* add attributes to statetable */
-	attribute = node->attributes;
-	do
+	/* add attributes to map */
+	for( node_endpoint_map::const_iterator i = node->node_endpoints.begin(); i != node->node_endpoints.end(); i++ )
 	{
-		statetable[ attribute->path.get_string() ] = attribute;
-
-		attribute = attribute->next;
+		statetable[ i->second->get_path().get_string() ] = i->second;
 	}
-	while( attribute != node->attributes );
 
 	/* recurse child nodes */
-	child_node = node->nodes;
+	const ntg_node *child_node = node->nodes;
 	if( child_node )
 	{
 		do
@@ -998,24 +891,16 @@ void ntg_node_add_to_statetable( const ntg_node *node, map_string_to_attribute &
 }
 
 
-void ntg_node_remove_from_statetable( const ntg_node *node, map_string_to_attribute &statetable )
+void ntg_node_remove_from_statetable( const ntg_node *node, node_endpoint_map &statetable )
 {
-	const ntg_node_attribute *attribute;
-	const ntg_node *child_node;
-
 	/* remove attributes from statetable */
-	attribute = node->attributes;
-	do
+	for( node_endpoint_map::const_iterator i = node->node_endpoints.begin(); i != node->node_endpoints.end(); i++ )
 	{
-		statetable.erase( attribute->path.get_string() );
-
-		attribute = attribute->next;
+		statetable.erase( i->second->get_path().get_string() );
 	}
-	while( attribute != node->attributes );
 
 	/* recurse child nodes */
-
-	child_node = node->nodes;
+	const ntg_node *child_node = node->nodes;
 	if( child_node )
 	{
 		do

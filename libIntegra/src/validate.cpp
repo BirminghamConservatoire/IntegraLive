@@ -23,7 +23,6 @@
 #include <assert.h>
 
 #include "validate.h"
-#include "memory.h"
 #include "helper.h"
 #include "globals.h"
 

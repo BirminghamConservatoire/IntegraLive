@@ -34,7 +34,7 @@ using namespace ntg_api;
 using namespace ntg_internal;
 
 
-ntg_command_status ntg_new( const GUID *module_id, const char *node_name, const CPath &path )
+ntg_command_status ntg_new( const GUID *module_id, string node_name, const CPath &path )
 {
     ntg_command_status status;
 

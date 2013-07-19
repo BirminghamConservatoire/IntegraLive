@@ -24,7 +24,6 @@
 #include <string.h>
 
 #include "globals.h"
-#include "memory.h"
 #include "Integra/integra.h"
 
 #define VALUE_SEPARATOR ": "

@@ -27,7 +27,6 @@
 
 #include <assert.h>
 
-#include "memory.h"
 #include "reentrance_checker.h"
 #include "system_class_handlers.h"
 
@@ -36,7 +35,7 @@ using namespace ntg_internal;
 
 struct ntg_reentrance_checker_state_ 
 {
-	ntg_node_attribute *node_attribute;
+	const CNodeEndpoint *node_endpoint;
 
 	ntg_reentrance_checker_state *next;
 
@@ -87,7 +86,7 @@ bool ntg_does_reentrance_check_care_about_source( ntg_command_source cmd_source 
 }
 
 
-bool ntg_reentrance_push( ntg_server *server, ntg_node_attribute *attribute, ntg_command_source cmd_source )
+bool ntg_reentrance_push( ntg_server *server, const CNodeEndpoint *endpoint, ntg_command_source cmd_source )
 {
 	ntg_reentrance_checker_state *state;
 
@@ -100,7 +99,7 @@ bool ntg_reentrance_push( ntg_server *server, ntg_node_attribute *attribute, ntg
 
 	for( state = server->system_class_data->reentrance_checker_state; state; state = state->next )
 	{
-		if( state->node_attribute == attribute )
+		if( state->node_endpoint == endpoint )
 		{
 			/* detected reentrance! */
 			return true;
@@ -110,7 +109,7 @@ bool ntg_reentrance_push( ntg_server *server, ntg_node_attribute *attribute, ntg
 	/* now push the stack (no reentrance detected) */
 
 	state = new ntg_reentrance_checker_state;
-	state->node_attribute = attribute;
+	state->node_endpoint = endpoint;
 	state->next = server->system_class_data->reentrance_checker_state;
 
 	server->system_class_data->reentrance_checker_state = state;	

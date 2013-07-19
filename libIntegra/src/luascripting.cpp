@@ -43,12 +43,10 @@ extern "C"
 }
 	 
 #include "error.h"
-#include "attribute.h"
 #include "node.h"
 #include "lua.h"
 #include "luascripting.h"
 #include "server_commands.h"
-#include "memory.h"
 #include "value.h"
 #include "helper.h"
 #include "globals.h"
@@ -168,11 +166,10 @@ static float ntg_lua_get_double(lua_State * L, int argnum)
 static int ntg_lua_set( lua_State * L )
 {
 	const ntg_node *node = NULL;
-	const ntg_node_attribute *attribute = NULL;
 	ntg_command_status set_result;
 	int num_arguments;
 	CPath path, node_path;
-	string attribute_name;
+	string endpoint_name;
 
 	assert( context_stack && context_stack->parent_path );
 
@@ -190,7 +187,7 @@ static int ntg_lua_set( lua_State * L )
     }
 	
 	node_path = path;
-	attribute_name = node_path.pop_element();
+	endpoint_name = node_path.pop_element();
 
 	node = ntg_node_find_by_path( node_path, ntg_server_get_root( server_ ) );
 	if( !node )
@@ -199,28 +196,28 @@ static int ntg_lua_set( lua_State * L )
 		return 0;
 	}
 
-	attribute = ntg_find_attribute( node, attribute_name.c_str() );
-	if( !attribute )
+	const CNodeEndpoint *endpoint = ntg_find_node_endpoint( node, endpoint_name.c_str() );
+	if( !endpoint )
 	{
 		ntg_lua_error_handler( "Can't find endpoint: %s", path.get_string().c_str() );
 		return 0;
 	}
 
-	if( attribute->endpoint->type != NTG_CONTROL )
+	if( endpoint->get_endpoint()->type != NTG_CONTROL )
 	{
 		ntg_lua_error_handler( "Endpoint is not a control: %s", path.get_string().c_str() );
 		return 0;
 	}
 
-	if( !attribute->endpoint->control_info->can_be_target )
+	if( !endpoint->get_endpoint()->control_info->can_be_target )
 	{
 		ntg_lua_error_handler( "Endpoint is not a legal script target: %s", path.get_string().c_str() );
 		return 0;
 	}
 
-	if( attribute->value )
+	if( endpoint->get_value() )
 	{	
-		assert( attribute->endpoint->control_info->type == NTG_STATE );
+		assert( endpoint->get_endpoint()->control_info->type == NTG_STATE );
 
 		CValue *new_value( NULL );
 
@@ -240,7 +237,7 @@ static int ntg_lua_set( lua_State * L )
 		}
 
 		assert( new_value );
-		CValue *converted_value = new_value->transmogrify( attribute->endpoint->control_info->state_info->type );
+		CValue *converted_value = new_value->transmogrify( endpoint->get_endpoint()->control_info->state_info->type );
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
@@ -251,7 +248,7 @@ static int ntg_lua_set( lua_State * L )
 	}
 	else
 	{
-		assert( attribute->endpoint->control_info->type == NTG_BANG );
+		assert( endpoint->get_endpoint()->control_info->type == NTG_BANG );
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Sending bang to %s...", path.get_string().c_str() );
 		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, NULL );
@@ -268,51 +265,46 @@ static int ntg_lua_set( lua_State * L )
 
 static int ntg_lua_get(lua_State * L)
 {
-	const ntg_node *node = NULL;
-	const ntg_node_attribute *attribute = NULL;
-    int i;
-    int num_arguments = 0;
-
 	assert( context_stack && context_stack->parent_path );
 
-	num_arguments = lua_gettop( L );
+	int num_arguments = lua_gettop( L );
 
     CPath path( *context_stack->parent_path );
-    for(i = 1; i <= num_arguments; i++) 
+    for( int i = 1; i <= num_arguments; i++) 
 	{
         path.append_element( ntg_lua_get_string( L, i ) );
     }
 
 	CPath node_path( path );
-	string attribute_name = node_path.pop_element();
+	string endpoint_name = node_path.pop_element();
 
-	node = ntg_node_find_by_path( node_path, ntg_server_get_root( server_ ) );
+	const ntg_node *node = ntg_node_find_by_path( node_path, ntg_server_get_root( server_ ) );
 	if( !node )
 	{
 		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	attribute = ntg_find_attribute( node, attribute_name.c_str() );
-	if( !attribute )
+	const CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( node, endpoint_name.c_str() );
+	if( !node_endpoint )
 	{
 		ntg_lua_error_handler( "Can't find endpoint: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	if( attribute->endpoint->type != NTG_CONTROL )
+	if( node_endpoint->get_endpoint()->type != NTG_CONTROL )
 	{
 		ntg_lua_error_handler( "Endpoint is not a control: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	if( attribute->endpoint->control_info->type != NTG_STATE )
+	if( node_endpoint->get_endpoint()->control_info->type != NTG_STATE )
 	{
 		ntg_lua_error_handler( "Endpoint is not stateful: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	if( !attribute->endpoint->control_info->can_be_source )
+	if( !node_endpoint->get_endpoint()->control_info->can_be_source )
 	{
 		ntg_lua_error_handler( "Endpoint is not a valid script input: %s", node_path.get_string().c_str() );
 		return 0;

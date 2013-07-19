@@ -30,6 +30,13 @@ namespace ntg_api
 	class CValue;
 }
 
+namespace ntg_internal
+{
+	class CNodeEndpoint;
+}
+
+
+
 #ifdef _WIN32
 	#ifdef INTEGRA_BRIDGE_EXPORTS	
 		#define INTEGRA_BRIDGE_API __declspec(dllexport)
@@ -78,13 +85,13 @@ typedef struct ntg_bridge_interface_
      * are handled by libIntegra. }
      *
      */
-    int (*module_connect)(const ntg_node_attribute *source, const ntg_node_attribute *target);
+    int (*module_connect)(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target);
 
     /** \brief Disconnect endpoints in a target environment */
-    int (*module_disconnect)(const ntg_node_attribute *source, const ntg_node_attribute *target);
+    int (*module_disconnect)(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target);
 
     /** \brief send a value to a particular port */
-    void (*send_value)(const ntg_node_attribute *target);
+    void (*send_value)(const ntg_internal::CNodeEndpoint *target);
 
     /** \brief Initialise the bridge 
      *

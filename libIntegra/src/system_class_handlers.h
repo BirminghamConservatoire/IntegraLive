@@ -51,7 +51,7 @@ void ntg_system_class_handlers_initialize(ntg_server *server);
 void ntg_system_class_handlers_shutdown(ntg_server *server);
 
 void ntg_system_class_handle_new(ntg_server *server, const ntg_node *node, ntg_internal::ntg_command_source cmd_source );
-void ntg_system_class_handle_set(ntg_server *server, const ntg_node_attribute *attribute, const ntg_api::CValue *previous_value, ntg_internal::ntg_command_source cmd_source );
+void ntg_system_class_handle_set(ntg_server *server, const ntg_internal::CNodeEndpoint *node_endpoint, const ntg_api::CValue *previous_value, ntg_internal::ntg_command_source cmd_source );
 void ntg_system_class_handle_rename(ntg_server *server, const ntg_node *node, const char *previous_name, ntg_internal::ntg_command_source cmd_source );
 void ntg_system_class_handle_move(ntg_server *server, const ntg_node *node, const ntg_api::CPath &previous_path, ntg_internal::ntg_command_source cmd_source );
 void ntg_system_class_handle_delete(ntg_server *server, const ntg_node *node, ntg_internal::ntg_command_source cmd_source );

@@ -31,7 +31,6 @@
 
 #include "interface.h"
 #include "Integra/integra.h"
-#include "memory.h"
 #include "helper.h"
 #include "value.h"
 #include "trace.h"

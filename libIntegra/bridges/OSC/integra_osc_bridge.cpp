@@ -40,13 +40,13 @@ void lo_address_set_flags(lo_address t, int flags);
 #include "Integra/integra_bridge.h"
 
 #include "src/interface.h"
-#include "src/attribute.h"
 #include "src/node.h"
 #include "src/path.h"
 #include "src/trace.h"
 #include "src/value.h"
 
 using namespace ntg_api;
+using namespace ntg_internal;
 
 #define NTG_OSC_ERROR -1
 #define NTG_BRIDGE_LISTEN_PORT "7772"
@@ -203,72 +203,69 @@ static bool osc_get_stream_connection_name( char *dest, const ntg_endpoint *endp
 }
 
 
-static int osc_module_connect(const ntg_node_attribute *source, const ntg_node_attribute *target)
+static int osc_module_connect(const CNodeEndpoint *source, const CNodeEndpoint *target)
 {
 	char source_name[ 10 ];
 	char target_name[ 10 ];
 	assert( source && target );
 
-	if( !osc_get_stream_connection_name( source_name, source->endpoint, source->node->interface ) )
+	if( !osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->interface ) )
 	{
 		NTG_TRACE_ERROR( "Failed to get stream connection name" );
 		return -1;
 	}
 
-	if( !osc_get_stream_connection_name( target_name, target->endpoint, target->node->interface ) )
+	if( !osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->interface ) )
 	{
 		NTG_TRACE_ERROR( "Failed to get stream connection name" );
 		return -1;
 	}
 
 	/* Make the connection */
-    lo_send(module_host, "/connect", "isis", source->node->id, source_name, target->node->id, target_name );
+    lo_send(module_host, "/connect", "isis", source->get_node()->id, source_name, target->get_node()->id, target_name );
 
     return 0;
 
 }
 
-static int osc_module_disconnect(const ntg_node_attribute *source, const ntg_node_attribute *target)
+static int osc_module_disconnect(const CNodeEndpoint *source, const CNodeEndpoint *target)
 {
 	char source_name[ 10 ];
 	char target_name[ 10 ];
 	assert( source && target );
 
-	osc_get_stream_connection_name( source_name, source->endpoint, source->node->interface );
-	osc_get_stream_connection_name( target_name, target->endpoint, target->node->interface );
+	osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->interface );
+	osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->interface );
 
 	/* remove the connection */
-    lo_send(module_host, "/disconnect", "isis", source->node->id, source_name, target->node->id, target_name );
+    lo_send(module_host, "/disconnect", "isis", source->get_node()->id, source_name, target->get_node()->id, target_name );
 
 	return 0;
 }
 
 
-static void osc_send_value(const ntg_node_attribute *attribute)
+static void osc_send_value(const CNodeEndpoint *node_endpoint )
 {
-    int module_id;
-    const char *attribute_name;
+	assert( node_endpoint );
 
-	assert( attribute );
-
-	module_id = attribute->node->id;
-	attribute_name = attribute->endpoint->name;
-	const CValue *value = attribute->value;
+	int module_id = node_endpoint->get_node()->id;
+	const char *endpoint_name = node_endpoint->get_endpoint()->name;
+	const CValue *value = node_endpoint->get_value();
 
 	if( value )
 	{
 		switch( value->get_type() )
 		{
 			case CValue::FLOAT:
-				lo_send(module_host, "/send", "isf", module_id, attribute_name, ( float ) *value );
+				lo_send(module_host, "/send", "isf", module_id, endpoint_name, ( float ) *value );
 				break;
 
 			case CValue::INTEGER:
-				lo_send(module_host, "/send", "isi", module_id, attribute_name, ( int ) *value );
+				lo_send(module_host, "/send", "isi", module_id, endpoint_name, ( int ) *value );
 				break;
 
 			case CValue::STRING:
-				lo_send(module_host, "/send", "iss", module_id, attribute_name, ( ( const string & ) *value ).c_str() );
+				lo_send(module_host, "/send", "iss", module_id, endpoint_name, ( ( const string & ) *value ).c_str() );
 				break;
 
 			default:
@@ -278,7 +275,7 @@ static void osc_send_value(const ntg_node_attribute *attribute)
 	}
 	else
 	{
-		lo_send(module_host, "/send", "iss", module_id, attribute_name, "bang");
+		lo_send(module_host, "/send", "iss", module_id, endpoint_name, "bang");
 	}
 }
 

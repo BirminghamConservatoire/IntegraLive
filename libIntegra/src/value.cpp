@@ -343,14 +343,14 @@ namespace ntg_api
 	{
 		ostringstream stream;
 		stream.precision( 6 );
-		stream << ostringstream::fixed << m_value;
+		stream << std::fixed << m_value;
 		string value = stream.str();
 
 		//remove trailing zeros
 		if( value.find( "." ) != string::npos )
 		{
 			int new_length = value.find_last_not_of( '0' );
-			value = value.substr( 0, new_length );
+			value = value.substr( 0, new_length + 1 );
 		}
 
 		return value;

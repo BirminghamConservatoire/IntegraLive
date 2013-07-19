@@ -184,7 +184,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
 
-	if( ntg_reentrance_push( server, node_endpoint, cmd_source ) )
+	if( server->reentrance_checker->push( node_endpoint, cmd_source ) )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "detected reentry - aborting set command", path.get_string().c_str() );
 		NTG_RETURN_ERROR_CODE( NTG_REENTRANCE_ERROR );
@@ -229,7 +229,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 		ntg_osc_client_send_set( server->osc_client, cmd_source, path, node_endpoint->get_value() );
     }
 
-	ntg_reentrance_pop( server, cmd_source );
+	server->reentrance_checker->pop();
 
     return command_status;
 }

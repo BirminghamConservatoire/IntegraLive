@@ -21,22 +21,41 @@
 #ifndef INTEGRA_REENTRANCE_CHECKER_H
 #define INTEGRA_REENTRANCE_CHECKER_H
 
-#include "server.h"
+#include <list>
+#include <unordered_map>
+
+#include "common_typedefs.h"
+
+namespace ntg_internal
+{
+	class CNodeEndpoint;
 
 
+	class CReentranceChecker
+	{
+		public:	
 
-typedef struct ntg_reentrance_checker_state_ ntg_reentrance_checker_state;
+			CReentranceChecker();
+			~CReentranceChecker();
+
+			/**\brief push reentrance stack, returns true if rentrance detected */
+			bool push( const ntg_internal::CNodeEndpoint *node_endpoint, ntg_internal::ntg_command_source command_source );
+
+			/**\brief pop reentrance stack.  must be called once for every push which returns false */
+			void pop();
+
+		private:
+
+			static bool cares_about_source( ntg_internal::ntg_command_source command_source );
 
 
-void ntg_reentrance_checker_initialize( ntg_server *server );
-void ntg_reentrance_checker_free( ntg_server *server );
+			typedef std::list<const ntg_internal::CNodeEndpoint *> node_endpoint_stack;
+			typedef std::unordered_map<const ntg_internal::CNodeEndpoint *, ntg_internal::ntg_command_source> map_node_endpoint_to_source;
 
-/**\brief push reentrance stack, returns true if rentrance detected */
-bool ntg_reentrance_push( ntg_server *server, const ntg_internal::CNodeEndpoint *node_endpoint, ntg_internal::ntg_command_source cmd_source );
-
-/**\brief pop reentrance stack.  must be called once for every ntg_reentrance_push */
-void ntg_reentrance_pop( ntg_server *server, ntg_internal::ntg_command_source cmd_source );
-
+			node_endpoint_stack m_stack;
+			map_node_endpoint_to_source m_map_endpoint_to_source;
+	};
+}
 
 
 #endif /*INTEGRA_REENTRANCE_CHECKER_H*/

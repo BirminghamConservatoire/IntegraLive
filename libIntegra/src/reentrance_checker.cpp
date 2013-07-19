@@ -28,110 +28,76 @@
 #include <assert.h>
 
 #include "reentrance_checker.h"
+#include "trace.h"
+
 #include "system_class_handlers.h"
 
-using namespace ntg_internal;
-
-
-struct ntg_reentrance_checker_state_ 
+namespace ntg_internal
 {
-	const CNodeEndpoint *node_endpoint;
-
-	ntg_reentrance_checker_state *next;
-
-};
-
-
-
-void ntg_reentrance_checker_initialize( ntg_server *server )
-{
-	server->system_class_data->reentrance_checker_state = NULL;
-}
-
-
-void ntg_reentrance_checker_free( ntg_server *server )
-{
-	/* stack should be empty during shutdown! */
-	assert( !server->system_class_data->reentrance_checker_state );
-
-	/* failsafe */
-	while( server->system_class_data->reentrance_checker_state )
+	CReentranceChecker::CReentranceChecker()
 	{
-		ntg_reentrance_pop( server, NTG_SOURCE_SYSTEM );
 	}
-}
 
 
-bool ntg_does_reentrance_check_care_about_source( ntg_command_source cmd_source )
-{
-	switch( cmd_source )
+	CReentranceChecker::~CReentranceChecker()
 	{
-		case NTG_SOURCE_SYSTEM:
-		case NTG_SOURCE_CONNECTION:
-		case NTG_SOURCE_SCRIPT:
-			return true;	/* these are potential sources of recursion */
-
-		case NTG_SOURCE_INITIALIZATION:
-		case NTG_SOURCE_LOAD:
-		case NTG_SOURCE_HOST:
-		case NTG_SOURCE_XMLRPC_API:
-		case NTG_SOURCE_OSC_API:
-		case NTG_SOURCE_C_API:
-			return false;	/* these cannot cause recursion */
-
-		default:
-			assert( false );
-			return false;
 	}
-}
 
 
-bool ntg_reentrance_push( ntg_server *server, const CNodeEndpoint *endpoint, ntg_command_source cmd_source )
-{
-	ntg_reentrance_checker_state *state;
-
-	if( !ntg_does_reentrance_check_care_about_source( cmd_source ) )
+	bool CReentranceChecker::push( const CNodeEndpoint *node_endpoint, ntg_command_source source )
 	{
+		if( cares_about_source( source ) )
+		{
+			map_node_endpoint_to_source::const_iterator lookup = m_map_endpoint_to_source.find( node_endpoint );
+			if( lookup != m_map_endpoint_to_source.end() )
+			{
+				if( cares_about_source( lookup->second ) )
+				{
+					return true;
+				}
+			}
+		}
+
+		m_map_endpoint_to_source[ node_endpoint ] = source;
+		m_stack.push_back( node_endpoint );
+
 		return false;
 	}
 
-	/* first iterate through stack to see if we already have this node attribute */
 
-	for( state = server->system_class_data->reentrance_checker_state; state; state = state->next )
+	void CReentranceChecker::pop()
 	{
-		if( state->node_endpoint == endpoint )
+		if( m_stack.empty() )
 		{
-			/* detected reentrance! */
-			return true;
+			NTG_TRACE_ERROR( "attempt to pop empty queue" );
+			return;
+		}
+
+		m_map_endpoint_to_source.erase( m_stack.back() );
+		m_stack.pop_back();
+	}
+
+
+	bool CReentranceChecker::cares_about_source( ntg_command_source source )
+	{
+		switch( source )
+		{
+			case NTG_SOURCE_SYSTEM:
+			case NTG_SOURCE_CONNECTION:
+			case NTG_SOURCE_SCRIPT:
+				return true;	/* these are potential sources of recursion */
+
+			case NTG_SOURCE_INITIALIZATION:
+			case NTG_SOURCE_LOAD:
+			case NTG_SOURCE_HOST:
+			case NTG_SOURCE_XMLRPC_API:
+			case NTG_SOURCE_C_API:
+				return false;	/* these cannot cause recursion */
+
+			default:
+				assert( false );
+				return false;
 		}
 	}
-
-	/* now push the stack (no reentrance detected) */
-
-	state = new ntg_reentrance_checker_state;
-	state->node_endpoint = endpoint;
-	state->next = server->system_class_data->reentrance_checker_state;
-
-	server->system_class_data->reentrance_checker_state = state;	
-
-	return false;
 }
 
-
-void ntg_reentrance_pop( ntg_server *server, ntg_command_source cmd_source )
-{
-	ntg_reentrance_checker_state *next = NULL;
-
-	if( !ntg_does_reentrance_check_care_about_source( cmd_source ) )
-	{
-		return;
-	}
-
-	assert( server->system_class_data->reentrance_checker_state );
-
-	next = server->system_class_data->reentrance_checker_state->next;
-
-	delete server->system_class_data->reentrance_checker_state;
-
-	server->system_class_data->reentrance_checker_state = next;	
-}

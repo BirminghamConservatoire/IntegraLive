@@ -39,7 +39,6 @@ static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
     "host",
     "script",
     "xmlrpc_api",
-    "osc_api",
     "c_api" };
 
 

@@ -69,6 +69,7 @@ extern "C"
 #include "player_handler.h"
 #include "osc_client.h"
 #include "interface.h"
+#include "reentrance_checker.h"
 
 #ifdef _WINDOWS
 	#ifdef interface 
@@ -315,6 +316,8 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 
 	ntg_system_class_handlers_initialize( server );
 
+	server->reentrance_checker = new CReentranceChecker();
+
     server_ = server;
 
     return server_;
@@ -342,6 +345,8 @@ void ntg_server_free(ntg_server *server)
 //    server->bridge = NULL;
 
 	ntg_module_manager_free( server->module_manager );
+
+	delete server->reentrance_checker;
 
 	ntg_scratch_directory_free(server);
 

@@ -78,7 +78,6 @@ namespace ntg_internal
 		NTG_SOURCE_HOST,
 		NTG_SOURCE_SCRIPT,
 		NTG_SOURCE_XMLRPC_API,
-		NTG_SOURCE_OSC_API,
 		NTG_SOURCE_C_API,
 		NTG_COMMAND_SOURCE_end
 	} ntg_command_source;

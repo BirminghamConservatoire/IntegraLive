@@ -41,8 +41,6 @@ struct ntg_system_class_data_
 
 	struct ntg_player_data_ *player_data;
 
-	struct ntg_reentrance_checker_state_ *reentrance_checker_state;
-
 	GUID connection_interface_guid;
 };
 

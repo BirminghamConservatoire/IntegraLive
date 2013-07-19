@@ -34,7 +34,6 @@
 #include "player_handler.h"
 #include "data_directory.h"
 #include "system_class_literals.h"
-#include "reentrance_checker.h"
 #include "server_commands.h"
 #include "node_endpoint.h"
 #include "helper.h"
@@ -782,7 +781,6 @@ bool ntg_should_copy_input_file( const CValue &value, ntg_command_source cmd_sou
 		case NTG_SOURCE_CONNECTION:
 	    case NTG_SOURCE_SCRIPT:
 	    case NTG_SOURCE_XMLRPC_API:
-	    case NTG_SOURCE_OSC_API:
 	    case NTG_SOURCE_C_API:
 			/* these are the sources for which we want to copy the file to the data directory */
 
@@ -868,7 +866,6 @@ void ntg_generic_data_directory_handler( ntg_server *server, const CNodeEndpoint
 		case NTG_SOURCE_CONNECTION:
 	    case NTG_SOURCE_SCRIPT:
 	    case NTG_SOURCE_XMLRPC_API:
-	    case NTG_SOURCE_OSC_API:
 	    case NTG_SOURCE_C_API:
 			/* external command is trying to reset the data directory - should delete the old one and create a new one */
 			ntg_node_data_directory_change( ( ( const string & ) *previous_value ).c_str(), ( ( const string & ) *endpoint->get_value() ).c_str() );
@@ -1916,15 +1913,11 @@ void ntg_system_class_handlers_initialize( ntg_server *server )
 	server->system_class_data = system_class_data;
 
 	ntg_player_initialize( server );
-
-	ntg_reentrance_checker_initialize( server );
 }
 
 
 void ntg_system_class_handlers_shutdown( ntg_server *server )
 {
-	ntg_reentrance_checker_free( server );
-
 	ntg_player_free( server );
 
 	ntg_system_class_handlers_free( server->system_class_data->new_handlers );

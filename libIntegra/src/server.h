@@ -33,9 +33,9 @@
 
 #define NTG_COMMAND_QUEUE_ELEMENTS 1024
 
-namespace ntg_api
+namespace ntg_internal
 {
-	class CPath;
+	class CReentranceChecker;
 }
 
 
@@ -56,6 +56,7 @@ typedef struct ntg_server_ {
     ntg_bridge_interface *bridge;
     struct ntg_osc_client_ *osc_client;
 	ntg_internal::node_endpoint_map state_table; /* resolves path-as-string to node endpoint */
+	ntg_internal::CReentranceChecker *reentrance_checker;
     struct ntg_system_class_data_ *system_class_data;
     char *scratch_directory_root;
 	struct ntg_module_manager_ *module_manager;

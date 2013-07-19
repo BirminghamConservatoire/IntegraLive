@@ -252,7 +252,7 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
     }
 
     /* get interface */
-	const ntg_interface *interface = ntg_get_interface_by_module_id( server->module_manager, module_id );
+	const ntg_interface *interface = server->module_manager->get_interface_by_module_id( *module_id );
     if( !interface ) 
 	{
         NTG_TRACE_ERROR( "unable to find interface" );
@@ -291,15 +291,14 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 	if( ntg_interface_has_implementation( interface ) )
 	{
 		/* load implementation in module host */
-		char *implementation_path = ntg_module_manager_get_patch_path( server->module_manager, interface );
-		if( implementation_path )
+		string patch_path = server->module_manager->get_patch_path( *interface );
+		if( patch_path.empty() )
 		{
-			server->bridge->module_load( node->id, implementation_path );
-			delete[] implementation_path;
+			NTG_TRACE_ERROR( "Failed to get implementation path - cannot load module in host" );
 		}
 		else
 		{
-			NTG_TRACE_ERROR( "Failed to get implementation path - cannot load module in host" );
+			server->bridge->module_load( node->id, patch_path.c_str() );
 		}
 	}
 
@@ -377,9 +376,9 @@ ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, nt
 	NTG_COMMAND_STATUS_INIT;
 
 	guid_set orphaned_embedded_modules;
-	ntg_module_manager_get_orphaned_embedded_modules( server->module_manager, *server->root, orphaned_embedded_modules );
+	server->module_manager->get_orphaned_embedded_modules( *server->root, orphaned_embedded_modules );
 
-	ntg_module_manager_unload_modules( server->module_manager, orphaned_embedded_modules );
+	server->module_manager->unload_modules( orphaned_embedded_modules );
 
 	NTG_RETURN_COMMAND_STATUS;
 }
@@ -389,16 +388,15 @@ ntg_command_status ntg_install_module_( ntg_server *server, ntg_command_source c
 {
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
-	ntg_module_install_result *module_install_result;
 
 	assert( server && file_path );
 	NTG_TRACE_PROGRESS( file_path );
 
 	NTG_COMMAND_STATUS_INIT
 
-	module_install_result = new ntg_module_install_result;
+	CModuleInstallResult *module_install_result = new CModuleInstallResult;
 
-	error_code = ntg_module_manager_install_module( server->module_manager, file_path, module_install_result );
+	error_code = server->module_manager->install_module( file_path, *module_install_result );
 
 	if( error_code == NTG_NO_ERROR )
 	{
@@ -423,7 +421,7 @@ ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_command
 
 	NTG_COMMAND_STATUS_INIT
 
-	error_code = ntg_module_manager_install_embedded_module( server->module_manager, module_id );
+	error_code = server->module_manager->install_embedded_module( *module_id );
 
 	NTG_RETURN_COMMAND_STATUS
 }
@@ -433,17 +431,15 @@ ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source
 {
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
-	ntg_module_uninstall_result *module_uninstall_result;
 
 	assert( server && module_id );
 	NTG_TRACE_PROGRESS( "" );
 
 	NTG_COMMAND_STATUS_INIT
 
-	module_uninstall_result = new ntg_module_uninstall_result;
-	memset( module_uninstall_result, 0, sizeof( ntg_module_uninstall_result ) );
+	CModuleUninstallResult *module_uninstall_result = new CModuleUninstallResult;
 
-	error_code = ntg_module_manager_uninstall_module( server->module_manager, module_id, module_uninstall_result );
+	error_code = server->module_manager->uninstall_module( *module_id, *module_uninstall_result );
 
 	if( error_code == NTG_NO_ERROR )
 	{
@@ -462,16 +458,15 @@ ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_comm
 {
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
-	ntg_load_module_in_development_result *result;
 
 	assert( server && file_path );
 	NTG_TRACE_PROGRESS( file_path );
 
 	NTG_COMMAND_STATUS_INIT
 
-	result = new ntg_load_module_in_development_result;
+	CLoadModuleInDevelopmentResult *result = new CLoadModuleInDevelopmentResult;
 
-	error_code = ntg_module_manager_load_module_in_development( server->module_manager, file_path, result );
+	error_code = server->module_manager->load_module_in_development( file_path, *result );
 
 	if( error_code == NTG_NO_ERROR )
 	{
@@ -636,7 +631,7 @@ ntg_command_status ntg_load_(ntg_server * server, ntg_command_source cmd_source,
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-	command_status = ntg_file_load( file_path, node, server->module_manager );
+	command_status = ntg_file_load( file_path, node, *server->module_manager );
 
 	return command_status;
 }
@@ -710,7 +705,7 @@ ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char 
 
 	file_path_with_suffix = ntg_ensure_filename_has_suffix( file_path, NTG_FILE_SUFFIX );
 
-	error_code = ntg_file_save( file_path_with_suffix, node, server_->module_manager );
+	error_code = ntg_file_save( file_path_with_suffix, node, *server_->module_manager );
 
 	delete[] file_path_with_suffix;
 

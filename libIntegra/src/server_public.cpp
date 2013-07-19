@@ -199,7 +199,7 @@ const guid_set &ntg_interfacelist(void)
 	/* no need to lock, as the set of interfaces does not change at runtime */
 	/* NOTE - this assumption will become invalid once we load modules from .integra files! */
 
-	return ntg_module_id_set( server_->module_manager );
+	return server_->module_manager->get_all_module_ids();
 }
 
 

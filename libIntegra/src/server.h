@@ -36,6 +36,7 @@
 namespace ntg_internal
 {
 	class CReentranceChecker;
+	class CModuleManager;
 }
 
 
@@ -45,9 +46,6 @@ namespace ntg_internal
 typedef struct ntg_system_class_data_ ntg_system_class_data;
 #endif
 
-#ifndef ntg_module_manager
-//typedef struct ntg_module_manager_ ntg_module_manager;
-#endif
 
 
 /** \brief Definition of the type ntg_server. @see Integra/integra.h */
@@ -57,9 +55,9 @@ typedef struct ntg_server_ {
     struct ntg_osc_client_ *osc_client;
 	ntg_internal::node_endpoint_map state_table; /* resolves path-as-string to node endpoint */
 	ntg_internal::CReentranceChecker *reentrance_checker;
+	ntg_internal::CModuleManager *module_manager;
     struct ntg_system_class_data_ *system_class_data;
     char *scratch_directory_root;
-	struct ntg_module_manager_ *module_manager;
     bool terminate;
     bool loading;
 } ntg_server;

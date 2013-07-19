@@ -583,7 +583,7 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 	GUID origin_guid;
 	char *valuestr = NULL;
 	const ntg_interface *interface = NULL;
-	const ntg_module_manager *module_manager = server_->module_manager;
+	const CModuleManager *module_manager = server_->module_manager;
 
 	assert( reader && module_manager );
 
@@ -616,7 +616,7 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 		    valuestr = (char *) xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_CLASSID );
 			if( valuestr )
 			{
-				if( ntg_interpret_legacy_module_id( module_manager, atoi( valuestr ), &origin_guid ) != NTG_NO_ERROR )
+				if( module_manager->interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != NTG_NO_ERROR )
 				{
 					NTG_TRACE_ERROR_WITH_STRING( "Failed to interpret legacy class id", valuestr );
 				}
@@ -628,7 +628,7 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 
 	if( !ntg_guid_is_null( &module_guid ) )
 	{
-		interface = ntg_get_interface_by_module_id( module_manager, &module_guid );
+		interface = module_manager->get_interface_by_module_id( module_guid );
 		if( interface )
 		{
 			return interface;
@@ -637,7 +637,7 @@ const ntg_interface *ntg_node_find_interface( xmlTextReaderPtr reader )
 
 	if( !ntg_guid_is_null( &origin_guid ) )
 	{
-		interface = ntg_get_interface_by_origin_id( module_manager, &origin_guid );
+		interface = module_manager->get_interface_by_origin_id( origin_guid );
 		return interface;
 	}
 

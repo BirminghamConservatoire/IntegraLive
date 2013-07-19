@@ -196,7 +196,7 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist_callback(ntg_server * server,
 
     env = va_arg(argv, xmlrpc_env *);
 
-	const guid_set &module_ids = ntg_module_id_set( server->module_manager );
+	const guid_set &module_ids = server->module_manager->get_all_module_ids();
 
     array_ = xmlrpc_array_new(env);
 	for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ ) 
@@ -251,7 +251,7 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback(ntg_server * server,
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
-	interface = ntg_get_interface_by_module_id( server->module_manager, &guid );
+	interface = server->module_manager->get_interface_by_module_id( guid );
     if( !interface )	
 	{
 	    free(module_id_string);
@@ -395,7 +395,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback(ntg_server * server,
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
-	interface = ntg_get_interface_by_module_id( server->module_manager, &guid );
+	interface = server->module_manager->get_interface_by_module_id( guid );
     if( !interface )	
 	{
 	    free(module_id_string);
@@ -715,7 +715,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets_callback(ntg_server * server,
 		return ntg_xmlrpc_error(env, NTG_ERROR);
 	}
 
-	interface = ntg_get_interface_by_module_id( server->module_manager, &guid );
+	interface = server->module_manager->get_interface_by_module_id( guid );
     if( !interface )	
 	{
 	    free(module_id_string);
@@ -1178,7 +1178,6 @@ static xmlrpc_value *ntg_xmlrpc_install_module_callback( ntg_server * server, co
     char *module_id_string;
     ntg_command_status command_status;
     xmlrpc_env *env;
-	ntg_module_install_result *result;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
 
 	assert( server );
@@ -1195,7 +1194,7 @@ static xmlrpc_value *ntg_xmlrpc_install_module_callback( ntg_server * server, co
 		return ntg_xmlrpc_error( env, command_status.error_code);
 	}
 
-	result = ( ntg_module_install_result * ) command_status.data;
+	CModuleInstallResult *result = ( CModuleInstallResult * ) command_status.data;
 	assert( result );
 
 	module_id_string = ntg_guid_to_string( &result->module_id );
@@ -1229,7 +1228,6 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( ntg_server 
     char *previous_module_id_string;
     ntg_command_status command_status;
     xmlrpc_env *env;
-	ntg_load_module_in_development_result *result;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
 
 	assert( server );
@@ -1246,7 +1244,7 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( ntg_server 
 		return ntg_xmlrpc_error( env, command_status.error_code);
 	}
 
-	result = ( ntg_load_module_in_development_result * ) command_status.data;
+	CLoadModuleInDevelopmentResult *result = ( CLoadModuleInDevelopmentResult * ) command_status.data;
 	assert( result );
 
 	module_id_string = ntg_guid_to_string( &result->module_id );
@@ -1333,7 +1331,6 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module_callback( ntg_server * server, 
 	GUID module_id;
     ntg_command_status command_status;
     xmlrpc_env *env;
-	ntg_module_uninstall_result *result;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
 
 	assert( server );
@@ -1356,7 +1353,7 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module_callback( ntg_server * server, 
 		return ntg_xmlrpc_error( env, command_status.error_code);
 	}
 
-	result = ( ntg_module_uninstall_result * ) command_status.data;
+	CModuleUninstallResult *result = ( CModuleUninstallResult * ) command_status.data;
 
     struct_ = xmlrpc_struct_new(env);
     xmlrpc_temp = xmlrpc_string_new(env, "module.uninstallmodule");

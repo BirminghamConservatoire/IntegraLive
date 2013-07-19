@@ -273,10 +273,9 @@ void ntg_find_module_guids_to_embed( const ntg_node *node, guid_set &module_guid
 }
 
 
-void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const ntg_module_manager *module_manager )
+void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const CModuleManager &module_manager )
 {
 	const ntg_interface *interface;
-	char *unique_interface_name;
 	char *target_path;
 
 	assert( zip_file && node );
@@ -286,7 +285,7 @@ void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const
 
 	for( guid_set::const_iterator i = module_guids_to_embed.begin(); i != module_guids_to_embed.end(); i++ )
 	{
-		interface = ntg_get_interface_by_module_id( module_manager, &( *i ) );
+		interface = module_manager.get_interface_by_module_id( *i );
 		if( !interface )
 		{
 			NTG_TRACE_ERROR( "Failed to retrieve interface" );
@@ -299,15 +298,14 @@ void ntg_copy_node_modules_to_zip( zipFile zip_file, const ntg_node *node, const
 			continue;
 		}
 
-		unique_interface_name = ntg_module_manager_get_unique_interface_name( interface );
+		string unique_interface_name = module_manager.get_unique_interface_name( *interface );
 
-		target_path = new char[ strlen( NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME ) + strlen( unique_interface_name ) + strlen( NTG_MODULE_SUFFIX ) + 2 ];
-		sprintf( target_path, "%s%s.%s", NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME, unique_interface_name, NTG_MODULE_SUFFIX );
+		target_path = new char[ strlen( NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME ) + unique_interface_name.length() + strlen( NTG_MODULE_SUFFIX ) + 2 ];
+		sprintf( target_path, "%s%s.%s", NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME, unique_interface_name.c_str(), NTG_MODULE_SUFFIX );
 
 		ntg_copy_file_to_zip( zip_file, target_path, interface->file_path );
 
 		delete[] target_path;
-		delete[] unique_interface_name;
 	}
 }
 
@@ -444,7 +442,7 @@ char *ntg_get_top_level_node_name( const char *filename )
 }
 
 
-ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, ntg_module_manager *module_manager )
+ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, CModuleManager &module_manager )
 {
     ntg_command_status command_status;
 	unsigned char *ixd_buffer = NULL;
@@ -461,7 +459,7 @@ ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, 
     server_->loading = true;
 
 	guid_set *new_embedded_modules = new guid_set;
-	command_status.error_code = ntg_module_manager_load_from_integra_file( module_manager, filename, *new_embedded_modules );
+	command_status.error_code = module_manager.load_from_integra_file( filename, *new_embedded_modules );
 	if( command_status.error_code != NTG_NO_ERROR ) 
 	{
 		NTG_TRACE_ERROR_WITH_STRING("couldn't load modules", filename );
@@ -561,7 +559,7 @@ CLEANUP:
 		/* load failed - unload modules */
 		if( new_embedded_modules )
 		{
-			ntg_module_manager_unload_modules( module_manager, *new_embedded_modules );
+			module_manager.unload_modules( *new_embedded_modules );
 			delete new_embedded_modules;
 		}
 	}
@@ -575,7 +573,7 @@ CLEANUP:
 }
 
 
-ntg_error_code ntg_file_save( const char *filename, const ntg_node *node, const ntg_module_manager *module_manager )
+ntg_error_code ntg_file_save( const char *filename, const ntg_node *node, const CModuleManager &module_manager )
 {
 	zipFile zip_file;
 	zip_fileinfo zip_file_info;

@@ -307,7 +307,7 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 
 	ntg_scratch_directory_initialize(server);
 
-	server->module_manager = ntg_module_manager_create( server->scratch_directory_root, system_module_directory, third_party_module_directory );
+	server->module_manager = new CModuleManager( server->scratch_directory_root, system_module_directory, third_party_module_directory );
 
     server->osc_client				= ntg_osc_client_new(osc_client_url, osc_client_port);
     server->terminate				= false;
@@ -344,7 +344,7 @@ void ntg_server_free(ntg_server *server)
     /* de-reference bridge */
 //    server->bridge = NULL;
 
-	ntg_module_manager_free( server->module_manager );
+	delete server->module_manager;
 
 	delete server->reentrance_checker;
 

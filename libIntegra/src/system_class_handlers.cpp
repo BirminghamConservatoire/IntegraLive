@@ -1704,7 +1704,7 @@ void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const 
 
 	if( class_name )
 	{
-		interface = ntg_get_core_interface_by_name( server->module_manager, class_name );
+		interface = server->module_manager->get_core_interface_by_name( class_name );
 		if( !interface )
 		{
 			NTG_TRACE_ERROR_WITH_STRING("failed to lookup into for core class", class_name);
@@ -1899,7 +1899,7 @@ void ntg_system_class_handlers_initialize( ntg_server *server )
 	system_class_data->move_handlers = ntg_move_handlers_create( server );
 	system_class_data->delete_handlers = ntg_delete_handlers_create( server );
 
-	connection_interface = ntg_get_core_interface_by_name( server->module_manager, NTG_CLASS_CONNECTION );
+	connection_interface = server->module_manager->get_core_interface_by_name( NTG_CLASS_CONNECTION );
 	if( connection_interface )
 	{
 		system_class_data->connection_interface_guid = connection_interface->module_guid;

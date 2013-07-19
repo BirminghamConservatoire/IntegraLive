@@ -35,10 +35,117 @@
 #endif
 
 
-typedef struct ntg_module_manager_ ntg_module_manager;
-typedef struct ntg_module_install_result_ ntg_module_install_result;
-typedef struct ntg_module_uninstall_result_ ntg_module_uninstall_result;
-typedef struct ntg_load_module_in_development_result_ ntg_load_module_in_development_result;
+namespace ntg_internal
+{
+	class CModuleInstallResult;
+	class CModuleUninstallResult;
+	class CLoadModuleInDevelopmentResult;
+
+
+	class CModuleManager
+	{
+		public:
+
+			CModuleManager( const ntg_api::string &scratch_directory_root, const ntg_api::string &system_module_directory, const ntg_api::string &third_party_module_directory );
+			~CModuleManager();
+
+			/* returns ids of new embedded modules in new_embedded_modules */
+			ntg_error_code load_from_integra_file( const ntg_api::string &integra_file, ntg_api::guid_set &new_embedded_modules );
+
+			ntg_error_code install_module( const ntg_api::string &module_file, CModuleInstallResult &result );
+			ntg_error_code install_embedded_module( const GUID &module_id );
+			ntg_error_code uninstall_module( const GUID &module_id, CModuleUninstallResult &result );
+			ntg_error_code load_module_in_development( const ntg_api::string &module_file, CLoadModuleInDevelopmentResult &result );
+
+
+			const ntg_api::guid_set &get_all_module_ids() const;
+
+			const ntg_interface *get_interface_by_module_id( const GUID &id ) const;
+			const ntg_interface *get_interface_by_origin_id( const GUID &id ) const;
+			const ntg_interface *get_core_interface_by_name( const ntg_api::string &name ) const;
+
+			ntg_api::string get_unique_interface_name( const ntg_interface &interface ) const;
+			ntg_api::string get_patch_path( const ntg_interface &interface ) const;
+
+			void get_orphaned_embedded_modules( const ntg_node &root_node, ntg_api::guid_set &results );
+			void unload_modules( const ntg_api::guid_set &module_ids );
+
+			ntg_error_code interpret_legacy_module_id( ntg_id old_id, GUID &output ) const;
+
+		private:
+
+			void load_modules_from_directory( const ntg_api::string &module_directory, ntg_module_source module_source );
+
+			/* 
+			 load_module only returns true if the module isn't already loaded
+			 however, it stores the id of the loaded module in module_guid regardless of whether the module was already loaded
+			*/
+			bool load_module( const ntg_api::string &filename, ntg_module_source module_source, GUID &module_guid );
+
+			static ntg_interface *load_interface( unzFile unzip_file );
+
+			ntg_error_code extract_implementation( unzFile unzip_file, const ntg_interface &interface, unsigned int &checksum );
+
+			void unload_module( ntg_interface *interface );
+
+			ntg_api::string get_implementation_path( const ntg_interface &interface ) const;
+			ntg_api::string get_implementation_directory_name( const ntg_interface &interface ) const;
+			
+			void delete_implementation( const ntg_interface &interface );
+
+			ntg_error_code store_module( const GUID &module_id );
+
+			void load_legacy_module_id_file();
+			void unload_all_modules();
+
+			ntg_api::string get_storage_path( const ntg_interface &interface ) const;
+			
+			ntg_error_code change_module_source( ntg_interface &interface, ntg_module_source new_source );
+
+
+			ntg_api::guid_set m_module_ids;
+			map_guid_to_interface m_module_id_map;
+			map_guid_to_interface m_origin_id_map;
+			map_string_to_interface m_core_name_map;
+
+			GUID *m_legacy_module_id_table;
+			int m_legacy_module_id_table_elems;
+
+			ntg_api::string m_implementation_directory_root;
+
+			ntg_api::string m_third_party_module_directory;
+			ntg_api::string m_embedded_module_directory;
+	};
+
+
+
+	class CModuleInstallResult
+	{
+		public:
+			GUID module_id;
+			bool was_previously_embedded;
+	};
+
+
+	class CModuleUninstallResult
+	{
+		public:
+			bool remains_as_embedded;
+	};
+
+
+	class CLoadModuleInDevelopmentResult
+	{
+		public:
+			GUID module_id;
+			GUID previous_module_id;
+			bool previous_remains_as_embedded;
+	};
+}
+
+
+
+#if 0 //DEPRECATED
 
 struct ntg_module_manager_
 {
@@ -105,6 +212,6 @@ void ntg_module_manager_unload_modules( ntg_module_manager *module_manager, cons
 ntg_error_code ntg_interpret_legacy_module_id( const ntg_module_manager *module_manager, ntg_id old_id, GUID *output );
 
 
-
+#endif //DEPRECATED
 
 #endif

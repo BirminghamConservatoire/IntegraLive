@@ -209,20 +209,20 @@ static int osc_module_connect(const CNodeEndpoint *source, const CNodeEndpoint *
 	char target_name[ 10 ];
 	assert( source && target );
 
-	if( !osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->interface ) )
+	if( !osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->get_interface() ) )
 	{
 		NTG_TRACE_ERROR( "Failed to get stream connection name" );
 		return -1;
 	}
 
-	if( !osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->interface ) )
+	if( !osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->get_interface() ) )
 	{
 		NTG_TRACE_ERROR( "Failed to get stream connection name" );
 		return -1;
 	}
 
 	/* Make the connection */
-    lo_send(module_host, "/connect", "isis", source->get_node()->id, source_name, target->get_node()->id, target_name );
+    lo_send(module_host, "/connect", "isis", source->get_node()->get_id(), source_name, target->get_node()->get_id(), target_name );
 
     return 0;
 
@@ -234,21 +234,21 @@ static int osc_module_disconnect(const CNodeEndpoint *source, const CNodeEndpoin
 	char target_name[ 10 ];
 	assert( source && target );
 
-	osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->interface );
-	osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->interface );
+	osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->get_interface() );
+	osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->get_interface() );
 
 	/* remove the connection */
-    lo_send(module_host, "/disconnect", "isis", source->get_node()->id, source_name, target->get_node()->id, target_name );
+    lo_send(module_host, "/disconnect", "isis", source->get_node()->get_id(), source_name, target->get_node()->get_id(), target_name );
 
 	return 0;
 }
 
 
-static void osc_send_value(const CNodeEndpoint *node_endpoint )
+static void osc_send_value( const CNodeEndpoint *node_endpoint )
 {
 	assert( node_endpoint );
 
-	int module_id = node_endpoint->get_node()->id;
+	int module_id = node_endpoint->get_node()->get_id();
 	const char *endpoint_name = node_endpoint->get_endpoint()->name;
 	const CValue *value = node_endpoint->get_value();
 

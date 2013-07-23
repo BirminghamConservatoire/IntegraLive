@@ -56,12 +56,12 @@ using namespace ntg_api;
 using namespace ntg_internal;
 
 
-char *ntg_make_up_node_data_directory_name( const ntg_node *node, const ntg_server *server )
+char *ntg_make_up_node_data_directory_name( const CNode &node, const ntg_server *server )
 {
 	char *node_directory_name;
 	int id_length, node_directory_length;
 
-	id_length = ntg_count_digits( node->id );
+	id_length = ntg_count_digits( node.get_id() );
 
 	node_directory_length = strlen( server->scratch_directory_root ) + 
 							strlen( NTG_NODE_DIRECTORY ) + 
@@ -69,13 +69,13 @@ char *ntg_make_up_node_data_directory_name( const ntg_node *node, const ntg_serv
 							strlen( NTG_PATH_SEPARATOR ) + 2;
 
 	node_directory_name = new char[ node_directory_length ];
-	sprintf( node_directory_name, "%s%s_%lu%s", server->scratch_directory_root, NTG_NODE_DIRECTORY, node->id, NTG_PATH_SEPARATOR );
+	sprintf( node_directory_name, "%s%s_%lu%s", server->scratch_directory_root, NTG_NODE_DIRECTORY, node.get_id(), NTG_PATH_SEPARATOR );
 
 	return node_directory_name;
 }
 
 
-char *ntg_node_data_directory_create( const ntg_node *node, const ntg_server *server )
+char *ntg_node_data_directory_create( const CNode &node, const ntg_server *server )
 {
 	char *node_directory_name = ntg_make_up_node_data_directory_name( node, server );
 
@@ -95,94 +95,77 @@ void ntg_node_data_directory_change( const char *previous_directory_name, const 
 }
 
 
-const char *ntg_get_relative_node_path( const ntg_node *node, const ntg_node *root ) 
+string ntg_get_relative_node_path( const CNode &node, const CPath &root ) 
 {
-	int node_path_length, root_path_length;
-	const char *relative_node_path;
+	const string &node_path_string = node.get_path().get_string();
+	const string &root_path_string = root.get_string();
 
-	assert( node && root );
+	int node_path_length = node_path_string.length();
+	int root_path_length = root_path_string.length();
 
-	node_path_length = node->path.get_string().length();
-	root_path_length = root->path.get_string().length();
-
-	if( node_path_length <= root_path_length || memcmp( node->path.get_string().c_str(), root->path.get_string().c_str(), root_path_length ) != 0 )
+	if( node_path_length <= root_path_length || node_path_string.substr( 0, root_path_length ) != root_path_string )
 	{
 		NTG_TRACE_ERROR( "node is not a descendant of root" );
-		return NULL;
+		return string();
 	}
 
-	relative_node_path = node->path.get_string().c_str() + root_path_length;
-
-	if( ntg_node_get_root( root ) != root )
+	if( root_path_length > 0 ) 
 	{
-		/* if root is not the root of the entire tree */
-		
-		assert( *relative_node_path == '.' );
-		relative_node_path++;	/* skip dot after root path */
+		/* if root is not the root of the entire tree, skip the dot after root path */
+		root_path_length++;
 	}
 
-	return relative_node_path;
+	return node_path_string.substr( root_path_length );
 }
 
 
-void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *node, const ntg_node *path_root )
+void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const CNode &node, const CPath &path_root )
 {
-	const char *relative_node_path;
-	char *target_path;
-	const ntg_node *child_node;
-
-	assert( zip_file && node && path_root );
+	assert( zip_file );
 
 	if( ntg_node_has_data_directory( node ) )
 	{
-		relative_node_path = ntg_get_relative_node_path( node, path_root );
+		string relative_node_path = ntg_get_relative_node_path( node, path_root );
 
-		if( relative_node_path )
+		if( relative_node_path.empty() )
 		{
-			target_path = new char[ strlen( NTG_NODE_DIRECTORY ) + strlen( NTG_PATH_SEPARATOR ) + strlen( relative_node_path ) + 1 ];
-			sprintf( target_path, "%s%s%s", NTG_NODE_DIRECTORY, NTG_PATH_SEPARATOR, relative_node_path );
+			NTG_TRACE_ERROR_WITH_STRING( "Couldn't build relative node path to", node.get_path().get_string().c_str() );
+		}
+		else
+		{
+			ostringstream target_path;
+			target_path << NTG_NODE_DIRECTORY << NTG_PATH_SEPARATOR << relative_node_path;
 			
 			const string *data_directory_name = ntg_node_get_data_directory( node );
 			if( data_directory_name )
 			{
-				ntg_copy_directory_contents_to_zip( zip_file, target_path, data_directory_name->c_str() );
+				ntg_copy_directory_contents_to_zip( zip_file, target_path.str().c_str(), data_directory_name->c_str() );
 			}
 			else
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Couldn't get data directory name", node->path.get_string().c_str() );
+				NTG_TRACE_ERROR_WITH_STRING( "Couldn't get data directory name", node.get_path().get_string().c_str() );
 			}
-
-			delete[] target_path;
-		}
-		else
-		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't build relative node path to", node->path.get_string().c_str() );
 		}
 	}
 
 	/* walk tree of child nodes */
-	child_node = node->nodes;
-	if( child_node )
+	const node_map &children = node.get_children();
+	for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 	{
-		do
-		{
-			ntg_copy_node_data_directories_to_zip( zip_file, child_node, path_root );
-
-			child_node = child_node->next;
-		}
-		while( child_node != node->nodes );
+		const CNode *child = i->second;
+		ntg_copy_node_data_directories_to_zip( zip_file, *child, path_root );
 	}
 }
 
 
-void ntg_extract_to_data_directory( unzFile unzip_file, unz_file_info *file_info, const ntg_node *node, const char *relative_file_path )
+void ntg_extract_to_data_directory( unzFile unzip_file, unz_file_info *file_info, const CNode &node, const char *relative_file_path )
 {
 	char *target_path;
 	FILE *output_file;
 	unsigned char *output_buffer;
 	int bytes_read, total_bytes_read, bytes_remaining;
 
-	assert( unzip_file && file_info && node && relative_file_path );
+	assert( unzip_file && file_info && relative_file_path );
 
 	const string *data_directory = ntg_node_get_data_directory( node );
 	assert( data_directory );
@@ -289,7 +272,7 @@ const char *ntg_get_node_directory_path( unzFile unzip_file )
 }
 
 
-ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node *parent_node )
+ntg_error_code ntg_load_data_directories( const char *file_path, const CNode *parent_node )
 {
 	unzFile unzip_file;
 	unz_file_info file_info;
@@ -297,10 +280,9 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 	const char *node_directory;
 	char *relative_node_path_string;
 	const char *relative_file_path;
-	const ntg_node *node;
 	int node_directory_length;
 
-	assert( file_path && parent_node );
+	assert( file_path );
 
 	unzip_file = unzOpen( file_path );
 	if( !unzip_file )
@@ -342,7 +324,7 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 		}
 
 		CPath relative_node_path = CPath( relative_node_path_string );
-		node = ntg_node_find_by_path( relative_node_path, ( ntg_node * ) parent_node );
+		const CNode *node = ntg_find_node( relative_node_path, parent_node );
 
 		if( !node )
 		{
@@ -351,7 +333,7 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 			continue;
 		}
 
-		if( !ntg_node_has_data_directory( node ) )
+		if( !ntg_node_has_data_directory( *node ) )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "found data file for node which shouldn't have data directory", file_name );
 			delete[] relative_node_path_string;
@@ -363,7 +345,7 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node 
 
 		if( unzOpenCurrentFile( unzip_file ) == UNZ_OK )
 		{
-			ntg_extract_to_data_directory( unzip_file, &file_info, node, relative_file_path );
+			ntg_extract_to_data_directory( unzip_file, &file_info, *node, relative_file_path );
 
 			unzCloseCurrentFile( unzip_file );
 		}
@@ -404,10 +386,10 @@ const char *ntg_copy_file_to_data_directory( const CNodeEndpoint *endpoint )
 {
 	assert( endpoint );
 
-	const string *data_directory = ntg_node_get_data_directory( endpoint->get_node() );
+	const string *data_directory = ntg_node_get_data_directory( *endpoint->get_node() );
 	if( !data_directory )
 	{
-		NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", endpoint->get_node()->name );
+		NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", endpoint->get_node()->get_name().c_str() );
 		return NULL;
 	}
 

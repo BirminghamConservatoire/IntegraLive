@@ -1,6 +1,6 @@
 /* libIntegra multimedia module interface
  *  
- * Copyright (C) 2012 Birmingham City University
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,25 +18,42 @@
  * USA.
  */
 
-#ifndef INTEGRA_PLAYER_HANDLER_H
-#define INTEGRA_PLAYER_HANDLER_H
 
-#include "server.h"
+#ifndef INTEGRA_STATE_TABLE_H
+#define INTEGRA_STATE_TABLE_H
+
+#include "common_typedefs.h"
+#include "node.h"
+#include "node_endpoint.h"
+
 
 namespace ntg_internal
 {
-	class CNode;
+	class CStateTable
+	{
+		public:
+
+			CStateTable();
+			~CStateTable();
+
+			void add( CNode &node );
+			void remove( const CNode &node );
+
+			const CNode *lookup_node( const ntg_api::string &path ) const;
+			CNode *lookup_node_writable( const ntg_api::string &path );
+			
+			const CNode *lookup_node( ntg_id id ) const;
+
+			const CNodeEndpoint *lookup_node_endpoint( const ntg_api::string &path ) const;
+			CNodeEndpoint *lookup_node_endpoint_writable( const ntg_api::string &path );
+
+		private:
+
+			node_map m_nodes;
+			map_id_to_node m_nodes_by_id;
+			node_endpoint_map m_node_endpoints;
+	};
 }
 
 
-void ntg_player_initialize( ntg_server *server );
-void ntg_player_free( ntg_server *server );
-
-void ntg_player_update( ntg_server *server, ntg_id player_id );
-
-void ntg_player_handle_path_change( ntg_server *server, const ntg_internal::CNode &player_node );
-void ntg_player_handle_delete( ntg_server *server, const ntg_internal::CNode &player_node );
-
-
-
-#endif /*INTEGRA_PLAYER_HANDLER_H*/
+#endif

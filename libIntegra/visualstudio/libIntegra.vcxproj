@@ -174,6 +174,7 @@
     <ClCompile Include="..\src\server_commands.cpp" />
     <ClCompile Include="..\src\server_public.cpp" />
     <ClCompile Include="..\src\signals.cpp" />
+    <ClCompile Include="..\src\state_table.cpp" />
     <ClCompile Include="..\src\system_class_handlers.cpp" />
     <ClCompile Include="..\src\trace.cpp" />
     <ClCompile Include="..\src\validate.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="..\src\server_commands.h" />
     <ClInclude Include="..\src\signals.h" />
     <ClInclude Include="..\src\common_typedefs.h" />
+    <ClInclude Include="..\src\state_table.h" />
     <ClInclude Include="..\src\system_class_handlers.h" />
     <ClInclude Include="..\src\system_class_literals.h" />
     <ClInclude Include="..\src\trace.h" />

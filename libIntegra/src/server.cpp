@@ -95,23 +95,6 @@ void ntg_unlock_server(void)
 }
 
 
-const CNodeEndpoint *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const string &path )
-{
-	ostringstream composite_path;
-	composite_path << root->path.get_string() << "." << path;
-
-	node_endpoint_map::const_iterator lookup = server->state_table.find( composite_path.str() );
-	if( lookup == server->state_table.end() )
-	{
-		return NULL;
-	}
-	else
-	{
-		return lookup->second;
-	}
-}
-
-
 void ntg_server_set_host_dsp(const ntg_server *server, bool status)
 {
 
@@ -122,81 +105,6 @@ void ntg_server_set_host_dsp(const ntg_server *server, bool status)
 }
 
 
-void ntg_print_node_state( ntg_server *server, ntg_node *first, int indentation)
-{
-    ntg_node *current = first;
-    ntg_node *next;
-	bool has_children;
-	char *module_id_string;
-
-    if(first==NULL){
-        printf("No nodes\n");
-        return;
-    }
-
-	do{
-        assert(current != NULL);
-        next = current->next;
-        for( int i = 0; i < indentation; i++ )
-		{
-            printf("  |");
-		}
-
-		module_id_string = ntg_guid_to_string( &current->interface->module_guid );
-		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n",current->name,current->interface->info->name, module_id_string, current->path.get_string().c_str() );
-		delete[] module_id_string;
-
-		has_children = (current->nodes!=NULL);
-
-		node_endpoint_map &node_endpoints = current->node_endpoints;
-		for( node_endpoint_map::const_iterator node_endpoint_iterator = node_endpoints.begin(); node_endpoint_iterator != node_endpoints.end(); node_endpoint_iterator++ )
-		{
-			const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
-			const CValue *value = node_endpoint->get_value();
-			if( !value ) continue;
-
-			for( int i = 0; i < indentation; i++ )
-			{
-				printf("  |");
-			}
-
-			printf( has_children ? "  |" : "   ");
-
-			string value_string = value->get_as_string();
-
-			printf("   -Attribute:  %s = %s\n", node_endpoint->get_endpoint()->name, value_string.c_str() );
-		}
-		
-        if( has_children )
-		{
-            ntg_print_node_state( server, current->nodes, indentation + 1 );
-		}
-
-        current = next;
-
-    }
-	while(current!=first);
-}
-
-
-void ntg_server_get_nodelist( const ntg_server *server, const ntg_node *container, path_list &results )
-{
-    const CPath **nodes = NULL;
-
-	assert( container );
-
-    const ntg_node *node = container->nodes;
-	if( node )
-	{
-		do
-		{
-			results.push_back( node->path );
-			ntg_server_get_nodelist( server, node, results );
-			node = node->next;
-		}
-		while( node != container->nodes );
-	}
-}
 
 
 void ntg_version(char *destination, int destination_size)
@@ -312,7 +220,6 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
     server->osc_client				= ntg_osc_client_new(osc_client_url, osc_client_port);
     server->terminate				= false;
     server->loading					= false;
-    server->root					= NULL;
 
 	ntg_system_class_handlers_initialize( server );
 
@@ -326,20 +233,21 @@ ntg_server *ntg_server_new( const char *osc_client_url, unsigned short osc_clien
 
 void ntg_server_free(ntg_server *server)
 {
+	assert( server );
 
-    if (server == NULL) {
-        return;
-    }
-
+	/* delete all nodes */
+	node_map copy_of_root_nodes = server->root_nodes;
+	for( node_map::const_iterator i = copy_of_root_nodes.begin(); i != copy_of_root_nodes.end(); i++ )
+	{
+		ntg_delete_( server, NTG_SOURCE_SYSTEM, i->second->get_path() );
+	}
+	
 	/* free libxml state */
 	xmlCleanupParser();
 	xmlCleanupGlobals();
 
 	/* shutdown system class handlers */
 	ntg_system_class_handlers_shutdown(server);
-
-    /* free node graph */
-    ntg_server_node_delete(server, ntg_server_get_root(server));
 
     /* de-reference bridge */
 //    server->bridge = NULL;
@@ -357,16 +265,6 @@ void ntg_server_free(ntg_server *server)
 }
 
 
-ntg_bridge_callback ntg_server_get_bridge_callback(void)
-{
-    return server_->bridge->bridge_callback;
-}
-
-
-ntg_node *ntg_server_get_root(const ntg_server * server)
-{
-    return server->root;
-}
 
 
 void ntg_server_receive_from_host( ntg_id id, const char *attribute_name, const CValue *value )
@@ -378,9 +276,7 @@ void ntg_server_receive_from_host( ntg_id id, const char *attribute_name, const 
 
     ntg_lock_server();
 
-	ntg_node *root = ntg_server_get_root( server_ );
-    ntg_node *target = ntg_node_find_by_id_r( root, id );
-
+	const CNode *target = ntg_find_node( id );
     if( !target ) 
 	{
         NTG_TRACE_ERROR_WITH_INT("couldn't find node with id", id );
@@ -388,7 +284,7 @@ void ntg_server_receive_from_host( ntg_id id, const char *attribute_name, const 
         return;
     }
 
-	CPath path( target->path );
+	CPath path( target->get_path() );
 	path.append_element( attribute_name );
 
 	ntg_set_( server_, NTG_SOURCE_HOST, path, value );
@@ -429,70 +325,89 @@ ntg_error_code ntg_server_connect_in_host( ntg_server *server, const CNodeEndpoi
 }
 
 
-int ntg_server_node_delete_r_(ntg_server * server, ntg_node * node)
+const ntg_internal::CNodeEndpoint *ntg_find_node_endpoint( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to )
 {
-
-    ntg_node *current, *next;
-
-    if (node == NULL) {
-        return NTG_ERROR;
-    }
-
-    current = node;
-
-    while (1) {
-        if (current->next == current) {
-            break;
-        }
-        next = current->next;
-
-        ntg_server_node_delete(server, current);
-        current = next;
-
-    }
-
-    ntg_server_node_delete(server, current);
-
-    return NTG_NO_ERROR;
-
+	if( relative_to )
+	{
+		return server_->state_table.lookup_node_endpoint( relative_to->get_path().get_string() + "." + path_string );
+	}
+	else
+	{
+		return server_->state_table.lookup_node_endpoint( path_string );
+	}
 }
 
-ntg_error_code ntg_server_node_delete(ntg_server * server, ntg_node * node)
+
+ntg_internal::CNodeEndpoint *ntg_find_node_endpoint_writable( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to )
 {
-    if (node == NULL) {
-        NTG_TRACE_ERROR("node is NULL");
-        return NTG_ERROR;
-    }
-
-    /* recursively delete subnodes */
-    ntg_server_node_delete_r_(server, node->nodes);
-
-    /* remove from module host */
-    if (server->bridge != NULL) 
+	if( relative_to )
 	{
-		if( node->interface && ntg_interface_has_implementation( node->interface ) )
-		{
-			server->bridge->module_remove(node->id);
-		}
-    }
+		return server_->state_table.lookup_node_endpoint_writable( relative_to->get_path().get_string() + "." + path_string );
+	}
+	else
+	{
+		return server_->state_table.lookup_node_endpoint_writable( path_string );
+	}
+}
 
-    /* unlink */
-    if (node->parent == NULL) {
-        /* root node */
-    } else if (node->parent->nodes == node) {
-        /* first node in list */
-        if (node == node->next) {
-            node->parent->nodes = NULL;
-        } else {
-            node->parent->nodes = node->next;
-        }
-    }
 
-    /* free the node */
-    ntg_node_free(node);
+const ntg_internal::CNode *ntg_find_node( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to )
+{
+	if( relative_to )
+	{
+		return server_->state_table.lookup_node( relative_to->get_path().get_string() + "." + path_string );
+	}
+	else
+	{
+		return server_->state_table.lookup_node( path_string );
+	}
+}
 
-    return NTG_NO_ERROR;
 
+const ntg_internal::CNode *ntg_find_node( ntg_id id )
+{
+	return server_->state_table.lookup_node( id );
+}
+
+
+ntg_internal::CNode *ntg_find_node_writable( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to )
+{
+	if( relative_to )
+	{
+		return server_->state_table.lookup_node_writable( relative_to->get_path().get_string() + "." + path_string );
+	}
+	else
+	{
+		return server_->state_table.lookup_node_writable( path_string );
+	}
+}
+
+
+const ntg_internal::node_map &ntg_get_sibling_set( ntg_server *server, const ntg_internal::CNode &node )
+{
+	const CNode *parent = node.get_parent();
+	if( parent )
+	{
+		return parent->get_children();
+	}
+	else
+	{
+		return server->root_nodes;
+	}
+}
+
+
+ntg_internal::node_map &ntg_get_sibling_set_writable( ntg_server *server, ntg_internal::CNode &node )
+{
+	CNode *parent = node.get_parent_writable();
+	if( parent )
+	{
+		return parent->get_children_writable();
+	}
+	else
+	{
+		return server->root_nodes;
+	}
 }
 
 
@@ -543,7 +458,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
         const char *osc_client_url,
         unsigned short osc_client_port)
 {
-    ntg_node *root;
     ntg_bridge_interface *p;
     struct stat file_buffer;
     char version[NTG_LONG_STRLEN];
@@ -551,7 +465,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
     unsigned short*xmlport=NULL;
 
     p = NULL;
-    root = NULL;
 
     ntg_version(version, NTG_LONG_STRLEN);
     NTG_TRACE_PROGRESS_WITH_STRING("libIntegra version", version);
@@ -613,14 +526,6 @@ ntg_error_code ntg_server_run(const char *bridge_path,
     p->server_receive_callback = ntg_server_receive_from_host;
 
     server_->bridge = p;
-
-    root = ntg_node_new();
-    /* not sure we need to set an interface for the root node?
-	ntg_node_set_interface(root, ??? );
-	*/
-
-    ntg_node_set_name(root, "root");
-    server_->root = root;
 
     xmlport = new unsigned short;
     *xmlport = xmlrpc_server_port;

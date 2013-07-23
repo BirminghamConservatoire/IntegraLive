@@ -309,28 +309,17 @@ void ntg_player_free(ntg_server *server)
 
 void ntg_player_update(ntg_server *server, ntg_id player_id )
 {
-	ntg_player_data *player_data = NULL;
-	ntg_player_state *player_state = NULL;
-	ntg_node *player_node = NULL;
-	const CNodeEndpoint *play_endpoint = NULL;
-	const CNodeEndpoint *active_endpoint = NULL;
-	const CNodeEndpoint *rate_endpoint = NULL;
-	const CNodeEndpoint *tick_endpoint = NULL;
-	const CNodeEndpoint *loop_endpoint = NULL;
-	const CNodeEndpoint *start_endpoint = NULL;
-	const CNodeEndpoint *end_endpoint = NULL;
-
 	assert( server );
 
-	player_data = server->system_class_data->player_data;
+	ntg_player_data *player_data = server->system_class_data->player_data;
 	assert( player_data );
 
-	player_node = ntg_node_find_by_id_r(ntg_server_get_root( server ), player_id );
+	const CNode *player_node = ntg_find_node( player_id );
 	assert( player_node );
 
-	play_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_PLAY );
-	active_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_ACTIVE );
-	tick_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_TICK );
+	const CNodeEndpoint *play_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_PLAY );
+	const CNodeEndpoint *active_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_ACTIVE );
+	const CNodeEndpoint *tick_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_TICK );
 	assert( play_endpoint && active_endpoint && tick_endpoint );
 
 	int play_value = *play_endpoint->get_value();
@@ -345,10 +334,10 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	/*
 	lookup player attributes
 	*/
-	rate_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_RATE );
-	loop_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_LOOP );
-	start_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_START );
-	end_endpoint = ntg_find_node_endpoint( player_node, NTG_ENDPOINT_END );
+	const CNodeEndpoint *rate_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_RATE );
+	const CNodeEndpoint *loop_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_LOOP );
+	const CNodeEndpoint *start_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_START );
+	const CNodeEndpoint *end_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_END );
 
 	assert( rate_endpoint && loop_endpoint && start_endpoint && end_endpoint );
 
@@ -358,6 +347,7 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	see if the player is already playing
 	*/
 
+	ntg_player_state *player_state;
 	for( player_state = player_data->player_states; player_state; player_state = player_state->next )
 	{
 		if( player_state->id == player_id )
@@ -377,10 +367,10 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	}
 
 	/* recreate paths, in case they have changed */
-	player_state->tick_path = player_node->path;
+	player_state->tick_path = player_node->get_path();
 	player_state->tick_path.append_element( NTG_ENDPOINT_TICK );
 
-	player_state->play_path = player_node->path;
+	player_state->play_path = player_node->get_path();
 	player_state->play_path.append_element( NTG_ENDPOINT_PLAY );
 
 	/*
@@ -401,7 +391,7 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 }
 
 
-void ntg_player_handle_path_change( ntg_server *server, const ntg_node *player_node )
+void ntg_player_handle_path_change( ntg_server *server, const CNode &player_node )
 {
 	ntg_player_data *player_data = NULL;
 	ntg_player_state *player_state = NULL;
@@ -413,12 +403,12 @@ void ntg_player_handle_path_change( ntg_server *server, const ntg_node *player_n
 
 	for( player_state = player_data->player_states; player_state; player_state = player_state->next )
 	{
-		if( player_state->id == player_node->id )
+		if( player_state->id == player_node.get_id() )
 		{
-			player_state->tick_path = player_node->path;
+			player_state->tick_path = player_node.get_path();
 			player_state->tick_path.append_element( NTG_ENDPOINT_TICK );
 
-			player_state->play_path = player_node->path;
+			player_state->play_path = player_node.get_path();
 			player_state->play_path.append_element( NTG_ENDPOINT_PLAY );
 		}
 	}
@@ -427,7 +417,7 @@ void ntg_player_handle_path_change( ntg_server *server, const ntg_node *player_n
 }
 
 
-void ntg_player_handle_delete( ntg_server *server, const ntg_node *player_node )
+void ntg_player_handle_delete( ntg_server *server, const CNode &player_node )
 {
-	ntg_player_stop( server, player_node->id, 0 );
+	ntg_player_stop( server, player_node.get_id(), 0 );
 }

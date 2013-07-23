@@ -42,6 +42,7 @@ namespace ntg_api
 			const string &operator[]( int index ) const;
 
 			const string &get_string() const;
+			operator const string &() const;
 
 			string pop_element();
 			void append_element( const string &element );

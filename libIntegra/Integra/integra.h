@@ -307,11 +307,6 @@ LIBINTEGRA_API ntg_error_code ntg_server_run(const char *bridge_file,
 
 
 
-/** \brief get the bridge callback
- * */
-LIBINTEGRA_API ntg_bridge_callback ntg_server_get_bridge_callback(void);
-
-
 /** \brief Evaluate a string containing lua code
  *
  * The function returns immediately.

@@ -105,13 +105,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
     NTG_COMMAND_STATUS_INIT;
 
 	/* get node from path */
-	if( path.get_number_of_elements() <= 1) 
-	{
-		NTG_TRACE_ERROR_WITH_STRING("attribute has too few elements", path.get_string().c_str() );
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
-
-	CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( path.get_string() );
+	CNodeEndpoint *node_endpoint = ntg_find_node_endpoint_writable( path.get_string() );
     if( node_endpoint == NULL) 
 	{
         NTG_TRACE_ERROR_WITH_STRING( "endpoint not found", path.get_string().c_str() );
@@ -168,7 +162,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 			break;
 	}
 
-	if( cmd_source == NTG_SOURCE_HOST && !ntg_node_is_active( node_endpoint->get_node() ) )
+	if( cmd_source == NTG_SOURCE_HOST && !ntg_node_is_active( *node_endpoint->get_node() ) )
 	{
 		return command_status;
 	}
@@ -213,7 +207,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
     /* send the attribute value to the host if needed */
-	if( ntg_should_send_set_to_host( *node_endpoint, *node_endpoint->get_node()->interface, cmd_source ) ) 
+	if( ntg_should_send_set_to_host( *node_endpoint, *node_endpoint->get_node()->get_interface(), cmd_source ) ) 
 	{
 		server->bridge->send_value( node_endpoint );
     }
@@ -240,16 +234,11 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
 
+	NTG_COMMAND_STATUS_INIT;
+
     assert( server );
 
-    ntg_node *root = ntg_server_get_root( server );
-    ntg_node *parent = ntg_node_find_by_path( path, root );
-
-    if( !parent ) 
-	{
-        NTG_TRACE_ERROR( "parent is NULL, returning NULL" );
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
+    CNode *parent = ntg_find_node_writable( path );
 
     /* get interface */
 	const ntg_interface *interface = server->module_manager->get_interface_by_module_id( *module_id );
@@ -266,9 +255,10 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
     /* First check if node name is already taken */
-    while( ntg_node_find_by_name( parent, node_name.c_str() ) ) 
+	node_map &sibling_map = parent ? parent->get_children_writable() : server->root_nodes;
+    while( sibling_map.count( node_name ) > 0 ) 
 	{
-        NTG_TRACE_PROGRESS_WITH_STRING("node name is in use; appending underscore", node_name.c_str() );
+        NTG_TRACE_PROGRESS_WITH_STRING( "node name is in use; appending underscore", node_name.c_str() );
 
         node_name += "_";
 	}
@@ -279,14 +269,10 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
         NTG_RETURN_ERROR_CODE( NTG_FAILED );
 	}
 
-    ntg_node *node = ntg_node_new();
-    
-    /* FIX: order is important here -- better to break into separate function */
-    ntg_node_set_interface( node, interface );
-    ntg_node_set_name( node, node_name.c_str() );
-    ntg_node_add( parent, node );
-	ntg_node_add_node_endpoints( node, interface->endpoint_list );
-	ntg_node_add_to_statetable( node, server->state_table );
+    CNode *node = new CNode;
+	node->initialize( interface, node_name, parent );
+	sibling_map[ node_name ] = node;
+	server->state_table.add( *node );
 
 	if( ntg_interface_has_implementation( interface ) )
 	{
@@ -298,7 +284,7 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 		}
 		else
 		{
-			server->bridge->module_load( node->id, patch_path.c_str() );
+			server->bridge->module_load( node->get_id(), patch_path.c_str() );
 		}
 	}
 
@@ -310,23 +296,22 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 			continue;
 		}
 
-        const CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( node, endpoint->name );
+		const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint->name );
         assert( node_endpoint );
 
 		ntg_set_( server_, NTG_SOURCE_INITIALIZATION, node_endpoint->get_path(), endpoint->control_info->state_info->default_value );
 	}
 
     /* handle any system class logic */
-	ntg_system_class_handle_new( server, node, cmd_source );
+	ntg_system_class_handle_new( server, *node, cmd_source );
 
-
-    NTG_TRACE_VERBOSE_WITH_STRING( "Created node", node->name );
+    NTG_TRACE_VERBOSE_WITH_STRING( "Created node", node->get_name().c_str() );
 
 	command_status.data = node;
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-	    ntg_osc_client_send_new( server->osc_client, cmd_source, module_id, node_name.c_str(), parent->path );
+	    ntg_osc_client_send_new( server->osc_client, cmd_source, module_id, node_name.c_str(), node->get_parent_path() );
 	}
 
     return command_status;
@@ -335,32 +320,46 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 
 ntg_command_status ntg_delete_( ntg_server *server, ntg_command_source cmd_source, const CPath &path )
 {
-    ntg_bridge_interface *bridge;
-    ntg_node *node, *root;
     ntg_command_status command_status;
-    ntg_error_code error_code;
+    ntg_error_code error_code = NTG_NO_ERROR;
 
     NTG_COMMAND_STATUS_INIT;
-    bridge = server->bridge;
 
-    root = ntg_server_get_root(server);
-    node = ntg_node_find_by_path(path, root);
+	CNode *node = ntg_find_node_writable( path );
 
-    if (node == NULL) 
+    if( !node ) 
 	{
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-	ntg_system_class_handle_delete( server, node, cmd_source );
-
-	ntg_node_remove_from_statetable( node, server->state_table );
-
-    error_code = ntg_server_node_delete(server, node);
-
-    if( ntg_should_send_to_client( cmd_source ) ) 
+	/* delete children */
+	node_map copy_of_children( node->get_children() );
+	for( node_map::iterator i = copy_of_children.begin(); i != copy_of_children.end(); i++ )
 	{
-		ntg_osc_client_send_delete(server->osc_client, cmd_source, path);
+		CNode *child = i->second;
+		ntg_delete_( server, cmd_source, child->get_path() );
 	}
+
+	/* system class logic */
+	ntg_system_class_handle_delete( server, *node, cmd_source );
+
+	/* state tables */
+	server->state_table.remove( *node );
+
+	/* remove in host */
+    if( server->bridge ) 
+	{
+		if( ntg_interface_has_implementation( node->get_interface() ) )
+		{
+			server->bridge->module_remove( node->get_id() );
+		}
+    }
+
+	/* remove from owning container */
+	ntg_get_sibling_set_writable( server, *node ).erase( node->get_name() );
+
+	/* finally delete the node */
+	delete node;
 
     NTG_RETURN_COMMAND_STATUS;
 }
@@ -376,7 +375,7 @@ ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, nt
 	NTG_COMMAND_STATUS_INIT;
 
 	guid_set orphaned_embedded_modules;
-	server->module_manager->get_orphaned_embedded_modules( *server->root, orphaned_embedded_modules );
+	server->module_manager->get_orphaned_embedded_modules( server->root_nodes, orphaned_embedded_modules );
 
 	server->module_manager->unload_modules( orphaned_embedded_modules );
 
@@ -482,131 +481,94 @@ ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_comm
 
 
 
-ntg_command_status ntg_rename_(ntg_server *server, ntg_command_source cmd_source, const CPath &path, const char *name)
+ntg_command_status ntg_rename_(ntg_server *server, ntg_command_source cmd_source, const CPath &path, const char *name )
 {
     ntg_error_code error_code = NTG_NO_ERROR;
     ntg_command_status command_status;
-    ntg_node *node, *root;
-	char *new_name = NULL;
-	char *previous_name = NULL;
 
-    assert( name ) ;
+    assert( name );
 
     NTG_COMMAND_STATUS_INIT;
 
-    root = ntg_server_get_root((ntg_server *) server);
-    node = ntg_node_find_by_path(path, root);
-
-    if (node == NULL) 
+    CNode *node = ntg_find_node_writable( path );
+    if( !node ) 
 	{
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-	new_name = ntg_strdup( name );
+	if( !ntg_validate_node_name( name ) )
+	{
+        NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", name );
+        NTG_RETURN_ERROR_CODE( NTG_ERROR );
+	}
+
+	string new_name = name;
 
     /* First check if node name is already taken */
-    while( ntg_node_sibling_find_by_name( node, new_name ) ) 
+	node_map &sibling_set = ntg_get_sibling_set_writable( server, *node );
+    while( sibling_set.count( new_name ) > 0 ) 
 	{
-        NTG_TRACE_PROGRESS_WITH_STRING("node name is in use; appending underscore", new_name);
-
-        new_name = ntg_string_append(new_name, "_");
+        NTG_TRACE_PROGRESS_WITH_STRING( "node name is in use; appending underscore", new_name.c_str() );
+		new_name += "_";
 	}
 
-	if( !ntg_validate_node_name( new_name ) )
-	{
-        NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", new_name );
-        NTG_RETURN_ERROR_CODE( NTG_FAILED );
-	}
-
-	previous_name = ntg_strdup( node->name );
+	string previous_name = node->get_name();
 
     /* remove old state table entries for node and children */
-	ntg_node_remove_from_statetable( node, server->state_table );
+	server->state_table.remove( *node );
 
-    ntg_node_rename(node, new_name);
+    node->rename( new_name );
+
+	sibling_set.erase( previous_name );
+	sibling_set[ new_name ] = node;
 
     /* add new state table entries for node and children */
-	ntg_node_add_to_statetable( node, server->state_table );
+	server->state_table.add( *node );
 
-	ntg_system_class_handle_rename( server, node, previous_name, cmd_source );
+	ntg_system_class_handle_rename( server, *node, previous_name.c_str(), cmd_source );
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-		ntg_osc_client_send_rename(server->osc_client, cmd_source, path, new_name );
+		ntg_osc_client_send_rename(server->osc_client, cmd_source, path, new_name.c_str() );
 	}
-
-	delete[] new_name;
-	delete[] previous_name;
 
     NTG_RETURN_COMMAND_STATUS;
 }
 
-ntg_command_status ntg_move_(ntg_server *server, ntg_command_source cmd_source, const CPath &node_path, const CPath &parent_path )
+ntg_command_status ntg_move_(ntg_server *server, ntg_command_source cmd_source, const CPath &node_path, const CPath &new_parent_path )
 {
     ntg_error_code      error_code = NTG_NO_ERROR;
     ntg_command_status  command_status;
-    ntg_node           *root;
-    ntg_node           *node;
-    ntg_node           *new_parent;
-    ntg_node           *parent;
 
     NTG_COMMAND_STATUS_INIT;
 
-    root = ntg_server_get_root(server);
-    node = ntg_node_find_by_path(node_path, root);
-
-    if( node==NULL ) 
+    CNode *node = ntg_find_node_writable( node_path );
+    if( !node ) 
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "unable to find node given by path", node_path.get_string().c_str() );
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-    parent = node->parent;
-    /* check if we're at the beginning of the node list */
-    if (parent->nodes == node) {
-        if (node->next != node) {
-            parent->nodes = node->next;
-        } else {
-            /* we're the only node in the list */
-            parent->nodes = NULL;
-        }
-    }
-
     /* remove old state table entries for node and children */
-	ntg_node_remove_from_statetable( node, server->state_table );
+	server->state_table.remove( *node );
 
-    ntg_node_unlink(node);
-    new_parent = ntg_node_find_by_path(parent_path, root);
+	node_map &old_sibling_set = ntg_get_sibling_set_writable( server, *node );
+	old_sibling_set.erase( node->get_name() );
 
-    if (new_parent == NULL) 
-	{
-        NTG_TRACE_ERROR_WITH_STRING( "unable to find node given by path", parent_path.get_string().c_str() );
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
+    CNode *new_parent = ntg_find_node_writable( new_parent_path );
+	node_map &new_sibling_set = new_parent ? new_parent->get_children_writable() : server->root_nodes;
+	new_sibling_set[ node->get_name() ] = node;
 
-    /* add node to new parent */
-    ntg_node_add( new_parent, node );
-
-    /* update stored path */
-    ntg_node_update_path(node);
-
-    if( error_code != NTG_NO_ERROR ) 
-	{
-        NTG_TRACE_ERROR("failed to update vertices");
-        NTG_RETURN_ERROR_CODE( NTG_FAILED );
-    }
-
-    /* update child paths and vertices */
-    ntg_node_update_path( node );
+	node->move( new_parent );
 
     /* add new state table entries for node and children */
-	ntg_node_add_to_statetable( node, server->state_table );
+	server->state_table.add( *node );
 
-	ntg_system_class_handle_move( server, node, node_path, cmd_source );
+	ntg_system_class_handle_move( server, *node, node_path, cmd_source );
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-		ntg_osc_client_send_move(server->osc_client, cmd_source, node_path, parent_path);
+		ntg_osc_client_send_move( server->osc_client, cmd_source, node_path, new_parent_path );
 	}
 
     NTG_RETURN_COMMAND_STATUS;
@@ -615,7 +577,6 @@ ntg_command_status ntg_move_(ntg_server *server, ntg_command_source cmd_source, 
 
 ntg_command_status ntg_load_(ntg_server * server, ntg_command_source cmd_source, const char *file_path, const CPath &path )
 {
-    ntg_node *node, *root;
 	ntg_command_status command_status;
 
     assert(server != NULL);
@@ -623,15 +584,9 @@ ntg_command_status ntg_load_(ntg_server * server, ntg_command_source cmd_source,
 
 	NTG_COMMAND_STATUS_INIT
 
-    root = ntg_server_get_root(server);
-    node = ntg_node_find_by_path( path, root);
+    const CNode *parent = ntg_find_node( path );
 
-    if( !node ) 
-	{
-        NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
-    }
-
-	command_status = ntg_file_load( file_path, node, *server->module_manager );
+	command_status = ntg_file_load( file_path, parent, *server->module_manager );
 
 	return command_status;
 }
@@ -658,20 +613,22 @@ const CValue *ntg_get_( ntg_server *server, const CPath &path )
 }
 
 
-ntg_error_code ntg_nodelist_(ntg_server *server, const CPath &path, path_list &results )
+ntg_error_code ntg_nodelist_( ntg_server *server, const CPath &path, path_list &results )
 {
     assert( server );
 
-    ntg_node *root = ntg_server_get_root( server );
-    ntg_node *parent = ntg_node_find_by_path( path, root );
+    const CNode *parent = ntg_find_node( path );
+	const node_map &nodes = parent ? parent->get_children() : server->root_nodes;
 
-    if( !parent ) 
+	for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
 	{
-        NTG_TRACE_ERROR("parent is NULL, returning NULL");
-        return NTG_ERROR;
-    }
+		const CNode *node = i->second;
 
-    ntg_server_get_nodelist( server_, parent, results);
+		results.push_back( node->get_path() );
+
+		ntg_nodelist_( server, node->get_path(), results );
+	}
+
 	return NTG_NO_ERROR;
 }
 
@@ -680,7 +637,6 @@ ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char 
 {
     ntg_error_code error_code;
     ntg_command_status command_status;
-    ntg_node *node, *root;
 	char *file_path_with_suffix;
 
     NTG_COMMAND_STATUS_INIT;
@@ -695,17 +651,15 @@ ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char 
         NTG_TRACE_PROGRESS_WITH_STRING("saving to", file_path);
     }
 
-    root = ntg_server_get_root(server_);
-    node = ntg_node_find_by_path(path, root);
-
-    if( node==NULL ) 
+    const CNode *node = ntg_find_node( path );
+    if( !node ) 
 	{
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
 	file_path_with_suffix = ntg_ensure_filename_has_suffix( file_path, NTG_FILE_SUFFIX );
 
-	error_code = ntg_file_save( file_path_with_suffix, node, *server_->module_manager );
+	error_code = ntg_file_save( file_path_with_suffix, *node, *server_->module_manager );
 
 	delete[] file_path_with_suffix;
 
@@ -713,10 +667,56 @@ ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char 
 }
 
 
+void ntg_print_node_state( ntg_server *server, const node_map &nodes, int indentation)
+{
+	for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
+	{
+		const CNode *node = i->second;
+
+        for( int i = 0; i < indentation; i++ )
+		{
+            printf("  |");
+		}
+
+		const ntg_interface *interface = node->get_interface();
+		char *module_id_string = ntg_guid_to_string( &interface->module_guid );
+		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n", node->get_name(), interface->info->name, module_id_string, node->get_path().get_string().c_str() );
+		delete[] module_id_string;
+
+		bool has_children = !node->get_children().empty();
+
+		const node_endpoint_map &node_endpoints = node->get_node_endpoints();
+		for( node_endpoint_map::const_iterator node_endpoint_iterator = node_endpoints.begin(); node_endpoint_iterator != node_endpoints.end(); node_endpoint_iterator++ )
+		{
+			const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
+			const CValue *value = node_endpoint->get_value();
+			if( !value ) continue;
+
+			for( int i = 0; i < indentation; i++ )
+			{
+				printf("  |");
+			}
+
+			printf( has_children ? "  |" : "   ");
+
+			string value_string = value->get_as_string();
+
+			printf("   -Attribute:  %s = %s\n", node_endpoint->get_endpoint()->name, value_string.c_str() );
+		}
+		
+        if( has_children )
+		{
+			ntg_print_node_state( server, node->get_children(), indentation + 1 );
+		}
+    }
+}
+
+
+
 void ntg_print_state_()
 {
 	printf("Print State:\n");
 	printf("***********:\n\n");
-    ntg_print_node_state(server_,ntg_server_get_root(server_)->nodes,0);
+	ntg_print_node_state( server_, server_->root_nodes, 0 );
 	fflush( stdout );
 }

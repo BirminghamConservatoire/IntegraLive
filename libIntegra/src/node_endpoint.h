@@ -27,14 +27,15 @@ typedef struct ntg_endpoint_ ntg_endpoint;
 #define NTG_ENDPOINT_TYPEDEF
 #endif
 
-typedef struct ntg_node_ ntg_node;
-
 #include "Integra/integra_bridge.h"
 #include "path.h"
 
 
 namespace ntg_internal
 {
+	class CNode;
+
+
 	class CNodeEndpoint
 	{
 		public: 
@@ -42,9 +43,9 @@ namespace ntg_internal
 			CNodeEndpoint();
 			~CNodeEndpoint();
 
-			void initialize( const struct ntg_node_ &node, const ntg_endpoint &endpoint );
+			void initialize( const CNode &node, const ntg_endpoint &endpoint );
 
-			const struct ntg_node_ *get_node() const { return m_node; }
+			const CNode *get_node() const { return m_node; }
 			const ntg_endpoint *get_endpoint() const { return m_endpoint; }
 
 			const ntg_api::CValue *get_value() const { return m_value; }
@@ -59,7 +60,7 @@ namespace ntg_internal
 
 		private:
 
-		    const ntg_node *m_node;
+		    const CNode *m_node;
 			const ntg_endpoint *m_endpoint;
 
 			ntg_api::CValue *m_value;

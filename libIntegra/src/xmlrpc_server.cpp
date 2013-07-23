@@ -813,8 +813,6 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback(ntg_server * server,
                  *xmlrpc_elem = NULL,
                  *xmlrpc_guid = NULL,
                  *xmlrpc_temp = NULL, *struct_ = NULL, *node_struct = NULL;
-    ntg_node *node = NULL;
-    ntg_node *root = NULL;
     char *module_id_string = NULL;
 
     env = va_arg(argv, xmlrpc_env *);
@@ -842,16 +840,14 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback(ntg_server * server,
         }
 
         /* get the class id */
-        root = ntg_server_get_root(server);
-        node = ntg_node_find_by_path( path, root );
-        
-        if (node == NULL) 
+        const CNode *node = ntg_find_node( path );
+        if( node == NULL ) 
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "path not found: ", path.get_string().c_str() );
             return ntg_xmlrpc_error(env, NTG_FAILED);
         }
 
-		module_id_string = ntg_guid_to_string( &node->interface->module_guid );
+		module_id_string = ntg_guid_to_string( &node->get_interface()->module_guid );
 
         /* construct the node struct and append to nodes array */
         node_struct = xmlrpc_struct_new(env);
@@ -1379,7 +1375,6 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(ntg_server * server, const int argc
 	GUID module_id;
     CPath *path;
     ntg_command_status command_status;
-    ntg_node *node;
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
 
@@ -1393,7 +1388,7 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(ntg_server * server, const int argc
     struct_ = xmlrpc_struct_new(env);
     command_status = ntg_new_(server, NTG_SOURCE_XMLRPC_API, &module_id, node_name, *path );
 
-    node = static_cast<ntg_node *>( command_status.data );
+    CNode *node = static_cast<CNode *>( command_status.data );
 
     if (node == NULL) {
         /* free out-of-place memory */
@@ -1410,7 +1405,7 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(ntg_server * server, const int argc
     xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-    xmlrpc_temp = xmlrpc_string_new(env, node->name);
+    xmlrpc_temp = xmlrpc_string_new(env, node->get_name().c_str() );
     xmlrpc_struct_set_value(env, struct_, "instancename", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 

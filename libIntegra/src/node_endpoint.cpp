@@ -51,7 +51,7 @@ namespace ntg_internal
 	}
 
 		
-	void CNodeEndpoint::initialize( const struct ntg_node_ &node, const ntg_endpoint &endpoint )
+	void CNodeEndpoint::initialize( const CNode &node, const ntg_endpoint &endpoint )
 	{
 		m_node = &node;
 		m_endpoint = &endpoint;
@@ -158,7 +158,7 @@ namespace ntg_internal
 	{
 		assert( m_node && m_endpoint );
 
-		m_path = m_node->path;
+		m_path = m_node->get_path();
 		m_path.append_element( m_endpoint->name );
 	}
 

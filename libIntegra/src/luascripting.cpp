@@ -165,7 +165,6 @@ static float ntg_lua_get_double(lua_State * L, int argnum)
 
 static int ntg_lua_set( lua_State * L )
 {
-	const ntg_node *node = NULL;
 	ntg_command_status set_result;
 	int num_arguments;
 	CPath path, node_path;
@@ -189,14 +188,14 @@ static int ntg_lua_set( lua_State * L )
 	node_path = path;
 	endpoint_name = node_path.pop_element();
 
-	node = ntg_node_find_by_path( node_path, ntg_server_get_root( server_ ) );
+	const CNode *node = ntg_find_node( node_path );
 	if( !node )
 	{
 		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	const CNodeEndpoint *endpoint = ntg_find_node_endpoint( node, endpoint_name.c_str() );
+	const CNodeEndpoint *endpoint = node->get_node_endpoint( endpoint_name );
 	if( !endpoint )
 	{
 		ntg_lua_error_handler( "Can't find endpoint: %s", path.get_string().c_str() );
@@ -278,14 +277,14 @@ static int ntg_lua_get(lua_State * L)
 	CPath node_path( path );
 	string endpoint_name = node_path.pop_element();
 
-	const ntg_node *node = ntg_node_find_by_path( node_path, ntg_server_get_root( server_ ) );
+	const CNode *node = ntg_find_node( node_path );
 	if( !node )
 	{
 		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	const CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( node, endpoint_name.c_str() );
+	const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_name );
 	if( !node_endpoint )
 	{
 		ntg_lua_error_handler( "Can't find endpoint: %s", node_path.get_string().c_str() );
@@ -446,41 +445,31 @@ char *ntg_lua_get_parameter_string( const CPath &child_path, const CPath &parent
 }
 
 
-char *ntg_lua_declare_child_objects( char *init_script, const ntg_node *node, const CPath &parent_path )
+char *ntg_lua_declare_child_objects( char *init_script, const node_map &children, const CPath &parent_path )
 {
-	const ntg_node *child_iterator;
 	char *child_declaration;
 	const char *child_initializer = "={}\n";
 
-	assert( node && parent_path.get_number_of_elements() <= node->path.get_number_of_elements() );
-
-	child_iterator = node->nodes;
-	if( child_iterator )
+	for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 	{
-		do 
-		{
-			//declare child object
-			child_declaration = get_lua_object_name( child_iterator->path, parent_path );
-			assert( child_declaration );
+		//declare child object
+		const CNode *child = i->second;
+		child_declaration = get_lua_object_name( child->get_path(), parent_path );
+		assert( child_declaration );
 
-			child_declaration = ntg_string_append( child_declaration, child_initializer );
+		child_declaration = ntg_string_append( child_declaration, child_initializer );
 
-			init_script = ntg_string_append( init_script, child_declaration );
-			delete[] child_declaration;
+		init_script = ntg_string_append( init_script, child_declaration );
+		delete[] child_declaration;
 
-			init_script = ntg_lua_declare_child_objects( init_script, child_iterator, parent_path );
-
-			child_iterator = child_iterator->next;
-
-		} 
-		while (child_iterator != node->nodes);
+		init_script = ntg_lua_declare_child_objects( init_script, child->get_children(), parent_path );
 	}
 
 	return init_script;
 }
 
 
-char *ntg_lua_get_child_metatable( const ntg_node *node, const CPath &parent_path )
+char *ntg_lua_get_child_metatable( const CNode &node, const CPath &parent_path )
 {
 	char *object_name;
 	char *parameter_string;
@@ -496,10 +485,11 @@ char *ntg_lua_get_child_metatable( const ntg_node *node, const CPath &parent_pat
 		"	end\n"
 		"})\n";
 
-	assert( node && parent_path.get_number_of_elements() < node->path.get_number_of_elements() );
+	const CPath &node_path = node.get_path();
+	assert( parent_path.get_number_of_elements() < node_path.get_number_of_elements() );
 
-	object_name = get_lua_object_name( node->path, parent_path );
-	parameter_string = ntg_lua_get_parameter_string( node->path, parent_path );
+	object_name = get_lua_object_name( node_path, parent_path );
+	parameter_string = ntg_lua_get_parameter_string( node_path, parent_path );
 	assert( object_name && parameter_string );
 
 	metatable = new char[ strlen( metatable_template ) + strlen( object_name ) + strlen( parameter_string ) * 2 + 1 ];
@@ -509,30 +499,21 @@ char *ntg_lua_get_child_metatable( const ntg_node *node, const CPath &parent_pat
 }
 
 
-char *ntg_lua_declare_child_metatables( char *init_script, const ntg_node *node, const CPath &parent_path )
+char *ntg_lua_declare_child_metatables( char *init_script, const node_map &children, const CPath &parent_path )
 {
-	const ntg_node *child_iterator;
 	char *child_metatable;
 
-	assert( node && parent_path.get_number_of_elements() <= node->path.get_number_of_elements() );
-
-	child_iterator = node->nodes;
-	if( child_iterator )
+	for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 	{
-		do 
-		{
-			child_metatable = ntg_lua_get_child_metatable( child_iterator, parent_path );
-			assert( child_metatable );
+		const CNode *child = i->second;
 
-			init_script = ntg_string_append( init_script, child_metatable );
-			delete[] child_metatable;
+		child_metatable = ntg_lua_get_child_metatable( *child, parent_path );
+		assert( child_metatable );
 
-			init_script = ntg_lua_declare_child_metatables( init_script, child_iterator, parent_path );
+		init_script = ntg_string_append( init_script, child_metatable );
+		delete[] child_metatable;
 
-			child_iterator = child_iterator->next;
-
-		} 
-		while (child_iterator != node->nodes);
+		init_script = ntg_lua_declare_child_metatables( init_script, child->get_children(), parent_path );
 	}
 
 	return init_script;
@@ -579,7 +560,7 @@ char *ntg_lua_build_init_script( const CPath &parent_path )
 		"})\n";
 
 	char *init_script = NULL;
-	ntg_node *parent_node;
+	
 	int i;
 
 	for( i = 0; *helper_functions[ i ] != 0; i++ )
@@ -588,15 +569,12 @@ char *ntg_lua_build_init_script( const CPath &parent_path )
 		init_script = ntg_string_append( init_script, "\n" );
 	}
 
-	parent_node = ntg_node_find_by_path( parent_path, ntg_server_get_root( server_ ) );
-	if( !parent_node )
-	{
-		NTG_TRACE_ERROR_WITH_STRING( "Can't find node", parent_path.get_string().c_str() );
-		return NULL;
-	}
+	const CNode *parent_node = ntg_find_node( parent_path );
+	const node_map &child_nodes = parent_node ? parent_node->get_children() : server_->root_nodes;
 
-	init_script = ntg_lua_declare_child_objects( init_script, parent_node, parent_path );
-	init_script = ntg_lua_declare_child_metatables( init_script, parent_node, parent_path );
+
+	init_script = ntg_lua_declare_child_objects( init_script, child_nodes, parent_path );
+	init_script = ntg_lua_declare_child_metatables( init_script, child_nodes, parent_path );
 	init_script = ntg_string_append( init_script, global_metatable );
 
 	return init_script;

@@ -123,6 +123,9 @@
     <ClCompile Include="..\src\node_endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\state_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
@@ -240,6 +243,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Integra\integra_bridge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\state_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

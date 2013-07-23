@@ -33,9 +33,9 @@ namespace ntg_internal
 }
 
 
-ntg_command_status ntg_file_load( const char *filename, const ntg_node *parent, ntg_internal::CModuleManager &module_manager );
+ntg_command_status ntg_file_load( const char *filename, const ntg_internal::CNode *parent, ntg_internal::CModuleManager &module_manager );
 
-ntg_error_code ntg_file_save( const char *filename, const ntg_node *node, const ntg_internal::CModuleManager &module_manager );
+ntg_error_code ntg_file_save( const char *filename, const ntg_internal::CNode &node, const ntg_internal::CModuleManager &module_manager );
 
 
 void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_path, const char *source_path );

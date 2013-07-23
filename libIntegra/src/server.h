@@ -29,12 +29,12 @@
 #include "Integra/integra_bridge.h"
 #include "node.h"
 #include "path.h"
+#include "state_table.h"
 
-
-#define NTG_COMMAND_QUEUE_ELEMENTS 1024
 
 namespace ntg_internal
 {
+	class CNode;
 	class CReentranceChecker;
 	class CModuleManager;
 }
@@ -50,10 +50,10 @@ typedef struct ntg_system_class_data_ ntg_system_class_data;
 
 /** \brief Definition of the type ntg_server. @see Integra/integra.h */
 typedef struct ntg_server_ {
-    ntg_node *root;
+	ntg_internal::node_map root_nodes;
     ntg_bridge_interface *bridge;
     struct ntg_osc_client_ *osc_client;
-	ntg_internal::node_endpoint_map state_table; /* resolves path-as-string to node endpoint */
+	ntg_internal::CStateTable state_table; 
 	ntg_internal::CReentranceChecker *reentrance_checker;
 	ntg_internal::CModuleManager *module_manager;
     struct ntg_system_class_data_ *system_class_data;
@@ -74,45 +74,28 @@ void ntg_server_free(ntg_server *server);
 void ntg_server_receive_from_host(ntg_id id, const char *attribute_name, const ntg_api::CValue *value);
 
 
-/**
- * \brief Get the root of the node graph */
-ntg_node *ntg_server_get_root(const ntg_server *server);
-
-/** \brief Get the list of nodes under a container node as an array */
-void ntg_server_get_nodelist( const ntg_server *server, const ntg_node *container, ntg_api::path_list &results );
-
 /** \brief Update a connection 
     \param do_connect Toggles the connection 0 = disconnect 1 = connec
  */
 ntg_error_code ntg_server_connect_in_host( ntg_server *server, const ntg_internal::CNodeEndpoint *source, 
 											const ntg_internal::CNodeEndpoint *target, bool connect );
 
-/** \brief Remove a node from the server
- *
- * \param *node a pointer to the node to removed
- * \param *container a pointer to the containing node
- *
- * */
-ntg_error_code ntg_server_node_delete(ntg_server *server, ntg_node *node);
 
 
-/** \brief shortcut for making/removing connections 
- *  \param *parent_path, a reference to the path of the parent we want to make the connection inside, e.g. ["Track1", "Block1"]
- *  \param *source_path_s a string representing the *relative* path to the source attribute in dot-separated notation, e.g. "TapDelay1.out1"
- *  \param *target_path_s a string representing the *relative* path to the target attribute in dot-separated notation, e.g. "AudioOut1.in1"
-    \return a pointer to a struct of type ntg_node, containing the new Connection node 
-    */
-ntg_node *ntg_server_connect(ntg_server * server, const ntg_api::CPath &parent_path, const char *source_path_s, const char *target_path_s );
+const ntg_internal::CNodeEndpoint *ntg_find_node_endpoint( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to = NULL );
+ntg_internal::CNodeEndpoint *ntg_find_node_endpoint_writable( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to = NULL );
 
+const ntg_internal::CNode *ntg_find_node( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to = NULL );
+const ntg_internal::CNode *ntg_find_node( ntg_id id );
 
+ntg_internal::CNode *ntg_find_node_writable( const ntg_api::string &path_string, const ntg_internal::CNode *relative_to = NULL );
 
-/** \brief return an ntg_node_attribute from a path relative to a base node */
-const ntg_internal::CNodeEndpoint *ntg_server_resolve_relative_path( const ntg_server *server, const ntg_node *root, const ntg_api::string &path );
+const ntg_internal::node_map &ntg_get_sibling_set( ntg_server *server, const ntg_internal::CNode &node );
+ntg_internal::node_map &ntg_get_sibling_set_writable( ntg_server *server, ntg_internal::CNode &node );
+
 
 
 void ntg_server_set_host_dsp(const ntg_server *server, bool status);
-
-void ntg_print_node_state( ntg_server *server, ntg_node *first,int indentation );
 
 bool ntg_saved_version_is_newer_than_current( const char *saved_version );
 

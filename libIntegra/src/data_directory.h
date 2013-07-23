@@ -27,16 +27,19 @@
 
 #include "server.h"
 
+namespace ntg_internal
+{
+	class CNode;
+}
 
 
-
-char *ntg_node_data_directory_create( const ntg_node *node, const ntg_server *server );
+char *ntg_node_data_directory_create( const ntg_internal::CNode &node, const ntg_server *server );
 void ntg_node_data_directory_change( const char *previous_directory_name, const char *new_directory_name );
 
-void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *node, const ntg_node *path_root );
+void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_internal::CNode &node, const ntg_api::CPath &path_root );
 
 
-ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node *parent_node );
+ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_internal::CNode *parent_node );
 
 const char *ntg_copy_file_to_data_directory( const ntg_internal::CNodeEndpoint *node_endpoint );
 

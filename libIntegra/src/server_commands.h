@@ -47,7 +47,7 @@ ntg_command_status ntg_rename_(ntg_server *server,
 ntg_command_status ntg_move_(ntg_server *server,
         ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &node_path,
-        const ntg_api::CPath &parent_path);
+        const ntg_api::CPath &new_parent_path);
 
 ntg_command_status ntg_load_(ntg_server * server,
         ntg_internal::ntg_command_source cmd_source,

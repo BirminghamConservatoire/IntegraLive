@@ -1,4 +1,5 @@
 ## Integra Module Development Guide
+<!-- This is a reference guide -->
 
 This guide will explain how to create modules that can be used in [Integra Live](http://integralive.org). 
 

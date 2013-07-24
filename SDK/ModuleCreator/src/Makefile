@@ -57,7 +57,9 @@ key:
 	fi
 
 app: $(SWF) key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass $(PASSWORD) -target bundle $(PRODUCT).app $(DESCRIPTOR) $(SWF) $(ASSETS)
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass $(PASSWORD) -target bundle $(PRODUCT).app $(DESCRIPTOR) $(SWF) $(ASSETS) icons
+	cp icons/*.icns $(PRODUCT).app/Contents/Resources/
+	rm -rf $(PRODUCT).app/Contents/Resources/icons
 
 
 air: $(SWF) key

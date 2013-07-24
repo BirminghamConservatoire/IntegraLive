@@ -64,10 +64,12 @@ key:
 	fi
 
 app: IntegraLive.swf key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle Integra\ Live.app IntegraLive-app.xml IntegraLive.swf icons assets
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle Integra\ Live.app IntegraLive-app.xml IntegraLive.swf assets
 	# Do this separately otherwise adt complains:
 	# "is not part of a Mac OS X Native Extensions framework"
 	cp -r BlockLibrary $(PRODUCT).app/Contents/Resources
+	# Copy in correct .icns files - AIR XML file doesn't support 1024x1024 retina!
+	cp icons/*.icns $(PRODUCT).app/Contents/Resources
 
 clean:
 	-@rm -f IntegraLive.swf
@@ -77,6 +79,7 @@ clean:
 	-@rm -f $(DESCRIPTOR)
 	-@rm -rf $(PRODUCT).app
 	-@rm -rf BlockLibrary
+	-@rm -rf *.tmp
  
 
 $(CONFIG): $(CONFIG).in

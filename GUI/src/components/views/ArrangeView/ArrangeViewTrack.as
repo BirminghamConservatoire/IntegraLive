@@ -21,11 +21,10 @@
 
 package components.views.ArrangeView
 {
-	import flash.display.DisplayObject;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
-	import flash.geom.Rectangle;
 	
 	import mx.containers.Canvas;
 	import mx.core.ScrollPolicy;
@@ -46,14 +45,12 @@ package components.views.ArrangeView
 	import components.controller.userDataCommands.SetTrackHeight;
 	import components.model.Block;
 	import components.model.Info;
-	import components.model.Project;
 	import components.model.Track;
 	import components.model.userData.TimelineState;
 	import components.utils.DragImage;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
-	import components.views.InfoView.InfoMarkupForViews;
 	
 	import flexunit.framework.Assert;
 	
@@ -69,6 +66,7 @@ package components.views.ArrangeView
 			addEventListener( DragEvent.DRAG_OVER, onDragOver );
 			addEventListener( DragEvent.DRAG_EXIT, onDragExit );
 			addEventListener( DragEvent.DRAG_DROP, onDragDrop );
+			addEventListener( Event.RESIZE, onResize );
 	
 			addUpdateMethod( AddBlock, onBlockAdded );
 			addUpdateMethod( RemoveBlock, onBlockRemoved );
@@ -86,7 +84,7 @@ package components.views.ArrangeView
 			verticalScrollPolicy = ScrollPolicy.OFF;    
 			
 			setStyle( "backgroundColor", 0x808080 );
-
+			
 			_trackID = trackID;
 			_track = model.getTrack( _trackID );
 			Assert.assertNotNull( _track );
@@ -423,6 +421,17 @@ package components.views.ArrangeView
 			blockView.width = block.length * timelineState.zoom;
 			blockView.setStyle( "bottom", 0 );
 			blockView.setStyle( "top", 0 );
+
+			updateVisiblePortion( blockView );
+		}
+		
+		
+		
+		private function updateVisiblePortion( blockView:BlockView ):void
+		{
+			var visibleStart:Number = Math.max( 0, -blockView.x );
+			var visibleWidth:Number = Math.max( 0, Math.min( width, blockView.width - visibleStart ) );
+			blockView.setVisiblePortion( visibleStart, visibleWidth );
 		}
 		
 		
@@ -483,6 +492,15 @@ package components.views.ArrangeView
 			var blockStartTicks:int = Math.max( 0, model.project.projectUserData.timelineState.pixelsToTicks( event.localX ) - Block.newBlockSeconds * model.project.player.rate / 2 );
 			
 			controller.processCommand( new ImportBlock( file.nativePath, trackID, blockStartTicks ) ); 
+		}
+		
+		
+		private function onResize( event:Event ):void
+		{
+			for each( var blockView:BlockView in _blockViews )
+			{
+				updateVisiblePortion( blockView );
+			}
 		}
 
 

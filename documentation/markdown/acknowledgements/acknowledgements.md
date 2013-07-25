@@ -1,27 +1,32 @@
 
 # Acknowledgments
 
-Integra Live was developed as part of the EU-funded Integra Project led by Birmingham Conservatoire in the UK and supported by the Culture 2007-2013 programme of the European Union. Further information can be found at [http://www.integralive.org](http://www.integralive.org).
+Integra Live is developed by [Integra Lab](http://www.bcu.ac.uk/pme/conservatoire/research/integra-lab) at Birmingham Conservatoire in the UK. 
+
+The software originally formed part of the EU-funded Integra Project, directed by [Lamberto Coccioli](http://www.conservatoire.bcu.ac.uk/profiles/lamberto-coccioli) at Birmingham Conservatoire and supported by the Culture 2007-2013 programme of the European Union.
 
 The core Integra Live contributors are as follows:
 
-- **Jamie Bullock** - Project Manager and Lead Developer
-- **Leighton Hargreaves** - Lead GUI Developer
-- **Daniel Beattie** - User Interface Designer
-- **Lessrain** - Graphic Design
-- **Henrik Frisk** - Framework Developer
-- **Thomas Musil** - Module Developer
-- **Kjetil Matheussen** - Scripting Developer
-- **Krzysztof Trzewiczek** - Module Controls Developer
+- **Jamie Bullock** — Project Manager &amp; Technical Lead
+- **Leighton Hargreaves** — Lead Developer
+- **Richard Cornock** — Lead Designer
+- **James Dooley** — Tester &amp; Module Developer
+- **Balandino di Donato** — Tester &amp; Module Developer
+- **Tychonas Michailidis** — Tester
+
 
 Other contributors include:
 
-- **IOhannes Zmoelnig** - Module Developer
-- **Svein Berge** - Module Developer
-- **Dag Henning Kalv&oslash;y** - Tester and Module Developer
-- **James Dooley** - Tester and Module Developer
-- **Tychonas Michailidis** - Tester
-- **Stefano Tofani** - Tester
+- **Daniel Beattie** — Interface Design
+- **Lessrain** — Graphic Design
+- **Thomas Musil** — Module Development
+- **Kjetil Matheussen** — Scripting Development
+- **Krzysztof Trzewiczek** — Module Controls Development
+- **Henrik Frisk** — Framework Research &amp; Development
+- **IOhannes Zmoelnig** — Module Development
+- **Svein Berge** — Module Development
+- **Dag Henning Kalv&oslash;y** — Testing and Module Development
+- **Stefano Tofani** — Tester
 
 ----
 

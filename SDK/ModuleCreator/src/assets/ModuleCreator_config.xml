@@ -61,14 +61,17 @@
 
 	<!-- 		help links.  Can be web or local relative to documentation directory			-->
 	<helplinks>
+		<helplink name="Module Development Quick Start">
+			html/module-development-quickstart/module-development-quickstart.htm
+		</helplink>
 		<helplink name="Module Development Guide">
-			html/module-development/module-development.htm
+			html/module-development-guide/module-development.htm
 		</helplink>
 		<helplink name="www.integralive.org">
 			http://www.integralive.org
 		</helplink>
 		<helplink name="User Forum">
-			http://integralive.uservoice.com/forums/58883-general
+			http://integralive.org/forum
 		</helplink>
 	</helplinks>		
 	

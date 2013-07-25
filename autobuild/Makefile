@@ -116,7 +116,7 @@ gui:
 	mv $(GUIDIR)/$(APPNAME) ./
 	touch $(APPNAME)/Contents/Resources/META-INF/AIR/debug
 
-creator: 
+creator: documentation
 	@if test ! -d $(APPNAME); \
 	then echo $(APPNAME) does not exist. Run 'make release' first. && exit 2; \
 	fi
@@ -125,6 +125,7 @@ creator:
 	mv $(CREATORDIR)/$(CREATORAPPNAME) ./
 	cp -r $(TEMPLATESDIR) $(CREATORRESIDR)
 	cp -r $(APPNAME) $(CREATORRESIDR)
+	mv documentation $(CREATORRESIDR)
 
 host:
 	if [ ! -e $(PD_DMG_NAME) ]; then \
@@ -167,6 +168,7 @@ clean: server-clean gui-clean
 	-diskutil unmount $(PRODUCT)
 	-rm -rf $(APPNAME)
 	-rm -rf $(PRODUCT).dmg
+	-rm -rf $(CREATORAPPNAME)
 
 
 maintainer-clean: clean dependencies-clean

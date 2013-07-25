@@ -651,7 +651,7 @@ package components.views.ModuleManager
 
 			for each( var versionToSwitch:InterfaceDefinition in versionsToSwitch )
 			{
-				markdown += "##![](app:/assets/moduleLogo.png) " + switchableItem.toString() + "\n\n";
+				markdown += "##![](app:/icons/module_48x48x32.png) " + switchableItem.toString() + "\n\n";
 
 				if( multipleVersionsInUse )
 				{

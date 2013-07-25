@@ -414,7 +414,7 @@ LIBINTEGRA_API const ntg_list *ntg_nodelist(const ntg_path *path);
 LIBINTEGRA_API ntg_command_status ntg_unload_orphaned_embedded_modules(void);
 
 /** \brief install a 3rd party integra module from disk
- * \param *file_path: path to the integra-module file to install
+ * \param *file_path: path to the module file to install
  * \return a struct of type ntg_command_status. If the function succeeded,
  * this will contain the error_code NTG_NO_ERROR, and the data member will point to 
  * a struct of type ntg_module_install_result.  This struct contains the members 
@@ -451,7 +451,7 @@ LIBINTEGRA_API ntg_command_status ntg_install_embedded_module( const GUID *modul
 LIBINTEGRA_API ntg_command_status ntg_uninstall_module( const GUID *module_id );
 
 /** \brief load a 3rd party integra module from disk, as a 'module in development'
- * \param *file_path: path to the integra-module file to load
+ * \param *file_path: path to the module file to load
  * \return a struct of type ntg_command_status. If the function succeeded,
  * this will contain the error_code NTG_NO_ERROR, and the data member will point to 
  * a struct of type ntg_module_in_development_install_result.  This struct contains the member

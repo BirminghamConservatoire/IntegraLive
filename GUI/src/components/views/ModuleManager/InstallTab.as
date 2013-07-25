@@ -391,7 +391,7 @@ package components.views.ModuleManager
 		{
 			var interfaceInfo:InterfaceInfo = interfaceDefinition.interfaceInfo;
 			
-			var markdown:String = "##![](app:/assets/moduleLogo.png) " + interfaceInfo.label + "\n\n";
+			var markdown:String = "##![](app:/icons/module_48x48x32.png) " + interfaceInfo.label + "\n\n";
 			
 			markdown += interfaceInfo.description + "\n\n";
 			

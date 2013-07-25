@@ -66,8 +66,8 @@ package components.controller.serverCommands
 			var audioSettings:AudioSettings = model.audioSettings;
 			Assert.assertNotNull( audioSettings );
 			
-			audioSettings.availableInputDevices = _availableInputDevices;
-			audioSettings.availableOutputDevices = _availableOutputDevices;
+			if( _availableInputDevices ) audioSettings.availableInputDevices = _availableInputDevices;
+			if( _availableOutputDevices ) audioSettings.availableOutputDevices = _availableOutputDevices;
 			
 			audioSettings.hasChangedSinceReset = true;
 		}

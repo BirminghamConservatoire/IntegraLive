@@ -77,7 +77,14 @@ ntg_error_code ntg_value_sprintf( char *output, int chars_available, const ntg_v
             output[ n + 1 ] = '\0';
             break;
         case NTG_STRING:
-            rv = sprintf_s( output, chars_available, "%s", value->ctype.s);
+			if( strlen( value->ctype.s ) >= chars_available )
+			{
+				return NTG_ERROR;
+			}
+			else
+			{
+				rv = sprintf_s( output, chars_available, "%s", value->ctype.s);
+			}
             break;
         case NTG_INTEGER:
             rv = sprintf_s( output, chars_available, "%d", value->ctype.i);

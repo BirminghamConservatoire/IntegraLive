@@ -21,7 +21,6 @@
 
 package components.controller.serverCommands
 {
-	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
 	
 	import components.controller.ServerCommand;
 	import components.model.IntegraModel;
@@ -29,20 +28,17 @@ package components.controller.serverCommands
 	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;
-	
 
-	public class SetAudioDevices extends ServerCommand
+	public class SetAudioOutputDevice extends ServerCommand
 	{
-		public function SetAudioDevices( inputDevice:String, outputDevice:String )
+		public function SetAudioOutputDevice( outputDevice:String )
 		{
 			super();
 
-			_selectedInputDevice = inputDevice;
 			_selectedOutputDevice = outputDevice;
 		}
 		
 		
-		public function get selectedInputDevice():String { return _selectedInputDevice; }
 		public function get selectedOutputDevice():String { return _selectedOutputDevice; }
 		
 	
@@ -50,17 +46,11 @@ package components.controller.serverCommands
 		{
 			var audioSettings:AudioSettings = model.audioSettings;
 			
-			if( !Utilities.doesStringVectorContainString( audioSettings.availableInputDevices, _selectedInputDevice ) )
-			{
-				return false;
-			}			
-
 			if( !Utilities.doesStringVectorContainString( audioSettings.availableOutputDevices, _selectedOutputDevice ) )
 			{
 				return false;
 			}			
 
-			if( _selectedInputDevice != audioSettings.selectedInputDevice ) return true;
 			if( _selectedOutputDevice != audioSettings.selectedOutputDevice ) return true;
 			
 			return false;
@@ -71,7 +61,7 @@ package components.controller.serverCommands
 		{
 			var audioSettings:AudioSettings = model.audioSettings;
 			
-			pushInverseCommand( new SetAudioDevices( audioSettings.selectedInputDevice, audioSettings.selectedOutputDevice ) );
+			pushInverseCommand( new SetAudioOutputDevice( audioSettings.selectedOutputDevice ) );
 		}
 		
 		
@@ -80,9 +70,7 @@ package components.controller.serverCommands
 			var audioSettings:AudioSettings = model.audioSettings;
 			Assert.assertNotNull( audioSettings );
 			
-			audioSettings.selectedInputDevice = _selectedInputDevice;
 			audioSettings.selectedOutputDevice = _selectedOutputDevice;
-			
 			audioSettings.hasChangedSinceReset = true;
 		}
 		
@@ -95,11 +83,7 @@ package components.controller.serverCommands
 			
 			methodCalls[ 0 ] = new Object;
 			methodCalls[ 0 ].methodName = "command.set";
-			methodCalls[ 0 ].params = [ audioSettingsPath.concat( "selectedInputDevice" ), _selectedInputDevice ]; 
-			
-			methodCalls[ 1 ] = new Object;
-			methodCalls[ 1 ].methodName = "command.set";
-			methodCalls[ 1 ].params = [ audioSettingsPath.concat( "selectedOutputDevice" ), _selectedOutputDevice ]; 
+			methodCalls[ 0 ].params = [ audioSettingsPath.concat( "selectedOutputDevice" ), _selectedOutputDevice ]; 
 			
 			connection.addArrayParam( methodCalls );
 			connection.callQueued( "system.multicall" );						
@@ -108,7 +92,6 @@ package components.controller.serverCommands
 		
 		public override function getAttributesChangedByThisCommand( model:IntegraModel, changedAttributes:Vector.<String> ):void
 		{
-			changedAttributes.push( model.getPathStringFromID( model.audioSettings.id ) + ".selectedInputDevice" );
 			changedAttributes.push( model.getPathStringFromID( model.audioSettings.id ) + ".selectedOutputDevice" );
 		}
 		
@@ -118,16 +101,14 @@ package components.controller.serverCommands
 			var responseArray:Array = response as Array;
 			Assert.assertNotNull( responseArray );
 			
-			if( responseArray.length != 2 ) return false;
+			if( responseArray.length != 1 ) return false;
 			
 			if( responseArray[ 0 ][ 0 ].response != "command.set" ) return false;
-			if( responseArray[ 1 ][ 0 ].response != "command.set" ) return false;
 			
 			return true;		
 		}
 
 		
-		private var _selectedInputDevice:String;
 		private var _selectedOutputDevice:String;
 	}
 }

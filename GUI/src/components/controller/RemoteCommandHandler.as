@@ -26,16 +26,18 @@ package components.controller
 	
 	import components.controller.serverCommands.ReceiveMidiInput;
 	import components.controller.serverCommands.SelectScene;
-	import components.controller.serverCommands.SetAudioDevices;
 	import components.controller.serverCommands.SetAudioDriver;
+	import components.controller.serverCommands.SetAudioInputDevice;
+	import components.controller.serverCommands.SetAudioOutputDevice;
 	import components.controller.serverCommands.SetAudioSettings;
 	import components.controller.serverCommands.SetAvailableAudioDevices;
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableMidiDrivers;
 	import components.controller.serverCommands.SetContainerActive;
-	import components.controller.serverCommands.SetMidiDevices;
 	import components.controller.serverCommands.SetMidiDriver;
+	import components.controller.serverCommands.SetMidiInputDevice;
+	import components.controller.serverCommands.SetMidiOutputDevice;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.SetPlayPosition;
@@ -275,13 +277,13 @@ package components.controller
 					case "availableInputDevices":
 						var availableInputDevices:Vector.<String> = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableInputDevices );
-						command = new SetAvailableAudioDevices( availableInputDevices, audioSettings.availableOutputDevices );
+						command = new SetAvailableAudioDevices( availableInputDevices, null );
 						break;
 
 					case "availableOutputDevices":
 						var availableOutputDevices:Vector.<String> = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableOutputDevices );
-						command = new SetAvailableAudioDevices( audioSettings.availableInputDevices, availableOutputDevices );
+						command = new SetAvailableAudioDevices( null, availableOutputDevices );
 						break;
 
 					case "selectedDriver":
@@ -289,11 +291,11 @@ package components.controller
 						break;
 						
 					case "selectedInputDevice":
-						command = new SetAudioDevices( String( value ), audioSettings.selectedOutputDevice );
+						command = new SetAudioInputDevice( String( value ) );
 						break;
 
 					case "selectedOutputDevice":
-						command = new SetAudioDevices( audioSettings.selectedInputDevice, String( value ) );
+						command = new SetAudioOutputDevice( String( value ) );
 						break;
 					
 					case "sampleRate":
@@ -329,13 +331,13 @@ package components.controller
 					case "availableInputDevices":
 						availableInputDevices = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableInputDevices );
-						command = new SetAvailableMidiDevices( availableInputDevices, model.midiSettings.availableOutputDevices );
+						command = new SetAvailableMidiDevices( availableInputDevices, null );
 						break;
 					
 					case "availableOutputDevices":
 						availableOutputDevices = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableOutputDevices );
-						command = new SetAvailableMidiDevices( model.midiSettings.availableInputDevices, availableOutputDevices );
+						command = new SetAvailableMidiDevices( null, availableOutputDevices );
 						break;
 					
 					case "selectedDriver":
@@ -343,11 +345,11 @@ package components.controller
 						break;
 					
 					case "selectedInputDevice":
-						command = new SetMidiDevices( String( value ), model.midiSettings.selectedOutputDevice );
+						command = new SetMidiInputDevice( String( value ) );
 						break;
 					
 					case "selectedOutputDevice":
-						command = new SetMidiDevices( model.midiSettings.selectedInputDevice, String( value ) );
+						command = new SetMidiOutputDevice( String( value ) );
 						break;
 					
 					default:

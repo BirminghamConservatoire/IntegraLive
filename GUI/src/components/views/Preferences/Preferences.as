@@ -37,15 +37,17 @@ package components.views.Preferences
 	
 	import components.controller.ServerCommand;
 	import components.controller.serverCommands.ResetAudioAndMidiSettings;
-	import components.controller.serverCommands.SetAudioDevices;
 	import components.controller.serverCommands.SetAudioDriver;
+	import components.controller.serverCommands.SetAudioInputDevice;
+	import components.controller.serverCommands.SetAudioOutputDevice;
 	import components.controller.serverCommands.SetAudioSettings;
 	import components.controller.serverCommands.SetAvailableAudioDevices;
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableMidiDrivers;
-	import components.controller.serverCommands.SetMidiDevices;
 	import components.controller.serverCommands.SetMidiDriver;
+	import components.controller.serverCommands.SetMidiInputDevice;
+	import components.controller.serverCommands.SetMidiOutputDevice;
 	import components.controller.userDataCommands.SetViewMode;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.EndpointDefinition;
@@ -69,10 +71,12 @@ package components.views.Preferences
 		{
 			super();
 			
-			addUpdateMethod( SetAudioDevices, onPreferencesChanged );
+			addUpdateMethod( SetAudioInputDevice, onPreferencesChanged );
+			addUpdateMethod( SetAudioOutputDevice, onPreferencesChanged );
 			addUpdateMethod( SetAudioDriver, onPreferencesChanged );
 			addUpdateMethod( SetAudioSettings, onPreferencesChanged );
-			addUpdateMethod( SetMidiDevices, onPreferencesChanged );
+			addUpdateMethod( SetMidiInputDevice, onPreferencesChanged );
+			addUpdateMethod( SetMidiOutputDevice, onPreferencesChanged );
 			addUpdateMethod( SetMidiDriver, onPreferencesChanged );
 			addUpdateMethod( SetAvailableAudioDrivers, onPreferencesChanged );
 			addUpdateMethod( SetAvailableMidiDrivers, onPreferencesChanged );
@@ -487,7 +491,7 @@ package components.views.Preferences
 
 			controller.activateUndoStack = false;
 			
-			controller.processCommand( new SetAudioDevices( audioInputDevice, audioSettings.selectedOutputDevice ) );
+			controller.processCommand( new SetAudioInputDevice( audioInputDevice ) );
 			
 			controller.activateUndoStack = true;
 		}
@@ -502,7 +506,7 @@ package components.views.Preferences
 			
 			controller.activateUndoStack = false;
 			
-			controller.processCommand( new SetAudioDevices( audioSettings.selectedInputDevice, audioOutputDevice ) );
+			controller.processCommand( new SetAudioOutputDevice( audioOutputDevice ) );
 				
 			controller.activateUndoStack = true;
 		}
@@ -535,7 +539,7 @@ package components.views.Preferences
 			
 			controller.activateUndoStack = false;
 			
-			controller.processCommand( new SetMidiDevices( midiInputDevice, midiSettings.selectedOutputDevice ) );
+			controller.processCommand( new SetMidiInputDevice( midiInputDevice ) );
 				
 			controller.activateUndoStack = true;
 		}
@@ -550,7 +554,7 @@ package components.views.Preferences
 			
 			controller.activateUndoStack = false;
 			
-			controller.processCommand( new SetMidiDevices( midiSettings.selectedInputDevice, midiOutputDevice ) );
+			controller.processCommand( new SetMidiOutputDevice( midiOutputDevice ) );
 				
 			controller.activateUndoStack = true;
 		}

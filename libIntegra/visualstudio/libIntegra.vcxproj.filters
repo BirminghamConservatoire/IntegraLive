@@ -129,6 +129,9 @@
     <ClCompile Include="..\src\state_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\file_helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
@@ -253,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="..\api\MurmurHash2.h">
       <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\file_helpers.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

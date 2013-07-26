@@ -36,6 +36,7 @@
 #include "globals.h"
 #include "file_io.h"
 #include "server.h"
+#include "file_helpers.h"
 
 using namespace ntg_api;
 using namespace ntg_internal;
@@ -174,57 +175,19 @@ void ntg_scratch_directory_free( CServer &server )
 
 
 
-char *ntg_extract_first_directory( const char *path )
-{
-	char *first_directory;
-	char *first_slash, *first_backslash;
-	
-	assert( path );
-
-	first_directory = ntg_strdup( path );
-
-	first_slash = strchr( first_directory, '/' );
-	first_backslash = strchr( first_directory, '\\' );
-
-	if( !first_slash && !first_backslash )
-	{
-		return NULL;
-	}
-
-	if( first_slash ) 
-	{
-		*first_slash = 0;
-	}
-
-	if( first_backslash ) 
-	{
-		*first_backslash = 0;
-	}
-
-	return first_directory;
-}
-
-
 void ntg_construct_subdirectories( const char *root_directory, const char *relative_file_path )
 {
-	char *subdirectory;
-	char *root_and_subdirectory;
-
 	assert( root_directory && relative_file_path );
 
-	subdirectory = ntg_extract_first_directory( relative_file_path );
-	if( !subdirectory )
+	string subdirectory = CFileHelpers::extract_first_directory_from_path( relative_file_path );
+	if( subdirectory.empty() )
 	{
 		return;
 	}
 
-	root_and_subdirectory = new char[ strlen( root_directory ) + strlen( subdirectory ) + strlen( NTG_PATH_SEPARATOR ) + 1 ];
-	sprintf( root_and_subdirectory, "%s%s%s", root_directory, subdirectory, NTG_PATH_SEPARATOR );
+	string root_and_subdirectory = root_directory + subdirectory + NTG_PATH_SEPARATOR;
 
-	mkdir( root_and_subdirectory );
+	mkdir( root_and_subdirectory.c_str() );
 
-	ntg_construct_subdirectories( root_and_subdirectory, relative_file_path + strlen( subdirectory ) + 1 );
-
-	delete[] root_and_subdirectory;
-	delete[] subdirectory;
+	ntg_construct_subdirectories( root_and_subdirectory.c_str(), relative_file_path + subdirectory.length() + 1 );
 }

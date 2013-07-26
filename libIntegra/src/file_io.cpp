@@ -986,7 +986,7 @@ command_status ntg_file_load( const char *filename, const CNode *parent, CModule
 	/* load the data directories */
 	if( is_zip_file )
 	{
-		if( ntg_load_data_directories( filename, parent ) != NTG_NO_ERROR )
+		if( CDataDirectory::extract_from_zip( filename, parent ) != NTG_NO_ERROR )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "failed to load data directories", filename );
 		}
@@ -1078,7 +1078,7 @@ error_code ntg_file_save( const char *filename, const CNode &node, const CModule
 
 	delete[] ixd_buffer;
 
-	ntg_copy_node_data_directories_to_zip( zip_file, node, node.get_parent_path() );
+	CDataDirectory::copy_to_zip( zip_file, node, node.get_parent_path() );
 
 	ntg_copy_node_modules_to_zip( zip_file, node, module_manager );
 

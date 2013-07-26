@@ -38,7 +38,34 @@ namespace ntg_internal
 	class CNode;
 	class CNodeEndpoint;
 	class CServer;
+
+	class CDataDirectory
+	{
+		public:
+			static ntg_api::string create_for_node( const CNode &node, const CServer &server );
+
+			static void change( const ntg_api::string &old_directory, const ntg_api::string &new_directory );
+
+			static void copy_to_zip( zipFile zip_file, const CNode &node, const ntg_api::CPath &path_root );
+
+			static ntg_api::error_code extract_from_zip( const ntg_api::string &file_path, const CNode *parent_node );
+
+			static ntg_api::string copy_file_to_data_directory( const CNodeEndpoint &node_endpoint );
+
+		private:
+
+			static ntg_api::string get_relative_node_path( const CNode &node, const ntg_api::CPath &root );
+
+			static ntg_api::string get_node_directory_path_in_zip( unzFile unzip_file );
+
+			static void extract_from_zip_to_data_directory( unzFile unzip_file, unz_file_info *file_info, const CNode &node, const char *relative_file_path );
+
+			static bool does_zip_contain_directory( unzFile unzip_file, const ntg_api::string &directory );
+	};
 }
+
+
+#if 0 //deprecated 
 
 
 ntg_api::string ntg_node_data_directory_create( const ntg_internal::CNode &node, const ntg_internal::CServer &server );
@@ -54,5 +81,6 @@ const char *ntg_copy_file_to_data_directory( const ntg_internal::CNodeEndpoint *
 const char *ntg_extract_filename_from_path( const char *path );
 
 
+#endif
 
 #endif /*INTEGRA_DATA_DIRECTORY_H*/

@@ -38,6 +38,7 @@
 #include "value.h"
 #include "trace.h"
 #include "luascripting.h"
+#include "file_helpers.h"
 
 using namespace ntg_api;
 using namespace ntg_internal;
@@ -753,11 +754,14 @@ bool ntg_should_copy_input_file( const CValue &value, ntg_command_source cmd_sou
 	    case NTG_SOURCE_SCRIPT:
 	    case NTG_SOURCE_XMLRPC_API:
 	    case NTG_SOURCE_C_API:
+			{
 			/* these are the sources for which we want to copy the file to the data directory */
 
 			/* but we only copy the file when a path is provided, otherwise we assume it is already in the data directory */
 			
-			return ( ntg_extract_filename_from_path( ( ( const string & ) value ).c_str() ) != NULL );
+			const string &path = value;
+			return ( CFileHelpers::extract_filename_from_path( path ) != path );
+			}
 
 		case NTG_SOURCE_INITIALIZATION:
 		case NTG_SOURCE_LOAD:
@@ -777,13 +781,11 @@ bool ntg_should_copy_input_file( const CValue &value, ntg_command_source cmd_sou
 
 void ntg_handle_input_file( CServer &server, const CNodeEndpoint *endpoint, ntg_command_source cmd_source )
 {
-	const char *filename;
-
 	assert( endpoint );
 	assert( ntg_node_has_data_directory( *endpoint->get_node() ) );
 
-	filename = ntg_copy_file_to_data_directory( endpoint );
-	if( filename )
+	string filename = CDataDirectory::copy_file_to_data_directory( *endpoint );
+	if( !filename.empty() )
 	{
 		ntg_set_( server, NTG_SOURCE_SYSTEM, endpoint->get_path(), &CStringValue( filename ) );
 	}
@@ -822,7 +824,7 @@ void ntg_generic_data_directory_handler( CServer &server, const CNodeEndpoint *e
 		case NTG_SOURCE_INITIALIZATION:
 			/* create and set data directory when the endpoint is initialized */
 			{
-			string data_directory = ntg_node_data_directory_create( *endpoint->get_node(), server );
+			string data_directory = CDataDirectory::create_for_node( *endpoint->get_node(), server );
 			ntg_set_( server, NTG_SOURCE_SYSTEM, endpoint->get_path(), &CStringValue( data_directory ) );
 			}
 			break;
@@ -837,7 +839,7 @@ void ntg_generic_data_directory_handler( CServer &server, const CNodeEndpoint *e
 	    case NTG_SOURCE_XMLRPC_API:
 	    case NTG_SOURCE_C_API:
 			/* external command is trying to reset the data directory - should delete the old one and create a new one */
-			ntg_node_data_directory_change( ( ( const string & ) *previous_value ).c_str(), ( ( const string & ) *endpoint->get_value() ).c_str() );
+			CDataDirectory::change( *previous_value, *endpoint->get_value() );
 			break;		
 
 		case NTG_SOURCE_HOST:

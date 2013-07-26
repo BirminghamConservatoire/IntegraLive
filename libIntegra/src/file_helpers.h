@@ -18,26 +18,24 @@
  * USA.
  */
 
-#ifndef INTEGRA_SCRATCH_DIRECTORY_H
-#define INTEGRA_SCRATCH_DIRECTORY_H
+#ifndef INTEGRA_FILE_HELPERS_H
+#define INTEGRA_FILE_HELPERS_H
 
-#include "server.h"
 
+#include "api/common_typedefs.h"
 
 namespace ntg_internal
 {
-	class CServer;
+	class CFileHelpers
+	{
+		public:
+			static ntg_api::string extract_filename_from_path( const ntg_api::string &path );
+
+			static ntg_api::string extract_first_directory_from_path( const ntg_api::string &path );
+
+	};
 }
 
 
-void ntg_scratch_directory_initialize( ntg_internal::CServer &server );
-void ntg_scratch_directory_free( ntg_internal::CServer &server );
 
-bool ntg_is_directory( const char *directory_name );
-void ntg_delete_directory( const char *directory_name );
-
-void ntg_construct_subdirectories( const char *root_directory, const char *relative_file_path );
-
-
-
-#endif /* INTEGRA_SCRATCH_DIRECTORY_H */
+#endif /*INTEGRA_FILE_HELPERS_H*/

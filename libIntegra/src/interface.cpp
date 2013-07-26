@@ -884,24 +884,6 @@ void ntg_propogate_defaults( ntg_interface *interface )
 }
 
 
-/* iterates over endpoints assigning index to each */
-void ntg_assign_endpoint_indices( ntg_interface *interface )
-{
-	ntg_endpoint *endpoint;
-	int index;
-
-	assert( interface );
-
-	index = 0;
-
-	for( endpoint = interface->endpoint_list; endpoint; endpoint = endpoint->next )
-	{
-		endpoint->endpoint_index = index;
-		index++;
-	}
-}
-
-
 error_code ntg_handle_interface_element( ntg_interface *interface, const char *element )
 {
 	assert( interface && element );
@@ -1324,9 +1306,7 @@ ntg_interface *ntg_interface_load( const unsigned char *buffer, unsigned int buf
 	}
 
 	ntg_propogate_defaults( interface );
-
-	ntg_assign_endpoint_indices( interface );
-
+	
 CLEANUP:
 
 	if( element_path )

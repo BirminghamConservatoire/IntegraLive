@@ -159,8 +159,6 @@ struct ntg_endpoint_
 	ntg_control_info *control_info;
 	ntg_stream_info *stream_info;
 
-	int endpoint_index;
-
 	ntg_endpoint *next;
 };
 

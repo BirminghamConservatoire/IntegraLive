@@ -96,11 +96,6 @@ namespace ntg_internal
 	{
 		unload_all_modules();
 
-		if( m_legacy_module_id_table )
-		{
-			delete[] m_legacy_module_id_table;
-		}
-
 		ntg_delete_directory( m_implementation_directory_root.c_str() );
 
 		ntg_delete_directory( m_embedded_module_directory.c_str() );
@@ -491,7 +486,7 @@ namespace ntg_internal
 
 	error_code CModuleManager::interpret_legacy_module_id( internal_id old_id, GUID &output ) const
 	{
-		if( !m_legacy_module_id_table || old_id >= m_legacy_module_id_table_elems )
+		if( old_id >= m_legacy_module_id_table.size() )
 		{
 			NTG_TRACE_ERROR_WITH_INT( "Can't interpret class id", old_id );
 			return NTG_ERROR;
@@ -557,8 +552,7 @@ namespace ntg_internal
 		internal_id old_id;
 		GUID guid;
 
-		m_legacy_module_id_table = NULL;
-		m_legacy_module_id_table_elems = 0;
+		m_legacy_module_id_table.clear();
 
 		file = fopen( NTG_LEGACY_CLASS_ID_FILENAME, "r" );
 		if( !file )
@@ -597,17 +591,11 @@ namespace ntg_internal
 				continue;
 			}
 
-			if( old_id >= m_legacy_module_id_table_elems )
+			GUID null_id;
+			ntg_guid_set_null( &null_id );
+			for( int i = m_legacy_module_id_table.size(); i <= old_id; i++ )
 			{
-				int new_table_size = old_id + 1;
-				GUID *new_legacy_module_id_table = new GUID[ new_table_size ];
-
-				memcpy( new_legacy_module_id_table, m_legacy_module_id_table, m_legacy_module_id_table_elems * sizeof( GUID ) );
-				memset( new_legacy_module_id_table + m_legacy_module_id_table_elems, 0, ( new_table_size - m_legacy_module_id_table_elems ) * sizeof( GUID ) );
-
-				delete m_legacy_module_id_table;
-				m_legacy_module_id_table = new_legacy_module_id_table;
-				m_legacy_module_id_table_elems = new_table_size;
+				m_legacy_module_id_table.push_back( null_id ); 
 			}
 
 			m_legacy_module_id_table[ old_id ] = guid;

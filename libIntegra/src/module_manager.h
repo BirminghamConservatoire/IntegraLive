@@ -113,8 +113,7 @@ namespace ntg_internal
 			map_guid_to_interface m_origin_id_map;
 			map_string_to_interface m_core_name_map;
 
-			GUID *m_legacy_module_id_table;
-			int m_legacy_module_id_table_elems;
+			ntg_api::guid_array m_legacy_module_id_table;
 
 			ntg_api::string m_implementation_directory_root;
 

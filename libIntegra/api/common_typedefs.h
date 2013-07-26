@@ -25,6 +25,7 @@
 #include <sstream>
 #include <string>
 #include <string>
+#include <vector>
 #include <unordered_set>
 
 #include "../externals/guiddef.h"
@@ -61,6 +62,7 @@ namespace ntg_api
 
 
 	typedef std::unordered_set<GUID, GuidHash> guid_set;
+	typedef std::vector<GUID> guid_array;
 
 };
 

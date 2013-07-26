@@ -38,7 +38,6 @@
 #endif
 
 /* global constants */
-#define XML_ENCODING        "ISO-8859-1"
 #define NTG_LONG_STRLEN    1024
 
 #define NTG_FILE_SUFFIX "integra"

@@ -41,6 +41,8 @@
 #include "validate.h"
 #include "server_commands.h"
 
+#define XML_ENCODING "ISO-8859-1"
+
 #define NTG_STR_INTEGRA_COLLECTION "IntegraCollection"
 #define NTG_STR_INTEGRA_VERSION "integraVersion"
 #define NTG_STR_OBJECT "object"

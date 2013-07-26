@@ -35,6 +35,9 @@ namespace ntg_internal
 
 			static ntg_api::string extract_first_directory_from_path( const ntg_api::string &path );
 
+			static ntg_api::string ensure_filename_has_suffix( const ntg_api::string &filename, const ntg_api::string &suffix );
+
+
 			static bool is_directory( const ntg_api::string &directory_name );
 			static void delete_directory( const ntg_api::string &directory_name );
 

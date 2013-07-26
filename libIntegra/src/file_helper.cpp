@@ -226,4 +226,26 @@ namespace ntg_internal
 		construct_subdirectories( root_and_subdirectory, relative_file_path.substr( subdirectory.length() + 1 ) );
 	}
 
+
+	string CFileHelper::ensure_filename_has_suffix( const string &filename, const string &suffix )
+	{
+		int filename_length = filename.length();
+		int suffix_length = suffix.length();
+
+		if( filename_length > suffix_length + 1 )
+		{
+			if( filename.substr( filename_length - suffix_length ) == suffix )
+			{
+				if( filename[ filename_length - suffix_length - 1 ] == '.' )
+				{
+					/* filename already has suffix */
+					return filename;
+				}
+			}
+		}
+
+		return filename + "." + suffix;
+	}
+
+
 }

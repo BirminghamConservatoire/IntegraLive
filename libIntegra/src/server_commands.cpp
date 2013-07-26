@@ -34,6 +34,7 @@
 #include "data_directory.h"
 #include "module_manager.h"
 #include "file_io.h"
+#include "file_helper.h"
 #include "interface.h"
 
 
@@ -623,7 +624,6 @@ command_status ntg_save_( CServer &server, const CPath &path, const char *file_p
 {
     error_code error_code;
     command_status command_status;
-	char *file_path_with_suffix;
 
     NTG_COMMAND_STATUS_INIT;
 
@@ -643,11 +643,9 @@ command_status ntg_save_( CServer &server, const CPath &path, const char *file_p
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-	file_path_with_suffix = ntg_ensure_filename_has_suffix( file_path, NTG_FILE_SUFFIX );
+	string file_path_with_suffix = CFileHelper::ensure_filename_has_suffix( file_path, NTG_FILE_SUFFIX );
 
-	error_code = ntg_file_save( file_path_with_suffix, *node, server.get_module_manager() );
-
-	delete[] file_path_with_suffix;
+	error_code = ntg_file_save( file_path_with_suffix.c_str(), *node, server.get_module_manager() );
 
     NTG_RETURN_COMMAND_STATUS;
 }

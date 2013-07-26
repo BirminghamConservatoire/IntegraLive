@@ -74,36 +74,6 @@ char *ntg_string_append( char *dest, const char *source )
 }
 
 
-char *ntg_ensure_filename_has_suffix( const char *filename, const char *suffix )
-{
-	int filename_length;
-	int suffix_length;
-	char *appended_filename;
-
-	assert( filename && suffix );
-
-	filename_length = strlen( filename );
-	suffix_length = strlen( suffix );
-
-	if( filename_length > suffix_length + 1 )
-	{
-		if( strcmp( filename + filename_length - suffix_length, suffix ) == 0 )
-		{
-			if( filename[ filename_length - suffix_length - 1 ] == '.' )
-			{
-				/* filename already has suffix */
-				return strdup( filename );
-			}
-		}
-	}
-
-	appended_filename = new char[ filename_length + suffix_length + 2 ];
-	sprintf( appended_filename, "%s.%s", filename, suffix );
-
-	return appended_filename;
-}
-
-
 string ntg_make_node_name( const string &module_name )
 {
 	ostringstream stream;

@@ -38,17 +38,6 @@ char *ntg_strdup(const char *string);
 char *ntg_string_append(char *dest, const char *source);
 
 
-/** \brief appends suffix to file_name if not already present
- * \param const char *filename The file name to be appended
- * \param const char *suffix the suffix to append
-  *
- * This method returns a newly allocated string which should be freed 
- * with ntg_free by the caller
- */
-
-char *ntg_ensure_filename_has_suffix(const char *filename, const char *suffix);
-
-
 ntg_api::string ntg_make_node_name( const ntg_api::string &module_name );
 
 /* test guids for equality*/

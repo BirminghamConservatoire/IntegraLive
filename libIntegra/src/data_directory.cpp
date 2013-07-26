@@ -43,7 +43,7 @@
 #include "system_class_handlers.h"
 #include "node_endpoint.h"
 #include "value.h"
-#include "file_helpers.h"
+#include "file_helper.h"
 
 
 #define NTG_NODE_DIRECTORY "node_data"
@@ -58,7 +58,7 @@ namespace ntg_internal
 	{
 		ostringstream stream;
 
-		stream << server.scratch_directory_root() << NTG_NODE_DIRECTORY << node.get_id() << NTG_PATH_SEPARATOR;
+		stream << server.get_scratch_directory() << NTG_NODE_DIRECTORY << node.get_id() << NTG_PATH_SEPARATOR;
 
 		string node_directory_name = stream.str();
 
@@ -70,7 +70,7 @@ namespace ntg_internal
 
 	void CDataDirectory::change( const ntg_api::string &old_directory, const ntg_api::string &new_directory )
 	{
-		ntg_delete_directory( old_directory.c_str() );
+		CFileHelper::delete_directory( old_directory );
 
 		mkdir( new_directory.c_str() );
 	}
@@ -150,7 +150,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			string relative_node_path_string = CFileHelpers::extract_first_directory_from_path( file_name + node_directory_length );
+			string relative_node_path_string = CFileHelper::extract_first_directory_from_path( file_name + node_directory_length );
 			if( relative_node_path_string.empty() )
 			{
 				NTG_TRACE_ERROR_WITH_STRING( "unexpected content - no relative path", file_name );
@@ -205,7 +205,7 @@ namespace ntg_internal
 		const string *data_directory = ntg_node_get_data_directory( node );
 		assert( data_directory );
 
-		ntg_construct_subdirectories( data_directory->c_str(), relative_file_path );
+		CFileHelper::construct_subdirectories( *data_directory, relative_file_path );
 
 		target_path = new char[ data_directory->length() + strlen( relative_file_path ) + 1 ];
 		sprintf( target_path, "%s%s", data_directory->c_str(), relative_file_path );
@@ -256,7 +256,7 @@ namespace ntg_internal
 		}
 
 		const string &input_path = *node_endpoint.get_value();
-		string copied_file = CFileHelpers::extract_filename_from_path( input_path );
+		string copied_file = CFileHelper::extract_filename_from_path( input_path );
 		if( copied_file.empty() || copied_file == input_path )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "can't extract filename from path", input_path.c_str() );
@@ -266,7 +266,7 @@ namespace ntg_internal
 		string output_filename( *data_directory );
 		output_filename += copied_file;
 
-		ntg_copy_file( input_path.c_str(), output_filename.c_str() );
+		CFileHelper::copy_file( input_path.c_str(), output_filename.c_str() );
 
 		return copied_file;
 	}

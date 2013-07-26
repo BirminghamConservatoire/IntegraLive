@@ -154,7 +154,7 @@
     <ClCompile Include="..\src\bridge_host.cpp" />
     <ClCompile Include="..\src\data_directory.cpp" />
     <ClCompile Include="..\src\error.cpp" />
-    <ClCompile Include="..\src\file_helpers.cpp" />
+    <ClCompile Include="..\src\file_helper.cpp" />
     <ClCompile Include="..\src\file_io.cpp" />
     <ClCompile Include="..\src\helper.cpp" />
     <ClCompile Include="..\src\id.cpp" />
@@ -198,7 +198,7 @@
     <ClInclude Include="..\src\bridge_host.h" />
     <ClInclude Include="..\src\data_directory.h" />
     <ClInclude Include="..\src\error.h" />
-    <ClInclude Include="..\src\file_helpers.h" />
+    <ClInclude Include="..\src\file_helper.h" />
     <ClInclude Include="..\src\file_io.h" />
     <ClInclude Include="..\src\globals.h" />
     <ClInclude Include="..\src\helper.h" />

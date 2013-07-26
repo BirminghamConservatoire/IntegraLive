@@ -40,8 +40,6 @@ ntg_api::error_code ntg_file_save( const char *filename, const ntg_internal::CNo
 
 void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_path, const char *source_path );
 
-ntg_api::error_code ntg_copy_file( const char *source_path, const char *target_path );
-ntg_api::error_code ntg_delete_file( const char *file_name );
 
 
 #endif /*INTEGRA_FILE_IO_H*/

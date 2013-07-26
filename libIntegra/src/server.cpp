@@ -143,9 +143,9 @@ namespace ntg_internal
 			_set_invalid_parameter_handler( invalid_parameter_handler );
 		#endif
 
-		ntg_scratch_directory_initialize( *this );
+		m_scratch_directory = new CScratchDirectory;
 
-		m_module_manager = new CModuleManager( m_scratch_directory_root, startup_info.system_module_directory, startup_info.third_party_module_directory );
+		m_module_manager = new CModuleManager( get_scratch_directory(), startup_info.system_module_directory, startup_info.third_party_module_directory );
 
 		m_osc_client = ntg_osc_client_new( startup_info.osc_client_url.c_str(), startup_info.osc_client_port );
 		m_terminate = false;
@@ -187,6 +187,25 @@ namespace ntg_internal
 		lock();
 		m_terminate = true; /* FIX: use a semaphore or condition */
 
+		/* delete all nodes */
+		node_map copy_of_nodes = m_nodes;
+		for( node_map::const_iterator i = copy_of_nodes.begin(); i != copy_of_nodes.end(); i++ )
+		{
+			ntg_delete_( *this, NTG_SOURCE_SYSTEM, i->second->get_path() );
+		}
+	
+		/* shutdown system class handlers */
+		ntg_system_class_handlers_shutdown( *this );
+
+		/* de-reference bridge */
+	    m_bridge = NULL;
+
+		delete m_module_manager;
+
+		delete m_reentrance_checker;
+
+		delete m_scratch_directory;
+
 		NTG_TRACE_PROGRESS( "shutting down OSC client" );
 		ntg_osc_client_destroy( m_osc_client );
 		
@@ -198,6 +217,8 @@ namespace ntg_internal
 		NTG_TRACE_PROGRESS("joining xmlrpc thread");
 		pthread_join( m_xmlrpc_thread, NULL );
 
+
+
 		/* FIX: This hangs on all platforms, just comment out for now */
 		/*
 		NTG_TRACE_PROGRESS("closing bridge");
@@ -206,6 +227,8 @@ namespace ntg_internal
 
 		NTG_TRACE_PROGRESS( "cleaning up XML parser" );
 		xmlCleanupParser();
+		xmlCleanupGlobals();
+
 
 		NTG_TRACE_PROGRESS( "done!" );
 
@@ -325,6 +348,13 @@ namespace ntg_internal
 			return m_state_table.lookup_node_endpoint_writable( path_string );
 		}
 	}
+
+
+	const string &CServer::get_scratch_directory() const
+	{
+		return m_scratch_directory->get_scratch_directory();
+	}
+
 
 
 	

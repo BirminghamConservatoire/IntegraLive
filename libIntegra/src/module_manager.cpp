@@ -38,6 +38,8 @@
 #include "helper.h"
 #include "globals.h"
 #include "file_io.h"
+#include "file_helper.h"
+#include "server.h"
 
 using namespace ntg_api;
 
@@ -73,14 +75,14 @@ namespace ntg_internal
 
 		m_implementation_directory_root = scratch_directory_root + NTG_IMPLEMENTATION_DIRECTORY_NAME;
 
-		if( !ntg_is_directory( m_implementation_directory_root.c_str() ) )
+		if( !CFileHelper::is_directory( m_implementation_directory_root.c_str() ) )
 		{
 			mkdir( m_implementation_directory_root.c_str() );
 		}
 
 		m_embedded_module_directory = scratch_directory_root + NTG_EMBEDDED_MODULE_DIRECTORY_NAME;
 
-		if( !ntg_is_directory( m_embedded_module_directory.c_str() ) )
+		if( !CFileHelper::is_directory( m_embedded_module_directory.c_str() ) )
 		{
 			mkdir( m_embedded_module_directory.c_str() );
 		}
@@ -96,9 +98,9 @@ namespace ntg_internal
 	{
 		unload_all_modules();
 
-		ntg_delete_directory( m_implementation_directory_root.c_str() );
+		CFileHelper::delete_directory( m_implementation_directory_root.c_str() );
 
-		ntg_delete_directory( m_embedded_module_directory.c_str() );
+		CFileHelper::delete_directory( m_embedded_module_directory.c_str() );
 	}
 
 
@@ -154,7 +156,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			temporary_file_name = tempnam( server_->scratch_directory_root().c_str(), "embedded_module" );
+			temporary_file_name = tempnam( server_->get_scratch_directory().c_str(), "embedded_module" );
 			if( !temporary_file_name )
 			{
 				NTG_TRACE_ERROR( "couldn't generate temporary filename" );
@@ -215,7 +217,7 @@ namespace ntg_internal
 
 			if( temporary_file_name )
 			{
-				ntg_delete_file( temporary_file_name );
+				CFileHelper::delete_file( temporary_file_name );
 				delete[] temporary_file_name;
 			}
 
@@ -327,7 +329,7 @@ namespace ntg_internal
 
 		result.remains_as_embedded = false;
 
-		error_code = ntg_delete_file( interface->file_path );
+		error_code = CFileHelper::delete_file( interface->file_path );
 		if( error_code != NTG_NO_ERROR )
 		{
 			return error_code;
@@ -771,7 +773,7 @@ namespace ntg_internal
 
 		string implementation_directory = get_implementation_path( interface );
 
-		if( ntg_is_directory( implementation_directory.c_str() ) )
+		if( CFileHelper::is_directory( implementation_directory.c_str() ) )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Can't extract module implementation - target directory already exists", implementation_directory.c_str() );
 			return NTG_FAILED;
@@ -807,7 +809,7 @@ namespace ntg_internal
 
 			relative_file_path = file_name + strlen( NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME );
 
-			ntg_construct_subdirectories( implementation_directory.c_str(), relative_file_path );
+			CFileHelper::construct_subdirectories( implementation_directory, relative_file_path );
 
 			string target_path = implementation_directory + relative_file_path;
 
@@ -864,7 +866,7 @@ namespace ntg_internal
 
 		if( interface->module_source == NTG_MODULE_EMBEDDED )
 		{
-			ntg_delete_file( interface->file_path );
+			CFileHelper::delete_file( interface->file_path );
 		}
 
 		m_module_id_map.erase( interface->module_guid );
@@ -882,10 +884,13 @@ namespace ntg_internal
 		if( ntg_interface_is_core( interface ) )
 		{
 			/* only remove from core name map if the entry points to this interface */
-			assert( m_core_name_map.count( interface->info->name ) > 0 );
-			if( m_core_name_map.at( interface->info->name ) == interface )
+			map_string_to_interface::const_iterator lookup = m_core_name_map.find( interface->info->name );
+			if( lookup != m_core_name_map.end() )
 			{
-				m_core_name_map.erase( interface->info->name );
+				if( lookup->second == interface )
+				{
+					m_core_name_map.erase( interface->info->name );
+				}
 			}
 		}
 
@@ -910,7 +915,7 @@ namespace ntg_internal
 
 	void CModuleManager::delete_implementation( const ntg_interface &interface )
 	{
-		ntg_delete_directory( get_implementation_path( interface ).c_str() );
+		CFileHelper::delete_directory( get_implementation_path( interface ).c_str() );
 	}
 
 
@@ -939,7 +944,7 @@ namespace ntg_internal
 			return NTG_ERROR;
 		}
 
-		error_code = ntg_copy_file( interface->file_path, module_storage_path.c_str() );
+		error_code = CFileHelper::copy_file( interface->file_path, module_storage_path );
 		if( error_code != NTG_NO_ERROR )
 		{
 			return error_code;

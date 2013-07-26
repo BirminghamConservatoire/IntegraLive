@@ -38,7 +38,7 @@
 #include "value.h"
 #include "trace.h"
 #include "luascripting.h"
-#include "file_helpers.h"
+#include "file_helper.h"
 
 using namespace ntg_api;
 using namespace ntg_internal;
@@ -760,7 +760,7 @@ bool ntg_should_copy_input_file( const CValue &value, ntg_command_source cmd_sou
 			/* but we only copy the file when a path is provided, otherwise we assume it is already in the data directory */
 			
 			const string &path = value;
-			return ( CFileHelpers::extract_filename_from_path( path ) != path );
+			return ( CFileHelper::extract_filename_from_path( path ) != path );
 			}
 
 		case NTG_SOURCE_INITIALIZATION:

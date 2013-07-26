@@ -21,15 +21,28 @@
 #ifndef INTEGRA_SCRATCH_DIRECTORY_H
 #define INTEGRA_SCRATCH_DIRECTORY_H
 
-#include "server.h"
+#include "api/common_typedefs.h"
 
 
 namespace ntg_internal
 {
-	class CServer;
+	class CScratchDirectory
+	{
+		public:
+
+			CScratchDirectory();
+			~CScratchDirectory();
+
+			const ntg_api::string &get_scratch_directory() { return m_scratch_directory; }
+
+		private:
+
+			ntg_api::string m_scratch_directory;
+	};
 }
 
 
+#if 0 //DEPRECATED 
 void ntg_scratch_directory_initialize( ntg_internal::CServer &server );
 void ntg_scratch_directory_free( ntg_internal::CServer &server );
 
@@ -37,6 +50,9 @@ bool ntg_is_directory( const char *directory_name );
 void ntg_delete_directory( const char *directory_name );
 
 void ntg_construct_subdirectories( const char *root_directory, const char *relative_file_path );
+
+
+#endif	/*deprecated */
 
 
 

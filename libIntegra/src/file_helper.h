@@ -23,15 +23,25 @@
 
 
 #include "api/common_typedefs.h"
+#include "error.h"
+
 
 namespace ntg_internal
 {
-	class CFileHelpers
+	class CFileHelper
 	{
 		public:
 			static ntg_api::string extract_filename_from_path( const ntg_api::string &path );
 
 			static ntg_api::string extract_first_directory_from_path( const ntg_api::string &path );
+
+			static bool is_directory( const ntg_api::string &directory_name );
+			static void delete_directory( const ntg_api::string &directory_name );
+
+			static ntg_api::error_code copy_file( const ntg_api::string &source_path, const ntg_api::string &target_path );
+			static ntg_api::error_code delete_file( const ntg_api::string &file_name );
+
+			static void construct_subdirectories( const ntg_api::string &root_directory, const ntg_api::string &relative_file_path );
 
 	};
 }

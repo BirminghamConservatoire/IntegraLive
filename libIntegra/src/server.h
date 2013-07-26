@@ -52,6 +52,7 @@ namespace ntg_internal
 	class CNodeEndpoint;
 	class CReentranceChecker;
 	class CModuleManager;
+	class CScratchDirectory;
 
 	class CServer : public ntg_api::CServerApi
 	{
@@ -91,8 +92,7 @@ namespace ntg_internal
 			struct ntg_system_class_data_ *get_system_class_data() { return m_system_class_data; }
 			void set_system_class_data( struct ntg_system_class_data_ *data ) { m_system_class_data = data; }
 
-			const ntg_api::string &scratch_directory_root() const { return m_scratch_directory_root; }
-			ntg_api::string &scratch_directory_root_writable() { return m_scratch_directory_root; }
+			const ntg_api::string &get_scratch_directory() const;
 
 			bool get_terminate_flag() const { return m_terminate; }
 
@@ -107,7 +107,7 @@ namespace ntg_internal
 			CReentranceChecker *m_reentrance_checker;
 			CModuleManager *m_module_manager;
 			struct ntg_system_class_data_ *m_system_class_data;
-			ntg_api::string m_scratch_directory_root;
+			CScratchDirectory *m_scratch_directory;
 
 			pthread_t m_xmlrpc_thread;
 

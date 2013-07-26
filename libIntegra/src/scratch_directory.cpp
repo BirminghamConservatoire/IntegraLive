@@ -21,6 +21,11 @@
 
 #include "platform_specifics.h"
 
+#include "scratch_directory.h"
+#include "globals.h"
+#include "file_helper.h"
+
+
 #include <assert.h>
 #ifdef _WINDOWS
 #include <direct.h>
@@ -31,12 +36,6 @@
 #endif
 #include <dirent.h>
 
-#include "data_directory.h"
-#include "helper.h"
-#include "globals.h"
-#include "file_io.h"
-#include "server.h"
-#include "file_helpers.h"
 
 using namespace ntg_api;
 using namespace ntg_internal;
@@ -48,6 +47,65 @@ using namespace ntg_internal;
 	#define NTG_SCRATCH_DIRECTORY_ROOT ".libIntegra" 
 #endif
 
+
+namespace ntg_internal
+{
+	CScratchDirectory::CScratchDirectory()
+	{
+		#ifdef _WINDOWS
+
+			char path_buffer[ NTG_LONG_STRLEN ];
+			int i;
+			GetTempPathA( NTG_LONG_STRLEN, path_buffer );
+
+			/* replace windows slashes with unix slashes */
+			for( i = strlen( path_buffer ) - 1; i >= 0; i-- )
+			{
+				if( path_buffer[ i ] == '\\' )
+				{
+					path_buffer[ i ] = '/';
+				}
+			}
+
+			m_scratch_directory = path_buffer;
+
+		#else
+
+			const char *tmp_dir = getenv( "TMPDIR" );
+			if( tmp_dir )
+			{
+				m_scratch_directory = string( tmp_dir ) + NTG_PATH_SEPARATOR;
+			}
+			else
+			{
+				m_scratch_directory = "~/";
+			}
+		#endif
+	
+			m_scratch_directory += NTG_SCRATCH_DIRECTORY_ROOT;
+
+			if( CFileHelper::is_directory( m_scratch_directory ) )
+			{
+				CFileHelper::delete_directory( m_scratch_directory );
+			}
+
+			m_scratch_directory += NTG_PATH_SEPARATOR;
+
+			mkdir( m_scratch_directory.c_str() );
+	}
+
+
+	CScratchDirectory::~CScratchDirectory()
+	{
+		CFileHelper::delete_directory( m_scratch_directory );
+	}
+
+
+}
+
+
+
+#if 0		//deprecated
 void ntg_delete_directory( const char *directory_name )
 {
 	DIR *directory_stream;
@@ -179,7 +237,7 @@ void ntg_construct_subdirectories( const char *root_directory, const char *relat
 {
 	assert( root_directory && relative_file_path );
 
-	string subdirectory = CFileHelpers::extract_first_directory_from_path( relative_file_path );
+	string subdirectory = CFileHelper::extract_first_directory_from_path( relative_file_path );
 	if( subdirectory.empty() )
 	{
 		return;
@@ -191,3 +249,5 @@ void ntg_construct_subdirectories( const char *root_directory, const char *relat
 
 	ntg_construct_subdirectories( root_and_subdirectory.c_str(), relative_file_path + subdirectory.length() + 1 );
 }
+
+#endif

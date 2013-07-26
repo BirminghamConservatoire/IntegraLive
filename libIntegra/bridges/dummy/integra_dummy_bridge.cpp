@@ -40,7 +40,7 @@ INTEGRA_BRIDGE_API ntg_bridge_interface_generator interface_generator[1];
 static ntg_bridge_interface *bridge_interface = NULL;
 
 
-static int dummy_module_load(const ntg_id instance_id, const char *implementation_name){
+static int dummy_module_load(const ntg_internal::internal_id instance_id, const char *implementation_name){
 
     fprintf(stderr, "%s(): instance_id = %d, implementation_name = %s\n",
             __FUNCTION__, (int)instance_id, implementation_name);
@@ -48,7 +48,7 @@ static int dummy_module_load(const ntg_id instance_id, const char *implementatio
     return 0;
 }
 
-static int dummy_module_remove(const ntg_id id){
+static int dummy_module_remove(const ntg_internal::internal_id id){
 
     fprintf(stderr, "%s(): id = %d\n", __FUNCTION__, (int)id);
 

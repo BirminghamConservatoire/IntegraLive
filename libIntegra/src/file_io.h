@@ -22,7 +22,7 @@
 #define INTEGRA_FILE_IO_H
 
 
-#include "Integra/integra.h"
+#include "error.h"
 #include "node.h"
 #include "module_manager.h"
 
@@ -33,15 +33,15 @@ namespace ntg_internal
 }
 
 
-ntg_command_status ntg_file_load( const char *filename, const ntg_internal::CNode *parent, ntg_internal::CModuleManager &module_manager );
+ntg_api::command_status ntg_file_load( const char *filename, const ntg_internal::CNode *parent, ntg_internal::CModuleManager &module_manager );
 
-ntg_error_code ntg_file_save( const char *filename, const ntg_internal::CNode &node, const ntg_internal::CModuleManager &module_manager );
+ntg_api::error_code ntg_file_save( const char *filename, const ntg_internal::CNode &node, const ntg_internal::CModuleManager &module_manager );
 
 
 void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_path, const char *source_path );
 
-ntg_error_code ntg_copy_file( const char *source_path, const char *target_path );
-ntg_error_code ntg_delete_file( const char *file_name );
+ntg_api::error_code ntg_copy_file( const char *source_path, const char *target_path );
+ntg_api::error_code ntg_delete_file( const char *file_name );
 
 
 #endif /*INTEGRA_FILE_IO_H*/

@@ -24,6 +24,7 @@
 #include "helper.h"
 #include "globals.h"
 #include "server.h"
+#include "value.h"
 
 #include <assert.h>
 
@@ -45,7 +46,7 @@ static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
 
 /* sure there must be a more elegant way to do this, but lo_message_add_varargs
  * doesn't seem to work, and this does */
-ntg_error_code ntg_osc_send_ssss(lo_address targ, const char *path, 
+error_code ntg_osc_send_ssss(lo_address targ, const char *path, 
         const char *s1, const char *s2, const char *s3, const char *s4)
 {
     lo_send(targ, path, "ssss", s1, s2, s3, s4);
@@ -53,7 +54,7 @@ ntg_error_code ntg_osc_send_ssss(lo_address targ, const char *path,
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_osc_send_sss(lo_address targ, const char *path, 
+error_code ntg_osc_send_sss(lo_address targ, const char *path, 
         const char *s1, const char *s2, const char *s3)
 {
     lo_send(targ, path, "sss", s1, s2, s3);
@@ -61,7 +62,7 @@ ntg_error_code ntg_osc_send_sss(lo_address targ, const char *path,
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_osc_send_ssi(lo_address targ, const char *path, 
+error_code ntg_osc_send_ssi(lo_address targ, const char *path, 
         const char *s1, const char *s2, int i)
 {
     lo_send(targ, path, "ssi", s1, s2, i);
@@ -69,7 +70,7 @@ ntg_error_code ntg_osc_send_ssi(lo_address targ, const char *path,
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_osc_send_ssf(lo_address targ, const char *path, 
+error_code ntg_osc_send_ssf(lo_address targ, const char *path, 
         const char *s1, const char *s2, float f)
 {
     lo_send(targ, path, "ssf", s1, s2, f);
@@ -77,7 +78,7 @@ ntg_error_code ntg_osc_send_ssf(lo_address targ, const char *path,
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_osc_send_ssN(lo_address targ, const char *path, 
+error_code ntg_osc_send_ssN(lo_address targ, const char *path, 
         const char *s1, const char *s2)
 {
     lo_send(targ, path, "ssN", s1, s2);
@@ -85,7 +86,7 @@ ntg_error_code ntg_osc_send_ssN(lo_address targ, const char *path,
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_osc_send_ss(lo_address targ, const char *path, 
+error_code ntg_osc_send_ss(lo_address targ, const char *path, 
         const char *s1, const char *s2)
 {
     lo_send(targ, path, "ss", s1, s2);
@@ -94,7 +95,7 @@ ntg_error_code ntg_osc_send_ss(lo_address targ, const char *path,
 }
 
 
-ntg_osc_client *ntg_osc_client_new(const char *url, unsigned short port)
+ntg_osc_client *ntg_osc_client_new( const string &url, unsigned short port)
 {
     char port_string[6];
 	ntg_osc_client *client = NULL;
@@ -103,7 +104,7 @@ ntg_osc_client *ntg_osc_client_new(const char *url, unsigned short port)
     snprintf(port_string, 5, "%d", port);
 
     client = new ntg_osc_client;
-    client->address = lo_address_new(url, port_string);
+    client->address = lo_address_new( url.empty() ? NULL : url.c_str(), port_string);
 
     if(client->address == NULL) {
         assert (false);
@@ -121,7 +122,7 @@ void ntg_osc_client_destroy(ntg_osc_client *client)
     delete client;
 }
 
-ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
+error_code ntg_osc_client_send_set(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &path,
         const CValue *value)
@@ -166,7 +167,7 @@ ntg_error_code ntg_osc_client_send_set(ntg_osc_client *client,
 }
 
 
-ntg_error_code ntg_osc_client_send_new(ntg_osc_client *client,
+error_code ntg_osc_client_send_new(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const GUID *module_id,
         const char *node_name,
@@ -192,7 +193,7 @@ ntg_error_code ntg_osc_client_send_new(ntg_osc_client *client,
     return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_osc_client_send_load(ntg_osc_client *client,
+error_code ntg_osc_client_send_load(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const char *file_path,
         const CPath &path)
@@ -207,7 +208,7 @@ ntg_error_code ntg_osc_client_send_load(ntg_osc_client *client,
             file_path, path.get_string().c_str() );
 }
 
-ntg_error_code ntg_osc_client_send_delete(ntg_osc_client *client,
+error_code ntg_osc_client_send_delete(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &path)
 {
@@ -219,7 +220,7 @@ ntg_error_code ntg_osc_client_send_delete(ntg_osc_client *client,
     return ntg_osc_send_ss(client->address, methodName, cmd_source_s, path.get_string().c_str() );
 }
    
-ntg_error_code ntg_osc_client_send_move(ntg_osc_client *client,
+error_code ntg_osc_client_send_move(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &node_path,
         const CPath &parent_path)
@@ -233,7 +234,7 @@ ntg_error_code ntg_osc_client_send_move(ntg_osc_client *client,
 
 }
 
-ntg_error_code ntg_osc_client_send_rename(ntg_osc_client *client,
+error_code ntg_osc_client_send_rename(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &path,
         const char *name)

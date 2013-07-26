@@ -19,10 +19,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include <assert.h>
@@ -30,7 +26,6 @@
 #include <libxml/xmlreader.h>
 
 #include "interface.h"
-#include "Integra/integra.h"
 #include "helper.h"
 #include "value.h"
 #include "trace.h"
@@ -196,20 +191,20 @@ NTG_IMPLEMENT_LIST_REVERSE( ntg_widget_attribute_mapping )
  the following forward-declarations define functions used by NTG_READ_XXX macros
 */
 
-ntg_error_code ntg_string_converter( const char *input, char **output );
-ntg_error_code ntg_boolean_converter( const char *input, bool *output );
-ntg_error_code ntg_integer_converter( const char *input, int *output );
-ntg_error_code ntg_float_converter( const char *input, float *output );
-ntg_error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type *output );
-ntg_error_code ntg_control_type_converter( const char *input, ntg_control_type *output );
-ntg_error_code ntg_type_converter( const char *input, CValue::type &output );
-ntg_error_code ntg_stream_type_converter( const char *input, ntg_stream_type *output );
-ntg_error_code ntg_stream_direction_converter( const char *input, ntg_stream_direction *output );
+error_code ntg_string_converter( const char *input, char **output );
+error_code ntg_boolean_converter( const char *input, bool *output );
+error_code ntg_integer_converter( const char *input, int *output );
+error_code ntg_float_converter( const char *input, float *output );
+error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type *output );
+error_code ntg_control_type_converter( const char *input, ntg_control_type *output );
+error_code ntg_type_converter( const char *input, CValue::type &output );
+error_code ntg_stream_type_converter( const char *input, ntg_stream_type *output );
+error_code ntg_stream_direction_converter( const char *input, ntg_stream_direction *output );
 
 /* this subset converts to ntg_value objects for each supported type */
-ntg_error_code ntg_value_float_converter( const char *input, CValue **output );
-ntg_error_code ntg_value_integer_converter( const char *input, CValue **output );
-ntg_error_code ntg_value_string_converter( const char *input, CValue **output );
+error_code ntg_value_float_converter( const char *input, CValue **output );
+error_code ntg_value_integer_converter( const char *input, CValue **output );
+error_code ntg_value_string_converter( const char *input, CValue **output );
 
 /* 
  the following macros handle reading of xml properties into specified locations, and are 
@@ -513,13 +508,13 @@ void ntg_interface_free( ntg_interface *interface )
  the following functions are used by NTG_READ_XXX macros to interpret xml text
 */
 
-ntg_error_code ntg_string_converter( const char *input, char **output )
+error_code ntg_string_converter( const char *input, char **output )
 {
 	*output = strdup( input );
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_boolean_converter( const char *input, bool &output )
+error_code ntg_boolean_converter( const char *input, bool &output )
 {
 	if( !strcmp( input, NTG_STR_FALSE ) )
 	{
@@ -537,20 +532,20 @@ ntg_error_code ntg_boolean_converter( const char *input, bool &output )
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_integer_converter( const char *input, int &output )
+error_code ntg_integer_converter( const char *input, int &output )
 {
 	output = atoi( input );
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_float_converter( const char *input, float &output )
+error_code ntg_float_converter( const char *input, float &output )
 {
 	output = atof( input );
 	return NTG_NO_ERROR;
 }
 
 
-ntg_error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type &output )
+error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type &output )
 {
 	if( !strcmp( input, NTG_STR_CONTROL ) )
 	{
@@ -568,7 +563,7 @@ ntg_error_code ntg_endpoint_type_converter( const char *input, ntg_endpoint_type
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_control_type_converter( const char *input, ntg_control_type &output )
+error_code ntg_control_type_converter( const char *input, ntg_control_type &output )
 {
 	if( !strcmp( input, NTG_STR_STATE ) )
 	{
@@ -587,7 +582,7 @@ ntg_error_code ntg_control_type_converter( const char *input, ntg_control_type &
 }
 
 
-ntg_error_code ntg_type_converter( const char *input, CValue::type &output )
+error_code ntg_type_converter( const char *input, CValue::type &output )
 {
 	if( !strcmp( input, NTG_STR_FLOAT ) )
 	{
@@ -611,7 +606,7 @@ ntg_error_code ntg_type_converter( const char *input, CValue::type &output )
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_scale_type_converter( const char *input, ntg_scale_type &output )
+error_code ntg_scale_type_converter( const char *input, ntg_scale_type &output )
 {
 	if( !strcmp( input, NTG_STR_LINEAR ) )
 	{
@@ -636,7 +631,7 @@ ntg_error_code ntg_scale_type_converter( const char *input, ntg_scale_type &outp
 }
 
 
-ntg_error_code ntg_stream_type_converter( const char *input, ntg_stream_type &output )
+error_code ntg_stream_type_converter( const char *input, ntg_stream_type &output )
 {
 	if( !strcmp( input, NTG_STR_AUDIO ) )
 	{
@@ -648,7 +643,7 @@ ntg_error_code ntg_stream_type_converter( const char *input, ntg_stream_type &ou
 	return NTG_ERROR;
 }
 
-ntg_error_code ntg_stream_direction_converter( const char *input, ntg_stream_direction &output )
+error_code ntg_stream_direction_converter( const char *input, ntg_stream_direction &output )
 {
 	if( !strcmp( input, NTG_STR_INPUT ) )
 	{
@@ -667,21 +662,21 @@ ntg_error_code ntg_stream_direction_converter( const char *input, ntg_stream_dir
 }
 
 
-ntg_error_code ntg_value_float_converter( const char *input, CValue **output )
+error_code ntg_value_float_converter( const char *input, CValue **output )
 {
 	*output = new CFloatValue();
 	(*output)->set_from_string( input );
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_value_integer_converter( const char *input, CValue **output )
+error_code ntg_value_integer_converter( const char *input, CValue **output )
 {
 	*output = new CIntegerValue();
 	(*output)->set_from_string( input );
 	return NTG_NO_ERROR;
 }
 
-ntg_error_code ntg_value_string_converter( const char *input, CValue **output )
+error_code ntg_value_string_converter( const char *input, CValue **output )
 {
 	*output = new CStringValue( input );
 	return NTG_NO_ERROR;
@@ -813,7 +808,7 @@ void ntg_reverse_lists( ntg_interface *interface )
 
 
 /* ntg_sanity_check doesn't test all the schema rules, but it does test the most essential things */
-ntg_error_code ntg_sanity_check( const ntg_interface *interface )
+error_code ntg_sanity_check( const ntg_interface *interface )
 {
 	const ntg_endpoint *endpoint;
 	const ntg_widget *widget;
@@ -907,7 +902,7 @@ void ntg_assign_endpoint_indices( ntg_interface *interface )
 }
 
 
-ntg_error_code ntg_handle_interface_element( ntg_interface *interface, const char *element )
+error_code ntg_handle_interface_element( ntg_interface *interface, const char *element )
 {
 	assert( interface && element );
 
@@ -991,7 +986,7 @@ ntg_error_code ntg_handle_interface_element( ntg_interface *interface, const cha
 
 
 
-ntg_error_code ntg_handle_interface_element_value( ntg_interface *interface, const char *element, const char *value )
+error_code ntg_handle_interface_element_value( ntg_interface *interface, const char *element, const char *value )
 {
 	assert( interface && element && value );
 
@@ -1166,11 +1161,11 @@ ntg_error_code ntg_handle_interface_element_value( ntg_interface *interface, con
 }
 
 
-ntg_error_code ntg_handle_interface_element_attributes( ntg_interface *interface, const char *element, xmlTextReaderPtr reader )
+error_code ntg_handle_interface_element_attributes( ntg_interface *interface, const char *element, xmlTextReaderPtr reader )
 {
 	char *module_guid_attribute = NULL;
 	char *origin_guid_attribute = NULL;
-	ntg_error_code error_code = NTG_NO_ERROR;
+	error_code error_code = NTG_NO_ERROR;
 
 	assert( interface && element && reader );
 
@@ -1223,7 +1218,7 @@ ntg_interface *ntg_interface_load( const unsigned char *buffer, unsigned int buf
 	int depth, new_depth;
 	bool handled_element_content = false;
 	char *element_path = NULL;
-	ntg_error_code error_code = NTG_FAILED;
+	error_code error_code = NTG_FAILED;
 	ntg_interface *interface = NULL;
 
 	assert( buffer );

@@ -19,10 +19,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include <assert.h>
@@ -39,6 +35,11 @@
 #include "helper.h"
 #include "globals.h"
 #include "file_io.h"
+#include "server.h"
+
+using namespace ntg_api;
+using namespace ntg_internal;
+
 
 #ifdef _WINDOWS
 	#define NTG_SCRATCH_DIRECTORY_ROOT "libIntegra" 
@@ -121,7 +122,7 @@ bool ntg_is_directory( const char *directory_name )
 }
 
 
-void ntg_scratch_directory_initialize( ntg_server *server )
+void ntg_scratch_directory_initialize( CServer &server )
 {
 #ifdef _WINDOWS
 
@@ -137,41 +138,38 @@ void ntg_scratch_directory_initialize( ntg_server *server )
 			path_buffer[ i ] = '/';
 		}
 	}
-	server->scratch_directory_root = ntg_strdup( path_buffer );
+
+	server.scratch_directory_root_writable() = path_buffer;
 
 #else
 
 	const char *tmp_dir = getenv( "TMPDIR" );
 	if( tmp_dir )
 	{
-		server->scratch_directory_root = ntg_strdup( tmp_dir );
-		server->scratch_directory_root = ntg_string_append( server->scratch_directory_root, NTG_PATH_SEPARATOR );
+		server.scratch_directory_root_writable() = string( tmp_dir ) + NTG_PATH_SEPARATOR;
 	}
 	else
 	{
-		server->scratch_directory_root = ntg_strdup( "~/" );
+		server->scratch_directory_root_writable() = "~/";
 	}
 #endif
 	
-	server->scratch_directory_root = ntg_string_append( server->scratch_directory_root, NTG_SCRATCH_DIRECTORY_ROOT );
+	server.scratch_directory_root_writable() += NTG_SCRATCH_DIRECTORY_ROOT;
 
-	if( ntg_is_directory( server->scratch_directory_root ) )
+	if( ntg_is_directory( server.scratch_directory_root_writable().c_str() ) )
 	{
-		ntg_delete_directory( server->scratch_directory_root );
+		ntg_delete_directory( server.scratch_directory_root_writable().c_str() );
 	}
 
-	server->scratch_directory_root = ntg_string_append( server->scratch_directory_root, NTG_PATH_SEPARATOR );
+	server.scratch_directory_root_writable() += NTG_PATH_SEPARATOR;
 
-	mkdir( server->scratch_directory_root );
+	mkdir( server.scratch_directory_root_writable().c_str() );
 }
 
 
-void ntg_scratch_directory_free( ntg_server *server )
+void ntg_scratch_directory_free( CServer &server )
 {
-	ntg_delete_directory( server->scratch_directory_root );
-
-	delete[] server->scratch_directory_root;
-	server->scratch_directory_root = NULL;
+	ntg_delete_directory( server.scratch_directory_root().c_str() );
 }
 
 

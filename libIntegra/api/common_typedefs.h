@@ -56,11 +56,12 @@ namespace ntg_api
 	/* Guids */ 
 	struct GuidHash 
 	{
-	  size_t operator()(const GUID& x) const { return MurmurHash2( &x, sizeof( GUID ), 53 ); }
+		size_t operator()(const GUID& x) const { return MurmurHash2( &x, sizeof( GUID ), 53 ); }
 	};
 
 
 	typedef std::unordered_set<GUID, GuidHash> guid_set;
+
 };
 
 
@@ -83,6 +84,7 @@ namespace ntg_internal
 	} ntg_command_source;
 
 
+	typedef unsigned long internal_id;
 
 
 }

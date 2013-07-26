@@ -19,6 +19,9 @@
     <Filter Include="Externals\minizip">
       <UniqueIdentifier>{1c90c70b-2bde-44ce-9486-309ad379e62c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\api">
+      <UniqueIdentifier>{0ba03a83-0c04-4a8e-a46d-7489cfdce5f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\externals\minizip\ioapi.c">
@@ -140,9 +143,6 @@
     <ClInclude Include="..\src\id.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Integra\integra.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\luascripting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -233,12 +233,6 @@
     <ClInclude Include="..\src\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\MurmurHash2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\common_typedefs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\node_endpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -247,6 +241,18 @@
     </ClInclude>
     <ClInclude Include="..\src\state_table.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\server_api.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\server_startup_info.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\common_typedefs.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\MurmurHash2.h">
+      <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

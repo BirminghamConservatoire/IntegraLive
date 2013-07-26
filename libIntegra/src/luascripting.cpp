@@ -18,10 +18,6 @@
  * USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#    include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include <stdio.h>
@@ -165,7 +161,7 @@ static float ntg_lua_get_double(lua_State * L, int argnum)
 
 static int ntg_lua_set( lua_State * L )
 {
-	ntg_command_status set_result;
+	command_status set_result;
 	int num_arguments;
 	CPath path, node_path;
 	string endpoint_name;
@@ -188,7 +184,7 @@ static int ntg_lua_set( lua_State * L )
 	node_path = path;
 	endpoint_name = node_path.pop_element();
 
-	const CNode *node = ntg_find_node( node_path );
+	const CNode *node = server_->find_node( node_path );
 	if( !node )
 	{
 		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
@@ -240,7 +236,7 @@ static int ntg_lua_set( lua_State * L )
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
-		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, converted_value );
+		set_result = ntg_set_( *server_, NTG_SOURCE_SCRIPT, path, converted_value );
 
 		delete new_value;
 		delete converted_value;
@@ -250,7 +246,7 @@ static int ntg_lua_set( lua_State * L )
 		assert( endpoint->get_endpoint()->control_info->type == NTG_BANG );
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Sending bang to %s...", path.get_string().c_str() );
-		set_result = ntg_set_( server_, NTG_SOURCE_SCRIPT, path, NULL );
+		set_result = ntg_set_( *server_, NTG_SOURCE_SCRIPT, path, NULL );
 	}
 
 	if( set_result.error_code != NTG_NO_ERROR )
@@ -277,7 +273,7 @@ static int ntg_lua_get(lua_State * L)
 	CPath node_path( path );
 	string endpoint_name = node_path.pop_element();
 
-	const CNode *node = ntg_find_node( node_path );
+	const CNode *node = server_->find_node( node_path );
 	if( !node )
 	{
 		ntg_lua_error_handler( "Can't find node: %s", node_path.get_string().c_str() );
@@ -309,7 +305,7 @@ static int ntg_lua_get(lua_State * L)
 		return 0;
 	}
 
-    const CValue *value = ntg_get_( server_, path );
+    const CValue *value = ntg_get_( *server_, path );
     if( !value ) 
 	{
 		ntg_lua_error_handler( "Can't read attribute value at %s", node_path.get_string().c_str() );
@@ -569,8 +565,8 @@ char *ntg_lua_build_init_script( const CPath &parent_path )
 		init_script = ntg_string_append( init_script, "\n" );
 	}
 
-	const CNode *parent_node = ntg_find_node( parent_path );
-	const node_map &child_nodes = parent_node ? parent_node->get_children() : server_->root_nodes;
+	const CNode *parent_node = server_->find_node( parent_path );
+	const node_map &child_nodes = parent_node ? parent_node->get_children() : server_->get_nodes();
 
 
 	init_script = ntg_lua_declare_child_objects( init_script, child_nodes, parent_path );

@@ -22,6 +22,8 @@
 #define INTEGRA_H
 
 
+#if 0	//DEPRECATED
+
 /** \file integra.h libIntegra public API */
 
 /* system includes*/
@@ -133,7 +135,6 @@ LIBINTEGRA_API ntg_command_status ntg_rename( const ntg_api::CPath &path, const 
 
 /** \brief Save all nodes including and below a given node on the server to a
     path on the filesystem
- * \param *server: a pointer to a struct of type ntg_server
  * \param *path: a reference to a class of type CPath giving the elements in
    the path to the given node. The path array must include the node
    itself, i.e. if we are saving a node called 'FooBar1', the path array
@@ -298,13 +299,15 @@ LIBINTEGRA_API void ntg_print_state(void);
  * or via the xmlrpc interface.
  *
  * */
+
+#if 0 //DEPRECATED
 LIBINTEGRA_API ntg_error_code ntg_server_run(const char *bridge_file, 
 							const char *system_module_directory,
 							const char *third_party_module_directory,
 							unsigned short xmlrpc_server_port, 
 							const char *osc_client_url, 
 							unsigned short osc_client_port);
-
+#endif
 
 
 /** \brief Evaluate a string containing lua code
@@ -320,14 +323,8 @@ LIBINTEGRA_API char *ntg_lua_eval( const ntg_api::CPath &parent_path, const char
 
 
 
-/** \brief Get the current version of libIntegra 
- * \param *destination: a pointer to a string into which the 
- * version number is written
- * \param *destination_size: the maximum number of characters 
- * which may be written to destination
- */
-LIBINTEGRA_API void ntg_version(char *destination, int destination_size);
 
 
+#endif //DEPRECATED
 
-#endif
+#endif 

@@ -1,5 +1,5 @@
 /* libIntegra multimedia module interface
- *  
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,42 +18,39 @@
  * USA.
  */
 
+#ifndef INTEGRA_SERVER_STARTUP_INFO_H
+#define INTEGRA_SERVER_STARTUP_INFO_H
 
-#ifndef INTEGRA_STATE_TABLE_H
-#define INTEGRA_STATE_TABLE_H
+#include "common_typedefs.h"
 
-#include "api/common_typedefs.h"
-#include "node.h"
-#include "node_endpoint.h"
-
-
-namespace ntg_internal
+namespace ntg_api
 {
-	class CStateTable
+	class LIBINTEGRA_API CServerStartupInfo
 	{
 		public:
+			CServerStartupInfo()
+			{
+				bridge_path = "";
+				system_module_directory = "";
+				third_party_module_directory = "";
+		
+				xmlrpc_server_port = 0;
+		
+				osc_client_url = "";
+				unsigned short osc_client_port = 0;
+			}
 
-			CStateTable();
-			~CStateTable();
-
-			void add( CNode &node );
-			void remove( const CNode &node );
-
-			const CNode *lookup_node( const ntg_api::string &path ) const;
-			CNode *lookup_node_writable( const ntg_api::string &path );
+			string bridge_path;
+			string system_module_directory;
+			string third_party_module_directory;
 			
-			const CNode *lookup_node( internal_id id ) const;
-
-			const CNodeEndpoint *lookup_node_endpoint( const ntg_api::string &path ) const;
-			CNodeEndpoint *lookup_node_endpoint_writable( const ntg_api::string &path );
-
-		private:
-
-			node_map m_nodes;
-			map_id_to_node m_nodes_by_id;
-			node_endpoint_map m_node_endpoints;
+			unsigned short xmlrpc_server_port;
+			
+			string osc_client_url;
+			unsigned short osc_client_port;
 	};
 }
+
 
 
 #endif

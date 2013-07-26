@@ -22,16 +22,13 @@
 #define INTEGRA_GLOBALS_H
 
 
-#ifdef HAVE_CONFIG_H
-#    include <config.h>
-#endif
-
 #include <pthread.h>
 #include <semaphore.h>
 
 #include "lo_ansi.h"
 #include "id.h"
 #include "trace.h"
+#include "api/common_typedefs.h"
 
 
 #ifdef DEFINE_GLOBALS
@@ -42,7 +39,6 @@
 
 /* global constants */
 #define XML_ENCODING        "ISO-8859-1"
-#define NTG_LEN_PATH_ATTR   10
 #define NTG_LONG_STRLEN    1024
 
 #define NTG_FILE_SUFFIX "integra"
@@ -64,15 +60,15 @@
 
 #define NTG_NODE_NAME_CHARACTER_SET "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-GLOBAL struct ntg_server_ *server_;
+namespace ntg_internal
+{
+	class CServer;
+}
+
+GLOBAL ntg_internal::CServer *server_;
 GLOBAL void *bridge_handle;
 
-GLOBAL ntg_id id_counter_; 
-GLOBAL pthread_t xmlrpc_thread;
-GLOBAL pthread_t server_thread;
-GLOBAL pthread_t signal_thread;
-
-GLOBAL lo_server_thread osc_interface;
+GLOBAL ntg_internal::internal_id id_counter_; 
 
 GLOBAL ntg_trace_category_bits trace_category_bits;
 GLOBAL ntg_trace_options_bits trace_option_bits;

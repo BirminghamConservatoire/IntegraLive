@@ -36,7 +36,6 @@
 #include "file_io.h"
 #include "interface.h"
 
-#include "Integra/integra.h"
 
 using namespace ntg_api;
 using namespace ntg_internal;
@@ -95,17 +94,15 @@ bool ntg_should_send_to_client( ntg_command_source cmd_source )
 
 
 
-ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, const CPath &path, const CValue *value )
+command_status ntg_set_( CServer &server, ntg_command_source cmd_source, const CPath &path, const CValue *value )
 {
-    ntg_error_code error_code = NTG_NO_ERROR;
-    ntg_command_status command_status;
-
-    assert( server );
+    error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
 
     NTG_COMMAND_STATUS_INIT;
 
 	/* get node from path */
-	CNodeEndpoint *node_endpoint = ntg_find_node_endpoint_writable( path.get_string() );
+	CNodeEndpoint *node_endpoint = server.find_node_endpoint_writable( path.get_string() );
     if( node_endpoint == NULL) 
 	{
         NTG_TRACE_ERROR_WITH_STRING( "endpoint not found", path.get_string().c_str() );
@@ -178,7 +175,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
 
-	if( server->reentrance_checker->push( node_endpoint, cmd_source ) )
+	if( server.get_reentrance_checker().push( node_endpoint, cmd_source ) )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "detected reentry - aborting set command", path.get_string().c_str() );
 		NTG_RETURN_ERROR_CODE( NTG_REENTRANCE_ERROR );
@@ -209,7 +206,7 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
     /* send the attribute value to the host if needed */
 	if( ntg_should_send_set_to_host( *node_endpoint, *node_endpoint->get_node()->get_interface(), cmd_source ) ) 
 	{
-		server->bridge->send_value( node_endpoint );
+		server.get_bridge()->send_value( node_endpoint );
     }
 
     if( error_code != NTG_NO_ERROR ) 
@@ -220,28 +217,26 @@ ntg_command_status ntg_set_(ntg_server *server, ntg_command_source cmd_source, c
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-		ntg_osc_client_send_set( server->osc_client, cmd_source, path, node_endpoint->get_value() );
+		ntg_osc_client_send_set( server.get_osc_client(), cmd_source, path, node_endpoint->get_value() );
     }
 
-	server->reentrance_checker->pop();
+	server.get_reentrance_checker().pop();
 
     return command_status;
 }
 
 
-ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, const GUID *module_id, string node_name, const CPath &path )
+command_status ntg_new_( CServer &server, ntg_command_source cmd_source, const GUID *module_id, string node_name, const CPath &path )
 {
-    ntg_error_code error_code = NTG_NO_ERROR;
-    ntg_command_status command_status;
+    error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
 
 	NTG_COMMAND_STATUS_INIT;
 
-    assert( server );
-
-    CNode *parent = ntg_find_node_writable( path );
+    CNode *parent = server.find_node_writable( path );
 
     /* get interface */
-	const ntg_interface *interface = server->module_manager->get_interface_by_module_id( *module_id );
+	const ntg_interface *interface = server.get_module_manager().get_interface_by_module_id( *module_id );
     if( !interface ) 
 	{
         NTG_TRACE_ERROR( "unable to find interface" );
@@ -255,7 +250,7 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 	}
 
     /* First check if node name is already taken */
-	node_map &sibling_map = parent ? parent->get_children_writable() : server->root_nodes;
+	node_map &sibling_map = parent ? parent->get_children_writable() : server.get_nodes_writable();
     while( sibling_map.count( node_name ) > 0 ) 
 	{
         NTG_TRACE_PROGRESS_WITH_STRING( "node name is in use; appending underscore", node_name.c_str() );
@@ -272,19 +267,19 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
     CNode *node = new CNode;
 	node->initialize( interface, node_name, parent );
 	sibling_map[ node_name ] = node;
-	server->state_table.add( *node );
+	server.get_state_table().add( *node );
 
 	if( ntg_interface_has_implementation( interface ) )
 	{
 		/* load implementation in module host */
-		string patch_path = server->module_manager->get_patch_path( *interface );
+		string patch_path = server.get_module_manager().get_patch_path( *interface );
 		if( patch_path.empty() )
 		{
 			NTG_TRACE_ERROR( "Failed to get implementation path - cannot load module in host" );
 		}
 		else
 		{
-			server->bridge->module_load( node->get_id(), patch_path.c_str() );
+			server.get_bridge()->module_load( node->get_id(), patch_path.c_str() );
 		}
 	}
 
@@ -299,7 +294,7 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 		const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint->name );
         assert( node_endpoint );
 
-		ntg_set_( server_, NTG_SOURCE_INITIALIZATION, node_endpoint->get_path(), endpoint->control_info->state_info->default_value );
+		ntg_set_( server, NTG_SOURCE_INITIALIZATION, node_endpoint->get_path(), endpoint->control_info->state_info->default_value );
 	}
 
     /* handle any system class logic */
@@ -311,22 +306,21 @@ ntg_command_status ntg_new_(ntg_server *server, ntg_command_source cmd_source, c
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-	    ntg_osc_client_send_new( server->osc_client, cmd_source, module_id, node_name.c_str(), node->get_parent_path() );
+	    ntg_osc_client_send_new( server.get_osc_client(), cmd_source, module_id, node_name.c_str(), node->get_parent_path() );
 	}
 
     return command_status;
 }
 
 
-ntg_command_status ntg_delete_( ntg_server *server, ntg_command_source cmd_source, const CPath &path )
+command_status ntg_delete_( CServer &server, ntg_command_source cmd_source, const CPath &path )
 {
-    ntg_command_status command_status;
-    ntg_error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
+    error_code error_code = NTG_NO_ERROR;
 
     NTG_COMMAND_STATUS_INIT;
 
-	CNode *node = ntg_find_node_writable( path );
-
+	CNode *node = server.find_node_writable( path );
     if( !node ) 
 	{
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
@@ -344,19 +338,16 @@ ntg_command_status ntg_delete_( ntg_server *server, ntg_command_source cmd_sourc
 	ntg_system_class_handle_delete( server, *node, cmd_source );
 
 	/* state tables */
-	server->state_table.remove( *node );
+	server.get_state_table().remove( *node );
 
 	/* remove in host */
-    if( server->bridge ) 
+	if( ntg_interface_has_implementation( node->get_interface() ) )
 	{
-		if( ntg_interface_has_implementation( node->get_interface() ) )
-		{
-			server->bridge->module_remove( node->get_id() );
-		}
+		server.get_bridge()->module_remove( node->get_id() );
     }
 
 	/* remove from owning container */
-	ntg_get_sibling_set_writable( server, *node ).erase( node->get_name() );
+	server.get_sibling_set_writable( *node ).erase( node->get_name() );
 
 	/* finally delete the node */
 	delete node;
@@ -365,37 +356,35 @@ ntg_command_status ntg_delete_( ntg_server *server, ntg_command_source cmd_sourc
 }
 
 
-ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, ntg_command_source cmd_source )
+command_status ntg_unload_orphaned_embedded_modules_( CServer &server, ntg_command_source cmd_source )
 {
-	ntg_command_status command_status;
-	ntg_error_code error_code = NTG_NO_ERROR;
-
-	assert( server );
+	command_status command_status;
+	error_code error_code = NTG_NO_ERROR;
 
 	NTG_COMMAND_STATUS_INIT;
 
 	guid_set orphaned_embedded_modules;
-	server->module_manager->get_orphaned_embedded_modules( server->root_nodes, orphaned_embedded_modules );
+	server.get_module_manager().get_orphaned_embedded_modules( server.get_nodes(), orphaned_embedded_modules );
 
-	server->module_manager->unload_modules( orphaned_embedded_modules );
+	server.get_module_manager_writable().unload_modules( orphaned_embedded_modules );
 
 	NTG_RETURN_COMMAND_STATUS;
 }
 
 
-ntg_command_status ntg_install_module_( ntg_server *server, ntg_command_source cmd_source, const char *file_path )
+command_status ntg_install_module_( CServer &server, ntg_command_source cmd_source, const char *file_path )
 {
-    ntg_error_code error_code = NTG_NO_ERROR;
-    ntg_command_status command_status;
+    error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
 
-	assert( server && file_path );
+	assert( file_path );
 	NTG_TRACE_PROGRESS( file_path );
 
 	NTG_COMMAND_STATUS_INIT
 
 	CModuleInstallResult *module_install_result = new CModuleInstallResult;
 
-	error_code = server->module_manager->install_module( file_path, *module_install_result );
+	error_code = server.get_module_manager_writable().install_module( file_path, *module_install_result );
 
 	if( error_code == NTG_NO_ERROR )
 	{
@@ -410,35 +399,35 @@ ntg_command_status ntg_install_module_( ntg_server *server, ntg_command_source c
 }
 
 
-ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id )
+command_status ntg_install_embedded_module_( CServer &server, ntg_command_source cmd_source, const GUID *module_id )
 {
-    ntg_error_code error_code = NTG_NO_ERROR;
-    ntg_command_status command_status;
+    error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
 
-	assert( server && module_id );
+	assert( module_id );
 	NTG_TRACE_PROGRESS( "" );
 
 	NTG_COMMAND_STATUS_INIT
 
-	error_code = server->module_manager->install_embedded_module( *module_id );
+	error_code = server.get_module_manager_writable().install_embedded_module( *module_id );
 
 	NTG_RETURN_COMMAND_STATUS
 }
 
 
-ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source cmd_source, const GUID *module_id )
+command_status ntg_uninstall_module_( CServer &server, ntg_command_source cmd_source, const GUID *module_id )
 {
-    ntg_error_code error_code = NTG_NO_ERROR;
-    ntg_command_status command_status;
+    error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
 
-	assert( server && module_id );
+	assert( module_id );
 	NTG_TRACE_PROGRESS( "" );
 
 	NTG_COMMAND_STATUS_INIT
 
 	CModuleUninstallResult *module_uninstall_result = new CModuleUninstallResult;
 
-	error_code = server->module_manager->uninstall_module( *module_id, *module_uninstall_result );
+	error_code = server.get_module_manager_writable().uninstall_module( *module_id, *module_uninstall_result );
 
 	if( error_code == NTG_NO_ERROR )
 	{
@@ -453,19 +442,19 @@ ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_command_source
 }
 
 
-ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_command_source cmd_source, const char *file_path )
+command_status ntg_load_module_in_development_( CServer &server, ntg_command_source cmd_source, const char *file_path )
 {
-    ntg_error_code error_code = NTG_NO_ERROR;
-    ntg_command_status command_status;
+    error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
 
-	assert( server && file_path );
+	assert( file_path );
 	NTG_TRACE_PROGRESS( file_path );
 
 	NTG_COMMAND_STATUS_INIT
 
 	CLoadModuleInDevelopmentResult *result = new CLoadModuleInDevelopmentResult;
 
-	error_code = server->module_manager->load_module_in_development( file_path, *result );
+	error_code = server.get_module_manager_writable().load_module_in_development( file_path, *result );
 
 	if( error_code == NTG_NO_ERROR )
 	{
@@ -481,16 +470,16 @@ ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_comm
 
 
 
-ntg_command_status ntg_rename_(ntg_server *server, ntg_command_source cmd_source, const CPath &path, const char *name )
+command_status ntg_rename_(CServer &server, ntg_command_source cmd_source, const CPath &path, const char *name )
 {
-    ntg_error_code error_code = NTG_NO_ERROR;
-    ntg_command_status command_status;
+    error_code error_code = NTG_NO_ERROR;
+    command_status command_status;
 
     assert( name );
 
     NTG_COMMAND_STATUS_INIT;
 
-    CNode *node = ntg_find_node_writable( path );
+    CNode *node = server.find_node_writable( path );
     if( !node ) 
 	{
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
@@ -505,7 +494,7 @@ ntg_command_status ntg_rename_(ntg_server *server, ntg_command_source cmd_source
 	string new_name = name;
 
     /* First check if node name is already taken */
-	node_map &sibling_set = ntg_get_sibling_set_writable( server, *node );
+	node_map &sibling_set = server.get_sibling_set_writable( *node );
     while( sibling_set.count( new_name ) > 0 ) 
 	{
         NTG_TRACE_PROGRESS_WITH_STRING( "node name is in use; appending underscore", new_name.c_str() );
@@ -515,7 +504,7 @@ ntg_command_status ntg_rename_(ntg_server *server, ntg_command_source cmd_source
 	string previous_name = node->get_name();
 
     /* remove old state table entries for node and children */
-	server->state_table.remove( *node );
+	server.get_state_table().remove( *node );
 
     node->rename( new_name );
 
@@ -523,26 +512,26 @@ ntg_command_status ntg_rename_(ntg_server *server, ntg_command_source cmd_source
 	sibling_set[ new_name ] = node;
 
     /* add new state table entries for node and children */
-	server->state_table.add( *node );
+	server.get_state_table().add( *node );
 
 	ntg_system_class_handle_rename( server, *node, previous_name.c_str(), cmd_source );
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-		ntg_osc_client_send_rename(server->osc_client, cmd_source, path, new_name.c_str() );
+		ntg_osc_client_send_rename( server.get_osc_client(), cmd_source, path, new_name.c_str() );
 	}
 
     NTG_RETURN_COMMAND_STATUS;
 }
 
-ntg_command_status ntg_move_(ntg_server *server, ntg_command_source cmd_source, const CPath &node_path, const CPath &new_parent_path )
+command_status ntg_move_( CServer &server, ntg_command_source cmd_source, const CPath &node_path, const CPath &new_parent_path )
 {
-    ntg_error_code      error_code = NTG_NO_ERROR;
-    ntg_command_status  command_status;
+    error_code      error_code = NTG_NO_ERROR;
+    command_status  command_status;
 
     NTG_COMMAND_STATUS_INIT;
 
-    CNode *node = ntg_find_node_writable( node_path );
+    CNode *node = server.find_node_writable( node_path );
     if( !node ) 
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "unable to find node given by path", node_path.get_string().c_str() );
@@ -550,51 +539,50 @@ ntg_command_status ntg_move_(ntg_server *server, ntg_command_source cmd_source, 
     }
 
     /* remove old state table entries for node and children */
-	server->state_table.remove( *node );
+	server.get_state_table().remove( *node );
 
-	node_map &old_sibling_set = ntg_get_sibling_set_writable( server, *node );
+	node_map &old_sibling_set = server.get_sibling_set_writable( *node );
 	old_sibling_set.erase( node->get_name() );
 
-    CNode *new_parent = ntg_find_node_writable( new_parent_path );
-	node_map &new_sibling_set = new_parent ? new_parent->get_children_writable() : server->root_nodes;
+    CNode *new_parent = server.find_node_writable( new_parent_path );
+	node_map &new_sibling_set = new_parent ? new_parent->get_children_writable() : server.get_nodes_writable();
 	new_sibling_set[ node->get_name() ] = node;
 
 	node->move( new_parent );
 
     /* add new state table entries for node and children */
-	server->state_table.add( *node );
+	server.get_state_table().add( *node );
 
 	ntg_system_class_handle_move( server, *node, node_path, cmd_source );
 
     if( ntg_should_send_to_client( cmd_source ) ) 
 	{
-		ntg_osc_client_send_move( server->osc_client, cmd_source, node_path, new_parent_path );
+		ntg_osc_client_send_move( server.get_osc_client(), cmd_source, node_path, new_parent_path );
 	}
 
     NTG_RETURN_COMMAND_STATUS;
 }
 
 
-ntg_command_status ntg_load_(ntg_server * server, ntg_command_source cmd_source, const char *file_path, const CPath &path )
+command_status ntg_load_( CServer &server, ntg_command_source cmd_source, const char *file_path, const CPath &path )
 {
-	ntg_command_status command_status;
+	command_status command_status;
 
-    assert(server != NULL);
-    assert(file_path != NULL);
+    assert( file_path );
 
 	NTG_COMMAND_STATUS_INIT
 
-    const CNode *parent = ntg_find_node( path );
+    const CNode *parent = server.find_node( path );
 
-	command_status = ntg_file_load( file_path, parent, *server->module_manager );
+	command_status = ntg_file_load( file_path, parent, server.get_module_manager_writable() );
 
 	return command_status;
 }
 
 
-const CValue *ntg_get_( ntg_server *server, const CPath &path )
+const CValue *ntg_get_( CServer &server, const CPath &path )
 {
-	const CNodeEndpoint *node_endpoint = ntg_find_node_endpoint( path.get_string() );
+	const CNodeEndpoint *node_endpoint = server.find_node_endpoint( path.get_string() );
     if( !node_endpoint ) 
 	{
         NTG_TRACE_ERROR_WITH_STRING( "endpoint not found; get request ignored", path.get_string().c_str() );
@@ -613,12 +601,10 @@ const CValue *ntg_get_( ntg_server *server, const CPath &path )
 }
 
 
-ntg_error_code ntg_nodelist_( ntg_server *server, const CPath &path, path_list &results )
+error_code ntg_nodelist_( CServer &server, const CPath &path, path_list &results )
 {
-    assert( server );
-
-    const CNode *parent = ntg_find_node( path );
-	const node_map &nodes = parent ? parent->get_children() : server->root_nodes;
+    const CNode *parent = server.find_node( path );
+	const node_map &nodes = parent ? parent->get_children() : server.get_nodes();
 
 	for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
 	{
@@ -633,10 +619,10 @@ ntg_error_code ntg_nodelist_( ntg_server *server, const CPath &path, path_list &
 }
 
 
-ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char *file_path  )
+command_status ntg_save_( CServer &server, const CPath &path, const char *file_path  )
 {
-    ntg_error_code error_code;
-    ntg_command_status command_status;
+    error_code error_code;
+    command_status command_status;
 	char *file_path_with_suffix;
 
     NTG_COMMAND_STATUS_INIT;
@@ -651,7 +637,7 @@ ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char 
         NTG_TRACE_PROGRESS_WITH_STRING("saving to", file_path);
     }
 
-    const CNode *node = ntg_find_node( path );
+    const CNode *node = server.find_node( path );
     if( !node ) 
 	{
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
@@ -659,7 +645,7 @@ ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char 
 
 	file_path_with_suffix = ntg_ensure_filename_has_suffix( file_path, NTG_FILE_SUFFIX );
 
-	error_code = ntg_file_save( file_path_with_suffix, *node, *server_->module_manager );
+	error_code = ntg_file_save( file_path_with_suffix, *node, server.get_module_manager() );
 
 	delete[] file_path_with_suffix;
 
@@ -667,7 +653,7 @@ ntg_command_status ntg_save_( ntg_server *server, const CPath &path, const char 
 }
 
 
-void ntg_print_node_state( ntg_server *server, const node_map &nodes, int indentation)
+void ntg_print_node_state( CServer &server, const node_map &nodes, int indentation)
 {
 	for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
 	{
@@ -717,6 +703,6 @@ void ntg_print_state_()
 {
 	printf("Print State:\n");
 	printf("***********:\n\n");
-	ntg_print_node_state( server_, server_->root_nodes, 0 );
+	ntg_print_node_state( *server_, server_->get_nodes(), 0 );
 	fflush( stdout );
 }

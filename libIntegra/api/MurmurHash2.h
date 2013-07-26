@@ -37,7 +37,10 @@ _resolve * USA.
 /* 2. It will not produce the same results on little-endian and big-endian */
 /*    machines. */
 
-unsigned int MurmurHash2 ( const void * key, int len, unsigned int seed );
+namespace ntg_api
+{
+	unsigned int MurmurHash2( const void * key, int len, unsigned int seed );
+}
 
 
 #endif /* NTG_MURMUR_HASH2_PRIVATE_H */

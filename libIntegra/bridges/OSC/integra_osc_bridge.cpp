@@ -130,7 +130,8 @@ int handler_bridge_callback(const char *path, const char *types, lo_arg **argv,
 }
 
 
-static int osc_module_load(const ntg_id instance_id, const char *implementation_name){
+static int osc_module_load( const internal_id instance_id, const char *implementation_name )
+{
 
 	int res = 0;
 
@@ -146,7 +147,8 @@ static int osc_module_load(const ntg_id instance_id, const char *implementation_
     return 0;
 }
 
-static int osc_module_remove(const ntg_id id){
+static int osc_module_remove(const internal_id id)
+{
 
     /* delete the instance */
     lo_send(module_host, "/remove", "i", id);

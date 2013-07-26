@@ -22,27 +22,44 @@
 #ifndef INTEGRA_ERRORS_PRIVATE
 #define INTEGRA_ERRORS_PRIVATE
 
+#include "api/common_typedefs.h"
+
+
 /*
  * Error handling
  */
+namespace ntg_api
+{
+	typedef enum error_code_ {
+		NTG_ERROR = -1,
+		NTG_NO_ERROR = 0,
+		NTG_FAILED = 1,
+		NTG_MEMORY_ALLOCATION_ERROR = 2,
+		NTG_MEMORY_FREE_ERROR = 3,
+		NTG_TYPE_ERROR = 4,
+		NTG_PATH_ERROR = 5,
+		NTG_CONSTRAINT_ERROR = 6,
+		NTG_REENTRANCE_ERROR = 7,
+		NTG_FILE_VALIDATION_ERROR = 8,
+		NTG_FILE_MORE_RECENT_ERROR = 9,
+		NTG_MODULE_ALREADY_INSTALLED = 10
+	} error_code;
 
-typedef enum ntg_error_code_ {
-    NTG_ERROR = -1,
-    NTG_NO_ERROR = 0,
-    NTG_FAILED = 1,
-    NTG_MEMORY_ALLOCATION_ERROR = 2,
-    NTG_MEMORY_FREE_ERROR = 3,
-    NTG_TYPE_ERROR = 4,
-    NTG_PATH_ERROR = 5,
-	NTG_CONSTRAINT_ERROR = 6,
-	NTG_REENTRANCE_ERROR = 7,
-	NTG_FILE_VALIDATION_ERROR = 8,
-	NTG_FILE_MORE_RECENT_ERROR = 9,
-	NTG_MODULE_ALREADY_INSTALLED = 10
-} ntg_error_code;
 
-/** \brief returns a textual description of a given error code */
-const char *ntg_error_text(ntg_error_code error_code);
+
+	/** \brief returns a textual description of a given error code */
+	LIBINTEGRA_API const char *ntg_error_text( error_code error_code );
+
+
+	/** \brief Definition of the type ntg_command_status @see
+	 * Integra/integra_Server.h */
+	typedef struct command_status_ 
+	{
+		void *data; /* arbitrary data passed back to the caller */
+		error_code error_code;
+	} command_status;
+}
+
 
 
 #endif /*INTEGRA_ERRORS_PRIVATE*/

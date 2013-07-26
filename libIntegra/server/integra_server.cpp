@@ -10,8 +10,9 @@
 
 #include "src/platform_specifics.h"
 
-#include "Integra/integra.h"
 #include "src/trace.h"
+#include "api/server_startup_info.h"
+#include "api/server_api.h"
 
 #include "close_orphaned_processes.h"
 
@@ -28,9 +29,7 @@
 #endif
 
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+using namespace ntg_api;
 
 #define MAXIMUM_ARGUMENTS ( 50 )
 #define NUMBER_OF_PROCESSES_TO_CLOSE ( 2 )
@@ -160,18 +159,14 @@ void post_help(const char *command_name) {
 
 int main( int argc, char *argv[] )
 {
-    const char *command_name = NULL;
-    const char *bridge_path = NULL;
-	const char *system_module_directory = NULL;
-	const char *third_party_module_directory = NULL;
+	CServerStartupInfo startup_info;
+
+	const char *command_name = NULL;
     const char *host_path = NULL;
     const char *host_arguments[ MAXIMUM_ARGUMENTS + 1 ];
 
     ntg_trace_category_bits trace_category_bits = NO_TRACE_CATEGORY_BITS;
     ntg_trace_options_bits trace_option_bits = NO_TRACE_OPTIONS_BITS;
-    unsigned short xmlrpc_server_port = 0;
-    const char *osc_client_url = NULL;
-    unsigned short osc_client_port = 0;	
     unsigned short number_of_processes_to_close = 0;
 
     const char *process_names_to_close[ NUMBER_OF_PROCESSES_TO_CLOSE ];
@@ -183,6 +178,7 @@ int main( int argc, char *argv[] )
     int flag_length = 0;
     bool in_host_arguments = false;
     bool have_host_path = false;
+
     /* defaults */
     bool trace_errors = true;
     bool trace_progress = true;
@@ -217,19 +213,19 @@ int main( int argc, char *argv[] )
 
             if( memcmp( argument, "-bridge", flag_length ) == 0 )
             {
-                bridge_path = equals + 1;
+                startup_info.bridge_path = equals + 1;
                 continue;
             }
 
 			if( memcmp( argument, "-system_modules", flag_length ) == 0 )
 			{
-				system_module_directory = equals + 1;
+				startup_info.system_module_directory = equals + 1;
 				continue;
 			}
 
 			if( memcmp( argument, "-third_party_modules", flag_length ) == 0 )
 			{
-				third_party_module_directory = equals + 1;
+				startup_info.third_party_module_directory = equals + 1;
 				continue;
 			}
 			
@@ -241,19 +237,19 @@ int main( int argc, char *argv[] )
 
             if( memcmp( argument, "-xmlrpc_server_port", flag_length ) == 0 )
             {
-                xmlrpc_server_port = atoi( equals + 1 );
+                startup_info.xmlrpc_server_port = atoi( equals + 1 );
                 continue;
             }
 
             if( memcmp( argument, "-osc_client_url", flag_length ) == 0 )
             {
-                osc_client_url = equals + 1;
+                startup_info.osc_client_url = equals + 1;
                 continue;
             }
 
             if( memcmp( argument, "-osc_client_port", flag_length ) == 0 )
             {
-                osc_client_port = atoi( equals + 1 );
+                startup_info.osc_client_port = atoi( equals + 1 );
                 continue;
             }
 
@@ -350,9 +346,20 @@ int main( int argc, char *argv[] )
         NTG_TRACE_ERROR("unable to start host - no path provided" );
     }
 
-    /*run the server */
-    ntg_server_run( bridge_path, system_module_directory, third_party_module_directory, 
-					xmlrpc_server_port, osc_client_url, osc_client_port);
+	Sleep( 10000 );
+
+
+	CServerApi *server = CServerApi::create_server( startup_info );
+	if( server )
+	{
+		server->block_until_shutdown_signal();
+
+		delete server;
+	}
+	else
+	{
+		NTG_TRACE_ERROR( "failed to create server" );
+	}
 
     if( host_process_handle > 0 )
     {

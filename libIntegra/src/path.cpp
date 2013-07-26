@@ -21,7 +21,6 @@
 #include "platform_specifics.h"
 #include "path.h"
 
-#include "integra/integra.h"
 #include "trace.h"
 #include "globals.h"
 

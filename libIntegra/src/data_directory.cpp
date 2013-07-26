@@ -19,10 +19,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include <assert.h>
@@ -56,30 +52,21 @@ using namespace ntg_api;
 using namespace ntg_internal;
 
 
-char *ntg_make_up_node_data_directory_name( const CNode &node, const ntg_server *server )
+string ntg_make_up_node_data_directory_name( const CNode &node, const CServer &server )
 {
-	char *node_directory_name;
-	int id_length, node_directory_length;
+	ostringstream stream;
 
-	id_length = ntg_count_digits( node.get_id() );
+	stream << server.scratch_directory_root() << NTG_NODE_DIRECTORY << node.get_id(), NTG_PATH_SEPARATOR;
 
-	node_directory_length = strlen( server->scratch_directory_root ) + 
-							strlen( NTG_NODE_DIRECTORY ) + 
-							id_length + 
-							strlen( NTG_PATH_SEPARATOR ) + 2;
-
-	node_directory_name = new char[ node_directory_length ];
-	sprintf( node_directory_name, "%s%s_%lu%s", server->scratch_directory_root, NTG_NODE_DIRECTORY, node.get_id(), NTG_PATH_SEPARATOR );
-
-	return node_directory_name;
+	return stream.str();
 }
 
 
-char *ntg_node_data_directory_create( const CNode &node, const ntg_server *server )
+string ntg_node_data_directory_create( const CNode &node, const CServer &server )
 {
-	char *node_directory_name = ntg_make_up_node_data_directory_name( node, server );
+	string node_directory_name = ntg_make_up_node_data_directory_name( node, server );
 
-	mkdir( node_directory_name );
+	mkdir( node_directory_name.c_str() );
 
 	return node_directory_name;
 }
@@ -272,7 +259,7 @@ const char *ntg_get_node_directory_path( unzFile unzip_file )
 }
 
 
-ntg_error_code ntg_load_data_directories( const char *file_path, const CNode *parent_node )
+error_code ntg_load_data_directories( const char *file_path, const CNode *parent_node )
 {
 	unzFile unzip_file;
 	unz_file_info file_info;
@@ -324,7 +311,7 @@ ntg_error_code ntg_load_data_directories( const char *file_path, const CNode *pa
 		}
 
 		CPath relative_node_path = CPath( relative_node_path_string );
-		const CNode *node = ntg_find_node( relative_node_path, parent_node );
+		const CNode *node = server_->find_node( relative_node_path, parent_node );
 
 		if( !node )
 		{

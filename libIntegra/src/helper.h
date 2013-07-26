@@ -25,16 +25,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include <libxml/encoding.h>
+#include "api/common_typedefs.h"
+#include "error.h"
 
-#include "integra/integra.h"
 
 /** \brief uses new char internally */
 char *ntg_strdup(const char *string);
 
-/** \brief Count the number of digits in an int 
- */
-int ntg_count_digits(int num);
 
 
 /** Appends one string to another (not including null character), and returns a pointer to the resulting string */
@@ -52,19 +49,7 @@ char *ntg_string_append(char *dest, const char *source);
 char *ntg_ensure_filename_has_suffix(const char *filename, const char *suffix);
 
 
-/**
- * ConvertInput:
- * @in: string in a given encoding
- * @encoding: the encoding used
- *
- * Converts @in into UTF-8 for processing with libxml2 APIs
- *
- * Returns the converted UTF-8 string, or NULL in case of error.
- */
-/* taken from libxml2 examples */
-xmlChar *ConvertInput(const char *in, const char *encoding);
-
-char *ntg_make_node_name(const char *class_name);
+ntg_api::string ntg_make_node_name( const ntg_api::string &module_name );
 
 /* test guids for equality*/
 bool ntg_guids_are_equal( const GUID *guid1, const GUID *guid2 );
@@ -81,18 +66,28 @@ bool ntg_guid_is_null( const GUID *guid );
 char *ntg_guid_to_string( const GUID *guid );
 
 /* converts string to guid.  expects string in hexadecimal form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
-ntg_error_code ntg_string_to_guid( const char *string, GUID *output );
+ntg_api::error_code ntg_string_to_guid( const char *string, GUID *output );
 
 
 /* converts date/time to ISO 8601 string.  Caller must free */
 char *ntg_date_to_string( const struct tm *date );
 
 /* converts string to date/time.  expects string in ISO 8601 form eg 2012-07-20T14:42 */
-ntg_error_code ntg_string_to_date( const char *input, struct tm &output );
+ntg_api::error_code ntg_string_to_date( const char *input, struct tm &output );
 
 
 /* does the node name consist entirely of valid characters? */
 bool ntg_validate_node_name( const char *name );
+
+
+/** \brief Get the current version of libIntegra 
+ * \param *destination: a pointer to a string into which the 
+ * version number is written
+ * \param *destination_size: the maximum number of characters 
+ * which may be written to destination
+ */
+LIBINTEGRA_API ntg_api::string ntg_version();
+
 
 
 

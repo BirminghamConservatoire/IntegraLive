@@ -23,7 +23,8 @@
 
 /** \file integra_bridge.h Integra bridge API */
 
-#include <Integra/integra.h>
+#include "../api/common_typedefs.h"
+
 
 namespace ntg_api
 {
@@ -69,14 +70,14 @@ typedef struct ntg_bridge_interface_
      that is meaningful to the module host
      *
      */
-    int (*module_load)(const ntg_id id, const char *implementation_name);
+    int (*module_load)(const ntg_internal::internal_id id, const char *implementation_name);
 
     /** \brief Remove an Integra module from a target environment
      *
      * \param id: the unique session id of the module
      *
      */
-    int (*module_remove)(ntg_id id);
+    int (*module_remove)(ntg_internal::internal_id id);
 
     /** \brief Connect two endpoints in a target environment
      *
@@ -122,8 +123,8 @@ typedef struct ntg_bridge_interface_
      * This is the mechanism by which data gets passed from the bridge *back* 
      * to the server
      *
-     * \param const ntg_id id The source module id
-     * \param const ntg_id port The source port id
+     * \param const ntg_internal::internal_id id The source module id
+     * \param const ntg_internal::internal_id port The source port id
      * \param const int argc The number of elements in the array pointed to 
      * by *mesage
      * \param ntg_value *message An array of ntg_values to passed to the 
@@ -134,7 +135,7 @@ typedef struct ntg_bridge_interface_
      * should be NULL
      *
      * */
-    void (*server_receive_callback)(ntg_id id, const char *attribute_name, 
+    void (*server_receive_callback)(ntg_internal::internal_id id, const char *attribute_name, 
             const ntg_api::CValue *value);
 
 } ntg_bridge_interface;

@@ -53,7 +53,7 @@ namespace ntg_internal
 		}
 
 		/* add self to id map */
-		ntg_id id = node.get_id();
+		internal_id id = node.get_id();
 		if( m_nodes_by_id.count( id ) > 0 )
 		{
 			NTG_TRACE_ERROR_WITH_INT( "duplicate key in state table", id );
@@ -103,7 +103,7 @@ namespace ntg_internal
 		}
 
 		/* remove self from id map */
-		ntg_id id = node.get_id();
+		internal_id id = node.get_id();
 		if( m_nodes_by_id.count( id ) != 1 )
 		{
 			NTG_TRACE_ERROR_WITH_INT( "missing key in state table", id );
@@ -165,7 +165,7 @@ namespace ntg_internal
 	}
 			
 
-	const CNode *CStateTable::lookup_node( ntg_id id ) const
+	const CNode *CStateTable::lookup_node( internal_id id ) const
 	{
 		map_id_to_node::const_iterator lookup = m_nodes_by_id.find( id );
 		if( lookup == m_nodes_by_id.end() )

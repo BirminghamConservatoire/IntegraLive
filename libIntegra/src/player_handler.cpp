@@ -19,10 +19,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#    include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include <pthread.h>
@@ -64,7 +60,7 @@ using namespace ntg_internal;
 
 typedef struct ntg_player_state_ 
 {
-	ntg_id id;
+	internal_id id;
 	ntg_api::CPath tick_path;
 	ntg_api::CPath play_path;
 	int rate;
@@ -113,15 +109,15 @@ sem_t *ntg_player_data_get_thread_shutdown_semaphore( ntg_player_data *player_da
 }
 
 
-void ntg_player_set_value( ntg_server *server, const CPath &attribute, const CValue *value )
+void ntg_player_set_value( CServer &server, const CPath &attribute, const CValue *value )
 {
-	ntg_lock_server();
+	server.lock();
 	ntg_set_( server, NTG_SOURCE_SYSTEM, attribute, value );
-	ntg_unlock_server();
+	server.unlock();
 }
 
 
-void ntg_player_stop( ntg_server *server, ntg_id player_id, int final_tick )
+void ntg_player_stop( CServer &server, internal_id player_id, int final_tick )
 {
 	/*
 	look through player states list, remove state for the first matching player_id found
@@ -132,9 +128,7 @@ void ntg_player_stop( ntg_server *server, ntg_id player_id, int final_tick )
 	ntg_player_state *iterator = NULL;
 	ntg_player_state **previous = NULL; 
 
-	assert( server );
-
-	player_data = server->system_class_data->player_data;
+	player_data = server.get_system_class_data()->player_data;
 
 	pthread_mutex_lock(&player_data->player_state_mutex);
 
@@ -235,14 +229,14 @@ void *ntg_player_thread( void *context )
 				}
 				else
 				{
-					ntg_player_set_value( server_, player->play_path, &CIntegerValue( 0 ) );
+					ntg_player_set_value( *server_, player->play_path, &CIntegerValue( 0 ) );
 					continue;
 				}
 			}
 
 			if( new_tick_value != player->previous_ticks )
 			{
-				ntg_player_set_value( server_, player->tick_path, &CIntegerValue( new_tick_value ) );
+				ntg_player_set_value( *server_, player->tick_path, &CIntegerValue( new_tick_value ) );
 				player->previous_ticks = new_tick_value;
 			}
 		}
@@ -254,7 +248,7 @@ void *ntg_player_thread( void *context )
 }
 
 
-void ntg_player_initialize(ntg_server *server)
+void ntg_player_initialize( CServer &server )
 {
 	ntg_player_data *player_data = new ntg_player_data;
 
@@ -271,14 +265,14 @@ void ntg_player_initialize(ntg_server *server)
 
 	pthread_create( &player_data->thread, NULL, ntg_player_thread, player_data);
 
-	server->system_class_data->player_data = player_data;
+	server.get_system_class_data()->player_data = player_data;
 }
 
 
-void ntg_player_free(ntg_server *server)
+void ntg_player_free( CServer &server )
 {
 	ntg_player_state *next_state = NULL;
-	ntg_player_data *player_data = server->system_class_data->player_data;
+	ntg_player_data *player_data = server.get_system_class_data()->player_data;
 	assert( player_data );
 
     NTG_TRACE_PROGRESS("stopping player thread");
@@ -307,14 +301,12 @@ void ntg_player_free(ntg_server *server)
 }
 
 
-void ntg_player_update(ntg_server *server, ntg_id player_id )
+void ntg_player_update( CServer &server, internal_id player_id )
 {
-	assert( server );
-
-	ntg_player_data *player_data = server->system_class_data->player_data;
+	ntg_player_data *player_data = server.get_system_class_data()->player_data;
 	assert( player_data );
 
-	const CNode *player_node = ntg_find_node( player_id );
+	const CNode *player_node = server.find_node( player_id );
 	assert( player_node );
 
 	const CNodeEndpoint *play_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_PLAY );
@@ -387,16 +379,16 @@ void ntg_player_update(ntg_server *server, ntg_id player_id )
 	player_state->loop_start_ticks = *start_endpoint->get_value();
 	player_state->loop_end_ticks = *end_endpoint->get_value();
 
-	pthread_mutex_unlock(&player_data->player_state_mutex);
+	pthread_mutex_unlock( &player_data->player_state_mutex );
 }
 
 
-void ntg_player_handle_path_change( ntg_server *server, const CNode &player_node )
+void ntg_player_handle_path_change( CServer &server, const CNode &player_node )
 {
 	ntg_player_data *player_data = NULL;
 	ntg_player_state *player_state = NULL;
 
-	player_data = server->system_class_data->player_data;
+	player_data = server.get_system_class_data()->player_data;
 	assert( player_data );
 
 	pthread_mutex_lock( &player_data->player_state_mutex );
@@ -417,7 +409,7 @@ void ntg_player_handle_path_change( ntg_server *server, const CNode &player_node
 }
 
 
-void ntg_player_handle_delete( ntg_server *server, const CNode &player_node )
+void ntg_player_handle_delete( CServer &server, const CNode &player_node )
 {
 	ntg_player_stop( server, player_node.get_id(), 0 );
 }

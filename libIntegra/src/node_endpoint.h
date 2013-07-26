@@ -27,6 +27,7 @@ typedef struct ntg_endpoint_ ntg_endpoint;
 #define NTG_ENDPOINT_TYPEDEF
 #endif
 
+#include <unordered_map>
 #include "Integra/integra_bridge.h"
 #include "path.h"
 
@@ -34,7 +35,7 @@ typedef struct ntg_endpoint_ ntg_endpoint;
 namespace ntg_internal
 {
 	class CNode;
-
+	
 
 	class CNodeEndpoint
 	{

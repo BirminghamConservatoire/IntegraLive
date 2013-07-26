@@ -21,10 +21,11 @@
 #ifndef INTEGRA_INSTANCE_PRIVATE_H
 #define INTEGRA_INSTANCE_PRIVATE_H
 
+#include <unordered_map>
 
 #include "node_endpoint.h"
 #include "path.h"
-#include "integra/integra.h"
+#include "api/common_typedefs.h"
 
 #ifndef __XML_XMLREADER_H__
 #ifndef NTG_TEXTREADER_TYPEDEF
@@ -52,7 +53,7 @@ namespace ntg_internal
 
 	typedef std::list<const CNode *> node_list;
 	typedef std::unordered_map<ntg_api::string, CNode *> node_map;
-	typedef std::unordered_map<ntg_id, const CNode *> map_id_to_node;
+	typedef std::unordered_map<internal_id, const CNode *> map_id_to_node;
 
 
 	class CNode
@@ -66,7 +67,7 @@ namespace ntg_internal
 			void rename( const ntg_api::string &new_name );
 			void move( CNode *new_parent );
 
-			ntg_id get_id() const { return m_id; }
+			internal_id get_id() const { return m_id; }
 			const ntg_interface *get_interface() const { return m_interface; }
 
 			const ntg_api::string &get_name() const { return m_name; }
@@ -95,7 +96,7 @@ namespace ntg_internal
 			void update_path();
 			void update_all_paths();
 
-			ntg_id m_id;
+			internal_id m_id;
 			const ntg_interface *m_interface;
 
 			ntg_api::string m_name;

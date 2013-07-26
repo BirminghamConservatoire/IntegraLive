@@ -24,7 +24,7 @@
 #include <list>
 #include <unordered_map>
 
-#include "common_typedefs.h"
+#include "api/common_typedefs.h"
 
 namespace ntg_internal
 {

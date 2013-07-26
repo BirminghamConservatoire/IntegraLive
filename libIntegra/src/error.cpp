@@ -25,43 +25,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Integra/integra.h"
+#include "error.h"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-
-const char *ntg_error_text( ntg_error_code error_code )
+namespace ntg_api
 {
-    switch( error_code ) 
+	const char *ntg_error_text( error_code error_code )
 	{
-		case NTG_NO_ERROR:
-            return "No error";
-		case NTG_ERROR:
-            return "Input error";
-		case NTG_FAILED:
-            return "Function failure";
-		case NTG_MEMORY_ALLOCATION_ERROR:
-            return "Memory allocation error";
-		case NTG_MEMORY_FREE_ERROR:
-            return "Memory free error";
-		case NTG_TYPE_ERROR:
-            return "Incorrect data type";
-		case NTG_PATH_ERROR:
-            return "Erroneous or incorrect path";
-		case NTG_CONSTRAINT_ERROR:
-            return "Failure to adhere to constraint";
-		case NTG_REENTRANCE_ERROR:
-            return "Reentrance detected - aborting";
-		case NTG_FILE_VALIDATION_ERROR:
-            return "File validation error";
-		case NTG_FILE_MORE_RECENT_ERROR:
-            return "File was saved in a more recent version of Integra, and cannot be loaded in this version.\n\nPlease upgrade to the latest version of Integra.";
-		case NTG_MODULE_ALREADY_INSTALLED:
-			return "Module already installed";
+		switch( error_code ) 
+		{
+			case NTG_NO_ERROR:
+				return "No error";
+			case NTG_ERROR:
+				return "Input error";
+			case NTG_FAILED:
+				return "Function failure";
+			case NTG_MEMORY_ALLOCATION_ERROR:
+				return "Memory allocation error";
+			case NTG_MEMORY_FREE_ERROR:
+				return "Memory free error";
+			case NTG_TYPE_ERROR:
+				return "Incorrect data type";
+			case NTG_PATH_ERROR:
+				return "Erroneous or incorrect path";
+			case NTG_CONSTRAINT_ERROR:
+				return "Failure to adhere to constraint";
+			case NTG_REENTRANCE_ERROR:
+				return "Reentrance detected - aborting";
+			case NTG_FILE_VALIDATION_ERROR:
+				return "File validation error";
+			case NTG_FILE_MORE_RECENT_ERROR:
+				return "File was saved in a more recent version of Integra, and cannot be loaded in this version.\n\nPlease upgrade to the latest version of Integra.";
+			case NTG_MODULE_ALREADY_INSTALLED:
+				return "Module already installed";
 
-        default:
-            return "Unknown error";
-    }
+			default:
+				return "Unknown error";
+		}
+	}
 }

@@ -22,6 +22,7 @@
 #ifndef INTEGRA_TRACING_PRIVATE
 #define INTEGRA_TRACING_PRIVATE
 
+#include "api/common_typedefs.h"
 
 /*
  * Tracing System

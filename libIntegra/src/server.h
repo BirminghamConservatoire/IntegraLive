@@ -25,27 +25,97 @@
 #define NTG_RETURN_ERROR_CODE( ERROR_CODE ) command_status.error_code = ERROR_CODE;return command_status;
 #define NTG_COMMAND_STATUS_INIT command_status.data = NULL, command_status.error_code = NTG_NO_ERROR;
 
+#include <pthread.h>
+
+#include "api/server_api.h"
 
 #include "Integra/integra_bridge.h"
 #include "node.h"
 #include "path.h"
 #include "state_table.h"
-
-
-namespace ntg_internal
-{
-	class CNode;
-	class CReentranceChecker;
-	class CModuleManager;
-}
-
-
+#include "osc_client.h"
 
 
 #ifndef ntg_system_class_data 
 typedef struct ntg_system_class_data_ ntg_system_class_data;
 #endif
 
+namespace ntg_api
+{
+	class CServerStartupInfo;
+}
+
+
+namespace ntg_internal
+{
+	class CNode;
+	class CNodeEndpoint;
+	class CReentranceChecker;
+	class CModuleManager;
+
+	class CServer : public ntg_api::CServerApi
+	{
+		public:
+
+			CServer( const ntg_api::CServerStartupInfo &startup_info );
+			~CServer();
+
+			void block_until_shutdown_signal();
+
+			void lock();
+			void unlock();
+
+			const node_map &get_nodes() const { return m_nodes; }
+			node_map &get_nodes_writable() { return m_nodes; }
+
+			const CNode *find_node( const ntg_api::string &path_string, const CNode *relative_to = NULL ) const;
+			const CNode *find_node( internal_id id ) const;
+
+			CNode *find_node_writable( const ntg_api::string &path_string, const CNode *relative_to = NULL );
+
+			const node_map &get_sibling_set( const CNode &node ) const;
+			node_map &get_sibling_set_writable( CNode &node );
+
+			const CNodeEndpoint *find_node_endpoint( const ntg_api::string &path_string, const CNode *relative_to = NULL ) const;
+			CNodeEndpoint *find_node_endpoint_writable( const ntg_api::string &path_string, const CNode *relative_to = NULL );
+
+			ntg_bridge_interface *get_bridge() { return m_bridge; }
+			ntg_osc_client *get_osc_client() { return m_osc_client; }
+			CStateTable &get_state_table() { return m_state_table;  }
+
+			CReentranceChecker &get_reentrance_checker() const { return *m_reentrance_checker; }
+
+			const CModuleManager &get_module_manager() const { return *m_module_manager; }
+			CModuleManager &get_module_manager_writable() { return *m_module_manager; }
+
+			struct ntg_system_class_data_ *get_system_class_data() { return m_system_class_data; }
+			void set_system_class_data( struct ntg_system_class_data_ *data ) { m_system_class_data = data; }
+
+			const ntg_api::string &scratch_directory_root() const { return m_scratch_directory_root; }
+			ntg_api::string &scratch_directory_root_writable() { return m_scratch_directory_root; }
+
+			bool get_terminate_flag() const { return m_terminate; }
+
+		private:
+
+			pthread_mutex_t m_mutex;
+
+			node_map m_nodes;
+			ntg_bridge_interface *m_bridge;
+			ntg_osc_client *m_osc_client;
+			CStateTable m_state_table; 
+			CReentranceChecker *m_reentrance_checker;
+			CModuleManager *m_module_manager;
+			struct ntg_system_class_data_ *m_system_class_data;
+			ntg_api::string m_scratch_directory_root;
+
+			pthread_t m_xmlrpc_thread;
+
+			bool m_terminate;
+	};
+}
+
+#if 0 //Deprecated
 
 
 /** \brief Definition of the type ntg_server. @see Integra/integra.h */
@@ -107,5 +177,6 @@ void ntg_unlock_server(void);
 /** \brief Terminate the server and cleanup */
 LIBINTEGRA_API void ntg_terminate(void);
 
+#endif
 
 #endif

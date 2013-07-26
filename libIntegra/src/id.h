@@ -27,14 +27,14 @@
  * \brief id header file
  */
 
-#include "Integra/integra.h"
+#include "api/common_typedefs.h"
 
 /** \brief Return a new unique id.
  *
  * The returned value is guaranteed to be unique within the current libIntegra 
  * process 
  */
-ntg_id ntg_id_new(void);
+ntg_internal::internal_id ntg_id_new(void);
 
 
 

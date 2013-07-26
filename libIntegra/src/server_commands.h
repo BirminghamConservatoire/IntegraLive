@@ -23,50 +23,55 @@
 #include "server.h"
 #include "path.h"
 
+namespace ntg_internal
+{
+	class CServer;
+}
 
-ntg_command_status ntg_set_(ntg_server *server, 
+
+ntg_api::command_status ntg_set_( ntg_internal::CServer &server, 
         ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &attribute_path,
         const ntg_api::CValue *value);
 
-ntg_command_status ntg_new_(ntg_server *server,
+ntg_api::command_status ntg_new_(ntg_internal::CServer &server,
         ntg_internal::ntg_command_source cmd_source,
         const GUID *module_id,
         ntg_api::string node_name,
         const ntg_api::CPath &path);
 
-ntg_command_status  ntg_delete_(ntg_server *server,
+ntg_api::command_status  ntg_delete_(ntg_internal::CServer &server,
         ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &path);
 
-ntg_command_status ntg_rename_(ntg_server *server,
+ntg_api::command_status ntg_rename_(ntg_internal::CServer &server,
         ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &path,
         const char *name);
 
-ntg_command_status ntg_move_(ntg_server *server,
+ntg_api::command_status ntg_move_(ntg_internal::CServer &server,
         ntg_internal::ntg_command_source cmd_source,
         const ntg_api::CPath &node_path,
         const ntg_api::CPath &new_parent_path);
 
-ntg_command_status ntg_load_(ntg_server * server,
+ntg_api::command_status ntg_load_(ntg_internal::CServer & server,
         ntg_internal::ntg_command_source cmd_source,
         const char *file_path,
         const ntg_api::CPath &path);
 
-ntg_command_status ntg_unload_orphaned_embedded_modules_( ntg_server *server, ntg_internal::ntg_command_source cmd_source );
-ntg_command_status ntg_install_module_( ntg_server *server, ntg_internal::ntg_command_source cmd_source, const char *file_path );
-ntg_command_status ntg_install_embedded_module_( ntg_server *server, ntg_internal::ntg_command_source cmd_source, const GUID *module_id );
-ntg_command_status ntg_uninstall_module_( ntg_server *server, ntg_internal::ntg_command_source cmd_source, const GUID *module_id );
-ntg_command_status ntg_load_module_in_development_( ntg_server *server, ntg_internal::ntg_command_source cmd_source, const char *file_path );
+ntg_api::command_status ntg_unload_orphaned_embedded_modules_( ntg_internal::CServer &server, ntg_internal::ntg_command_source cmd_source );
+ntg_api::command_status ntg_install_module_( ntg_internal::CServer &server, ntg_internal::ntg_command_source cmd_source, const char *file_path );
+ntg_api::command_status ntg_install_embedded_module_( ntg_internal::CServer &server, ntg_internal::ntg_command_source cmd_source, const GUID *module_id );
+ntg_api::command_status ntg_uninstall_module_( ntg_internal::CServer &server, ntg_internal::ntg_command_source cmd_source, const GUID *module_id );
+ntg_api::command_status ntg_load_module_in_development_( ntg_internal::CServer &server, ntg_internal::ntg_command_source cmd_source, const char *file_path );
 
 
-ntg_error_code ntg_nodelist_( ntg_server *server, const ntg_api::CPath &path, ntg_api::path_list &results );
+ntg_api::error_code ntg_nodelist_( ntg_internal::CServer &server, const ntg_api::CPath &path, ntg_api::path_list &results );
 
 
-ntg_command_status ntg_save_(ntg_server *server, const ntg_api::CPath &path, const char *file_path );
+ntg_api::command_status ntg_save_(ntg_internal::CServer &server, const ntg_api::CPath &path, const char *file_path );
 
-const ntg_api::CValue *ntg_get_(ntg_server *server, const ntg_api::CPath &path );
+const ntg_api::CValue *ntg_get_(ntg_internal::CServer &server, const ntg_api::CPath &path );
 
 
 void ntg_print_state_();

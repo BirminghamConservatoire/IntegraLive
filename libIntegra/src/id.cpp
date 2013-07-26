@@ -24,13 +24,16 @@
 #include "id.h"
 #include "globals.h"
 
+using namespace ntg_internal;
+
+
 /** Initialise the id counter mutex */
 static pthread_mutex_t id_counter_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-ntg_id ntg_id_new(void)
+internal_id ntg_id_new(void)
 {
 
-    ntg_id id;
+    internal_id id;
 
     pthread_mutex_lock(&id_counter_mutex);
 

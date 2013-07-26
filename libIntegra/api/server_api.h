@@ -1,6 +1,6 @@
-/* libIntegra multimedia module interface
- *  
- * Copyright (C) 2012 Birmingham City University
+/* libIntegra multimedia module info interface
+ *
+ * Copyright (C) 2007 Jamie Bullock, Henrik Frisk
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,31 @@
  * USA.
  */
 
-#ifndef INTEGRA_PLAYER_HANDLER_H
-#define INTEGRA_PLAYER_HANDLER_H
+#ifndef SERVER_API_H
+#define SERVER_API_H
 
-#include "api/common_typedefs.h"
+#include "common_typedefs.h"
 
-namespace ntg_internal
+
+namespace ntg_api
 {
-	class CNode;
-	class CServer;
+	class CServerStartupInfo;
+
+	class LIBINTEGRA_API CServerApi
+	{
+		protected:
+			CServerApi() {}
+
+		public:
+
+			static CServerApi *create_server( const CServerStartupInfo &startup_info );
+			virtual ~CServerApi() {}
+
+			virtual void block_until_shutdown_signal() = 0;
+
+	};
 }
 
 
-void ntg_player_initialize( ntg_internal::CServer &server );
-void ntg_player_free( ntg_internal::CServer &server );
 
-void ntg_player_update( ntg_internal::CServer &server, ntg_internal::internal_id player_id );
-
-void ntg_player_handle_path_change( ntg_internal::CServer &server, const ntg_internal::CNode &player_node );
-void ntg_player_handle_delete( ntg_internal::CServer &server, const ntg_internal::CNode &player_node );
-
-
-
-#endif /*INTEGRA_PLAYER_HANDLER_H*/
+#endif 

@@ -24,9 +24,14 @@
 #include "server.h"
 
 
+namespace ntg_internal
+{
+	class CServer;
+}
 
-void ntg_scratch_directory_initialize( ntg_server *server );
-void ntg_scratch_directory_free( ntg_server *server );
+
+void ntg_scratch_directory_initialize( ntg_internal::CServer &server );
+void ntg_scratch_directory_free( ntg_internal::CServer &server );
 
 bool ntg_is_directory( const char *directory_name );
 void ntg_delete_directory( const char *directory_name );

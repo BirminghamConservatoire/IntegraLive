@@ -22,14 +22,9 @@
 
 #include "platform_specifics.h"
 
-#ifdef HAVE_CONFIG_H
-#    include <config.h>
-#endif
-
 #include <signal.h>
 #include <pthread.h>
 
-#include "Integra/integra.h"
 #include "helper.h"
 #include "globals.h"
 #include "server.h"

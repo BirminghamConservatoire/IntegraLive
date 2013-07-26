@@ -19,10 +19,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include <assert.h>
@@ -90,7 +86,7 @@ void ntg_init_zip_file_info( zip_fileinfo *info )
 }
 
 
-ntg_error_code ntg_delete_file( const char *file_name )
+error_code ntg_delete_file( const char *file_name )
 {
 	if( remove( file_name ) != 0 )
 	{
@@ -102,14 +98,14 @@ ntg_error_code ntg_delete_file( const char *file_name )
 }
 
 
-ntg_error_code ntg_copy_file( const char *source_path, const char *target_path )
+error_code ntg_copy_file( const char *source_path, const char *target_path )
 {
 	FILE *source_file = NULL;
 	FILE *target_file = NULL;
 	unsigned char *copy_buffer = NULL;
 	unsigned long bytes_to_copy = 0;
 	unsigned long bytes_read = 0;
-	ntg_error_code error_code = NTG_FAILED;
+	error_code error_code = NTG_FAILED;
 
 	assert( source_path && target_path );
 
@@ -282,6 +278,59 @@ void ntg_find_module_guids_to_embed( const CNode &node, guid_set &module_guids_t
 }
 
 
+/* taken from libxml2 examples */
+xmlChar *ConvertInput(const char *in, const char *encoding)
+{
+    unsigned char *out;
+    int ret;
+    int size;
+    int out_size;
+    int temp;
+    xmlCharEncodingHandlerPtr handler;
+
+    if (in == 0)
+        return 0;
+
+    handler = xmlFindCharEncodingHandler(encoding);
+
+    if (!handler) {
+        NTG_TRACE_ERROR_WITH_STRING("ConvertInput: no encoding handler found for",
+               encoding ? encoding : "");
+        return NULL;
+    }
+
+    size = (int)strlen(in) + 1;
+    out_size = size * 2 - 1;
+    out = new unsigned char[ out_size ];
+
+    if (out != 0) {
+        temp = size - 1;
+        ret = handler->input(out, &out_size, (const xmlChar *)in, &temp);
+        if ((ret < 0) || (temp - size + 1)) {
+            if (ret < 0) {
+                NTG_TRACE_ERROR("ConvertInput: conversion wasn't successful.");
+            } else {
+                NTG_TRACE_ERROR_WITH_INT
+                    ("ConvertInput: conversion wasn't successful. converted octets",
+                     temp);
+            }
+
+            free(out);
+            out = NULL;
+        } else {
+			unsigned char *new_buffer = new unsigned char[ out_size + 1 ];
+			memcpy( new_buffer, out, out_size );
+			new_buffer[ out_size ] = 0;	/* null terminating out */
+			delete out;
+			out = new_buffer;
+        }
+    } else {
+        NTG_TRACE_ERROR("ConvertInput: no mem");
+    }
+
+    return out;
+}
+
 void ntg_copy_node_modules_to_zip( zipFile zip_file, const CNode &node, const CModuleManager &module_manager )
 {
 	const ntg_interface *interface;
@@ -319,7 +368,7 @@ void ntg_copy_node_modules_to_zip( zipFile zip_file, const CNode &node, const CM
 }
 
 
-ntg_error_code ntg_load_ixd_buffer_directly( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length )
+error_code ntg_load_ixd_buffer_directly( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length )
 {
 	FILE *file;
 	size_t bytes_loaded;
@@ -352,7 +401,7 @@ ntg_error_code ntg_load_ixd_buffer_directly( const char *file_path, unsigned cha
 }
 
 
-ntg_error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length, bool *is_zip_file )
+error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length, bool *is_zip_file )
 {
 	unzFile unzip_file;
 	unz_file_info file_info;
@@ -451,7 +500,7 @@ char *ntg_get_top_level_node_name( const char *filename )
 }
 
 
-ntg_error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
+error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
 {
     xmlChar *tmp;
 
@@ -519,11 +568,10 @@ ntg_error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
 }
 
 
-ntg_error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned int *buffer_length )
+error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned int *buffer_length )
 {
     xmlTextWriterPtr writer;
 	xmlBufferPtr write_buffer;
-	char version_string[ NTG_LONG_STRLEN ];
     int rc;
 
 	assert( buffer && buffer_length );
@@ -558,8 +606,8 @@ ntg_error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsign
     xmlTextWriterStartElement(writer, BAD_CAST NTG_STR_INTEGRA_COLLECTION );
     xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:xsi", BAD_CAST "http://www.w3.org/2001/XMLSchema-node");
 
-	ntg_version( version_string, NTG_LONG_STRLEN );
-	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_INTEGRA_VERSION, "%s", version_string );
+	string version_string = ntg_version();
+	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_INTEGRA_VERSION, "%s", version_string.c_str() );
 
     if( ntg_save_node_tree( node, writer ) != NTG_NO_ERROR )
 	{
@@ -587,7 +635,7 @@ ntg_error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsign
 }
 
 
-const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader )
+const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader, const CModuleManager &module_manager )
 {
 	/*
 	 this method needs to deal with various permutations, due to the need to load modules by module id, origin id, and 
@@ -612,9 +660,8 @@ const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader )
 	GUID origin_guid;
 	char *valuestr = NULL;
 	const ntg_interface *interface = NULL;
-	const CModuleManager *module_manager = server_->module_manager;
 
-	assert( reader && module_manager );
+	assert( reader );
 
 	ntg_guid_set_null( &module_guid );
 	ntg_guid_set_null( &origin_guid );
@@ -645,7 +692,7 @@ const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader )
 		    valuestr = (char *) xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_CLASSID );
 			if( valuestr )
 			{
-				if( module_manager->interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != NTG_NO_ERROR )
+				if( module_manager.interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != NTG_NO_ERROR )
 				{
 					NTG_TRACE_ERROR_WITH_STRING( "Failed to interpret legacy class id", valuestr );
 				}
@@ -657,7 +704,7 @@ const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader )
 
 	if( !ntg_guid_is_null( &module_guid ) )
 	{
-		interface = module_manager->get_interface_by_module_id( module_guid );
+		interface = module_manager.get_interface_by_module_id( module_guid );
 		if( interface )
 		{
 			return interface;
@@ -666,7 +713,7 @@ const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader )
 
 	if( !ntg_guid_is_null( &origin_guid ) )
 	{
-		interface = module_manager->get_interface_by_origin_id( origin_guid );
+		interface = module_manager.get_interface_by_origin_id( origin_guid );
 		return interface;
 	}
 
@@ -674,7 +721,33 @@ const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader )
 }
 
 
-ntg_error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list &loaded_nodes )
+bool ntg_is_saved_version_newer_than_current( const string &saved_version )
+{
+	string current_version = ntg_version();
+
+	size_t last_dot_in_saved_version = saved_version.find_last_of( '.' );
+	size_t last_dot_in_current_version = current_version.find_last_of( '.' );
+
+	if( last_dot_in_saved_version == string::npos )
+	{
+		NTG_TRACE_ERROR_WITH_STRING( "Can't parse version string", saved_version.c_str() );
+		return false;
+	}
+
+	if( last_dot_in_current_version == string::npos )
+	{
+		NTG_TRACE_ERROR_WITH_STRING( "Can't parse version string", current_version.c_str() );
+		return false;
+	}
+
+	string saved_build_number = saved_version.substr( last_dot_in_saved_version + 1 );
+	string current_build_number = current_version.substr( last_dot_in_current_version + 1 );
+
+	return ( atoi( saved_build_number.c_str() ) > atoi( current_build_number.c_str() ) );
+}
+
+
+error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list &loaded_nodes )
 {
     xmlNodePtr          xml_node;
     xmlChar             *name;
@@ -711,7 +784,7 @@ ntg_error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_
 			saved_version = ( char * ) xmlTextReaderGetAttribute( reader, BAD_CAST NTG_STR_INTEGRA_VERSION );
 			if( saved_version )
 			{
-				saved_version_is_more_recent = ntg_saved_version_is_newer_than_current( saved_version );
+				saved_version_is_more_recent = ntg_is_saved_version_newer_than_current( saved_version );
 				xmlFree( saved_version );
 				if( saved_version_is_more_recent )
 				{
@@ -737,7 +810,7 @@ ntg_error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_
 
             if (type == XML_READER_TYPE_ELEMENT) 
 			{
-				interface = ntg_find_interface( reader );
+				interface = ntg_find_interface( reader, server_->get_module_manager() );
 				if( interface )
 				{
 					name = xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_NAME);
@@ -746,7 +819,7 @@ ntg_error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_
 					const CPath &parent_path = parent ? parent->get_path() : empty_path;
 					/* add the new node */
 					node = (CNode *)
-						ntg_new_(server_, NTG_SOURCE_LOAD, &interface->module_guid, (char * ) name, parent_path ).data;
+						ntg_new_( *server_, NTG_SOURCE_LOAD, &interface->module_guid, (char * ) name, parent_path ).data;
 
 					xmlFree(name);
 
@@ -814,7 +887,7 @@ ntg_error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_
 	for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
 	{
 		CPath path( value_iterator->first );
-		ntg_set_( server_, NTG_SOURCE_LOAD, path, value_iterator->second );
+		ntg_set_( *server_, NTG_SOURCE_LOAD, path, value_iterator->second );
 		delete value_iterator->second;
 	}
 
@@ -824,7 +897,7 @@ ntg_error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_
 }
 
 
-ntg_error_code ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge )
+error_code ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge )
 {
 	const ntg_interface *interface = node.get_interface();
 
@@ -850,9 +923,9 @@ ntg_error_code ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_int
 }
 
 
-ntg_command_status ntg_file_load( const char *filename, const CNode *parent, CModuleManager &module_manager )
+command_status ntg_file_load( const char *filename, const CNode *parent, CModuleManager &module_manager )
 {
-    ntg_command_status command_status;
+    command_status command_status;
 	unsigned char *ixd_buffer = NULL;
 	bool is_zip_file;
 	unsigned int ixd_buffer_length;
@@ -863,8 +936,6 @@ ntg_command_status ntg_file_load( const char *filename, const CNode *parent, CMo
 	NTG_COMMAND_STATUS_INIT;
 
     LIBXML_TEST_VERSION;
-
-    server_->loading = true;
 
 	guid_set *new_embedded_modules = new guid_set;
 	command_status.error_code = module_manager.load_from_integra_file( filename, *new_embedded_modules );
@@ -902,7 +973,7 @@ ntg_command_status ntg_file_load( const char *filename, const CNode *parent, CMo
 	}
 
     /* stop DSP in the host */
-    ntg_server_set_host_dsp( server_, 0);
+	server_->get_bridge()->host_dsp( 0 );
 
     /* actually load the data */
     command_status.error_code = ntg_load_nodes( parent, reader, new_nodes );
@@ -924,7 +995,7 @@ ntg_command_status ntg_file_load( const char *filename, const CNode *parent, CMo
 	/* send the loaded attributes to the host */
 	for( new_node_iterator = new_nodes.begin(); new_node_iterator != new_nodes.end(); new_node_iterator++ )
 	{
-		if( ntg_send_loaded_values_to_host( **new_node_iterator, server_->bridge ) != NTG_NO_ERROR)
+		if( ntg_send_loaded_values_to_host( **new_node_iterator, server_->get_bridge() ) != NTG_NO_ERROR)
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "failed to send loaded attributes to host", filename );
 			continue;
@@ -939,7 +1010,7 @@ ntg_command_status ntg_file_load( const char *filename, const CNode *parent, CMo
 
 		if( top_level_node->get_name() != top_level_node_name )
 		{
-			ntg_rename_( server_, NTG_SOURCE_SYSTEM, top_level_node->get_path(), top_level_node_name.c_str() );
+			ntg_rename_( *server_, NTG_SOURCE_SYSTEM, top_level_node->get_path(), top_level_node_name.c_str() );
 		}
 	}
 
@@ -971,15 +1042,13 @@ CLEANUP:
 	}
 
 	/* restart DSP in the host */
-    ntg_server_set_host_dsp(server_, 1);
-
-    server_->loading = false;
+	server_->get_bridge()->host_dsp( 1 );
 
 	return command_status;
 }
 
 
-ntg_error_code ntg_file_save( const char *filename, const CNode &node, const CModuleManager &module_manager )
+error_code ntg_file_save( const char *filename, const CNode &node, const CModuleManager &module_manager )
 {
 	zipFile zip_file;
 	zip_fileinfo zip_file_info;

@@ -36,7 +36,6 @@
 
 #include "helper.h"
 #include "globals.h"
-#include "Integra/integra.h"
 
 using namespace ntg_api;
 
@@ -52,17 +51,6 @@ char *ntg_strdup(const char *string)
         NTG_TRACE_ERROR("string is NULL");
     }
     return NULL;
-}
-
-
-int ntg_count_digits(int num)
-{
-	const double log10 = 2.3025850929940456840179914546844;
-
-	if( num < 0 ) return ntg_count_digits( -num ) + 1;
-	if( num == 0 ) return 1;
-
-	return int( log( (double) num ) / log10 ) + 1;
 }
 
 
@@ -116,74 +104,12 @@ char *ntg_ensure_filename_has_suffix( const char *filename, const char *suffix )
 }
 
 
-/* taken from libxml2 examples */
-xmlChar *ConvertInput(const char *in, const char *encoding)
+string ntg_make_node_name( const string &module_name )
 {
-    unsigned char *out;
-    int ret;
-    int size;
-    int out_size;
-    int temp;
-    xmlCharEncodingHandlerPtr handler;
-
-    if (in == 0)
-        return 0;
-
-    handler = xmlFindCharEncodingHandler(encoding);
-
-    if (!handler) {
-        NTG_TRACE_ERROR_WITH_STRING("ConvertInput: no encoding handler found for",
-               encoding ? encoding : "");
-        return NULL;
-    }
-
-    size = (int)strlen(in) + 1;
-    out_size = size * 2 - 1;
-    out = new unsigned char[ out_size ];
-
-    if (out != 0) {
-        temp = size - 1;
-        ret = handler->input(out, &out_size, (const xmlChar *)in, &temp);
-        if ((ret < 0) || (temp - size + 1)) {
-            if (ret < 0) {
-                NTG_TRACE_ERROR("ConvertInput: conversion wasn't successful.");
-            } else {
-                NTG_TRACE_ERROR_WITH_INT
-                    ("ConvertInput: conversion wasn't successful. converted octets",
-                     temp);
-            }
-
-            free(out);
-            out = NULL;
-        } else {
-			unsigned char *new_buffer = new unsigned char[ out_size + 1 ];
-			memcpy( new_buffer, out, out_size );
-			new_buffer[ out_size ] = 0;	/* null terminating out */
-			delete out;
-			out = new_buffer;
-        }
-    } else {
-        NTG_TRACE_ERROR("ConvertInput: no mem");
-    }
-
-    return out;
-}
-
-
-char *ntg_make_node_name(const char *class_name)
-{
-
-    ntg_id fake_id;
-    char *node_name;
-
-    fake_id = ntg_id_new();
-
-    node_name = new char[ strlen(class_name) + ntg_count_digits( fake_id ) + 1 ];
-
-    sprintf(node_name, "%s%li", class_name, fake_id);
-
-    return node_name;
-
+	ostringstream stream;
+	stream << module_name << ntg_id_new();
+	
+	return stream.str();
 }
 
 
@@ -210,7 +136,7 @@ bool ntg_validate_node_name( const char *name )
 
 
 /* helper to read a single hexadecimal character */
-ntg_error_code ntg_read_hex_char( char input, unsigned char *output )
+error_code ntg_read_hex_char( char input, unsigned char *output )
 {
 	if( input >= '0' && input <= '9' )
 	{
@@ -235,7 +161,7 @@ ntg_error_code ntg_read_hex_char( char input, unsigned char *output )
 
 
 /* helper to read up to a caller-specified number of hexadecimal characters, up to an unsigned long's worth */
-unsigned long ntg_read_hex_chars( const char *input, unsigned int number_of_bytes, ntg_error_code *error_code )
+unsigned long ntg_read_hex_chars( const char *input, unsigned int number_of_bytes, error_code *error_code )
 {
 	unsigned long result = 0;
 	unsigned char nibble;
@@ -296,9 +222,9 @@ char *ntg_guid_to_string( const GUID *guid )
 }
 
 
-ntg_error_code ntg_string_to_guid( const char *string, GUID *output )
+error_code ntg_string_to_guid( const char *string, GUID *output )
 {
-	ntg_error_code error_code = NTG_NO_ERROR;
+	error_code error_code = NTG_NO_ERROR;
 	int i;
 
 	assert( string && output );
@@ -347,7 +273,7 @@ char *ntg_date_to_string( const struct tm *date )
 }
 
 
-ntg_error_code ntg_string_to_date( const char *input, struct tm &output )
+error_code ntg_string_to_date( const char *input, struct tm &output )
 {
 	if( strlen( input ) < 16 )
 	{
@@ -395,4 +321,57 @@ int ntg_levenshtein_distance( const char *string1, const char *string2 )
 		ntg_levenshtein_distance( string1 + 1, string2 ) + 1,
 		ntg_levenshtein_distance( string1, string2 + 1 ) + 1 ), 
 		ntg_levenshtein_distance( string1 + 1, string2 + 1 ) + cost );
+}
+
+
+string ntg_version()
+{
+#ifdef _WINDOWS
+
+	/*windows only - read version number from current module*/
+
+	HMODULE module_handle = NULL;
+	WCHAR file_name[_MAX_PATH];
+	DWORD handle = 0;
+	BYTE *version_info = NULL;
+	UINT len = 0;
+	VS_FIXEDFILEINFO *vsfi = NULL;
+	DWORD size; 
+
+	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS| 
+					GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+					(LPCTSTR)ntg_version, 
+					&module_handle);
+
+	size = GetModuleFileName(module_handle, file_name, _MAX_PATH);
+	file_name[size] = 0;
+	size = GetFileVersionInfoSize(file_name, &handle);
+	version_info = new BYTE[ size ];
+	if (!GetFileVersionInfo(file_name, handle, size, version_info))
+	{
+		NTG_TRACE_ERROR( "Failed to read version number from module" );
+		delete[] version_info;
+
+		return "<failed to read version number>";
+	}
+
+	// we have version information
+	VerQueryValue(version_info, L"\\", (void**)&vsfi, &len);
+
+	ostringstream stream;
+	stream << HIWORD( vsfi->dwFileVersionMS ) << ".";
+	stream << LOWORD( vsfi->dwFileVersionMS ) << ".";
+	stream << HIWORD( vsfi->dwFileVersionLS ) << ".";
+	stream << LOWORD( vsfi->dwFileVersionLS );
+
+	return stream.str();
+
+	delete[] version_info;
+
+#else
+
+	/*non-windows - use version number from preprocessor macro*/
+	return string( TOSTRING( LIBINTEGRA_VERSION ) );
+
+#endif
 }

@@ -33,8 +33,7 @@
 #include <time.h>
 #include <stdbool.h>
 
-#include "Integra/integra.h"
-#include "common_typedefs.h"
+#include "api/common_typedefs.h"
 #include "value.h"
 
 #ifndef NTG_ENDPOINT_TYPEDEF

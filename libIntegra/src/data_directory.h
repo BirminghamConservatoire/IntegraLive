@@ -24,22 +24,30 @@
 #include "../externals/minizip/zip.h"
 #include "../externals/minizip/unzip.h"
 
+#include "error.h"
+#include "api/common_typedefs.h"
 
-#include "server.h"
+namespace ntg_api
+{
+	class CPath;
+}
+
 
 namespace ntg_internal
 {
 	class CNode;
+	class CNodeEndpoint;
+	class CServer;
 }
 
 
-char *ntg_node_data_directory_create( const ntg_internal::CNode &node, const ntg_server *server );
+ntg_api::string ntg_node_data_directory_create( const ntg_internal::CNode &node, const ntg_internal::CServer &server );
 void ntg_node_data_directory_change( const char *previous_directory_name, const char *new_directory_name );
 
 void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_internal::CNode &node, const ntg_api::CPath &path_root );
 
 
-ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_internal::CNode *parent_node );
+ntg_api::error_code ntg_load_data_directories( const char *file_path, const ntg_internal::CNode *parent_node );
 
 const char *ntg_copy_file_to_data_directory( const ntg_internal::CNodeEndpoint *node_endpoint );
 

@@ -18,10 +18,6 @@
  * USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#    include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include "server.h"
@@ -34,147 +30,146 @@ using namespace ntg_api;
 using namespace ntg_internal;
 
 
-ntg_command_status ntg_new( const GUID *module_id, string node_name, const CPath &path )
+command_status ntg_new( const GUID *module_id, string node_name, const CPath &path )
 {
-    ntg_command_status status;
+    command_status status;
 
-    ntg_lock_server();
-    status = ntg_new_(server_, NTG_SOURCE_C_API, module_id, node_name, path );
-    ntg_unlock_server();
+    server_->lock();
+    status = ntg_new_( *server_, NTG_SOURCE_C_API, module_id, node_name, path );
+    server_->unlock();
 
     return status;
 }
 
-ntg_command_status ntg_delete( const CPath &path )
+command_status ntg_delete( const CPath &path )
 {
-    ntg_command_status status;
+    command_status status;
 
-    ntg_lock_server();
-    status = ntg_delete_(server_, NTG_SOURCE_C_API, path);
-    ntg_unlock_server();
+    server_->lock();
+    status = ntg_delete_( *server_, NTG_SOURCE_C_API, path );
+    server_->unlock();
 
     return status;
 
 }
 
 
-ntg_command_status ntg_unload_orphaned_embedded_modules(void)
+command_status ntg_unload_orphaned_embedded_modules(void)
 {
-    ntg_command_status status;
+    command_status status;
 
-    ntg_lock_server();
-    status = ntg_unload_orphaned_embedded_modules_(server_, NTG_SOURCE_C_API);
-    ntg_unlock_server();
-
-    return status;
-}
-
-
-ntg_command_status ntg_install_module( const char *file_path )
-{
-    ntg_command_status status;
-
-    ntg_lock_server();
-    status = ntg_install_module_( server_, NTG_SOURCE_C_API, file_path );
-    ntg_unlock_server();
+    server_->lock();
+    status = ntg_unload_orphaned_embedded_modules_( *server_, NTG_SOURCE_C_API );
+    server_->unlock();
 
     return status;
 }
 
 
-ntg_command_status ntg_install_embedded_module( const GUID *module_id )
+command_status ntg_install_module( const char *file_path )
 {
-    ntg_command_status status;
+    command_status status;
 
-    ntg_lock_server();
-    status = ntg_install_embedded_module_( server_, NTG_SOURCE_C_API, module_id );
-    ntg_unlock_server();
+    server_->lock();
+    status = ntg_install_module_( *server_, NTG_SOURCE_C_API, file_path );
+    server_->unlock();
 
     return status;
 }
 
 
-ntg_command_status ntg_uninstall_module( const GUID *module_id )
+command_status ntg_install_embedded_module( const GUID *module_id )
 {
-    ntg_command_status status;
+    command_status status;
 
-    ntg_lock_server();
-    status = ntg_uninstall_module_( server_, NTG_SOURCE_C_API, module_id );
-    ntg_unlock_server();
+    server_->lock();
+    status = ntg_install_embedded_module_( *server_, NTG_SOURCE_C_API, module_id );
+    server_->unlock();
 
     return status;
 }
 
 
-ntg_command_status ntg_load_module_in_development( const char *file_path )
+command_status ntg_uninstall_module( const GUID *module_id )
 {
-    ntg_command_status status;
+    command_status status;
 
-    ntg_lock_server();
-    status = ntg_load_module_in_development_( server_, NTG_SOURCE_C_API, file_path );
-    ntg_unlock_server();
+    server_->lock();
+    status = ntg_uninstall_module_( *server_, NTG_SOURCE_C_API, module_id );
+    server_->unlock();
+
+    return status;
+}
+
+
+command_status ntg_load_module_in_development( const char *file_path )
+{
+    command_status status;
+
+    server_->lock();
+    status = ntg_load_module_in_development_( *server_, NTG_SOURCE_C_API, file_path );
+    server_->unlock();
 
     return status;
 }
 
 
 
-ntg_command_status ntg_rename( const CPath &path, const char *name)
+command_status ntg_rename( const CPath &path, const char *name)
 {
+    command_status status;
+
+    server_->lock();
+    status = ntg_rename_( *server_, NTG_SOURCE_C_API, path, name );
+    server_->unlock();
+
+    return status;
+}
+
+
+command_status ntg_save( const CPath &path, const char *file_path ) 
+{
+    command_status status;
+
+    server_->lock();
+    status = ntg_save_( *server_, path, file_path );
+    server_->unlock();
+
+    return status;
+}
+
+
+command_status ntg_load(const char *file_path, const CPath &path )
+{
+    command_status status;
+
+    server_->lock();
+    status = ntg_load_( *server_, NTG_SOURCE_C_API, file_path, path );
+    server_->unlock();
+
+    return status;
+}
+
+command_status ntg_move( const CPath &node_path, const CPath &parent_path )
+{
+    command_status status;
+
+    server_->lock();
+    status = ntg_move_( *server_, NTG_SOURCE_C_API, node_path, parent_path );
+    server_->unlock();
+
+    return status;
+}
+
+command_status ntg_set( const CPath &path, const CValue *value )
+{
+    command_status status;
     
-    ntg_command_status status;
+    server_->lock();
 
-    ntg_lock_server();
-    status = ntg_rename_(server_, NTG_SOURCE_C_API, path, name);
-    ntg_unlock_server();
+    status = ntg_set_( *server_, NTG_SOURCE_C_API, path, value );
 
-    return status;
-}
-
-
-ntg_command_status ntg_save( const CPath &path, const char *file_path ) 
-{
-    ntg_command_status status;
-
-    ntg_lock_server();
-    status = ntg_save_(server_,  path, file_path);
-    ntg_unlock_server();
-
-    return status;
-}
-
-
-ntg_command_status ntg_load(const char *file_path, const CPath &path )
-{
-    ntg_command_status status;
-
-    ntg_lock_server();
-    status = ntg_load_(server_, NTG_SOURCE_C_API, file_path, path);
-    ntg_unlock_server();
-
-    return status;
-}
-
-ntg_command_status ntg_move( const CPath &node_path, const CPath &parent_path )
-{
-    ntg_command_status status;
-
-    ntg_lock_server();
-    status = ntg_move_(server_, NTG_SOURCE_C_API, node_path, parent_path );
-    ntg_unlock_server();
-
-    return status;
-}
-
-ntg_command_status ntg_set( const CPath &path, const CValue *value )
-{
-    ntg_command_status status;
-    
-    ntg_lock_server();
-
-    status = ntg_set_(server_, NTG_SOURCE_C_API, path, value);
-
-    ntg_unlock_server();
+    server_->unlock();
 
     return status;
 }
@@ -182,13 +177,13 @@ ntg_command_status ntg_set( const CPath &path, const CValue *value )
 
 CValue *ntg_get( const CPath &path )
 {
-    ntg_lock_server();
+    server_->lock();
 
-    const CValue *value = ntg_get_( server_, path );
+    const CValue *value = ntg_get_( *server_, path );
 
 	CValue *copy = value ? value->clone() : NULL;
 
-    ntg_unlock_server();
+    server_->unlock();
 
 	return copy;
 }
@@ -199,29 +194,22 @@ const guid_set &ntg_interfacelist(void)
 	/* no need to lock, as the set of interfaces does not change at runtime */
 	/* NOTE - this assumption will become invalid once we load modules from .integra files! */
 
-	return server_->module_manager->get_all_module_ids();
+	return server_->get_module_manager().get_all_module_ids();
 }
 
 
-ntg_error_code ntg_nodelist( const ntg_api::CPath &path, ntg_api::path_list &results )
+error_code ntg_nodelist( const ntg_api::CPath &path, ntg_api::path_list &results )
 {
-    ntg_lock_server();
-    ntg_error_code result = ntg_nodelist_( server_, path, results );
-    ntg_unlock_server();
+    server_->lock();
+    error_code result = ntg_nodelist_( *server_, path, results );
+    server_->unlock();
 
     return result;
 }
 
-void ntg_terminate(void)
-{
-    /* 
-     * we don't lock the server here because ntg_server_halt() handles locking
-     */
-    ntg_server_halt(server_);
-}
 
 void ntg_print_state(void){
-    ntg_lock_server();
+    server_->lock();
 	ntg_print_state_();
-    ntg_unlock_server();
+    server_->unlock();
 }

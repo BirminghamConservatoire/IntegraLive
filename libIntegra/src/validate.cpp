@@ -26,6 +26,8 @@
 #include "helper.h"
 #include "globals.h"
 
+using namespace ntg_api;
+
 
 void schemaErrorCallback(void *none, const char *message, ...)
 {
@@ -81,7 +83,7 @@ ntg_xml_sac *ntg_xml_get_sac(const char *schema_path)
 
 }
 
-int ntg_xml_destroy_sac(ntg_xml_sac * sac)
+error_code ntg_xml_destroy_sac(ntg_xml_sac * sac)
 {
 
     xmlSchemaFree(sac->schema);
@@ -115,7 +117,7 @@ xmlDocPtr ntg_xml_document_read( const char *xml_buffer, unsigned int buffer_len
 }
 
 
-int ntg_xml_docptr_free(xmlDocPtr doc)
+error_code ntg_xml_docptr_free(xmlDocPtr doc)
 {
 
     if (doc != NULL) {
@@ -128,10 +130,8 @@ int ntg_xml_docptr_free(xmlDocPtr doc)
     }
 }
 
-int ntg_xml_validate_against_schema(const xmlDocPtr doc,
-                                    const ntg_xml_sac * sac)
+error_code ntg_xml_validate_against_schema(const xmlDocPtr doc, const ntg_xml_sac * sac)
 {
-
     int validation_code;
 
     if (sac == NULL) {
@@ -151,9 +151,9 @@ int ntg_xml_validate_against_schema(const xmlDocPtr doc,
         return NTG_FAILED;
     }
 
-    /* FIX: at the moment we don't try to interpret th validation code */
-    return validation_code;
-
+	if( validation_code > 0 ) return NTG_ERROR;
+	if( validation_code < 0 ) return NTG_FAILED;
+	return NTG_NO_ERROR;
 }
 
 FILE *ntg_xml_dump_schema(const ntg_xml_sac * sac, const char *file_path)
@@ -169,7 +169,8 @@ FILE *ntg_xml_dump_schema(const ntg_xml_sac * sac, const char *file_path)
     return fp;
 }
 
-ntg_error_code ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length )
+
+error_code ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length )
 {
     char *schema_path = NULL;
     int validation_code;

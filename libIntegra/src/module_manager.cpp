@@ -19,10 +19,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "platform_specifics.h"
 
 #include <assert.h>
@@ -111,7 +107,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_error_code CModuleManager::load_from_integra_file( const string &integra_file, guid_set &new_embedded_modules )
+	error_code CModuleManager::load_from_integra_file( const string &integra_file, guid_set &new_embedded_modules )
 	{
 		unzFile unzip_file;
 		unz_file_info file_info;
@@ -124,7 +120,7 @@ namespace ntg_internal
 		int total_bytes_read;
 		int bytes_remaining;
 		GUID loaded_module_id;
-		ntg_error_code error_code = NTG_NO_ERROR;
+		error_code error_code = NTG_NO_ERROR;
 
 		new_embedded_modules.clear();
 
@@ -163,7 +159,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			temporary_file_name = tempnam( server_->scratch_directory_root, "embedded_module" );
+			temporary_file_name = tempnam( server_->scratch_directory_root().c_str(), "embedded_module" );
 			if( !temporary_file_name )
 			{
 				NTG_TRACE_ERROR( "couldn't generate temporary filename" );
@@ -240,7 +236,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_error_code CModuleManager::install_module( const string &module_file, CModuleInstallResult &result )
+	error_code CModuleManager::install_module( const string &module_file, CModuleInstallResult &result )
 	{
 		bool module_was_loaded = false;
 		GUID module_id;
@@ -288,7 +284,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_error_code CModuleManager::install_embedded_module( const GUID &module_id )
+	error_code CModuleManager::install_embedded_module( const GUID &module_id )
 	{
 		const ntg_interface *interface;
 		
@@ -308,9 +304,10 @@ namespace ntg_internal
 		return change_module_source( ( ntg_interface & ) *interface, NTG_MODULE_3RD_PARTY );
 	}
 
-	ntg_error_code CModuleManager::uninstall_module( const GUID &module_id, CModuleUninstallResult &result )
+
+	error_code CModuleManager::uninstall_module( const GUID &module_id, CModuleUninstallResult &result )
 	{
-		ntg_error_code error_code = NTG_NO_ERROR;
+		error_code error_code = NTG_NO_ERROR;
 
 		result.remains_as_embedded = false;
 
@@ -327,7 +324,7 @@ namespace ntg_internal
 			return NTG_ERROR;
 		}
 
-		if( is_module_in_use( server_->root_nodes, module_id ) )
+		if( is_module_in_use( server_->get_nodes(), module_id ) )
 		{
 			result.remains_as_embedded = true;
 			return change_module_source( *interface, NTG_MODULE_EMBEDDED );
@@ -345,7 +342,7 @@ namespace ntg_internal
 		return NTG_NO_ERROR;
 	}
 
-	ntg_error_code CModuleManager::load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result )
+	error_code CModuleManager::load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result )
 	{
 		for( map_guid_to_interface::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
@@ -360,7 +357,7 @@ namespace ntg_internal
 			{
 				result.previous_module_id = interface->module_guid;
 
-				if( is_module_in_use( server_->root_nodes, interface->module_guid ) )
+				if( is_module_in_use( server_->get_nodes(), interface->module_guid ) )
 				{
 					change_module_source( *interface, NTG_MODULE_EMBEDDED );
 					result.previous_remains_as_embedded = true;
@@ -492,7 +489,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_error_code CModuleManager::interpret_legacy_module_id( ntg_id old_id, GUID &output ) const
+	error_code CModuleManager::interpret_legacy_module_id( internal_id old_id, GUID &output ) const
 	{
 		if( !m_legacy_module_id_table || old_id >= m_legacy_module_id_table_elems )
 		{
@@ -557,7 +554,7 @@ namespace ntg_internal
 		char line[ NTG_LONG_STRLEN ];
 		FILE *file = NULL;
 		const char *guid_as_string;
-		ntg_id old_id;
+		internal_id old_id;
 		GUID guid;
 
 		m_legacy_module_id_table = NULL;
@@ -772,7 +769,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_error_code CModuleManager::extract_implementation( unzFile unzip_file, const ntg_interface &interface, unsigned int &checksum )
+	error_code CModuleManager::extract_implementation( unzFile unzip_file, const ntg_interface &interface, unsigned int &checksum )
 	{
 		unz_file_info file_info;
 		char file_name[ NTG_LONG_STRLEN ];
@@ -929,10 +926,10 @@ namespace ntg_internal
 	}
 
 
-	ntg_error_code CModuleManager::store_module( const GUID &module_id )
+	error_code CModuleManager::store_module( const GUID &module_id )
 	{
 		ntg_interface *interface;
-		ntg_error_code error_code;
+		error_code error_code;
 
 		interface = ( ntg_interface * ) get_interface_by_module_id( module_id );
 		if( !interface )
@@ -994,7 +991,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_error_code CModuleManager::change_module_source( ntg_interface &interface, ntg_module_source new_source )
+	error_code CModuleManager::change_module_source( ntg_interface &interface, ntg_module_source new_source )
 	{
 		/* sanity checks */
 		if( interface.module_source == NTG_MODULE_SHIPPED_WITH_INTEGRA || new_source == NTG_MODULE_SHIPPED_WITH_INTEGRA )

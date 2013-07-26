@@ -30,6 +30,12 @@ namespace ntg_api
 }
 
 
+namespace ntg_internal
+{
+	class CServer;
+}
+
+
 
 struct ntg_system_class_data_ 
 {
@@ -45,14 +51,14 @@ struct ntg_system_class_data_
 };
 
 
-void ntg_system_class_handlers_initialize(ntg_server *server);
-void ntg_system_class_handlers_shutdown(ntg_server *server);
+void ntg_system_class_handlers_initialize( ntg_internal::CServer &server );
+void ntg_system_class_handlers_shutdown( ntg_internal::CServer &server );
 
-void ntg_system_class_handle_new(ntg_server *server, const ntg_internal::CNode &node, ntg_internal::ntg_command_source cmd_source );
-void ntg_system_class_handle_set(ntg_server *server, const ntg_internal::CNodeEndpoint *node_endpoint, const ntg_api::CValue *previous_value, ntg_internal::ntg_command_source cmd_source );
-void ntg_system_class_handle_rename(ntg_server *server, const ntg_internal::CNode &node, const char *previous_name, ntg_internal::ntg_command_source cmd_source );
-void ntg_system_class_handle_move(ntg_server *server, const ntg_internal::CNode &node, const ntg_api::CPath &previous_path, ntg_internal::ntg_command_source cmd_source );
-void ntg_system_class_handle_delete(ntg_server *server, const ntg_internal::CNode &node, ntg_internal::ntg_command_source cmd_source );
+void ntg_system_class_handle_new( ntg_internal::CServer &server, const ntg_internal::CNode &node, ntg_internal::ntg_command_source cmd_source );
+void ntg_system_class_handle_set( ntg_internal::CServer &server, const ntg_internal::CNodeEndpoint *node_endpoint, const ntg_api::CValue *previous_value, ntg_internal::ntg_command_source cmd_source );
+void ntg_system_class_handle_rename( ntg_internal::CServer &server, const ntg_internal::CNode &node, const char *previous_name, ntg_internal::ntg_command_source cmd_source );
+void ntg_system_class_handle_move( ntg_internal::CServer &server, const ntg_internal::CNode &node, const ntg_api::CPath &previous_path, ntg_internal::ntg_command_source cmd_source );
+void ntg_system_class_handle_delete( ntg_internal::CServer &server, const ntg_internal::CNode &node, ntg_internal::ntg_command_source cmd_source );
 
 bool ntg_node_is_active( const ntg_internal::CNode &node );
 bool ntg_node_has_data_directory( const ntg_internal::CNode &node );

@@ -1,8 +1,9 @@
 include Make.config
 MARKDOWN=../Markdown.pl
+RECODE=../recode.py
 
 all:
-	$(MARKDOWN) $(NAME).md > $(NAME).htm
+	$(RECODE) $(NAME).md | $(MARKDOWN) > $(NAME).htm
 
 clean:
 	rm -f *.htm

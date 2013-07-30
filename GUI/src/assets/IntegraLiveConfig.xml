@@ -87,24 +87,20 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		
 		<!-- 		help links.  Can be web or local relative to documentation directory			-->
 		<helplinks>
-			<helplink name="Quick Start Guide">
-				html/quick-start-guide/quickstart.htm
+			<helplink name="Integra Live Help">
+				html/integra-live-help/integra-live-help.htm
 			</helplink>
-
-  			<helplink name="Scripting Tutorial 1">
-				html/scripting1/scripting1.htm
-			</helplink>
-			<helplink name="Scripting Tutorial 2">
-				html/scripting2/scripting2.htm
+			<helplink name="Module Development Quick Start">
+				html/module-development-quickstart/module-development-quickstart.htm
 			</helplink>
 			<helplink name="Module Development Guide">
-				html/module-development/module-development.htm
+				html/module-development-guide/module-development-guide.htm
 			</helplink>
-			<helplink name="www.integralive.org">
+			<helplink name="Integra Live Website...">
 				http://www.integralive.org
 			</helplink>
-			<helplink name="User Forum">
-				http://integralive.uservoice.com/forums/58883-general
+			<helplink name="User Forum...">
+				http://integralive.org/forum
 			</helplink>
 		</helplinks>		
 		

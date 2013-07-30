@@ -3,7 +3,7 @@
 
 This is a step-by-step tutorial showing how to create a simple [Tremolo](http://en.wikipedia.org/wiki/Tremolo) module for [Integra Live](http://integralive.org). 
 
-Since Integra *modules* are written in Pd, a basic knowledge of [Pure Data](http://puredata.info) is required. Developers unfamiliar with Pd should [start here](http://puredata.info/docs/StartHere/).
+Since Integra modules are written in Pd, a basic knowledge of [Pure Data](http://puredata.info) is required. Developers unfamiliar with Pd should [start here](http://puredata.info/docs/StartHere/).
 
 ### Requirements
 
@@ -61,7 +61,7 @@ This tutorial requires the Integra Module Creator application.
 
 14. Finally quit Integra Live and select Save As... from the File menu in the Module Creator to save the module
 
-15. The module can now be installed in Integra Live by double-clicking the module file, or by selecting Install 3rd Party Moduless... from the File menu in Integra Live
+15. The module can now be installed in Integra Live by double-clicking the module file, or by selecting Install 3rd Party Modules... from the File menu in Integra Live
 
 
 ### More Information

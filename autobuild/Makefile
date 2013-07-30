@@ -135,7 +135,9 @@ host:
 	yes | hdiutil mount $(PD_DMG_NAME) > /dev/null
 	cp -r $(PD_MOUNT_POINT)/*.app/Contents/Resources host
 	find ./host -type d -exec chmod 755 {} \;
+	sh remove_externals.sh
 	cp $(PD_OSC_HOST) host/extra
+	rm -rf extra
 	cd host/bin; cp -f pd pd_integra; rm -f pd; ln -s pd_integra pd
 
 modules: host server

@@ -1,7 +1,7 @@
 ## Integra Module Development Guide
 <!-- This is a reference guide -->
 
-This guide will explain how to create modules that can be used in [Integra Live](http://integralive.org). 
+This guide provides an in-depth information on how to create modules that can be used in [Integra Live](http://integralive.org). For an initial introduction see the [Module Development Quick Start Guide](../module-development-quickstart/module-development-quickstart.htm).
 
 ### Requirements
 
@@ -19,13 +19,13 @@ The *interface* is defined using the Integra Module Creator tool, and written to
 
 The *implementation* for the module is defined using the [Pure Data patching environment](http://puredata.info) (Pd), and saved as a set of Pd patches. These patches are loaded in Pure Data on request when Integra Live is running. 
 
-When a module is saved by the Module Creator, the *interface* (IID file) and *implementation* (Pd patches) are bundled up together in a <a href="http://en.wikipedia.org/wiki/ZIP_(file_format)">ZIP</a> archive with the suffix `.integra-module`.
+When a module is saved by the Module Creator, the *interface* (IID file) and *implementation* (Pd patches) are bundled up together in a <a href="http://en.wikipedia.org/wiki/ZIP_(file_format)">ZIP</a> archive with the suffix `.module`.
 
 #### Module Endpoints
 
-The module *interface* contains a schematic description of one or more *endpoints*. An *endpoint* is a connectable attribute that can be of type Control or Stream. Control *endpoints* define parameters such as “delay time” or “frequency”. Stream *endpoints* define audio inputs and outputs. The information included in the *endpoint* definitions enables Integra Live to determine such things as which parameters to show in the routing view menus and which control widgets to show in the Module Properties panel. 
+The module *interface* contains a schematic description of one or more *endpoints*. An *endpoint* is a connectable attribute that can be of type Control or Stream. Control *endpoints* define parameters such as “delay time” or “frequency”. Stream *endpoints* define audio inputs and outputs. The information included in the *endpoint* definitions enable Integra Live to determine which parameters to show in the routing view menus and which control widgets to show in the Module Properties panel. 
 
-Control *endpoints* can of type State or Bang. State *endpoints* are associated with a value that represents the current state of a parameter. This value changes in response to live interaction, internal timers and control processing or as a result of two or more *endpoints* being connected. Endpoint state is saved by Integra Live when *projects* are saved, or *tracks*, *blocks* or *modules* are exported and is restored when they are loaded.
+Control *endpoints* can of type State or Bang. State *endpoints* are associated with a value that represents the current state of a parameter. This value changes in response to external inputs (such as MIDI), internal timers and scheduled processing or as a result of two or more *endpoints* being connected. Endpoint state is saved by Integra Live when *projects* are saved, or when *tracks*, *blocks* or *modules* are exported and is restored when they are loaded.
 
 Control *endpoints* of type Bang are stateless and send an “empty” value to any connected *endpoints* when triggered via a GUI widget or by receiving a value from a connected endpoint.   
 
@@ -33,7 +33,7 @@ Control *endpoints* of type Bang are stateless and send an “empty” value to 
 
 > We encourage module developers to consider carefully their module's *interface* before creating the module *implementation*. 
 
-Developers should normally develop their *interface* first, later [refactoring](http://en.wikipedia.org/wiki/Refactoring) it after they have created their *implementation* in Pure Data.
+Developers should normally develop their *interface* first, [refactoring](http://en.wikipedia.org/wiki/Refactoring) it after they have created their *implementation* in Pure Data.
 
 #### Import Template...
 
@@ -57,31 +57,31 @@ When the Module Creator is first opened, the Interface Info tab is active. Inter
 
 > We encourage module developers to use a short easily identifiable Interface Name
  
-The naming conventions for modules is as follows:
+Naming conventions for modules are as follows:
 
 - Stereo* — the module has exactly two outputs and zero or more inputs OR exactly two inputs and zero or more outputs
 - Quad* — the module has exactly four outputs and zero or more inputs OR exactly four inputs and zero or more outputs
 - Octo* — the module has exactly eight outputs and zero or more inputs OR exactly eight inputs and zero or more outputs
 
-No special prefix is used for all other input / output configurations. For example a bandpass filter with one input and one output would simply be called BandPass or BandPassFilter. 
+No special prefix is used for other input / output configurations. For example a bandpass filter with one input and one output would simply be called BandPass or BandPassFilter. 
  
 **Interface Label** should contain a short human-readable version of the Interface Name. Interface Labels are used construct the *module library* and module *info view* panels in Integra Live.
 
-**Interface Description** should describe what the module does in simple language. Technical terminology should be kept to a minimum. The Interface Description field can be written in [Markdown](http://daringfireball.net/projects/markdown/syntax), with a preview  shown to the right of the text entry panel. The contents of this field are used to generate the *module info* panel contents in Integra Live.
+**Interface Description** should describe what the module does in simple language. Technical terminology should be kept to a minimum. The Interface Description field can be written in [Markdown](http://daringfireball.net/projects/markdown/syntax), and a preview of this is shown to the right of the text entry panel. The contents of this field are used to generate the *module info* panel contents in Integra Live.
 
 > We encourage module developers to consult the [documentation guidelines](https://github.com/BirminghamConservatoire/IntegraLive/wiki/Contributing-Documentation#module-documentation-guidelines) for further details
 
-A completed Interface Info definition is shown below along with a preview of the Interface Description field.
+A completed Interface Info is shown below along with a preview of the Interface Description field.
 
 ![](../../page-images/addsynth.png)
 
-**Tags** should define a set of tags that can be used to categorise the module. These are used to construct the Tags filter box in the Module List in Integra Live.
+**Tags** should define a set of words used to categorise the module. These are used to construct the Tags filter box in the Module List in Integra Live.
 
 A number of pre-defined tags are provided in the module creator. To use non-listed tags, click “add tag” and type directly at the cursor.
 
 #### Endpoints
 
-Clicking the Endpoints tab in the Module Creator enables interface info for one or more endpoints to be added. To add an endpoint, click the Add Endpoint button
+Clicking the Endpoints tab in the Module Creator enables interface info for one or more *endpoints* to be added. To add an Endpoint, click the Add Endpoint button
 
 ![](../../page-images/add_endpoint.png)
 
@@ -103,19 +103,19 @@ Each Endpoint has one compulsory field (Endpoint Name), and a number of optional
 
 > We encourage module developers to consult the [documentation guidelines](https://github.com/BirminghamConservatoire/IntegraLive/wiki/Contributing-Documentation#module-documentation-guidelines) for further details
 
-A completed Endpoint Info definition is shown below.
+A completed Endpoint Info is shown below.
 
 ![](../../page-images/q.png)
 
-**Endpoint Type** defines whether the Endpoint is a Control parameter such as “delay time” or “frequency” or a Stream such as a module audio input or output. When Stream is selected, the Stream Direction must be specified as Input or Output in the Stream Info box. When Control is selected then many other options are available as explained below.
+**Endpoint Type** defines whether the Endpoint is a Control parameter such as “delay time” or “frequency”, or a Stream such as an audio input or output. When Stream is selected, the Stream Direction must be specified as Input or Output in the Stream Info box. When Control is selected, many other options are available as explained below.
 
-**Widget** is used to optionally define a Widget that is assigned to a Control endpoint. Each Endpoint may only have one widget, however, one widget can be assigned to multiple endpoints. For example an XYScratchPad widget has an “x” and “y” axis, and these axes can be assigned to different endpoints such as “pitch” and ”position”. In order to associate a single widget with multiple endpoints the Label field must be completed, and assigned the same value for each endpoint. Following the previous example, the Label “scrubWidget” could be given to the XYScratchPad “x” assigned to “position” and also to the XYScratchPad “y” assigned to “pitch”.
+**Widget** is used to optionally define a Widget that is assigned to a Control endpoint. Each Endpoint may only have one widget, however, one widget can be assigned to multiple endpoints. For example an XYScratchPad widget has an “x” and “y” axis, and these axes can be assigned to different endpoints such as “pitch” and ”position”. In order to associate a single widget with multiple endpoints the Label field must be completed, and assigned the same value for each endpoint. Following the previous example, the Label “scrubWidget” could be given to the XYScratchPad “x” — assigned to “position” and also to the XYScratchPad “y” — assigned to “pitch”.
 
-**Control Info** is used to define a more detailed definition of Control Endpoints. 
+**Control Info** is used to provide a more detailed definition of Control Endpoints. 
 
 **Control Type** can either be State or Bang. Bang should be selected for endpoints that correspond to trigger parameters such as “play” or “stop”.  State should be selected for parameters that have a value associated with them such as “delayTime” or “frequency”. When State is selected then the State Info box will be displayed.
 
-**State Info ⇒ State Type** is used to define the type of value that can be stored by the endpoint. Types supported by Integra are Float (32-bit), Integer (32-bit) and String.
+**State Info ⇒ State Type** is used to define the type of value that can be stored for the endpoint. Types supported by Integra are Float (32-bit), Integer (32-bit) and String.
 
 **State Info ⇒ Constraint** is a compulsory field for State Control Endpoints, and is used to define a constraint that is applied to the endpoint. This can be a range, or a set of allowed values, both of which restrict the possible values that can be assigned to the endpoint. Endpoint Constraints are used by Integra Live to determine the visual appearance and behaviour of Control Widgets.
 
@@ -125,11 +125,11 @@ A completed Endpoint Info definition is shown below.
 
 **Range ⇒ Minimum Length / Maximum Length** are used to constrain the bounds of State Control Endpoints of type String. For example, a sound file player module might have a “path” endpoint with a Range ⇒ Minimum Length of 1 and a Range ⇒ Maximum Length of 1024.
 
-**Allowed Values** are used to constrain the possible values an Endpoint can to take to a specific set of integer, floating point values or strings. For example a "window size" endpoint could have Allowed Values of 64, 128, 256, 512, 1024 and 2048.
+**Allowed Values** are used to constrain the possible values an Endpoint can to take, to a specific set of integer, floating point values or strings. For example a "window size" endpoint could have Allowed Values of 64, 128, 256, 512, 1024 and 2048.
 
 **Default Value** is a compulsory field that defines the initial value an Endpoint is set to when a *module* is first instantiated. The Default Value must conform to any Endpoint Constraints.
 
-**State Labels** are optional and defines a set of Value/Label pairs. These can be used to label values at certain points on a Control Widget's range. For example for a “pan” Endpoint, a Value of “-1” could be labelled “left”, “0” — “centre” and “1” — “right”.
+**State Labels** are optional and define a set of Value/Label pairs. These can be used to label values at certain points on a Control Widget's range. For example: for a “pan” Endpoint, a Value of “-1” could be labelled “left”, “0” — “centre” and “1” — “right”.
 
 #### Widget Layout
 

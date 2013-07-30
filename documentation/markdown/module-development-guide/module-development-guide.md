@@ -1,6 +1,28 @@
 ## Integra Module Development Guide
 <!-- This is a reference guide -->
 
+**Table of Contents**  
+
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Anatomy of a Module](#anatomy-of-a-module)
+	- [Module Endpoints](#module-endpoints)
+- [Creating a new Module Interface](#creating-a-new-module-interface)
+	- [Import Template...](#import-template)
+	- [Interface Info](#interface-info)
+	- [Endpoints](#endpoints)
+	- [Widget Layout](#widget-layout)
+	- [Implementation](#implementation)
+- [Editing the Pd Patch](#editing-the-pd-patch)
+	- [Sending Values to libIntegra](#sending-values-to-libintegra)
+- [Saving Files](#saving-files)
+	- [Saving Files from Pd](#saving-files-from-pd)
+- [Advanced Controls](#advanced-controls)
+- [Testing in Integra Live](#testing-in-integra-live)
+- [Further support](#further-support)
+
+### Introduction
+
 This guide provides an in-depth information on how to create modules that can be used in [Integra Live](http://integralive.org). For an initial introduction see the [Module Development Quick Start Guide](../module-development-quickstart/module-development-quickstart.htm).
 
 ### Requirements

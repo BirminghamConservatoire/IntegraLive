@@ -58,7 +58,7 @@ package components.views.ModuleManager
 			for each( var upgradedModuleGuid:String in upgradedModuleGuids )
 			{
 				var previousVersion:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( upgradedModuleGuid );
-				markdown += "##![](app:/icons/module_48x48x32.png) " + previousVersion.interfaceInfo.label + "\n\n";
+				markdown += "##![](app:/icons/module_32x32x32.png) " + previousVersion.interfaceInfo.label + "\n\n";
 				
 				var upgradedVersion:InterfaceDefinition = _model.getInterfaceDefinitionsByOriginGuid( previousVersion.originGuid )[ 0 ];
 				Assert.assertTrue( previousVersion != upgradedVersion );

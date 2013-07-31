@@ -216,7 +216,7 @@ package components.views.ModuleManager
 		private static const _borderThickness:Number = 4;
 		private static const _cornerRadius:Number = 15;
 		
-		private static const _manageLabel:String = "Project Modules";
+		private static const _manageLabel:String = "Manage Versions";
 		private static const _installLabel:String = "Install / Uninstall";
 	}
 }

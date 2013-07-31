@@ -1,7 +1,7 @@
-## Integra Live Quick Start
+## Integra Live Help
 
-### Overview
-The application is divided into two main views: the Arrange View is for composing and experimenting with musical ideas -- the Live View is for performance.
+### Introduction
+Integra Live is divided into two main views: the Arrange View is for composing and experimenting with musical ideas — the Live View is for performance.
 
 To switch between the views, click the buttons in the top-left of the Integra Live window:
 
@@ -10,10 +10,10 @@ To switch between the views, click the buttons in the top-left of the Integra Li
 Integra Live also has an Info View showing information about the the application and documentation for your project.
 
 ### Arrange View
-The Arrange View is the main view of the application. It allows audio processing *blocks* to be arranged spatially in a manner that makes sense for the music being created. It also allows interactive elements to be added by routing external controllers or automated envelopes to a range of control parameters.
+The Arrange View is the main view of the application. It enables audio processing *blocks* to be be created and arranged on a musical timeline. It also enables interactive elements to be added through the Routing and Scripting tabs in the Properties Panel.
 
 #### Blocks
-A *block* is a small collection of connected *modules*. *blocks* are used to organise *modules* into logical groupings that make musical sense. One example is the 'PitchDetection' *block* included with the application, which contains a pitch detector, the frequency of which is mapped to a simple tone generator.
+A *block* is a container for adding and connecting *modules*. *blocks* are used to organise *modules* into groupings that make musical sense. One example is the “SpectralDelay” *block* included in the Integra Live Block Library. This *block* contains a stereo soundfile player feeding into two filters and two spectral delays.
 
 - To add a *block* from the Block Library, click the *block* name and drag it onto a *track*
 
@@ -21,7 +21,7 @@ A *block* is a small collection of connected *modules*. *blocks* are used to org
 
 - To add a new empty *block*, double-click an empty area inside a *track*
 
-- To activate a *block*, drag the playhead so that it is vertically aligned with the *block*
+- To activate a *block*, drag the playhead so that it is horizontally aligned with the *block*
 
 - *blocks* can be re-sized by click-dragging their left or right edge
 
@@ -35,7 +35,7 @@ A *block* is a small collection of connected *modules*. *blocks* are used to org
 - To vertically re-size a *track* click-drag the tab in the bottom-right corner
 
 #### Properties Panel
-In the lower part of Arrange View comprises a Properties Panel. This panel changes context depending on whether a *block*, *track* or entire *project* is selected. The properties panel is used to control routing, scripting and envelopes. The current *project*, *track* or *block* can also be selected using the "cookie crumb navigation" widget in the top-left of the Properties Panel.
+The lower part of Arrange View shows a Properties Panel. This panel changes context depending on whether a *block*, *track* or entire *project* is selected. The Properties Panel is used to control routing, scripting and envelopes. The current *project*, *track* or *block* can also be selected using the "cookie crumb navigation" widget in the top-left of the Properties Panel.
 
 **Figure 2. Block, Track and Project properties selection in Arrange View**
 
@@ -45,7 +45,7 @@ In the lower part of Arrange View comprises a Properties Panel. This panel chang
 
 The Module View is a sub-view of the Arrange View. It can be entered by double-clicking on a block.
 
-A *module* is the basic building block that can be used to process, generate or analyse musical sound in Integra Live. *modules* can be very simple 'effects' such as delays and pitch shifters, or more sophisticated processing tools.
+A *module* can be used to process, generate or analyse musical sound in Integra Live. *modules* can be very simple “effects” such as delays and pitch shifters, or more sophisticated processing tools such as granular synthesisers.
 
 ##### Adding and connecting Modules
 
@@ -55,13 +55,13 @@ A *module* is the basic building block that can be used to process, generate or 
 
   ![](../../page-images/shadow-module_view_add_module.png)
 
-- To connect two *modules*, click and drag from a *module* output (e.g. 'out1') to a *module* input (e.g. 'in1')
+- To connect two *modules*, click and drag from a *module* output (e.g. “out1”) to a *module* input (e.g. “in1”)
 
   ![](../../page-images/shadow-module_view_module_connection.png)
 
 - Dragging a *module* onto an existing connection, will split the connection and add the *module* in the signal path
 
-- Modules and connections can be removed by selecting and then pressing 'backspace'
+- Modules and connections can be removed by selecting and then pressing “backspace”
 
 ##### Module Properties Panel
 
@@ -73,14 +73,16 @@ A *module* is the basic building block that can be used to process, generate or 
 
 - Module controls (such as sliders and dials) are used to change *module* parameters in real-time and are interactive through clicking, dragging and text-entry
 
-- Precise values can be entered by double-clicking the control's numeric value and typing the new value in the text-entry box
+- Precise values can be entered by double-clicking the control‘s numeric value and typing the new value in the text-entry box
 
   ![](../../page-images/shadow-parameter_entry.png)
+  
+- MIDI learn can be enabled for a parameter by clicking the MIDI learn icon on the parameter's control ![](../../page-images/midi_learn_icon.png). Once incoming MIDI has been received, an automatic route will be created in the *block*'s routing panel.
 
 #### Routing
-In Integra Live, *tracks*, *blocks* and *modules* all have parameters that are used to store values representing their current settings. These values can be routed so that when a source parameter changes, the value any target parameters also changes. This can be used for example, to route the value of a slider on an external controller to 'room size' of a reverb, or to route the value of a 'play' button to another 'play' button so that playback of two separate modules starts simultaneously.
+In Integra Live, *tracks*, *blocks* and *modules* all have parameters that are used to store values representing their current settings. These values can be routed so that when a source parameter changes, the value of any target parameters also changes. This can be used to route the value of a slider on an external controller to “room size” of a reverb, or to route the value of a “play” button to another “play” button so that playback of two separate modules starts simultaneously.
 
-- To add routing within a *block*, select a *block*, then click the Routing Tab in the Block Properties Panel, then click the '+' icon to add a new route
+- To add routing within a *block*, select a *block*, then click the Routing Tab in the Block Properties Panel, then click the “+” icon to add a new route
 
 - The drop-down menus can then be used to set the source *module*, source parameter, target *module* and target parameter
 
@@ -88,17 +90,19 @@ In Integra Live, *tracks*, *blocks* and *modules* all have parameters that are u
 
 - The same process can also be used for routing between *blocks* or *tracks*, by selecting the parent *track* or *project* respectively
 
+When a route is created between two parameters, the target parameter becomes “locked”. A small lock icon will be displayed on the parameter's control in the module properties panel indicating that it cannot be changed. To temporarily override the lock, hover over the control and hold the `ctrl` key.
+
 #### Scripting
 Integra Live has a built-in scripting facility based on the [Lua programming language](http://www.lua.org). Scripts can be used to set and get parameters and perform a range of procedural operations on them.
 
-- To add scripting within a *block*, select a *block*, then click the Scripting Tab in the properties panel, then click the '+' icon to add a new script. Script can then be typed into the text-area
+- To add scripting within a *block*, select a *block*, then click the Scripting Tab in the properties panel, then click the “+” icon to add a new script. Script can then be typed into the text-area
 
-- Integra Script is a super-set of Lua, with the added functions integra.set() and integra.get(), which can be used as follows
+- Integra Script is a super-set of Lua, with the added ability to directly address Integra Live parameters using “dot notation”
 
-        x = integra.get("AudioIn1", "vu")
-        integra.set("TapDelay1", "delayTime", math.abs(x) / 10.)
+        x = AudioIn1.vu
+        TapDelay1.delayTime = math.abs(x) / 10.
 
-- Scripts can be triggered by routing any parameter to the Script 'trigger' parameter
+- Scripts can be triggered by routing any parameter to the Script “trigger” parameter
 
 #### Timeline
 The master timeline provides a reference point against which musical ideas can be organised. Timeline progression can be linear, where the ordering and duration of blocks corresponds to their ordering in performance, or non-linear, where the playhead moves to arbitrary points on the timeline with some blocks being activated indefinitely or stopped and started through user interaction.
@@ -107,12 +111,12 @@ The master timeline provides a reference point against which musical ideas can b
 
   ![](../../page-images/shadow-timeline_triangle.png)
 
-- The playhead state can be set to 'play' or 'pause' using the button controls in the top-left of the Arrange View
+- The playhead state can be set to “play” or “pause” using the button controls in the top-left of the Arrange View
 
 - Clicking the timeline numbering, can be used to zoom and scroll the view. Clicking and dragging left/right controls horizontal scroll, dragging up/down controls zoom level
 
 #### Scenes
-Scenes are used to create user-defined progressions through musical time. One application of this is to define Scenes that correspond to different sections of a musical work 'Section A', 'Section B', 'Cadenza' etc. Another application is to create multiple pathways within a work as found in improvisation and 'open form' composition
+Scenes are used to create user-defined progressions through musical time. One application of this is to define Scenes that correspond to different sections of a musical work “Section A”, “Section B”, “Cadenza” etc. Another application is to create multiple pathways within a work as found in improvisation and “open form” composition
 
 - Scenes can be added by click-dragging in the *scene bar* on the global timeline
 
@@ -153,7 +157,9 @@ Envelopes can be used to automate the control of module parameters. This can be 
 
 - To select an envelope use the *module* and parameter dropdowns on the Block Properties Panel.
 
-- To delete an envelope click the 'x' next to the *module parameter* dropdown on the Block Properties Panel.
+- To delete an envelope click the “x” next to the *module parameter* dropdown on the Block Properties Panel.
+
+As with routing, when an envelope is created, the target parameter becomes “locked”. A small lock icon will be displayed on the parameter's control in the module properties panel indicating that it is being controlled by an envelope cannot be changed. To temporarily override the lock, hover over the control and hold the `ctrl` key.
 
 #### Block Toolbar
 Each block has a *block toolbar*, which contains a number of buttons that can be used to perform actions on the block.
@@ -166,9 +172,9 @@ Each block has a *block toolbar*, which contains a number of buttons that can be
 ### Live View
 The Live View is designed for live performance. Its purpose is to provide a reduced set of module controls for each Block, with custom control sizes and layout for convenience. When in Live View the computer keyboard also becomes active for navigating between Scenes.
 
-- Controls can be added to Live View by selecting Arrange View, clicking '+' on the relevant block, and then clicking the checkbox in the top right corner of the required controls
+- Controls can be added to Live View by selecting Arrange View, clicking “+” on the relevant block, and then clicking the checkbox in the top right corner of the required controls
 
-- An entire Module's controls can be added or removed from the Live View using the checkbox on each module
+- An entire Module‘s controls can be added or removed from the Live View using the checkbox on each module
 
 - Controls can also be added directly in Live View by right-clicking the canvas and selecting a control from the menu:
 
@@ -203,23 +209,35 @@ To add documentation to an element:
 
 - Hover the mouse over the element you want to add documentation to
 - Press **Control-3** (**F2 on Windows**) to lock the Info View
-- Click the 'edit' button on the Info View title bar
+- Click the “edit” button on the Info View title bar
 - Type your documentation into the documentation panel
 - Press **Control-3** (**F2 on Windows**) to release the Info View
 
 You can now view your documentation by hovering over your documented element.
 
+### Module Management
+
+/** to be written **/
+
 ### Other features
+
+#### Mute Control
+
+/** to be written **/
+
+#### MIDI Monitor
+
+/** to be written **/
 
 #### Lighting
 
-- Lighting can be set to 'on' for studio use and 'off' for live use in darkened environments. This is achieved by clicking the *lighting icon* in the top-right of the application window ![](../../page-images/light_bulb.png)
+- Lighting can be set to “on” for studio use and “off” for live use in darkened environments. This is achieved by clicking the *lighting icon* in the top-right of the application window ![](../../page-images/light_bulb.png)
 
 #### Import and export
 
-*Tracks*, *blocks* and *modules* can all be exported and imported to/from disk. This enables specific components to be moved between projects. Additionally, *blocks*, can be added to the Block Library, which allows easy drag 'n' drop of exported *blocks*.
+*Tracks*, *blocks* and *module settings* can all be exported and imported to/from disk. This enables specific components to be moved between projects. Additionally, *blocks*, can be added to the Block Library, which allows easy drag ‘n’ drop of exported *blocks*.
 
-- Import/export is available from the context menu in Arrange View. For example to export a track, context-click the track and click 'Export...-\>Track'
+- Import/export is available from the context menu in Arrange View. For example to export a track, context-click the track and click “Export...-\>Track”
 
   ![](../../page-images/shadow-arrange_export.png)
 

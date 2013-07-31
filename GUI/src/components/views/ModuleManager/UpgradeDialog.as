@@ -87,7 +87,7 @@ package components.views.ModuleManager
 			_closeButton.setStyle( "skin", TextButtonSkin );
 			
 			_upgradeButton.label = "Upgrade";
-			_moduleManagerButton.label = "Module Manager";
+			_moduleManagerButton.label = "Module Manager...";
 			_closeButton.label = "Cancel";
 			
 			_alwaysUpgradeCheckbox.label = "Always Upgrade";
@@ -249,7 +249,7 @@ package components.views.ModuleManager
 			
 			//calculate window size
 			var rowHeight:Number = FontSize.getTextRowHeight( this );
-			width = Math.min( rowHeight * 20, parentDocument.width );
+			width = Math.min( rowHeight * 22, parentDocument.width );
 			height = Math.min( rowHeight * 12, parentDocument.height );
 			
 			var internalMargin:Number = rowHeight / 2;

@@ -126,6 +126,8 @@ creator: documentation
 	cp -r $(TEMPLATESDIR) $(CREATORRESIDR)
 	cp -r $(APPNAME) $(CREATORRESIDR)
 	mv documentation $(CREATORRESIDR)
+	# Hack to make the generated host see expr etc (declare -stdpath doesn't work) NOTE: we won't need this when we switch to libPd
+	cd $(CREATORAPPNAME)/Contents/Resources/$(APPNAME)/Contents/Resources/host/extra && for file in extra/*; do ln -s $$file $$(basename $$file) ;done && cd -
 
 host:
 	if [ ! -e $(PD_DMG_NAME) ]; then \

@@ -136,6 +136,8 @@ host:
 	cp -r $(PD_MOUNT_POINT)/*.app/Contents/Resources host
 	find ./host -type d -exec chmod 755 {} \;
 	sh remove_externals.sh
+	cp $(PD_MOUNT_POINT)/*.app/Contents/lib/libfftw3f.3.dylib host/extra/bsaylor
+	cd host/extra/bsaylor && chmod 644 partconv~.pd_darwin && install_name_tool -change @executable_path/../../lib/libfftw3f.3.dylib @loader_path/libfftw3f.3.dylib partconv~.pd_darwin && cd -
 	cp $(PD_OSC_HOST) host/extra
 	rm -rf extra
 	cd host/bin; cp -f pd pd_integra; rm -f pd; ln -s pd_integra pd

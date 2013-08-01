@@ -40,7 +40,7 @@ package components.utils
 			verticalScrollPolicy = ScrollPolicy.OFF;
 			
 			_label.setStyle( "left", _height );
-			_label.setStyle( "right", 0 );
+			_label.setStyle( "right", _height );
 			_label.setStyle( "textAlign", "center" );
 			_label.setStyle( "verticalCenter", 0 );
 			_label.setStyle( "color", 0x212b34 );

@@ -49,6 +49,7 @@ all: $(DEFAULTBUILD)
 movedirs:
 	mv server $(APPRESDIR)
 	mv host $(APPRESDIR)
+	mv lib $(APPRESDIR)
 	mv documentation $(APPRESDIR)
 	mv modules $(APPRESDIR)
 
@@ -136,6 +137,8 @@ host:
 	cp -r $(PD_MOUNT_POINT)/*.app/Contents/Resources host
 	find ./host -type d -exec chmod 755 {} \;
 	sh remove_externals.sh
+	mkdir lib
+	cp $(PD_MOUNT_POINT)/*.app/Contents/lib/libfftw3f.3.dylib lib
 	cp $(PD_OSC_HOST) host/extra
 	rm -rf extra
 	cd host/bin; cp -f pd pd_integra; rm -f pd; ln -s pd_integra pd

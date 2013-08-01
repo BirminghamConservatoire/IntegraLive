@@ -353,6 +353,8 @@
 					{
 						_collapseButton.visible = false;
 						_childLibrary.visible = false;
+						_expandInterpolation = 0;
+						_childLibrary.data = new Array();
 					}
 				}
 			}

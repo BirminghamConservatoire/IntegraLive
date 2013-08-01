@@ -23,7 +23,6 @@ package components.views.ModuleLibrary
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	
 	import mx.controls.Button;
 	import mx.core.ScrollPolicy;
@@ -191,7 +190,8 @@ package components.views.ModuleLibrary
 			
 			listData.sort( moduleCompareFunction );
 			
-			_library.data = listData;		}
+			_library.data = listData;		
+		}
 		
 		
 		

@@ -112,6 +112,7 @@ package components.views.ModuleManager
 			
 			_info.setStyle( "borderStyle", "solid" );
 			_info.setStyle( "borderThickness", 2 );
+			_info.setStyle( "cornerRadius", ModuleManagerList.cornerRadius );
 			addChild( _info );
 		}
 		

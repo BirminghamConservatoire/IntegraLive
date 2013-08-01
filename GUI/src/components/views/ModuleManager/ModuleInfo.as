@@ -60,21 +60,17 @@ package components.views.ModuleManager
 				{
 					default:
 					case ColorScheme.LIGHT:
-						_borderColor = 0xcfcfcf;
 						_backgroundColor ='#ffffff';
 						_textColor ='#6D6D6D';
 						break;
 					
 					case ColorScheme.DARK:
-						_borderColor = 0x313131;
 						_backgroundColor ='#000000';
 						_textColor = '#939393';
 						break;
 				}
 				
 				recreateInfo();
-				
-				invalidateDisplayList();
 			}
 			else
 			{
@@ -84,17 +80,6 @@ package components.views.ModuleManager
 				}	
 			}
 		}		
-		
-		
-		override protected function updateDisplayList( width:Number, height:Number):void
-		{
-			super.updateDisplayList( width, height );
-			
-			graphics.clear();
-			
-			/*graphics.beginFill( getStyle( ColorScheme.STYLENAME ) == ColorScheme.DARK ? 0x000000 : 0xffffff );
-			graphics.drawRect( 0, 0, width, height );*/
-		}
 		
 		
 		private function get htmlHeader():String
@@ -155,7 +140,6 @@ package components.views.ModuleManager
 
 		private var _html:HTML = null;
 		
-		private var _borderColor:uint;
 		private var _backgroundColor:String;
 		private var _textColor:String;
 	}

@@ -21,9 +21,10 @@
 - [Testing in Integra Live](#testing-in-integra-live)
 - [Further support](#further-support)
 
+
 ### Introduction
 
-This guide provides an in-depth information on how to create modules that can be used in [Integra Live](http://integralive.org). For an initial introduction see the [Module Development Quick Start Guide](../module-development-quickstart/module-development-quickstart.htm).
+This guide provides in-depth information on how to create modules that can be used in [Integra Live](http://integralive.org). For an initial introduction see the [Module Development Quick Start Guide](../module-development-quickstart/module-development-quickstart.htm).
 
 ### Requirements
 

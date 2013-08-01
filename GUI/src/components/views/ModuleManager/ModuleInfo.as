@@ -124,6 +124,7 @@ package components.views.ModuleManager
 			_html.setStyle( "right", ModuleManagerList.cornerRadius );
 			_html.setStyle( "top", ModuleManagerList.cornerRadius );
 			_html.setStyle( "bottom", ModuleManagerList.cornerRadius );
+			_html.setStyle( "borderStyle", "none" );
 			
 			var htmlText:String = _info.html;
 			htmlText = "<html>" + htmlHeader + htmlText.substr( 6 );

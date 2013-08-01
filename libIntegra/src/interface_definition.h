@@ -55,6 +55,8 @@ namespace ntg_internal
 
 	class CInterfaceDefinition
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 
 			CInterfaceDefinition();
@@ -90,6 +92,9 @@ namespace ntg_internal
 			void set_implementation_checksum( unsigned int checksum );
 
 	private:
+
+			void propagate_defaults();
+
 			GUID m_module_guid;
 			GUID m_origin_guid;
 			module_source m_source;
@@ -103,6 +108,8 @@ namespace ntg_internal
 
 	class CInterfaceInfo
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CInterfaceInfo();
 			~CInterfaceInfo();
@@ -116,7 +123,10 @@ namespace ntg_internal
 			const struct tm &get_created_date() const { return m_created_date; }
 			const struct tm &get_modified_date() const { return m_modified_date; }
 
+			void propagate_defaults();
+
 		private:
+
 			ntg_api::string m_name;
 			ntg_api::string m_label;
 			ntg_api::string m_description;
@@ -131,6 +141,8 @@ namespace ntg_internal
 	//todo - remove LIBINTEGRA_API from here - temporary measure to make the bridge compile */
 	class LIBINTEGRA_API CEndpointDefinition
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 
 			CEndpointDefinition();
@@ -155,6 +167,8 @@ namespace ntg_internal
 			bool should_load_from_ixd( ntg_api::CValue::type loaded_type ) const;
 			bool is_audio_stream() const;
 
+			void propagate_defaults();
+
 		private:
 
 			ntg_api::string m_name;
@@ -168,14 +182,16 @@ namespace ntg_internal
 
 	class CControlInfo
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CControlInfo();
 			~CControlInfo();
 
 			enum control_type
 			{
-				STATE = 1,
-				BANG = 2
+				STATEFUL = 1,
+				BANG
 			};
 
 			control_type get_type() const { return m_type; }
@@ -196,6 +212,8 @@ namespace ntg_internal
 
 	class CStateInfo
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CStateInfo();
 			~CStateInfo();
@@ -221,6 +239,8 @@ namespace ntg_internal
 
 	class CConstraint
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CConstraint();
 			~CConstraint();
@@ -236,6 +256,8 @@ namespace ntg_internal
 
 	class CValueRange
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CValueRange();
 			~CValueRange();
@@ -252,6 +274,8 @@ namespace ntg_internal
 
 	class CValueScale
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CValueScale();
 			~CValueScale();
@@ -274,6 +298,8 @@ namespace ntg_internal
 
 	class CStreamInfo
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CStreamInfo();
 			~CStreamInfo();
@@ -300,6 +326,8 @@ namespace ntg_internal
 
 	class CWidgetDefinition
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CWidgetDefinition();
 			~CWidgetDefinition();
@@ -319,6 +347,8 @@ namespace ntg_internal
 
 	class CWidgetPosition
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:	
 			CWidgetPosition();
 			~CWidgetPosition();
@@ -338,6 +368,8 @@ namespace ntg_internal
 
 	class CImplementationInfo
 	{
+		friend class CInterfaceDefinitionLoader;
+
 		public:
 			CImplementationInfo();
 			~CImplementationInfo();

@@ -750,8 +750,8 @@ namespace ntg_internal
 			return NULL;
 		}
 
-		CInterfaceDefintionLoader interface_definition_loader;
-		CInterfaceDefinition *interface_definition = interface_definition_loader.load( buffer, buffer_size );
+		CInterfaceDefinitionLoader interface_definition_loader;
+		CInterfaceDefinition *interface_definition = interface_definition_loader.load( *buffer, buffer_size );
 		delete[] buffer;
 
 		return interface_definition;

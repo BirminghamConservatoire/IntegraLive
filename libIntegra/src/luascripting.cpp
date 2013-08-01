@@ -211,7 +211,7 @@ static int ntg_lua_set( lua_State * L )
 
 	if( endpoint->get_value() )
 	{	
-		assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::STATE );
+		assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::STATEFUL );
 
 		CValue *new_value( NULL );
 
@@ -292,7 +292,7 @@ static int ntg_lua_get(lua_State * L)
 		return 0;
 	}
 
-	if( node_endpoint->get_endpoint_definition().get_control_info()->get_type() != CControlInfo::STATE )
+	if( node_endpoint->get_endpoint_definition().get_control_info()->get_type() != CControlInfo::STATEFUL )
 	{
 		ntg_lua_error_handler( "Endpoint is not stateful: %s", node_path.get_string().c_str() );
 		return 0;

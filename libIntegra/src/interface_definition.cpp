@@ -69,6 +69,19 @@ namespace ntg_internal
 	}
 
 
+	void CInterfaceDefinition::propagate_defaults()
+	{
+		assert( m_interface_info );
+		m_interface_info->propagate_defaults();
+
+		for( endpoint_definition_list::iterator i = m_endpoint_definitions.begin(); i != m_endpoint_definitions.end(); i++ )
+		{
+			( *i )->propagate_defaults();
+		}
+	}
+
+
+
 	bool CInterfaceDefinition::is_core_interface() const
 	{
 		assert( m_interface_info );
@@ -138,6 +151,15 @@ namespace ntg_internal
 	}
 
 
+	void CInterfaceInfo::propagate_defaults()
+	{
+		if( m_label.empty() )
+		{
+			m_label = m_name;
+		}
+	}
+
+
 	/************************************/
 	/* ENDPOINT DEFINITION	            */
 	/************************************/
@@ -189,7 +211,7 @@ namespace ntg_internal
 		*/
 
 		if( m_type != CONTROL ) return false;
-		if( m_control_info->get_type() != CControlInfo::STATE ) return false;
+		if( m_control_info->get_type() != CControlInfo::STATEFUL ) return false;
 		if( !m_control_info->get_state_info()->get_is_saved_to_file() ) return false;
 		if( m_control_info->get_state_info()->get_type() != loaded_type ) return false;
 
@@ -202,6 +224,15 @@ namespace ntg_internal
 		if( m_type != STREAM ) return false;
 
 		return ( m_stream_info->get_type() == CStreamInfo::AUDIO );
+	}
+
+
+	void CEndpointDefinition::propagate_defaults()
+	{
+		if( m_label.empty() )
+		{
+			m_label = m_name;
+		}
 	}
 
 

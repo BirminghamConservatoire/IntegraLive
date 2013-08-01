@@ -56,34 +56,6 @@ int count_arguments( const char **arguments )
     return number_of_arguments;
 }
 
-void write_pid_to_file( const char *path )
-{
-    FILE *file = fopen(path, "w");
-    char buf[10];
-
-    sprintf(buf, "%d", getpid());
-    fputs(buf, file);
-    fclose(file);
-}
-
-unsigned int read_pid_from_file( const char *path )
-{
-    FILE *file = fopen(path, "r");
-    char buf[10];
-    int pid = 0;
-
-    if(file == NULL)
-    {
-        return 0;
-    }
-
-    fgets(buf, 10, file);
-    fclose(file);
-
-    pid = (int)strtol(buf, NULL, 10);
-
-    return pid;
-}
 
 void append_argument( const char **arguments, const char *argument )
 {
@@ -192,6 +164,7 @@ int main( int argc, char *argv[] )
         post_command_line_options(command_name);
         return -1;
     }
+
 
     /*deal with commandline arguments */
     for( i = 1; i < argc; i++ )

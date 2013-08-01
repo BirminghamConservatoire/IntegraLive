@@ -528,7 +528,7 @@ void ntg_handle_connections( CServer &server, const CNode &search_node, const CN
 				}
 
 				CValue *converted_value;
-				if( destination_endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::STATE )
+				if( destination_endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::STATEFUL )
 				{
 					if( changed_endpoint->get_value() )
 					{
@@ -1643,7 +1643,7 @@ void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const 
 
 	if( class_name )
 	{
-		const CInterfaceDefinition *interface_definition = server.get_module_manager().get_core_interface_by_name( class_name );
+		interface_definition = server.get_module_manager().get_core_interface_by_name( class_name );
 		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR_WITH_STRING("failed to lookup into for core class", class_name);

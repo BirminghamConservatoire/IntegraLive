@@ -62,7 +62,7 @@ namespace ntg_internal
 			m_value = NULL;
 		}
 
-		if( endpoint_definition.get_type() == CEndpointDefinition::CONTROL && endpoint_definition.get_control_info()->get_type() == CControlInfo::STATE )
+		if( endpoint_definition.get_type() == CEndpointDefinition::CONTROL && endpoint_definition.get_control_info()->get_type() == CControlInfo::STATEFUL )
 		{
 			const CStateInfo *state_info = endpoint_definition.get_control_info()->get_state_info();
 			assert( state_info );

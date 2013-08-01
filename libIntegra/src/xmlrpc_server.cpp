@@ -435,7 +435,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 
 			switch( control_info->get_type() )
 			{
-				case CControlInfo::STATE:
+				case CControlInfo::STATEFUL:
 					xmlrpc_temp = xmlrpc_string_new(env, "state" );
 					break;
 

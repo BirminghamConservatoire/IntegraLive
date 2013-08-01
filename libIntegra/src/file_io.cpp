@@ -838,7 +838,7 @@ error_code ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interfa
 	for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 	{
 		const CEndpointDefinition &endpoint_definition = **i;
-		if( !endpoint_definition.should_send_to_host() || endpoint_definition.get_control_info()->get_type() != CControlInfo::STATE )
+		if( !endpoint_definition.should_send_to_host() || endpoint_definition.get_control_info()->get_type() != CControlInfo::STATEFUL )
 		{
 			continue;
 		}

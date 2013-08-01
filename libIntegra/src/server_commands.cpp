@@ -121,7 +121,7 @@ command_status ntg_set_( CServer &server, ntg_command_source cmd_source, const C
 		case CEndpointDefinition::CONTROL:
 			switch( endpoint_definition.get_control_info()->get_type() )
 			{
-				case CControlInfo::STATE:
+				case CControlInfo::STATEFUL:
 				{
 					if( !value )
 					{
@@ -294,7 +294,7 @@ command_status ntg_new_( CServer &server, ntg_command_source cmd_source, const G
 	for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 	{
 		const CEndpointDefinition *endpoint_definition = *i;
-		if( endpoint_definition->get_type() != CEndpointDefinition::CONTROL || endpoint_definition->get_control_info()->get_type() != CControlInfo::STATE )
+		if( endpoint_definition->get_type() != CEndpointDefinition::CONTROL || endpoint_definition->get_control_info()->get_type() != CControlInfo::STATEFUL )
 		{
 			continue;
 		}

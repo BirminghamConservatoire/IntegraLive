@@ -248,10 +248,10 @@ namespace ntg_internal
 
 	ntg_api::string CDataDirectory::copy_file_to_data_directory( const ntg_internal::CNodeEndpoint &node_endpoint )
 	{
-		const string *data_directory = ntg_node_get_data_directory( *node_endpoint.get_node() );
+		const string *data_directory = ntg_node_get_data_directory( node_endpoint.get_node() );
 		if( !data_directory )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", node_endpoint.get_node()->get_name().c_str() );
+			NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", node_endpoint.get_node().get_name().c_str() );
 			return NULL;
 		}
 

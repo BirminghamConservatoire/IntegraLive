@@ -23,7 +23,6 @@
 
 
 #include <stdio.h>
-#include <stdbool.h>
 
 #include "api/common_typedefs.h"
 #include "error.h"

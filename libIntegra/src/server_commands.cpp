@@ -35,7 +35,7 @@
 #include "module_manager.h"
 #include "file_io.h"
 #include "file_helper.h"
-#include "interface.h"
+#include "interface_definition.h"
 
 
 using namespace ntg_api;
@@ -43,7 +43,7 @@ using namespace ntg_internal;
 
 
 
-bool ntg_should_send_set_to_host( const CNodeEndpoint &endpoint, const ntg_interface &interface, ntg_command_source cmd_source )
+bool ntg_should_send_set_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, ntg_command_source cmd_source )
 {
 	switch( cmd_source )
 	{
@@ -57,17 +57,17 @@ bool ntg_should_send_set_to_host( const CNodeEndpoint &endpoint, const ntg_inter
 			break;		
 	}
 
-	if( ntg_endpoint_is_input_file( endpoint.get_endpoint() ) && ntg_should_copy_input_file( *endpoint.get_value(), cmd_source ) )
+	if( endpoint.get_endpoint_definition().is_input_file() && ntg_should_copy_input_file( *endpoint.get_value(), cmd_source ) )
 	{
 		return false;
 	}
 
-	if( !ntg_interface_has_implementation( &interface ) )
+	if( !interface_definition.has_implementation() )
 	{
 		return false;
 	}
 
-	if( !ntg_endpoint_should_send_to_host( endpoint.get_endpoint() ) )
+	if( !endpoint.get_endpoint_definition().should_send_to_host() )
 	{
 		return false;
 	}
@@ -110,29 +110,33 @@ command_status ntg_set_( CServer &server, ntg_command_source cmd_source, const C
         NTG_RETURN_ERROR_CODE( NTG_PATH_ERROR );
     }
 
-	const ntg_endpoint *endpoint = node_endpoint->get_endpoint();
+	const CEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
 
-	switch( endpoint->type )
+	switch( endpoint_definition.get_type() )
 	{
-		case NTG_STREAM:
+		case CEndpointDefinition::STREAM:
 			NTG_TRACE_ERROR_WITH_STRING( "can't call set for a stream attribute!", path.get_string().c_str() );
 			NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
 
-		case NTG_CONTROL:
-			switch( endpoint->control_info->type )
+		case CEndpointDefinition::CONTROL:
+			switch( endpoint_definition.get_control_info()->get_type() )
 			{
-				case NTG_STATE:
+				case CControlInfo::STATE:
+				{
 					if( !value )
 					{
 						NTG_TRACE_ERROR_WITH_STRING( "called set without a value for a stateful endpoint", path.get_string().c_str() );
 						NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
 					}
 
+					CValue::type value_type = value->get_type();
+					CValue::type endpoint_type = endpoint_definition.get_control_info()->get_state_info()->get_type();
+
 					/* test that new value is of correct type */
-					if( value->get_type() != endpoint->control_info->state_info->type )
+					if( value_type != endpoint_type )
 					{
 						/* we allow passing integers to float attributes and vice-versa, but no other mismatched types */
-						if( ( value->get_type() != CValue::INTEGER && value->get_type() != CValue::FLOAT ) || ( endpoint->control_info->state_info->type != CValue::INTEGER && endpoint->control_info->state_info->type != CValue::FLOAT ) )
+						if( ( value_type != CValue::INTEGER && value->get_type() != CValue::FLOAT ) || ( endpoint_type != CValue::INTEGER && endpoint_type != CValue::FLOAT ) )
 						{
 							NTG_TRACE_ERROR_WITH_STRING( "called set with incorrect value type", path.get_string().c_str() );
 							NTG_RETURN_ERROR_CODE( NTG_TYPE_ERROR );
@@ -140,8 +144,9 @@ command_status ntg_set_( CServer &server, ntg_command_source cmd_source, const C
 					} 
 
 					break;
+				}
 
-				case NTG_BANG:
+				case CControlInfo::BANG:
 					if( value )
 					{
 						NTG_TRACE_ERROR_WITH_STRING( "called set with a value for a stateless endpoint", path.get_string().c_str() );
@@ -160,7 +165,7 @@ command_status ntg_set_( CServer &server, ntg_command_source cmd_source, const C
 			break;
 	}
 
-	if( cmd_source == NTG_SOURCE_HOST && !ntg_node_is_active( *node_endpoint->get_node() ) )
+	if( cmd_source == NTG_SOURCE_HOST && !ntg_node_is_active( node_endpoint->get_node() ) )
 	{
 		return command_status;
 	}
@@ -205,7 +210,7 @@ command_status ntg_set_( CServer &server, ntg_command_source cmd_source, const C
 	}
 
     /* send the attribute value to the host if needed */
-	if( ntg_should_send_set_to_host( *node_endpoint, *node_endpoint->get_node()->get_interface(), cmd_source ) ) 
+	if( ntg_should_send_set_to_host( *node_endpoint, node_endpoint->get_node().get_interface_definition(), cmd_source ) ) 
 	{
 		server.get_bridge()->send_value( node_endpoint );
     }
@@ -237,8 +242,8 @@ command_status ntg_new_( CServer &server, ntg_command_source cmd_source, const G
     CNode *parent = server.find_node_writable( path );
 
     /* get interface */
-	const ntg_interface *interface = server.get_module_manager().get_interface_by_module_id( *module_id );
-    if( !interface ) 
+	const CInterfaceDefinition *interface_definition = server.get_module_manager().get_interface_by_module_id( *module_id );
+    if( !interface_definition ) 
 	{
         NTG_TRACE_ERROR( "unable to find interface" );
         NTG_RETURN_ERROR_CODE( NTG_FAILED );
@@ -247,7 +252,7 @@ command_status ntg_new_( CServer &server, ntg_command_source cmd_source, const G
     /* if node name is NULL, create one */
     if( node_name.empty() )
 	{
-		node_name = ntg_make_node_name( interface->info->name );
+		node_name = ntg_make_node_name( interface_definition->get_interface_info().get_name() );
 	}
 
     /* First check if node name is already taken */
@@ -266,14 +271,14 @@ command_status ntg_new_( CServer &server, ntg_command_source cmd_source, const G
 	}
 
     CNode *node = new CNode;
-	node->initialize( interface, node_name, parent );
+	node->initialize( *interface_definition, node_name, parent );
 	sibling_map[ node_name ] = node;
 	server.get_state_table().add( *node );
 
-	if( ntg_interface_has_implementation( interface ) )
+	if( interface_definition->has_implementation() )
 	{
 		/* load implementation in module host */
-		string patch_path = server.get_module_manager().get_patch_path( *interface );
+		string patch_path = server.get_module_manager().get_patch_path( *interface_definition );
 		if( patch_path.empty() )
 		{
 			NTG_TRACE_ERROR( "Failed to get implementation path - cannot load module in host" );
@@ -285,17 +290,19 @@ command_status ntg_new_( CServer &server, ntg_command_source cmd_source, const G
 	}
 
     /* set attribute defaults */
-	for( const ntg_endpoint *endpoint = interface->endpoint_list; endpoint; endpoint = endpoint->next )
+	const endpoint_definition_list &endpoint_definitions = interface_definition->get_endpoint_definitions();
+	for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 	{
-		if( endpoint->type != NTG_CONTROL || endpoint->control_info->type != NTG_STATE )
+		const CEndpointDefinition *endpoint_definition = *i;
+		if( endpoint_definition->get_type() != CEndpointDefinition::CONTROL || endpoint_definition->get_control_info()->get_type() != CControlInfo::STATE )
 		{
 			continue;
 		}
 
-		const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint->name );
+		const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_definition->get_name() );
         assert( node_endpoint );
 
-		ntg_set_( server, NTG_SOURCE_INITIALIZATION, node_endpoint->get_path(), endpoint->control_info->state_info->default_value );
+		ntg_set_( server, NTG_SOURCE_INITIALIZATION, node_endpoint->get_path(), &endpoint_definition->get_control_info()->get_state_info()->get_default_value() );
 	}
 
     /* handle any system class logic */
@@ -342,7 +349,7 @@ command_status ntg_delete_( CServer &server, ntg_command_source cmd_source, cons
 	server.get_state_table().remove( *node );
 
 	/* remove in host */
-	if( ntg_interface_has_implementation( node->get_interface() ) )
+	if( node->get_interface_definition().has_implementation() )
 	{
 		server.get_bridge()->module_remove( node->get_id() );
     }
@@ -593,8 +600,8 @@ const CValue *ntg_get_( CServer &server, const CPath &path )
 	const CValue *value = node_endpoint->get_value();
 	if( !value )
 	{
-		const ntg_endpoint *endpoint = node_endpoint->get_endpoint();
-		assert( endpoint->type == NTG_STREAM || endpoint->control_info->type == NTG_BANG );
+		const CEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
+		assert( endpoint_definition.get_type() == CEndpointDefinition::STREAM || endpoint_definition.get_control_info()->get_type() == CControlInfo::BANG );
 		return NULL;
 	}
 
@@ -629,12 +636,12 @@ command_status ntg_save_( CServer &server, const CPath &path, const char *file_p
 
     if (file_path == NULL) 
 	{
-        NTG_TRACE_ERROR("file path is NULL");
+        NTG_TRACE_ERROR( "file path is NULL" );
         NTG_RETURN_ERROR_CODE( NTG_ERROR );
     }
     else 
 	{
-        NTG_TRACE_PROGRESS_WITH_STRING("saving to", file_path);
+        NTG_TRACE_PROGRESS_WITH_STRING( "saving to", file_path );
     }
 
     const CNode *node = server.find_node( path );
@@ -662,9 +669,9 @@ void ntg_print_node_state( CServer &server, const node_map &nodes, int indentati
             printf("  |");
 		}
 
-		const ntg_interface *interface = node->get_interface();
-		char *module_id_string = ntg_guid_to_string( &interface->module_guid );
-		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n", node->get_name(), interface->info->name, module_id_string, node->get_path().get_string().c_str() );
+		const CInterfaceDefinition &interface_definition = node->get_interface_definition();
+		char *module_id_string = ntg_guid_to_string( &interface_definition.get_module_guid() );
+		printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n", node->get_name(), interface_definition.get_interface_info().get_name().c_str(), module_id_string, node->get_path().get_string().c_str() );
 		delete[] module_id_string;
 
 		bool has_children = !node->get_children().empty();
@@ -685,7 +692,7 @@ void ntg_print_node_state( CServer &server, const node_map &nodes, int indentati
 
 			string value_string = value->get_as_string();
 
-			printf("   -Attribute:  %s = %s\n", node_endpoint->get_endpoint()->name, value_string.c_str() );
+			printf("   -Attribute:  %s = %s\n", node_endpoint->get_endpoint_definition().get_name().c_str(), value_string.c_str() );
 		}
 		
         if( has_children )

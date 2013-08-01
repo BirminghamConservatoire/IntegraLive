@@ -34,12 +34,13 @@
 
 #include "module_manager.h"
 #include "scratch_directory.h"
-#include "interface.h"
+#include "interface_definition.h"
 #include "helper.h"
 #include "globals.h"
 #include "file_io.h"
 #include "file_helper.h"
 #include "server.h"
+#include "interface_definition_loader.h"
 
 using namespace ntg_api;
 
@@ -87,9 +88,9 @@ namespace ntg_internal
 			mkdir( m_embedded_module_directory.c_str() );
 		}
 
-		load_modules_from_directory( system_module_directory, NTG_MODULE_SHIPPED_WITH_INTEGRA );
+		load_modules_from_directory( system_module_directory, CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA );
 
-		load_modules_from_directory( third_party_module_directory, NTG_MODULE_3RD_PARTY );
+		load_modules_from_directory( third_party_module_directory, CInterfaceDefinition::MODULE_3RD_PARTY );
 		m_third_party_module_directory = third_party_module_directory + NTG_PATH_SEPARATOR;
 	}
 
@@ -201,7 +202,7 @@ namespace ntg_internal
 			fclose( temporary_file );
 			temporary_file = NULL;
 
-			if( load_module( temporary_file_name, NTG_MODULE_EMBEDDED, loaded_module_id ) )
+			if( load_module( temporary_file_name, CInterfaceDefinition::MODULE_EMBEDDED, loaded_module_id ) )
 			{
 				new_embedded_modules.insert( loaded_module_id );
 
@@ -242,7 +243,7 @@ namespace ntg_internal
 
 		ntg_guid_set_null( &module_id );
 
-		module_was_loaded = load_module( module_file, NTG_MODULE_3RD_PARTY, module_id );
+		module_was_loaded = load_module( module_file, CInterfaceDefinition::MODULE_3RD_PARTY, module_id );
 		if( module_was_loaded )
 		{
 			result.module_id = module_id;
@@ -254,24 +255,24 @@ namespace ntg_internal
 			return NTG_FILE_VALIDATION_ERROR;
 		}
 
-		const ntg_interface *existing_interface = get_interface_by_module_id( module_id );
+		const CInterfaceDefinition *existing_interface = get_interface_by_module_id( module_id );
 		if( !existing_interface )
 		{
 			NTG_TRACE_ERROR( "can't lookup existing interface" );
 			return NTG_FAILED;
 		}
 
-		switch( existing_interface->module_source )
+		switch( existing_interface->get_module_source() )
 		{
-			case NTG_MODULE_SHIPPED_WITH_INTEGRA:
-			case NTG_MODULE_3RD_PARTY:
-			case NTG_MODULE_IN_DEVELOPMENT:
+			case CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
+			case CInterfaceDefinition::MODULE_3RD_PARTY:
+			case CInterfaceDefinition::MODULE_IN_DEVELOPMENT:
 				return NTG_MODULE_ALREADY_INSTALLED;
 
-			case NTG_MODULE_EMBEDDED:
+			case CInterfaceDefinition::MODULE_EMBEDDED:
 				result.module_id = module_id;
 				result.was_previously_embedded = true;
-				return change_module_source( ( ntg_interface & ) *existing_interface, NTG_MODULE_3RD_PARTY );
+				return change_module_source( ( CInterfaceDefinition & ) *existing_interface, CInterfaceDefinition::MODULE_3RD_PARTY );
 
 			default:
 
@@ -283,22 +284,20 @@ namespace ntg_internal
 
 	error_code CModuleManager::install_embedded_module( const GUID &module_id )
 	{
-		const ntg_interface *interface;
-		
-		interface = get_interface_by_module_id( module_id );
-		if( !interface )
+		const CInterfaceDefinition *interface_definition = get_interface_by_module_id( module_id );
+		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR( "Can't find interface" );
 			return NTG_ERROR;
 		}
 
-		if( interface->module_source != NTG_MODULE_EMBEDDED )
+		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_EMBEDDED )
 		{
 			NTG_TRACE_ERROR( "Module isn't embedded" );
 			return NTG_ERROR;
 		}
 
-		return change_module_source( ( ntg_interface & ) *interface, NTG_MODULE_3RD_PARTY );
+		return change_module_source( ( CInterfaceDefinition & ) *interface_definition, CInterfaceDefinition::MODULE_3RD_PARTY );
 	}
 
 
@@ -308,14 +307,14 @@ namespace ntg_internal
 
 		result.remains_as_embedded = false;
 
-		ntg_interface *interface = ( ntg_interface * ) get_interface_by_module_id( module_id );
-		if( !interface )
+		const CInterfaceDefinition *interface_definition = get_interface_by_module_id( module_id );
+		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR( "Can't find interface" );
 			return NTG_ERROR;
 		}
 
-		if( interface->module_source != NTG_MODULE_3RD_PARTY )
+		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_3RD_PARTY )
 		{
 			NTG_TRACE_ERROR( "Can't uninstall module - it is not a 3rd party module" );
 			return NTG_ERROR;
@@ -324,44 +323,45 @@ namespace ntg_internal
 		if( is_module_in_use( server_->get_nodes(), module_id ) )
 		{
 			result.remains_as_embedded = true;
-			return change_module_source( *interface, NTG_MODULE_EMBEDDED );
+			return change_module_source( ( CInterfaceDefinition & ) *interface_definition, CInterfaceDefinition::MODULE_EMBEDDED );
 		}
 
 		result.remains_as_embedded = false;
 
-		error_code = CFileHelper::delete_file( interface->file_path );
+		error_code = CFileHelper::delete_file( interface_definition->get_file_path() );
 		if( error_code != NTG_NO_ERROR )
 		{
 			return error_code;
 		}
 
-		unload_module( interface );
+		unload_module( ( CInterfaceDefinition * ) interface_definition );
 		return NTG_NO_ERROR;
 	}
 
+
 	error_code CModuleManager::load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result )
 	{
-		for( map_guid_to_interface::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
+		for( map_guid_to_interface_definition::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
-			ntg_interface *interface = i->second;
+			CInterfaceDefinition &interface_definition = *i->second;
 
-			if( interface->module_source != NTG_MODULE_IN_DEVELOPMENT )
+			if( interface_definition.get_module_source() != CInterfaceDefinition::MODULE_IN_DEVELOPMENT )
 			{
 				continue;
 			}
 
 			if( ntg_guid_is_null( &result.previous_module_id ) )
 			{
-				result.previous_module_id = interface->module_guid;
+				result.previous_module_id = interface_definition.get_module_guid();
 
-				if( is_module_in_use( server_->get_nodes(), interface->module_guid ) )
+				if( is_module_in_use( server_->get_nodes(), interface_definition.get_module_guid() ) )
 				{
-					change_module_source( *interface, NTG_MODULE_EMBEDDED );
+					change_module_source( interface_definition, CInterfaceDefinition::MODULE_EMBEDDED );
 					result.previous_remains_as_embedded = true;
 				}
 				else
 				{
-					unload_module( interface );
+					unload_module( &interface_definition );
 				}
 			}
 			else
@@ -381,9 +381,9 @@ namespace ntg_internal
 	}
 
 
-	const ntg_interface *CModuleManager::get_interface_by_module_id( const GUID &id ) const
+	const CInterfaceDefinition *CModuleManager::get_interface_by_module_id( const GUID &id ) const
 	{
-		map_guid_to_interface::const_iterator lookup = m_module_id_map.find( id );
+		map_guid_to_interface_definition::const_iterator lookup = m_module_id_map.find( id );
 		if( lookup == m_module_id_map.end() ) 
 		{
 			return NULL;
@@ -395,9 +395,9 @@ namespace ntg_internal
 	}
 
 
-	const ntg_interface *CModuleManager::get_interface_by_origin_id( const GUID &id ) const
+	const CInterfaceDefinition *CModuleManager::get_interface_by_origin_id( const GUID &id ) const
 	{
-		map_guid_to_interface::const_iterator lookup = m_origin_id_map.find( id );
+		map_guid_to_interface_definition::const_iterator lookup = m_origin_id_map.find( id );
 		if( lookup == m_origin_id_map.end() ) 
 		{
 			return NULL;
@@ -409,9 +409,9 @@ namespace ntg_internal
 	}
 
 
-	const ntg_interface *CModuleManager::get_core_interface_by_name( const string &name ) const
+	const CInterfaceDefinition *CModuleManager::get_core_interface_by_name( const string &name ) const
 	{
-		map_string_to_interface::const_iterator lookup = m_core_name_map.find( name );
+		map_string_to_interface_definition::const_iterator lookup = m_core_name_map.find( name );
 		if( lookup == m_core_name_map.end() ) 
 		{
 			return NULL;
@@ -423,12 +423,12 @@ namespace ntg_internal
 	}
 
 
-	string CModuleManager::get_unique_interface_name( const ntg_interface &interface ) const
+	string CModuleManager::get_unique_interface_name( const CInterfaceDefinition &interface_definition ) const
 	{
-		char *module_guid = ntg_guid_to_string( &interface.module_guid );
+		char *module_guid = ntg_guid_to_string( &interface_definition.get_module_guid() );
 
 		ostringstream unique_name;
-		unique_name << interface.info->name << "-" << module_guid;
+		unique_name << interface_definition.get_interface_info().get_name() << "-" << module_guid;
 
 		delete[] module_guid;
 
@@ -436,13 +436,13 @@ namespace ntg_internal
 	}
 
 
-	string CModuleManager::get_patch_path( const ntg_interface &interface ) const
+	string CModuleManager::get_patch_path( const CInterfaceDefinition &interface_definition ) const
 	{
 		const string patch_extension = ".pd";
 
-		assert( interface.implementation && interface.implementation->patch_name );
+		assert( interface_definition.get_implementation_info() && !interface_definition.get_implementation_info()->get_patch_name().empty() );
 
-		string implementation_path = get_implementation_path( interface ) + interface.implementation->patch_name;
+		string implementation_path = get_implementation_path( interface_definition ) + interface_definition.get_implementation_info()->get_patch_name();
 
 		/* chop off patch extension */
 		int implementation_path_length = implementation_path.length() - patch_extension.length();
@@ -459,13 +459,13 @@ namespace ntg_internal
 	void CModuleManager::get_orphaned_embedded_modules( const node_map &search_nodes, guid_set &results ) const
 	{
 		/* first pass - collect ids of all embedded modules */
-		for( map_guid_to_interface::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
+		for( map_guid_to_interface_definition::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
-			const ntg_interface *interface = i->second;
+			const CInterfaceDefinition *interface_definition = i->second;
 
-			if( interface->module_source == NTG_MODULE_EMBEDDED )
+			if( interface_definition->get_module_source() == CInterfaceDefinition::MODULE_EMBEDDED )
 			{
-				results.insert( interface->module_guid );
+				results.insert( interface_definition->get_module_guid() );
 			}
 		}
 
@@ -478,10 +478,10 @@ namespace ntg_internal
 	{
 		for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ )
 		{
-			ntg_interface *interface = ( ntg_interface * ) get_interface_by_module_id( *i );
-			assert( interface );
+			CInterfaceDefinition *interface_definition = ( CInterfaceDefinition * ) get_interface_by_module_id( *i );
+			assert( interface_definition );
 
-			unload_module( interface );
+			unload_module( interface_definition );
 		}
 	}
 
@@ -500,7 +500,7 @@ namespace ntg_internal
 	}
 
 
-	void CModuleManager::load_modules_from_directory( const string &module_directory, ntg_module_source module_source )
+	void CModuleManager::load_modules_from_directory( const string &module_directory, CInterfaceDefinition::module_source source )
 	{
 		DIR *directory_stream;
 		struct dirent *directory_entry;
@@ -539,7 +539,7 @@ namespace ntg_internal
 					continue;
 
 				default:
-					load_module( full_path, module_source, module_guid );
+					load_module( full_path, source, module_guid );
 					break;
 			}
 		}
@@ -612,11 +612,9 @@ namespace ntg_internal
 	 however, it stores the id of the loaded module in module_guid regardless of whether the module was already loaded
 	*/
 
-	bool CModuleManager::load_module( const string &filename, ntg_module_source module_source, GUID &module_guid )
+	bool CModuleManager::load_module( const string &filename, CInterfaceDefinition::module_source source, GUID &module_guid )
 	{
 		unzFile unzip_file;
-		ntg_interface *interface = NULL;
-		unsigned int checksum = 0;
 
 		ntg_guid_set_null( &module_guid );
 
@@ -627,66 +625,67 @@ namespace ntg_internal
 			return false;
 		}
 
-		interface = load_interface( unzip_file );
-		if( !interface ) 
+		CInterfaceDefinition *interface_definition = load_interface( unzip_file );
+		if( !interface_definition ) 
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Failed to load interface", filename.c_str() );
 			unzClose( unzip_file );
 			return false;
 		}
 
-		module_guid = interface->module_guid;
+		module_guid = interface_definition->get_module_guid();
 
-		if( m_module_id_map.count( interface->module_guid ) > 0 )
+		if( m_module_id_map.count( module_guid ) > 0 )
 		{
-			NTG_TRACE_VERBOSE_WITH_STRING( "Module already loaded", interface->info->name );
-			ntg_interface_free( interface );
+			NTG_TRACE_VERBOSE_WITH_STRING( "Module already loaded", interface_definition->get_interface_info().get_name().c_str() );
+			delete interface_definition;
 			unzClose( unzip_file );
 			return false;
 		}
 
-		if( interface->info->implemented_in_libintegra && module_source != NTG_MODULE_SHIPPED_WITH_INTEGRA )
+		if( interface_definition->get_interface_info().get_implemented_in_libintegra() && source != CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Attempt to load 'implemented in libintegra' module as 3rd party or embedded", interface->info->name )
-			ntg_interface_free( interface );
+			NTG_TRACE_ERROR_WITH_STRING( "Attempt to load 'implemented in libintegra' module as 3rd party or embedded", interface_definition->get_interface_info().get_name().c_str() )
+			delete interface_definition;
 			unzClose( unzip_file );
 			return false;
 		}
 
-		interface->file_path = ntg_strdup( filename.c_str() );
-		interface->module_source = module_source;
+		interface_definition->set_file_path( filename );
+		interface_definition->set_module_source( source );
 
-		m_module_id_map[ interface->module_guid ] = interface;
+		m_module_id_map[ interface_definition->get_module_guid() ] = interface_definition;
 
-		if( m_origin_id_map.count( interface->origin_guid ) > 0 )
+		if( m_origin_id_map.count( interface_definition->get_origin_guid() ) > 0 )
 		{
-			NTG_TRACE_VERBOSE_WITH_STRING( "Two modules with same origin!  Leaving original in origin->interface table", interface->info->name );
+			NTG_TRACE_VERBOSE_WITH_STRING( "Two modules with same origin!  Leaving original in origin->interface table", interface_definition->get_interface_info().get_name().c_str() );
 		}
 		else
 		{
-			m_origin_id_map[ interface->origin_guid ] = interface;
+			m_origin_id_map[ interface_definition->get_origin_guid() ] = interface_definition;
 		}
 
-		if( ntg_interface_is_core( interface ) )
+		if( interface_definition->is_core_interface() )
 		{
-			if( m_core_name_map.count( interface->info->name ) > 0 )
+			const string &name = interface_definition->get_interface_info().get_name();
+			if( m_core_name_map.count( name ) > 0 )
 			{
-				NTG_TRACE_VERBOSE_WITH_STRING( "Two core modules with same name!  Leaving original in name->interface table", interface->info->name );
+				NTG_TRACE_VERBOSE_WITH_STRING( "Two core modules with same name!  Leaving original in name->interface table", name.c_str() );
 			}
 			else
 			{
-				m_core_name_map[ interface->info->name ] = interface;
+				m_core_name_map[ name ] = interface_definition;
 			}
 		}
 	
-		m_module_ids.insert( interface->module_guid );
+		m_module_ids.insert( interface_definition->get_module_guid() );
 
-		if( ntg_interface_has_implementation( interface ) )
+		if( interface_definition->has_implementation() )
 		{
-			extract_implementation( unzip_file, *interface, checksum );
+			unsigned int checksum = 0;
+			extract_implementation( unzip_file, *interface_definition, checksum );
 
-			assert( interface && interface->implementation );
-			interface->implementation->checksum = checksum;
+			interface_definition->set_implementation_checksum( checksum );
 		}
 
 		unzClose( unzip_file );
@@ -702,10 +701,10 @@ namespace ntg_internal
 
 		for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ )
 		{
-			ntg_interface *interface = ( ntg_interface * ) get_interface_by_module_id( *i );
-			assert( interface );
+			CInterfaceDefinition *interface_definition = ( CInterfaceDefinition * ) get_interface_by_module_id( *i );
+			assert( interface_definition );
 
-			unload_module( interface );
+			unload_module( interface_definition );
 		}
 
 		assert( m_module_ids.empty() );
@@ -715,12 +714,11 @@ namespace ntg_internal
 	}
 
 
-	ntg_interface *CModuleManager::load_interface( unzFile unzip_file )
+	CInterfaceDefinition *CModuleManager::load_interface( unzFile unzip_file )
 	{
 		unz_file_info file_info;
 		unsigned char *buffer = NULL;
 		unsigned int buffer_size = 0;
-		ntg_interface *interface = NULL;
 
 		assert( unzip_file );
 
@@ -752,14 +750,15 @@ namespace ntg_internal
 			return NULL;
 		}
 
-		interface = ntg_interface_load( buffer, buffer_size );
+		CInterfaceDefintionLoader interface_definition_loader;
+		CInterfaceDefinition *interface_definition = interface_definition_loader.load( buffer, buffer_size );
 		delete[] buffer;
 
-		return interface;
+		return interface_definition;
 	}
 
 
-	error_code CModuleManager::extract_implementation( unzFile unzip_file, const ntg_interface &interface, unsigned int &checksum )
+	error_code CModuleManager::extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum )
 	{
 		unz_file_info file_info;
 		char file_name[ NTG_LONG_STRLEN ];
@@ -771,7 +770,7 @@ namespace ntg_internal
 
 		checksum = 0;
 
-		string implementation_directory = get_implementation_path( interface );
+		string implementation_directory = get_implementation_path( interface_definition );
 
 		if( CFileHelper::is_directory( implementation_directory.c_str() ) )
 		{
@@ -855,160 +854,158 @@ namespace ntg_internal
 	}
 
 
-	void CModuleManager::unload_module( ntg_interface *interface )
+	void CModuleManager::unload_module( CInterfaceDefinition *interface_definition )
 	{
-		assert( interface );
+		assert( interface_definition );
 
-		if( ntg_interface_has_implementation( interface ) )
+		if( interface_definition->has_implementation() )
 		{
-			delete_implementation( *interface );
+			delete_implementation( *interface_definition );
 		}
 
-		if( interface->module_source == NTG_MODULE_EMBEDDED )
+		if( interface_definition->get_module_source() == CInterfaceDefinition::MODULE_EMBEDDED )
 		{
-			CFileHelper::delete_file( interface->file_path );
+			CFileHelper::delete_file( interface_definition->get_file_path() );
 		}
 
-		m_module_id_map.erase( interface->module_guid );
+		m_module_id_map.erase( interface_definition->get_module_guid() );
 
 		/* only remove origin id keys if the entry points to this interface */
-		map_guid_to_interface::const_iterator lookup = m_origin_id_map.find( interface->origin_guid );
+		map_guid_to_interface_definition::const_iterator lookup = m_origin_id_map.find( interface_definition->get_origin_guid() );
 		if( lookup != m_origin_id_map.end() )
 		{
-			if( lookup->second == interface )
+			if( lookup->second == interface_definition )
 			{
-				m_origin_id_map.erase( interface->origin_guid );
+				m_origin_id_map.erase( interface_definition->get_origin_guid() );
 			}
 		}
 
-		if( ntg_interface_is_core( interface ) )
+		if( interface_definition->is_core_interface() )
 		{
 			/* only remove from core name map if the entry points to this interface */
-			map_string_to_interface::const_iterator lookup = m_core_name_map.find( interface->info->name );
+			map_string_to_interface_definition::const_iterator lookup = m_core_name_map.find( interface_definition->get_interface_info().get_name() );
 			if( lookup != m_core_name_map.end() )
 			{
-				if( lookup->second == interface )
+				if( lookup->second == interface_definition )
 				{
-					m_core_name_map.erase( interface->info->name );
+					m_core_name_map.erase( interface_definition->get_interface_info().get_name() );
 				}
 			}
 		}
 
 		/* remove from id set */
-		m_module_ids.erase( interface->module_guid );
+		m_module_ids.erase( interface_definition->get_module_guid() );
 
-		ntg_interface_free( interface );
+		delete interface_definition;
 	}
 
 
-	string CModuleManager::get_implementation_path( const ntg_interface &interface ) const
+	string CModuleManager::get_implementation_path( const CInterfaceDefinition &interface_definition ) const
 	{
-		return m_implementation_directory_root + get_implementation_directory_name( interface );
+		return m_implementation_directory_root + get_implementation_directory_name( interface_definition );
 	}
 
 
-	string CModuleManager::get_implementation_directory_name( const ntg_interface &interface ) const
+	string CModuleManager::get_implementation_directory_name( const CInterfaceDefinition &interface_definition ) const
 	{
-		return get_unique_interface_name( interface ) + NTG_PATH_SEPARATOR;
+		return get_unique_interface_name( interface_definition ) + NTG_PATH_SEPARATOR;
 	}
 
 
-	void CModuleManager::delete_implementation( const ntg_interface &interface )
+	void CModuleManager::delete_implementation( const CInterfaceDefinition &interface_definition )
 	{
-		CFileHelper::delete_directory( get_implementation_path( interface ).c_str() );
+		CFileHelper::delete_directory( get_implementation_path( interface_definition ).c_str() );
 	}
 
 
 	error_code CModuleManager::store_module( const GUID &module_id )
 	{
-		ntg_interface *interface;
+		CInterfaceDefinition *interface_definition;
 		error_code error_code;
 
-		interface = ( ntg_interface * ) get_interface_by_module_id( module_id );
-		if( !interface )
+		interface_definition = ( CInterfaceDefinition * ) get_interface_by_module_id( module_id );
+		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR( "failed to lookup interface" );
 			return NTG_ERROR;
 		}
 
-		if( !interface->file_path )
+		if( interface_definition->get_file_path().empty() )
 		{
 			NTG_TRACE_ERROR( "Unknown interface file path" );
 			return NTG_ERROR;
 		}
 
-		string module_storage_path = get_storage_path( *interface );
+		string module_storage_path = get_storage_path( *interface_definition );
 		if( module_storage_path.empty() )
 		{
 			NTG_TRACE_ERROR( "failed to get storage path" );
 			return NTG_ERROR;
 		}
 
-		error_code = CFileHelper::copy_file( interface->file_path, module_storage_path );
+		error_code = CFileHelper::copy_file( interface_definition->get_file_path(), module_storage_path );
 		if( error_code != NTG_NO_ERROR )
 		{
 			return error_code;
 		}
 
-		delete[] interface->file_path;
-		interface->file_path = strdup( module_storage_path.c_str() );
+		interface_definition->set_file_path( module_storage_path );
 
 		return NTG_NO_ERROR;
 	}
 
 
-	string CModuleManager::get_storage_path( const ntg_interface &interface ) const
+	string CModuleManager::get_storage_path( const CInterfaceDefinition &interface_definition ) const
 	{
 		string storage_directory;
 
-		switch( interface.module_source )
+		switch( interface_definition.get_module_source() )
 		{
-			case NTG_MODULE_3RD_PARTY:
+			case CInterfaceDefinition::MODULE_3RD_PARTY:
 				storage_directory = m_third_party_module_directory;
 				break;
 
-			case NTG_MODULE_EMBEDDED:
+			case CInterfaceDefinition::MODULE_EMBEDDED:
 				storage_directory = m_embedded_module_directory; 
 				break;
 
-			case NTG_MODULE_SHIPPED_WITH_INTEGRA:
-			case NTG_MODULE_IN_DEVELOPMENT:
+			case CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
+			case CInterfaceDefinition::MODULE_IN_DEVELOPMENT:
 			default:
 				NTG_TRACE_ERROR( "Unexpected module source" );
 				return string();
 		}
 
-		string unique_name = get_unique_interface_name( interface );
+		string unique_name = get_unique_interface_name( interface_definition );
 
 		return storage_directory + unique_name + "." + NTG_MODULE_SUFFIX;
 	}
 
 
-	error_code CModuleManager::change_module_source( ntg_interface &interface, ntg_module_source new_source )
+	error_code CModuleManager::change_module_source( CInterfaceDefinition &interface_definition, CInterfaceDefinition::module_source new_source )
 	{
 		/* sanity checks */
-		if( interface.module_source == NTG_MODULE_SHIPPED_WITH_INTEGRA || new_source == NTG_MODULE_SHIPPED_WITH_INTEGRA )
+		if( interface_definition.get_module_source() == CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA || new_source == CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA )
 		{
 			return NTG_ERROR;
 		}
 
-		if( interface.module_source == new_source )
+		if( interface_definition.get_module_source() == new_source )
 		{
 			return NTG_ERROR;
 		}
 
-		interface.module_source = new_source;
+		interface_definition.set_module_source( new_source );
 
-		string new_file_path = get_storage_path( interface );
+		string new_file_path = get_storage_path( interface_definition );
 		if( new_file_path.empty() )
 		{
 			return NTG_FAILED;			
 		}
 
-		rename( interface.file_path, new_file_path.c_str() );
+		rename( interface_definition.get_file_path().c_str(), new_file_path.c_str() );
 
-		delete[] interface.file_path;
-		interface.file_path = strdup( new_file_path.c_str() );
+		interface_definition.set_file_path( new_file_path );
 	
 		return NTG_NO_ERROR;
 	}
@@ -1020,7 +1017,7 @@ namespace ntg_internal
 		{
 			const CNode *node = i->second;
 
-			if( ntg_guids_are_equal( &node->get_interface()->module_guid, &module_id ) )
+			if( ntg_guids_are_equal( &node->get_interface_definition().get_module_guid(), &module_id ) )
 			{
 				return true;
 			}
@@ -1041,7 +1038,7 @@ namespace ntg_internal
 		{
 			const CNode *node = i->second;
 			
-			set.erase( node->get_interface()->module_guid );
+			set.erase( node->get_interface_definition().get_module_guid() );
 
 			remove_in_use_module_ids_from_set( node->get_children(), set );
 		}

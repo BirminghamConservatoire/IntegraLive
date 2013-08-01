@@ -35,21 +35,11 @@ typedef xmlTextReader *xmlTextReaderPtr;
 #endif 
 #endif
 
-#ifndef NTG_INTERFACE_TYPEDEF
-typedef struct ntg_interface_ ntg_interface;
-#define NTG_INTERFACE_TYPEDEF
-#endif
-
-#ifdef _WINDOWS
-	#ifdef interface 
-		#undef interface
-	#endif
-#endif
-
 
 namespace ntg_internal
 {
 	class CNode;
+	class CInterfaceDefinition;
 
 	typedef std::list<const CNode *> node_list;
 	typedef std::unordered_map<ntg_api::string, CNode *> node_map;
@@ -62,13 +52,13 @@ namespace ntg_internal
 			CNode();
 			~CNode();
 
-			void initialize( const ntg_interface *interface, const ntg_api::string &name, CNode *parent );
+			void initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, CNode *parent );
 
 			void rename( const ntg_api::string &new_name );
 			void move( CNode *new_parent );
 
 			internal_id get_id() const { return m_id; }
-			const ntg_interface *get_interface() const { return m_interface; }
+			const CInterfaceDefinition &get_interface_definition() const { return *m_interface_definition; }
 
 			const ntg_api::string &get_name() const { return m_name; }
 			const ntg_api::CPath &get_path() const { return m_path; }
@@ -97,7 +87,7 @@ namespace ntg_internal
 			void update_all_paths();
 
 			internal_id m_id;
-			const ntg_interface *m_interface;
+			const CInterfaceDefinition *m_interface_definition;
 
 			ntg_api::string m_name;
 			ntg_api::CPath m_path;

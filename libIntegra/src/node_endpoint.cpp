@@ -25,7 +25,7 @@
 #include "node_endpoint.h"
 #include "node.h"
 #include "value.h"
-#include "interface.h"
+#include "interface_definition.h"
 #include "trace.h"
 
 
@@ -37,7 +37,7 @@ namespace ntg_internal
 	CNodeEndpoint::CNodeEndpoint()
 	{
 		m_node = NULL;
-		m_endpoint = NULL;
+		m_endpoint_definition = NULL;
 		m_value = NULL;
 	}
 
@@ -51,10 +51,10 @@ namespace ntg_internal
 	}
 
 		
-	void CNodeEndpoint::initialize( const CNode &node, const ntg_endpoint &endpoint )
+	void CNodeEndpoint::initialize( const CNode &node, const CEndpointDefinition &endpoint_definition )
 	{
 		m_node = &node;
-		m_endpoint = &endpoint;
+		m_endpoint_definition = &endpoint_definition;
 
 		if( m_value ) 
 		{
@@ -62,12 +62,12 @@ namespace ntg_internal
 			m_value = NULL;
 		}
 
-		if( endpoint.type == NTG_CONTROL && endpoint.control_info->type == NTG_STATE )
+		if( endpoint_definition.get_type() == CEndpointDefinition::CONTROL && endpoint_definition.get_control_info()->get_type() == CControlInfo::STATE )
 		{
-			const ntg_state_info *state_info = endpoint.control_info->state_info;
+			const CStateInfo *state_info = endpoint_definition.get_control_info()->get_state_info();
 			assert( state_info );
 
-			m_value = CValue::factory( state_info->type );
+			m_value = CValue::factory( state_info->get_type() );
 		}
 
 		update_path();
@@ -76,12 +76,21 @@ namespace ntg_internal
 
 	bool CNodeEndpoint::test_constraint( const ntg_api::CValue &value ) const
 	{
-		if( !m_endpoint->control_info || !m_endpoint->control_info->state_info )
+		const CControlInfo *control_info = m_endpoint_definition->get_control_info();
+		if( !control_info ) 
 		{
+			NTG_TRACE_ERROR( "not a constrained type of endpoint" );
 			return false;
 		}
 
-		CValue::type endpoint_type = m_endpoint->control_info->state_info->type;
+		const CStateInfo *state_info = control_info->get_state_info();
+		if( !state_info )
+		{
+			NTG_TRACE_ERROR( "not a constrained type of endpoint" );
+			return false;
+		}
+
+		CValue::type endpoint_type = state_info->get_type();
 
 		if( value.get_type() != endpoint_type )
 		{
@@ -92,9 +101,9 @@ namespace ntg_internal
 			return test_result;
 		}
 
-		const ntg_constraint *constraint = &m_endpoint->control_info->state_info->constraint;
+		const CConstraint &constraint = state_info->get_constraint();
 
-		const ntg_range *range = constraint->range;
+		const CValueRange *range = constraint.get_value_range();
 		if( range )
 		{
 			switch( value.get_type() )
@@ -105,8 +114,8 @@ namespace ntg_internal
 						const string &string_value = value;
 						int string_length = string_value.length();
 			
-						if( string_length < ( int ) *range->minimum ) return false;
-						if( string_length > ( int ) *range->maximum ) return false;
+						if( string_length < ( int ) range->get_minimum() ) return false;
+						if( string_length > ( int ) range->get_maximum() ) return false;
 
 						return true;
 					}
@@ -116,8 +125,8 @@ namespace ntg_internal
 						/* for integers, range constraint defines min/max value */
 						int int_value = value;
 
-						if( int_value < ( int ) *range->minimum ) return false;
-						if( int_value > ( int ) *range->maximum ) return false;
+						if( int_value < ( int ) range->get_minimum() ) return false;
+						if( int_value > ( int ) range->get_maximum() ) return false;
 
 						return true;
 					}
@@ -127,8 +136,8 @@ namespace ntg_internal
 						/* for floats, range constraint defines min/max value */
 						float float_value = value;
 
-						if( float_value < ( float ) *range->minimum ) return false;
-						if( float_value > ( float ) *range->maximum ) return false;
+						if( float_value < ( float ) range->get_minimum() ) return false;
+						if( float_value > ( float ) range->get_maximum() ) return false;
 
 						return true;
 					}
@@ -140,10 +149,11 @@ namespace ntg_internal
 		}
 		else	/* allowed value constraint */
 		{
-			const ntg_allowed_state *allowed_state;
-			for( allowed_state = constraint->allowed_states; allowed_state; allowed_state = allowed_state->next )
+			const value_set *allowed_states = constraint.get_allowed_states();
+			assert( allowed_states );
+			for( value_set::const_iterator i = allowed_states->begin(); i != allowed_states->end(); i++ )
 			{
-				if( value.is_equal( *allowed_state->value ) ) 
+				if( value.is_equal( **i ) ) 
 				{
 					return true;
 				}
@@ -156,10 +166,10 @@ namespace ntg_internal
 
 	void CNodeEndpoint::update_path()
 	{
-		assert( m_node && m_endpoint );
+		assert( m_node && m_endpoint_definition );
 
 		m_path = m_node->get_path();
-		m_path.append_element( m_endpoint->name );
+		m_path.append_element( m_endpoint_definition->get_name() );
 	}
 
 

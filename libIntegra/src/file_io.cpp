@@ -37,7 +37,7 @@
 #include "helper.h"
 #include "data_directory.h"
 #include "module_manager.h"
-#include "interface.h"
+#include "interface_definition.h"
 #include "validate.h"
 #include "server_commands.h"
 
@@ -198,9 +198,9 @@ void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_pa
 
 void ntg_find_module_guids_to_embed( const CNode &node, guid_set &module_guids_to_embed )
 {
-	if( ntg_interface_should_embed_module( node.get_interface() ) )
+	if( node.get_interface_definition().should_embed() )
 	{
-		module_guids_to_embed.insert( node.get_interface()->module_guid );
+		module_guids_to_embed.insert( node.get_interface_definition().get_module_guid() );
 	}
 
 	/* walk subtree */
@@ -265,11 +265,9 @@ xmlChar *ConvertInput(const char *in, const char *encoding)
     return out;
 }
 
+
 void ntg_copy_node_modules_to_zip( zipFile zip_file, const CNode &node, const CModuleManager &module_manager )
 {
-	const ntg_interface *interface;
-	char *target_path;
-
 	assert( zip_file );
 
 	guid_set module_guids_to_embed;
@@ -277,27 +275,25 @@ void ntg_copy_node_modules_to_zip( zipFile zip_file, const CNode &node, const CM
 
 	for( guid_set::const_iterator i = module_guids_to_embed.begin(); i != module_guids_to_embed.end(); i++ )
 	{
-		interface = module_manager.get_interface_by_module_id( *i );
-		if( !interface )
+		const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( *i );
+		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR( "Failed to retrieve interface" );
 			continue;
 		}
 
-		if( !interface->file_path )
+		if( interface_definition->get_file_path().empty() )
 		{
 			NTG_TRACE_ERROR( "Failed to locate module file" );
 			continue;
 		}
 
-		string unique_interface_name = module_manager.get_unique_interface_name( *interface );
+		string unique_interface_name = module_manager.get_unique_interface_name( *interface_definition );
 
-		target_path = new char[ strlen( NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME ) + unique_interface_name.length() + strlen( NTG_MODULE_SUFFIX ) + 2 ];
-		sprintf( target_path, "%s%s.%s", NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME, unique_interface_name.c_str(), NTG_MODULE_SUFFIX );
+		ostringstream target_path;
+		target_path << NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME << unique_interface_name << "." << NTG_MODULE_SUFFIX;
 
-		ntg_copy_file_to_zip( zip_file, target_path, interface->file_path );
-
-		delete[] target_path;
+		ntg_copy_file_to_zip( zip_file, target_path.str().c_str(), interface_definition->get_file_path().c_str() );
 	}
 }
 
@@ -441,14 +437,14 @@ error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
     xmlTextWriterStartElement( writer, BAD_CAST NTG_STR_OBJECT );
 
     /* write out node->interface->module_guid */
-	char *guid_string = ntg_guid_to_string( &node.get_interface()->module_guid );
+	char *guid_string = ntg_guid_to_string( &node.get_interface_definition().get_module_guid() );
     tmp = ConvertInput( guid_string, XML_ENCODING);
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_MODULEID, (char * ) tmp );
 	free( tmp );
 	delete[] guid_string;
 
     /* write out node->interface->origin_guid */
-	guid_string = ntg_guid_to_string( &node.get_interface()->origin_guid );
+	guid_string = ntg_guid_to_string( &node.get_interface_definition().get_origin_guid() );
     tmp = ConvertInput(guid_string, XML_ENCODING);
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_ORIGINID, (char * ) tmp );
 	free( tmp );
@@ -464,8 +460,8 @@ error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
 	{
 		const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
 		const CValue *value = node_endpoint->get_value();
-		const ntg_endpoint *endpoint = node_endpoint->get_endpoint();
-		if( !value || !endpoint->control_info->state_info->is_saved_to_file ) 
+		const CEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
+		if( !value || !endpoint_definition.get_control_info()->get_state_info()->get_is_saved_to_file() ) 
 		{
 			continue;
 		}
@@ -473,7 +469,7 @@ error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
         /* write attribute->name */
 		CValue::type type = value->get_type();
 
-		tmp = ConvertInput( endpoint->name, XML_ENCODING);
+		tmp = ConvertInput( endpoint_definition.get_name().c_str(), XML_ENCODING );
         xmlTextWriterStartElement(writer, BAD_CAST NTG_STR_ATTRIBUTE);
         xmlTextWriterWriteAttribute(writer, BAD_CAST NTG_STR_NAME,
                                     BAD_CAST tmp);
@@ -569,7 +565,7 @@ error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned i
 }
 
 
-const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader, const CModuleManager &module_manager )
+const CInterfaceDefinition *ntg_find_interface( xmlTextReaderPtr reader, const CModuleManager &module_manager )
 {
 	/*
 	 this method needs to deal with various permutations, due to the need to load modules by module id, origin id, and 
@@ -593,7 +589,6 @@ const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader, const CModuleM
 	GUID module_guid;
 	GUID origin_guid;
 	char *valuestr = NULL;
-	const ntg_interface *interface = NULL;
 
 	assert( reader );
 
@@ -638,17 +633,17 @@ const ntg_interface *ntg_find_interface( xmlTextReaderPtr reader, const CModuleM
 
 	if( !ntg_guid_is_null( &module_guid ) )
 	{
-		interface = module_manager.get_interface_by_module_id( module_guid );
-		if( interface )
+		const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( module_guid );
+		if( interface_definition )
 		{
-			return interface;
+			return interface_definition;
 		}
 	}
 
 	if( !ntg_guid_is_null( &origin_guid ) )
 	{
-		interface = module_manager.get_interface_by_origin_id( origin_guid );
-		return interface;
+		const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_origin_id( origin_guid );
+		return interface_definition;
 	}
 
 	return NULL;
@@ -691,7 +686,6 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
     unsigned int        type;
     unsigned int        prev_depth;
     int                 rv;
-	const ntg_interface *interface;
 	char				*saved_version;
 	bool				saved_version_is_more_recent;
 	const CNode *		parent = NULL;
@@ -744,8 +738,8 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 
             if (type == XML_READER_TYPE_ELEMENT) 
 			{
-				interface = ntg_find_interface( reader, server_->get_module_manager() );
-				if( interface )
+				const CInterfaceDefinition *interface_definition = ntg_find_interface( reader, server_->get_module_manager() );
+				if( interface_definition )
 				{
 					name = xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_NAME);
 
@@ -753,7 +747,7 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 					const CPath &parent_path = parent ? parent->get_path() : empty_path;
 					/* add the new node */
 					node = (CNode *)
-						ntg_new_( *server_, NTG_SOURCE_LOAD, &interface->module_guid, (char * ) name, parent_path ).data;
+						ntg_new_( *server_, NTG_SOURCE_LOAD, &interface_definition->get_module_guid(), (char * ) name, parent_path ).data;
 
 					xmlFree(name);
 
@@ -790,7 +784,7 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 				}
 
 				const CNodeEndpoint *existing_node_endpoint = node->get_node_endpoint( ( char * ) name );
-				if( existing_node_endpoint && ntg_endpoint_should_load_from_ixd( existing_node_endpoint->get_endpoint(), value->get_type() ) )
+				if( existing_node_endpoint && existing_node_endpoint->get_endpoint_definition().should_load_from_ixd( value->get_type() ) )
 				{
 					/* 
 					only store attribute if it exists and is of reasonable type 
@@ -798,7 +792,7 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 					*/
 
 					CPath path( node->get_path() );
-					path.append_element( existing_node_endpoint->get_endpoint()->name );
+					path.append_element( existing_node_endpoint->get_endpoint_definition().get_name() );
 
 					loaded_values[ path.get_string() ] = value;
 				}
@@ -833,21 +827,23 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 
 error_code ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge )
 {
-	const ntg_interface *interface = node.get_interface();
+	const CInterfaceDefinition &interface_definition = node.get_interface_definition();
 
-	if( !ntg_interface_has_implementation( interface ) )
+	if( !interface_definition.has_implementation() )
 	{
 		return NTG_NO_ERROR;
 	}
 
-	for( const ntg_endpoint *endpoint = interface->endpoint_list; endpoint; endpoint = endpoint->next )
+	const endpoint_definition_list &endpoint_definitions = interface_definition.get_endpoint_definitions();
+	for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 	{
-		if( !ntg_endpoint_should_send_to_host( endpoint ) || endpoint->control_info->type != NTG_STATE )
+		const CEndpointDefinition &endpoint_definition = **i;
+		if( !endpoint_definition.should_send_to_host() || endpoint_definition.get_control_info()->get_type() != CControlInfo::STATE )
 		{
 			continue;
 		}
 
-		const CNodeEndpoint *node_endpoint = node.get_node_endpoint( endpoint->name );
+		const CNodeEndpoint *node_endpoint = node.get_node_endpoint( endpoint_definition.get_name() );
 		assert( node_endpoint );
 
 		bridge->send_value( node_endpoint );

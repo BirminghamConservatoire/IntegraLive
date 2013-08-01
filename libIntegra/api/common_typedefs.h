@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 
 #include "../externals/guiddef.h"
 
@@ -52,6 +53,8 @@ namespace ntg_api
 	typedef std::ostringstream ostringstream;
 	typedef std::string string;
 	typedef std::vector<string> string_vector;
+	typedef std::unordered_set<string> string_set;
+	typedef std::unordered_map<string, string> string_map;
 
 
 	/* Guids */ 
@@ -71,6 +74,8 @@ namespace ntg_api
 
 namespace ntg_internal
 {
+	/* todo - don't define this here eventually! */
+
 	typedef enum ntg_command_source_ 
 	{
 		NTG_SOURCE_NONE = -1,

@@ -63,9 +63,6 @@
     <ClCompile Include="..\src\init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\interface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\luascripting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,6 +127,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\file_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\interface_definition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\interface_definition_loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,9 +221,6 @@
     <ClInclude Include="..\src\data_directory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\module_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -258,6 +258,12 @@
       <Filter>Header Files\api</Filter>
     </ClInclude>
     <ClInclude Include="..\src\file_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\interface_definition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\interface_definition_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

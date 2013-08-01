@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 #include <unistd.h>
 #include <assert.h>
 
@@ -35,7 +34,7 @@
 #include "server.h"
 #include "server_commands.h"
 #include "module_manager.h"
-#include "interface.h"
+#include "interface_definition.h"
 
 
 using namespace ntg_api;
@@ -47,7 +46,7 @@ namespace ntg_internal
 {
 	CNode::CNode()
 	{
-		m_interface = NULL;
+		m_interface_definition = NULL;
 		m_id = 0;
 		m_parent = NULL;
 	}
@@ -69,23 +68,24 @@ namespace ntg_internal
 	}
 
 
-	void CNode::initialize( const ntg_interface *interface, const ntg_api::string &name, CNode *parent )
+	void CNode::initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, CNode *parent )
 	{
-		assert( interface );
-
 		m_id = ntg_id_new();
-		m_interface = interface;
+		m_interface_definition = &interface_definition;
 		m_name = name;
 		m_parent = parent;
 
 		update_path();
 
-		for( const ntg_endpoint *endpoint = interface->endpoint_list; endpoint; endpoint = endpoint->next )
+		const endpoint_definition_list &endpoint_definitions = interface_definition.get_endpoint_definitions();
+		for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 		{
-			CNodeEndpoint *node_endpoint = new CNodeEndpoint;
-			node_endpoint->initialize( *this, *endpoint );
+			const CEndpointDefinition &endpoint_definition = **i;
 
-			m_node_endpoints[ endpoint->name ] = node_endpoint;
+			CNodeEndpoint *node_endpoint = new CNodeEndpoint;
+			node_endpoint->initialize( *this, endpoint_definition );
+
+			m_node_endpoints[ endpoint_definition.get_name() ] = node_endpoint;
 		}
 	}
 

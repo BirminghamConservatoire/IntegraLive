@@ -159,6 +159,7 @@ namespace ntg_api
 
 
 	typedef std::unordered_map<string, CValue *> value_map;
+	typedef std::unordered_set<CValue *> value_set;
 }
 
 

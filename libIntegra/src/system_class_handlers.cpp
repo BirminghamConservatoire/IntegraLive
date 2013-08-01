@@ -34,7 +34,7 @@
 #include "node_endpoint.h"
 #include "helper.h"
 #include "module_manager.h"
-#include "interface.h"
+#include "interface_definition.h"
 #include "value.h"
 #include "trace.h"
 #include "luascripting.h"
@@ -260,7 +260,7 @@ void ntg_node_activate_tree(CServer &server, const CNode &node, bool activate, p
 
 	const CNodeEndpoint *active_endpoint = node.get_node_endpoint( NTG_ENDPOINT_ACTIVE );
 
-	if( ntg_interface_is_core_name_match( node.get_interface(), NTG_CLASS_CONTAINER ) )
+	if( node.get_interface_definition().is_named_core_interface( NTG_CLASS_CONTAINER ) )
 	{
 		/* if node is a container, update 'activate' according to it's active flag */
 		assert( active_endpoint );
@@ -315,12 +315,12 @@ void ntg_container_active_handler( CServer &server, const CNode &node, bool acti
 		const CNode *activated_node = server.find_node( path );
 		assert( activated_node );
 
-		if( ntg_interface_is_core_name_match( activated_node->get_interface(), NTG_CLASS_ENVELOPE ) )
+		if( activated_node->get_interface_definition().is_named_core_interface( NTG_CLASS_ENVELOPE ) )
 		{
 			ntg_envelope_update_value( server, *activated_node );
 		}
 
-		if( ntg_interface_is_core_name_match( activated_node->get_interface(), NTG_CLASS_PLAYER ) )
+		if( activated_node->get_interface_definition().is_named_core_interface( NTG_CLASS_PLAYER ) )
 		{
 			const CNodeEndpoint *player_tick = activated_node->get_node_endpoint( NTG_ENDPOINT_TICK );
 			assert( player_tick );
@@ -391,7 +391,7 @@ void ntg_player_set_state(CServer &server, const CNode &player_node, int tick, i
 bool ntg_scene_is_selected( const CNode &scene_node )
 {
 	const CNode *player_node = scene_node.get_parent();
-	if( !player_node || !ntg_interface_is_core_name_match( player_node->get_interface(), NTG_CLASS_PLAYER ) )
+	if( !player_node || !player_node->get_interface_definition().is_named_core_interface( NTG_CLASS_PLAYER ) )
 	{
 		return false;
 	}
@@ -412,14 +412,14 @@ void ntg_container_update_path_of_players( CServer &server, const CNode &node )
 	{
 		const CNode *child = i->second;
 
-		if( ntg_interface_is_core_name_match( node.get_interface(), NTG_CLASS_CONTAINER ) )
+		if( node.get_interface_definition().is_named_core_interface( NTG_CLASS_CONTAINER ) )
 		{
 			/* recursively walk container tree */
 			ntg_container_update_path_of_players( server, *child );
 		}
 		else
 		{
-			if( ntg_interface_is_core_name_match( node.get_interface(), NTG_CLASS_PLAYER ) )
+			if( node.get_interface_definition().is_named_core_interface( NTG_CLASS_PLAYER ) )
 			{
 				ntg_player_handle_path_change( server, *child );
 			}
@@ -428,44 +428,35 @@ void ntg_container_update_path_of_players( CServer &server, const CNode &node )
 }
 
 
-void ntg_quantize_to_allowed_states( CValue &value, const ntg_allowed_state *allowed_states )
+void ntg_quantize_to_allowed_states( CValue &value, const value_set &allowed_states )
 {
-	const ntg_allowed_state *iterator;
 	const CValue *nearest_allowed_state = NULL;
 	float distance_to_current = 0;
 	float distance_to_nearest_allowed_state = 0;
 	bool first = true;
 
-	assert( allowed_states );
-
-	for( iterator = allowed_states; iterator; iterator = iterator->next )
+	for( value_set::const_iterator i = allowed_states.begin(); i != allowed_states.end(); i++ )
 	{
-		if( value.get_type() != iterator->value->get_type() )
+		const CValue *allowed_state = *i;
+		if( value.get_type() != allowed_state->get_type() )
 		{
 			NTG_TRACE_ERROR( "Value type mismatch whilst quantizing to allowed states" );
 			continue;
 		}
 
-		distance_to_current = abs( value.get_difference( *iterator->value ) );
-		if( first )
+		distance_to_current = abs( value.get_difference( *allowed_state ) );
+		if( first || distance_to_current < distance_to_nearest_allowed_state )
 		{
 			distance_to_nearest_allowed_state = distance_to_current;
-			nearest_allowed_state = iterator->value;
+			nearest_allowed_state = allowed_state;
 			first = false;
-		}
-		else
-		{
-			if( distance_to_current < distance_to_nearest_allowed_state )
-			{
-				distance_to_nearest_allowed_state = distance_to_current;
-				nearest_allowed_state = iterator->value;
-			}
 		}
 	}
 
 	if( !nearest_allowed_state )
 	{
 		NTG_TRACE_ERROR( "failed to quantize to allowed states - allowed states is empty" );
+		return;
 	}
 
 	assert( nearest_allowed_state->get_type() == value.get_type() );
@@ -496,7 +487,7 @@ void ntg_handle_connections( CServer &server, const CNode &search_node, const CN
 	for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 	{
 		const CNode *sibling = i->second;
-		if( !ntg_guids_are_equal( &sibling->get_interface()->module_guid, &server.get_system_class_data()->connection_interface_guid ) ) 
+		if( !ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
 		{
 			/* not a connection */
             continue;
@@ -514,7 +505,7 @@ void ntg_handle_connections( CServer &server, const CNode &search_node, const CN
 		const string &source_endpoint_value = *source_endpoint->get_value();
 		if( source_endpoint_value == relative_endpoint_path )
 		{
-			if( changed_endpoint->get_endpoint()->type != NTG_CONTROL || !changed_endpoint->get_endpoint()->control_info->can_be_source )
+			if( changed_endpoint->get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL || !changed_endpoint->get_endpoint_definition().get_control_info()->get_can_be_source() )
 			{
 				NTG_TRACE_ERROR( "aborting handling of connection from endpoint which cannot be a connection source" );
 				continue;
@@ -530,23 +521,24 @@ void ntg_handle_connections( CServer &server, const CNode &search_node, const CN
 			{
 				/* found a destination! */
 
-				if( destination_endpoint->get_endpoint()->type != NTG_CONTROL || !destination_endpoint->get_endpoint()->control_info->can_be_target )
+				if( destination_endpoint->get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL || !destination_endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 				{
 					NTG_TRACE_ERROR( "aborting handling of connection to endpoint which cannot be a connection target" );
 					continue;
 				}
 
 				CValue *converted_value;
-				if( destination_endpoint->get_endpoint()->control_info->type == NTG_STATE )
+				if( destination_endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::STATE )
 				{
 					if( changed_endpoint->get_value() )
 					{
 						converted_value = changed_endpoint->get_value()->transmogrify( destination_endpoint->get_value()->get_type() );
 
-						if( destination_endpoint->get_endpoint()->control_info->state_info->constraint.allowed_states )
+						const value_set *allowed_states = destination_endpoint->get_endpoint_definition().get_control_info()->get_state_info()->get_constraint().get_allowed_states();
+						if( allowed_states )
 						{
 							/* if destination has set of allowed states, quantize to nearest allowed state */
-							ntg_quantize_to_allowed_states( *converted_value, destination_endpoint->get_endpoint()->control_info->state_info->constraint.allowed_states );
+							ntg_quantize_to_allowed_states( *converted_value, *allowed_states );
 						}
 					}
 					else
@@ -557,7 +549,7 @@ void ntg_handle_connections( CServer &server, const CNode &search_node, const CN
 				}
 				else
 				{
-					assert( destination_endpoint->get_endpoint()->control_info->type == NTG_BANG );
+					assert( destination_endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::BANG );
 					converted_value = NULL;
 				}
 
@@ -605,7 +597,7 @@ void ntg_update_connections_on_object_rename( CServer &server, const CNode &sear
 	{
 		const CNode *sibling = i->second;
 
-		if( !ntg_guids_are_equal( &sibling->get_interface()->module_guid, &server.get_system_class_data()->connection_interface_guid ) ) 
+		if( !ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
 		{
 			/* current is not a connection */
             continue;
@@ -637,7 +629,7 @@ void ntg_update_connection_path_on_move( CServer &server, const CNodeEndpoint *c
 	int absolute_path_length;
 	int characters_after_old_path;
 
-	const CNode *parent = connection_path->get_node()->get_parent();
+	const CNode *parent = connection_path->get_node().get_parent();
 	const string &connection_path_string = *connection_path->get_value();
 
 	ostringstream absolute_path_stream;
@@ -658,7 +650,7 @@ void ntg_update_connection_path_on_move( CServer &server, const CNodeEndpoint *c
 		return;
 	}
 
-	const CPath &parent_path = connection_path->get_node()->get_parent_path();
+	const CPath &parent_path = connection_path->get_node().get_parent_path();
 	for( int i = 0; i < parent_path.get_number_of_elements(); i++ )
 	{
 		if( i >= new_path.get_number_of_elements() || new_path[ i ] != parent_path[ i ] )
@@ -691,7 +683,7 @@ void ntg_update_connections_on_object_move( CServer &server, const CNode &search
 	for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 	{
 		const CNode *sibling = i->second;
-		if( !ntg_guids_are_equal( &sibling->get_interface()->module_guid, &server.get_system_class_data()->connection_interface_guid ) ) 
+		if( !ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
 		{
 			/* current is not a connection */
             continue;
@@ -716,16 +708,16 @@ void ntg_update_connections_on_object_move( CServer &server, const CNode &search
 
 error_code ntg_connect_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect )
 {
-	const ntg_endpoint *source_endpoint = source.get_endpoint();
-	const ntg_endpoint *target_endpoint = target.get_endpoint();
+	const CEndpointDefinition &source_endpoint_definition = source.get_endpoint_definition();
+	const CEndpointDefinition &target_endpoint_definition = target.get_endpoint_definition();
 
-	if( !ntg_endpoint_is_audio_stream( source_endpoint ) || source_endpoint->stream_info->direction != NTG_STREAM_OUTPUT )
+	if( !source_endpoint_definition.is_audio_stream() || source_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::OUTPUT )
 	{
 		NTG_TRACE_ERROR( "trying to make incorrect connection in host - source isn't an audio output" );
 		return NTG_ERROR;
 	}
 
-	if( !ntg_endpoint_is_audio_stream( target_endpoint ) || target_endpoint->stream_info->direction != NTG_STREAM_INPUT )
+	if( !target_endpoint_definition.is_audio_stream() || target_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::INPUT )
 	{
 		NTG_TRACE_ERROR( "trying to make incorrect connection in host - target isn't an audio output" );
 		return NTG_ERROR;
@@ -782,7 +774,7 @@ bool ntg_should_copy_input_file( const CValue &value, ntg_command_source cmd_sou
 void ntg_handle_input_file( CServer &server, const CNodeEndpoint *endpoint, ntg_command_source cmd_source )
 {
 	assert( endpoint );
-	assert( ntg_node_has_data_directory( *endpoint->get_node() ) );
+	assert( ntg_node_has_data_directory( endpoint->get_node() ) );
 
 	string filename = CDataDirectory::copy_file_to_data_directory( *endpoint );
 	if( !filename.empty() )
@@ -803,15 +795,15 @@ void ntg_generic_active_handler( CServer &server, const CNodeEndpoint *endpoint,
 {
 	assert( endpoint );
 
-	if( ntg_interface_is_core_name_match( endpoint->get_node()->get_interface(), NTG_CLASS_CONTAINER ) )
+	if( endpoint->get_node().get_interface_definition().is_named_core_interface( NTG_CLASS_CONTAINER ) )
 	{
-		ntg_container_active_handler( server, *endpoint->get_node(), ( int ) *endpoint->get_value() != 0 );
+		ntg_container_active_handler( server, endpoint->get_node(), ( int ) *endpoint->get_value() != 0 );
 	}
 	else
 	{
 		if( cmd_source == NTG_SOURCE_INITIALIZATION )
 		{
-			ntg_non_container_active_initializer( server, *endpoint->get_node() );
+			ntg_non_container_active_initializer( server, endpoint->get_node() );
 		}
 	}
 }
@@ -824,7 +816,7 @@ void ntg_generic_data_directory_handler( CServer &server, const CNodeEndpoint *e
 		case NTG_SOURCE_INITIALIZATION:
 			/* create and set data directory when the endpoint is initialized */
 			{
-			string data_directory = CDataDirectory::create_for_node( *endpoint->get_node(), server );
+			string data_directory = CDataDirectory::create_for_node( endpoint->get_node(), server );
 			ntg_set_( server, NTG_SOURCE_SYSTEM, endpoint->get_path(), &CStringValue( data_directory ) );
 			}
 			break;
@@ -857,21 +849,21 @@ void ntg_generic_data_directory_handler( CServer &server, const CNodeEndpoint *e
 
 void ntg_script_trigger_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *script_node = endpoint->get_node();
+	const CNode &script_node = endpoint->get_node();
 
-	const CNodeEndpoint *text_endpoint = script_node->get_node_endpoint( NTG_ENDPOINT_TEXT );
+	const CNodeEndpoint *text_endpoint = script_node.get_node_endpoint( NTG_ENDPOINT_TEXT );
     assert( text_endpoint );
 
     const string &script = *text_endpoint->get_value();
 
     NTG_TRACE_VERBOSE_WITH_STRING( "running script...", script.c_str() );
 
-	const CPath &parent_path = script_node->get_parent_path();
+	const CPath &parent_path = script_node.get_parent_path();
 	
     char *script_output = ntg_lua_eval( parent_path, script.c_str() );
 	if( script_output )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, script_node->get_node_endpoint( NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) );
+		ntg_set_( server, NTG_SOURCE_SYSTEM, script_node.get_node_endpoint( NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) );
 		delete[] script_output;
 	}
 
@@ -881,18 +873,18 @@ void ntg_script_trigger_handler( CServer &server, const CNodeEndpoint *endpoint,
 
 void ntg_scaler_in_value_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *scaler_node = endpoint->get_node();
+	const CNode &scaler_node = endpoint->get_node();
 
-	if( !ntg_node_is_active( *scaler_node ) )
+	if( !ntg_node_is_active( scaler_node ) )
 	{
 		return;
 	}
 
-	const CNodeEndpoint *in_range_min_endpoint = scaler_node->get_node_endpoint( NTG_ENDPOINT_IN_RANGE_MIN );
-	const CNodeEndpoint *in_range_max_endpoint = scaler_node->get_node_endpoint( NTG_ENDPOINT_IN_RANGE_MAX );
-	const CNodeEndpoint *out_range_min_endpoint = scaler_node->get_node_endpoint( NTG_ENDPOINT_OUT_RANGE_MIN );
-	const CNodeEndpoint *out_range_max_endpoint = scaler_node->get_node_endpoint( NTG_ENDPOINT_OUT_RANGE_MAX );
-	const CNodeEndpoint *out_value_endpoint = scaler_node->get_node_endpoint( NTG_ENDPOINT_OUT_VALUE);
+	const CNodeEndpoint *in_range_min_endpoint = scaler_node.get_node_endpoint( NTG_ENDPOINT_IN_RANGE_MIN );
+	const CNodeEndpoint *in_range_max_endpoint = scaler_node.get_node_endpoint( NTG_ENDPOINT_IN_RANGE_MAX );
+	const CNodeEndpoint *out_range_min_endpoint = scaler_node.get_node_endpoint( NTG_ENDPOINT_OUT_RANGE_MIN );
+	const CNodeEndpoint *out_range_max_endpoint = scaler_node.get_node_endpoint( NTG_ENDPOINT_OUT_RANGE_MAX );
+	const CNodeEndpoint *out_value_endpoint = scaler_node.get_node_endpoint( NTG_ENDPOINT_OUT_VALUE);
 	assert( in_range_min_endpoint && in_range_max_endpoint && out_range_min_endpoint && out_range_max_endpoint && out_value_endpoint);
 
 	assert( endpoint->get_value()->get_type() == CValue::FLOAT );
@@ -935,14 +927,14 @@ void ntg_scaler_in_value_handler( CServer &server, const CNodeEndpoint *endpoint
 
 void ntg_control_point_value_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *parent = endpoint->get_node()->get_parent();
+	const CNode *parent = endpoint->get_node().get_parent();
 	if( !parent )
 	{
 		NTG_TRACE_ERROR( "control point with no parent" );
 		return;
 	}
 
-	if( !ntg_interface_is_core_name_match( parent->get_interface(), NTG_CLASS_ENVELOPE ) )
+	if( !parent->get_interface_definition().is_named_core_interface( NTG_CLASS_ENVELOPE ) )
 	{
 		NTG_TRACE_ERROR( "control point whose parent is not an envelope" );
 		return;
@@ -954,14 +946,14 @@ void ntg_control_point_value_handler( CServer &server, const CNodeEndpoint *endp
 
 void ntg_control_point_tick_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *parent =  endpoint->get_node()->get_parent();
+	const CNode *parent =  endpoint->get_node().get_parent();
 	if( !parent )
 	{
 		NTG_TRACE_ERROR( "control point with no parent" );
 		return;
 	}
 
-	if( !ntg_interface_is_core_name_match( parent->get_interface(), NTG_CLASS_ENVELOPE ) )
+	if( !parent->get_interface_definition().is_named_core_interface( NTG_CLASS_ENVELOPE ) )
 	{ 
 		NTG_TRACE_ERROR( "control point whose parent is not an envelope" );
 		return;
@@ -973,25 +965,25 @@ void ntg_control_point_tick_handler( CServer &server, const CNodeEndpoint *endpo
 
 void ntg_envelope_start_tick_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_envelope_update_value(server, *endpoint->get_node() );
+	ntg_envelope_update_value(server, endpoint->get_node() );
 }
 
 
 void ntg_envelope_current_tick_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_envelope_update_value(server, *endpoint->get_node() );
+	ntg_envelope_update_value(server, endpoint->get_node() );
 }
 
 
 void ntg_player_active_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, endpoint->get_node()->get_id() );
+	ntg_player_update(server, endpoint->get_node().get_id() );
 }
 
 
 void ntg_player_play_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, endpoint->get_node()->get_id() );
+	ntg_player_update(server, endpoint->get_node().get_id() );
 }
 
 
@@ -999,26 +991,26 @@ void ntg_player_tick_handler( CServer &server, const CNodeEndpoint *endpoint, co
 {
 	if( cmd_source != NTG_SOURCE_SYSTEM )
 	{
-		ntg_player_update(server, endpoint->get_node()->get_id() );
+		ntg_player_update(server, endpoint->get_node().get_id() );
 	}
 }
 
 
 void ntg_player_loop_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, endpoint->get_node()->get_id() );
+	ntg_player_update(server, endpoint->get_node().get_id() );
 }
 
 
 void ntg_player_start_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, endpoint->get_node()->get_id() );
+	ntg_player_update(server, endpoint->get_node().get_id() );
 }
 
 
 void ntg_player_end_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	ntg_player_update(server, endpoint->get_node()->get_id() );
+	ntg_player_update(server, endpoint->get_node().get_id() );
 }
 
 
@@ -1036,7 +1028,7 @@ void ntg_player_scene_handler( CServer &server, const CNodeEndpoint *endpoint, c
 
 	string scene_name = *endpoint->get_value();
 
-	const CNode *scene_node = endpoint->get_node()->get_child( scene_name );
+	const CNode *scene_node = endpoint->get_node().get_child( scene_name );
 	if( !scene_node )	
 	{
 		if( !scene_name.empty() )
@@ -1076,14 +1068,14 @@ void ntg_player_scene_handler( CServer &server, const CNodeEndpoint *endpoint, c
 		}
 	}
 
-	ntg_player_set_state( server, *endpoint->get_node(), tick, play, loop, start, end );
+	ntg_player_set_state( server, endpoint->get_node(), tick, play, loop, start, end );
 }
 
 
 void ntg_scene_activate_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *player_node = endpoint->get_node()->get_parent();
-	if( !player_node || !ntg_interface_is_core_name_match( player_node->get_interface(), NTG_CLASS_PLAYER ) )
+	const CNode *player_node = endpoint->get_node().get_parent();
+	if( !player_node || !player_node->get_interface_definition().is_named_core_interface( NTG_CLASS_PLAYER ) )
 	{
 		NTG_TRACE_ERROR( "scene not inside player" );
 		return;
@@ -1092,21 +1084,21 @@ void ntg_scene_activate_handler( CServer &server, const CNodeEndpoint *endpoint,
 	const CNodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_SCENE );
 	assert( player_scene_endpoint );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_scene_endpoint->get_path(), &CStringValue( endpoint->get_node()->get_name() ) ); 
+	ntg_set_( server, NTG_SOURCE_SYSTEM, player_scene_endpoint->get_path(), &CStringValue( endpoint->get_node().get_name() ) ); 
 }
 
 
 void ntg_scene_mode_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *scene_node = endpoint->get_node();
+	const CNode &scene_node = endpoint->get_node();
 
-	if( !ntg_scene_is_selected( *scene_node ) )
+	if( !ntg_scene_is_selected( scene_node ) )
 	{
 		return;
 	}
 
-	const CNodeEndpoint *scene_start_endpoint = scene_node->get_node_endpoint( NTG_ENDPOINT_START );
-	const CNodeEndpoint *scene_length_endpoint = scene_node->get_node_endpoint( NTG_ENDPOINT_LENGTH );
+	const CNodeEndpoint *scene_start_endpoint = scene_node.get_node_endpoint( NTG_ENDPOINT_START );
+	const CNodeEndpoint *scene_length_endpoint = scene_node.get_node_endpoint( NTG_ENDPOINT_LENGTH );
 	assert( scene_start_endpoint && scene_length_endpoint );
 
 	string scene_mode = *endpoint->get_value();
@@ -1140,8 +1132,8 @@ void ntg_scene_mode_handler( CServer &server, const CNodeEndpoint *endpoint, con
 		play = 1;
 	}
 
-	const CNode *player = scene_node->get_parent();
-	if( !player || !ntg_interface_is_core_name_match( player->get_interface(), NTG_CLASS_PLAYER ) )
+	const CNode *player = scene_node.get_parent();
+	if( !player || !player->get_interface_definition().is_named_core_interface( NTG_CLASS_PLAYER ) )
 	{
 		NTG_TRACE_ERROR( "scene not inside player" );
 		return;
@@ -1153,18 +1145,18 @@ void ntg_scene_mode_handler( CServer &server, const CNodeEndpoint *endpoint, con
 
 void ntg_scene_start_and_length_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *scene_node = endpoint->get_node();
+	const CNode &scene_node = endpoint->get_node();
 
-	if( !ntg_scene_is_selected( *scene_node ) )
+	if( !ntg_scene_is_selected( scene_node ) )
 	{
 		return;
 	}
 
-	const CNodeEndpoint *scene_start = scene_node->get_node_endpoint( NTG_ENDPOINT_START );
-	const CNodeEndpoint *scene_length = scene_node->get_node_endpoint( NTG_ENDPOINT_LENGTH );
-	const CNodeEndpoint *player_tick = scene_node->get_node_endpoint( NTG_ENDPOINT_TICK );
-	const CNodeEndpoint *player_start = scene_node->get_node_endpoint( NTG_ENDPOINT_START );
-	const CNodeEndpoint *player_end = scene_node->get_node_endpoint( NTG_ENDPOINT_END );
+	const CNodeEndpoint *scene_start = scene_node.get_node_endpoint( NTG_ENDPOINT_START );
+	const CNodeEndpoint *scene_length = scene_node.get_node_endpoint( NTG_ENDPOINT_LENGTH );
+	const CNodeEndpoint *player_tick = scene_node.get_node_endpoint( NTG_ENDPOINT_TICK );
+	const CNodeEndpoint *player_start = scene_node.get_node_endpoint( NTG_ENDPOINT_START );
+	const CNodeEndpoint *player_end = scene_node.get_node_endpoint( NTG_ENDPOINT_END );
 	assert( scene_start && scene_length && player_tick && player_start && player_end );
 
 	int start = *scene_start->get_value();
@@ -1182,11 +1174,11 @@ void ntg_scene_start_and_length_handler( CServer &server, const CNodeEndpoint *e
 
 void ntg_player_next_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *player_node = endpoint->get_node();
+	const CNode &player_node = endpoint->get_node();
 
 	/* find selected scene start*/
-	const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_SCENE );
-	const CNodeEndpoint *tick_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_TICK );
+	const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( NTG_ENDPOINT_SCENE );
+	const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( NTG_ENDPOINT_TICK );
 	assert( scene_endpoint && tick_endpoint );
 
 	int player_tick = *tick_endpoint->get_value();
@@ -1198,7 +1190,7 @@ void ntg_player_next_handler( CServer &server, const CNodeEndpoint *endpoint, co
 
 	if( !selected_scene_name.empty() )
 	{
-		selected_scene = player_node->get_child( selected_scene_name );
+		selected_scene = player_node.get_child( selected_scene_name );
 		if( selected_scene )
 		{
 			scene_start_endpoint = selected_scene->get_node_endpoint( NTG_ENDPOINT_START );
@@ -1210,11 +1202,11 @@ void ntg_player_next_handler( CServer &server, const CNodeEndpoint *endpoint, co
 	int best_scene_start;
 	int search_scene_start;
 
-	const node_map &scenes = player_node->get_children();
+	const node_map &scenes = player_node.get_children();
 	for( node_map::const_iterator i = scenes.begin(); i != scenes.end(); i++ )
 	{
 		const CNode *search_scene = i->second;
-		if( !ntg_interface_is_core_name_match( search_scene->get_interface(), NTG_CLASS_SCENE ) )
+		if( !search_scene->get_interface_definition().is_named_core_interface( NTG_CLASS_SCENE ) )
 		{
 			NTG_TRACE_ERROR( "Object other than scene in player" );
 			continue;
@@ -1246,11 +1238,11 @@ void ntg_player_next_handler( CServer &server, const CNodeEndpoint *endpoint, co
 
 void ntg_player_prev_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	const CNode *player_node = endpoint->get_node();
+	const CNode &player_node = endpoint->get_node();
 
 	/* find selected scene start*/
-	const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_SCENE );
-	const CNodeEndpoint *tick_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_TICK );
+	const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( NTG_ENDPOINT_SCENE );
+	const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( NTG_ENDPOINT_TICK );
 	assert( scene_endpoint && tick_endpoint );
 
 	int player_tick = *tick_endpoint->get_value();
@@ -1262,7 +1254,7 @@ void ntg_player_prev_handler( CServer &server, const CNodeEndpoint *endpoint, co
 
 	if( !selected_scene_name.empty() )
 	{
-		selected_scene = player_node->get_child( selected_scene_name );
+		selected_scene = player_node.get_child( selected_scene_name );
 		if( selected_scene )
 		{
 			scene_start_endpoint = selected_scene->get_node_endpoint( NTG_ENDPOINT_START );
@@ -1274,11 +1266,11 @@ void ntg_player_prev_handler( CServer &server, const CNodeEndpoint *endpoint, co
 	int best_scene_start;
 	int search_scene_start;
 
-	const node_map &scenes = player_node->get_children();
+	const node_map &scenes = player_node.get_children();
 	for( node_map::const_iterator i = scenes.begin(); i != scenes.end(); i++ )
 	{
 		const CNode *search_scene = i->second;
-		if( !ntg_interface_is_core_name_match( search_scene->get_interface(), NTG_CLASS_SCENE ) )
+		if( !search_scene->get_interface_definition().is_named_core_interface( NTG_CLASS_SCENE ) )
 		{
 			NTG_TRACE_ERROR( "Object other than scene in player" );
 			continue;
@@ -1319,47 +1311,46 @@ void ntg_connection_source_path_handler( CServer &server, const CNodeEndpoint *e
 	}
 
 	assert( endpoint );
-	const CNode *connection_node = endpoint->get_node();
-	assert( connection_node );
-	const CNode *connection_owner = connection_node->get_parent();
+	const CNode &connection_node = endpoint->get_node();
+	const CNode *connection_owner = connection_node.get_parent();
 
-	const CNodeEndpoint *source_path = connection_node->get_node_endpoint( NTG_ENDPOINT_SOURCE_PATH );
-	const CNodeEndpoint *target_path = connection_node->get_node_endpoint( NTG_ENDPOINT_TARGET_PATH );
+	const CNodeEndpoint *source_path = connection_node.get_node_endpoint( NTG_ENDPOINT_SOURCE_PATH );
+	const CNodeEndpoint *target_path = connection_node.get_node_endpoint( NTG_ENDPOINT_TARGET_PATH );
 	assert( source_path && target_path );
 
 	const CNodeEndpoint *old_source_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
 	const CNodeEndpoint *new_source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
 	const CNodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
 
-	if( new_source_endpoint && new_source_endpoint->get_endpoint()->type == NTG_CONTROL && !new_source_endpoint->get_endpoint()->control_info->can_be_source )
+	if( new_source_endpoint && new_source_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_source_endpoint->get_endpoint_definition().get_control_info()->get_can_be_source() )
 	{
 		NTG_TRACE_ERROR( "Setting connection source to an endpoint which should not be a connection source!" );
 	}
 
-	if( !target_endpoint || !ntg_endpoint_is_audio_stream( target_endpoint->get_endpoint() ) )
+	if( !target_endpoint || !target_endpoint->get_endpoint_definition().is_audio_stream() )
 	{
 		/* early exit - wasn't an audio connection before and still isn't */
 		return;
 	}
 
-	if( target_endpoint->get_endpoint()->stream_info->direction != NTG_STREAM_INPUT )
+	if( target_endpoint->get_endpoint_definition().get_stream_info()->get_direction() != CStreamInfo::INPUT )
 	{
 		/* early exit - target isn't an input */
 		return;
 	}
 
-	if( old_source_endpoint && ntg_endpoint_is_audio_stream( old_source_endpoint->get_endpoint() ) )
+	if( old_source_endpoint && old_source_endpoint->get_endpoint_definition().is_audio_stream() )
 	{
-		if( old_source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
+		if( old_source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 		{
 			/* remove previous connection in host */
 			ntg_connect_in_host( server, *old_source_endpoint, *target_endpoint, false );
 		}
 	}
 
-	if( new_source_endpoint && ntg_endpoint_is_audio_stream( new_source_endpoint->get_endpoint() ) )
+	if( new_source_endpoint && new_source_endpoint->get_endpoint_definition().is_audio_stream() )
 	{
-		if( new_source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
+		if( new_source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 		{
 			/* create new connection in host */
 			ntg_connect_in_host( server, *new_source_endpoint, *target_endpoint, true );
@@ -1379,48 +1370,47 @@ void ntg_connection_target_path_handler( CServer &server, const CNodeEndpoint *e
 	}
 
 	assert( endpoint );
-	const CNode *connection_node = endpoint->get_node();
-	assert( connection_node );
-	const CNode *connection_owner = connection_node->get_parent();
+	const CNode &connection_node = endpoint->get_node();
+	const CNode *connection_owner = connection_node.get_parent();
 
-	const CNodeEndpoint *source_path = connection_node->get_node_endpoint( NTG_ENDPOINT_SOURCE_PATH );
-	const CNodeEndpoint *target_path = connection_node->get_node_endpoint( NTG_ENDPOINT_TARGET_PATH );
+	const CNodeEndpoint *source_path = connection_node.get_node_endpoint( NTG_ENDPOINT_SOURCE_PATH );
+	const CNodeEndpoint *target_path = connection_node.get_node_endpoint( NTG_ENDPOINT_TARGET_PATH );
 	assert( source_path && target_path );
 
 	const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
 	const CNodeEndpoint *old_target_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
 	const CNodeEndpoint *new_target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
 
-	if( new_target_endpoint && new_target_endpoint->get_endpoint()->type == NTG_CONTROL && !new_target_endpoint->get_endpoint()->control_info->can_be_target )
+	if( new_target_endpoint && new_target_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_target_endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 	{
 		NTG_TRACE_ERROR( "Setting connection target to an endpoint which should not be a connection target!" );
 	}
 
 
-	if( !source_endpoint || !ntg_endpoint_is_audio_stream( source_endpoint->get_endpoint() ) )
+	if( !source_endpoint || !source_endpoint->get_endpoint_definition().is_audio_stream() )
 	{
 		/* early exit - wasn't an audio connection before and still isn't */
 		return;
 	}
 
-	if( source_endpoint->get_endpoint()->stream_info->direction != NTG_STREAM_OUTPUT )
+	if( source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() != CStreamInfo::OUTPUT )
 	{
 		/* early exit - source isn't an output */
 		return;
 	}
 
-	if( old_target_endpoint && ntg_endpoint_is_audio_stream( old_target_endpoint->get_endpoint() ) )
+	if( old_target_endpoint && old_target_endpoint->get_endpoint_definition().is_audio_stream() )
 	{
-		if( old_target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
+		if( old_target_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::INPUT )
 		{
 			/* remove previous connection in host */
 			ntg_connect_in_host( server, *source_endpoint, *old_target_endpoint, false );
 		}
 	}
 
-	if( new_target_endpoint && ntg_endpoint_is_audio_stream( new_target_endpoint->get_endpoint() ) )
+	if( new_target_endpoint && new_target_endpoint->get_endpoint_definition().is_audio_stream() )
 	{
-		if( new_target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
+		if( new_target_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::INPUT )
 		{
 			/* create new connection in host */
 			ntg_connect_in_host( server, *source_endpoint, *new_target_endpoint, true );
@@ -1431,7 +1421,7 @@ void ntg_connection_target_path_handler( CServer &server, const CNodeEndpoint *e
 
 void ntg_generic_set_handler( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source )
 {
-	if( ntg_endpoint_is_input_file( endpoint->get_endpoint() ) && ntg_should_copy_input_file( *endpoint->get_value(), cmd_source ) )
+	if( endpoint->get_endpoint_definition().is_input_file() && ntg_should_copy_input_file( *endpoint->get_value(), cmd_source ) )
 	{
 		ntg_handle_input_file( server, endpoint, cmd_source );
 	}
@@ -1443,7 +1433,7 @@ void ntg_generic_set_handler( CServer &server, const CNodeEndpoint *endpoint, co
 			break;
 
 		default:
-			ntg_handle_connections( server, *endpoint->get_node(), endpoint );
+			ntg_handle_connections( server, endpoint->get_node(), endpoint );
 	}
 }
 
@@ -1472,7 +1462,7 @@ void ntg_scene_rename_handler( CServer &server, const CNode &node, const char *p
 	/* if this is the selected scene, need to update the player's scene endpoint */
 
 	const CNode *player = node.get_parent();
-	if( !player || !ntg_interface_is_core_name_match( player->get_interface(), NTG_CLASS_PLAYER ) )
+	if( !player || !player->get_interface_definition().is_named_core_interface( NTG_CLASS_PLAYER ) )
 	{
 		NTG_TRACE_ERROR( "scene not in a player" );
 		return;
@@ -1539,7 +1529,7 @@ void ntg_generic_new_handler( CServer &server, const CNode &new_node, ntg_comman
 		{
 			const CNode *sibling = i->second;
 
-			if( sibling != ancestor && ntg_guids_are_equal( &sibling->get_interface()->module_guid, &server.get_system_class_data()->connection_interface_guid ) ) 
+			if( sibling != ancestor && ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
 			{
 				/* found a connection which might target the new node */
 
@@ -1552,11 +1542,11 @@ void ntg_generic_new_handler( CServer &server, const CNode &new_node, ntg_comman
 	
 				if( source_endpoint && target_endpoint )
 				{
-					if( source_endpoint->get_node() == &new_node || target_endpoint->get_node() == &new_node )
+					if( source_endpoint->get_node().get_id() == new_node.get_id() || target_endpoint->get_node().get_id() == new_node.get_id() )
 					{
-						if( ntg_endpoint_is_audio_stream( source_endpoint->get_endpoint() ) && source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
+						if( source_endpoint->get_endpoint_definition().is_audio_stream() && source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 						{
-							if( ntg_endpoint_is_audio_stream( target_endpoint->get_endpoint()) && target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
+							if( target_endpoint->get_endpoint_definition().is_audio_stream() && target_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::INPUT )
 							{
 								/* create connection in host */
 								ntg_connect_in_host( server, *source_endpoint, *target_endpoint, true );
@@ -1599,7 +1589,7 @@ void ntg_scene_delete_handler( CServer &server, const CNode &node, ntg_command_s
 	/* if this is the selected scene, need to clear the player's scene endpoint */
 
 	const CNode *player = node.get_parent();;
-	if( !player || !ntg_interface_is_core_name_match( player->get_interface(), NTG_CLASS_PLAYER ) )
+	if( !player || !player->get_interface_definition().is_named_core_interface( NTG_CLASS_PLAYER ) )
 	{
 		NTG_TRACE_ERROR( "parent of deleted scene is not a player!" );
 		return;
@@ -1628,9 +1618,9 @@ void ntg_connection_delete_handler( CServer &server, const CNode &node, ntg_comm
 	const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
 	const CNodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
 	
-	if( source_endpoint && ntg_endpoint_is_audio_stream( source_endpoint->get_endpoint() ) && source_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_OUTPUT )
+	if( source_endpoint && source_endpoint->get_endpoint_definition().is_audio_stream() && source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 	{
-		if( target_endpoint && ntg_endpoint_is_audio_stream( target_endpoint->get_endpoint() ) && target_endpoint->get_endpoint()->stream_info->direction == NTG_STREAM_INPUT )
+		if( target_endpoint && target_endpoint->get_endpoint_definition().is_audio_stream() && target_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::INPUT )
 		{
 			/* remove connection in host */
 			ntg_connect_in_host( server, *source_endpoint, *target_endpoint, false );
@@ -1646,40 +1636,35 @@ The following methods perform housekeeping and external interface for system cla
 
 void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const CServer &server, const char *class_name, const char *attribute_name, void * function )
 {
-	ntg_system_class_handler *handler = NULL;
-	const ntg_interface *interface = NULL;
-
 	assert( list_head );
 	assert( function );
 
+	const CInterfaceDefinition *interface_definition = NULL;
+
 	if( class_name )
 	{
-		interface = server.get_module_manager().get_core_interface_by_name( class_name );
-		if( !interface )
+		const CInterfaceDefinition *interface_definition = server.get_module_manager().get_core_interface_by_name( class_name );
+		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR_WITH_STRING("failed to lookup into for core class", class_name);
 			return;
 		}
 
-		if( !ntg_interface_is_core( interface ) )
+		if( !interface_definition->is_core_interface() )
 		{
 			NTG_TRACE_ERROR_WITH_STRING("attempt to add system class handler for non-core class", class_name);
 			return;
 		}
 
-		assert( strcmp( class_name, interface->info->name ) == 0 );
-	}
-	else
-	{
-		interface = NULL;
+		assert( interface_definition->get_interface_info().get_name() == class_name );
 	}
 		
-	handler = new ntg_system_class_handler;
+	ntg_system_class_handler *handler = new ntg_system_class_handler;
 	
-	if( interface )
+	if( interface_definition )
 	{
 		handler->module_guid = new GUID;
-		*handler->module_guid = interface->module_guid;
+		*handler->module_guid = interface_definition->get_module_guid();
 	}
 	else
 	{
@@ -1830,7 +1815,6 @@ void ntg_system_class_handlers_free( ntg_system_class_handler *handlers )
 
 void ntg_system_class_handlers_initialize( CServer &server )
 {
-	const ntg_interface *connection_interface =  NULL;
 	ntg_system_class_data *system_class_data = new ntg_system_class_data;
 
 	system_class_data->new_handlers = ntg_new_handlers_create( server );
@@ -1839,10 +1823,10 @@ void ntg_system_class_handlers_initialize( CServer &server )
 	system_class_data->move_handlers = ntg_move_handlers_create( server );
 	system_class_data->delete_handlers = ntg_delete_handlers_create( server );
 
-	connection_interface = server.get_module_manager().get_core_interface_by_name( NTG_CLASS_CONNECTION );
+	const CInterfaceDefinition *connection_interface = server.get_module_manager().get_core_interface_by_name( NTG_CLASS_CONNECTION );
 	if( connection_interface )
 	{
-		system_class_data->connection_interface_guid = connection_interface->module_guid;
+		system_class_data->connection_interface_guid = connection_interface->get_module_guid();
 	}
 	else
 	{
@@ -1877,7 +1861,7 @@ void ntg_system_class_handle_new( CServer &server, const CNode &node, ntg_comman
 
 	for( handler = server.get_system_class_data()->new_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface()->module_guid ) )
+		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
 		{
 			continue;
 		}
@@ -1894,16 +1878,14 @@ void ntg_system_class_handle_set( CServer &server, const CNodeEndpoint *endpoint
 	ntg_system_class_handler *handler = NULL;
 	ntg_system_class_set_handler_function function = NULL;
 
-	assert( endpoint );
-
 	for( handler = server.get_system_class_data()->set_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &endpoint->get_node()->get_interface()->module_guid ) )
+		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &endpoint->get_node().get_interface_definition().get_module_guid() ) )
 		{
 			continue;
 		}
 
-		if( handler->attribute_name && endpoint && strcmp( handler->attribute_name, endpoint->get_endpoint()->name ) != 0 )
+		if( handler->attribute_name && endpoint->get_endpoint_definition().get_name() != handler->attribute_name )
 		{
 			continue;
 		}
@@ -1922,7 +1904,7 @@ void ntg_system_class_handle_rename( CServer &server, const CNode &node, const c
 
 	for( handler = server.get_system_class_data()->rename_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface()->module_guid ) )
+		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
 		{
 			continue;
 		}
@@ -1941,7 +1923,7 @@ void ntg_system_class_handle_move( CServer &server, const CNode &node, const CPa
 
 	for( handler = server.get_system_class_data()->move_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface()->module_guid ) )
+		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
 		{
 			continue;
 		}
@@ -1960,7 +1942,7 @@ void ntg_system_class_handle_delete( CServer &server, const CNode &node, ntg_com
 
 	for( handler = server.get_system_class_data()->delete_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface()->module_guid ) )
+		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
 		{
 			continue;
 		}

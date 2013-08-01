@@ -21,7 +21,6 @@
 #include "platform_specifics.h"
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -46,7 +45,7 @@ extern "C"
 #include "value.h"
 #include "helper.h"
 #include "globals.h"
-#include "interface.h"
+#include "interface_definition.h"
 #include "helper.h"
 
 
@@ -198,13 +197,13 @@ static int ntg_lua_set( lua_State * L )
 		return 0;
 	}
 
-	if( endpoint->get_endpoint()->type != NTG_CONTROL )
+	if( endpoint->get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL )
 	{
 		ntg_lua_error_handler( "Endpoint is not a control: %s", path.get_string().c_str() );
 		return 0;
 	}
 
-	if( !endpoint->get_endpoint()->control_info->can_be_target )
+	if( !endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 	{
 		ntg_lua_error_handler( "Endpoint is not a legal script target: %s", path.get_string().c_str() );
 		return 0;
@@ -212,7 +211,7 @@ static int ntg_lua_set( lua_State * L )
 
 	if( endpoint->get_value() )
 	{	
-		assert( endpoint->get_endpoint()->control_info->type == NTG_STATE );
+		assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::STATE );
 
 		CValue *new_value( NULL );
 
@@ -232,7 +231,7 @@ static int ntg_lua_set( lua_State * L )
 		}
 
 		assert( new_value );
-		CValue *converted_value = new_value->transmogrify( endpoint->get_endpoint()->control_info->state_info->type );
+		CValue *converted_value = new_value->transmogrify( endpoint->get_endpoint_definition().get_control_info()->get_state_info()->get_type() );
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
@@ -243,7 +242,7 @@ static int ntg_lua_set( lua_State * L )
 	}
 	else
 	{
-		assert( endpoint->get_endpoint()->control_info->type == NTG_BANG );
+		assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::BANG );
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Sending bang to %s...", path.get_string().c_str() );
 		set_result = ntg_set_( *server_, NTG_SOURCE_SCRIPT, path, NULL );
@@ -287,19 +286,19 @@ static int ntg_lua_get(lua_State * L)
 		return 0;
 	}
 
-	if( node_endpoint->get_endpoint()->type != NTG_CONTROL )
+	if( node_endpoint->get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL )
 	{
 		ntg_lua_error_handler( "Endpoint is not a control: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	if( node_endpoint->get_endpoint()->control_info->type != NTG_STATE )
+	if( node_endpoint->get_endpoint_definition().get_control_info()->get_type() != CControlInfo::STATE )
 	{
 		ntg_lua_error_handler( "Endpoint is not stateful: %s", node_path.get_string().c_str() );
 		return 0;
 	}
 
-	if( !node_endpoint->get_endpoint()->control_info->can_be_source )
+	if( !node_endpoint->get_endpoint_definition().get_control_info()->get_can_be_source() )
 	{
 		ntg_lua_error_handler( "Endpoint is not a valid script input: %s", node_path.get_string().c_str() );
 		return 0;

@@ -159,7 +159,8 @@
     <ClCompile Include="..\src\helper.cpp" />
     <ClCompile Include="..\src\id.cpp" />
     <ClCompile Include="..\src\init.cpp" />
-    <ClCompile Include="..\src\interface.cpp" />
+    <ClCompile Include="..\src\interface_definition.cpp" />
+    <ClCompile Include="..\src\interface_definition_loader.cpp" />
     <ClCompile Include="..\src\luascripting.cpp" />
     <ClCompile Include="..\src\module_manager.cpp" />
     <ClCompile Include="..\src\MurmurHash2.cpp" />
@@ -203,7 +204,8 @@
     <ClInclude Include="..\src\globals.h" />
     <ClInclude Include="..\src\helper.h" />
     <ClInclude Include="..\src\id.h" />
-    <ClInclude Include="..\src\interface.h" />
+    <ClInclude Include="..\src\interface_definition.h" />
+    <ClInclude Include="..\src\interface_definition_loader.h" />
     <ClInclude Include="..\src\lo_ansi.h" />
     <ClInclude Include="..\src\luascripting.h" />
     <ClInclude Include="..\src\module_manager.h" />

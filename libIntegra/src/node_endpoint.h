@@ -22,11 +22,6 @@
 #define INTEGRA_NODE_ENDPOINT_H
 
 
-#ifndef NTG_ENDPOINT_TYPEDEF
-typedef struct ntg_endpoint_ ntg_endpoint;
-#define NTG_ENDPOINT_TYPEDEF
-#endif
-
 #include <unordered_map>
 #include "Integra/integra_bridge.h"
 #include "path.h"
@@ -35,7 +30,7 @@ typedef struct ntg_endpoint_ ntg_endpoint;
 namespace ntg_internal
 {
 	class CNode;
-	
+	class CEndpointDefinition;	
 
 	class CNodeEndpoint
 	{
@@ -44,10 +39,10 @@ namespace ntg_internal
 			CNodeEndpoint();
 			~CNodeEndpoint();
 
-			void initialize( const CNode &node, const ntg_endpoint &endpoint );
+			void initialize( const CNode &node, const CEndpointDefinition &endpoint_definition );
 
-			const CNode *get_node() const { return m_node; }
-			const ntg_endpoint *get_endpoint() const { return m_endpoint; }
+			const CNode &get_node() const { return *m_node; }
+			const CEndpointDefinition &get_endpoint_definition() const { return *m_endpoint_definition; }
 
 			const ntg_api::CValue *get_value() const { return m_value; }
 			const ntg_api::CPath &get_path() const { return m_path; }
@@ -61,8 +56,8 @@ namespace ntg_internal
 
 		private:
 
-		    const CNode *m_node;
-			const ntg_endpoint *m_endpoint;
+			const CNode *m_node;
+			const CEndpointDefinition *m_endpoint_definition;
 
 			ntg_api::CValue *m_value;
 			ntg_api::CPath m_path;

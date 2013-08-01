@@ -25,16 +25,10 @@
 #include "../externals/minizip/unzip.h"
 
 #include "api/common_typedefs.h"
-#include "interface.h"
+#include "interface_definition.h"
 #include "../externals/guiddef.h"
 #include "node.h"
 #include "error.h"
-
-#ifdef _WINDOWS
-	#ifdef interface 
-		#undef interface
-	#endif
-#endif
 
 
 namespace ntg_internal
@@ -62,12 +56,12 @@ namespace ntg_internal
 
 			const ntg_api::guid_set &get_all_module_ids() const;
 
-			const ntg_interface *get_interface_by_module_id( const GUID &id ) const;
-			const ntg_interface *get_interface_by_origin_id( const GUID &id ) const;
-			const ntg_interface *get_core_interface_by_name( const ntg_api::string &name ) const;
+			const CInterfaceDefinition *get_interface_by_module_id( const GUID &id ) const;
+			const CInterfaceDefinition *get_interface_by_origin_id( const GUID &id ) const;
+			const CInterfaceDefinition *get_core_interface_by_name( const ntg_api::string &name ) const;
 
-			ntg_api::string get_unique_interface_name( const ntg_interface &interface ) const;
-			ntg_api::string get_patch_path( const ntg_interface &interface ) const;
+			ntg_api::string get_unique_interface_name( const CInterfaceDefinition &interface_definition ) const;
+			ntg_api::string get_patch_path( const CInterfaceDefinition &interface_definition ) const;
 
 			void get_orphaned_embedded_modules( const node_map &search_nodes, ntg_api::guid_set &results ) const;
 			void unload_modules( const ntg_api::guid_set &module_ids );
@@ -76,42 +70,42 @@ namespace ntg_internal
 
 		private:
 
-			void load_modules_from_directory( const ntg_api::string &module_directory, ntg_module_source module_source );
+			void load_modules_from_directory( const ntg_api::string &module_directory, CInterfaceDefinition::module_source source );
 
 			/* 
 			 load_module only returns true if the module isn't already loaded
 			 however, it stores the id of the loaded module in module_guid regardless of whether the module was already loaded
 			*/
-			bool load_module( const ntg_api::string &filename, ntg_module_source module_source, GUID &module_guid );
+			bool load_module( const ntg_api::string &filename, CInterfaceDefinition::module_source source, GUID &module_guid );
 
-			static ntg_interface *load_interface( unzFile unzip_file );
+			static CInterfaceDefinition *load_interface( unzFile unzip_file );
 
-			ntg_api::error_code extract_implementation( unzFile unzip_file, const ntg_interface &interface, unsigned int &checksum );
+			ntg_api::error_code extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum );
 
-			void unload_module( ntg_interface *interface );
+			void unload_module( CInterfaceDefinition *interface_definition );
 
-			ntg_api::string get_implementation_path( const ntg_interface &interface ) const;
-			ntg_api::string get_implementation_directory_name( const ntg_interface &interface ) const;
+			ntg_api::string get_implementation_path( const CInterfaceDefinition &interface_definition ) const;
+			ntg_api::string get_implementation_directory_name( const CInterfaceDefinition &interface_definition ) const;
 			
-			void delete_implementation( const ntg_interface &interface );
+			void delete_implementation( const CInterfaceDefinition &interface_definition );
 
 			ntg_api::error_code store_module( const GUID &module_id );
 
 			void load_legacy_module_id_file();
 			void unload_all_modules();
 
-			ntg_api::string get_storage_path( const ntg_interface &interface ) const;
+			ntg_api::string get_storage_path( const CInterfaceDefinition &interface_definition ) const;
 			
-			ntg_api::error_code change_module_source( ntg_interface &interface, ntg_module_source new_source );
+			ntg_api::error_code change_module_source( CInterfaceDefinition &interface_definition, CInterfaceDefinition::module_source new_source );
 
 			bool is_module_in_use( const node_map &search_nodes, const GUID &module_id ) const;
 			void remove_in_use_module_ids_from_set( const node_map &search_nodes, ntg_api::guid_set &set ) const;
 
 
 			ntg_api::guid_set m_module_ids;
-			map_guid_to_interface m_module_id_map;
-			map_guid_to_interface m_origin_id_map;
-			map_string_to_interface m_core_name_map;
+			map_guid_to_interface_definition m_module_id_map;
+			map_guid_to_interface_definition m_origin_id_map;
+			map_string_to_interface_definition m_core_name_map;
 
 			ntg_api::guid_array m_legacy_module_id_table;
 

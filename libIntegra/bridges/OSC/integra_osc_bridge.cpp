@@ -39,7 +39,7 @@ void lo_address_set_flags(lo_address t, int flags);
 
 #include "Integra/integra_bridge.h"
 
-#include "src/interface.h"
+#include "src/interface_definition.h"
 #include "src/node.h"
 #include "src/path.h"
 #include "src/trace.h"
@@ -158,44 +158,51 @@ static int osc_module_remove(const internal_id id)
 }
 
 
-static bool osc_get_stream_connection_name( char *dest, const ntg_endpoint *endpoint, const ntg_interface *interface )
+static bool osc_get_stream_connection_name( char *dest, const CEndpointDefinition &endpoint_definition, const CInterfaceDefinition &interface_definition )
 {
+	bool found( false );
 	int index = 1;
-	const ntg_endpoint *endpoint_iterator;
 
-	assert( dest && endpoint && endpoint->stream_info && interface );
+	assert( dest && endpoint_definition.is_audio_stream() );
 
-	for( endpoint_iterator = interface->endpoint_list; endpoint_iterator; endpoint_iterator = endpoint_iterator->next )
+	endpoint_definition_list endpoint_definitions = interface_definition.get_endpoint_definitions();
+	for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 	{
-		if( endpoint_iterator == endpoint )
+		const CEndpointDefinition *prior_endpoint = *i;
+		
+		if( prior_endpoint == &endpoint_definition )
 		{
+			found = true;
 			break;
 		}
 
-		if( !endpoint_iterator->stream_info ) 
+		if( prior_endpoint->is_audio_stream() ) 
 		{
 			continue;
 		}
 
-		if( endpoint_iterator->stream_info->type == endpoint->stream_info->type && endpoint_iterator->stream_info->direction == endpoint->stream_info->direction )
+		const CStreamInfo *prior_stream = prior_endpoint->get_stream_info();
+		const CStreamInfo *my_stream = endpoint_definition.get_stream_info();
+
+		if( prior_stream->get_type() == my_stream->get_type() && prior_stream->get_direction() == my_stream->get_direction() )
 		{
 			index ++;
 		}
 	}
 
-	if( !endpoint_iterator )
+	if( !found )
 	{
 		/* endpoint not found! */
 		return false;
 	}
 
-	switch( endpoint->stream_info->direction )
+	switch( endpoint_definition.get_stream_info()->get_direction() )
 	{
-		case NTG_STREAM_INPUT:
+		case CStreamInfo::INPUT:
 			sprintf( dest, "in%i", index );
 			return true;
 
-		case NTG_STREAM_OUTPUT:
+		case CStreamInfo::OUTPUT:
 			sprintf( dest, "out%i", index );
 			return true;
 
@@ -205,26 +212,26 @@ static bool osc_get_stream_connection_name( char *dest, const ntg_endpoint *endp
 }
 
 
-static int osc_module_connect(const CNodeEndpoint *source, const CNodeEndpoint *target)
+static int osc_module_connect( const CNodeEndpoint *source, const CNodeEndpoint *target )
 {
 	char source_name[ 10 ];
 	char target_name[ 10 ];
 	assert( source && target );
 
-	if( !osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->get_interface() ) )
+	if( !osc_get_stream_connection_name( source_name, source->get_endpoint_definition(), source->get_node().get_interface_definition() ) )
 	{
 		NTG_TRACE_ERROR( "Failed to get stream connection name" );
 		return -1;
 	}
 
-	if( !osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->get_interface() ) )
+	if( !osc_get_stream_connection_name( target_name, target->get_endpoint_definition(), target->get_node().get_interface_definition() ) )
 	{
 		NTG_TRACE_ERROR( "Failed to get stream connection name" );
 		return -1;
 	}
 
 	/* Make the connection */
-    lo_send(module_host, "/connect", "isis", source->get_node()->get_id(), source_name, target->get_node()->get_id(), target_name );
+    lo_send(module_host, "/connect", "isis", source->get_node().get_id(), source_name, target->get_node().get_id(), target_name );
 
     return 0;
 
@@ -236,11 +243,11 @@ static int osc_module_disconnect(const CNodeEndpoint *source, const CNodeEndpoin
 	char target_name[ 10 ];
 	assert( source && target );
 
-	osc_get_stream_connection_name( source_name, source->get_endpoint(), source->get_node()->get_interface() );
-	osc_get_stream_connection_name( target_name, target->get_endpoint(), target->get_node()->get_interface() );
+	osc_get_stream_connection_name( source_name, source->get_endpoint_definition(), source->get_node().get_interface_definition() );
+	osc_get_stream_connection_name( target_name, target->get_endpoint_definition(), target->get_node().get_interface_definition() );
 
 	/* remove the connection */
-    lo_send(module_host, "/disconnect", "isis", source->get_node()->get_id(), source_name, target->get_node()->get_id(), target_name );
+    lo_send(module_host, "/disconnect", "isis", source->get_node().get_id(), source_name, target->get_node().get_id(), target_name );
 
 	return 0;
 }
@@ -250,8 +257,8 @@ static void osc_send_value( const CNodeEndpoint *node_endpoint )
 {
 	assert( node_endpoint );
 
-	int module_id = node_endpoint->get_node()->get_id();
-	const char *endpoint_name = node_endpoint->get_endpoint()->name;
+	int module_id = node_endpoint->get_node().get_id();
+	const string &endpoint_name = node_endpoint->get_endpoint_definition().get_name();
 	const CValue *value = node_endpoint->get_value();
 
 	if( value )
@@ -259,15 +266,15 @@ static void osc_send_value( const CNodeEndpoint *node_endpoint )
 		switch( value->get_type() )
 		{
 			case CValue::FLOAT:
-				lo_send(module_host, "/send", "isf", module_id, endpoint_name, ( float ) *value );
+				lo_send(module_host, "/send", "isf", module_id, endpoint_name.c_str(), ( float ) *value );
 				break;
 
 			case CValue::INTEGER:
-				lo_send(module_host, "/send", "isi", module_id, endpoint_name, ( int ) *value );
+				lo_send(module_host, "/send", "isi", module_id, endpoint_name.c_str(), ( int ) *value );
 				break;
 
 			case CValue::STRING:
-				lo_send(module_host, "/send", "iss", module_id, endpoint_name, ( ( const string & ) *value ).c_str() );
+				lo_send(module_host, "/send", "iss", module_id, endpoint_name.c_str(), ( ( const string & ) *value ).c_str() );
 				break;
 
 			default:

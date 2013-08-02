@@ -1,4 +1,3 @@
-
 # Acknowledgments
 
 Integra Live is developed by [Integra Lab](http://www.bcu.ac.uk/pme/conservatoire/research/integra-lab) at Birmingham Conservatoire in the UK. 
@@ -195,8 +194,7 @@ Copyright &copy; Immanuel Bauer
 
 Licensed under the GNU GPL version 3
 
-
-
+<link rel="stylesheet" type="text/css" href="../../page-images/style.css" media="screen" />
 
 
 

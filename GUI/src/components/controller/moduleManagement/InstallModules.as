@@ -34,6 +34,7 @@ package components.controller.moduleManagement
 	import components.controller.ServerCommand;
 	import components.controller.events.InstallEvent;
 	import components.controller.events.LoadCompleteEvent;
+	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.model.IntegraModel;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.modelLoader.ModelLoader;
@@ -163,7 +164,7 @@ package components.controller.moduleManagement
 			var previouslyInDevelopmentModuleGuids:Array = [];
 			var removedModuleGuids:Array = [];
 			
-			var installedModuleInDevelopment:Boolean = false;
+			_installedModuleInDevelopment = false;
 
 			
 			for( var i:int = 0; i < response.length; i++ )
@@ -188,7 +189,7 @@ package components.controller.moduleManagement
 					
 					case "module.loadmoduleindevelopment":
 						newModuleGuids.push( responseNode.moduleid );
-						installedModuleInDevelopment = true;
+						_installedModuleInDevelopment = true;
 						if( responseNode.hasOwnProperty( "previousmoduleid" ) )
 						{
 							if( responseNode.previousremainsasembedded )
@@ -215,7 +216,7 @@ package components.controller.moduleManagement
 				}
 			}
 			
-			if( installedModuleInDevelopment )
+			if( _installedModuleInDevelopment )
 			{
 				_resultsString = "##Loaded an in-development module";
 			}
@@ -267,6 +268,11 @@ package components.controller.moduleManagement
 			_installer = null;
 			
 			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED, _resultsString ) );
+			
+			if( _installedModuleInDevelopment )
+			{
+				IntegraController.singleInstance.processCommand( new PollForUpgradableModules( IntegraModel.singleInstance.project.id ) );
+			}
 		}
 
 		
@@ -378,6 +384,7 @@ package components.controller.moduleManagement
 		private var _loadCompleteDispatcher:EventDispatcher = null;
 		
 		private var _resultsString:String;
+		private var _installedModuleInDevelopment:Boolean = false;
 		
 		private static var _installer:InstallModules = null;
 		

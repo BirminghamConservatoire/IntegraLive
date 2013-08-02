@@ -7,7 +7,7 @@ To switch between the views, click the buttons in the top-left of the Integra Li
 
 ![](../../page-images/shadow-arrange_live_toggle.png)
 
-Integra Live also has an Info View showing information about the the application and documentation for your project.
+Integra Live also has an Info View showing info about the application and current project.
 
 ### Arrange View
 The Arrange View is the main view of the application. It enables audio processing *blocks* to be be created and arranged on a musical timeline. It also enables interactive elements to be added through the Routing and Scripting tabs in the Properties Panel.
@@ -145,7 +145,7 @@ Envelopes can be used to automate the control of module parameters. This can be 
 
   ![](../../page-images/shadow-envelope_module.png)
 
-- Select the parameter you want to control from the parameters dropdown:
+- Select the parameter to control from the parameters dropdown:
 
   ![](../../page-images/shadow-envelope_parameter.png)
 
@@ -201,19 +201,19 @@ The Info View shows information about elements in Integra Live when the cursor h
 
 The Info View can be shown or hidden at any time using the View menu
 
-#### Adding Your own Documentation
+#### Adding Info
 
-You can use the Info View to add documentation to your own projects. Documentation can be added to the project itself, as well as individual *tracks*, *blocks* and *scenes*.
+The Info View can be used to add info to projects. Info can be added to the project itself, as well as individual *tracks*, *blocks* and *scenes*.
 
-To add documentation to an element:
+To add info to an element:
 
-- Hover the mouse over the element you want to add documentation to
+- Hover the mouse over the element
 - Press **Control-3** (**F2 on Windows**) to lock the Info View
 - Click the “edit” button on the Info View title bar
-- Type your documentation into the documentation panel
+- Type your info into the Info panel
 - Press **Control-3** (**F2 on Windows**) to release the Info View
 
-You can now view your documentation by hovering over your documented element.
+Info can now be viewed by hovering over the element with the cursor.
 
 ### Module Management
 
@@ -246,7 +246,7 @@ You can now view your documentation by hovering over your documented element.
 - *Tracks*, *blocks* and *modules* can be renamed by double-clicking their name and typing in the text-entry box
 
 ### Further support
-This guide is not intended to be exhaustive. If you have any further questions, feature requests or bug reports, please use our [online feedback forum](http://integralive.uservoice.com).
+This guide is not intended to be exhaustive. For additional questions, feature requests or bug reports, please use the [online feedback forum](http://integralive.org/forum).
 
 
 <link rel="stylesheet" type="text/css" href="../../page-images/style.css" media="screen" />

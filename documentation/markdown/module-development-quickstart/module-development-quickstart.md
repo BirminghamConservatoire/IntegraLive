@@ -1,5 +1,4 @@
-## Integra Module Development Quick Start
-<!-- This is a tutorial -->
+### Introduction
 
 This is a step-by-step tutorial showing how to create a simple [Tremolo](http://en.wikipedia.org/wiki/Tremolo) module for [Integra Live](http://integralive.org). 
 

@@ -1,5 +1,3 @@
-## Integra Live Help
-
 ### Introduction
 Integra Live is divided into two main views: the Arrange View is for composing and experimenting with musical ideas — the Live View is for performance.
 
@@ -217,7 +215,9 @@ Info can now be viewed by hovering over the element with the cursor.
 
 ### Module Management
 
-/** to be written **/
+Integra Live comes bundled with a library of official modules. In addition to this, there are facilities for installing and managing user-created 3rd party modules.
+
+To install a 3rd party module, double-click the `.module` file or select Install 3rd Party Modules… from the File menu in Integra Live. This will    
 
 ### Other features
 
@@ -229,6 +229,8 @@ Info can now be viewed by hovering over the element with the cursor.
 
 /** to be written **/
 
+#### Lock Override
+
 #### Lighting
 
 - Lighting can be set to “on” for studio use and “off” for live use in darkened environments. This is achieved by clicking the *lighting icon* in the top-right of the application window ![](../../page-images/light_bulb.png)
@@ -237,7 +239,7 @@ Info can now be viewed by hovering over the element with the cursor.
 
 *Tracks*, *blocks* and *module settings* can all be exported and imported to/from disk. This enables specific components to be moved between projects. Additionally, *blocks*, can be added to the Block Library, which allows easy drag ‘n’ drop of exported *blocks*.
 
-- Import/export is available from the context menu in Arrange View. For example to export a track, context-click the track and click “Export...-\>Track”
+- Import/export is available from the context menu in Arrange View. For example to export a track, context-click the track and click “Export…→Track”
 
   ![](../../page-images/shadow-arrange_export.png)
 

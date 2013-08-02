@@ -1,9 +1,9 @@
 include Make.config
-MARKDOWN=../Markdown.pl
-RECODE=../recode.py
+TEMPLATE=template.pandoc
+PANDOC=pandoc --include-in-header=header.html --template=../$(TEMPLATE) --toc --toc-depth=4 --standalone --ascii 
 
 all:
-	$(RECODE) $(NAME).md | $(MARKDOWN) > $(NAME).htm
+	$(PANDOC) $(NAME).md > $(NAME).htm
 
 clean:
 	rm -f *.htm

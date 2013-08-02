@@ -144,6 +144,8 @@ namespace ntg_internal
 			_set_invalid_parameter_handler( invalid_parameter_handler );
 		#endif
 
+		m_next_internal_id = 0;
+
 		m_scratch_directory = new CScratchDirectory;
 
 		m_module_manager = new CModuleManager( get_scratch_directory(), startup_info.system_module_directory, startup_info.third_party_module_directory );
@@ -416,6 +418,14 @@ namespace ntg_internal
 		printf("***********:\n\n");
 		dump_state( server_->get_nodes(), 0 );
 		fflush( stdout );
+	}
+
+
+	internal_id CServer::create_internal_id()
+	{
+		internal_id id = m_next_internal_id;
+		m_next_internal_id ++;
+		return id;
 	}
 
 

@@ -37,7 +37,7 @@ namespace ntg_internal
 			
 			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
 
-			ntg_api::string make_node_name( const ntg_api::string &module_name ) const;
+			ntg_api::string make_node_name( CServer &server, const ntg_api::string &module_name ) const;
 
 			GUID m_module_id;
 			ntg_api::string m_node_name;

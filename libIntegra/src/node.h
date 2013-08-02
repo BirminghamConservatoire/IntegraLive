@@ -52,7 +52,7 @@ namespace ntg_internal
 			CNode();
 			~CNode();
 
-			void initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, CNode *parent );
+			void initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, internal_id id, CNode *parent );
 
 			void rename( const ntg_api::string &new_name );
 			void reparent( CNode *new_parent );

@@ -25,7 +25,6 @@
 #include "node.h"
 #include "module_manager.h"
 #include "trace.h"
-#include "id.h"
 #include "helper.h"
 #include "system_class_handlers.h"
 #include "api/command_result.h"
@@ -67,7 +66,7 @@ namespace ntg_internal
 		/* if node name is NULL, create one */
 		if( m_node_name.empty() )
 		{
-			m_node_name = make_node_name( interface_definition->get_interface_info().get_name() );
+			m_node_name = make_node_name( server, interface_definition->get_interface_info().get_name() );
 		}
 
 		/* First check if node name is already taken */
@@ -87,7 +86,7 @@ namespace ntg_internal
 		}
 
 		CNode *node = new CNode;
-		node->initialize( *interface_definition, m_node_name, parent );
+		node->initialize( *interface_definition, m_node_name, server.create_internal_id(), parent );
 		sibling_map[ m_node_name ] = node;
 		server.get_state_table().add( *node );
 
@@ -148,10 +147,10 @@ namespace ntg_internal
 	}
 
 
-	string CNewCommand::make_node_name( const string &module_name ) const
+	string CNewCommand::make_node_name( CServer &server, const string &module_name ) const
 	{
 		ostringstream stream;
-		stream << module_name << ntg_id_new();
+		stream << module_name << server.create_internal_id();
 	
 		return stream.str();
 	}

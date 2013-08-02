@@ -98,6 +98,8 @@ namespace ntg_internal
 
 			ntg_api::CError process_command( ntg_api::CCommandApi *command, ntg_command_source command_source, ntg_api::CCommandResult *result = NULL );
 
+			internal_id create_internal_id();
+
 			void dump_state();
 
 		private:
@@ -118,6 +120,9 @@ namespace ntg_internal
 			pthread_t m_xmlrpc_thread;
 
 			bool m_terminate;
+
+			ntg_internal::internal_id m_next_internal_id; 
+
 	};
 }
 

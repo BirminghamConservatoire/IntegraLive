@@ -67,9 +67,9 @@ namespace ntg_internal
 	}
 
 
-	void CNode::initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, CNode *parent )
+	void CNode::initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, internal_id id, CNode *parent )
 	{
-		m_id = ntg_id_new();
+		m_id = id;
 		m_interface_definition = &interface_definition;
 		m_name = name;
 		m_parent = parent;

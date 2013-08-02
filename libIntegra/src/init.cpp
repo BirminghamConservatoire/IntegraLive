@@ -29,7 +29,6 @@
 void do_init()
 {
     /** Initialise the id counter */
-    id_counter_ = 0;
     server_ = NULL;
 
 	trace_category_bits = NO_TRACE_CATEGORY_BITS;

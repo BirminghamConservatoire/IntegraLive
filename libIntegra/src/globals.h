@@ -26,7 +26,6 @@
 #include <semaphore.h>
 
 #include "lo_ansi.h"
-#include "id.h"
 #include "trace.h"
 #include "api/common_typedefs.h"
 
@@ -66,8 +65,6 @@ namespace ntg_internal
 
 GLOBAL ntg_internal::CServer *server_;
 GLOBAL void *bridge_handle;
-
-GLOBAL ntg_internal::internal_id id_counter_; 
 
 GLOBAL ntg_trace_category_bits trace_category_bits;
 GLOBAL ntg_trace_options_bits trace_option_bits;

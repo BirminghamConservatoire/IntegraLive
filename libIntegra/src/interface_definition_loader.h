@@ -43,30 +43,30 @@ namespace ntg_internal
 
 		private:
 
-			ntg_api::error_code handle_element_value( const ntg_api::string &element_value );
-			ntg_api::error_code handle_element();
-			ntg_api::error_code handle_element_attributes();
+			ntg_api::CError handle_element_value( const ntg_api::string &element_value );
+			ntg_api::CError handle_element();
+			ntg_api::CError handle_element_attributes();
 
 			void store_map_entries();
 
 			void push_element_name( const ntg_api::string &element );
 			void pop_element_name();
 
-			ntg_api::error_code do_sanity_check();
+			ntg_api::CError do_sanity_check();
 
 			void cleanup();
 
-			ntg_api::error_code converter( const ntg_api::string &input, ntg_api::string &output );
-			ntg_api::error_code converter( const ntg_api::string &input, bool &output );
-			ntg_api::error_code converter( const ntg_api::string &input, int &output );
-			ntg_api::error_code converter( const ntg_api::string &input, float &output );
-			ntg_api::error_code converter( const ntg_api::string &input, CEndpointDefinition::endpoint_type &output );
-			ntg_api::error_code converter( const ntg_api::string &input, CControlInfo::control_type &output );
-			ntg_api::error_code converter( const ntg_api::string &input, ntg_api::CValue::type &output );
-			ntg_api::error_code converter( const ntg_api::string &input, CValueScale::scale_type &output );
-			ntg_api::error_code converter( const ntg_api::string &input, CStreamInfo::stream_type &output );
-			ntg_api::error_code converter( const ntg_api::string &input, CStreamInfo::stream_direction &output );
-			ntg_api::error_code converter( const ntg_api::string &input, struct tm &output );
+			ntg_api::CError converter( const ntg_api::string &input, ntg_api::string &output );
+			ntg_api::CError converter( const ntg_api::string &input, bool &output );
+			ntg_api::CError converter( const ntg_api::string &input, int &output );
+			ntg_api::CError converter( const ntg_api::string &input, float &output );
+			ntg_api::CError converter( const ntg_api::string &input, CEndpointDefinition::endpoint_type &output );
+			ntg_api::CError converter( const ntg_api::string &input, CControlInfo::control_type &output );
+			ntg_api::CError converter( const ntg_api::string &input, ntg_api::CValue::type &output );
+			ntg_api::CError converter( const ntg_api::string &input, CValueScale::scale_type &output );
+			ntg_api::CError converter( const ntg_api::string &input, CStreamInfo::stream_type &output );
+			ntg_api::CError converter( const ntg_api::string &input, CStreamInfo::stream_direction &output );
+			ntg_api::CError converter( const ntg_api::string &input, struct tm &output );
 
 			ntg_api::CValue::type get_state_type();
 			ntg_api::CValue::type get_range_type();

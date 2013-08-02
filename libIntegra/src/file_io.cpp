@@ -39,7 +39,9 @@
 #include "module_manager.h"
 #include "interface_definition.h"
 #include "validate.h"
-#include "server_commands.h"
+#include "server.h"
+#include "api/command_result.h"
+#include "api/command_api.h"
 
 #define XML_ENCODING "ISO-8859-1"
 
@@ -298,7 +300,7 @@ void ntg_copy_node_modules_to_zip( zipFile zip_file, const CNode &node, const CM
 }
 
 
-error_code ntg_load_ixd_buffer_directly( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length )
+CError ntg_load_ixd_buffer_directly( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length )
 {
 	FILE *file;
 	size_t bytes_loaded;
@@ -309,7 +311,7 @@ error_code ntg_load_ixd_buffer_directly( const char *file_path, unsigned char **
 	if( !file )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Couldn't open file", file_path );
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
 	/* find size of the file */
@@ -324,14 +326,14 @@ error_code ntg_load_ixd_buffer_directly( const char *file_path, unsigned char **
 	if( bytes_loaded != *ixd_buffer_length )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Error reading from file", file_path );
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
 
-error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length, bool *is_zip_file )
+CError ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length, bool *is_zip_file )
 {
 	unzFile unzip_file;
 	unz_file_info file_info;
@@ -355,21 +357,21 @@ error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffe
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Unable to locate " NTG_INTERNAL_IXD_FILE_NAME, file_path );
 		unzClose( unzip_file );
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
 	if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Couldn't get info for " NTG_INTERNAL_IXD_FILE_NAME, file_path );
 		unzClose( unzip_file );
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
 	if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Unable to open " NTG_INTERNAL_IXD_FILE_NAME, file_path );
 		unzClose( unzip_file );
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
 	*ixd_buffer_length = file_info.uncompressed_size;
@@ -380,12 +382,12 @@ error_code ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffe
 		NTG_TRACE_ERROR_WITH_STRING( "Unable to read " NTG_INTERNAL_IXD_FILE_NAME, file_path );
 		unzClose( unzip_file );
 		delete[] *ixd_buffer;
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
 	unzClose( unzip_file );
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
 
@@ -430,7 +432,7 @@ char *ntg_get_top_level_node_name( const char *filename )
 }
 
 
-error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
+CError ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
 {
     xmlChar *tmp;
 
@@ -494,11 +496,11 @@ error_code ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
 	}
 
     xmlTextWriterEndElement(writer);
-    return NTG_NO_ERROR;
+    return CError::SUCCESS;
 }
 
 
-error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned int *buffer_length )
+CError ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned int *buffer_length )
 {
     xmlTextWriterPtr writer;
 	xmlBufferPtr write_buffer;
@@ -513,7 +515,7 @@ error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned i
     if( !write_buffer ) 
 	{
 		NTG_TRACE_ERROR( "error creating xml write buffer" );
-        return NTG_FAILED;
+        return CError::FAILED;
     }
 
     writer = xmlNewTextWriterMemory( write_buffer, 0 );
@@ -521,7 +523,7 @@ error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned i
     if( writer == NULL ) 
 	{
         NTG_TRACE_ERROR("Error creating the xml writer");
-        return NTG_FAILED;
+        return CError::FAILED;
     }
 
     xmlTextWriterSetIndent( writer, true );
@@ -529,7 +531,7 @@ error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned i
     if (rc < 0) 
 	{
         NTG_TRACE_ERROR("Error at xmlTextWriterStartDocument");
-        return NTG_FAILED;
+        return CError::FAILED;
     }
 
     /* write header */
@@ -539,10 +541,10 @@ error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned i
 	string version_string = ntg_version();
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_INTEGRA_VERSION, "%s", version_string.c_str() );
 
-    if( ntg_save_node_tree( node, writer ) != NTG_NO_ERROR )
+    if( ntg_save_node_tree( node, writer ) != CError::SUCCESS )
 	{
 		NTG_TRACE_ERROR( "Failed to save node" );
-        return NTG_FAILED;
+        return CError::FAILED;
 	}
 
     /* we don't strictly need this as xmlTextWriterEndDocument() tidies up */
@@ -552,7 +554,7 @@ error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned i
     if (rc < 0) 
 	{
         NTG_TRACE_ERROR("Error at xmlTextWriterEndDocument");
-        return NTG_FAILED;
+        return CError::FAILED;
     }
     xmlFreeTextWriter(writer);
 
@@ -561,7 +563,7 @@ error_code ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned i
 	*buffer_length = write_buffer->use;
 	xmlBufferFree( write_buffer );
 
-    return NTG_NO_ERROR;
+    return CError::SUCCESS;
 }
 
 
@@ -621,7 +623,7 @@ const CInterfaceDefinition *ntg_find_interface( xmlTextReaderPtr reader, const C
 		    valuestr = (char *) xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_CLASSID );
 			if( valuestr )
 			{
-				if( module_manager.interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != NTG_NO_ERROR )
+				if( module_manager.interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != CError::SUCCESS )
 				{
 					NTG_TRACE_ERROR_WITH_STRING( "Failed to interpret legacy class id", valuestr );
 				}
@@ -676,7 +678,7 @@ bool ntg_is_saved_version_newer_than_current( const string &saved_version )
 }
 
 
-error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list &loaded_nodes )
+CError ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list &loaded_nodes )
 {
     xmlNodePtr          xml_node;
     xmlChar             *name;
@@ -697,7 +699,7 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 
     if (!rv) 
 	{
-        return NTG_ERROR;
+        return CError::INPUT_ERROR;
     }
 
     NTG_TRACE_VERBOSE("loading... ");
@@ -716,7 +718,7 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 				xmlFree( saved_version );
 				if( saved_version_is_more_recent )
 				{
-					return NTG_FILE_MORE_RECENT_ERROR;
+					return CError::FILE_MORE_RECENT_ERROR;
 				}
 			}
 		}
@@ -746,8 +748,10 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 					CPath empty_path;
 					const CPath &parent_path = parent ? parent->get_path() : empty_path;
 					/* add the new node */
-					node = (CNode *)
-						ntg_new_( *server_, NTG_SOURCE_LOAD, &interface_definition->get_module_guid(), (char * ) name, parent_path ).data;
+
+					CNewCommandResult result;
+					server_->process_command( CNewCommandApi::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), NTG_SOURCE_LOAD, &result );
+					node = result.get_created_node();
 
 					xmlFree(name);
 
@@ -815,23 +819,23 @@ error_code ntg_load_nodes( const CNode *node, xmlTextReaderPtr reader, node_list
 	for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
 	{
 		CPath path( value_iterator->first );
-		ntg_set_( *server_, NTG_SOURCE_LOAD, path, value_iterator->second );
+		server_->process_command( CSetCommandApi::create( path, value_iterator->second ), NTG_SOURCE_LOAD );
 		delete value_iterator->second;
 	}
 
     NTG_TRACE_VERBOSE("done!");
 
-    return NTG_NO_ERROR;
+    return CError::SUCCESS;
 }
 
 
-error_code ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge )
+CError ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge )
 {
 	const CInterfaceDefinition &interface_definition = node.get_interface_definition();
 
 	if( !interface_definition.has_implementation() )
 	{
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 	const endpoint_definition_list &endpoint_definitions = interface_definition.get_endpoint_definitions();
@@ -849,13 +853,12 @@ error_code ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interfa
 		bridge->send_value( node_endpoint );
 	}
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
 
-command_status ntg_file_load( const char *filename, const CNode *parent, CModuleManager &module_manager )
+CError ntg_file_load( const char *filename, const CNode *parent, CModuleManager &module_manager, ntg_api::guid_set &new_embedded_module_ids )
 {
-    command_status command_status;
 	unsigned char *ixd_buffer = NULL;
 	bool is_zip_file;
 	unsigned int ixd_buffer_length;
@@ -863,31 +866,28 @@ command_status ntg_file_load( const char *filename, const CNode *parent, CModule
 	node_list new_nodes;
 	node_list::const_iterator new_node_iterator;
 
-	NTG_COMMAND_STATUS_INIT;
-
     LIBXML_TEST_VERSION;
 
-	guid_set *new_embedded_modules = new guid_set;
-	command_status.error_code = module_manager.load_from_integra_file( filename, *new_embedded_modules );
-	if( command_status.error_code != NTG_NO_ERROR ) 
+	CError error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
+	if( error != CError::SUCCESS ) 
 	{
 		NTG_TRACE_ERROR_WITH_STRING("couldn't load modules", filename );
 		goto CLEANUP;
 	}
 
 	/* pull ixd data out of file */
-	command_status.error_code = ntg_load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
-	if( command_status.error_code != NTG_NO_ERROR ) 
+	error = ntg_load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
+	if( error != CError::SUCCESS ) 
 	{
-		NTG_TRACE_ERROR_WITH_STRING("couldn't load ixd", filename);
+		NTG_TRACE_ERROR_WITH_STRING( "couldn't load ixd", filename );
 		goto CLEANUP;
 	}
 
 	xmlInitParser();
 
     /* validate candidate IXD file against schema */
-    command_status.error_code = ntg_xml_validate( (char *)ixd_buffer, ixd_buffer_length );
-    if( command_status.error_code != NTG_NO_ERROR ) 
+    error = ntg_xml_validate( (char *)ixd_buffer, ixd_buffer_length );
+    if( error != CError::SUCCESS ) 
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "ixd validation failed", filename );
 		goto CLEANUP;
@@ -898,7 +898,7 @@ command_status ntg_file_load( const char *filename, const CNode *parent, CModule
     if( reader == NULL )
 	{
 		NTG_TRACE_ERROR_WITH_STRING("unable to read ixd", filename );
-		command_status.error_code = NTG_FAILED;
+		error = CError::FAILED;
 		goto CLEANUP;
 	}
 
@@ -906,8 +906,8 @@ command_status ntg_file_load( const char *filename, const CNode *parent, CModule
 	server_->get_bridge()->host_dsp( 0 );
 
     /* actually load the data */
-    command_status.error_code = ntg_load_nodes( parent, reader, new_nodes );
-	if( command_status.error_code != NTG_NO_ERROR )
+    error = ntg_load_nodes( parent, reader, new_nodes );
+	if( error != CError::SUCCESS )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "failed to load nodes", filename );
 		goto CLEANUP;
@@ -916,7 +916,7 @@ command_status ntg_file_load( const char *filename, const CNode *parent, CModule
 	/* load the data directories */
 	if( is_zip_file )
 	{
-		if( CDataDirectory::extract_from_zip( filename, parent ) != NTG_NO_ERROR )
+		if( CDataDirectory::extract_from_zip( filename, parent ) != CError::SUCCESS )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "failed to load data directories", filename );
 		}
@@ -925,7 +925,7 @@ command_status ntg_file_load( const char *filename, const CNode *parent, CModule
 	/* send the loaded attributes to the host */
 	for( new_node_iterator = new_nodes.begin(); new_node_iterator != new_nodes.end(); new_node_iterator++ )
 	{
-		if( ntg_send_loaded_values_to_host( **new_node_iterator, server_->get_bridge() ) != NTG_NO_ERROR)
+		if( ntg_send_loaded_values_to_host( **new_node_iterator, server_->get_bridge() ) != CError::SUCCESS)
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "failed to send loaded attributes to host", filename );
 			continue;
@@ -940,7 +940,7 @@ command_status ntg_file_load( const char *filename, const CNode *parent, CModule
 
 		if( top_level_node->get_name() != top_level_node_name )
 		{
-			ntg_rename_( *server_, NTG_SOURCE_SYSTEM, top_level_node->get_path(), top_level_node_name.c_str() );
+			server_->process_command( CRenameCommandApi::create( top_level_node->get_path(), top_level_node_name.c_str() ), NTG_SOURCE_SYSTEM );
 		}
 	}
 
@@ -957,28 +957,21 @@ CLEANUP:
 		delete[] ixd_buffer;
 	}
 
-	if( command_status.error_code == NTG_NO_ERROR )
-	{
-		command_status.data = new_embedded_modules;
-	}
-	else
+	if( error != CError::SUCCESS )
 	{
 		/* load failed - unload modules */
-		if( new_embedded_modules )
-		{
-			module_manager.unload_modules( *new_embedded_modules );
-			delete new_embedded_modules;
-		}
+		module_manager.unload_modules( new_embedded_module_ids );
+		new_embedded_module_ids.clear();
 	}
 
 	/* restart DSP in the host */
 	server_->get_bridge()->host_dsp( 1 );
 
-	return command_status;
+	return error;
 }
 
 
-error_code ntg_file_save( const char *filename, const CNode &node, const CModuleManager &module_manager )
+CError ntg_file_save( const char *filename, const CNode &node, const CModuleManager &module_manager )
 {
 	zipFile zip_file;
 	zip_fileinfo zip_file_info;
@@ -991,13 +984,13 @@ error_code ntg_file_save( const char *filename, const CNode &node, const CModule
 	if( !zip_file )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Failed to create zipfile", filename );
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
-	if( ntg_save_nodes( node, &ixd_buffer, &ixd_buffer_length ) != NTG_NO_ERROR )
+	if( ntg_save_nodes( node, &ixd_buffer, &ixd_buffer_length ) != CError::SUCCESS )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Failed to save node tree", filename );
-		return NTG_FAILED;
+		return CError::FAILED;
 	}
 
 	ntg_init_zip_file_info( &zip_file_info );
@@ -1014,7 +1007,7 @@ error_code ntg_file_save( const char *filename, const CNode &node, const CModule
 
 	zipClose( zip_file, NULL );
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
 

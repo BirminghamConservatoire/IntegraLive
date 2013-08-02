@@ -19,47 +19,36 @@
  */
 
 
-#ifndef INTEGRA_ERRORS_PRIVATE
-#define INTEGRA_ERRORS_PRIVATE
+#ifndef INTEGRA_SET_COMMAND_PRIVATE
+#define INTEGRA_SET_COMMAND_PRIVATE
 
-#include "api/common_typedefs.h"
+#include "api/command_api.h"
+#include "path.h"
 
-/*
- * Error handling
- */
-namespace ntg_api
+
+namespace ntg_internal
 {
-	class LIBINTEGRA_API CError
+	class CNodeEndpoint;
+	class CInterfaceDefinition;
+
+
+	class LIBINTEGRA_API CSetCommand : public ntg_api::CSetCommandApi
 	{
 		public:
-
-			enum code 
-			{
-				INPUT_ERROR = -1,
-				SUCCESS = 0,
-				FAILED = 1,
-				TYPE_ERROR = 2,
-				PATH_ERROR = 3,
-				CONSTRAINT_ERROR = 4,
-				REENTRANCE_ERROR = 5,
-				FILE_VALIDATION_ERROR = 6,
-				FILE_MORE_RECENT_ERROR = 7,
-				MODULE_ALREADY_INSTALLED = 8
-			};
-
-			CError();
-			CError( code error_code );
-
-			operator code() const;
-			string get_text() const;
+			CSetCommand( const ntg_api::CPath &endpoint_path, const ntg_api::CValue *value );
+			~CSetCommand();
 
 		private:
+			
+			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
 
-			code m_error_code;
+			bool should_send_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, ntg_command_source source ) const;
+
+			ntg_api::CPath m_endpoint_path;
+			ntg_api::CValue *m_value;
 	};
-
 }
 
 
 
-#endif /*INTEGRA_ERRORS_PRIVATE*/
+#endif /*INTEGRA_SET_COMMAND_PRIVATE*/

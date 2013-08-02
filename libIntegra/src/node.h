@@ -55,7 +55,7 @@ namespace ntg_internal
 			void initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, CNode *parent );
 
 			void rename( const ntg_api::string &new_name );
-			void move( CNode *new_parent );
+			void reparent( CNode *new_parent );
 
 			internal_id get_id() const { return m_id; }
 			const CInterfaceDefinition &get_interface_definition() const { return *m_interface_definition; }
@@ -76,9 +76,10 @@ namespace ntg_internal
 
 			const node_endpoint_map &get_node_endpoints() const { return m_node_endpoints; }
 			node_endpoint_map &get_node_endpoints_writable() { return m_node_endpoints; }
-			
 
 			const CNodeEndpoint *get_node_endpoint( const ntg_api::string &endpoint_name ) const;
+
+			void get_all_node_paths( ntg_api::path_list &results ) const;
 
 
 		private:

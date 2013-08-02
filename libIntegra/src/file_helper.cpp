@@ -150,27 +150,27 @@ namespace ntg_internal
 	}
 
 
-	error_code CFileHelper::delete_file( const string &file_name )
+	CError CFileHelper::delete_file( const string &file_name )
 	{
 		if( remove( file_name.c_str() ) != 0 )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Failed to remove file", file_name.c_str() );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
-	error_code CFileHelper::copy_file( const string &source_path, const string &target_path )
+	CError CFileHelper::copy_file( const string &source_path, const string &target_path )
 	{
-		error_code error = NTG_FAILED;
+		CError error = CError::FAILED;
 
 		FILE *source_file = fopen( source_path.c_str(), "rb" );
 		if( !source_file )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "failed to open", source_path.c_str() );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		fseek( source_file, 0, SEEK_END );
@@ -199,7 +199,7 @@ namespace ntg_internal
 			bytes_to_copy -= bytes_read;
 		}
 
-		error = NTG_NO_ERROR;
+		error = CError::SUCCESS;
 
 	CLEANUP:
 

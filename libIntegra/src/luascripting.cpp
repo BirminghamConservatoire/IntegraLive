@@ -41,7 +41,8 @@ extern "C"
 #include "node.h"
 #include "lua.h"
 #include "luascripting.h"
-#include "server_commands.h"
+#include "server.h"
+#include "api/command_api.h"
 #include "value.h"
 #include "helper.h"
 #include "globals.h"
@@ -160,10 +161,10 @@ static float ntg_lua_get_double(lua_State * L, int argnum)
 
 static int ntg_lua_set( lua_State * L )
 {
-	command_status set_result;
 	int num_arguments;
 	CPath path, node_path;
 	string endpoint_name;
+	CError error;
 
 	assert( context_stack && context_stack->parent_path );
 
@@ -235,7 +236,7 @@ static int ntg_lua_set( lua_State * L )
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
-		set_result = ntg_set_( *server_, NTG_SOURCE_SCRIPT, path, converted_value );
+		error = server_->process_command( CSetCommandApi::create( path, converted_value ), NTG_SOURCE_SCRIPT );
 
 		delete new_value;
 		delete converted_value;
@@ -245,12 +246,12 @@ static int ntg_lua_set( lua_State * L )
 		assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::BANG );
 
 		ntg_lua_output_handler( NTG_SET_COLOR, "Sending bang to %s...", path.get_string().c_str() );
-		set_result = ntg_set_( *server_, NTG_SOURCE_SCRIPT, path, NULL );
+		error = server_->process_command( CSetCommandApi::create( path, NULL ), NTG_SOURCE_SCRIPT );
 	}
 
-	if( set_result.error_code != NTG_NO_ERROR )
+	if( error != CError::SUCCESS )
 	{
-		ntg_lua_error_handler( "%s", ntg_error_text( set_result.error_code ) );
+		ntg_lua_error_handler( "%s", error.get_text().c_str() );
 	}
 
     return 0;
@@ -304,7 +305,7 @@ static int ntg_lua_get(lua_State * L)
 		return 0;
 	}
 
-    const CValue *value = ntg_get_( *server_, path );
+    const CValue *value = server_->get_value( path );
     if( !value ) 
 	{
 		ntg_lua_error_handler( "Can't read attribute value at %s", node_path.get_string().c_str() );

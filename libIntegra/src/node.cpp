@@ -32,7 +32,6 @@
 #include "globals.h"
 #include "node.h"
 #include "server.h"
-#include "server_commands.h"
 #include "module_manager.h"
 #include "interface_definition.h"
 
@@ -98,7 +97,7 @@ namespace ntg_internal
 	}
 
 
-	void CNode::move( CNode *new_parent )
+	void CNode::reparent( CNode *new_parent )
 	{
 		m_parent = new_parent;
 
@@ -164,6 +163,17 @@ namespace ntg_internal
 		for( node_map::iterator i = m_children.begin(); i != m_children.end(); i++ )
 		{
 			i->second->update_all_paths();
+		}
+	}
+
+
+	void CNode::get_all_node_paths( path_list &results ) const
+	{
+		results.push_back( m_path );
+
+		for( node_map::const_iterator i = m_children.begin(); i != m_children.end(); i++ )
+		{
+			i->second->get_all_node_paths( results );
 		}
 	}
 }

@@ -46,52 +46,52 @@ static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
 
 /* sure there must be a more elegant way to do this, but lo_message_add_varargs
  * doesn't seem to work, and this does */
-error_code ntg_osc_send_ssss(lo_address targ, const char *path, 
+CError ntg_osc_send_ssss(lo_address targ, const char *path, 
         const char *s1, const char *s2, const char *s3, const char *s4)
 {
     lo_send(targ, path, "ssss", s1, s2, s3, s4);
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
-error_code ntg_osc_send_sss(lo_address targ, const char *path, 
+CError ntg_osc_send_sss(lo_address targ, const char *path, 
         const char *s1, const char *s2, const char *s3)
 {
     lo_send(targ, path, "sss", s1, s2, s3);
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
-error_code ntg_osc_send_ssi(lo_address targ, const char *path, 
+CError ntg_osc_send_ssi(lo_address targ, const char *path, 
         const char *s1, const char *s2, int i)
 {
     lo_send(targ, path, "ssi", s1, s2, i);
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
-error_code ntg_osc_send_ssf(lo_address targ, const char *path, 
+CError ntg_osc_send_ssf(lo_address targ, const char *path, 
         const char *s1, const char *s2, float f)
 {
     lo_send(targ, path, "ssf", s1, s2, f);
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
-error_code ntg_osc_send_ssN(lo_address targ, const char *path, 
+CError ntg_osc_send_ssN(lo_address targ, const char *path, 
         const char *s1, const char *s2)
 {
     lo_send(targ, path, "ssN", s1, s2);
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
-error_code ntg_osc_send_ss(lo_address targ, const char *path, 
+CError ntg_osc_send_ss(lo_address targ, const char *path, 
         const char *s1, const char *s2)
 {
     lo_send(targ, path, "ss", s1, s2);
 
-	return NTG_NO_ERROR;
+	return CError::SUCCESS;
 }
 
 
@@ -122,7 +122,7 @@ void ntg_osc_client_destroy(ntg_osc_client *client)
     delete client;
 }
 
-error_code ntg_osc_client_send_set(ntg_osc_client *client,
+CError ntg_osc_client_send_set(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &path,
         const CValue *value)
@@ -163,11 +163,11 @@ error_code ntg_osc_client_send_set(ntg_osc_client *client,
 		ntg_osc_send_ssN(client->address, methodName, cmd_source_s, path_s);
 	}
 
-    return NTG_NO_ERROR;
+    return CError::SUCCESS;
 }
 
 
-error_code ntg_osc_client_send_new(ntg_osc_client *client,
+CError ntg_osc_client_send_new(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const GUID *module_id,
         const char *node_name,
@@ -190,10 +190,10 @@ error_code ntg_osc_client_send_new(ntg_osc_client *client,
 
 	delete[] module_id_string;
 
-    return NTG_NO_ERROR;
+    return CError::SUCCESS;
 }
 
-error_code ntg_osc_client_send_load(ntg_osc_client *client,
+CError ntg_osc_client_send_load(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const char *file_path,
         const CPath &path)
@@ -208,7 +208,7 @@ error_code ntg_osc_client_send_load(ntg_osc_client *client,
             file_path, path.get_string().c_str() );
 }
 
-error_code ntg_osc_client_send_delete(ntg_osc_client *client,
+CError ntg_osc_client_send_delete(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &path)
 {
@@ -220,7 +220,7 @@ error_code ntg_osc_client_send_delete(ntg_osc_client *client,
     return ntg_osc_send_ss(client->address, methodName, cmd_source_s, path.get_string().c_str() );
 }
    
-error_code ntg_osc_client_send_move(ntg_osc_client *client,
+CError ntg_osc_client_send_move(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &node_path,
         const CPath &parent_path)
@@ -234,7 +234,7 @@ error_code ntg_osc_client_send_move(ntg_osc_client *client,
 
 }
 
-error_code ntg_osc_client_send_rename(ntg_osc_client *client,
+CError ntg_osc_client_send_rename(ntg_osc_client *client,
         ntg_command_source cmd_source,
         const CPath &path,
         const char *name)
@@ -250,4 +250,20 @@ error_code ntg_osc_client_send_rename(ntg_osc_client *client,
 }
 
 
+bool ntg_should_send_to_client( ntg_command_source cmd_source ) 
+{
+	switch( cmd_source )
+	{
+		case NTG_SOURCE_INITIALIZATION:
+			/* don't send to client on initialization - client infers from known default values */
+			return false;
+
+		case NTG_SOURCE_LOAD:
+			/* don't send to client on load - calls nodelist and get explicitly */
+			return false;
+
+		default:
+			return true;
+	}
+}
 

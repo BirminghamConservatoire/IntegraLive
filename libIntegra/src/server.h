@@ -21,10 +21,6 @@
 #ifndef INTEGRA_SERVER_PRIVATE_H
 #define INTEGRA_SERVER_PRIVATE_H
 
-#define NTG_RETURN_COMMAND_STATUS command_status.error_code = error_code;return command_status;
-#define NTG_RETURN_ERROR_CODE( ERROR_CODE ) command_status.error_code = ERROR_CODE;return command_status;
-#define NTG_COMMAND_STATUS_INIT command_status.data = NULL, command_status.error_code = NTG_NO_ERROR;
-
 #include <pthread.h>
 
 #include "api/server_api.h"
@@ -43,6 +39,8 @@ typedef struct ntg_system_class_data_ ntg_system_class_data;
 namespace ntg_api
 {
 	class CServerStartupInfo;
+	class CCommandApi;
+	class CCommandResult;
 }
 
 
@@ -80,6 +78,8 @@ namespace ntg_internal
 			const CNodeEndpoint *find_node_endpoint( const ntg_api::string &path_string, const CNode *relative_to = NULL ) const;
 			CNodeEndpoint *find_node_endpoint_writable( const ntg_api::string &path_string, const CNode *relative_to = NULL );
 
+			const ntg_api::CValue *get_value( const ntg_api::CPath &path ) const;
+
 			ntg_bridge_interface *get_bridge() { return m_bridge; }
 			ntg_osc_client *get_osc_client() { return m_osc_client; }
 			CStateTable &get_state_table() { return m_state_table;  }
@@ -96,7 +96,13 @@ namespace ntg_internal
 
 			bool get_terminate_flag() const { return m_terminate; }
 
+			ntg_api::CError process_command( ntg_api::CCommandApi *command, ntg_command_source command_source, ntg_api::CCommandResult *result = NULL );
+
+			void dump_state();
+
 		private:
+
+			void dump_state( const node_map &nodes, int indentation );
 
 			pthread_mutex_t m_mutex;
 

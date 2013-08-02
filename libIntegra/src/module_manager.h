@@ -46,13 +46,15 @@ namespace ntg_internal
 			~CModuleManager();
 
 			/* returns ids of new embedded modules in new_embedded_modules */
-			ntg_api::error_code load_from_integra_file( const ntg_api::string &integra_file, ntg_api::guid_set &new_embedded_modules );
+			ntg_api::CError load_from_integra_file( const ntg_api::string &integra_file, ntg_api::guid_set &new_embedded_modules );
 
-			ntg_api::error_code install_module( const ntg_api::string &module_file, CModuleInstallResult &result );
-			ntg_api::error_code install_embedded_module( const GUID &module_id );
-			ntg_api::error_code uninstall_module( const GUID &module_id, CModuleUninstallResult &result );
-			ntg_api::error_code load_module_in_development( const ntg_api::string &module_file, CLoadModuleInDevelopmentResult &result );
+			ntg_api::CError install_module( const ntg_api::string &module_file, CModuleInstallResult &result );
+			ntg_api::CError install_embedded_module( const GUID &module_id );
+			ntg_api::CError uninstall_module( const GUID &module_id, CModuleUninstallResult &result );
+			ntg_api::CError load_module_in_development( const ntg_api::string &module_file, CLoadModuleInDevelopmentResult &result );
+			ntg_api::CError unload_orphaned_embedded_modules();
 
+			void unload_modules( const ntg_api::guid_set &module_ids );
 
 			const ntg_api::guid_set &get_all_module_ids() const;
 
@@ -63,10 +65,7 @@ namespace ntg_internal
 			ntg_api::string get_unique_interface_name( const CInterfaceDefinition &interface_definition ) const;
 			ntg_api::string get_patch_path( const CInterfaceDefinition &interface_definition ) const;
 
-			void get_orphaned_embedded_modules( const node_map &search_nodes, ntg_api::guid_set &results ) const;
-			void unload_modules( const ntg_api::guid_set &module_ids );
-
-			ntg_api::error_code interpret_legacy_module_id( internal_id old_id, GUID &output ) const;
+			ntg_api::CError interpret_legacy_module_id( internal_id old_id, GUID &output ) const;
 
 		private:
 
@@ -80,7 +79,7 @@ namespace ntg_internal
 
 			static CInterfaceDefinition *load_interface( unzFile unzip_file );
 
-			ntg_api::error_code extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum );
+			ntg_api::CError extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum );
 
 			void unload_module( CInterfaceDefinition *interface_definition );
 
@@ -89,14 +88,14 @@ namespace ntg_internal
 			
 			void delete_implementation( const CInterfaceDefinition &interface_definition );
 
-			ntg_api::error_code store_module( const GUID &module_id );
+			ntg_api::CError store_module( const GUID &module_id );
 
 			void load_legacy_module_id_file();
 			void unload_all_modules();
 
 			ntg_api::string get_storage_path( const CInterfaceDefinition &interface_definition ) const;
 			
-			ntg_api::error_code change_module_source( CInterfaceDefinition &interface_definition, CInterfaceDefinition::module_source new_source );
+			ntg_api::CError change_module_source( CInterfaceDefinition &interface_definition, CInterfaceDefinition::module_source new_source );
 
 			bool is_module_in_use( const node_map &search_nodes, const GUID &module_id ) const;
 			void remove_in_use_module_ids_from_set( const node_map &search_nodes, ntg_api::guid_set &set ) const;

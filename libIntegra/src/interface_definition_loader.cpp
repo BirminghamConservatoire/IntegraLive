@@ -117,12 +117,12 @@ using namespace ntg_api;
 		if( STORAGE_POINTER )													\
 		{																		\
 			NTG_TRACE_ERROR( "multiple " START_TAG " tags" );					\
-			return NTG_ERROR;													\
+			return CError::INPUT_ERROR;											\
 		}																		\
 		else																	\
 		{																		\
 			STORAGE_POINTER = new TYPE;											\
-			return NTG_NO_ERROR;												\
+			return CError::SUCCESS;												\
 		}																		\
 	}	
 
@@ -132,7 +132,7 @@ using namespace ntg_api;
 	{																			\
 		TYPE *entry = new TYPE;													\
 		LIST.push_back( entry );												\
-		return NTG_NO_ERROR;													\
+		return CError::SUCCESS;													\
 	}
 
 
@@ -155,12 +155,12 @@ using namespace ntg_api;
 		if( STORAGE_LOCATION.count( element_value ) > 0 )						\
 		{																		\
 			NTG_TRACE_ERROR_WITH_STRING( "duplicate", element_value.c_str());	\
-			return NTG_ERROR;													\
+			return CError::INPUT_ERROR;											\
 		}																		\
 		else																	\
 		{																		\
 			STORAGE_LOCATION.insert( element_value );							\
-			return NTG_NO_ERROR;												\
+			return CError::SUCCESS;												\
 		}																		\
 	}
 
@@ -169,7 +169,7 @@ using namespace ntg_api;
 	{																			\
 		STORAGE_LOCATION = CValue::factory( VALUE_TYPE );						\
 		STORAGE_LOCATION->set_from_string( element_value );						\
-		return NTG_NO_ERROR;													\
+		return CError::SUCCESS;													\
 	}
 
 
@@ -179,7 +179,7 @@ using namespace ntg_api;
 		CValue *value = CValue::factory( VALUE_TYPE );							\
 		value->set_from_string( element_value );								\
 		STORAGE_LOCATION->insert( value );										\
-		return NTG_NO_ERROR;													\
+		return CError::SUCCESS;													\
 	}
 
 
@@ -229,7 +229,7 @@ namespace ntg_internal
 				case XML_READER_TYPE_TEXT:
 					{
 						char *element_value = ( char * ) xmlTextReaderValue( m_reader );
-						if( handle_element_value( element_value ) != NTG_NO_ERROR )
+						if( handle_element_value( element_value ) != CError::SUCCESS )
 						{
 							xmlFree( element_value );
 							cleanup();
@@ -261,7 +261,7 @@ namespace ntg_internal
 
 						assert( depth == new_depth );
 
-						if( handle_element() != NTG_NO_ERROR )
+						if( handle_element() != CError::SUCCESS )
 						{
 							cleanup();
 							return NULL;
@@ -269,7 +269,7 @@ namespace ntg_internal
 
 						if( xmlTextReaderHasAttributes( m_reader ) )
 						{
-							if( handle_element_attributes() != NTG_NO_ERROR )
+							if( handle_element_attributes() != CError::SUCCESS )
 							{
 								cleanup();
 								return NULL;
@@ -308,8 +308,8 @@ namespace ntg_internal
 			}
 		}
 
-		error_code error_code = do_sanity_check();
-		if( error_code != NTG_NO_ERROR )
+		CError CError = do_sanity_check();
+		if( CError != CError::SUCCESS )
 		{
 			NTG_TRACE_ERROR( "sanity check failed" );
 			cleanup();
@@ -327,7 +327,7 @@ namespace ntg_internal
 	}
 
 
-	error_code CInterfaceDefinitionLoader::handle_element_value( const string &element_value )
+	CError CInterfaceDefinitionLoader::handle_element_value( const string &element_value )
 	{
 		assert( m_interface_definition && !m_element_path.empty() );
 
@@ -498,12 +498,12 @@ namespace ntg_internal
 
 		NTG_TRACE_ERROR_WITH_STRING( "unhandled element", m_element_path.c_str() );
 	
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 
 	}
 
 
-	error_code CInterfaceDefinitionLoader::handle_element()
+	CError CInterfaceDefinitionLoader::handle_element()
 	{
 		assert( m_interface_definition && !m_element_path.empty() );
 
@@ -570,14 +570,14 @@ namespace ntg_internal
 			m_interface_definition->widget_list->mapping_list, 
 			ntg_widget_attribute_mapping );*/
 
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
-	error_code CInterfaceDefinitionLoader::handle_element_attributes()
+	CError CInterfaceDefinitionLoader::handle_element_attributes()
 	{
 		char *origin_guid_attribute = NULL;
-		error_code error_code = NTG_NO_ERROR;
+		CError error = CError::SUCCESS;
 
 		assert( m_interface_definition && m_reader && !m_element_path.empty() );
 
@@ -586,10 +586,10 @@ namespace ntg_internal
 			char *module_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST ATTRIBUTE_MODULE_GUID );
 			if( module_guid_attribute )
 			{
-				if( ntg_string_to_guid( module_guid_attribute, &m_interface_definition->m_module_guid ) != NTG_NO_ERROR )
+				if( ntg_string_to_guid( module_guid_attribute, &m_interface_definition->m_module_guid ) != CError::SUCCESS )
 				{
 					NTG_TRACE_ERROR_WITH_STRING( "Couldn't parse guid", module_guid_attribute );
-					error_code = NTG_ERROR;
+					error = CError::INPUT_ERROR;
 				}
 
 				xmlFree( module_guid_attribute );
@@ -597,16 +597,16 @@ namespace ntg_internal
 			else
 			{
 				NTG_TRACE_ERROR( INTERFACE " lacks " ATTRIBUTE_MODULE_GUID " attribute" );
-				error_code = NTG_ERROR;
+				error = CError::INPUT_ERROR;
 			}
 
 			char *origin_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST ATTRIBUTE_ORIGIN_GUID );
 			if( origin_guid_attribute )
 			{
-				if( ntg_string_to_guid( origin_guid_attribute, &m_interface_definition->m_origin_guid ) != NTG_NO_ERROR )
+				if( ntg_string_to_guid( origin_guid_attribute, &m_interface_definition->m_origin_guid ) != CError::SUCCESS )
 				{
 					NTG_TRACE_ERROR_WITH_STRING( "Couldn't parse guid", origin_guid_attribute );
-					error_code = NTG_ERROR;
+					error = CError::INPUT_ERROR;
 				}
 
 				xmlFree( origin_guid_attribute );
@@ -614,11 +614,11 @@ namespace ntg_internal
 			else
 			{
 				NTG_TRACE_ERROR( INTERFACE " lacks " ATTRIBUTE_ORIGIN_GUID " attribute" );
-				error_code = NTG_ERROR;
+				error = CError::INPUT_ERROR;
 			}
 		}
 
-		return error_code;
+		return error;
 	}
 
 
@@ -689,16 +689,16 @@ namespace ntg_internal
 	}
 
 
-	error_code CInterfaceDefinitionLoader::do_sanity_check()
+	CError CInterfaceDefinitionLoader::do_sanity_check()
 	{
 		if( !m_interface_definition )
 		{
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		if( m_interface_definition->get_interface_info().get_name().empty() )
 		{
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		const endpoint_definition_list &endpoint_definitions = m_interface_definition->get_endpoint_definitions();
@@ -708,7 +708,7 @@ namespace ntg_internal
 
 			if( endpoint_definition.get_name().empty() )	
 			{
-				return NTG_ERROR;
+				return CError::INPUT_ERROR;
 			}
 
 			switch( endpoint_definition.get_type() )
@@ -719,7 +719,7 @@ namespace ntg_internal
 
 						if( !control_info )
 						{
-							return NTG_ERROR;
+							return CError::INPUT_ERROR;
 						}
 
 						switch( control_info->get_type() )
@@ -727,7 +727,7 @@ namespace ntg_internal
 							case CControlInfo::STATEFUL:
 								if( !control_info->get_state_info() ) 
 								{
-									return NTG_ERROR;
+									return CError::INPUT_ERROR;
 								}
 								break;
 
@@ -735,7 +735,7 @@ namespace ntg_internal
 								break;
 
 							default:
-								return NTG_ERROR;
+								return CError::INPUT_ERROR;
 						}
 					}
 					break;
@@ -743,12 +743,12 @@ namespace ntg_internal
 				case CEndpointDefinition::STREAM:
 					if( !endpoint_definition.get_stream_info() ) 
 					{
-						return NTG_ERROR;
+						return CError::INPUT_ERROR;
 					}
 					break;
 
 				default:
-					return NTG_ERROR;
+					return CError::INPUT_ERROR;
 			}
 		}
 
@@ -759,175 +759,175 @@ namespace ntg_internal
 			const CWidgetDefinition &widget_definition = **i;
 			if( widget_definition.get_type().empty() || widget_definition.get_label().empty() )
 			{
-				return NTG_ERROR;
+				return CError::INPUT_ERROR;
 			}
 		}
 
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, string &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, string &output )
 	{
 		output = input;
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, bool &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, bool &output )
 	{
 		if( input == STR_FALSE )
 		{
 			output = false;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_TRUE )
 		{
 			output = true;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		NTG_TRACE_ERROR_WITH_STRING( "invalid boolean", input.c_str() );
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, int &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, int &output )
 	{
 		output = atoi( input.c_str() );
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, float &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, float &output )
 	{
 		output = atof( input.c_str() );
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, CEndpointDefinition::endpoint_type &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, CEndpointDefinition::endpoint_type &output )
 	{
 		if( input == STR_CONTROL )
 		{
 			output = CEndpointDefinition::CONTROL;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_STREAM )
 		{
 			output = CEndpointDefinition::STREAM;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		NTG_TRACE_ERROR_WITH_STRING( "invalid endpoint type", input.c_str() );
-		return NTG_ERROR;	
+		return CError::INPUT_ERROR;	
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, CControlInfo::control_type &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, CControlInfo::control_type &output )
 	{
 		if( input == STR_STATE )
 		{
 			output = CControlInfo::STATEFUL;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_BANG )
 		{
 			output = CControlInfo::BANG;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		NTG_TRACE_ERROR_WITH_STRING( "invalid control type", input.c_str() );
-		return NTG_ERROR;	
+		return CError::INPUT_ERROR;	
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, CValue::type &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, CValue::type &output )
 	{
 		if( input == STR_FLOAT )
 		{
 			output = CValue::FLOAT;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_INTEGER )
 		{
 			output = CValue::INTEGER;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_STRING )
 		{
 			output = CValue::STRING;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		NTG_TRACE_ERROR_WITH_STRING( "invalid value type", input.c_str() );
-		return NTG_ERROR;	
+		return CError::INPUT_ERROR;	
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, CValueScale::scale_type &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, CValueScale::scale_type &output )
 	{
 		if( input == STR_LINEAR )
 		{
 			output = CValueScale::LINEAR;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_EXPONENTIAL )
 		{
 			output = CValueScale::EXPONENTIAL;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_DECIBEL )
 		{
 			output = CValueScale::DECIBEL;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		NTG_TRACE_ERROR_WITH_STRING( "invalid scale type", input.c_str() );
-		return NTG_ERROR;	
+		return CError::INPUT_ERROR;	
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, CStreamInfo::stream_type &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, CStreamInfo::stream_type &output )
 	{
 		if( input == STR_AUDIO )
 		{
 			output = CStreamInfo::AUDIO;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		NTG_TRACE_ERROR_WITH_STRING( "invalid stream type", input.c_str() );
-		return NTG_ERROR;	
+		return CError::INPUT_ERROR;	
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, CStreamInfo::stream_direction &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, CStreamInfo::stream_direction &output )
 	{
 		if( input == STR_INPUT )
 		{
 			output = CStreamInfo::INPUT;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		if( input == STR_OUTPUT )
 		{
 			output = CStreamInfo::OUTPUT;
-			return NTG_NO_ERROR;
+			return CError::SUCCESS;
 		}
 
 		NTG_TRACE_ERROR_WITH_STRING( "invalid stream direction", input.c_str() );
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 
 
-	error_code CInterfaceDefinitionLoader::converter( const string &input, struct tm &output )
+	CError CInterfaceDefinitionLoader::converter( const string &input, struct tm &output )
 	{
 		return ntg_string_to_date( input.c_str(), output );
 	}

@@ -33,7 +33,7 @@
 #include "trace.h"
 #include "globals.h"
 #include "path.h"
-#include "server_commands.h"
+#include "api/command_api.h"
 
 
 #ifdef _WINDOWS
@@ -112,7 +112,7 @@ sem_t *ntg_player_data_get_thread_shutdown_semaphore( ntg_player_data *player_da
 void ntg_player_set_value( CServer &server, const CPath &attribute, const CValue *value )
 {
 	server.lock();
-	ntg_set_( server, NTG_SOURCE_SYSTEM, attribute, value );
+	server.process_command( CSetCommandApi::create( attribute, value ), NTG_SOURCE_SYSTEM );
 	server.unlock();
 }
 

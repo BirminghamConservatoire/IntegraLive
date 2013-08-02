@@ -41,11 +41,12 @@ extern "C"
 #include "helper.h"
 #include "value.h"
 #include "path.h"
-#include "server_commands.h"
 #include "bridge_host.h"
 
 #include "api/server_startup_info.h"
+#include "api/command_api.h"
 
+#include <assert.h>
 
 using namespace ntg_api;
 
@@ -120,7 +121,7 @@ namespace ntg_internal
 			CPath path( target->get_path() );
 			path.append_element( attribute_name );
 
-			ntg_set_( *server_, NTG_SOURCE_HOST, path, value );
+			server_->process_command( CSetCommandApi::create( path, value ), NTG_SOURCE_HOST );
 		}
 		else
 		{
@@ -191,7 +192,7 @@ namespace ntg_internal
 		node_map copy_of_nodes = m_nodes;
 		for( node_map::const_iterator i = copy_of_nodes.begin(); i != copy_of_nodes.end(); i++ )
 		{
-			ntg_delete_( *this, NTG_SOURCE_SYSTEM, i->second->get_path() );
+			process_command( CDeleteCommandApi::create( i->second->get_path() ), NTG_SOURCE_SYSTEM );
 		}
 	
 		/* shutdown system class handlers */
@@ -350,13 +351,84 @@ namespace ntg_internal
 	}
 
 
+	const CValue *CServer::get_value( const ntg_api::CPath &path ) const
+	{
+		const CNodeEndpoint *node_endpoint = find_node_endpoint( path.get_string() );
+		
+		return node_endpoint ? node_endpoint->get_value() : NULL;
+	}
+
+
 	const string &CServer::get_scratch_directory() const
 	{
 		return m_scratch_directory->get_scratch_directory();
 	}
 
 
+	void CServer::dump_state( const node_map &nodes, int indentation )
+	{
+		for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
+		{
+			const CNode *node = i->second;
 
+			for( int i = 0; i < indentation; i++ )
+			{
+				printf("  |");
+			}
+
+			const CInterfaceDefinition &interface_definition = node->get_interface_definition();
+			char *module_id_string = ntg_guid_to_string( &interface_definition.get_module_guid() );
+			printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n", node->get_name(), interface_definition.get_interface_info().get_name().c_str(), module_id_string, node->get_path().get_string().c_str() );
+			delete[] module_id_string;
+
+			bool has_children = !node->get_children().empty();
+
+			const node_endpoint_map &node_endpoints = node->get_node_endpoints();
+			for( node_endpoint_map::const_iterator node_endpoint_iterator = node_endpoints.begin(); node_endpoint_iterator != node_endpoints.end(); node_endpoint_iterator++ )
+			{
+				const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
+				const CValue *value = node_endpoint->get_value();
+				if( !value ) continue;
+
+				for( int i = 0; i < indentation; i++ )
+				{
+					printf("  |");
+				}
+
+				printf( has_children ? "  |" : "   ");
+
+				string value_string = value->get_as_string();
+
+				printf("   -Attribute:  %s = %s\n", node_endpoint->get_endpoint_definition().get_name().c_str(), value_string.c_str() );
+			}
+		
+			if( has_children )
+			{
+				dump_state( node->get_children(), indentation + 1 );
+			}
+		}
+	}
+
+
+	void CServer::dump_state()
+	{
+		printf("Print State:\n");
+		printf("***********:\n\n");
+		dump_state( server_->get_nodes(), 0 );
+		fflush( stdout );
+	}
+
+
+	CError CServer::process_command( ntg_api::CCommandApi *command, ntg_command_source command_source, ntg_api::CCommandResult *result )
+	{
+		assert( command );
+
+		CError error = command->execute( *this, command_source, result );
+
+		delete command;
+
+		return error;
+	}
 	
 }
 

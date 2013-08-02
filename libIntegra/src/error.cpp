@@ -20,46 +20,44 @@
 
 #include "platform_specifics.h"
 
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "error.h"
 
 namespace ntg_api
 {
-	const char *ntg_error_text( error_code error_code )
+	CError::CError()
 	{
-		switch( error_code ) 
-		{
-			case NTG_NO_ERROR:
-				return "No error";
-			case NTG_ERROR:
-				return "Input error";
-			case NTG_FAILED:
-				return "Function failure";
-			case NTG_MEMORY_ALLOCATION_ERROR:
-				return "Memory allocation error";
-			case NTG_MEMORY_FREE_ERROR:
-				return "Memory free error";
-			case NTG_TYPE_ERROR:
-				return "Incorrect data type";
-			case NTG_PATH_ERROR:
-				return "Erroneous or incorrect path";
-			case NTG_CONSTRAINT_ERROR:
-				return "Failure to adhere to constraint";
-			case NTG_REENTRANCE_ERROR:
-				return "Reentrance detected - aborting";
-			case NTG_FILE_VALIDATION_ERROR:
-				return "File validation error";
-			case NTG_FILE_MORE_RECENT_ERROR:
-				return "File was saved in a more recent version of Integra, and cannot be loaded in this version.\n\nPlease upgrade to the latest version of Integra.";
-			case NTG_MODULE_ALREADY_INSTALLED:
-				return "Module already installed";
+		m_error_code = SUCCESS;
+	}
 
-			default:
-				return "Unknown error";
+
+	CError::CError( code error_code )
+	{
+		m_error_code = error_code;
+	}
+
+
+	CError::operator code() const
+	{
+		return m_error_code;
+	}
+
+
+	string CError::get_text() const
+	{
+		switch( m_error_code ) 
+		{
+			case SUCCESS:					return "Success";
+			case INPUT_ERROR:				return "Input error";
+			case FAILED:					return "Function failure";
+			case TYPE_ERROR:				return "Incorrect data type";
+			case PATH_ERROR:				return "Erroneous or incorrect path";
+			case CONSTRAINT_ERROR:			return "Failure to adhere to constraint";
+			case REENTRANCE_ERROR:			return "Reentrance detected - aborting";
+			case FILE_VALIDATION_ERROR:		return "File validation error";
+			case FILE_MORE_RECENT_ERROR:	return "File was saved in a more recent version of Integra, and cannot be loaded in this version.\n\nPlease upgrade to the latest version of Integra.";
+			case MODULE_ALREADY_INSTALLED:	return "Module already installed";
+
+			default:						return "Unknown error";
 		}
 	}
 }

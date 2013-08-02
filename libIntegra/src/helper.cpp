@@ -74,15 +74,6 @@ char *ntg_string_append( char *dest, const char *source )
 }
 
 
-string ntg_make_node_name( const string &module_name )
-{
-	ostringstream stream;
-	stream << module_name << ntg_id_new();
-	
-	return stream.str();
-}
-
-
 bool ntg_validate_node_name( const char *name )
 {
 	int i, length;
@@ -106,32 +97,32 @@ bool ntg_validate_node_name( const char *name )
 
 
 /* helper to read a single hexadecimal character */
-error_code ntg_read_hex_char( char input, unsigned char *output )
+CError ntg_read_hex_char( char input, unsigned char *output )
 {
 	if( input >= '0' && input <= '9' )
 	{
 		*output = input - '0';
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 	if( input >= 'A' && input <= 'F' )
 	{
 		*output = input + 0x0A - 'A';
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 	if( input >= 'a' && input <= 'f' )
 	{
 		*output = input + 0x0A - 'a';
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
-	return NTG_ERROR;
+	return CError::INPUT_ERROR;
 }
 
 
 /* helper to read up to a caller-specified number of hexadecimal characters, up to an unsigned long's worth */
-unsigned long ntg_read_hex_chars( const char *input, unsigned int number_of_bytes, error_code *error_code )
+unsigned long ntg_read_hex_chars( const char *input, unsigned int number_of_bytes, CError *CError )
 {
 	unsigned long result = 0;
 	unsigned char nibble;
@@ -141,9 +132,9 @@ unsigned long ntg_read_hex_chars( const char *input, unsigned int number_of_byte
 
 	for( i = 0; i < number_of_bytes * 2; i++ )
 	{
-		if( ntg_read_hex_char( input[ i ], &nibble ) != NTG_NO_ERROR )
+		if( ntg_read_hex_char( input[ i ], &nibble ) != CError::SUCCESS )
 		{
-			*error_code = NTG_ERROR;
+			*CError = CError::INPUT_ERROR;
 			return 0;
 		}
 
@@ -192,43 +183,43 @@ char *ntg_guid_to_string( const GUID *guid )
 }
 
 
-error_code ntg_string_to_guid( const char *string, GUID *output )
+CError ntg_string_to_guid( const char *string, GUID *output )
 {
-	error_code error_code = NTG_NO_ERROR;
+	CError CError = CError::SUCCESS;
 	int i;
 
 	assert( string && output );
 
 	if( strlen( string ) < 36 ) 
 	{
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 	
 	if( string[ 8 ] != '-' || string[ 13 ] != '-' || string[ 18 ] != '-' || string[ 23 ] != '-' )
 	{
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 
-	output->Data1 = ntg_read_hex_chars( string, sizeof( uint32_t ), &error_code );
-	output->Data2 = ntg_read_hex_chars( string + 9, sizeof( uint16_t ), &error_code );
-	output->Data3 = ntg_read_hex_chars( string + 14, sizeof( uint16_t ), &error_code );
+	output->Data1 = ntg_read_hex_chars( string, sizeof( uint32_t ), &CError );
+	output->Data2 = ntg_read_hex_chars( string + 9, sizeof( uint16_t ), &CError );
+	output->Data3 = ntg_read_hex_chars( string + 14, sizeof( uint16_t ), &CError );
 
 	for( i = 0; i < 2; i++ )
 	{
-		output->Data4[ i ] = ntg_read_hex_chars( string + 19 + i * 2, sizeof( uint8_t ), &error_code );
+		output->Data4[ i ] = ntg_read_hex_chars( string + 19 + i * 2, sizeof( uint8_t ), &CError );
 	}
 
 	for( i = 0; i < 6; i++ )
 	{
-		output->Data4[ i + 2 ] = ntg_read_hex_chars( string + 24 + i * 2, sizeof( uint8_t ), &error_code );
+		output->Data4[ i + 2 ] = ntg_read_hex_chars( string + 24 + i * 2, sizeof( uint8_t ), &CError );
 	}
 
-	if( error_code != NTG_NO_ERROR )
+	if( CError != CError::SUCCESS )
 	{
 		ntg_guid_set_null( output );
 	}
 
-	return error_code;
+	return CError;
 }
 
 
@@ -243,12 +234,12 @@ char *ntg_date_to_string( const struct tm *date )
 }
 
 
-error_code ntg_string_to_date( const char *input, struct tm &output )
+CError ntg_string_to_date( const char *input, struct tm &output )
 {
 	if( strlen( input ) < 16 )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Unexpected date/time format", input );
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 
 	output.tm_year = atoi( input ) - 1900;
@@ -260,11 +251,11 @@ error_code ntg_string_to_date( const char *input, struct tm &output )
 	output.tm_isdst = -1;
 	if( mktime( &output ) == -1 )
 	{
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 	else
 	{
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 }
 

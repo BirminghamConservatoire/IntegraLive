@@ -30,7 +30,6 @@
 #include "player_handler.h"
 #include "data_directory.h"
 #include "system_class_literals.h"
-#include "server_commands.h"
 #include "node_endpoint.h"
 #include "helper.h"
 #include "module_manager.h"
@@ -39,6 +38,7 @@
 #include "trace.h"
 #include "luascripting.h"
 #include "file_helper.h"
+#include "api/command_api.h"
 
 using namespace ntg_api;
 using namespace ntg_internal;
@@ -217,7 +217,7 @@ void ntg_envelope_update_value( CServer &server, const CNode &envelope_node )
 
 	if( !current_value_endpoint->get_value()->is_equal( output_value ) )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, current_value_endpoint->get_path(), &output_value );
+		server.process_command( CSetCommandApi::create( current_value_endpoint->get_path(), &output_value ), NTG_SOURCE_SYSTEM );
 	}
 }
 
@@ -275,7 +275,7 @@ void ntg_node_activate_tree(CServer &server, const CNode &node, bool activate, p
 
 			if( !active_endpoint->get_value()->is_equal( value ) )
 			{
-				ntg_set_( server, NTG_SOURCE_SYSTEM, active_endpoint->get_path(), &value );
+				server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), NTG_SOURCE_SYSTEM );
 
 				if( activate )
 				{
@@ -325,7 +325,7 @@ void ntg_container_active_handler( CServer &server, const CNode &node, bool acti
 			const CNodeEndpoint *player_tick = activated_node->get_node_endpoint( NTG_ENDPOINT_TICK );
 			assert( player_tick );
 
-			ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->get_path(), player_tick->get_value() );
+			server.process_command( CSetCommandApi::create( player_tick->get_path(), player_tick->get_value() ), NTG_SOURCE_SYSTEM );
 		}
 	}
 }
@@ -346,7 +346,7 @@ void ntg_non_container_active_initializer( CServer &server, const CNode &node)
 	if( !ntg_node_are_all_ancestors_active( node ) )
 	{
 		CIntegerValue value( 0 );
-		ntg_set_( server, NTG_SOURCE_SYSTEM, active_endpoint->get_path(), &value );
+		server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), NTG_SOURCE_SYSTEM );
 	}
 }
 
@@ -374,17 +374,17 @@ void ntg_player_set_state(CServer &server, const CNode &player_node, int tick, i
 	We can prevent this from being a problem by setting tick after start & end, and setting play last
 	*/
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_loop_endpoint->get_path(), &CIntegerValue( loop ) );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_start_endpoint->get_path(), &CIntegerValue( start ) );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_end_endpoint->get_path(), &CIntegerValue( play ) );
+	server.process_command( CSetCommandApi::create( player_loop_endpoint->get_path(), &CIntegerValue( loop ) ), NTG_SOURCE_SYSTEM );
+	server.process_command( CSetCommandApi::create( player_start_endpoint->get_path(), &CIntegerValue( start ) ), NTG_SOURCE_SYSTEM );
+	server.process_command( CSetCommandApi::create( player_end_endpoint->get_path(), &CIntegerValue( play ) ), NTG_SOURCE_SYSTEM );
 
 	/* don't set tick unless >= 0.  Allows calling functions to skip setting tick */
 	if( tick >= 0 )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick_endpoint->get_path(), &CIntegerValue( tick ) );
+		server.process_command( CSetCommandApi::create( player_tick_endpoint->get_path(), &CIntegerValue( tick ) ), NTG_SOURCE_SYSTEM );
 	}
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_play_endpoint->get_path(), &CIntegerValue( play ) );
+	server.process_command( CSetCommandApi::create( player_play_endpoint->get_path(), &CIntegerValue( play ) ), NTG_SOURCE_SYSTEM );
 }
 
 
@@ -553,7 +553,7 @@ void ntg_handle_connections( CServer &server, const CNode &search_node, const CN
 					converted_value = NULL;
 				}
 
-				ntg_set_( server, NTG_SOURCE_CONNECTION, destination_endpoint->get_path(), converted_value );
+				server.process_command( CSetCommandApi::create( destination_endpoint->get_path(), converted_value ), NTG_SOURCE_CONNECTION );
 				
 				if( converted_value )
 				{
@@ -584,7 +584,7 @@ void ntg_update_connection_path_on_rename( CServer &server, const CNodeEndpoint 
 
 	string new_connection_path = new_name + path_after_renamed_node;
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, connection_path->get_path(), &CStringValue( new_connection_path ) );
+	server.process_command( CSetCommandApi::create( connection_path->get_path(), &CStringValue( new_connection_path ) ), NTG_SOURCE_SYSTEM );
 }
 
 
@@ -671,7 +671,7 @@ void ntg_update_connection_path_on_move( CServer &server, const CNodeEndpoint *c
 	ostringstream new_connection_path;
 	new_connection_path << new_relative_path.get_string() << absolute_path.substr( previous_path_length );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, connection_path->get_path(), &CStringValue( new_connection_path.str() ) );
+	server.process_command( CSetCommandApi::create( connection_path->get_path(), &CStringValue( new_connection_path.str() ) ), NTG_SOURCE_SYSTEM );
 }
 
 
@@ -706,7 +706,7 @@ void ntg_update_connections_on_object_move( CServer &server, const CNode &search
 }
 
 
-error_code ntg_connect_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect )
+CError ntg_connect_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect )
 {
 	const CEndpointDefinition &source_endpoint_definition = source.get_endpoint_definition();
 	const CEndpointDefinition &target_endpoint_definition = target.get_endpoint_definition();
@@ -714,13 +714,13 @@ error_code ntg_connect_in_host( CServer &server, const CNodeEndpoint &source, co
 	if( !source_endpoint_definition.is_audio_stream() || source_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::OUTPUT )
 	{
 		NTG_TRACE_ERROR( "trying to make incorrect connection in host - source isn't an audio output" );
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 
 	if( !target_endpoint_definition.is_audio_stream() || target_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::INPUT )
 	{
 		NTG_TRACE_ERROR( "trying to make incorrect connection in host - target isn't an audio output" );
-		return NTG_ERROR;
+		return CError::INPUT_ERROR;
 	}
 
     if( connect ) 
@@ -732,7 +732,7 @@ error_code ntg_connect_in_host( CServer &server, const CNodeEndpoint &source, co
         server.get_bridge()->module_disconnect( &source, &target );
     }
 
-    return NTG_NO_ERROR;
+    return CError::SUCCESS;
 }
 
 
@@ -779,7 +779,7 @@ void ntg_handle_input_file( CServer &server, const CNodeEndpoint *endpoint, ntg_
 	string filename = CDataDirectory::copy_file_to_data_directory( *endpoint );
 	if( !filename.empty() )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, endpoint->get_path(), &CStringValue( filename ) );
+		server.process_command( CSetCommandApi::create( endpoint->get_path(), &CStringValue( filename ) ), NTG_SOURCE_SYSTEM );
 	}
 }
 
@@ -817,7 +817,7 @@ void ntg_generic_data_directory_handler( CServer &server, const CNodeEndpoint *e
 			/* create and set data directory when the endpoint is initialized */
 			{
 			string data_directory = CDataDirectory::create_for_node( endpoint->get_node(), server );
-			ntg_set_( server, NTG_SOURCE_SYSTEM, endpoint->get_path(), &CStringValue( data_directory ) );
+			server.process_command( CSetCommandApi::create( endpoint->get_path(), &CStringValue( data_directory ) ), NTG_SOURCE_SYSTEM );
 			}
 			break;
 
@@ -863,7 +863,7 @@ void ntg_script_trigger_handler( CServer &server, const CNodeEndpoint *endpoint,
     char *script_output = ntg_lua_eval( parent_path, script.c_str() );
 	if( script_output )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, script_node.get_node_endpoint( NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) );
+		server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) ), NTG_SOURCE_SYSTEM );
 		delete[] script_output;
 	}
 
@@ -921,7 +921,7 @@ void ntg_scaler_in_value_handler( CServer &server, const CNodeEndpoint *endpoint
 	scaled_value = ( scaled_value - in_range_min ) * out_range_total / in_range_total + out_range_min;
 
 	/*store result*/
-	ntg_set_( server, NTG_SOURCE_SYSTEM, out_value_endpoint->get_path(), &CFloatValue( scaled_value ) );
+	server.process_command( CSetCommandApi::create( out_value_endpoint->get_path(), &CFloatValue( scaled_value ) ), NTG_SOURCE_SYSTEM );
 }
 
 
@@ -1084,7 +1084,7 @@ void ntg_scene_activate_handler( CServer &server, const CNodeEndpoint *endpoint,
 	const CNodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( NTG_ENDPOINT_SCENE );
 	assert( player_scene_endpoint );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_scene_endpoint->get_path(), &CStringValue( endpoint->get_node().get_name() ) ); 
+	server.process_command( CSetCommandApi::create( player_scene_endpoint->get_path(), &CStringValue( endpoint->get_node().get_name() ) ), NTG_SOURCE_SYSTEM );
 }
 
 
@@ -1166,9 +1166,9 @@ void ntg_scene_start_and_length_handler( CServer &server, const CNodeEndpoint *e
 	CIntegerValue player_start_value( start );
 	CIntegerValue player_end_value( end );
 
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->get_path(), &player_start_value );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_start->get_path(), &player_start_value );
-	ntg_set_( server, NTG_SOURCE_SYSTEM, player_end->get_path(), &player_end_value );
+	server.process_command( CSetCommandApi::create( player_tick->get_path(), &player_start_value ), NTG_SOURCE_SYSTEM );
+	server.process_command( CSetCommandApi::create( player_start->get_path(), &player_start_value ), NTG_SOURCE_SYSTEM );
+	server.process_command( CSetCommandApi::create( player_end->get_path(), &player_end_value ), NTG_SOURCE_SYSTEM );
 }
 
 
@@ -1231,7 +1231,7 @@ void ntg_player_next_handler( CServer &server, const CNodeEndpoint *endpoint, co
 
 	if( next_scene_name )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( *next_scene_name ) );
+		server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), NTG_SOURCE_SYSTEM );
 	}
 }
 
@@ -1295,7 +1295,7 @@ void ntg_player_prev_handler( CServer &server, const CNodeEndpoint *endpoint, co
 
 	if( next_scene_name )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( *next_scene_name ) );
+		server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), NTG_SOURCE_SYSTEM );
 	}
 }
 
@@ -1474,7 +1474,7 @@ void ntg_scene_rename_handler( CServer &server, const CNode &node, const char *p
 	const string &scene_value = *scene_endpoint->get_value();
 	if( scene_value == previous_name )
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( node.get_name() ) );
+		server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( node.get_name() ) ), NTG_SOURCE_SYSTEM );
 	}
 }
 
@@ -1601,7 +1601,7 @@ void ntg_scene_delete_handler( CServer &server, const CNode &node, ntg_command_s
 	const string &scene_value = *scene_endpoint->get_value();
 	if( scene_value == node.get_name() ) 
 	{
-		ntg_set_( server, NTG_SOURCE_SYSTEM, scene_endpoint->get_path(), &CStringValue( "" ) );
+		server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( "" ) ), NTG_SOURCE_SYSTEM );
 	}
 }
 

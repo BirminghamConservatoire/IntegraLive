@@ -73,7 +73,7 @@ ntg_xml_sac *ntg_xml_get_sac(const char *schema_path);
  * \return an ntg error code as defined in integra_error.h
  *
  */
-ntg_api::error_code ntg_xml_destroy_sac(ntg_xml_sac *sac);
+ntg_api::CError ntg_xml_destroy_sac(ntg_xml_sac *sac);
 
 /** \brief Read an XML document from file 
  *
@@ -90,7 +90,7 @@ xmlDocPtr ntg_xml_document_read( const char *xml_buffer, unsigned int buffer_len
  * \return An error code as defined in integra_error.h
  *
  */
-ntg_api::error_code ntg_xml_docptr_free(xmlDocPtr doc);
+ntg_api::CError ntg_xml_docptr_free(xmlDocPtr doc);
 
 /**
  * \brief Validate an XML document
@@ -102,7 +102,7 @@ ntg_api::error_code ntg_xml_docptr_free(xmlDocPtr doc);
  * \param xmlDocPtr doc A pointer to an XML document
  * \param ntg_xml_sac A pointer to an ntg_xml_sac struct
  */
-ntg_api::error_code ntg_xml_validate_against_schema(const xmlDocPtr doc,
+ntg_api::CError ntg_xml_validate_against_schema(const xmlDocPtr doc,
                                     const ntg_xml_sac *sac);
 
 /**
@@ -127,7 +127,7 @@ FILE *ntg_xml_dump_schema(const ntg_xml_sac *sac,
  * \param *xml_buffer pointer to buffer containing xml data
  * \param buffer_length size of buffer in bytes
  */
-ntg_api::error_code ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length );
+ntg_api::CError ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length );
 
 /*! @} */
 

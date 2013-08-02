@@ -115,13 +115,13 @@ namespace ntg_internal
 	}
 
 
-	ntg_api::error_code CDataDirectory::extract_from_zip( const ntg_api::string &file_path, const ntg_internal::CNode *parent_node )
+	ntg_api::CError CDataDirectory::extract_from_zip( const ntg_api::string &file_path, const ntg_internal::CNode *parent_node )
 	{
 		unzFile unzip_file = unzOpen( file_path.c_str() );
 		if( !unzip_file )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Couldn't open zip file", file_path.c_str() );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		string node_directory = get_node_directory_path_in_zip( unzip_file );
@@ -131,7 +131,7 @@ namespace ntg_internal
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Couldn't iterate contents", file_path.c_str() );
 			unzClose( unzip_file );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		do
@@ -189,7 +189,7 @@ namespace ntg_internal
 
 		unzClose( unzip_file );
 
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 

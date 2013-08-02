@@ -37,8 +37,6 @@ char *ntg_strdup(const char *string);
 char *ntg_string_append(char *dest, const char *source);
 
 
-ntg_api::string ntg_make_node_name( const ntg_api::string &module_name );
-
 /* test guids for equality*/
 bool ntg_guids_are_equal( const GUID *guid1, const GUID *guid2 );
 
@@ -54,14 +52,14 @@ bool ntg_guid_is_null( const GUID *guid );
 char *ntg_guid_to_string( const GUID *guid );
 
 /* converts string to guid.  expects string in hexadecimal form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
-ntg_api::error_code ntg_string_to_guid( const char *string, GUID *output );
+ntg_api::CError ntg_string_to_guid( const char *string, GUID *output );
 
 
 /* converts date/time to ISO 8601 string.  Caller must free */
 char *ntg_date_to_string( const struct tm *date );
 
 /* converts string to date/time.  expects string in ISO 8601 form eg 2012-07-20T14:42 */
-ntg_api::error_code ntg_string_to_date( const char *input, struct tm &output );
+ntg_api::CError ntg_string_to_date( const char *input, struct tm &output );
 
 
 /* does the node name consist entirely of valid characters? */

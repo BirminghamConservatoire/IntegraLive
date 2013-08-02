@@ -83,7 +83,7 @@ ntg_xml_sac *ntg_xml_get_sac(const char *schema_path)
 
 }
 
-error_code ntg_xml_destroy_sac(ntg_xml_sac * sac)
+CError ntg_xml_destroy_sac(ntg_xml_sac * sac)
 {
 
     xmlSchemaFree(sac->schema);
@@ -91,9 +91,7 @@ error_code ntg_xml_destroy_sac(ntg_xml_sac * sac)
     xmlSchemaFreeValidCtxt(sac->validity_context);
 
     delete sac;
-
-    return NTG_NO_ERROR;
-
+	return CError::SUCCESS;
 }
 
 xmlDocPtr ntg_xml_document_read( const char *xml_buffer, unsigned int buffer_length )
@@ -117,26 +115,26 @@ xmlDocPtr ntg_xml_document_read( const char *xml_buffer, unsigned int buffer_len
 }
 
 
-error_code ntg_xml_docptr_free(xmlDocPtr doc)
+CError ntg_xml_docptr_free(xmlDocPtr doc)
 {
 
     if (doc != NULL) {
         xmlFreeDoc(doc);
         /* FIX: we need to check the return value of xmlFreeDoc() */
-        return NTG_NO_ERROR;
+        return CError::SUCCESS;
     } else {
         NTG_TRACE_ERROR("XML document pointer is NULL, no resource freed.");
-        return NTG_FAILED;
+        return CError::FAILED;
     }
 }
 
-error_code ntg_xml_validate_against_schema(const xmlDocPtr doc, const ntg_xml_sac * sac)
+CError ntg_xml_validate_against_schema(const xmlDocPtr doc, const ntg_xml_sac * sac)
 {
     int validation_code;
 
     if (sac == NULL) {
         NTG_TRACE_ERROR("sac pointer is NULL");
-        return NTG_FAILED;
+        return CError::FAILED;
     }
 
     if (sac->validity_context != NULL) {
@@ -148,12 +146,12 @@ error_code ntg_xml_validate_against_schema(const xmlDocPtr doc, const ntg_xml_sa
         validation_code = xmlSchemaValidateDoc(sac->validity_context, doc);
     } else {
         NTG_TRACE_ERROR("XML validity context is NULL");
-        return NTG_FAILED;
+        return CError::FAILED;
     }
 
-	if( validation_code > 0 ) return NTG_ERROR;
-	if( validation_code < 0 ) return NTG_FAILED;
-	return NTG_NO_ERROR;
+	if( validation_code > 0 ) return CError::INPUT_ERROR;
+	if( validation_code < 0 ) return CError::FAILED;
+	return CError::SUCCESS;
 }
 
 FILE *ntg_xml_dump_schema(const ntg_xml_sac * sac, const char *file_path)
@@ -170,7 +168,7 @@ FILE *ntg_xml_dump_schema(const ntg_xml_sac * sac, const char *file_path)
 }
 
 
-error_code ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length )
+CError ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length )
 {
     char *schema_path = NULL;
     int validation_code;
@@ -192,8 +190,8 @@ error_code ntg_xml_validate( const char *xml_buffer, unsigned int buffer_length 
     if (validation_code) 
 	{
         NTG_TRACE_ERROR_WITH_INT("validation failed, error code", validation_code);
-        return NTG_FILE_VALIDATION_ERROR;
+        return CError::FILE_VALIDATION_ERROR;
     }
 
-    return NTG_NO_ERROR;
+    return CError::SUCCESS;
 }

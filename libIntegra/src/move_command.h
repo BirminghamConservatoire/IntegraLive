@@ -1,6 +1,6 @@
-/* libIntegra multimedia module interface
+ /* libIntegra multimedia module interface
  *  
- * Copyright (C) 2012 Birmingham City University
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,28 +18,30 @@
  * USA.
  */
 
-#ifndef INTEGRA_FILE_IO_H
-#define INTEGRA_FILE_IO_H
 
+#ifndef INTEGRA_MOVE_COMMAND_PRIVATE
+#define INTEGRA_MOVE_COMMAND_PRIVATE
 
-#include "error.h"
-#include "node.h"
-#include "module_manager.h"
+#include "api/command_api.h"
+#include "path.h"
 
 
 namespace ntg_internal
 {
-	class CModuleManager;
+	class LIBINTEGRA_API CMoveCommand : public ntg_api::CMoveCommandApi
+	{
+		public:
+			CMoveCommand( const ntg_api::CPath &node_path, const ntg_api::CPath &new_parent_path );
+
+		private:
+			
+			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+
+			ntg_api::CPath m_node_path;
+			ntg_api::CPath m_new_parent_path;
+	};
 }
 
 
-ntg_api::CError ntg_file_load( const char *filename, const ntg_internal::CNode *parent, ntg_internal::CModuleManager &module_manager, ntg_api::guid_set &new_embedded_module_ids );
 
-ntg_api::CError ntg_file_save( const char *filename, const ntg_internal::CNode &node, const ntg_internal::CModuleManager &module_manager );
-
-
-void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_path, const char *source_path );
-
-
-
-#endif /*INTEGRA_FILE_IO_H*/
+#endif /*INTEGRA_MOVE_COMMAND_PRIVATE*/

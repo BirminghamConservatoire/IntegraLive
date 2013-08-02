@@ -105,7 +105,7 @@ namespace ntg_internal
 	}
 
 
-	error_code CModuleManager::load_from_integra_file( const string &integra_file, guid_set &new_embedded_modules )
+	CError CModuleManager::load_from_integra_file( const string &integra_file, guid_set &new_embedded_modules )
 	{
 		unzFile unzip_file;
 		unz_file_info file_info;
@@ -118,7 +118,7 @@ namespace ntg_internal
 		int total_bytes_read;
 		int bytes_remaining;
 		GUID loaded_module_id;
-		error_code error_code = NTG_NO_ERROR;
+		CError CError = CError::SUCCESS;
 
 		new_embedded_modules.clear();
 
@@ -126,7 +126,7 @@ namespace ntg_internal
 		if( !unzip_file )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Couldn't open zip file", integra_file.c_str() );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		implementation_directory_length = strlen( NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME );
@@ -135,7 +135,7 @@ namespace ntg_internal
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Couldn't iterate contents", integra_file.c_str() );
 			unzClose( unzip_file );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		copy_buffer = new unsigned char[ NTG_DATA_COPY_BUFFER_SIZE ];
@@ -161,7 +161,7 @@ namespace ntg_internal
 			if( !temporary_file_name )
 			{
 				NTG_TRACE_ERROR( "couldn't generate temporary filename" );
-				error_code = NTG_FAILED;
+				CError = CError::FAILED;
 				continue;
 			}
 
@@ -169,14 +169,14 @@ namespace ntg_internal
 			if( !temporary_file )
 			{
 				NTG_TRACE_ERROR_WITH_STRING( "couldn't open temporary file", temporary_file_name );
-				error_code = NTG_FAILED;
+				CError = CError::FAILED;
 				goto CLEANUP;
 			}
 
 			if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR_WITH_STRING( "couldn't open zip contents", file_name );
-				error_code = NTG_FAILED;
+				CError = CError::FAILED;
 				goto CLEANUP;
 			}
 
@@ -190,7 +190,7 @@ namespace ntg_internal
 				if( bytes_read <= 0 )
 				{
 					NTG_TRACE_ERROR( "Error decompressing file" );
-					error_code = NTG_FAILED;
+					CError = CError::FAILED;
 					goto CLEANUP;
 				}
 
@@ -230,11 +230,11 @@ namespace ntg_internal
 
 		delete[] copy_buffer;
 
-		return error_code;
+		return CError;
 	}
 
 
-	error_code CModuleManager::install_module( const string &module_file, CModuleInstallResult &result )
+	CError CModuleManager::install_module( const string &module_file, CModuleInstallResult &result )
 	{
 		bool module_was_loaded = false;
 		GUID module_id;
@@ -252,14 +252,14 @@ namespace ntg_internal
 
 		if( ntg_guid_is_null( &module_id ) )
 		{
-			return NTG_FILE_VALIDATION_ERROR;
+			return CError::FILE_VALIDATION_ERROR;
 		}
 
 		const CInterfaceDefinition *existing_interface = get_interface_by_module_id( module_id );
 		if( !existing_interface )
 		{
 			NTG_TRACE_ERROR( "can't lookup existing interface" );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		switch( existing_interface->get_module_source() )
@@ -267,7 +267,7 @@ namespace ntg_internal
 			case CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
 			case CInterfaceDefinition::MODULE_3RD_PARTY:
 			case CInterfaceDefinition::MODULE_IN_DEVELOPMENT:
-				return NTG_MODULE_ALREADY_INSTALLED;
+				return CError::MODULE_ALREADY_INSTALLED;
 
 			case CInterfaceDefinition::MODULE_EMBEDDED:
 				result.module_id = module_id;
@@ -277,33 +277,33 @@ namespace ntg_internal
 			default:
 
 				NTG_TRACE_ERROR( "existing interface has unexpected module source" );
-				return NTG_FAILED;
+				return CError::FAILED;
 		}
 	}
 
 
-	error_code CModuleManager::install_embedded_module( const GUID &module_id )
+	CError CModuleManager::install_embedded_module( const GUID &module_id )
 	{
 		const CInterfaceDefinition *interface_definition = get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR( "Can't find interface" );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_EMBEDDED )
 		{
 			NTG_TRACE_ERROR( "Module isn't embedded" );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		return change_module_source( ( CInterfaceDefinition & ) *interface_definition, CInterfaceDefinition::MODULE_3RD_PARTY );
 	}
 
 
-	error_code CModuleManager::uninstall_module( const GUID &module_id, CModuleUninstallResult &result )
+	CError CModuleManager::uninstall_module( const GUID &module_id, CModuleUninstallResult &result )
 	{
-		error_code error_code = NTG_NO_ERROR;
+		CError CError = CError::SUCCESS;
 
 		result.remains_as_embedded = false;
 
@@ -311,13 +311,13 @@ namespace ntg_internal
 		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR( "Can't find interface" );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_3RD_PARTY )
 		{
 			NTG_TRACE_ERROR( "Can't uninstall module - it is not a 3rd party module" );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		if( is_module_in_use( server_->get_nodes(), module_id ) )
@@ -328,18 +328,18 @@ namespace ntg_internal
 
 		result.remains_as_embedded = false;
 
-		error_code = CFileHelper::delete_file( interface_definition->get_file_path() );
-		if( error_code != NTG_NO_ERROR )
+		CError = CFileHelper::delete_file( interface_definition->get_file_path() );
+		if( CError != CError::SUCCESS )
 		{
-			return error_code;
+			return CError;
 		}
 
 		unload_module( ( CInterfaceDefinition * ) interface_definition );
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
-	error_code CModuleManager::load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result )
+	CError CModuleManager::load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result )
 	{
 		for( map_guid_to_interface_definition::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
@@ -367,11 +367,11 @@ namespace ntg_internal
 			else
 			{
 				NTG_TRACE_ERROR( "Encountered more than one in-development module!" );
-				return NTG_FAILED;
+				return CError::FAILED;
 			}
 		}
 
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 	
@@ -456,8 +456,9 @@ namespace ntg_internal
 	}
 
 
-	void CModuleManager::get_orphaned_embedded_modules( const node_map &search_nodes, guid_set &results ) const
+	ntg_api::CError CModuleManager::unload_orphaned_embedded_modules()
 	{
+		guid_set module_ids;
 		/* first pass - collect ids of all embedded modules */
 		for( map_guid_to_interface_definition::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
@@ -465,12 +466,17 @@ namespace ntg_internal
 
 			if( interface_definition->get_module_source() == CInterfaceDefinition::MODULE_EMBEDDED )
 			{
-				results.insert( interface_definition->get_module_guid() );
+				module_ids.insert( interface_definition->get_module_guid() );
 			}
 		}
 
 		/* second pass - walk node tree pruning any modules still in use */
-		remove_in_use_module_ids_from_set( search_nodes, results );
+		remove_in_use_module_ids_from_set( server_->get_nodes(), module_ids );
+
+		/* third pass - unload modules */
+		unload_modules( module_ids );
+
+		return CError::SUCCESS;
 	}
 
 
@@ -486,17 +492,17 @@ namespace ntg_internal
 	}
 
 
-	error_code CModuleManager::interpret_legacy_module_id( internal_id old_id, GUID &output ) const
+	CError CModuleManager::interpret_legacy_module_id( internal_id old_id, GUID &output ) const
 	{
 		if( old_id >= m_legacy_module_id_table.size() )
 		{
 			NTG_TRACE_ERROR_WITH_INT( "Can't interpret class id", old_id );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		output = m_legacy_module_id_table[ old_id ];
 
-		return ntg_guid_is_null( &output ) ? NTG_ERROR : NTG_NO_ERROR;
+		return ntg_guid_is_null( &output ) ? CError::INPUT_ERROR : CError::SUCCESS;
 	}
 
 
@@ -587,7 +593,7 @@ namespace ntg_internal
 			/* skip comma and space */
 			guid_as_string += 2;	
 
-			if( ntg_string_to_guid( guid_as_string, &guid ) != NTG_NO_ERROR )
+			if( ntg_string_to_guid( guid_as_string, &guid ) != CError::SUCCESS )
 			{
 				NTG_TRACE_ERROR_WITH_STRING( "Error parsing guid", guid_as_string );
 				continue;
@@ -758,7 +764,7 @@ namespace ntg_internal
 	}
 
 
-	error_code CModuleManager::extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum )
+	CError CModuleManager::extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum )
 	{
 		unz_file_info file_info;
 		char file_name[ NTG_LONG_STRLEN ];
@@ -775,7 +781,7 @@ namespace ntg_internal
 		if( CFileHelper::is_directory( implementation_directory.c_str() ) )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Can't extract module implementation - target directory already exists", implementation_directory.c_str() );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		mkdir( implementation_directory.c_str() );
@@ -783,7 +789,7 @@ namespace ntg_internal
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
 			NTG_TRACE_ERROR( "Couldn't iterate contents" );
-			return NTG_FAILED;
+			return CError::FAILED;
 		}
 
 		do
@@ -850,7 +856,7 @@ namespace ntg_internal
 		}
 		while( unzGoToNextFile( unzip_file ) != UNZ_END_OF_LIST_OF_FILE );
 
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
@@ -918,40 +924,40 @@ namespace ntg_internal
 	}
 
 
-	error_code CModuleManager::store_module( const GUID &module_id )
+	CError CModuleManager::store_module( const GUID &module_id )
 	{
 		CInterfaceDefinition *interface_definition;
-		error_code error_code;
+		CError CError;
 
 		interface_definition = ( CInterfaceDefinition * ) get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
 			NTG_TRACE_ERROR( "failed to lookup interface" );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_file_path().empty() )
 		{
 			NTG_TRACE_ERROR( "Unknown interface file path" );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		string module_storage_path = get_storage_path( *interface_definition );
 		if( module_storage_path.empty() )
 		{
 			NTG_TRACE_ERROR( "failed to get storage path" );
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
-		error_code = CFileHelper::copy_file( interface_definition->get_file_path(), module_storage_path );
-		if( error_code != NTG_NO_ERROR )
+		CError = CFileHelper::copy_file( interface_definition->get_file_path(), module_storage_path );
+		if( CError != CError::SUCCESS )
 		{
-			return error_code;
+			return CError;
 		}
 
 		interface_definition->set_file_path( module_storage_path );
 
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 
@@ -982,17 +988,17 @@ namespace ntg_internal
 	}
 
 
-	error_code CModuleManager::change_module_source( CInterfaceDefinition &interface_definition, CInterfaceDefinition::module_source new_source )
+	CError CModuleManager::change_module_source( CInterfaceDefinition &interface_definition, CInterfaceDefinition::module_source new_source )
 	{
 		/* sanity checks */
 		if( interface_definition.get_module_source() == CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA || new_source == CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA )
 		{
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition.get_module_source() == new_source )
 		{
-			return NTG_ERROR;
+			return CError::INPUT_ERROR;
 		}
 
 		interface_definition.set_module_source( new_source );
@@ -1000,14 +1006,14 @@ namespace ntg_internal
 		string new_file_path = get_storage_path( interface_definition );
 		if( new_file_path.empty() )
 		{
-			return NTG_FAILED;			
+			return CError::FAILED;			
 		}
 
 		rename( interface_definition.get_file_path().c_str(), new_file_path.c_str() );
 
 		interface_definition.set_file_path( new_file_path );
 	
-		return NTG_NO_ERROR;
+		return CError::SUCCESS;
 	}
 
 

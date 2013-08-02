@@ -32,7 +32,7 @@ In order to create Integra modules, the Integra Module Creator tool is required.
 
 On Mac OS X, [download the Module Creator.dmg](http://sourceforge.net/projects/integralive/files/), mount the DMG, and drag the “Module Creator.app” to the Applications folder.
 
-On Windows, the Module Creator is bundled with the main Integra Live installer. To install, [download the Integra Live.msi](http://sourceforge.net/projects/integralive/files/), double-click the .msi file and follow the on-screen instructions. Once installed, the Module Creator will be available from via the Start Menu.
+On Windows, the Module Creator is bundled with the main Integra Live installer. To install, [download the Integra Live.msi](http://sourceforge.net/projects/integralive/files/), double-click the .msi file and follow the on-screen instructions. Once installed, the Module Creator will be available via the Start Menu.
 
 ### Anatomy of a Module
 
@@ -50,13 +50,13 @@ The module *interface* contains a schematic description of one or more *endpoint
 
 Control *endpoints* can of type State or Bang. State *endpoints* are associated with a value that represents the current state of a parameter. This value changes in response to external inputs (such as MIDI), internal timers and scheduled processing or as a result of two or more *endpoints* being connected. Endpoint state is saved by Integra Live when *projects* are saved, or when *tracks*, *blocks* or *modules* are exported and is restored when they are loaded.
 
-Control *endpoints* of type Bang are stateless and send an “empty” value to any connected *endpoints* when triggered via a GUI widget or by receiving a value from a connected endpoint.   
+Control *endpoints* of type Bang are stateless and send a valueless signal to any connected *endpoints* when triggered (via a GUI widget, a connected endpoint or the module's implementation).   
 
 ### Creating a new Module Interface
 
 > We encourage module developers to consider carefully their module's *interface* before creating the module *implementation*. 
 
-Developers should normally develop their *interface* first, [refactoring](http://en.wikipedia.org/wiki/Refactoring) it after they have created their *implementation* in Pure Data.
+Developers should normally develop their *interface* first, [refactoring](http://en.wikipedia.org/wiki/Refactoring) it if needed after they have created their *implementation* in Pure Data.
 
 #### Import Template...
 
@@ -88,7 +88,7 @@ Naming conventions for modules are as follows:
 
 No special prefix is used for other input / output configurations. For example a bandpass filter with one input and one output would simply be called BandPass or BandPassFilter. 
  
-**Interface Label** should contain a short human-readable version of the Interface Name. Interface Labels are used construct the *module library* and module *info view* panels in Integra Live.
+**Interface Label** should contain a short human-readable version of the Interface Name. Interface Labels are used construct the *module library* and module *info view* panels in Integra Live.  For example, the Interface Label for the "BandPass" module is "Band Pass Filter".
 
 **Interface Description** should describe what the module does in simple language. Technical terminology should be kept to a minimum. The Interface Description field can be written in [Markdown](http://daringfireball.net/projects/markdown/syntax), and a preview of this is shown to the right of the text entry panel. The contents of this field are used to generate the *module info* panel contents in Integra Live.
 
@@ -116,11 +116,11 @@ Each Endpoint has one compulsory field (Endpoint Name), and a number of optional
 
 ![](../../page-images/endpoint_info.png)
 
-**Endpoint Name** must be in [lower camel case](http://en.wikipedia.org/wiki/Camel_case) without special characters. This will be used to auto-generate module parameter names in Integra Live, which are used in the Routing and Scripting panels as well as for *control* labels in the Module Properties and Live views.
+**Endpoint Name** must be in [lower camel case](http://en.wikipedia.org/wiki/Camel_case) without special characters.  Endpoint Names are used in the Routing and Scripting panels as well as for *control* labels in the Module Properties and Live views.
 
 > We encourage module developers to use a short easily identifiable Endpoint Name 
 
-**Endpoint Label** should contain a short human-readable version of the Endpoint Name. Endpoint Labels are used construct the Info  panels for module parameters in Integra Live.
+**Endpoint Label** should contain a short human-readable version of the Endpoint Name. Endpoint Labels are used construct the Info  panels for module parameters in Integra Live.  For example, the Endpoint Name "inLevel" might be given an Endpoint Label "Input Level".
 
 **Endpoint Description** should describe what the module does in simple language. Technical terminology should be kept to a minimum. The Endpoint Description field can be written in [Markdown](http://daringfireball.net/projects/markdown/syntax), with a preview  shown to the right of the text entry panel. The contents of this field are used to generate the *parameter info* panel contents in Integra Live.
 
@@ -132,7 +132,7 @@ A completed Endpoint Info is shown below.
 
 **Endpoint Type** defines whether the Endpoint is a Control parameter such as “delay time” or “frequency”, or a Stream such as an audio input or output. When Stream is selected, the Stream Direction must be specified as Input or Output in the Stream Info box. When Control is selected, many other options are available as explained below.
 
-**Widget** is used to optionally define a Widget that is assigned to a Control endpoint. Each Endpoint may only have one widget, however, one widget can be assigned to multiple endpoints. For example an XYScratchPad widget has an “x” and “y” axis, and these axes can be assigned to different endpoints such as “pitch” and ”position”. In order to associate a single widget with multiple endpoints the Label field must be completed, and assigned the same value for each endpoint. Following the previous example, the Label “scrubWidget” could be given to the XYScratchPad “x” — assigned to “position” and also to the XYScratchPad “y” — assigned to “pitch”.
+**Widget** is used to optionally define a Widget that is assigned to a Control endpoint. Each Endpoint may only have one widget, however, one widget can be assigned to multiple endpoints. For example an XYScratchPad widget has an “x” and “y” axis, and these axes can be assigned to different endpoints such as “pitch” and ”position”.  In the case of widgets with multiple outputs, the widget control provides submenus to specify how Widgets should be shared between Endpoints.
 
 **Control Info** is used to provide a more detailed definition of Control Endpoints. 
 
@@ -174,13 +174,13 @@ Missing Pd ‘objects’ (externals or abstractions) will be listed in a Missing
 
 ### Editing the Pd Patch
 
-The Pd patch for module *implementations* can be edited by clicking the Edit In Pd button in the Implementation tab of the Module Creator. This will open up a Pd window some controls for module *endpoints* under the heading Test Module Parameters.
+The Pd patch for module *implementations* can be edited by clicking the Edit In Pd button in the Implementation tab of the Module Creator. This will open up a Pd window containing some controls for module *endpoints* under the heading Test Module Parameters.
 
 The patch that opens when Edit In Pd is clicked is a **host** patch. To open a module implementation, click the toggle under Show / Hide Module. This will open the top-level Pd patch for the module.
 
 ![](../../page-images/implementation_pd.png)
 
-The module is required to provide audio inlets and outlets for each Audio Stream Endpoint, and to respond to messages from libIntegra using the receive symbol `integra-broadcast-receive`. Followed by a `[route $1]` to route only messages designated for this instance. When using one of the Templates included with the Module Creator, this boilerplate is provided by the `[handlers/ntg_receive]` abstraction.
+The module is required to provide audio inlets and outlets for each Audio Stream Endpoint, and to respond to messages from libIntegra using the receive symbol `integra-broadcast-receive`, followed by a `[route $1]` to route only messages designated for this instance. When using one of the Templates included with the Module Creator, this boilerplate is provided by the `[handlers/ntg_receive]` abstraction.
 
 > Developers are strongly encouraged to use one of the provided templates rather than starting their module from scratch
 
@@ -264,7 +264,7 @@ The module will then be accessible via the Module Library in Module View (access
 
 ![](../../page-images/in_development_module.png)
 
-Modules can iteratively be tested in Integra Live by making changes in the Module Creator with the embedded version of Integra Live open and repeatedly selecting Test In Integra Live. Note that each time a new in-development module is installed in the running application, the update module must be dragged from the Module Library to the Module View canvas.
+Modules can iteratively be tested in Integra Live by making changes in the Module Creator with the embedded version of Integra Live open and repeatedly selecting Test In Integra Live. Note that when a new in-development module is installed in the running application, Integra Live will prompt you to upgrade any instances of the in-development module to the latest version.
 
 ### Further support
 

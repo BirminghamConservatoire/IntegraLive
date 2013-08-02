@@ -170,6 +170,7 @@ package components.controller.moduleManagement
 			for( var i:int = 0; i < response.length; i++ )
 			{
 				_resultsString += "\n* " + _fileTitles[ i ];
+				_resultsString += " installed";
 					
 				var responseNode:Object = response[ i ][ 0 ];
 				

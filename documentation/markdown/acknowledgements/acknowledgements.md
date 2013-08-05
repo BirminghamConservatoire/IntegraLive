@@ -10,7 +10,7 @@ The core Integra Live contributors are as follows:
 - **Leighton Hargreaves** — Lead Developer
 - **Richard Cornock** — Lead Designer
 - **James Dooley** — Tester &amp; Module Developer
-- **Balandino di Donato** — Tester &amp; Module Developer
+- **Balandino Di Donato** — Tester &amp; Module Developer
 - **Tychonas Michailidis** — Tester
 
 

@@ -23,7 +23,6 @@
 
 #define DEFINE_GLOBALS
 #include "globals.h"
-#include "helper.h"
 #include "server.h"
 
 void do_init()

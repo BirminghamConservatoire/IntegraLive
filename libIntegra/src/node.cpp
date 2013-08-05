@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "helper.h"
 #include "value.h"
 #include "path.h"
 #include "globals.h"

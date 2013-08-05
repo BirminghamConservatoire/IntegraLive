@@ -23,15 +23,12 @@
 
 #include <assert.h>
 #include <math.h>
-#include <float.h>
-#include <string.h>
 
 #include "system_class_handlers.h"
 #include "player_handler.h"
 #include "data_directory.h"
 #include "system_class_literals.h"
 #include "node_endpoint.h"
-#include "helper.h"
 #include "module_manager.h"
 #include "interface_definition.h"
 #include "value.h"
@@ -487,7 +484,7 @@ void ntg_handle_connections( CServer &server, const CNode &search_node, const CN
 	for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 	{
 		const CNode *sibling = i->second;
-		if( !ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
+		if( sibling->get_interface_definition().get_module_guid() != server.get_system_class_data()->connection_interface_guid ) 
 		{
 			/* not a connection */
             continue;
@@ -597,7 +594,7 @@ void ntg_update_connections_on_object_rename( CServer &server, const CNode &sear
 	{
 		const CNode *sibling = i->second;
 
-		if( !ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
+		if( sibling->get_interface_definition().get_module_guid() != server.get_system_class_data()->connection_interface_guid ) 
 		{
 			/* current is not a connection */
             continue;
@@ -683,7 +680,7 @@ void ntg_update_connections_on_object_move( CServer &server, const CNode &search
 	for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 	{
 		const CNode *sibling = i->second;
-		if( !ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
+		if( sibling->get_interface_definition().get_module_guid() != server.get_system_class_data()->connection_interface_guid ) 
 		{
 			/* current is not a connection */
             continue;
@@ -1525,7 +1522,7 @@ void ntg_generic_new_handler( CServer &server, const CNode &new_node, ntg_comman
 		{
 			const CNode *sibling = i->second;
 
-			if( sibling != ancestor && ntg_guids_are_equal( &sibling->get_interface_definition().get_module_guid(), &server.get_system_class_data()->connection_interface_guid ) ) 
+			if( sibling != ancestor && sibling->get_interface_definition().get_module_guid() == server.get_system_class_data()->connection_interface_guid ) 
 			{
 				/* found a connection which might target the new node */
 
@@ -1815,7 +1812,7 @@ void ntg_system_class_handlers_initialize( CServer &server )
 	else
 	{
 		NTG_TRACE_ERROR( "failed to look up class info for " NTG_CLASS_CONNECTION );
-		ntg_guid_set_null( &system_class_data->connection_interface_guid );
+		system_class_data->connection_interface_guid = NULL_GUID;
 	}
 
 	server.set_system_class_data( system_class_data );
@@ -1845,7 +1842,7 @@ void ntg_system_class_handle_new( CServer &server, const CNode &node, ntg_comman
 
 	for( handler = server.get_system_class_data()->new_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
+		if( handler->module_guid && *handler->module_guid != node.get_interface_definition().get_module_guid() )
 		{
 			continue;
 		}
@@ -1864,7 +1861,7 @@ void ntg_system_class_handle_set( CServer &server, const CNodeEndpoint *endpoint
 
 	for( handler = server.get_system_class_data()->set_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &endpoint->get_node().get_interface_definition().get_module_guid() ) )
+		if( handler->module_guid && *handler->module_guid != endpoint->get_node().get_interface_definition().get_module_guid() )
 		{
 			continue;
 		}
@@ -1888,7 +1885,7 @@ void ntg_system_class_handle_rename( CServer &server, const CNode &node, const c
 
 	for( handler = server.get_system_class_data()->rename_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
+		if( handler->module_guid && *handler->module_guid != node.get_interface_definition().get_module_guid() )
 		{
 			continue;
 		}
@@ -1907,7 +1904,7 @@ void ntg_system_class_handle_move( CServer &server, const CNode &node, const CPa
 
 	for( handler = server.get_system_class_data()->move_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
+		if( handler->module_guid && *handler->module_guid != node.get_interface_definition().get_module_guid() )
 		{
 			continue;
 		}
@@ -1926,7 +1923,7 @@ void ntg_system_class_handle_delete( CServer &server, const CNode &node, ntg_com
 
 	for( handler = server.get_system_class_data()->delete_handlers; handler; handler = handler->next )
 	{
-		if( handler->module_guid && !ntg_guids_are_equal( handler->module_guid, &node.get_interface_definition().get_module_guid() ) )
+		if( handler->module_guid && *handler->module_guid != node.get_interface_definition().get_module_guid() )
 		{
 			continue;
 		}

@@ -35,10 +35,10 @@
 #include "module_manager.h"
 #include "scratch_directory.h"
 #include "interface_definition.h"
-#include "helper.h"
 #include "globals.h"
 #include "file_io.h"
 #include "file_helper.h"
+#include "string_helper.h"
 #include "server.h"
 #include "interface_definition_loader.h"
 
@@ -237,11 +237,9 @@ namespace ntg_internal
 	CError CModuleManager::install_module( const string &module_file, CModuleInstallResult &result )
 	{
 		bool module_was_loaded = false;
-		GUID module_id;
+		GUID module_id = NULL_GUID;
 	
 		memset( &result, 0, sizeof( CModuleInstallResult ) );
-
-		ntg_guid_set_null( &module_id );
 
 		module_was_loaded = load_module( module_file, CInterfaceDefinition::MODULE_3RD_PARTY, module_id );
 		if( module_was_loaded )
@@ -250,7 +248,7 @@ namespace ntg_internal
 			return store_module( module_id );
 		}
 
-		if( ntg_guid_is_null( &module_id ) )
+		if( module_id == NULL_GUID )
 		{
 			return CError::FILE_VALIDATION_ERROR;
 		}
@@ -350,7 +348,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			if( ntg_guid_is_null( &result.previous_module_id ) )
+			if( result.previous_module_id == NULL_GUID )
 			{
 				result.previous_module_id = interface_definition.get_module_guid();
 
@@ -425,12 +423,10 @@ namespace ntg_internal
 
 	string CModuleManager::get_unique_interface_name( const CInterfaceDefinition &interface_definition ) const
 	{
-		char *module_guid = ntg_guid_to_string( &interface_definition.get_module_guid() );
+		string module_guid = CStringHelper::guid_to_string( interface_definition.get_module_guid() );
 
 		ostringstream unique_name;
 		unique_name << interface_definition.get_interface_info().get_name() << "-" << module_guid;
-
-		delete[] module_guid;
 
 		return unique_name.str();
 	}
@@ -502,7 +498,7 @@ namespace ntg_internal
 
 		output = m_legacy_module_id_table[ old_id ];
 
-		return ntg_guid_is_null( &output ) ? CError::INPUT_ERROR : CError::SUCCESS;
+		return ( output == NULL_GUID ) ? CError::INPUT_ERROR : CError::SUCCESS;
 	}
 
 
@@ -593,17 +589,15 @@ namespace ntg_internal
 			/* skip comma and space */
 			guid_as_string += 2;	
 
-			if( ntg_string_to_guid( guid_as_string, &guid ) != CError::SUCCESS )
+			if( CStringHelper::string_to_guid( guid_as_string, guid ) != CError::SUCCESS )
 			{
 				NTG_TRACE_ERROR_WITH_STRING( "Error parsing guid", guid_as_string );
 				continue;
 			}
 
-			GUID null_id;
-			ntg_guid_set_null( &null_id );
 			for( int i = m_legacy_module_id_table.size(); i <= old_id; i++ )
 			{
-				m_legacy_module_id_table.push_back( null_id ); 
+				m_legacy_module_id_table.push_back( NULL_GUID ); 
 			}
 
 			m_legacy_module_id_table[ old_id ] = guid;
@@ -622,7 +616,7 @@ namespace ntg_internal
 	{
 		unzFile unzip_file;
 
-		ntg_guid_set_null( &module_guid );
+		module_guid = NULL_GUID;
 
 		unzip_file = unzOpen( filename.c_str() );
 		if( !unzip_file )
@@ -1023,7 +1017,7 @@ namespace ntg_internal
 		{
 			const CNode *node = i->second;
 
-			if( ntg_guids_are_equal( &node->get_interface_definition().get_module_guid(), &module_id ) )
+			if( node->get_interface_definition().get_module_guid() == module_id )
 			{
 				return true;
 			}

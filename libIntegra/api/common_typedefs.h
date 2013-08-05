@@ -45,8 +45,6 @@
 #endif
 
 
-
-
 namespace ntg_api
 {
 	/* Strings */
@@ -93,9 +91,8 @@ namespace ntg_internal
 
 	typedef unsigned long internal_id;
 
-
+	const GUID NULL_GUID = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 }
-
 
 
 

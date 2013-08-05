@@ -57,9 +57,6 @@
     <ClCompile Include="..\src\file_io.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\helper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,15 +147,15 @@
     <ClCompile Include="..\src\save_command.cpp">
       <Filter>Source Files\commands</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\string_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\luascripting.h">
@@ -300,6 +297,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\save_command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\string_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

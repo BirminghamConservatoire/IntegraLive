@@ -34,12 +34,13 @@
 
 #include "file_io.h"
 #include "globals.h"
-#include "helper.h"
 #include "data_directory.h"
 #include "module_manager.h"
 #include "interface_definition.h"
 #include "validate.h"
+#include "string_helper.h"
 #include "server.h"
+#include "api/common_typedefs.h"
 #include "api/command_result.h"
 #include "api/command_api.h"
 
@@ -423,18 +424,16 @@ CError ntg_save_node_tree( const CNode &node, xmlTextWriterPtr writer)
     xmlTextWriterStartElement( writer, BAD_CAST NTG_STR_OBJECT );
 
     /* write out node->interface->module_guid */
-	char *guid_string = ntg_guid_to_string( &node.get_interface_definition().get_module_guid() );
-    tmp = ConvertInput( guid_string, XML_ENCODING);
+	string guid_string = CStringHelper::guid_to_string( node.get_interface_definition().get_module_guid() );
+    tmp = ConvertInput( guid_string.c_str(), XML_ENCODING);
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_MODULEID, (char * ) tmp );
 	free( tmp );
-	delete[] guid_string;
 
     /* write out node->interface->origin_guid */
-	guid_string = ntg_guid_to_string( &node.get_interface_definition().get_origin_guid() );
-    tmp = ConvertInput(guid_string, XML_ENCODING);
+	guid_string = CStringHelper::guid_to_string( node.get_interface_definition().get_origin_guid() );
+    tmp = ConvertInput(guid_string.c_str(), XML_ENCODING);
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_ORIGINID, (char * ) tmp );
 	free( tmp );
-	delete[] guid_string;
 
     /* write out node->name */
     tmp = ConvertInput( node.get_name().c_str(), XML_ENCODING);
@@ -522,7 +521,7 @@ CError ntg_save_nodes( const CNode &node, unsigned char **buffer, unsigned int *
     xmlTextWriterStartElement(writer, BAD_CAST NTG_STR_INTEGRA_COLLECTION );
     xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:xsi", BAD_CAST "http://www.w3.org/2001/XMLSchema-node");
 
-	string version_string = ntg_version();
+	string version_string = server_->get_libintegra_version();
 	xmlTextWriterWriteFormatAttribute(writer, BAD_CAST NTG_STR_INTEGRA_VERSION, "%s", version_string.c_str() );
 
     if( ntg_save_node_tree( node, writer ) != CError::SUCCESS )
@@ -578,20 +577,20 @@ const CInterfaceDefinition *ntg_find_interface( xmlTextReaderPtr reader, const C
 
 	assert( reader );
 
-	ntg_guid_set_null( &module_guid );
-	ntg_guid_set_null( &origin_guid );
+	module_guid = NULL_GUID;
+	origin_guid = NULL_GUID;
 
 	valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_MODULEID );
 	if( valuestr )
 	{
-		ntg_string_to_guid( valuestr, &module_guid );
+		CStringHelper::string_to_guid( valuestr, module_guid );
         xmlFree( valuestr );
 	}
 
 	valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_ORIGINID );
 	if( valuestr )
 	{
-		ntg_string_to_guid( valuestr, &origin_guid );
+		CStringHelper::string_to_guid( valuestr, origin_guid );
         xmlFree( valuestr );
 	}
 	else
@@ -599,7 +598,7 @@ const CInterfaceDefinition *ntg_find_interface( xmlTextReaderPtr reader, const C
 		valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST NTG_STR_INSTANCEID );
 		if( valuestr )
 		{
-			ntg_string_to_guid( valuestr, &origin_guid );
+			CStringHelper::string_to_guid( valuestr, origin_guid );
 			xmlFree( valuestr );
 		}
 		else
@@ -617,7 +616,7 @@ const CInterfaceDefinition *ntg_find_interface( xmlTextReaderPtr reader, const C
 		}
 	}
 
-	if( !ntg_guid_is_null( &module_guid ) )
+	if( module_guid != NULL_GUID )
 	{
 		const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( module_guid );
 		if( interface_definition )
@@ -626,7 +625,7 @@ const CInterfaceDefinition *ntg_find_interface( xmlTextReaderPtr reader, const C
 		}
 	}
 
-	if( !ntg_guid_is_null( &origin_guid ) )
+	if( origin_guid != NULL_GUID ) 
 	{
 		const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_origin_id( origin_guid );
 		return interface_definition;
@@ -638,7 +637,7 @@ const CInterfaceDefinition *ntg_find_interface( xmlTextReaderPtr reader, const C
 
 bool ntg_is_saved_version_newer_than_current( const string &saved_version )
 {
-	string current_version = ntg_version();
+	string current_version = server_->get_libintegra_version();
 
 	size_t last_dot_in_saved_version = saved_version.find_last_of( '.' );
 	size_t last_dot_in_current_version = current_version.find_last_of( '.' );

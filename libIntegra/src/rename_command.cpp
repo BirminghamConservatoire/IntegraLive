@@ -23,7 +23,7 @@
 #include "rename_command.h"
 #include "server.h"
 #include "trace.h"
-#include "helper.h"
+#include "string_helper.h"
 #include "system_class_handlers.h"
 
 #include <assert.h>
@@ -57,7 +57,7 @@ namespace ntg_internal
 			return CError::PATH_ERROR;
 		}
 
-		if( !ntg_validate_node_name( m_new_name.c_str() ) )
+		if( !CStringHelper::validate_node_name( m_new_name ) )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", m_new_name.c_str() );
 			return CError::INPUT_ERROR;

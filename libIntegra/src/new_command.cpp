@@ -25,7 +25,7 @@
 #include "node.h"
 #include "module_manager.h"
 #include "trace.h"
-#include "helper.h"
+#include "string_helper.h"
 #include "system_class_handlers.h"
 #include "api/command_result.h"
 
@@ -79,7 +79,7 @@ namespace ntg_internal
 			m_node_name += "_";
 		}
 
-		if( !ntg_validate_node_name( m_node_name.c_str() ) )
+		if( !CStringHelper::validate_node_name( m_node_name ) )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", m_node_name.c_str() );
 			return CError::FAILED;

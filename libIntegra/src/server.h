@@ -102,6 +102,8 @@ namespace ntg_internal
 
 			void dump_state();
 
+			ntg_api::string get_libintegra_version() const;
+
 		private:
 
 			void dump_state( const node_map &nodes, int indentation );

@@ -24,7 +24,6 @@
 #include <assert.h>
 
 #include "interface_definition.h"
-#include "helper.h"
 #include "trace.h"
 
 #define NTG_CORE_TAG "core"
@@ -40,8 +39,8 @@ namespace ntg_internal
 
 	CInterfaceDefinition::CInterfaceDefinition()
 	{
-		ntg_guid_set_null( &m_module_guid );
-		ntg_guid_set_null( &m_origin_guid );
+		m_module_guid = NULL_GUID;
+		m_origin_guid = NULL_GUID;
 		m_interface_info = new CInterfaceInfo;
 		m_implementation_info = NULL;
 	}

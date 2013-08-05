@@ -36,6 +36,8 @@
 #define GLOBAL extern
 #endif
 
+#define NTG_NULL_GUID GUID( 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } )
+
 /* global constants */
 #define NTG_LONG_STRLEN    1024
 

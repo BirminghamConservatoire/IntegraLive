@@ -26,7 +26,7 @@
 #include "interface_definition_loader.h"
 #include "interface_definition.h"
 #include "trace.h"
-#include "helper.h"
+#include "string_helper.h"
 
 using namespace ntg_api;
 
@@ -586,7 +586,7 @@ namespace ntg_internal
 			char *module_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST ATTRIBUTE_MODULE_GUID );
 			if( module_guid_attribute )
 			{
-				if( ntg_string_to_guid( module_guid_attribute, &m_interface_definition->m_module_guid ) != CError::SUCCESS )
+				if( CStringHelper::string_to_guid( module_guid_attribute, m_interface_definition->m_module_guid ) != CError::SUCCESS )
 				{
 					NTG_TRACE_ERROR_WITH_STRING( "Couldn't parse guid", module_guid_attribute );
 					error = CError::INPUT_ERROR;
@@ -603,7 +603,7 @@ namespace ntg_internal
 			char *origin_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST ATTRIBUTE_ORIGIN_GUID );
 			if( origin_guid_attribute )
 			{
-				if( ntg_string_to_guid( origin_guid_attribute, &m_interface_definition->m_origin_guid ) != CError::SUCCESS )
+				if( CStringHelper::string_to_guid( origin_guid_attribute, m_interface_definition->m_origin_guid ) != CError::SUCCESS )
 				{
 					NTG_TRACE_ERROR_WITH_STRING( "Couldn't parse guid", origin_guid_attribute );
 					error = CError::INPUT_ERROR;
@@ -929,7 +929,7 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, struct tm &output )
 	{
-		return ntg_string_to_date( input.c_str(), output );
+		return CStringHelper::string_to_date( input.c_str(), output );
 	}
 
 

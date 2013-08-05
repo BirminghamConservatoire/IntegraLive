@@ -38,10 +38,10 @@ extern "C"
 #include "trace.h"
 #include "globals.h"
 #include "xmlrpc_server.h"
-#include "helper.h"
 #include "value.h"
 #include "path.h"
 #include "bridge_host.h"
+#include "string_helper.h"
 
 #include "api/server_startup_info.h"
 #include "api/command_api.h"
@@ -55,8 +55,6 @@ namespace ntg_api
 {
 	CServerApi *CServerApi::create_server( const ntg_api::CServerStartupInfo &startup_info )
 	{
-		NTG_TRACE_PROGRESS_WITH_STRING( "libIntegra version", ntg_version().c_str() );
-
 		#ifdef __APPLE__
 			sem_abyss_init = sem_open("sem_abyss_init", O_CREAT, 0777, 0);
 			sem_system_shutdown = sem_open("sem_system_shutdown", O_CREAT, 0777, 0);
@@ -134,7 +132,7 @@ namespace ntg_internal
 
 	CServer::CServer( const ntg_api::CServerStartupInfo &startup_info )
 	{
-		NTG_TRACE_PROGRESS( "constructing server" );
+		NTG_TRACE_PROGRESS_WITH_STRING( "libIntegra version", get_libintegra_version().c_str() );
 
 		server_ = this;
 
@@ -379,9 +377,8 @@ namespace ntg_internal
 			}
 
 			const CInterfaceDefinition &interface_definition = node->get_interface_definition();
-			char *module_id_string = ntg_guid_to_string( &interface_definition.get_module_guid() );
-			printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n", node->get_name(), interface_definition.get_interface_info().get_name().c_str(), module_id_string, node->get_path().get_string().c_str() );
-			delete[] module_id_string;
+			string module_id_string = CStringHelper::guid_to_string( interface_definition.get_module_guid() );
+			printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n", node->get_name(), interface_definition.get_interface_info().get_name().c_str(), module_id_string.c_str(), node->get_path().get_string().c_str() );
 
 			bool has_children = !node->get_children().empty();
 
@@ -439,6 +436,60 @@ namespace ntg_internal
 
 		return error;
 	}
+
+
+	string CServer::get_libintegra_version() const
+	{
+		#ifdef _WINDOWS
+
+			/*windows only - read version number from current module*/
+
+			HMODULE module_handle = NULL;
+			WCHAR file_name[_MAX_PATH];
+			DWORD handle = 0;
+			BYTE *version_info = NULL;
+			UINT len = 0;
+			VS_FIXEDFILEINFO *vsfi = NULL;
+			DWORD size; 
+
+			GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS| 
+							GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+							(LPCTSTR) CServerApi::create_server, 
+							&module_handle);
+
+			size = GetModuleFileName(module_handle, file_name, _MAX_PATH);
+			file_name[size] = 0;
+			size = GetFileVersionInfoSize(file_name, &handle);
+			version_info = new BYTE[ size ];
+			if (!GetFileVersionInfo(file_name, handle, size, version_info))
+			{
+				NTG_TRACE_ERROR( "Failed to read version number from module" );
+				delete[] version_info;
+
+				return "<failed to read version number>";
+			}
+
+			// we have version information
+			VerQueryValue(version_info, L"\\", (void**)&vsfi, &len);
+
+			ostringstream stream;
+			stream << HIWORD( vsfi->dwFileVersionMS ) << ".";
+			stream << LOWORD( vsfi->dwFileVersionMS ) << ".";
+			stream << HIWORD( vsfi->dwFileVersionLS ) << ".";
+			stream << LOWORD( vsfi->dwFileVersionLS );
+
+			return stream.str();
+
+			delete[] version_info;
+
+		#else
+
+			/*non-windows - use version number from preprocessor macro*/
+			return string( TOSTRING( LIBINTEGRA_VERSION ) );
+
+		#endif
+	}
+
 	
 }
 

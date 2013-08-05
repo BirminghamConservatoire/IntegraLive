@@ -44,10 +44,8 @@ extern "C"
 #include "server.h"
 #include "api/command_api.h"
 #include "value.h"
-#include "helper.h"
 #include "globals.h"
 #include "interface_definition.h"
-#include "helper.h"
 
 
 

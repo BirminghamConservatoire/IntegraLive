@@ -21,9 +21,9 @@
 #include "platform_specifics.h"
 
 #include "osc_client.h"
-#include "helper.h"
 #include "globals.h"
 #include "server.h"
+#include "string_helper.h"
 #include "value.h"
 
 #include <assert.h>
@@ -175,7 +175,6 @@ CError ntg_osc_client_send_new(ntg_osc_client *client,
 {
     const char *methodName = "/command.new";
     const char *cmd_source_s = NULL;
-	char *module_id_string;
 
 	assert(client != NULL);
     assert(module_id != NULL);
@@ -183,12 +182,10 @@ CError ntg_osc_client_send_new(ntg_osc_client *client,
 
     cmd_source_s = ntg_command_source_text[cmd_source];
 
-	module_id_string = ntg_guid_to_string( module_id );
+	string module_id_string = CStringHelper::guid_to_string( *module_id );
 
     ntg_osc_send_ssss(client->address, methodName, cmd_source_s,
-			module_id_string, node_name, path.get_string().c_str() );
-
-	delete[] module_id_string;
+			module_id_string.c_str(), node_name, path.get_string().c_str() );
 
     return CError::SUCCESS;
 }

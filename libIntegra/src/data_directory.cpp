@@ -38,7 +38,6 @@
 #include "data_directory.h"
 #include "scratch_directory.h"
 #include "file_io.h"
-#include "helper.h"
 #include "globals.h"
 #include "system_class_handlers.h"
 #include "node_endpoint.h"

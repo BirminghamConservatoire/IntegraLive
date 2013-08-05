@@ -160,7 +160,6 @@
     <ClCompile Include="..\src\error.cpp" />
     <ClCompile Include="..\src\file_helper.cpp" />
     <ClCompile Include="..\src\file_io.cpp" />
-    <ClCompile Include="..\src\helper.cpp" />
     <ClCompile Include="..\src\init.cpp" />
     <ClCompile Include="..\src\interface_definition.cpp" />
     <ClCompile Include="..\src\interface_definition_loader.cpp" />
@@ -181,6 +180,7 @@
     <ClCompile Include="..\src\set_command.cpp" />
     <ClCompile Include="..\src\signals.cpp" />
     <ClCompile Include="..\src\state_table.cpp" />
+    <ClCompile Include="..\src\string_helper.cpp" />
     <ClCompile Include="..\src\system_class_handlers.cpp" />
     <ClCompile Include="..\src\trace.cpp" />
     <ClCompile Include="..\src\validate.cpp" />
@@ -212,7 +212,6 @@
     <ClInclude Include="..\src\file_helper.h" />
     <ClInclude Include="..\src\file_io.h" />
     <ClInclude Include="..\src\globals.h" />
-    <ClInclude Include="..\src\helper.h" />
     <ClInclude Include="..\src\interface_definition.h" />
     <ClInclude Include="..\src\interface_definition_loader.h" />
     <ClInclude Include="..\src\lo_ansi.h" />
@@ -232,6 +231,7 @@
     <ClInclude Include="..\src\set_command.h" />
     <ClInclude Include="..\src\signals.h" />
     <ClInclude Include="..\src\state_table.h" />
+    <ClInclude Include="..\src\string_helper.h" />
     <ClInclude Include="..\src\system_class_handlers.h" />
     <ClInclude Include="..\src\system_class_literals.h" />
     <ClInclude Include="..\src\trace.h" />

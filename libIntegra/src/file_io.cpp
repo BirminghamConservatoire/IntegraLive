@@ -37,7 +37,7 @@
 #include "data_directory.h"
 #include "module_manager.h"
 #include "interface_definition.h"
-#include "validate.h"
+#include "validator.h"
 #include "string_helper.h"
 #include "server.h"
 #include "api/common_typedefs.h"
@@ -848,6 +848,7 @@ CError ntg_file_load( const char *filename, const CNode *parent, CModuleManager 
     xmlTextReaderPtr reader = NULL;
 	node_list new_nodes;
 	node_list::const_iterator new_node_iterator;
+	CValidator validator;
 
     LIBXML_TEST_VERSION;
 
@@ -869,7 +870,7 @@ CError ntg_file_load( const char *filename, const CNode *parent, CModuleManager 
 	xmlInitParser();
 
     /* validate candidate IXD file against schema */
-    error = ntg_xml_validate( (char *)ixd_buffer, ixd_buffer_length );
+	error = validator.validate_ixd( (char *)ixd_buffer, ixd_buffer_length );
     if( error != CError::SUCCESS ) 
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "ixd validation failed", filename );

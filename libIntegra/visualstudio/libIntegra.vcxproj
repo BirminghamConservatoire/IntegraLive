@@ -183,7 +183,7 @@
     <ClCompile Include="..\src\string_helper.cpp" />
     <ClCompile Include="..\src\system_class_handlers.cpp" />
     <ClCompile Include="..\src\trace.cpp" />
-    <ClCompile Include="..\src\validate.cpp" />
+    <ClCompile Include="..\src\validator.cpp" />
     <ClCompile Include="..\src\value.cpp" />
     <ClCompile Include="..\src\xmlrpc_common.cpp" />
     <ClCompile Include="..\src\xmlrpc_server.cpp" />
@@ -234,7 +234,7 @@
     <ClInclude Include="..\src\system_class_handlers.h" />
     <ClInclude Include="..\src\system_class_literals.h" />
     <ClInclude Include="..\src\trace.h" />
-    <ClInclude Include="..\src\validate.h" />
+    <ClInclude Include="..\src\validator.h" />
     <ClInclude Include="..\src\value.h" />
     <ClInclude Include="..\src\xmlrpc_common.h" />
     <ClInclude Include="..\src\xmlrpc_server.h" />

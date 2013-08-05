@@ -96,9 +96,6 @@
     <ClCompile Include="..\src\trace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\validate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\value.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,6 +147,9 @@
     <ClCompile Include="..\src\lua_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\validator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
@@ -171,9 +171,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\signals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\validate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\value.h">
@@ -297,6 +294,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\lua_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\validator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -109,12 +109,23 @@ sem_t *ntg_player_data_get_thread_shutdown_semaphore( ntg_player_data *player_da
 }
 
 
-void ntg_player_set_value( CServer &server, const CPath &attribute, const CValue *value )
+/*void ntg_player_set_value( CServer &server, const CPath &attribute, const CValue *value, bool already_locked )
 {
-	server.lock();
+	if( !already_locked ) 
+	{
+		NTG_TRACE_PROGRESS( "locking server thread..." );
+		server.lock();
+		NTG_TRACE_PROGRESS( "locked server thread" );
+	}
+
 	server.process_command( CSetCommandApi::create( attribute, value ), NTG_SOURCE_SYSTEM );
-	server.unlock();
-}
+
+	if( !already_locked ) 
+	{
+		NTG_TRACE_PROGRESS( "unlocked server thread" );
+		server.unlock();
+	}
+}*/
 
 
 void ntg_player_stop( CServer &server, internal_id player_id, int final_tick )
@@ -130,7 +141,9 @@ void ntg_player_stop( CServer &server, internal_id player_id, int final_tick )
 
 	player_data = server.get_system_class_data()->player_data;
 
-	pthread_mutex_lock(&player_data->player_state_mutex);
+	NTG_TRACE_PROGRESS( "locking player thread..." );
+	pthread_mutex_lock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "locked player thread" );
 
 	previous = &(player_data->player_states); 
 
@@ -142,7 +155,7 @@ void ntg_player_stop( CServer &server, internal_id player_id, int final_tick )
 
 			if( final_tick != iterator->previous_ticks )
 			{
-				ntg_player_set_value( server, iterator->tick_path, &CIntegerValue( final_tick ) );
+				server.process_command( CSetCommandApi::create( iterator->tick_path, &CIntegerValue( final_tick ) ), NTG_SOURCE_SYSTEM );
 			}
 
 			/* remove and free the player state */
@@ -156,7 +169,8 @@ void ntg_player_stop( CServer &server, internal_id player_id, int final_tick )
 		}
 	}
 
-	pthread_mutex_unlock(&player_data->player_state_mutex);
+	pthread_mutex_unlock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "unlocked player thread" );
 }
 
 
@@ -199,7 +213,11 @@ void *ntg_player_thread( void *context )
 	{
 		usleep( NTG_PLAYER_UPDATE_MICROSECONDS );
 
+		std::list<CSetCommandApi *> commands;
+
+		NTG_TRACE_PROGRESS( "locking player thread..." );
 		pthread_mutex_lock(&player_data->player_state_mutex);
+		NTG_TRACE_PROGRESS( "locked player thread" );
 
 		current_msecs = ntg_get_current_msecs();
 
@@ -229,19 +247,29 @@ void *ntg_player_thread( void *context )
 				}
 				else
 				{
-					ntg_player_set_value( *server_, player->play_path, &CIntegerValue( 0 ) );
-					continue;
+					commands.push_back( CSetCommandApi::create( player->play_path, &CIntegerValue( 0 ) ) );
 				}
 			}
 
 			if( new_tick_value != player->previous_ticks )
 			{
-				ntg_player_set_value( *server_, player->tick_path, &CIntegerValue( new_tick_value ) );
+				commands.push_back( CSetCommandApi::create( player->tick_path, &CIntegerValue( new_tick_value ) ) );
 				player->previous_ticks = new_tick_value;
 			}
 		}
 
 		pthread_mutex_unlock(&player_data->player_state_mutex);
+		NTG_TRACE_PROGRESS( "unlocked player thread" );
+
+		if( !commands.empty() )
+		{
+			server_->lock();
+			for( std::list<CSetCommandApi *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
+			{
+				server_->process_command( *i, NTG_SOURCE_SYSTEM );
+			}
+			server_->unlock();
+		}
     }
 
 	return NULL;
@@ -254,7 +282,6 @@ void ntg_player_initialize( CServer &server )
 
 	player_data->player_states = NULL;
 
-	/*player_data->player_state_mutex = PTHREAD_MUTEX_INITIALIZER;*/
 	pthread_mutex_init(&player_data->player_state_mutex, NULL);
 
 #ifdef __APPLE__
@@ -282,7 +309,9 @@ void ntg_player_free( CServer &server )
 
     NTG_TRACE_PROGRESS("freeing player states");
 
-	pthread_mutex_lock(&player_data->player_state_mutex);
+	NTG_TRACE_PROGRESS( "locking player thread..." );
+	pthread_mutex_lock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "locked player thread" );
 
 	while( player_data->player_states )
 	{
@@ -293,7 +322,8 @@ void ntg_player_free( CServer &server )
 		player_data->player_states = next_state;		
 	}
 
-	pthread_mutex_unlock(&player_data->player_state_mutex);
+	pthread_mutex_unlock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "unlocked player thread" );
 
 	pthread_mutex_destroy( &player_data->player_state_mutex );
 
@@ -333,7 +363,9 @@ void ntg_player_update( CServer &server, internal_id player_id )
 
 	assert( rate_endpoint && loop_endpoint && start_endpoint && end_endpoint );
 
-	pthread_mutex_lock(&player_data->player_state_mutex);
+	NTG_TRACE_PROGRESS( "locking player thread..." );
+	pthread_mutex_lock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "locked player thread" );
 
 	/*
 	see if the player is already playing
@@ -380,6 +412,7 @@ void ntg_player_update( CServer &server, internal_id player_id )
 	player_state->loop_end_ticks = *end_endpoint->get_value();
 
 	pthread_mutex_unlock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "unlocked player thread" );
 }
 
 
@@ -391,7 +424,9 @@ void ntg_player_handle_path_change( CServer &server, const CNode &player_node )
 	player_data = server.get_system_class_data()->player_data;
 	assert( player_data );
 
+	NTG_TRACE_PROGRESS( "locking player thread..." );
 	pthread_mutex_lock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "locked player thread" );
 
 	for( player_state = player_data->player_states; player_state; player_state = player_state->next )
 	{
@@ -406,6 +441,7 @@ void ntg_player_handle_path_change( CServer &server, const CNode &player_node )
 	}
 
 	pthread_mutex_unlock( &player_data->player_state_mutex );
+	NTG_TRACE_PROGRESS( "unlocked player thread" );
 }
 
 

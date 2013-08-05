@@ -38,7 +38,7 @@ ntg_api::CError ntg_file_load( const char *filename, const ntg_internal::CNode *
 ntg_api::CError ntg_file_save( const char *filename, const ntg_internal::CNode &node, const ntg_internal::CModuleManager &module_manager );
 
 
-void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_path, const char *source_path );
+void ntg_copy_directory_contents_to_zip( zipFile zip_file, const ntg_api::string &target_path, const ntg_api::string &source_path );
 
 
 

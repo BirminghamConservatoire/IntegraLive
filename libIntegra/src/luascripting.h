@@ -22,9 +22,9 @@
 #ifndef INTEGRA_LUA_H
 #define INTEGRA_LUA_H
 
+#include "api/common_typedefs.h"
 
-
-char *ntg_lua_eval( const ntg_api::CPath &parent_path, const char *script_string );
+ntg_api::string ntg_lua_eval( const ntg_api::CPath &parent_path, const ntg_api::string &script_string );
 
 
 

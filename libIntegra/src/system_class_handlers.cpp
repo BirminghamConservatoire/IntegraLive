@@ -59,8 +59,8 @@ typedef struct ntg_system_class_handler_
 	/* module_guid can be null if the handler should apply to all classes */
 	GUID *module_guid;
 
-	/* attribute_name can be null if the handler is not for a set command, or if it should apply to all attributes */
-	char *attribute_name;
+	/* endpoint_name can be null if the handler is not for a set command, or if it should apply to all attributes */
+	string endpoint_name;
 
 	void *function;
 
@@ -376,7 +376,7 @@ void ntg_player_set_state(CServer &server, const CNode &player_node, int tick, i
 
 	server.process_command( CSetCommandApi::create( player_loop_endpoint->get_path(), &CIntegerValue( loop ) ), NTG_SOURCE_SYSTEM );
 	server.process_command( CSetCommandApi::create( player_start_endpoint->get_path(), &CIntegerValue( start ) ), NTG_SOURCE_SYSTEM );
-	server.process_command( CSetCommandApi::create( player_end_endpoint->get_path(), &CIntegerValue( play ) ), NTG_SOURCE_SYSTEM );
+	server.process_command( CSetCommandApi::create( player_end_endpoint->get_path(), &CIntegerValue( end ) ), NTG_SOURCE_SYSTEM );
 
 	/* don't set tick unless >= 0.  Allows calling functions to skip setting tick */
 	if( tick >= 0 )
@@ -860,12 +860,8 @@ void ntg_script_trigger_handler( CServer &server, const CNodeEndpoint *endpoint,
 
 	const CPath &parent_path = script_node.get_parent_path();
 	
-    char *script_output = ntg_lua_eval( parent_path, script.c_str() );
-	if( script_output )
-	{
-		server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) ), NTG_SOURCE_SYSTEM );
-		delete[] script_output;
-	}
+    string script_output = ntg_lua_eval( parent_path, script );
+	server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) ), NTG_SOURCE_SYSTEM );
 
     NTG_TRACE_VERBOSE("script finished");
 }
@@ -1154,9 +1150,9 @@ void ntg_scene_start_and_length_handler( CServer &server, const CNodeEndpoint *e
 
 	const CNodeEndpoint *scene_start = scene_node.get_node_endpoint( NTG_ENDPOINT_START );
 	const CNodeEndpoint *scene_length = scene_node.get_node_endpoint( NTG_ENDPOINT_LENGTH );
-	const CNodeEndpoint *player_tick = scene_node.get_node_endpoint( NTG_ENDPOINT_TICK );
-	const CNodeEndpoint *player_start = scene_node.get_node_endpoint( NTG_ENDPOINT_START );
-	const CNodeEndpoint *player_end = scene_node.get_node_endpoint( NTG_ENDPOINT_END );
+	const CNodeEndpoint *player_tick = scene_node.get_parent()->get_node_endpoint( NTG_ENDPOINT_TICK );
+	const CNodeEndpoint *player_start = scene_node.get_parent()->get_node_endpoint( NTG_ENDPOINT_START );
+	const CNodeEndpoint *player_end = scene_node.get_parent()->get_node_endpoint( NTG_ENDPOINT_END );
 	assert( scene_start && scene_length && player_tick && player_start && player_end );
 
 	int start = *scene_start->get_value();
@@ -1634,7 +1630,7 @@ The following methods perform housekeeping and external interface for system cla
 */
 
 
-void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const CServer &server, const char *class_name, const char *attribute_name, void * function )
+void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const CServer &server, const char *class_name, const char *endpoint_name, void *function )
 {
 	assert( list_head );
 	assert( function );
@@ -1646,13 +1642,13 @@ void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const 
 		interface_definition = server.get_module_manager().get_core_interface_by_name( class_name );
 		if( !interface_definition )
 		{
-			NTG_TRACE_ERROR_WITH_STRING("failed to lookup into for core class", class_name);
+			NTG_TRACE_ERROR_WITH_STRING("failed to lookup into for core class", class_name );
 			return;
 		}
 
 		if( !interface_definition->is_core_interface() )
 		{
-			NTG_TRACE_ERROR_WITH_STRING("attempt to add system class handler for non-core class", class_name);
+			NTG_TRACE_ERROR_WITH_STRING("attempt to add system class handler for non-core class", class_name );
 			return;
 		}
 
@@ -1671,14 +1667,7 @@ void ntg_system_class_handlers_add( ntg_system_class_handler **list_head, const 
 		handler->module_guid = NULL;
 	}
 
-	if( attribute_name )
-	{
-		handler->attribute_name = ntg_strdup( attribute_name );
-	}
-	else
-	{
-		handler->attribute_name = NULL;
-	}
+	handler->endpoint_name = endpoint_name ? string( endpoint_name ) : string();
 
 	handler->function = function;
 
@@ -1801,11 +1790,6 @@ void ntg_system_class_handlers_free( ntg_system_class_handler *handlers )
 			delete handlers->module_guid;
 		}
 
-		if( handlers->attribute_name )
-		{
-			delete[] handlers->attribute_name;
-		}
-
 		delete handlers;
 
 		handlers = next_handler;		
@@ -1885,7 +1869,7 @@ void ntg_system_class_handle_set( CServer &server, const CNodeEndpoint *endpoint
 			continue;
 		}
 
-		if( handler->attribute_name && endpoint->get_endpoint_definition().get_name() != handler->attribute_name )
+		if( !handler->endpoint_name.empty() && endpoint->get_endpoint_definition().get_name() != handler->endpoint_name )
 		{
 			continue;
 		}

@@ -64,7 +64,7 @@ using namespace ntg_internal;
 typedef struct ntg_lua_context_stack_
 {
 	const CPath *parent_path;
-	char *output;
+	string output;
 
 	struct ntg_lua_context_stack_ *next;
 
@@ -85,7 +85,7 @@ static void ntg_lua_output_handler( int color, const char *fmt, ...)
 
 	char progress_string[ NTG_LONG_STRLEN ];
 
-	assert( context_stack && context_stack->output );
+	assert( context_stack );
 	assert( fmt );
 
 	{
@@ -109,10 +109,9 @@ static void ntg_lua_output_handler( int color, const char *fmt, ...)
 
 	color = MAX( 0, MIN( 0xffffff, color ) );
 
-	new_output = new char[ strlen( context_stack->output ) + strlen( progress_template ) + strlen( progress_string ) + 7 ];
-	sprintf( new_output, progress_template, context_stack->output, color, progress_string );
+	new_output = new char[ context_stack->output.length() + strlen( progress_template ) + strlen( progress_string ) + 7 ];
+	sprintf( new_output, progress_template, context_stack->output.c_str(), color, progress_string );
 
-	delete[] context_stack->output;
 	context_stack->output = new_output;
 }
 
@@ -121,7 +120,7 @@ static void ntg_lua_error_handler( const char *fmt, ...)
 {
 	char error_string[ NTG_LONG_STRLEN ];
 
-	assert( context_stack && context_stack->output );
+	assert( context_stack );
 	assert( fmt );
 
 	{
@@ -339,7 +338,7 @@ static int ilua_print( lua_State * L )
 {
     int num_arguments = 0;
 	int i;
-	char *print = NULL;
+	ostringstream output;
 
 	num_arguments = lua_gettop( L );
 
@@ -349,12 +348,12 @@ static int ilua_print( lua_State * L )
 		{
 			case LUA_TNUMBER:
 			case LUA_TSTRING:
-				if( print ) 
+				if( !output.str().empty() ) 
 				{
-					print = ntg_string_append( print, ", " );
+					output << ", ";
 				}
 
-				print = ntg_string_append( print, ntg_lua_get_string( L, i ) );
+				output << ntg_lua_get_string( L, i );
 				break;
 
 			default:
@@ -363,10 +362,9 @@ static int ilua_print( lua_State * L )
 		}
 	}
 
-	if( print )
+	if( !output.str().empty() )
 	{
-		ntg_lua_output_handler( NTG_PRINT_COLOR, print );
-		delete[] print;
+		ntg_lua_output_handler( NTG_PRINT_COLOR, output.str().c_str() );
 	}
 
 	return 1;
@@ -382,31 +380,25 @@ static const luaL_Reg ilua_funcreg[] =
 };
 
 
-char *get_lua_object_name( const CPath &child_path, const CPath &parent_path )
+string get_lua_object_name( const CPath &child_path, const CPath &parent_path )
 {
-	int i;
-	const char *path_element;
-	char *object_name = NULL;
-	char *new_object_name;
-
 	int child_elements = child_path.get_number_of_elements();
 	int parent_elements = parent_path.get_number_of_elements();
 
 	assert( child_elements > parent_elements );
 
-	for( i = parent_elements; i < child_elements; i++ )
+	string object_name;
+
+	for( int i = parent_elements; i < child_elements; i++ )
 	{
-		path_element = child_path[ i ].c_str();
-		if( !object_name )
+		const string &path_element = child_path[ i ];
+		if( object_name.empty() )
 		{
-			object_name = ntg_strdup( path_element );
+			object_name = path_element;
 		}
 		else
 		{
-			new_object_name = new char[ strlen( object_name ) + strlen( path_element ) + 5 ];
-			sprintf( new_object_name, "%s[\"%s\"]", object_name, path_element );
-			delete[] object_name;
-			object_name = new_object_name;
+			object_name += ( "[\"" + path_element + "\"]" );
 		}
 	}
 	
@@ -414,62 +406,47 @@ char *get_lua_object_name( const CPath &child_path, const CPath &parent_path )
 }
 
 
-char *ntg_lua_get_parameter_string( const CPath &child_path, const CPath &parent_path )
+string ntg_lua_get_parameter_string( const CPath &child_path, const CPath &parent_path )
 {
-	const char *path_element;
-	char *parameter_string;
-	char *new_parameter_string;
-
 	int child_elements = child_path.get_number_of_elements();
 	int parent_elements = parent_path.get_number_of_elements();
 
 	assert( child_elements > parent_elements );
 
-	parameter_string = ntg_strdup( "" );
+	string parameter_string;
 
 	for( int i = parent_elements; i < child_elements; i++ )
 	{
-		path_element = child_path[ i ].c_str();
+		const string &path_element = child_path[ i ];
 
-		new_parameter_string = new char[ strlen( parameter_string ) + strlen( path_element ) + 5 ];
-		sprintf( new_parameter_string, "%s\"%s\", ", parameter_string, path_element );
-		delete[] parameter_string;
-		parameter_string = new_parameter_string;
+		parameter_string += ( "\"" + path_element + "\", " );
 	}
 	
 	return parameter_string;
 }
 
 
-char *ntg_lua_declare_child_objects( char *init_script, const node_map &children, const CPath &parent_path )
+void ntg_lua_declare_child_objects( string &init_script, const node_map &children, const CPath &parent_path )
 {
-	char *child_declaration;
-	const char *child_initializer = "={}\n";
+	const string &child_initializer = "={}\n";
 
 	for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 	{
 		//declare child object
 		const CNode *child = i->second;
-		child_declaration = get_lua_object_name( child->get_path(), parent_path );
-		assert( child_declaration );
+		string child_declaration = get_lua_object_name( child->get_path(), parent_path );
 
-		child_declaration = ntg_string_append( child_declaration, child_initializer );
+		child_declaration += child_initializer;
 
-		init_script = ntg_string_append( init_script, child_declaration );
-		delete[] child_declaration;
+		init_script += child_declaration;
 
-		init_script = ntg_lua_declare_child_objects( init_script, child->get_children(), parent_path );
+		ntg_lua_declare_child_objects( init_script, child->get_children(), parent_path );
 	}
-
-	return init_script;
 }
 
 
-char *ntg_lua_get_child_metatable( const CNode &node, const CPath &parent_path )
+string ntg_lua_get_child_metatable( const CNode &node, const CPath &parent_path )
 {
-	char *object_name;
-	char *parameter_string;
-	char *metatable;
 	const char *metatable_template = 
 		"setmetatable(%s,\n"
 		"{\n"
@@ -484,39 +461,34 @@ char *ntg_lua_get_child_metatable( const CNode &node, const CPath &parent_path )
 	const CPath &node_path = node.get_path();
 	assert( parent_path.get_number_of_elements() < node_path.get_number_of_elements() );
 
-	object_name = get_lua_object_name( node_path, parent_path );
-	parameter_string = ntg_lua_get_parameter_string( node_path, parent_path );
-	assert( object_name && parameter_string );
+	string object_name = get_lua_object_name( node_path, parent_path );
+	string parameter_string = ntg_lua_get_parameter_string( node_path, parent_path );
 
-	metatable = new char[ strlen( metatable_template ) + strlen( object_name ) + strlen( parameter_string ) * 2 + 1 ];
-	sprintf( metatable, metatable_template, object_name, parameter_string, parameter_string );
+	char *metatable = new char[ strlen( metatable_template ) + object_name.length() + parameter_string.length() * 2 + 1 ];
+	sprintf( metatable, metatable_template, object_name.c_str(), parameter_string.c_str(), parameter_string.c_str() );
 
-	return metatable;
+	string result( metatable );
+	delete metatable;
+	return result;
 }
 
 
-char *ntg_lua_declare_child_metatables( char *init_script, const node_map &children, const CPath &parent_path )
+void ntg_lua_declare_child_metatables( string &init_script, const node_map &children, const CPath &parent_path )
 {
-	char *child_metatable;
-
 	for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 	{
 		const CNode *child = i->second;
 
-		child_metatable = ntg_lua_get_child_metatable( *child, parent_path );
-		assert( child_metatable );
+		string child_metatable = ntg_lua_get_child_metatable( *child, parent_path );
 
-		init_script = ntg_string_append( init_script, child_metatable );
-		delete[] child_metatable;
+		init_script += child_metatable;
 
-		init_script = ntg_lua_declare_child_metatables( init_script, child->get_children(), parent_path );
+		ntg_lua_declare_child_metatables( init_script, child->get_children(), parent_path );
 	}
-
-	return init_script;
 }
 
 
-char *ntg_lua_build_init_script( const CPath &parent_path )
+string ntg_lua_build_init_script( const CPath &parent_path )
 {
 	const char *helper_functions[] = 
 	{
@@ -555,23 +527,20 @@ char *ntg_lua_build_init_script( const CPath &parent_path )
 		"	end\n"
 		"})\n";
 
-	char *init_script = NULL;
+	string init_script;
 	
-	int i;
-
-	for( i = 0; *helper_functions[ i ] != 0; i++ )
+	for( int i = 0; *helper_functions[ i ] != 0; i++ )
 	{
-		init_script = ntg_string_append( init_script, helper_functions[ i ] );
-		init_script = ntg_string_append( init_script, "\n" );
+		init_script += helper_functions[ i ];
+		init_script += "\n";
 	}
 
 	const CNode *parent_node = server_->find_node( parent_path );
 	const node_map &child_nodes = parent_node ? parent_node->get_children() : server_->get_nodes();
-
-
-	init_script = ntg_lua_declare_child_objects( init_script, child_nodes, parent_path );
-	init_script = ntg_lua_declare_child_metatables( init_script, child_nodes, parent_path );
-	init_script = ntg_string_append( init_script, global_metatable );
+	
+	ntg_lua_declare_child_objects( init_script, child_nodes, parent_path );
+	ntg_lua_declare_child_metatables( init_script, child_nodes, parent_path );
+	init_script += global_metatable;
 
 	return init_script;
 }
@@ -580,22 +549,19 @@ char *ntg_lua_build_init_script( const CPath &parent_path )
 lua_State *ntg_lua_create_state( const CPath &parent_path )
 {
 	lua_State *state;
-	char *init_script = NULL;
 
-	init_script = ntg_lua_build_init_script( parent_path );
-	if( !init_script ) return NULL;
+	string init_script = ntg_lua_build_init_script( parent_path );
+	if( init_script.empty() ) return NULL;
 
 	state = luaL_newstate();
 
     luaL_openlibs( state );
     luaL_register( state, "integra", ilua_funcreg );
 
-	if( luaL_dostring( state, init_script ) )
+	if( luaL_dostring( state, init_script.c_str() ) )
 	{
 		NTG_TRACE_ERROR_WITH_STRING( "Failed to initialize lua state", lua_tostring( state, -1 ) );
 	}
-
-	delete[] init_script;
 
 	return state;
 }
@@ -607,19 +573,16 @@ lua_State *ntg_lua_create_state( const CPath &parent_path )
  * This method is designed to handle re-entrance correctly, by using a 
  * context stack.  This allows script outputs to cause other scripts to be executed.
  *
- * returns textual output from operation, returned string should be freed by caller
+ * returns textual output from operation
  */
-char *ntg_lua_eval( const CPath &parent_path, const char *script_string )
+string ntg_lua_eval( const CPath &parent_path, const string &script_string )
 {
 	lua_State *state;
 	ntg_lua_context_stack *context;
-	char *output = NULL;
 	time_t raw_time_stamp;
 	const char *timestamp_format = "_executing script at %H:%M:%S..._";
 	int timestamp_format_length = strlen( timestamp_format ) + 1;
 	
-	assert( script_string );
-
 	/* initialize the state */
 
 	state = ntg_lua_create_state( parent_path );
@@ -632,8 +595,10 @@ char *ntg_lua_eval( const CPath &parent_path, const char *script_string )
 
 	context->parent_path = &parent_path;
 
-	context->output = new char[ timestamp_format_length ];
-	strftime( context->output, timestamp_format_length, timestamp_format, localtime( &raw_time_stamp ) );
+	char *formatted_time_stamp = new char[ timestamp_format_length ];
+	strftime( formatted_time_stamp, timestamp_format_length, timestamp_format, localtime( &raw_time_stamp ) );
+	context->output = formatted_time_stamp;
+	delete formatted_time_stamp;
 
 	/* push the stack */
 	context->next = context_stack;
@@ -641,20 +606,20 @@ char *ntg_lua_eval( const CPath &parent_path, const char *script_string )
 
 	/* execute the script */
 
-	if( luaL_dostring( state, script_string ) )
+	if( luaL_dostring( state, script_string.c_str() ) )
 	{
 		ntg_lua_error_handler( lua_tostring( state, -1 ) );
 	}
 
-	context->output = ntg_string_append( context->output, "\n\n_done_" );
+	context->output += "\n\n_done_";
 
 	/* pop the stack */
 
 	assert( context == context_stack );		/* test that re-entrances have tidied up as expected */
 	
-	output = context_stack->output;
+	string output = context_stack->output;
 	context_stack = context_stack->next;
-	delete[] context;
+	delete context;
 
 	/* free the state */
 	lua_close( state );

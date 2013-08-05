@@ -90,29 +90,25 @@ void ntg_init_zip_file_info( zip_fileinfo *info )
 }
 
 
-void ntg_copy_file_to_zip( zipFile zip_file, const char *target_path, const char *source_path )
+void ntg_copy_file_to_zip( zipFile zip_file, const string &target_path, const string &source_path )
 {
 	zip_fileinfo zip_file_info;
-	FILE *input_file;
-	unsigned char *buffer;
-	size_t bytes_read;
-
 	ntg_init_zip_file_info( &zip_file_info );
 
-	input_file = fopen( source_path, "rb" );
+	FILE *input_file = fopen( source_path.c_str(), "rb" );
 	if( !input_file )
 	{
-		NTG_TRACE_ERROR_WITH_STRING( "couldn't open", source_path );
+		NTG_TRACE_ERROR_WITH_STRING( "couldn't open", source_path.c_str() );
 		return;
 	}
 
-	buffer = new unsigned char[ NTG_DATA_COPY_BUFFER_SIZE ];
+	unsigned char *buffer = new unsigned char[ NTG_DATA_COPY_BUFFER_SIZE ];
 
-	zipOpenNewFileInZip( zip_file, target_path, &zip_file_info, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION );
+	zipOpenNewFileInZip( zip_file, target_path.c_str(), &zip_file_info, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION );
 
 	while( !feof( input_file ) )
 	{
-		bytes_read = fread( buffer, 1, NTG_DATA_COPY_BUFFER_SIZE, input_file );
+		size_t bytes_read = fread( buffer, 1, NTG_DATA_COPY_BUFFER_SIZE, input_file );
 		if( bytes_read > 0 )
 		{
 			zipWriteInFileInZip( zip_file, buffer, bytes_read );
@@ -121,7 +117,7 @@ void ntg_copy_file_to_zip( zipFile zip_file, const char *target_path, const char
 		{
 			if( ferror( input_file ) )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Error reading file", source_path );
+				NTG_TRACE_ERROR_WITH_STRING( "Error reading file", source_path.c_str() );
 				break;
 			}
 		}
@@ -135,21 +131,16 @@ void ntg_copy_file_to_zip( zipFile zip_file, const char *target_path, const char
 }
 
 
-void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_path, const char *source_path )
+void ntg_copy_directory_contents_to_zip( zipFile zip_file, const string &target_path, const string &source_path )
 {
-	DIR *directory_stream;
-	struct dirent *directory_entry;
-	const char *file_name;
-	char *full_source_path;
-	char *full_target_path;
-	struct stat entry_data;
-
-	directory_stream = opendir( source_path );
+	DIR *directory_stream = opendir( source_path.c_str() );
 	if( !directory_stream )
 	{
-		NTG_TRACE_ERROR_WITH_STRING( "unable to open directory", source_path );
+		NTG_TRACE_ERROR_WITH_STRING( "unable to open directory", source_path.c_str() );
 		return;
 	}
+
+	struct dirent *directory_entry = NULL;
 
 	while( true )
 	{
@@ -159,40 +150,36 @@ void ntg_copy_directory_contents_to_zip( zipFile zip_file, const char *target_pa
 			break;
 		}
 
-		file_name = directory_entry->d_name;
+		string file_name = directory_entry->d_name;
 
-		if( strcmp( file_name, ".." ) == 0 || strcmp( file_name, "." ) == 0 )
+		if( file_name == ".." || file_name == "." )
 		{
 			continue;
 		}
 
-		full_source_path = ntg_strdup( source_path );
-		full_source_path = ntg_string_append( full_source_path, file_name );
+		string full_source_path = source_path + file_name;
 
-		if( stat( full_source_path, &entry_data ) != 0 )
+		struct stat entry_data;
+		if( stat( full_source_path.c_str(), &entry_data ) != 0 )
 		{
 			NTG_TRACE_ERROR_WITH_ERRNO( "couldn't read directory entry data" );
-			delete[] full_source_path;
 			continue;
 		}
 
-		full_target_path = new char[ strlen( NTG_INTEGRA_DATA_DIRECTORY_NAME ) + strlen( target_path ) + strlen( NTG_PATH_SEPARATOR ) + strlen( file_name ) + 1 ];
-		sprintf( full_target_path, "%s%s%s%s", NTG_INTEGRA_DATA_DIRECTORY_NAME, target_path, NTG_PATH_SEPARATOR, file_name );
+		ostringstream full_target_path;
+		full_target_path << NTG_INTEGRA_DATA_DIRECTORY_NAME << target_path << NTG_PATH_SEPARATOR << file_name;
 
 		switch( entry_data.st_mode & _S_IFMT )
 		{
 			case S_IFDIR:	/* directory */
-				full_source_path = ntg_string_append( full_source_path, NTG_PATH_SEPARATOR );
-				ntg_copy_directory_contents_to_zip( zip_file, full_target_path, full_source_path );
+				full_source_path += NTG_PATH_SEPARATOR;
+				ntg_copy_directory_contents_to_zip( zip_file, full_target_path.str(), full_source_path );
 				break;
 
 			default:
-				ntg_copy_file_to_zip( zip_file, full_target_path, full_source_path );
+				ntg_copy_file_to_zip( zip_file, full_target_path.str(), full_source_path );
 				break;
 		}
-
-		delete[] full_target_path;
-		delete[] full_source_path;
 	}
 	while( directory_entry != NULL );
 }
@@ -391,35 +378,32 @@ CError ntg_load_ixd_buffer( const char *file_path, unsigned char **ixd_buffer, u
 }
 
 
-char *ntg_get_top_level_node_name( const char *filename )
+string ntg_get_top_level_node_name( const string &filename )
 {
-	const char *last_slash, *last_backslash;
-	int index_after_last_slash = 0;
-	int index_after_last_backslash = 0;
 	int index_of_extension = 0;
 	int i, length;
-	char *name;
-	
-	assert( filename );
 
 	/* strip path from filename */
-	last_slash = strrchr( filename, '/' );
-	last_backslash = strrchr( filename, '\\' );
+	size_t last_slash = filename.find_last_of( '/' );
+	size_t last_backslash = filename.find_last_of( '\\' );
 
-	if( last_slash ) index_after_last_slash = ( last_slash + 1 - filename );
-	if( last_backslash ) index_after_last_backslash = ( last_backslash + 1 - filename );
+	int index_after_last_slash = 0;
+	int index_after_last_backslash = 0;
 
-	name = ntg_strdup( filename + MAX( index_after_last_slash, index_after_last_backslash ) );
+	if( last_slash != string::npos ) index_after_last_slash = ( last_slash + 1 );
+	if( last_backslash != string::npos ) index_after_last_backslash = ( last_backslash + 1 );
+
+	string name = filename.substr( MAX( index_after_last_slash, index_after_last_backslash ) );
 
 	/* strip extension */
-	index_of_extension = strlen( name ) - strlen( NTG_FILE_SUFFIX ) - 1;
-	if( index_of_extension > 0 && strcmp( name + index_of_extension, "."NTG_FILE_SUFFIX ) == 0 )
+	index_of_extension = name.length() - strlen( NTG_FILE_SUFFIX ) - 1;
+	if( index_of_extension > 0 && name.substr( index_of_extension ) == "."NTG_FILE_SUFFIX ) 
 	{
-		name[ index_of_extension ] = 0;
+		name = name.substr( 0, index_of_extension );
 	}
 
 	/* remove illegal characters */
-	length = strlen( name );
+	length = name.length();
 	for( i = 0; i < length; i++ )
 	{
 		if( !strchr( NTG_NODE_NAME_CHARACTER_SET, name[ i ] ) )

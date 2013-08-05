@@ -28,15 +28,6 @@
 #include "error.h"
 
 
-/** \brief uses new char internally */
-char *ntg_strdup(const char *string);
-
-
-
-/** Appends one string to another (not including null character), and returns a pointer to the resulting string */
-char *ntg_string_append(char *dest, const char *source);
-
-
 /* test guids for equality*/
 bool ntg_guids_are_equal( const GUID *guid1, const GUID *guid2 );
 
@@ -72,7 +63,7 @@ bool ntg_validate_node_name( const char *name );
  * \param *destination_size: the maximum number of characters 
  * which may be written to destination
  */
-LIBINTEGRA_API ntg_api::string ntg_version();
+ntg_api::string ntg_version();
 
 
 

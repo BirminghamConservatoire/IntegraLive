@@ -40,40 +40,6 @@
 using namespace ntg_api;
 
 
-char *ntg_strdup(const char *string)
-{
-    if (string != NULL) {
-      size_t len = strlen(string);
-      char *newstring = new char[ len + 1 ];
-      strncpy(newstring, string, len + 1);
-      return newstring;
-    } else {
-        NTG_TRACE_ERROR("string is NULL");
-    }
-    return NULL;
-}
-
-
-/* dest must have been allocated with new, or be NULL */
-char *ntg_string_append( char *dest, const char *source )
-{
-	if( !source )
-	{
-		return dest;
-	}
-
-	if( !dest )
-	{
-		return ntg_strdup( source );
-	}
-
-	ostringstream composite;
-	composite << dest << source;
-
-	return ntg_strdup( composite.str().c_str() );
-}
-
-
 bool ntg_validate_node_name( const char *name )
 {
 	int i, length;

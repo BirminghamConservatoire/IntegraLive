@@ -51,6 +51,7 @@ namespace ntg_internal
 	class CReentranceChecker;
 	class CModuleManager;
 	class CScratchDirectory;
+	class CLuaEngine;
 
 	class CServer : public ntg_api::CServerApi
 	{
@@ -94,7 +95,7 @@ namespace ntg_internal
 
 			const ntg_api::string &get_scratch_directory() const;
 
-			bool get_terminate_flag() const { return m_terminate; }
+			CLuaEngine &get_lua_engine() { return *m_lua_engine; }
 
 			ntg_api::CError process_command( ntg_api::CCommandApi *command, ntg_command_source command_source, ntg_api::CCommandResult *result = NULL );
 
@@ -103,6 +104,8 @@ namespace ntg_internal
 			void dump_state();
 
 			ntg_api::string get_libintegra_version() const;
+
+			bool get_terminate_flag() const { return m_terminate; }
 
 		private:
 
@@ -118,6 +121,7 @@ namespace ntg_internal
 			CModuleManager *m_module_manager;
 			struct ntg_system_class_data_ *m_system_class_data;
 			CScratchDirectory *m_scratch_directory;
+			CLuaEngine *m_lua_engine;
 
 			pthread_t m_xmlrpc_thread;
 

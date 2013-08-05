@@ -23,7 +23,7 @@ _resolve * USA.
 
 #define NTG_OSC_CLIENT_TIMEOUT 1
 
-#include "lo_ansi.h"
+#include "lo/lo.h"
 
 #include "error.h"
 #include "api/common_typedefs.h"

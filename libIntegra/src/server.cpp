@@ -42,6 +42,7 @@ extern "C"
 #include "path.h"
 #include "bridge_host.h"
 #include "string_helper.h"
+#include "lua_engine.h"
 
 #include "api/server_startup_info.h"
 #include "api/command_api.h"
@@ -146,6 +147,8 @@ namespace ntg_internal
 
 		m_scratch_directory = new CScratchDirectory;
 
+		m_lua_engine = new CLuaEngine;
+
 		m_module_manager = new CModuleManager( get_scratch_directory(), startup_info.system_module_directory, startup_info.third_party_module_directory );
 
 		m_osc_client = ntg_osc_client_new( startup_info.osc_client_url.c_str(), startup_info.osc_client_port );
@@ -206,6 +209,8 @@ namespace ntg_internal
 		delete m_reentrance_checker;
 
 		delete m_scratch_directory;
+
+		delete m_lua_engine;
 
 		NTG_TRACE_PROGRESS( "shutting down OSC client" );
 		ntg_osc_client_destroy( m_osc_client );

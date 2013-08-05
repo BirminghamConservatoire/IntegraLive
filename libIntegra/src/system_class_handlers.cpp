@@ -33,7 +33,7 @@
 #include "interface_definition.h"
 #include "value.h"
 #include "trace.h"
-#include "luascripting.h"
+#include "lua_engine.h"
 #include "file_helper.h"
 #include "api/command_api.h"
 
@@ -857,7 +857,7 @@ void ntg_script_trigger_handler( CServer &server, const CNodeEndpoint *endpoint,
 
 	const CPath &parent_path = script_node.get_parent_path();
 	
-    string script_output = ntg_lua_eval( parent_path, script );
+	string script_output = server.get_lua_engine().run_script( server, parent_path, script );
 	server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( NTG_ENDPOINT_INFO )->get_path(), &CStringValue( script_output ) ), NTG_SOURCE_SYSTEM );
 
     NTG_TRACE_VERBOSE("script finished");

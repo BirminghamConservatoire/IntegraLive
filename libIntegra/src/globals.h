@@ -25,7 +25,6 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#include "lo_ansi.h"
 #include "trace.h"
 #include "api/common_typedefs.h"
 

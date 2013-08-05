@@ -154,6 +154,7 @@
     <ClCompile Include="..\src\bridge_host.cpp" />
     <ClCompile Include="..\src\delete_command.cpp" />
     <ClCompile Include="..\src\load_command.cpp" />
+    <ClCompile Include="..\src\lua_engine.cpp" />
     <ClCompile Include="..\src\move_command.cpp" />
     <ClCompile Include="..\src\new_command.cpp" />
     <ClCompile Include="..\src\data_directory.cpp" />
@@ -163,7 +164,6 @@
     <ClCompile Include="..\src\init.cpp" />
     <ClCompile Include="..\src\interface_definition.cpp" />
     <ClCompile Include="..\src\interface_definition_loader.cpp" />
-    <ClCompile Include="..\src\luascripting.cpp" />
     <ClCompile Include="..\src\module_manager.cpp" />
     <ClCompile Include="..\src\MurmurHash2.cpp" />
     <ClCompile Include="..\src\node.cpp" />
@@ -205,6 +205,7 @@
     <ClInclude Include="..\src\bridge_host.h" />
     <ClInclude Include="..\src\delete_command.h" />
     <ClInclude Include="..\src\load_command.h" />
+    <ClInclude Include="..\src\lua_engine.h" />
     <ClInclude Include="..\src\move_command.h" />
     <ClInclude Include="..\src\new_command.h" />
     <ClInclude Include="..\src\data_directory.h" />
@@ -214,8 +215,6 @@
     <ClInclude Include="..\src\globals.h" />
     <ClInclude Include="..\src\interface_definition.h" />
     <ClInclude Include="..\src\interface_definition_loader.h" />
-    <ClInclude Include="..\src\lo_ansi.h" />
-    <ClInclude Include="..\src\luascripting.h" />
     <ClInclude Include="..\src\module_manager.h" />
     <ClInclude Include="..\src\node.h" />
     <ClInclude Include="..\src\node_endpoint.h" />

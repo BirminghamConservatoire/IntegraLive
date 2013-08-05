@@ -60,9 +60,6 @@
     <ClCompile Include="..\src\init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\luascripting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\MurmurHash2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,15 +147,15 @@
     <ClCompile Include="..\src\string_helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\lua_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\luascripting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\node.h">
@@ -189,9 +186,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\platform_specifics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\lo_ansi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\system_class_handlers.h">
@@ -300,6 +294,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\string_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lua_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

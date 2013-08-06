@@ -14,7 +14,7 @@ On Windows, the Module Creator is bundled with the main Integra Live installer. 
 
 Integra modules are loadable units that can be used to process, generate or analyse audio or control signals in Integra Live. Modules can be simple “effects” such as delays and pitch shifters, or more sophisticated processing tools such as granular synthesisers. 
 
-![](../../page-images/shadow-module_diagram.png)
+![](../../page-images/module_diagram.png)
 
 Integra Live comes bundled with a library of official modules, which can be accessed via the Module Library in the Module View of the software. Integra Live also provides facilities for installing and managing 3rd party modules through the software’s Module Manager view.
 
@@ -24,7 +24,7 @@ Each module’s data is stored in a corresponding file, which can be loaded by I
 
 The Integra Live application is built on top of a [shared library](http://en.wikipedia.org/wiki/Shared_library#Shared_libraries) called libIntegra. libIntegra is responsible for loading modules and managing communications between the Integra Live GUI and the Integra DSP Host (based on [Pure Data](http://puredata.info) as well as other tasks such as saving and loading Integra project files.  
 
-![](../../page-images/shadow-integra_stack.png)
+![](../../page-images/integra_stack.png)
 
 ### Anatomy of a Module
 

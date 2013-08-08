@@ -19,29 +19,28 @@
  */
 
 
-#ifndef INTEGRA_RENAME_COMMAND_PRIVATE
-#define INTEGRA_RENAME_COMMAND_PRIVATE
+#ifndef INTEGRA_SCENE_LOGIC_PRIVATE
+#define INTEGRA_SCENE_LOGIC_PRIVATE
 
-#include "api/command_api.h"
-#include "path.h"
+#include "logic.h"
 
 
 namespace ntg_internal
 {
-	class CRenameCommand : public ntg_api::CRenameCommandApi
+	class CSceneLogic : public CLogic
 	{
 		public:
-			CRenameCommand( const ntg_api::CPath &path, const ntg_api::string &new_name );
+			CSceneLogic( const CNode &node );
+			~CSceneLogic();
 
-		private:
-			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
-
-			ntg_api::CPath m_path;
-			ntg_api::string m_new_name;
+			void handle_new( CServer &server, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const ntg_api::CValue *previous_value, ntg_command_source source );
+			void handle_rename( CServer &server, const ntg_api::string &previous_name, ntg_command_source source );
+			void handle_move( CServer &server, const ntg_api::CPath &previous_path, ntg_command_source source );
+			void handle_delete( CServer &server, ntg_command_source source );
 	};
 }
 
 
 
-#endif /*INTEGRA_RENAME_COMMAND_PRIVATE*/
+#endif /*INTEGRA_NEW_COMMAND_PRIVATE*/

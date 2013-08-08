@@ -23,6 +23,7 @@
 
 #include "server.h"
 
+#if 0	//DEPRECATED
 
 namespace ntg_api
 {
@@ -66,6 +67,8 @@ const ntg_api::string *ntg_node_get_data_directory( const ntg_internal::CNode &n
 
 bool ntg_should_copy_input_file( const ntg_api::CValue &value, ntg_internal::ntg_command_source cmd_source );
 
+
+#endif
 
 
 #endif /*INTEGRA_SYSTEM_CLASS_HANDLERS_H*/

@@ -24,6 +24,7 @@
 #include "server.h"
 #include "trace.h"
 #include "string_helper.h"
+#include "logic.h"
 #include "system_class_handlers.h"
 
 #include <assert.h>
@@ -84,7 +85,7 @@ namespace ntg_internal
 		/* add new state table entries for node and children */
 		server.get_state_table().add( *node );
 
-		ntg_system_class_handle_rename( server, *node, previous_name.c_str(), source );
+		node->get_logic().handle_rename( server, previous_name, source );
 
 		if( ntg_should_send_to_client( source ) ) 
 		{

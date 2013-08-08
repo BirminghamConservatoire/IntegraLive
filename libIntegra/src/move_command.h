@@ -28,7 +28,7 @@
 
 namespace ntg_internal
 {
-	class LIBINTEGRA_API CMoveCommand : public ntg_api::CMoveCommandApi
+	class CMoveCommand : public ntg_api::CMoveCommandApi
 	{
 		public:
 			CMoveCommand( const ntg_api::CPath &node_path, const ntg_api::CPath &new_parent_path );

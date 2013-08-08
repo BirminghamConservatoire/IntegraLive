@@ -30,7 +30,7 @@
 #define MAX_TIMESTAMP_LENGTH 32
 
 
-LIBINTEGRA_API void ntg_trace(ntg_trace_category_bits trace_category, const char *location, const char *message)
+void ntg_trace(ntg_trace_category_bits trace_category, const char *location, const char *message)
 {
 	time_t rawtime;
 	char timestamp_string[ MAX_TIMESTAMP_LENGTH ];
@@ -94,7 +94,7 @@ LIBINTEGRA_API void ntg_trace(ntg_trace_category_bits trace_category, const char
 }
 
 
-LIBINTEGRA_API void ntg_trace_with_int(ntg_trace_category_bits trace_category, const char *location, const char *message, int int_value)
+void ntg_trace_with_int(ntg_trace_category_bits trace_category, const char *location, const char *message, int int_value)
 {
 	char *trace_string = NULL;
 	int max_length = 0;
@@ -114,7 +114,7 @@ LIBINTEGRA_API void ntg_trace_with_int(ntg_trace_category_bits trace_category, c
 }
 
 
-LIBINTEGRA_API void ntg_trace_with_float(ntg_trace_category_bits trace_category, const char *location, const char *message, float float_value)
+void ntg_trace_with_float(ntg_trace_category_bits trace_category, const char *location, const char *message, float float_value)
 {
 	char *trace_string = NULL;
 	int max_length = 0;
@@ -134,7 +134,7 @@ LIBINTEGRA_API void ntg_trace_with_float(ntg_trace_category_bits trace_category,
 }
 
 
-LIBINTEGRA_API void ntg_trace_with_string(ntg_trace_category_bits trace_category, const char *location, const char *message, const char *string_value)
+void ntg_trace_with_string(ntg_trace_category_bits trace_category, const char *location, const char *message, const char *string_value)
 {
 	char *trace_string = NULL;
 	int max_length = 0;
@@ -154,7 +154,7 @@ LIBINTEGRA_API void ntg_trace_with_string(ntg_trace_category_bits trace_category
 }
 
 
-LIBINTEGRA_API void ntg_set_trace_options(ntg_trace_category_bits categories_to_trace, ntg_trace_options_bits trace_options)
+void ntg_set_trace_options(ntg_trace_category_bits categories_to_trace, ntg_trace_options_bits trace_options)
 {
 	trace_category_bits = categories_to_trace;
 	trace_option_bits = trace_options;

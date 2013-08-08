@@ -32,7 +32,7 @@ This will ensure that all class-specific implementation is encapsulated within t
 #ifndef INTEGRA_SYSTEM_CLASS_LITERALS
 #define INTEGRA_SYSTEM_CLASS_LITERALS
 
-
+#if 0 //DEPRECATED
 
 #define NTG_CLASS_CONTAINER "Container"
 #define NTG_CLASS_SCRIPT "Script"
@@ -80,7 +80,7 @@ This will ensure that all class-specific implementation is encapsulated within t
 #define NTG_SCENE_MODE_LOOP "loop"
 	
 
-
+#endif
 
 
 #endif /*INTEGRA_SYSTEM_CLASS_LITERALS*/

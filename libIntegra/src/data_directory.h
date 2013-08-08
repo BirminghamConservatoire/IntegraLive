@@ -50,7 +50,7 @@ namespace ntg_internal
 
 			static ntg_api::CError extract_from_zip( const ntg_api::string &file_path, const CNode *parent_node );
 
-			static ntg_api::string copy_file_to_data_directory( const CNodeEndpoint &node_endpoint );
+			static ntg_api::string copy_file_to_data_directory( const CNodeEndpoint &input_file );
 
 		private:
 

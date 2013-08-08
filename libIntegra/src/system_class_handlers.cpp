@@ -44,6 +44,8 @@ using namespace ntg_internal;
 typedefs
 */
 
+#if 0 //DEPRECATED
+
 typedef void (*ntg_system_class_new_handler_function)( CServer &server, const CNode &node, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_set_handler_function)( CServer &server, const CNodeEndpoint *endpoint, const CValue *previous_value, ntg_command_source cmd_source);
 typedef void (*ntg_system_class_rename_handler_function)( CServer &server, const CNode &node, const char *previous_name, ntg_command_source cmd_source);
@@ -1968,3 +1970,5 @@ const string *ntg_node_get_data_directory( const CNode &node )
 	return &value;
 }
 
+
+#endif //DEPRECATED

@@ -28,7 +28,7 @@
 
 namespace ntg_internal
 {
-	class LIBINTEGRA_API CDeleteCommand : public ntg_api::CDeleteCommandApi
+	class CDeleteCommand : public ntg_api::CDeleteCommandApi
 	{
 		public:
 			CDeleteCommand( const ntg_api::CPath &path );

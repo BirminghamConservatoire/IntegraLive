@@ -23,7 +23,8 @@
 #include "move_command.h"
 #include "server.h"
 #include "trace.h"
-#include "system_class_handlers.h"
+#include "logic.h"
+
 
 #include <assert.h>
 
@@ -72,7 +73,7 @@ namespace ntg_internal
 		/* add new state table entries for node and children */
 		server.get_state_table().add( *node );
 
-		ntg_system_class_handle_move( server, *node, m_node_path, source );
+		node->get_logic().handle_move( server, m_node_path, source );
 
 		if( ntg_should_send_to_client( source ) ) 
 		{

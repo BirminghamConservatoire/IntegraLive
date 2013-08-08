@@ -32,7 +32,7 @@ namespace ntg_internal
 	class CInterfaceDefinition;
 
 
-	class LIBINTEGRA_API CSetCommand : public ntg_api::CSetCommandApi
+	class CSetCommand : public ntg_api::CSetCommandApi
 	{
 		public:
 			CSetCommand( const ntg_api::CPath &endpoint_path, const ntg_api::CValue *value );

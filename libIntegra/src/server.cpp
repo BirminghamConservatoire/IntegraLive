@@ -154,8 +154,6 @@ namespace ntg_internal
 		m_osc_client = ntg_osc_client_new( startup_info.osc_client_url.c_str(), startup_info.osc_client_port );
 		m_terminate = false;
 
-		ntg_system_class_handlers_initialize( *this );
-
 		m_reentrance_checker = new CReentranceChecker();
 
 		m_bridge = ( ntg_bridge_interface * ) ntg_bridge_load( startup_info.bridge_path.c_str() );
@@ -198,9 +196,6 @@ namespace ntg_internal
 			process_command( CDeleteCommandApi::create( i->second->get_path() ), NTG_SOURCE_SYSTEM );
 		}
 	
-		/* shutdown system class handlers */
-		ntg_system_class_handlers_shutdown( *this );
-
 		/* de-reference bridge */
 	    m_bridge = NULL;
 

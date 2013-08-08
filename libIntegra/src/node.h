@@ -39,6 +39,7 @@ typedef xmlTextReader *xmlTextReaderPtr;
 namespace ntg_internal
 {
 	class CNode;
+	class CLogic;
 	class CInterfaceDefinition;
 
 	typedef std::list<const CNode *> node_list;
@@ -81,6 +82,7 @@ namespace ntg_internal
 
 			void get_all_node_paths( ntg_api::path_list &results ) const;
 
+			CLogic &get_logic() const;
 
 		private:
 
@@ -97,6 +99,8 @@ namespace ntg_internal
 			node_map m_children;
 
 			node_endpoint_map m_node_endpoints;
+
+			CLogic *m_logic;
 	};
 }
 

@@ -28,7 +28,7 @@
 
 namespace ntg_internal
 {
-	class LIBINTEGRA_API CLoadCommand : public ntg_api::CLoadCommandApi
+	class CLoadCommand : public ntg_api::CLoadCommandApi
 	{
 		public:
 			CLoadCommand( const ntg_api::string &file_path, const ntg_api::CPath &parent_path );

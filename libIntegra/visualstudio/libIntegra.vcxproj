@@ -152,8 +152,13 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
     </ClCompile>
     <ClCompile Include="..\src\bridge_host.cpp" />
+    <ClCompile Include="..\src\connection_logic.cpp" />
+    <ClCompile Include="..\src\container_logic.cpp" />
+    <ClCompile Include="..\src\control_point_logic.cpp" />
     <ClCompile Include="..\src\delete_command.cpp" />
+    <ClCompile Include="..\src\envelope_logic.cpp" />
     <ClCompile Include="..\src\load_command.cpp" />
+    <ClCompile Include="..\src\logic.cpp" />
     <ClCompile Include="..\src\lua_engine.cpp" />
     <ClCompile Include="..\src\move_command.cpp" />
     <ClCompile Include="..\src\new_command.cpp" />
@@ -172,10 +177,14 @@
     <ClCompile Include="..\src\path.cpp" />
     <ClCompile Include="..\src\platform_specifics.cpp" />
     <ClCompile Include="..\src\player_handler.cpp" />
+    <ClCompile Include="..\src\player_logic.cpp" />
     <ClCompile Include="..\src\reentrance_checker.cpp" />
     <ClCompile Include="..\src\rename_command.cpp" />
     <ClCompile Include="..\src\save_command.cpp" />
+    <ClCompile Include="..\src\scaler_logic.cpp" />
+    <ClCompile Include="..\src\scene_logic.cpp" />
     <ClCompile Include="..\src\scratch_directory.cpp" />
+    <ClCompile Include="..\src\script_logic.cpp" />
     <ClCompile Include="..\src\server.cpp" />
     <ClCompile Include="..\src\set_command.cpp" />
     <ClCompile Include="..\src\signals.cpp" />
@@ -203,8 +212,13 @@
     <ClInclude Include="..\externals\minizip\zip.h" />
     <ClInclude Include="..\Integra\integra_bridge.h" />
     <ClInclude Include="..\src\bridge_host.h" />
+    <ClInclude Include="..\src\connection_logic.h" />
+    <ClInclude Include="..\src\container_logic.h" />
+    <ClInclude Include="..\src\control_point_logic.h" />
     <ClInclude Include="..\src\delete_command.h" />
+    <ClInclude Include="..\src\envelope_logic.h" />
     <ClInclude Include="..\src\load_command.h" />
+    <ClInclude Include="..\src\logic.h" />
     <ClInclude Include="..\src\lua_engine.h" />
     <ClInclude Include="..\src\move_command.h" />
     <ClInclude Include="..\src\new_command.h" />
@@ -222,10 +236,14 @@
     <ClInclude Include="..\src\path.h" />
     <ClInclude Include="..\src\platform_specifics.h" />
     <ClInclude Include="..\src\player_handler.h" />
+    <ClInclude Include="..\src\player_logic.h" />
     <ClInclude Include="..\src\reentrance_checker.h" />
     <ClInclude Include="..\src\rename_command.h" />
     <ClInclude Include="..\src\save_command.h" />
+    <ClInclude Include="..\src\scaler_logic.h" />
+    <ClInclude Include="..\src\scene_logic.h" />
     <ClInclude Include="..\src\scratch_directory.h" />
+    <ClInclude Include="..\src\script_logic.h" />
     <ClInclude Include="..\src\server.h" />
     <ClInclude Include="..\src\set_command.h" />
     <ClInclude Include="..\src\signals.h" />

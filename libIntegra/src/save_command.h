@@ -28,7 +28,7 @@
 
 namespace ntg_internal
 {
-	class LIBINTEGRA_API CSaveCommand : public ntg_api::CSaveCommandApi
+	class CSaveCommand : public ntg_api::CSaveCommandApi
 	{
 		public:
 			CSaveCommand( const ntg_api::string &file_path, const ntg_api::CPath &node_path );

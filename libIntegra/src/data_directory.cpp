@@ -39,10 +39,11 @@
 #include "scratch_directory.h"
 #include "file_io.h"
 #include "globals.h"
-#include "system_class_handlers.h"
+#include "logic.h"
 #include "node_endpoint.h"
 #include "value.h"
 #include "file_helper.h"
+#include "server.h"
 
 
 #define NTG_NODE_DIRECTORY "node_data"
@@ -79,7 +80,7 @@ namespace ntg_internal
 	{
 		assert( zip_file );
 
-		if( ntg_node_has_data_directory( node ) )
+		if( node.get_logic().has_data_directory() )
 		{
 			string relative_node_path = get_relative_node_path( node, path_root );
 
@@ -92,7 +93,7 @@ namespace ntg_internal
 				ostringstream target_path;
 				target_path << NTG_NODE_DIRECTORY << NTG_PATH_SEPARATOR << relative_node_path;
 			
-				const string *data_directory_name = ntg_node_get_data_directory( node );
+				const string *data_directory_name = node.get_logic().get_data_directory();
 				if( data_directory_name )
 				{
 					ntg_copy_directory_contents_to_zip( zip_file, target_path.str().c_str(), data_directory_name->c_str() );
@@ -165,7 +166,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			if( !ntg_node_has_data_directory( *node ) )
+			if( !node->get_logic().has_data_directory() )
 			{
 				NTG_TRACE_ERROR_WITH_STRING( "found data file for node which shouldn't have data directory", file_name );
 				continue;
@@ -201,7 +202,7 @@ namespace ntg_internal
 
 		assert( unzip_file && file_info && relative_file_path );
 
-		const string *data_directory = ntg_node_get_data_directory( node );
+		const string *data_directory = node.get_logic().get_data_directory();
 		assert( data_directory );
 
 		CFileHelper::construct_subdirectories( *data_directory, relative_file_path );
@@ -245,16 +246,16 @@ namespace ntg_internal
 	}
 
 
-	ntg_api::string CDataDirectory::copy_file_to_data_directory( const ntg_internal::CNodeEndpoint &node_endpoint )
+	ntg_api::string CDataDirectory::copy_file_to_data_directory( const ntg_internal::CNodeEndpoint &input_file )
 	{
-		const string *data_directory = ntg_node_get_data_directory( node_endpoint.get_node() );
+		const string *data_directory = input_file.get_node().get_logic().get_data_directory();
 		if( !data_directory )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", node_endpoint.get_node().get_name().c_str() );
+			NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", input_file.get_node().get_name().c_str() );
 			return NULL;
 		}
 
-		const string &input_path = *node_endpoint.get_value();
+		const string &input_path = *input_file.get_value();
 		string copied_file = CFileHelper::extract_filename_from_path( input_path );
 		if( copied_file.empty() || copied_file == input_path )
 		{

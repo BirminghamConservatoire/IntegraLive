@@ -33,6 +33,7 @@
 #include "server.h"
 #include "module_manager.h"
 #include "interface_definition.h"
+#include "logic.h"
 
 
 using namespace ntg_api;
@@ -47,6 +48,7 @@ namespace ntg_internal
 		m_interface_definition = NULL;
 		m_id = 0;
 		m_parent = NULL;
+		m_logic = NULL;
 	}
 	
 	
@@ -62,6 +64,12 @@ namespace ntg_internal
 		for( node_endpoint_map::iterator i = m_node_endpoints.begin(); i != m_node_endpoints.end(); i++ )
 		{
 			delete i->second;
+		}
+
+		/* delete logic */
+		if( m_logic )
+		{
+			delete m_logic;
 		}
 	}
 
@@ -85,6 +93,8 @@ namespace ntg_internal
 
 			m_node_endpoints[ endpoint_definition.get_name() ] = node_endpoint;
 		}
+
+		m_logic = CLogic::create( *this );
 	}
 
 
@@ -174,6 +184,13 @@ namespace ntg_internal
 		{
 			i->second->get_all_node_paths( results );
 		}
+	}
+
+
+	CLogic &CNode::get_logic() const
+	{ 
+		assert( m_logic ); 
+		return *m_logic; 
 	}
 }
 

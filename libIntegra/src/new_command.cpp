@@ -25,6 +25,7 @@
 #include "node.h"
 #include "module_manager.h"
 #include "trace.h"
+#include "logic.h"
 #include "string_helper.h"
 #include "system_class_handlers.h"
 #include "api/command_result.h"
@@ -121,7 +122,7 @@ namespace ntg_internal
 		}
 
 		/* handle any system class logic */
-		ntg_system_class_handle_new( server, *node, source );
+		node->get_logic().handle_new( server, source );
 
 		NTG_TRACE_VERBOSE_WITH_STRING( "Created node", node->get_name().c_str() );
 

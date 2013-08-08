@@ -19,29 +19,34 @@
  */
 
 
-#ifndef INTEGRA_RENAME_COMMAND_PRIVATE
-#define INTEGRA_RENAME_COMMAND_PRIVATE
+#ifndef INTEGRA_CONTAINER_LOGIC_PRIVATE
+#define INTEGRA_CONTAINER_LOGIC_PRIVATE
 
-#include "api/command_api.h"
+#include "logic.h"
 #include "path.h"
 
 
 namespace ntg_internal
 {
-	class CRenameCommand : public ntg_api::CRenameCommandApi
+	class CContainerLogic : public CLogic
 	{
 		public:
-			CRenameCommand( const ntg_api::CPath &path, const ntg_api::string &new_name );
+			CContainerLogic( const CNode &node );
+			~CContainerLogic();
+
+			void handle_new( CServer &server, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const ntg_api::CValue *previous_value, ntg_command_source source );
+			void handle_rename( CServer &server, const ntg_api::string &previous_name, ntg_command_source source );
+			void handle_move( CServer &server, const ntg_api::CPath &previous_path, ntg_command_source source );
+			void handle_delete( CServer &server, ntg_command_source source );
 
 		private:
-			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
 
-			ntg_api::CPath m_path;
-			ntg_api::string m_new_name;
+			void active_handler( CServer &server, bool active );
+			void activate_tree( CServer &server, const CNode &node, bool activate, ntg_api::path_list &activated_nodes );
 	};
 }
 
 
 
-#endif /*INTEGRA_RENAME_COMMAND_PRIVATE*/
+#endif /*INTEGRA_NEW_COMMAND_PRIVATE*/

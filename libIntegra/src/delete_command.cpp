@@ -24,7 +24,8 @@
 #include "server.h"
 #include "trace.h"
 #include "interface_definition.h"
-#include "system_class_handlers.h"
+#include "logic.h"
+
 
 #include <assert.h>
 
@@ -65,7 +66,7 @@ namespace ntg_internal
 		}
 
 		/* system class logic */
-		ntg_system_class_handle_delete( server, *node, source );
+		node->get_logic().handle_delete( server, source );
 
 		/* state tables */
 		server.get_state_table().remove( *node );

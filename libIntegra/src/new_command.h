@@ -28,7 +28,7 @@
 
 namespace ntg_internal
 {
-	class LIBINTEGRA_API CNewCommand : public ntg_api::CNewCommandApi
+	class CNewCommand : public ntg_api::CNewCommandApi
 	{
 		public:
 			CNewCommand( const GUID &module_id, const ntg_api::string &node_name, const ntg_api::CPath &parent_path );

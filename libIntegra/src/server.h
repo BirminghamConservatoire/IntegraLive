@@ -30,11 +30,9 @@
 #include "path.h"
 #include "state_table.h"
 #include "osc_client.h"
+#include "player_handler.h"
 
 
-#ifndef ntg_system_class_data 
-typedef struct ntg_system_class_data_ ntg_system_class_data;
-#endif
 
 namespace ntg_api
 {
@@ -90,12 +88,12 @@ namespace ntg_internal
 			const CModuleManager &get_module_manager() const { return *m_module_manager; }
 			CModuleManager &get_module_manager_writable() { return *m_module_manager; }
 
-			struct ntg_system_class_data_ *get_system_class_data() { return m_system_class_data; }
-			void set_system_class_data( struct ntg_system_class_data_ *data ) { m_system_class_data = data; }
-
 			const ntg_api::string &get_scratch_directory() const;
 
 			CLuaEngine &get_lua_engine() { return *m_lua_engine; }
+
+			ntg_player_data *get_player_data() { return m_player_data; }
+			void set_player_data( ntg_player_data *player_data ) { m_player_data = player_data; }
 
 			ntg_api::CError process_command( ntg_api::CCommandApi *command, ntg_command_source command_source, ntg_api::CCommandResult *result = NULL );
 
@@ -119,9 +117,9 @@ namespace ntg_internal
 			CStateTable m_state_table; 
 			CReentranceChecker *m_reentrance_checker;
 			CModuleManager *m_module_manager;
-			struct ntg_system_class_data_ *m_system_class_data;
 			CScratchDirectory *m_scratch_directory;
 			CLuaEngine *m_lua_engine;
+			ntg_player_data *m_player_data;
 
 			pthread_t m_xmlrpc_thread;
 

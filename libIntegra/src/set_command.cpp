@@ -27,6 +27,7 @@
 #include "system_class_handlers.h"
 #include "interface_definition.h"
 #include "reentrance_checker.h"
+#include "logic.h"
 
 #include <assert.h>
 
@@ -132,7 +133,7 @@ namespace ntg_internal
 				break;
 		}
 
-		if( source == NTG_SOURCE_HOST && !ntg_node_is_active( node_endpoint->get_node() ) )
+		if( source == NTG_SOURCE_HOST && !node_endpoint->get_node().get_logic().node_is_active() )
 		{
 			return CError::SUCCESS;
 		}
@@ -169,7 +170,7 @@ namespace ntg_internal
 
 		
 		/* handle any system class logic */
-		ntg_system_class_handle_set( server, node_endpoint, previous_value, source );
+		node_endpoint->get_node().get_logic().handle_set( server, *node_endpoint, previous_value, source );
 
 		if( previous_value )
 		{
@@ -207,7 +208,7 @@ namespace ntg_internal
 				break;		
 		}
 
-		if( endpoint.get_endpoint_definition().is_input_file() && ntg_should_copy_input_file( *endpoint.get_value(), source ) )
+		if( endpoint.get_endpoint_definition().is_input_file() && endpoint.get_node().get_logic().should_copy_input_file( endpoint, source ) )
 		{
 			return false;
 		}

@@ -21,10 +21,21 @@
 #include "platform_specifics.h"
 
 #include "control_point_logic.h"
+#include "envelope_logic.h"
+#include "trace.h"
+#include "server.h"
+#include "node.h"
+#include "node_endpoint.h"
+#include "interface_definition.h"
 
 
 namespace ntg_internal
 {
+	const string CControlPointLogic::s_endpoint_tick = "tick";
+	const string CControlPointLogic::s_endpoint_value = "value";
+	const string CControlPointLogic::s_endpoint_curvature = "curvature";
+
+
 	CControlPointLogic::CControlPointLogic( const CNode &node )
 		:	CLogic( node )
 	{
@@ -40,7 +51,7 @@ namespace ntg_internal
 	{
 		CLogic::handle_new( server, source );
 
-		//todo - implement
+		update_envelope( server, get_node().get_parent() );
 	}
 
 
@@ -48,15 +59,13 @@ namespace ntg_internal
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
-		//todo - implement
-	}
-
-
-	void CControlPointLogic::handle_rename( CServer &server, const string &previous_name, ntg_command_source source )
-	{
-		CLogic::handle_rename( server, previous_name, source );
-
-		//todo - implement
+		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
+	
+		if( endpoint_name == s_endpoint_value || endpoint_name == s_endpoint_tick )
+		{
+			update_envelope( server, get_node().get_parent() );
+			return;
+		}	
 	}
 
 
@@ -64,7 +73,15 @@ namespace ntg_internal
 	{
 		CLogic::handle_move( server, previous_path, source );
 
-		//todo - implement
+		/* let's handle the obscure case of moving a control point from one envelope to another! */
+
+		/* update the previous envelope */
+		CPath old_parent_path( previous_path );
+		old_parent_path.pop_element();
+		update_envelope( server, server.find_node( old_parent_path ) );
+
+		/* update the new envelope */
+		update_envelope( server, get_node().get_parent() );
 	}
 
 
@@ -72,8 +89,25 @@ namespace ntg_internal
 	{
 		CLogic::handle_delete( server, source );
 
-		//todo - implement
+		update_envelope( server, get_node().get_parent(), true );
 	}
 
 
+	void CControlPointLogic::update_envelope( CServer &server, const CNode *envelope_node, bool is_deleting )
+	{
+		if( !envelope_node )
+		{
+			NTG_TRACE_ERROR( "Control point has no parent node!" );
+			return;
+		}
+
+		CEnvelopeLogic *envelope_logic = dynamic_cast< CEnvelopeLogic * > ( &envelope_node->get_logic() );
+		if( !envelope_logic )
+		{
+			NTG_TRACE_ERROR( "Control point is not inside an envelope!" );
+			return;
+		}
+
+		envelope_logic->update_value( server, is_deleting ? &get_node() : NULL );
+	}
 }

@@ -26,12 +26,11 @@
 
 #include "value.h"
 #include "player_handler.h"
-#include "system_class_literals.h"
-#include "system_class_handlers.h"
 #include "trace.h"
 #include "globals.h"
 #include "path.h"
 #include "player_logic.h"
+#include "server.h"
 #include "api/command_api.h"
 
 

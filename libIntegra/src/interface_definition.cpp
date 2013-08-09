@@ -85,7 +85,7 @@ namespace ntg_internal
 	}
 
 
-	bool CInterfaceDefinition::is_named_core_interface( const ntg_api::string &name ) const
+	bool CInterfaceDefinition::is_named_core_interface( const string &name ) const
 	{
 		if( is_core_interface() ) 
 		{
@@ -199,7 +199,7 @@ namespace ntg_internal
 	}
 
 
-	bool CEndpointDefinition::should_load_from_ixd( ntg_api::CValue::type loaded_type ) const
+	bool CEndpointDefinition::should_load_from_ixd( CValue::type loaded_type ) const
 	{
 		/* 
 		Just because a value is in an ixd file, doesn't mean we want to load it.  

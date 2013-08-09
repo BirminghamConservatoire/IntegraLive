@@ -43,14 +43,6 @@ namespace ntg_internal
 	}
 
 	
-	void CContainerLogic::handle_new( CServer &server, ntg_command_source source )
-	{
-		CLogic::handle_new( server, source );
-
-		//todo - implement
-	}
-
-
 	void CContainerLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
@@ -59,34 +51,8 @@ namespace ntg_internal
 		if( endpoint_name == s_endpoint_active )
 		{
 			active_handler( server, ( int ) *node_endpoint.get_value() != 0 );
+			return;
 		}
-
-
-		//todo - implement
-	}
-
-
-	void CContainerLogic::handle_rename( CServer &server, const string &previous_name, ntg_command_source source )
-	{
-		CLogic::handle_rename( server, previous_name, source );
-
-		//todo - implement
-	}
-
-
-	void CContainerLogic::handle_move( CServer &server, const CPath &previous_path, ntg_command_source source )
-	{
-		CLogic::handle_move( server, previous_path, source );
-
-		//todo - implement
-	}
-
-
-	void CContainerLogic::handle_delete( CServer &server, ntg_command_source source )
-	{
-		CLogic::handle_delete( server, source );
-
-		//todo - implement
 	}
 
 
@@ -164,7 +130,4 @@ namespace ntg_internal
 			activate_tree( server, *i->second, activate, activated_nodes );
 		}
 	}
-
-
-
 }

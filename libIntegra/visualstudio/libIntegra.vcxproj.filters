@@ -99,9 +99,6 @@
     <ClCompile Include="..\src\signals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\system_class_handlers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\trace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -221,13 +218,7 @@
     <ClInclude Include="..\src\platform_specifics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\system_class_handlers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\player_handler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\system_class_literals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\reentrance_checker.h">

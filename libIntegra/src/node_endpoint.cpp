@@ -71,7 +71,7 @@ namespace ntg_internal
 	}
 
 
-	bool CNodeEndpoint::test_constraint( const ntg_api::CValue &value ) const
+	bool CNodeEndpoint::test_constraint( const CValue &value ) const
 	{
 		const CControlInfo *control_info = m_endpoint_definition->get_control_info();
 		if( !control_info ) 

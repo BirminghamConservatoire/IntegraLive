@@ -27,7 +27,6 @@
 #include "trace.h"
 #include "logic.h"
 #include "string_helper.h"
-#include "system_class_handlers.h"
 #include "api/command_result.h"
 
 #include <assert.h>

@@ -24,7 +24,6 @@
 #include "server.h"
 #include "value.h"
 #include "trace.h"
-#include "system_class_handlers.h"
 #include "interface_definition.h"
 #include "reentrance_checker.h"
 #include "logic.h"
@@ -43,7 +42,7 @@ namespace ntg_api
 
 namespace ntg_internal
 {
-	CSetCommand::CSetCommand( const ntg_api::CPath &endpoint_path, const ntg_api::CValue *value )
+	CSetCommand::CSetCommand( const CPath &endpoint_path, const CValue *value )
 	{
 		m_endpoint_path = endpoint_path;
 		if( value )

@@ -202,17 +202,22 @@ namespace ntg_internal
 	void CLogic::handle_rename( CServer &server, const string &previous_name, ntg_command_source source )
 	{
 		update_connections_on_rename( server, m_node, previous_name, m_node.get_name() );
+
+		update_on_path_change( server );
 	}
 
 
 	void CLogic::handle_move( CServer &server, const CPath &previous_path, ntg_command_source source )
 	{
 		update_connections_on_move( server, m_node, previous_path, m_node.get_path() );
+
+		update_on_path_change( server );
 	}
 
 
 	void CLogic::handle_delete( CServer &server, ntg_command_source source )
 	{
+		/* no implementation currently needed */
 	}
 
 
@@ -334,7 +339,7 @@ namespace ntg_internal
 	}
 
 
-	void CLogic::data_directory_handler( CServer &server, const CNodeEndpoint &node_endpoint, const ntg_api::CValue *previous_value, ntg_command_source source )
+	void CLogic::data_directory_handler( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
 	{
 		switch( source )
 		{
@@ -715,4 +720,13 @@ namespace ntg_internal
 	}
 
 
+	void CLogic::update_on_path_change( CServer &server )
+	{
+		const node_map &children = m_node.get_children();
+		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
+		{
+			const CNode *child = i->second;
+			child->get_logic().update_on_path_change( server );
+		}
+	}	
 }

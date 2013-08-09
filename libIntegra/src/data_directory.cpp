@@ -65,7 +65,7 @@ namespace ntg_internal
 	}
 
 
-	void CDataDirectory::change( const ntg_api::string &old_directory, const ntg_api::string &new_directory )
+	void CDataDirectory::change( const string &old_directory, const string &new_directory )
 	{
 		CFileHelper::delete_directory( old_directory );
 
@@ -73,7 +73,7 @@ namespace ntg_internal
 	}
 
 
-	void CDataDirectory::copy_to_zip( zipFile zip_file, const ntg_internal::CNode &node, const ntg_api::CPath &path_root )
+	void CDataDirectory::copy_to_zip( zipFile zip_file, const CNode &node, const CPath &path_root )
 	{
 		assert( zip_file );
 
@@ -112,7 +112,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_api::CError CDataDirectory::extract_from_zip( const ntg_api::string &file_path, const ntg_internal::CNode *parent_node )
+	CError CDataDirectory::extract_from_zip( const string &file_path, const CNode *parent_node )
 	{
 		unzFile unzip_file = unzOpen( file_path.c_str() );
 		if( !unzip_file )
@@ -243,7 +243,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_api::string CDataDirectory::copy_file_to_data_directory( const ntg_internal::CNodeEndpoint &input_file )
+	string CDataDirectory::copy_file_to_data_directory( const CNodeEndpoint &input_file )
 	{
 		const string *data_directory = input_file.get_node().get_logic().get_data_directory();
 		if( !data_directory )

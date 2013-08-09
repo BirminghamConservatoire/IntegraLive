@@ -29,12 +29,12 @@ namespace ntg_internal
 {
 	class CPlayerLogic : public CLogic
 	{
+		friend class CSceneLogic;
 
 		public:
 			CPlayerLogic( const CNode &node );
 			~CPlayerLogic();
 
-			void handle_new( CServer &server, ntg_command_source source );
 			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
 			void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
 			void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
@@ -47,6 +47,13 @@ namespace ntg_internal
 		private:
 
 			void update_on_activation( CServer &server );
+			void update_on_path_change( CServer &server );
+
+			void scene_handler( CServer &server );
+			void next_handler( CServer &server );
+			void prev_handler( CServer &server );
+
+			void update_player( CServer &server, int tick, int play, int loop, int start, int end );
 
 			static const string s_endpoint_play;
 			static const string s_endpoint_tick;
@@ -54,8 +61,9 @@ namespace ntg_internal
 			static const string s_endpoint_end;
 			static const string s_endpoint_loop;
 			static const string s_endpoint_rate;
-
-
+			static const string s_endpoint_scene;
+			static const string s_endpoint_next;
+			static const string s_endpoint_prev;
 	};
 }
 

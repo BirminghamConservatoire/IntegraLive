@@ -29,15 +29,24 @@ namespace ntg_internal
 {
 	class CControlPointLogic : public CLogic
 	{
+		friend class CEnvelopeLogic;
+
 		public:
 			CControlPointLogic( const CNode &node );
 			~CControlPointLogic();
 
 			void handle_new( CServer &server, ntg_command_source source );
 			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
-			void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
 			void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
 			void handle_delete( CServer &server, ntg_command_source source );
+
+		private:
+
+			void update_envelope( CServer &server, const CNode *envelope_node, bool is_deleting = false );
+
+			static const string s_endpoint_tick;
+			static const string s_endpoint_value;
+			static const string s_endpoint_curvature;
 	};
 }
 

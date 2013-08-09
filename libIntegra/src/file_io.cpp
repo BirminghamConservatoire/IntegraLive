@@ -839,7 +839,7 @@ CError ntg_send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *
 }
 
 
-CError ntg_file_load( const char *filename, const CNode *parent, CModuleManager &module_manager, ntg_api::guid_set &new_embedded_module_ids )
+CError ntg_file_load( const char *filename, const CNode *parent, CModuleManager &module_manager, guid_set &new_embedded_module_ids )
 {
 	unsigned char *ixd_buffer = NULL;
 	bool is_zip_file;

@@ -73,7 +73,7 @@ namespace ntg_internal
 	}
 
 
-	void CNode::initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, internal_id id, CNode *parent )
+	void CNode::initialize( const CInterfaceDefinition &interface_definition, const string &name, internal_id id, CNode *parent )
 	{
 		m_id = id;
 		m_interface_definition = &interface_definition;
@@ -97,7 +97,7 @@ namespace ntg_internal
 	}
 
 
-	void CNode::rename( const ntg_api::string &new_name )
+	void CNode::rename( const string &new_name )
 	{
 		m_name = new_name;
 
@@ -125,7 +125,7 @@ namespace ntg_internal
 	}
 
 
-	const CNode *CNode::get_child( const ntg_api::string &child_name ) const
+	const CNode *CNode::get_child( const string &child_name ) const
 	{
 		node_map::const_iterator lookup = m_children.find( child_name );
 		if( lookup == m_children.end() )
@@ -138,7 +138,7 @@ namespace ntg_internal
 	}
 
 
-	const CNodeEndpoint *CNode::get_node_endpoint( const ntg_api::string &endpoint_name ) const
+	const CNodeEndpoint *CNode::get_node_endpoint( const string &endpoint_name ) const
 	{
 		node_endpoint_map::const_iterator lookup = m_node_endpoints.find( endpoint_name );
 		if( lookup == m_node_endpoints.end() )

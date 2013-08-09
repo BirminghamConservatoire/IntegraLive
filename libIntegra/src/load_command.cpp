@@ -24,7 +24,6 @@
 #include "server.h"
 #include "trace.h"
 #include "file_io.h"
-#include "system_class_handlers.h"
 #include "api/command_result.h"
 
 #include <assert.h>

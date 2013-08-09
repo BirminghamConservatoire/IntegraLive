@@ -105,7 +105,7 @@ namespace ntg_internal
 
 
 	
-	ntg_api::CError CValidator::validate_ixd( const char *xml_buffer, unsigned int buffer_length )
+	CError CValidator::validate_ixd( const char *xml_buffer, unsigned int buffer_length )
 	{
 		assert( xml_buffer );
 
@@ -144,7 +144,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_api::CError CValidator::document_free( xmlDocPtr doc )
+	CError CValidator::document_free( xmlDocPtr doc )
 	{
 		if( doc ) 
 		{
@@ -159,7 +159,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_api::CError CValidator::validate_against_schema( const xmlDocPtr doc )
+	CError CValidator::validate_against_schema( const xmlDocPtr doc )
 	{
 		int validation_code;
 

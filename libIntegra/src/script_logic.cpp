@@ -21,10 +21,25 @@
 #include "platform_specifics.h"
 
 #include "script_logic.h"
+#include "node_endpoint.h"
+#include "server.h"
+#include "lua_engine.h"
+#include "interface_definition.h"
+#include "trace.h"
+#include "api/command_api.h"
+
+#include <assert.h>
+
 
 
 namespace ntg_internal
 {
+	const string CScriptLogic::s_endpoint_trigger = "trigger";
+	const string CScriptLogic::s_endpoint_text = "text";
+	const string CScriptLogic::s_endpoint_info = "info";
+
+
+
 	CScriptLogic::CScriptLogic( const CNode &node )
 		:	CLogic( node )
 	{
@@ -36,44 +51,36 @@ namespace ntg_internal
 	}
 
 	
-	void CScriptLogic::handle_new( CServer &server, ntg_command_source source )
-	{
-		CLogic::handle_new( server, source );
-
-		//todo - implement
-	}
-
-
 	void CScriptLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
-		//todo - implement
+		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
+	
+		if( endpoint_name == s_endpoint_trigger )
+		{
+			trigger_handler( server );
+			return;
+		}	
 	}
 
 
-	void CScriptLogic::handle_rename( CServer &server, const string &previous_name, ntg_command_source source )
+	void CScriptLogic::trigger_handler( CServer &server )
 	{
-		CLogic::handle_rename( server, previous_name, source );
+		const CNode &script_node = get_node();
 
-		//todo - implement
+		const CNodeEndpoint *text_endpoint = script_node.get_node_endpoint( s_endpoint_text );
+		assert( text_endpoint );
+
+		const string &script = *text_endpoint->get_value();
+
+		NTG_TRACE_VERBOSE_WITH_STRING( "running script...", script.c_str() );
+
+		const CPath &parent_path = script_node.get_parent_path();
+	
+		string script_output = server.get_lua_engine().run_script( server, parent_path, script );
+		server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( s_endpoint_info )->get_path(), &CStringValue( script_output ) ), NTG_SOURCE_SYSTEM );
+
+		NTG_TRACE_VERBOSE("script finished");
 	}
-
-
-	void CScriptLogic::handle_move( CServer &server, const CPath &previous_path, ntg_command_source source )
-	{
-		CLogic::handle_move( server, previous_path, source );
-
-		//todo - implement
-	}
-
-
-	void CScriptLogic::handle_delete( CServer &server, ntg_command_source source )
-	{
-		CLogic::handle_delete( server, source );
-
-		//todo - implement
-	}
-
-
 }

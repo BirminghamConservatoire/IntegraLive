@@ -26,7 +26,6 @@
 #include "reentrance_checker.h"
 #include "trace.h"
 
-#include "system_class_handlers.h"
 
 namespace ntg_internal
 {

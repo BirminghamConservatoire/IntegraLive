@@ -65,12 +65,15 @@ namespace ntg_internal
 			const string *get_data_directory() const;
 
 			virtual void update_on_activation( CServer &server ) {}
+			virtual void update_on_path_change( CServer &server );
 
 		protected:
 
 			const CNode &get_node() const { return m_node; }
 
 			bool are_all_ancestors_active() const;
+
+			CError connect_audio_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect );
 
 			static const string s_endpoint_active;
 			static const string s_endpoint_data_directory; 
@@ -85,8 +88,6 @@ namespace ntg_internal
 			void handle_connections( CServer &server, const CNode &search_node, const CNodeEndpoint &changed_endpoint );
 
 			void quantize_to_allowed_states( CValue &value, const value_set &allowed_states ) const;
-
-			CError connect_audio_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect );
 
 			void update_connection_path_on_rename( CServer &server, const CNodeEndpoint &connection_path, const string &previous_name, const string &new_name );
 			void update_connections_on_rename( CServer &server, const CNode &search_node, const string &previous_name, const string &new_name );

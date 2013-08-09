@@ -84,14 +84,14 @@ namespace ntg_internal
 	}
 
 
-	bool CFileHelper::is_directory( const ntg_api::string &directory_name )
+	bool CFileHelper::is_directory( const string &directory_name )
 	{
 		struct stat status_info;
 		return ( stat( directory_name.c_str(), &status_info) == 0 && S_ISDIR( status_info.st_mode ) );
 	}
 
 
-	void CFileHelper::delete_directory( const ntg_api::string &directory_name )
+	void CFileHelper::delete_directory( const string &directory_name )
 	{
 		DIR *directory_stream = opendir( directory_name.c_str() );
 		if( !directory_stream )

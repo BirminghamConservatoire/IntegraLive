@@ -32,7 +32,6 @@ extern "C"
 #include "server.h"
 #include "scratch_directory.h"
 #include "osc_client.h"
-#include "system_class_handlers.h"
 #include "reentrance_checker.h"
 #include "module_manager.h"
 #include "trace.h"
@@ -51,7 +50,7 @@ extern "C"
 
 namespace ntg_api
 {
-	CServerApi *CServerApi::create_server( const ntg_api::CServerStartupInfo &startup_info )
+	CServerApi *CServerApi::create_server( const CServerStartupInfo &startup_info )
 	{
 		#ifdef __APPLE__
 			sem_abyss_init = sem_open("sem_abyss_init", O_CREAT, 0777, 0);
@@ -128,7 +127,7 @@ namespace ntg_internal
 	}
 
 
-	CServer::CServer( const ntg_api::CServerStartupInfo &startup_info )
+	CServer::CServer( const CServerStartupInfo &startup_info )
 	{
 		NTG_TRACE_PROGRESS_WITH_STRING( "libIntegra version", get_libintegra_version().c_str() );
 
@@ -145,6 +144,8 @@ namespace ntg_internal
 		m_scratch_directory = new CScratchDirectory;
 
 		m_lua_engine = new CLuaEngine;
+
+		ntg_player_initialize( *this );
 
 		m_module_manager = new CModuleManager( get_scratch_directory(), startup_info.system_module_directory, startup_info.third_party_module_directory );
 
@@ -204,6 +205,8 @@ namespace ntg_internal
 
 		delete m_lua_engine;
 
+		ntg_player_free( *this );
+
 		NTG_TRACE_PROGRESS( "shutting down OSC client" );
 		ntg_osc_client_destroy( m_osc_client );
 		
@@ -262,7 +265,7 @@ namespace ntg_internal
 	}
 
 
-	const CNode *CServer::find_node( const ntg_api::string &path_string, const CNode *relative_to ) const
+	const CNode *CServer::find_node( const string &path_string, const CNode *relative_to ) const
 	{
 		if( relative_to )
 		{
@@ -281,7 +284,7 @@ namespace ntg_internal
 	}
 
 
-	CNode *CServer::find_node_writable( const ntg_api::string &path_string, const CNode *relative_to )
+	CNode *CServer::find_node_writable( const string &path_string, const CNode *relative_to )
 	{
 		if( relative_to )
 		{
@@ -322,7 +325,7 @@ namespace ntg_internal
 	}
 
 
-	const CNodeEndpoint *CServer::find_node_endpoint( const ntg_api::string &path_string, const CNode *relative_to ) const
+	const CNodeEndpoint *CServer::find_node_endpoint( const string &path_string, const CNode *relative_to ) const
 	{
 		if( relative_to )
 		{
@@ -335,7 +338,7 @@ namespace ntg_internal
 	}
 
 
-	CNodeEndpoint *CServer::find_node_endpoint_writable( const ntg_api::string &path_string, const CNode *relative_to )
+	CNodeEndpoint *CServer::find_node_endpoint_writable( const string &path_string, const CNode *relative_to )
 	{
 		if( relative_to )
 		{
@@ -348,7 +351,7 @@ namespace ntg_internal
 	}
 
 
-	const CValue *CServer::get_value( const ntg_api::CPath &path ) const
+	const CValue *CServer::get_value( const CPath &path ) const
 	{
 		const CNodeEndpoint *node_endpoint = find_node_endpoint( path.get_string() );
 		
@@ -423,7 +426,7 @@ namespace ntg_internal
 	}
 
 
-	CError CServer::process_command( ntg_api::CCommandApi *command, ntg_command_source command_source, ntg_api::CCommandResult *result )
+	CError CServer::process_command( CCommandApi *command, ntg_command_source command_source, CCommandResult *result )
 	{
 		assert( command );
 

@@ -21,7 +21,12 @@
 #include "platform_specifics.h"
 
 #include "player_logic.h"
+#include "scene_logic.h"
 #include "server.h"
+#include "node.h"
+#include "node_endpoint.h"
+#include "trace.h"
+#include "interface_definition.h"
 #include "api/command_api.h"
 
 #include <assert.h>
@@ -29,12 +34,15 @@
 
 namespace ntg_internal
 {
-	const ntg_api::string CPlayerLogic::s_endpoint_play = "play";
-	const ntg_api::string CPlayerLogic::s_endpoint_tick = "tick";
-	const ntg_api::string CPlayerLogic::s_endpoint_start = "start";
-	const ntg_api::string CPlayerLogic::s_endpoint_end = "end";
-	const ntg_api::string CPlayerLogic::s_endpoint_loop = "loop";
-	const ntg_api::string CPlayerLogic::s_endpoint_rate = "rate";
+	const string CPlayerLogic::s_endpoint_play = "play";
+	const string CPlayerLogic::s_endpoint_tick = "tick";
+	const string CPlayerLogic::s_endpoint_start = "start";
+	const string CPlayerLogic::s_endpoint_end = "end";
+	const string CPlayerLogic::s_endpoint_loop = "loop";
+	const string CPlayerLogic::s_endpoint_rate = "rate";
+	const string CPlayerLogic::s_endpoint_scene = "scene";
+	const string CPlayerLogic::s_endpoint_next = "next";
+	const string CPlayerLogic::s_endpoint_prev = "prev";
 
 
 
@@ -48,20 +56,49 @@ namespace ntg_internal
 	{
 	}
 
-	
-	void CPlayerLogic::handle_new( CServer &server, ntg_command_source source )
-	{
-		CLogic::handle_new( server, source );
-
-		//todo - implement
-	}
-
 
 	void CPlayerLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
-		//todo - implement
+		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
+	
+		if( endpoint_name == s_endpoint_active || 
+			endpoint_name == s_endpoint_play ||
+			endpoint_name == s_endpoint_loop ||
+			endpoint_name == s_endpoint_start ||
+			endpoint_name == s_endpoint_end )
+		{
+			ntg_player_update( server, get_node().get_id() );
+			return;
+		}
+
+		if( endpoint_name == s_endpoint_tick )
+		{
+			if( source != NTG_SOURCE_SYSTEM )
+			{
+				ntg_player_update( server, get_node().get_id() );
+			}
+			return;
+		}
+
+		if( endpoint_name == s_endpoint_scene )
+		{
+			scene_handler( server );
+			return;
+		}
+
+		if( endpoint_name == s_endpoint_next )
+		{
+			next_handler( server );
+			return;
+		}
+
+		if( endpoint_name == s_endpoint_prev )
+		{
+			prev_handler( server );
+			return;
+		}
 	}
 
 
@@ -69,7 +106,7 @@ namespace ntg_internal
 	{
 		CLogic::handle_rename( server, previous_name, source );
 
-		//todo - implement
+		ntg_player_handle_path_change( server, get_node() );
 	}
 
 
@@ -77,7 +114,7 @@ namespace ntg_internal
 	{
 		CLogic::handle_move( server, previous_path, source );
 
-		//todo - implement
+		ntg_player_handle_path_change( server, get_node() );
 	}
 
 
@@ -85,16 +122,257 @@ namespace ntg_internal
 	{
 		CLogic::handle_delete( server, source );
 
-		//todo - implement
+		ntg_player_handle_delete( server, get_node() );
 	}
 
 
 	void CPlayerLogic::update_on_activation( CServer &server )
 	{
+		CLogic::update_on_activation( server );
+
 		const CNodeEndpoint *tick = get_node().get_node_endpoint( s_endpoint_tick );
 		assert( tick );
 
 		server.process_command( CSetCommandApi::create( tick->get_path(), tick->get_value() ), NTG_SOURCE_SYSTEM );
 	}
 
+
+	void CPlayerLogic::update_on_path_change( CServer &server )
+	{
+		CLogic::update_on_path_change( server );
+
+		ntg_player_handle_path_change( server, get_node() );
+	}
+
+
+	void CPlayerLogic::scene_handler( CServer &server )
+	{
+		/* defaults for values to copy into the player.  The logic below updates these variables */
+
+		int tick = -1;
+		int play = 0;
+		int loop = 0;
+		int start = -1;
+		int end = -1;
+
+		/* handle scene selection */
+		const CNode &player_node = get_node();
+		const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( s_endpoint_scene );
+		assert( scene_endpoint );
+		string scene_name = *scene_endpoint->get_value();
+
+		const CNode *scene_node = player_node.get_child( scene_name );
+		if( !scene_node )	
+		{
+			if( !scene_name.empty() )
+			{
+				NTG_TRACE_ERROR_WITH_STRING( "Player doesn't have scene", scene_name.c_str() );
+				return;
+			}
+		}
+		else
+		{
+			if( !dynamic_cast< const CSceneLogic * > ( &scene_node->get_logic() ) )
+			{
+				NTG_TRACE_ERROR( "Object referred to by player's scene endpoint is not a scene!" );
+				return;
+			}
+
+			const CNodeEndpoint *scene_start_endpoint = scene_node->get_node_endpoint( CSceneLogic::s_endpoint_start );
+			const CNodeEndpoint *scene_length_endpoint = scene_node->get_node_endpoint( CSceneLogic::s_endpoint_length );
+			const CNodeEndpoint *scene_mode_endpoint = scene_node->get_node_endpoint( CSceneLogic::s_endpoint_mode );
+			assert( scene_start_endpoint && scene_length_endpoint && scene_mode_endpoint );
+
+			string scene_mode = *scene_mode_endpoint->get_value();
+
+			start = *scene_start_endpoint->get_value();
+			int length = *scene_length_endpoint->get_value();
+			end = start + length;
+			tick = start;
+
+			if( scene_mode == CSceneLogic::s_scene_mode_play )
+			{
+				play = 1;
+			}
+			else
+			{
+				if( scene_mode == CSceneLogic::s_scene_mode_loop )
+				{
+					play = 1;
+					loop = 1;
+				}
+				else
+				{
+					assert( scene_mode == CSceneLogic::s_scene_mode_hold );
+				}
+			}
+		}
+
+		update_player( server, tick, play, loop, start, end );
+	}
+
+
+	void CPlayerLogic::next_handler( CServer &server )
+	{
+		const CNode &player_node = get_node();
+
+		/* find selected scene start*/
+		const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( s_endpoint_scene );
+		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( s_endpoint_tick );
+		assert( scene_endpoint && tick_endpoint );
+
+		int player_tick = *tick_endpoint->get_value();
+	
+		const CNode *selected_scene = NULL;
+		const CNodeEndpoint *scene_start_endpoint = NULL;
+
+		const string &selected_scene_name = *scene_endpoint->get_value();
+
+		if( !selected_scene_name.empty() )
+		{
+			selected_scene = player_node.get_child( selected_scene_name );
+			if( selected_scene )
+			{
+				scene_start_endpoint = selected_scene->get_node_endpoint( s_endpoint_start );
+			}
+		}
+
+		/* iterate through scenes looking for next scene */
+		const string *next_scene_name = NULL;
+		int best_scene_start;
+		int search_scene_start;
+
+		const node_map &scenes = player_node.get_children();
+		for( node_map::const_iterator i = scenes.begin(); i != scenes.end(); i++ )
+		{
+			const CNode *search_scene = i->second;
+			if( !dynamic_cast< const CSceneLogic *> ( &search_scene->get_logic() ) )
+			{
+				NTG_TRACE_ERROR( "Object other than scene in player" );
+				continue;
+			}
+
+			if( search_scene != selected_scene )
+			{
+				const CNodeEndpoint *start_endpoint = search_scene->get_node_endpoint( s_endpoint_start );
+				assert( start_endpoint );
+				search_scene_start = *start_endpoint->get_value();
+
+				if( search_scene_start >= player_tick )
+				{
+					if( !next_scene_name || search_scene_start < best_scene_start )
+					{
+						next_scene_name = &search_scene->get_name();
+						best_scene_start = search_scene_start;
+					}
+				}
+			}
+		}
+
+		if( next_scene_name )
+		{
+			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), NTG_SOURCE_SYSTEM );
+		}
+	}
+
+
+	void CPlayerLogic::prev_handler( CServer &server )
+	{
+		const CNode &player_node = get_node();
+
+		/* find selected scene start*/
+		const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( s_endpoint_scene );
+		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( s_endpoint_tick );
+		assert( scene_endpoint && tick_endpoint );
+
+		int player_tick = *tick_endpoint->get_value();
+	
+		const CNode *selected_scene = NULL;
+		const CNodeEndpoint *scene_start_endpoint = NULL;
+
+		const string &selected_scene_name = *scene_endpoint->get_value();
+
+		if( !selected_scene_name.empty() )
+		{
+			selected_scene = player_node.get_child( selected_scene_name );
+			if( selected_scene )
+			{
+				scene_start_endpoint = selected_scene->get_node_endpoint( s_endpoint_start );
+			}
+		}
+
+		/* iterate through scenes looking for prev scene */
+		const string *next_scene_name = NULL;
+		int best_scene_start;
+		int search_scene_start;
+
+		const node_map &scenes = player_node.get_children();
+		for( node_map::const_iterator i = scenes.begin(); i != scenes.end(); i++ )
+		{
+			const CNode *search_scene = i->second;
+			if( !dynamic_cast< const CSceneLogic *> ( &search_scene->get_logic() ) )
+			{
+				NTG_TRACE_ERROR( "Object other than scene in player" );
+				continue;
+			}
+
+			if( search_scene != selected_scene )
+			{
+				const CNodeEndpoint *start_endpoint = search_scene->get_node_endpoint( s_endpoint_start );
+				assert( start_endpoint );
+				search_scene_start = *start_endpoint->get_value();
+
+				if( search_scene_start < player_tick )
+				{
+					if( !next_scene_name || search_scene_start > best_scene_start )
+					{
+						next_scene_name = &search_scene->get_name();
+						best_scene_start = search_scene_start;
+					}
+				}
+			}
+		}
+
+		if( next_scene_name )
+		{
+			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), NTG_SOURCE_SYSTEM );
+		}	
+	}
+
+
+	void CPlayerLogic::update_player( CServer &server, int tick, int play, int loop, int start, int end )
+	{
+		/*
+		updates player state.  ignores tick when < 0
+		*/
+
+		const CNode &player_node = get_node();
+
+		/* look up the player endpoints to set */
+		const CNodeEndpoint *player_tick_endpoint = player_node.get_node_endpoint( s_endpoint_tick );
+		const CNodeEndpoint *player_play_endpoint = player_node.get_node_endpoint( s_endpoint_play );
+		const CNodeEndpoint *player_loop_endpoint = player_node.get_node_endpoint( s_endpoint_loop );
+		const CNodeEndpoint *player_start_endpoint = player_node.get_node_endpoint( s_endpoint_start );
+		const CNodeEndpoint *player_end_endpoint = player_node.get_node_endpoint( s_endpoint_end );
+
+		assert( player_tick_endpoint && player_play_endpoint && player_loop_endpoint && player_start_endpoint && player_end_endpoint );
+
+		/* 
+		Set the new values.  
+		Order is important here as the player will set play = false when loop == false and tick > end 
+		We can prevent this from being a problem by setting tick after start & end, and setting play last
+		*/
+
+		server.process_command( CSetCommandApi::create( player_loop_endpoint->get_path(), &CIntegerValue( loop ) ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( player_start_endpoint->get_path(), &CIntegerValue( start ) ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( player_end_endpoint->get_path(), &CIntegerValue( end ) ), NTG_SOURCE_SYSTEM );
+
+		/* don't set tick unless >= 0.  Allows calling functions to skip setting tick */
+		if( tick >= 0 )
+		{
+			server.process_command( CSetCommandApi::create( player_tick_endpoint->get_path(), &CIntegerValue( tick ) ), NTG_SOURCE_SYSTEM );
+		}
+
+		server.process_command( CSetCommandApi::create( player_play_endpoint->get_path(), &CIntegerValue( play ) ), NTG_SOURCE_SYSTEM );
+	}
 }

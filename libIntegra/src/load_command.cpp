@@ -53,7 +53,7 @@ namespace ntg_internal
 
 		guid_set new_embedded_module_ids;
 
-		CError error = ntg_file_load( m_file_path.c_str(), parent, server.get_module_manager_writable(), new_embedded_module_ids );
+		CError error = CFileIO::load( server, m_file_path, parent, new_embedded_module_ids );
 
 		if( error != CError::SUCCESS )
 		{

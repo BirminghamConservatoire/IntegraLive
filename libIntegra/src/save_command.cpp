@@ -64,11 +64,11 @@ namespace ntg_internal
 			return CError::INPUT_ERROR;
 		}
 
-		string file_path_with_suffix = CFileHelper::ensure_filename_has_suffix( m_file_path, NTG_FILE_SUFFIX );
+		string file_path_with_suffix = CFileHelper::ensure_filename_has_suffix( m_file_path, CFileIO::s_file_suffix );
 
 		NTG_TRACE_PROGRESS_WITH_STRING( "saving to", file_path_with_suffix.c_str() );
 
-		return ntg_file_save( file_path_with_suffix.c_str(), *node, server.get_module_manager() );
+		return CFileIO::save( server, file_path_with_suffix, *node );
 	}
 
 

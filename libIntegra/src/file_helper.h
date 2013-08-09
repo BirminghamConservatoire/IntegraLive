@@ -25,6 +25,7 @@
 #include "api/common_typedefs.h"
 #include "error.h"
 
+
 using namespace ntg_api;
 
 
@@ -47,7 +48,6 @@ namespace ntg_internal
 			static CError delete_file( const string &file_name );
 
 			static void construct_subdirectories( const string &root_directory, const string &relative_file_path );
-
 	};
 }
 

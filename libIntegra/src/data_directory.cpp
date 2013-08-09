@@ -46,16 +46,17 @@
 #include "server.h"
 
 
-#define NTG_NODE_DIRECTORY "node_data"
-
-
 namespace ntg_internal
 {
+	const string CDataDirectory::s_node_directory = "node_data";
+
+
+
 	string CDataDirectory::create_for_node( const CNode &node, const CServer &server )
 	{
 		ostringstream stream;
 
-		stream << server.get_scratch_directory() << NTG_NODE_DIRECTORY << node.get_id() << NTG_PATH_SEPARATOR;
+		stream << server.get_scratch_directory() << s_node_directory << node.get_id() << CFileIO::s_path_separator;
 
 		string node_directory_name = stream.str();
 
@@ -88,12 +89,12 @@ namespace ntg_internal
 			else
 			{
 				ostringstream target_path;
-				target_path << NTG_NODE_DIRECTORY << NTG_PATH_SEPARATOR << relative_node_path;
+				target_path << s_node_directory << CFileIO::s_path_separator << relative_node_path;
 			
 				const string *data_directory_name = node.get_logic().get_data_directory();
 				if( data_directory_name )
 				{
-					ntg_copy_directory_contents_to_zip( zip_file, target_path.str().c_str(), data_directory_name->c_str() );
+					copy_directory_contents_to_zip( zip_file, target_path.str(), *data_directory_name );
 				}
 				else
 				{
@@ -217,7 +218,7 @@ namespace ntg_internal
 
 		delete[] target_path;
 
-		output_buffer = new unsigned char[ NTG_DATA_COPY_BUFFER_SIZE ];
+		output_buffer = new unsigned char[ CFileIO::s_data_copy_buffer_size ];
 
 		total_bytes_read = 0;
 		while( total_bytes_read < file_info->uncompressed_size )
@@ -225,7 +226,7 @@ namespace ntg_internal
 			bytes_remaining = file_info->uncompressed_size - total_bytes_read;
 			assert( bytes_remaining > 0 );
 
-			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, MIN( NTG_DATA_COPY_BUFFER_SIZE, bytes_remaining ) );
+			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, MIN( CFileIO::s_data_copy_buffer_size, bytes_remaining ) );
 			if( bytes_read <= 0 )
 			{
 				NTG_TRACE_ERROR( "Error decompressing file" );
@@ -300,8 +301,7 @@ namespace ntg_internal
 		 of integra_data/node_data.
 		*/
 
-		const char *normal_node_directory_path = NTG_INTEGRA_DATA_DIRECTORY_NAME NTG_NODE_DIRECTORY NTG_PATH_SEPARATOR;
-		const char *old_node_directory_path = NTG_INTEGRA_DATA_DIRECTORY_NAME;
+		string normal_node_directory_path = CFileIO::s_data_directory_name + s_node_directory + CFileIO::s_path_separator;
 
 		assert( unzip_file );
 
@@ -310,12 +310,12 @@ namespace ntg_internal
 			return normal_node_directory_path;
 		}
 
-		if( does_zip_contain_directory( unzip_file, NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME ) )
+		if( does_zip_contain_directory( unzip_file, CFileIO::s_implementation_directory_name ) )
 		{
 			return normal_node_directory_path;
 		}
 
-		return old_node_directory_path;
+		return CFileIO::s_data_directory_name;
 	}
 
 
@@ -351,6 +351,60 @@ namespace ntg_internal
 		return false;
 	}
 
+
+
+	void CDataDirectory::copy_directory_contents_to_zip( zipFile zip_file, const string &target_path, const string &source_path )
+	{
+		DIR *directory_stream = opendir( source_path.c_str() );
+		if( !directory_stream )
+		{
+			NTG_TRACE_ERROR_WITH_STRING( "unable to open directory", source_path.c_str() );
+			return;
+		}
+
+		struct dirent *directory_entry = NULL;
+
+		while( true )
+		{
+			directory_entry = readdir( directory_stream );
+			if( !directory_entry )
+			{
+				break;
+			}
+
+			string file_name = directory_entry->d_name;
+
+			if( file_name == ".." || file_name == "." )
+			{
+				continue;
+			}
+
+			string full_source_path = source_path + file_name;
+
+			struct stat entry_data;
+			if( stat( full_source_path.c_str(), &entry_data ) != 0 )
+			{
+				NTG_TRACE_ERROR_WITH_ERRNO( "couldn't read directory entry data" );
+				continue;
+			}
+
+			ostringstream full_target_path;
+			full_target_path << CFileIO::s_data_directory_name << target_path << CFileIO::s_path_separator << file_name;
+
+			switch( entry_data.st_mode & _S_IFMT )
+			{
+				case S_IFDIR:	/* directory */
+					full_source_path += CFileIO::s_path_separator;
+					copy_directory_contents_to_zip( zip_file, full_target_path.str(), full_source_path );
+					break;
+
+				default:
+					CFileIO::copy_file_to_zip( zip_file, full_target_path.str(), full_source_path );
+					break;
+			}
+		}
+		while( directory_entry != NULL );
+	}
 
 
 

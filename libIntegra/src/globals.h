@@ -40,24 +40,6 @@
 /* global constants */
 #define NTG_LONG_STRLEN    1024
 
-#define NTG_FILE_SUFFIX "integra"
-#define NTG_MODULE_SUFFIX "integra-module"
-
-/* 
- we use linux-style path separators for all builds, because windows can use the two interchangeably, 
- PD can't cope with windows separators at all, and zip files maintain the directionality of slashes 
- (if we used system-specific slashes in zip files, the files would not be platform-independant)
-*/
-
-#define NTG_PATH_SEPARATOR "/"
-
-#define NTG_DATA_COPY_BUFFER_SIZE 16384
-
-#define NTG_INTEGRA_DATA_DIRECTORY_NAME "integra_data" NTG_PATH_SEPARATOR
-#define NTG_INTERNAL_IXD_FILE_NAME NTG_INTEGRA_DATA_DIRECTORY_NAME "nodes.ixd"
-#define NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME NTG_INTEGRA_DATA_DIRECTORY_NAME "implementation" NTG_PATH_SEPARATOR
-
-#define NTG_NODE_NAME_CHARACTER_SET "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 namespace ntg_internal
 {

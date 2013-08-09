@@ -22,6 +22,7 @@
 #include "platform_specifics.h"
 
 #include "scratch_directory.h"
+#include "file_io.h"
 #include "globals.h"
 #include "file_helper.h"
 
@@ -88,7 +89,7 @@ namespace ntg_internal
 				CFileHelper::delete_directory( m_scratch_directory );
 			}
 
-			m_scratch_directory += NTG_PATH_SEPARATOR;
+			m_scratch_directory += CFileIO::s_path_separator;
 
 			mkdir( m_scratch_directory.c_str() );
 	}

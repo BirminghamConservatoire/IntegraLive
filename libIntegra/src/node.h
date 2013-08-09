@@ -18,8 +18,8 @@
  * USA.
  */
 
-#ifndef INTEGRA_INSTANCE_PRIVATE_H
-#define INTEGRA_INSTANCE_PRIVATE_H
+#ifndef INTEGRA_NODE_PRIVATE_H
+#define INTEGRA_NODE_PRIVATE_H
 
 #include <unordered_map>
 
@@ -27,6 +27,7 @@
 #include "path.h"
 #include "api/common_typedefs.h"
 
+#if 0 //DEPRECATED
 #ifndef __XML_XMLREADER_H__
 #ifndef NTG_TEXTREADER_TYPEDEF
 typedef struct _xmlTextReader xmlTextReader;
@@ -34,7 +35,7 @@ typedef xmlTextReader *xmlTextReaderPtr;
 #define NTG_TEXTREADER_TYPEDEF
 #endif 
 #endif
-
+#endif //DEPRECATED
 
 using namespace ntg_api;
 

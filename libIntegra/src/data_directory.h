@@ -63,6 +63,10 @@ namespace ntg_internal
 			static void extract_from_zip_to_data_directory( unzFile unzip_file, unz_file_info *file_info, const CNode &node, const char *relative_file_path );
 
 			static bool does_zip_contain_directory( unzFile unzip_file, const string &directory );
+
+			static void copy_directory_contents_to_zip( zipFile zip_file, const string &target_path, const string &source_path );
+
+			static const string s_node_directory;
 	};
 }
 

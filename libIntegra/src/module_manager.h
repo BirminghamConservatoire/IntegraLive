@@ -67,6 +67,8 @@ namespace ntg_internal
 
 			CError interpret_legacy_module_id( internal_id old_id, GUID &output ) const;
 
+			const static string s_module_suffix;
+
 		private:
 
 			void load_modules_from_directory( const string &module_directory, CInterfaceDefinition::module_source source );

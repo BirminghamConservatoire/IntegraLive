@@ -41,6 +41,9 @@
 #include "string_helper.h"
 #include "server.h"
 #include "interface_definition_loader.h"
+#include "file_io.h"
+
+using namespace ntg_api;
 
 /* 
  whilst dealing with zipped files, we always use linux-style path separators, 
@@ -48,12 +51,12 @@
  and PD can't cope with windows separators at all
 */
 
-#define NTG_MODULE_INNER_DIRECTORY_NAME "integra_module_data" NTG_PATH_SEPARATOR
+#define NTG_MODULE_INNER_DIRECTORY_NAME "integra_module_data/" 
 #define NTG_IDD_FILE_NAME NTG_MODULE_INNER_DIRECTORY_NAME "interface_definition.iid"
-#define NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME NTG_MODULE_INNER_DIRECTORY_NAME "implementation" NTG_PATH_SEPARATOR
+#define NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME NTG_MODULE_INNER_DIRECTORY_NAME "implementation/"
 
-#define NTG_IMPLEMENTATION_DIRECTORY_NAME "implementations" NTG_PATH_SEPARATOR
-#define NTG_EMBEDDED_MODULE_DIRECTORY_NAME "loaded_embedded_modules" NTG_PATH_SEPARATOR
+#define NTG_IMPLEMENTATION_DIRECTORY_NAME "implementations/"
+#define NTG_EMBEDDED_MODULE_DIRECTORY_NAME "loaded_embedded_modules/"
 
 #define NTG_CHECKSUM_SEED 53
 
@@ -68,6 +71,9 @@
 
 namespace ntg_internal
 {
+	const string CModuleManager::s_module_suffix = "integra-module";
+
+
 	CModuleManager::CModuleManager( const string &scratch_directory_root, const string &system_module_directory, const string &third_party_module_directory )
 	{
 		load_legacy_module_id_file();
@@ -89,7 +95,7 @@ namespace ntg_internal
 		load_modules_from_directory( system_module_directory, CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA );
 
 		load_modules_from_directory( third_party_module_directory, CInterfaceDefinition::MODULE_3RD_PARTY );
-		m_third_party_module_directory = third_party_module_directory + NTG_PATH_SEPARATOR;
+		m_third_party_module_directory = third_party_module_directory + CFileIO::s_path_separator;
 	}
 
 
@@ -127,7 +133,7 @@ namespace ntg_internal
 			return CError::FAILED;
 		}
 
-		implementation_directory_length = strlen( NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME );
+		implementation_directory_length = CFileIO::s_implementation_directory_name.length();
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
@@ -136,7 +142,7 @@ namespace ntg_internal
 			return CError::FAILED;
 		}
 
-		copy_buffer = new unsigned char[ NTG_DATA_COPY_BUFFER_SIZE ];
+		copy_buffer = new unsigned char[ CFileIO::s_data_copy_buffer_size ];
 
 		do
 		{
@@ -149,7 +155,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			if( strlen( file_name ) <= implementation_directory_length || memcmp( file_name, NTG_INTEGRA_IMPLEMENTATION_DIRECTORY_NAME, implementation_directory_length ) != 0 )
+			if( strlen( file_name ) <= implementation_directory_length || string( file_name ).substr( 0, implementation_directory_length ) != CFileIO::s_implementation_directory_name )
 			{
 				/* skip file not in node directory */
 				continue;
@@ -184,7 +190,7 @@ namespace ntg_internal
 				bytes_remaining = file_info.uncompressed_size - total_bytes_read;
 				assert( bytes_remaining > 0 );
 
-				bytes_read = unzReadCurrentFile( unzip_file, copy_buffer, MIN( NTG_DATA_COPY_BUFFER_SIZE, bytes_remaining ) );
+				bytes_read = unzReadCurrentFile( unzip_file, copy_buffer, MIN( CFileIO::s_data_copy_buffer_size, bytes_remaining ) );
 				if( bytes_read <= 0 )
 				{
 					NTG_TRACE_ERROR( "Error decompressing file" );
@@ -450,7 +456,7 @@ namespace ntg_internal
 	}
 
 
-	CError CModuleManager::unload_orphaned_embedded_modules()
+	ntg_api::CError CModuleManager::unload_orphaned_embedded_modules()
 	{
 		guid_set module_ids;
 		/* first pass - collect ids of all embedded modules */
@@ -525,7 +531,7 @@ namespace ntg_internal
 
 			name = directory_entry->d_name;
 
-			string full_path = module_directory + NTG_PATH_SEPARATOR + name;
+			string full_path = module_directory + CFileIO::s_path_separator + name;
 
 			if( stat( full_path.c_str(), &entry_data ) != 0 )
 			{
@@ -798,7 +804,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			if( strcmp( file_name + strlen( file_name ) - 1, NTG_PATH_SEPARATOR ) == 0 )
+			if( strcmp( file_name + strlen( file_name ) - 1, CFileIO::s_path_separator.c_str() ) == 0 )
 			{
 				/* skip directories */
 				continue;
@@ -906,7 +912,7 @@ namespace ntg_internal
 
 	string CModuleManager::get_implementation_directory_name( const CInterfaceDefinition &interface_definition ) const
 	{
-		return get_unique_interface_name( interface_definition ) + NTG_PATH_SEPARATOR;
+		return get_unique_interface_name( interface_definition ) + CFileIO::s_path_separator;
 	}
 
 
@@ -976,7 +982,7 @@ namespace ntg_internal
 
 		string unique_name = get_unique_interface_name( interface_definition );
 
-		return storage_directory + unique_name + "." + NTG_MODULE_SUFFIX;
+		return storage_directory + unique_name + "." + s_module_suffix;
 	}
 
 
@@ -1009,7 +1015,7 @@ namespace ntg_internal
 	}
 
 
-	bool CModuleManager::is_module_in_use( const node_map &search_nodes, const GUID &module_id ) const
+	bool CModuleManager::is_module_in_use( const ntg_internal::node_map &search_nodes, const GUID &module_id ) const
 	{
 		for( node_map::const_iterator i = search_nodes.begin(); i != search_nodes.end(); i++ )
 		{
@@ -1030,7 +1036,7 @@ namespace ntg_internal
 	}
 
 
-	void CModuleManager::remove_in_use_module_ids_from_set( const node_map &search_nodes, guid_set &set ) const
+	void CModuleManager::remove_in_use_module_ids_from_set( const node_map &search_nodes, ntg_api::guid_set &set ) const
 	{
 		for( node_map::const_iterator i = search_nodes.begin(); i != search_nodes.end(); i++ )
 		{

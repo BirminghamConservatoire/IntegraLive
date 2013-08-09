@@ -23,6 +23,7 @@
 
 #include "trace.h"
 #include "globals.h"
+#include "string_helper.h"
 
 
 namespace ntg_api
@@ -131,7 +132,7 @@ namespace ntg_api
 
 	void CPath::append_element( const string &element )
 	{
-		if( element.find_first_not_of( NTG_NODE_NAME_CHARACTER_SET ) != string::npos )
+		if( element.find_first_not_of( CStringHelper::s_node_name_character_set ) != string::npos )
 		{
 			NTG_TRACE_ERROR_WITH_STRING( "Invalid element name", element.c_str() );
 			return;

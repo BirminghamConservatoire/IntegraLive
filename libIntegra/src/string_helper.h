@@ -49,6 +49,10 @@ namespace ntg_api
 			/* does the node name consist entirely of valid characters? */
 			static bool validate_node_name( const string &name );
 
+
+			static const string s_node_name_character_set;
+
+
 		private:
 
 			static unsigned long read_hex_chars( const string &input, unsigned int number_of_bytes, CError &error );

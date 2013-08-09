@@ -30,6 +30,9 @@ using namespace ntg_internal;
 
 namespace ntg_api
 {
+	const string CStringHelper::s_node_name_character_set = "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
 	string CStringHelper::guid_to_string( const GUID &guid )
 	{
 		char string[ 37 ];
@@ -123,7 +126,7 @@ namespace ntg_api
 	
 		for( int i = 0; i < length; i++ )
 		{
-			if( !strchr( NTG_NODE_NAME_CHARACTER_SET, name[ i ] ) )
+			if( s_node_name_character_set.find_first_of( name[ i ] ) == string::npos )
 			{
 				return false;
 			}

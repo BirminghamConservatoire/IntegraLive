@@ -32,6 +32,7 @@
 #include <dirent.h>
 
 #include "file_helper.h"
+#include "file_io.h"
 #include "trace.h"
 #include "globals.h"
 
@@ -116,7 +117,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			string full_path = directory_name + NTG_PATH_SEPARATOR + name;
+			string full_path = directory_name + CFileIO::s_path_separator + name;
 
 			struct stat entry_data;
 			if( stat( full_path.c_str(), &entry_data ) != 0 )
@@ -181,11 +182,11 @@ namespace ntg_internal
 			goto CLEANUP;
 		}
 
-		unsigned char *copy_buffer = new unsigned char[ NTG_DATA_COPY_BUFFER_SIZE ];
+		unsigned char *copy_buffer = new unsigned char[ CFileIO::s_data_copy_buffer_size ];
 
 		while( bytes_to_copy > 0 )
 		{
-			unsigned long bytes_read = fread( copy_buffer, 1, MIN( bytes_to_copy, NTG_DATA_COPY_BUFFER_SIZE ), source_file );
+			unsigned long bytes_read = fread( copy_buffer, 1, MIN( bytes_to_copy, CFileIO::s_data_copy_buffer_size ), source_file );
 			if( bytes_read <= 0 )
 			{
 				NTG_TRACE_ERROR_WITH_STRING( "error reading", source_path.c_str() );
@@ -216,7 +217,7 @@ namespace ntg_internal
 			return;
 		}
 
-		string root_and_subdirectory = root_directory + subdirectory + NTG_PATH_SEPARATOR;
+		string root_and_subdirectory = root_directory + subdirectory + CFileIO::s_path_separator;
 
 		mkdir( root_and_subdirectory.c_str() );
 
@@ -243,6 +244,4 @@ namespace ntg_internal
 
 		return filename + "." + suffix;
 	}
-
-
 }

@@ -125,7 +125,45 @@ namespace ntg_internal
 	
 	void CLogic::handle_new( CServer &server, ntg_command_source source )
 	{
+		/* add connections in host if needed */ 
+
+		for( const CNode *ancestor = &m_node; ancestor; ancestor = ancestor->get_parent() )
+		{
+			const node_map &siblings = server.get_sibling_set( *ancestor );
+			for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
+			{
+				const CNode *sibling = i->second;
+
+				if( sibling != ancestor && sibling->get_interface_definition().get_module_guid() == get_connection_interface_guid( server ) ) 
+				{
+					/* found a connection which might target the new node */
+
+					const CNodeEndpoint *source_path = sibling->get_node_endpoint( s_endpoint_source_path );
+					const CNodeEndpoint *target_path = sibling->get_node_endpoint( s_endpoint_target_path );
+					assert( source_path && target_path );
+
+					const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), ancestor->get_parent() );
+					const CNodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), ancestor->get_parent() );
+	
+					if( source_endpoint && target_endpoint )
+					{
+						if( source_endpoint->get_node().get_id() == m_node.get_id() || target_endpoint->get_node().get_id() == m_node.get_id() )
+						{
+							if( source_endpoint->get_endpoint_definition().is_audio_stream() && source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
+							{
+								if( target_endpoint->get_endpoint_definition().is_audio_stream() && target_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::INPUT )
+								{
+									/* create connection in host */
+									connect_audio_in_host( server, *source_endpoint, *target_endpoint, true );
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
+
 
 	void CLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
 	{
@@ -163,13 +201,18 @@ namespace ntg_internal
 		}
 	}
 
+
 	void CLogic::handle_rename( CServer &server, const string &previous_name, ntg_command_source source )
 	{
+		update_connections_on_rename( server, m_node, previous_name, m_node.get_name() );
 	}
+
 
 	void CLogic::handle_move( CServer &server, const CPath &previous_path, ntg_command_source source )
 	{
+		update_connections_on_move( server, m_node, previous_path, m_node.get_path() );
 	}
+
 
 	void CLogic::handle_delete( CServer &server, ntg_command_source source )
 	{
@@ -502,4 +545,177 @@ namespace ntg_internal
 
 		return m_connection_interface_guid;
 	}
+
+
+	CError CLogic::connect_audio_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect )
+	{
+		const CEndpointDefinition &source_endpoint_definition = source.get_endpoint_definition();
+		const CEndpointDefinition &target_endpoint_definition = target.get_endpoint_definition();
+
+		if( !source_endpoint_definition.is_audio_stream() || source_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::OUTPUT )
+		{
+			NTG_TRACE_ERROR( "trying to make incorrect connection in host - source isn't an audio output" );
+			return CError::INPUT_ERROR;
+		}
+
+		if( !target_endpoint_definition.is_audio_stream() || target_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::INPUT )
+		{
+			NTG_TRACE_ERROR( "trying to make incorrect connection in host - target isn't an audio output" );
+			return CError::INPUT_ERROR;
+		}
+
+		if( connect ) 
+		{
+			server.get_bridge()->module_connect( &source, &target );
+		} 
+		else 
+		{
+			server.get_bridge()->module_disconnect( &source, &target );
+		}
+
+		return CError::SUCCESS;
+	}
+
+
+	void CLogic::update_connection_path_on_rename( CServer &server, const CNodeEndpoint &connection_path, const string &previous_name, const string &new_name )
+	{
+		int previous_name_length;
+		int old_connection_path_length;
+
+		const string &old_connection_path = *connection_path.get_value();
+
+		previous_name_length = previous_name.length();
+		old_connection_path_length = old_connection_path.length();
+		if( old_connection_path_length <= previous_name_length || previous_name != old_connection_path.substr( 0, previous_name_length ) )
+		{
+			/* connection path doesn't refer to the renamed object */
+			return;
+		}
+
+		string path_after_renamed_node = old_connection_path.substr( previous_name_length );
+
+		string new_connection_path = new_name + path_after_renamed_node;
+
+		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path ) ), NTG_SOURCE_SYSTEM );
+	}
+
+
+	void CLogic::update_connections_on_rename( CServer &server, const CNode &search_node, const string &previous_name, const string &new_name )
+	{
+		const node_map &siblings = server.get_sibling_set( search_node );
+
+		/* search amongst sibling nodes */
+		for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
+		{
+			const CNode *sibling = i->second;
+
+			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
+			{
+				/* current is not a connection */
+				continue;
+			}
+
+			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( s_endpoint_source_path );
+			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( s_endpoint_target_path );
+			assert( source_endpoint && target_endpoint );
+
+			update_connection_path_on_rename( server, *source_endpoint, previous_name, new_name );
+			update_connection_path_on_rename( server, *target_endpoint, previous_name, new_name );
+		}
+	
+		/* recurse up the tree */
+		const CNode *parent = search_node.get_parent();
+		if( parent ) 
+		{
+			string previous_name_in_parent_scope = parent->get_name() + "." + previous_name;
+			string new_name_in_parent_scope = parent->get_name() + "." + new_name;
+
+			update_connections_on_rename( server, *parent, previous_name_in_parent_scope, new_name_in_parent_scope );
+		}
+	}
+
+
+	void CLogic::update_connections_on_move( CServer &server, const CNode &search_node, const CPath &previous_path, const CPath &new_path )
+	{
+		const node_map &siblings = server.get_sibling_set( search_node );
+
+		/* search amongst sibling nodes */
+		for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
+		{
+			const CNode *sibling = i->second;
+			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
+			{
+				/* current is not a connection */
+				continue;
+			}
+
+			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( s_endpoint_source_path );
+			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( s_endpoint_target_path );
+			assert( source_endpoint && target_endpoint );
+
+			update_connection_path_on_move( server, *source_endpoint, previous_path, new_path );
+			update_connection_path_on_move( server, *target_endpoint, previous_path, new_path );
+		}
+	
+		/* recurse up the tree */
+		const CNode *parent = search_node.get_parent();
+		if( parent ) 
+		{
+			update_connections_on_move( server, *parent, previous_path, new_path );
+		}
+	}
+
+
+	void CLogic::update_connection_path_on_move( CServer &server, const CNodeEndpoint &connection_path, const CPath &previous_path, const CPath &new_path )
+	{
+		int previous_path_length;
+		int absolute_path_length;
+		int characters_after_old_path;
+
+		const CNode *parent = connection_path.get_node().get_parent();
+		const string &connection_path_string = *connection_path.get_value();
+
+		ostringstream absolute_path_stream;
+		if( parent )
+		{
+			absolute_path_stream << parent->get_path().get_string() << ".";
+		}
+	
+		absolute_path_stream << connection_path_string;
+
+		const string &absolute_path = absolute_path_stream.str();
+
+		previous_path_length = previous_path.get_string().length();
+		absolute_path_length = absolute_path.length();
+		if( previous_path_length > absolute_path_length || previous_path.get_string() != absolute_path.substr( 0, previous_path_length ) )
+		{
+			/* connection_path isn't affected by this move */
+			return;
+		}
+
+		const CPath &parent_path = connection_path.get_node().get_parent_path();
+		for( int i = 0; i < parent_path.get_number_of_elements(); i++ )
+		{
+			if( i >= new_path.get_number_of_elements() || new_path[ i ] != parent_path[ i ] )
+			{
+				/* new_path can't be targetted by this connection */
+				return;
+			}
+		}
+
+		CPath new_relative_path;
+		for( int i = parent_path.get_number_of_elements(); i < new_path.get_number_of_elements(); i++ )
+		{
+			new_relative_path.append_element( new_path[ i ] );
+		}
+	
+		characters_after_old_path = absolute_path_length - previous_path_length;
+	
+		ostringstream new_connection_path;
+		new_connection_path << new_relative_path.get_string() << absolute_path.substr( previous_path_length );
+
+		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path.str() ) ), NTG_SOURCE_SYSTEM );
+	}
+
+
 }

@@ -24,6 +24,7 @@
 
 #include "api/common_typedefs.h"
 #include "value.h"
+#include "error.h"
 
 namespace ntg_api
 {
@@ -81,6 +82,14 @@ namespace ntg_internal
 			void handle_connections( CServer &server, const CNode &search_node, const CNodeEndpoint &changed_endpoint );
 
 			void quantize_to_allowed_states( ntg_api::CValue &value, const ntg_api::value_set &allowed_states ) const;
+
+			ntg_api::CError connect_audio_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect );
+
+			void update_connection_path_on_rename( CServer &server, const CNodeEndpoint &connection_path, const ntg_api::string &previous_name, const ntg_api::string &new_name );
+			void update_connections_on_rename( CServer &server, const CNode &search_node, const ntg_api::string &previous_name, const ntg_api::string &new_name );
+
+			void update_connections_on_move( CServer &server, const CNode &search_node, const ntg_api::CPath &previous_path, const ntg_api::CPath &new_path );
+			void update_connection_path_on_move( CServer &server, const CNodeEndpoint &connection_path, const ntg_api::CPath &previous_path, const ntg_api::CPath &new_path );
 
 			const GUID &get_connection_interface_guid( CServer &server );
 

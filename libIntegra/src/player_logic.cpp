@@ -27,6 +27,7 @@
 #include "node_endpoint.h"
 #include "trace.h"
 #include "interface_definition.h"
+#include "player_handler.h"
 #include "api/command_api.h"
 
 #include <assert.h>
@@ -69,7 +70,7 @@ namespace ntg_internal
 			endpoint_name == s_endpoint_start ||
 			endpoint_name == s_endpoint_end )
 		{
-			ntg_player_update( server, get_node().get_id() );
+			server.get_player_handler().update( get_node() );
 			return;
 		}
 
@@ -77,7 +78,7 @@ namespace ntg_internal
 		{
 			if( source != NTG_SOURCE_SYSTEM )
 			{
-				ntg_player_update( server, get_node().get_id() );
+				server.get_player_handler().update( get_node() );
 			}
 			return;
 		}
@@ -106,7 +107,7 @@ namespace ntg_internal
 	{
 		CLogic::handle_rename( server, previous_name, source );
 
-		ntg_player_handle_path_change( server, get_node() );
+		server.get_player_handler().handle_path_change( get_node() );
 	}
 
 
@@ -114,7 +115,7 @@ namespace ntg_internal
 	{
 		CLogic::handle_move( server, previous_path, source );
 
-		ntg_player_handle_path_change( server, get_node() );
+		server.get_player_handler().handle_path_change( get_node() );
 	}
 
 
@@ -122,7 +123,7 @@ namespace ntg_internal
 	{
 		CLogic::handle_delete( server, source );
 
-		ntg_player_handle_delete( server, get_node() );
+		server.get_player_handler().handle_delete( get_node() );
 	}
 
 
@@ -141,7 +142,7 @@ namespace ntg_internal
 	{
 		CLogic::update_on_path_change( server );
 
-		ntg_player_handle_path_change( server, get_node() );
+		server.get_player_handler().handle_path_change( get_node() );
 	}
 
 

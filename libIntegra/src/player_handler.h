@@ -28,54 +28,67 @@
 
 #include "path.h"
 
+using namespace ntg_api;
+
 
 namespace ntg_internal
 {
 	class CNode;
 	class CServer;
 
-	typedef struct ntg_player_state_ 
+	class CPlayerHandler
 	{
-		ntg_internal::internal_id id;
-		ntg_api::CPath tick_path;
-		ntg_api::CPath play_path;
-		int rate;
-		int initial_ticks;
-		int previous_ticks;
-		int64_t start_msecs;
+		public:
+			CPlayerHandler( CServer &server );
+			~CPlayerHandler();
 
-		bool loop;
-		int loop_start_ticks;
-		int loop_end_ticks;
+			void update( const CNode &player_node );
 
-		struct ntg_player_state_ *next;
+			void handle_path_change( const CNode &player_node );
+			void handle_delete( const CNode &player_node );
 
-	} ntg_player_state;
+		private:
 
+			friend void *player_handler_thread_function( void *context );
 
-	typedef struct ntg_player_data_
-	{
-		ntg_player_state *player_states;
+			void thread_function();
 
-		pthread_t thread;
-		pthread_mutex_t player_state_mutex;
-
-	#ifdef __APPLE__
-		sem_t *sem_player_thread_shutdown;
-	#else
-		sem_t sem_player_thread_shutdown;
-	#endif
-
-	} ntg_player_data;
+			void stop_player( internal_id player_id );
+			int64_t get_current_msecs() const;
 
 
-	void ntg_player_initialize( ntg_internal::CServer &server );
-	void ntg_player_free( ntg_internal::CServer &server );
+			class CPlayerState 
+			{
+				public:
+					CPlayerState();
 
-	void ntg_player_update( ntg_internal::CServer &server, ntg_internal::internal_id player_id );
+					ntg_internal::internal_id m_id;
+					CPath m_tick_path;
+					CPath m_play_path;
+					int m_rate;
+					int m_initial_ticks;
+					int m_previous_ticks;
+					int64_t m_start_msecs;
 
-	void ntg_player_handle_path_change( ntg_internal::CServer &server, const ntg_internal::CNode &player_node );
-	void ntg_player_handle_delete( ntg_internal::CServer &server, const ntg_internal::CNode &player_node );
+					bool m_loop;
+					int m_loop_start_ticks;
+					int m_loop_end_ticks;
+			};
+
+			typedef std::unordered_map<internal_id, CPlayerState *> player_state_map;
+
+			player_state_map m_player_states;
+
+			pthread_t m_thread;
+			pthread_mutex_t m_mutex;
+
+			sem_t *m_thread_shutdown_semaphore;
+
+			CServer &m_server;
+
+			static const int s_player_update_microseconds;
+			static const int s_player_sanity_check_seconds;
+	};
 }
 
 

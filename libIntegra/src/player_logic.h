@@ -30,6 +30,7 @@ namespace ntg_internal
 	class CPlayerLogic : public CLogic
 	{
 		friend class CSceneLogic;
+		friend class CPlayerHandler;
 
 		public:
 			CPlayerLogic( const CNode &node );
@@ -39,10 +40,6 @@ namespace ntg_internal
 			void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
 			void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
 			void handle_delete( CServer &server, ntg_command_source source );
-
-			//todo - just declare CPlayerHandler as friend class once it's written instead of all these functions
-			friend void ntg_player_update( CServer &server, internal_id player_id );
-			friend void ntg_player_handle_path_change( CServer &server, const CNode &player_node );
 
 		private:
 

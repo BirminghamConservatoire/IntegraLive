@@ -42,6 +42,7 @@ extern "C"
 #include "bridge_host.h"
 #include "string_helper.h"
 #include "lua_engine.h"
+#include "player_handler.h"
 
 #include "api/server_startup_info.h"
 #include "api/command_api.h"
@@ -145,7 +146,7 @@ namespace ntg_internal
 
 		m_lua_engine = new CLuaEngine;
 
-		ntg_player_initialize( *this );
+		m_player_handler = new CPlayerHandler( *this );
 
 		m_module_manager = new CModuleManager( get_scratch_directory(), startup_info.system_module_directory, startup_info.third_party_module_directory );
 
@@ -205,7 +206,7 @@ namespace ntg_internal
 
 		delete m_lua_engine;
 
-		ntg_player_free( *this );
+		delete m_player_handler;
 
 		NTG_TRACE_PROGRESS( "shutting down OSC client" );
 		ntg_osc_client_destroy( m_osc_client );

@@ -30,7 +30,6 @@
 #include "path.h"
 #include "state_table.h"
 #include "osc_client.h"
-#include "player_handler.h"
 
 
 namespace ntg_api
@@ -51,6 +50,7 @@ namespace ntg_internal
 	class CModuleManager;
 	class CScratchDirectory;
 	class CLuaEngine;
+	class CPlayerHandler;
 
 	class CServer : public CServerApi
 	{
@@ -93,8 +93,7 @@ namespace ntg_internal
 
 			CLuaEngine &get_lua_engine() { return *m_lua_engine; }
 
-			ntg_player_data *get_player_data() { return m_player_data; }
-			void set_player_data( ntg_player_data *player_data ) { m_player_data = player_data; }
+			CPlayerHandler &get_player_handler() { return *m_player_handler; }
 
 			CError process_command( CCommandApi *command, ntg_command_source command_source, CCommandResult *result = NULL );
 
@@ -120,7 +119,7 @@ namespace ntg_internal
 			CModuleManager *m_module_manager;
 			CScratchDirectory *m_scratch_directory;
 			CLuaEngine *m_lua_engine;
-			ntg_player_data *m_player_data;
+			CPlayerHandler *m_player_handler;
 
 			pthread_t m_xmlrpc_thread;
 

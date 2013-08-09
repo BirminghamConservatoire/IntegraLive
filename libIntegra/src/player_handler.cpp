@@ -18,20 +18,19 @@
  * USA.
  */
 
-
-#include "platform_specifics.h"
-
-#include <assert.h>
 #include <unistd.h>
 
-#include "value.h"
+#include "platform_specifics.h"
 #include "player_handler.h"
 #include "trace.h"
-#include "globals.h"
-#include "path.h"
+#include "node.h"
+#include "node_endpoint.h"
 #include "player_logic.h"
 #include "server.h"
 #include "api/command_api.h"
+
+#include <assert.h>
+
 
 
 #ifdef _WINDOWS
@@ -40,248 +39,72 @@
 #include <sys/time.h> /* for gettimeofday() */
 #endif
 
-using namespace ntg_api;
-using namespace ntg_internal;
-
-/* 
- hardcoded player update rate of 40hz 
- */
-#define NTG_PLAYER_UPDATE_MICROSECONDS 25000
-
-/* 
- in case the user updates their clock, or DST starts or ends.  
- When elapsed time between player updates exceeds this value, clock is reset to avoid jumping around 
- */
-#define NTG_PLAYER_SANITY_CHECK_SECONDS 30
-
-
-
 
 namespace ntg_internal
 {
+	/* 
+	 hardcoded player update rate of 40hz 
+	*/
+	const int CPlayerHandler::s_player_update_microseconds = 25000;
+
+	/* 
+	 in case the user updates their clock, or DST starts or ends.  
+	 When elapsed time between player updates exceeds this value, clock is reset to avoid jumping around 
+	*/
+	const int CPlayerHandler::s_player_sanity_check_seconds = 30;
 
 
-	void ntg_player_state_free( ntg_player_state *state )
+
+	CPlayerHandler::CPlayerHandler( CServer &server )
+		:	m_server( server )
 	{
-		delete state;
+		pthread_mutex_init( &m_mutex, NULL);
+
+		#ifdef __APPLE__
+			m_thread_shutdown_semaphore= sem_open( "sem_player_thread_shutdown" , O_CREAT, 0777, 0 );
+		#else
+			m_thread_shutdown_semaphore = new sem_t;
+			sem_init( m_thread_shutdown_semaphore, 0, 0 );
+		#endif
+
+		pthread_create( &m_thread, NULL, player_handler_thread_function, this );
 	}
 
 
-	sem_t *ntg_player_data_get_thread_shutdown_semaphore( ntg_player_data *player_data )
+	CPlayerHandler::~CPlayerHandler()
 	{
-	#ifdef __APPLE__
-		return player_data->sem_player_thread_shutdown;
-	#else
-		return &player_data->sem_player_thread_shutdown;
-	#endif
-	}
+		NTG_TRACE_PROGRESS( "stopping player thread" );
 
+		sem_post( m_thread_shutdown_semaphore );
+		pthread_join( m_thread, NULL);
 
-	void ntg_player_stop( CServer &server, internal_id player_id, int final_tick )
-	{
-		/*
-		look through player states list, remove state for the first matching player_id found
-		nb:assumes there's only one player state per player
-		*/
+		#ifdef __APPLE__
+			sem_close( m_thread_shutdown_semaphore );
+		#else
+			sem_destroy( m_thread_shutdown_semaphore );
+			delete m_thread_shutdown_semaphore;
+		#endif
 
-		ntg_player_data *player_data = NULL;
-		ntg_player_state *iterator = NULL;
-		ntg_player_state **previous = NULL; 
+		NTG_TRACE_PROGRESS( "freeing player states" );
 
-		player_data = server.get_player_data();
+		pthread_mutex_lock( &m_mutex );
 
-		pthread_mutex_lock( &player_data->player_state_mutex );
-
-		previous = &(player_data->player_states); 
-
-		for( iterator = *previous; iterator; iterator = iterator->next )
+		for( player_state_map::iterator i = m_player_states.begin(); i != m_player_states.end(); i++ )
 		{
-			if( iterator->id == player_id )
-			{
-				/* set final tick */
-
-				if( final_tick != iterator->previous_ticks )
-				{
-					server.process_command( CSetCommandApi::create( iterator->tick_path, &CIntegerValue( final_tick ) ), NTG_SOURCE_SYSTEM );
-				}
-
-				/* remove and free the player state */
-
-				*previous = iterator->next;
-
-				ntg_player_state_free( iterator );
-				break;	
-
-				previous = &(iterator->next);
-			}
+			delete i->second;
 		}
 
-		pthread_mutex_unlock( &player_data->player_state_mutex );
+		pthread_mutex_unlock( &m_mutex );
+
+		pthread_mutex_destroy( &m_mutex );
 	}
 
 
-	int64_t ntg_get_current_msecs()
+	void CPlayerHandler::update( const CNode &player_node )
 	{
-	#ifdef _WINDOWS
-
-		assert( CLOCKS_PER_SEC == 1000 );
-		return clock();
-
-	#else
-
-		struct timeval time_data;
-	
-		gettimeofday( &time_data, NULL );
-
-		int64_t result = time_data.tv_sec;
-		result *= 1000;
-	
-		result += ( time_data.tv_usec / 1000 );
-	
-		return result;
-
-	#endif
-	}
-
-
-	void *ntg_player_thread( void *context )
-	{
-		ntg_player_state *player = NULL;
-		int64_t current_msecs;
-		int player_rate;
-		int elapsed_ticks;
-		int new_tick_value;
-		int loop_duration;
-
-		ntg_player_data *player_data = static_cast< ntg_player_data * > ( context );
-
-		while( sem_trywait( ntg_player_data_get_thread_shutdown_semaphore( player_data ) ) < 0 ) 
-		{
-			usleep( NTG_PLAYER_UPDATE_MICROSECONDS );
-
-			std::list<CSetCommandApi *> commands;
-
-			pthread_mutex_lock(&player_data->player_state_mutex);
-
-			current_msecs = ntg_get_current_msecs();
-
-			for( player = player_data->player_states; player; player = player->next )
-			{
-				player_rate = player->rate;
-				elapsed_ticks = ( current_msecs - player->start_msecs ) * player_rate / 1000;
-			
-				new_tick_value = player->initial_ticks + elapsed_ticks;
-
-				if( abs( new_tick_value - player->previous_ticks ) > NTG_PLAYER_SANITY_CHECK_SECONDS * player_rate )
-				{
-					/* special case to handle unusual number of elapsed ticks - for example when clocks go forward or back */
-					player->start_msecs = current_msecs - ( player->previous_ticks - player->initial_ticks ) * 1000 / player_rate; 
-					new_tick_value = player->previous_ticks;
-				}
-		
-				if( new_tick_value >= player->loop_end_ticks && player->loop_end_ticks > 0 )
-				{
-					if( player->loop )
-					{
-						loop_duration = ( player->loop_end_ticks - player->loop_start_ticks );
-						if( loop_duration > 0 )
-						{
-							new_tick_value = ( new_tick_value - player->loop_start_ticks ) % loop_duration + player->loop_start_ticks;
-						}
-					}
-					else
-					{
-						commands.push_back( CSetCommandApi::create( player->play_path, &CIntegerValue( 0 ) ) );
-					}
-				}
-
-				if( new_tick_value != player->previous_ticks )
-				{
-					commands.push_back( CSetCommandApi::create( player->tick_path, &CIntegerValue( new_tick_value ) ) );
-					player->previous_ticks = new_tick_value;
-				}
-			}
-
-			pthread_mutex_unlock(&player_data->player_state_mutex);
-
-			if( !commands.empty() )
-			{
-				server_->lock();
-				for( std::list<CSetCommandApi *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
-				{
-					server_->process_command( *i, NTG_SOURCE_SYSTEM );
-				}
-				server_->unlock();
-			}
-		}
-
-		return NULL;
-	}
-
-
-	void ntg_player_initialize( CServer &server )
-	{
-		ntg_player_data *player_data = new ntg_player_data;
-
-		player_data->player_states = NULL;
-
-		pthread_mutex_init(&player_data->player_state_mutex, NULL);
-
-	#ifdef __APPLE__
-		player_data->sem_player_thread_shutdown = sem_open("sem_player_thread_shutdown", O_CREAT, 0777, 0);
-	#else
-		sem_init(&player_data->sem_player_thread_shutdown, 0, 0);
-	#endif
-
-		pthread_create( &player_data->thread, NULL, ntg_player_thread, player_data);
-
-		server.set_player_data( player_data );
-	}
-
-
-	void ntg_player_free( CServer &server )
-	{
-		ntg_player_state *next_state = NULL;
-		ntg_player_data *player_data = server.get_player_data();
-		assert( player_data );
-
-		NTG_TRACE_PROGRESS("stopping player thread");
-
-		sem_post( ntg_player_data_get_thread_shutdown_semaphore( player_data ) );
-		pthread_join( player_data->thread, NULL);
-
-		NTG_TRACE_PROGRESS("freeing player states");
-
-		pthread_mutex_lock( &player_data->player_state_mutex );
-
-		while( player_data->player_states )
-		{
-			next_state = player_data->player_states->next;
-
-			ntg_player_state_free( player_data->player_states );
-
-			player_data->player_states = next_state;		
-		}
-
-		pthread_mutex_unlock( &player_data->player_state_mutex );
-
-		pthread_mutex_destroy( &player_data->player_state_mutex );
-
-		delete player_data;
-	}
-
-
-	void ntg_player_update( CServer &server, internal_id player_id )
-	{
-		ntg_player_data *player_data = server.get_player_data();
-		assert( player_data );
-
-		const CNode *player_node = server.find_node( player_id );
-		assert( player_node );
-
-		const CNodeEndpoint *play_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_play );
-		const CNodeEndpoint *active_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_active );
-		const CNodeEndpoint *tick_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_tick );
+		const CNodeEndpoint *play_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_play );
+		const CNodeEndpoint *active_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_active );
+		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_tick );
 		assert( play_endpoint && active_endpoint && tick_endpoint );
 
 		int play_value = *play_endpoint->get_value();
@@ -289,99 +112,226 @@ namespace ntg_internal
 
 		if( play_value == 0 || active_value == 0 )
 		{
-			ntg_player_stop( server, player_id, *tick_endpoint->get_value() );
+			stop_player( player_node.get_id() );
 			return;
 		}
 
 		/*
 		lookup player attributes
 		*/
-		const CNodeEndpoint *rate_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_rate );
-		const CNodeEndpoint *loop_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_loop );
-		const CNodeEndpoint *start_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_start );
-		const CNodeEndpoint *end_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_end );
+		const CNodeEndpoint *rate_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_rate );
+		const CNodeEndpoint *loop_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_loop );
+		const CNodeEndpoint *start_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_start );
+		const CNodeEndpoint *end_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_end );
 
 		assert( rate_endpoint && loop_endpoint && start_endpoint && end_endpoint );
 
-		pthread_mutex_lock( &player_data->player_state_mutex );
+		pthread_mutex_lock( &m_mutex );
 
 		/*
 		see if the player is already playing
 		*/
 
-		ntg_player_state *player_state;
-		for( player_state = player_data->player_states; player_state; player_state = player_state->next )
-		{
-			if( player_state->id == player_id )
-			{
-				/*this player is already playing - update it*/
-				break;
-			}
-		}
+		CPlayerState *player_state = NULL;
 
-		if( !player_state )
+		internal_id player_id = player_node.get_id();
+		player_state_map::iterator lookup = m_player_states.find( player_id );
+		if( lookup == m_player_states.end() )
 		{
 			/* create new player if not already playing */
-			player_state = new ntg_player_state;
-			player_state->id = player_id;
-			player_state->next = player_data->player_states;
-			player_data->player_states = player_state;
+			player_state = new CPlayerState;
+			player_state->m_id = player_id;
+			m_player_states[ player_id ] = player_state;
+		}
+		else
+		{
+			/*this player is already playing - update it*/
+			player_state = lookup->second;
 		}
 
 		/* recreate paths, in case they have changed */
-		player_state->tick_path = player_node->get_path();
-		player_state->tick_path.append_element( CPlayerLogic::s_endpoint_tick );
+		player_state->m_tick_path = player_node.get_path();
+		player_state->m_tick_path.append_element( CPlayerLogic::s_endpoint_tick );
 
-		player_state->play_path = player_node->get_path();
-		player_state->play_path.append_element( CPlayerLogic::s_endpoint_play );
+		player_state->m_play_path = player_node.get_path();
+		player_state->m_play_path.append_element( CPlayerLogic::s_endpoint_play );
 
 		/*
 		setup all other player state fields
 		*/
 
-		player_state->initial_ticks = *tick_endpoint->get_value(); 
-		player_state->previous_ticks = player_state->initial_ticks; 
-		player_state->rate = *rate_endpoint->get_value();
-		player_state->start_msecs = ntg_get_current_msecs();
+		player_state->m_initial_ticks = *tick_endpoint->get_value(); 
+		player_state->m_previous_ticks = player_state->m_initial_ticks; 
+		player_state->m_rate = *rate_endpoint->get_value();
+		player_state->m_start_msecs = get_current_msecs();
 
 		int loop_value = *loop_endpoint->get_value();
-		player_state->loop = ( loop_value != 0 );
-		player_state->loop_start_ticks = *start_endpoint->get_value();
-		player_state->loop_end_ticks = *end_endpoint->get_value();
+		player_state->m_loop = ( loop_value != 0 );
+		player_state->m_loop_start_ticks = *start_endpoint->get_value();
+		player_state->m_loop_end_ticks = *end_endpoint->get_value();
 
-		pthread_mutex_unlock( &player_data->player_state_mutex );
+		pthread_mutex_unlock( &m_mutex );
 	}
 
 
-	void ntg_player_handle_path_change( CServer &server, const CNode &player_node )
+	void CPlayerHandler::handle_path_change( const CNode &player_node )
 	{
-		ntg_player_data *player_data = NULL;
-		ntg_player_state *player_state = NULL;
+		pthread_mutex_lock( &m_mutex );
 
-		player_data = server.get_player_data();
-		assert( player_data );
-
-		pthread_mutex_lock( &player_data->player_state_mutex );
-
-		for( player_state = player_data->player_states; player_state; player_state = player_state->next )
+		player_state_map::iterator lookup = m_player_states.find( player_node.get_id() );
+		if( lookup != m_player_states.end() )
 		{
-			if( player_state->id == player_node.get_id() )
-			{
-				player_state->tick_path = player_node.get_path();
-				player_state->tick_path.append_element( CPlayerLogic::s_endpoint_tick );
+			CPlayerState *player_state = lookup->second;
 
-				player_state->play_path = player_node.get_path();
-				player_state->play_path.append_element( CPlayerLogic::s_endpoint_play );
-			}
+			player_state->m_tick_path = player_node.get_path();
+			player_state->m_tick_path.append_element( CPlayerLogic::s_endpoint_tick );
+
+			player_state->m_play_path = player_node.get_path();
+			player_state->m_play_path.append_element( CPlayerLogic::s_endpoint_play );
 		}
 
-		pthread_mutex_unlock( &player_data->player_state_mutex );
+		pthread_mutex_unlock( &m_mutex );	
 	}
 
 
-	void ntg_player_handle_delete( CServer &server, const CNode &player_node )
+	void CPlayerHandler::handle_delete( const CNode &player_node )
 	{
-		ntg_player_stop( server, player_node.get_id(), 0 );
+		stop_player( player_node.get_id() );
 	}
 
+
+	void CPlayerHandler::stop_player( internal_id player_id )
+	{
+		pthread_mutex_lock( &m_mutex );
+
+		player_state_map::iterator lookup = m_player_states.find( player_id );
+		if( lookup != m_player_states.end() )
+		{
+			CPlayerState *player_state = lookup->second;
+
+			delete player_state;
+
+			m_player_states.erase( player_id );
+		}
+
+		pthread_mutex_unlock( &m_mutex );	
+	}
+
+
+	int64_t CPlayerHandler::get_current_msecs() const
+	{
+		#ifdef _WINDOWS
+
+			assert( CLOCKS_PER_SEC == 1000 );
+			return clock();
+
+		#else
+
+			struct timeval time_data;
+	
+			gettimeofday( &time_data, NULL );
+
+			int64_t result = time_data.tv_sec;
+			result *= 1000;
+	
+			result += ( time_data.tv_usec / 1000 );
+	
+			return result;
+
+		#endif	
+	}
+
+
+	void CPlayerHandler::thread_function()
+	{
+		/*int64_t current_msecs;
+		int player_rate;
+		int elapsed_ticks;
+		int new_tick_value;
+		int loop_duration;*/
+
+		while( sem_trywait( m_thread_shutdown_semaphore ) < 0 ) 
+		{
+			usleep( CPlayerHandler::s_player_update_microseconds );
+
+			std::list<CSetCommandApi *> commands;
+
+			pthread_mutex_lock( &m_mutex );
+
+			int64_t current_msecs = get_current_msecs();
+
+			for( player_state_map::const_iterator i = m_player_states.begin(); i != m_player_states.end(); i++ )
+			{
+				CPlayerState *player_state = i->second;
+				int player_rate = player_state->m_rate;
+				int elapsed_ticks = ( current_msecs - player_state->m_start_msecs ) * player_rate / 1000;
+			
+				int new_tick_value = player_state->m_initial_ticks + elapsed_ticks;
+
+				if( abs( new_tick_value - player_state->m_previous_ticks ) > s_player_sanity_check_seconds * player_rate )
+				{
+					/* special case to handle unusual number of elapsed ticks - for example when clocks go forward or back */
+					player_state->m_start_msecs = current_msecs - ( player_state->m_previous_ticks - player_state->m_initial_ticks ) * 1000 / player_rate; 
+					new_tick_value = player_state->m_previous_ticks;
+				}
+		
+				if( new_tick_value >= player_state->m_loop_end_ticks && player_state->m_loop_end_ticks > 0 )
+				{
+					if( player_state->m_loop )
+					{
+						int loop_duration = ( player_state->m_loop_end_ticks - player_state->m_loop_start_ticks );
+						if( loop_duration > 0 )
+						{
+							new_tick_value = ( new_tick_value - player_state->m_loop_start_ticks ) % loop_duration + player_state->m_loop_start_ticks;
+						}
+					}
+					else
+					{
+						commands.push_back( CSetCommandApi::create( player_state->m_play_path, &CIntegerValue( 0 ) ) );
+					}
+				}
+
+				if( new_tick_value != player_state->m_previous_ticks )
+				{
+					commands.push_back( CSetCommandApi::create( player_state->m_tick_path, &CIntegerValue( new_tick_value ) ) );
+					player_state->m_previous_ticks = new_tick_value;
+				}
+			}
+
+			pthread_mutex_unlock( &m_mutex );
+
+			if( !commands.empty() )
+			{
+				m_server.lock();
+				for( std::list<CSetCommandApi *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
+				{
+					m_server.process_command( *i, NTG_SOURCE_SYSTEM );
+				}
+				m_server.unlock();
+			}
+		}
+	}
+
+
+	CPlayerHandler::CPlayerState::CPlayerState()
+	{
+		m_id = 0;
+		m_rate = 0;
+		m_initial_ticks = 0;
+		m_previous_ticks = 0;
+		m_start_msecs = 0;
+
+		m_loop = 0;
+		m_loop_start_ticks = false;
+		m_loop_end_ticks = false;
+	}
+
+
+	void *player_handler_thread_function( void *context )
+	{
+		CPlayerHandler *player_handler = static_cast< CPlayerHandler * > ( context );
+		player_handler->thread_function();
+
+		return NULL;
+	}
 }

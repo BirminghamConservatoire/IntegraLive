@@ -25,20 +25,24 @@
 #include "api/command_api.h"
 #include "path.h"
 
+using namespace ntg_api;
+
+
+
 
 namespace ntg_internal
 {
-	class CMoveCommand : public ntg_api::CMoveCommandApi
+	class CMoveCommand : public CMoveCommandApi
 	{
 		public:
-			CMoveCommand( const ntg_api::CPath &node_path, const ntg_api::CPath &new_parent_path );
+			CMoveCommand( const CPath &node_path, const CPath &new_parent_path );
 
 		private:
 			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
 
-			ntg_api::CPath m_node_path;
-			ntg_api::CPath m_new_parent_path;
+			CPath m_node_path;
+			CPath m_new_parent_path;
 	};
 }
 

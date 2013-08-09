@@ -28,8 +28,6 @@
 #include "trace.h"
 #include "string_helper.h"
 
-using namespace ntg_api;
-
 #define INTERFACE					"InterfaceDeclaration"
 #define INTERFACE_INFO				"InterfaceInfo"			
 #define NAME						"Name"

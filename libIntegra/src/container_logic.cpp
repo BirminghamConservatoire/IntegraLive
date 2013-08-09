@@ -30,9 +30,6 @@
 #include <assert.h>
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CContainerLogic::CContainerLogic( const CNode &node )

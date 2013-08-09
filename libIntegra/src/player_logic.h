@@ -35,9 +35,9 @@ namespace ntg_internal
 			~CPlayerLogic();
 
 			void handle_new( CServer &server, ntg_command_source source );
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const ntg_api::CValue *previous_value, ntg_command_source source );
-			void handle_rename( CServer &server, const ntg_api::string &previous_name, ntg_command_source source );
-			void handle_move( CServer &server, const ntg_api::CPath &previous_path, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
+			void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
 			void handle_delete( CServer &server, ntg_command_source source );
 
 			//todo - just declare CPlayerHandler as friend class once it's written instead of all these functions
@@ -48,12 +48,12 @@ namespace ntg_internal
 
 			void update_on_activation( CServer &server );
 
-			static const ntg_api::string s_endpoint_play;
-			static const ntg_api::string s_endpoint_tick;
-			static const ntg_api::string s_endpoint_start;
-			static const ntg_api::string s_endpoint_end;
-			static const ntg_api::string s_endpoint_loop;
-			static const ntg_api::string s_endpoint_rate;
+			static const string s_endpoint_play;
+			static const string s_endpoint_tick;
+			static const string s_endpoint_start;
+			static const string s_endpoint_end;
+			static const string s_endpoint_loop;
+			static const string s_endpoint_rate;
 
 
 	};

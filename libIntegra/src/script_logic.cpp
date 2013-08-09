@@ -23,9 +23,6 @@
 #include "script_logic.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CScriptLogic::CScriptLogic( const CNode &node )

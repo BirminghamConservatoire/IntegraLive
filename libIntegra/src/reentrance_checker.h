@@ -39,18 +39,18 @@ namespace ntg_internal
 			~CReentranceChecker();
 
 			/**\brief push reentrance stack, returns true if rentrance detected */
-			bool push( const ntg_internal::CNodeEndpoint *node_endpoint, ntg_internal::ntg_command_source command_source );
+			bool push( const CNodeEndpoint *node_endpoint, ntg_command_source command_source );
 
 			/**\brief pop reentrance stack.  must be called once for every push which returns false */
 			void pop();
 
 		private:
 
-			static bool cares_about_source( ntg_internal::ntg_command_source command_source );
+			static bool cares_about_source( ntg_command_source command_source );
 
 
-			typedef std::list<const ntg_internal::CNodeEndpoint *> node_endpoint_stack;
-			typedef std::unordered_map<const ntg_internal::CNodeEndpoint *, ntg_internal::ntg_command_source> map_node_endpoint_to_source;
+			typedef std::list<const CNodeEndpoint *> node_endpoint_stack;
+			typedef std::unordered_map<const CNodeEndpoint *, ntg_command_source> map_node_endpoint_to_source;
 
 			node_endpoint_stack m_stack;
 			map_node_endpoint_to_source m_map_endpoint_to_source;

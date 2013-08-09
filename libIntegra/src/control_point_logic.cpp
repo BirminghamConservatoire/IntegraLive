@@ -23,9 +23,6 @@
 #include "control_point_logic.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CControlPointLogic::CControlPointLogic( const CNode &node )

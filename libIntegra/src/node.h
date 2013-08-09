@@ -36,6 +36,9 @@ typedef xmlTextReader *xmlTextReaderPtr;
 #endif
 
 
+using namespace ntg_api;
+
+
 namespace ntg_internal
 {
 	class CNode;
@@ -43,7 +46,7 @@ namespace ntg_internal
 	class CInterfaceDefinition;
 
 	typedef std::list<const CNode *> node_list;
-	typedef std::unordered_map<ntg_api::string, CNode *> node_map;
+	typedef std::unordered_map<string, CNode *> node_map;
 	typedef std::unordered_map<internal_id, const CNode *> map_id_to_node;
 
 
@@ -53,34 +56,34 @@ namespace ntg_internal
 			CNode();
 			~CNode();
 
-			void initialize( const CInterfaceDefinition &interface_definition, const ntg_api::string &name, internal_id id, CNode *parent );
+			void initialize( const CInterfaceDefinition &interface_definition, const string &name, internal_id id, CNode *parent );
 
-			void rename( const ntg_api::string &new_name );
+			void rename( const string &new_name );
 			void reparent( CNode *new_parent );
 
 			internal_id get_id() const { return m_id; }
 			const CInterfaceDefinition &get_interface_definition() const { return *m_interface_definition; }
 
-			const ntg_api::string &get_name() const { return m_name; }
-			const ntg_api::CPath &get_path() const { return m_path; }
+			const string &get_name() const { return m_name; }
+			const CPath &get_path() const { return m_path; }
 
 			const CNode *get_parent() const { return m_parent; }
 			CNode *get_parent_writable() { return m_parent; }
 
 			/* returns an empty CPath when node has no parent */
-			const ntg_api::CPath &get_parent_path() const;
+			const CPath &get_parent_path() const;
 
 			const node_map &get_children() const { return m_children; }
 			node_map &get_children_writable() { return m_children; }
 
-			const CNode *get_child( const ntg_api::string &child_name ) const;
+			const CNode *get_child( const string &child_name ) const;
 
 			const node_endpoint_map &get_node_endpoints() const { return m_node_endpoints; }
 			node_endpoint_map &get_node_endpoints_writable() { return m_node_endpoints; }
 
-			const CNodeEndpoint *get_node_endpoint( const ntg_api::string &endpoint_name ) const;
+			const CNodeEndpoint *get_node_endpoint( const string &endpoint_name ) const;
 
-			void get_all_node_paths( ntg_api::path_list &results ) const;
+			void get_all_node_paths( path_list &results ) const;
 
 			CLogic &get_logic() const;
 
@@ -92,8 +95,8 @@ namespace ntg_internal
 			internal_id m_id;
 			const CInterfaceDefinition *m_interface_definition;
 
-			ntg_api::string m_name;
-			ntg_api::CPath m_path;
+			string m_name;
+			CPath m_path;
 
 			CNode *m_parent;
 			node_map m_children;

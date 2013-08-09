@@ -25,9 +25,6 @@
 #include "validator.h"
 #include "globals.h"
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	const char *CValidator::s_schema_file = "CollectionSchema.xsd";

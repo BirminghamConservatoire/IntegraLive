@@ -25,19 +25,21 @@
 #include "api/command_api.h"
 #include "path.h"
 
+using namespace ntg_api;
+
 
 namespace ntg_internal
 {
-	class CDeleteCommand : public ntg_api::CDeleteCommandApi
+	class CDeleteCommand : public CDeleteCommandApi
 	{
 		public:
-			CDeleteCommand( const ntg_api::CPath &path );
+			CDeleteCommand( const CPath &path );
 
 		private:
 			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
 
-			ntg_api::CPath m_path;
+			CPath m_path;
 	};
 }
 

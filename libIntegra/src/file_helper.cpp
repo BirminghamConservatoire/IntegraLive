@@ -36,9 +36,6 @@
 #include "globals.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	string CFileHelper::extract_filename_from_path( const string &path )

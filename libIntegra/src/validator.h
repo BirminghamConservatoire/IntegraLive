@@ -27,6 +27,9 @@
 
 #include "error.h"
 
+using namespace ntg_api;
+
+
 namespace ntg_internal
 {
 	class CValidator
@@ -41,15 +44,15 @@ namespace ntg_internal
 			 * \param *xml_buffer pointer to buffer containing xml data
 			 * \param buffer_length size of buffer in bytes
 			 */
-			ntg_api::CError validate_ixd( const char *xml_buffer, unsigned int buffer_length );
+			CError validate_ixd( const char *xml_buffer, unsigned int buffer_length );
 
 		private:
 
 
 			xmlDocPtr document_read( const char *xml_buffer, unsigned int buffer_length );
-			ntg_api::CError document_free( xmlDocPtr doc );
+			CError document_free( xmlDocPtr doc );
 
-			ntg_api::CError validate_against_schema( const xmlDocPtr doc );
+			CError validate_against_schema( const xmlDocPtr doc );
 
 			xmlSchemaParserCtxtPtr m_schema_parser_context;
 			xmlSchemaPtr m_schema;

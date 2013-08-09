@@ -25,20 +25,24 @@
 #include "api/command_api.h"
 #include "path.h"
 
+using namespace ntg_api;
+
+
+
 
 namespace ntg_internal
 {
-	class CSaveCommand : public ntg_api::CSaveCommandApi
+	class CSaveCommand : public CSaveCommandApi
 	{
 		public:
-			CSaveCommand( const ntg_api::string &file_path, const ntg_api::CPath &node_path );
+			CSaveCommand( const string &file_path, const CPath &node_path );
 
 		private:
 			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
 
-			ntg_api::string m_file_path;
-			ntg_api::CPath m_node_path;
+			string m_file_path;
+			CPath m_node_path;
 	};
 }
 

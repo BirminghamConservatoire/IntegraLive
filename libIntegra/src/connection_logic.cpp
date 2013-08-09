@@ -23,9 +23,6 @@
 #include "connection_logic.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CConnectionLogic::CConnectionLogic( const CNode &node )

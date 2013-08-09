@@ -35,15 +35,15 @@ namespace ntg_internal
 			~CContainerLogic();
 
 			void handle_new( CServer &server, ntg_command_source source );
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const ntg_api::CValue *previous_value, ntg_command_source source );
-			void handle_rename( CServer &server, const ntg_api::string &previous_name, ntg_command_source source );
-			void handle_move( CServer &server, const ntg_api::CPath &previous_path, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
+			void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
 			void handle_delete( CServer &server, ntg_command_source source );
 
 		private:
 
 			void active_handler( CServer &server, bool active );
-			void activate_tree( CServer &server, const CNode &node, bool activate, ntg_api::path_list &activated_nodes );
+			void activate_tree( CServer &server, const CNode &node, bool activate, path_list &activated_nodes );
 	};
 }
 

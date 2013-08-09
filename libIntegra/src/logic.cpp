@@ -39,9 +39,6 @@
 #include "module_manager.h"
 #include "api/command_api.h"
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	const string CLogic::s_module_container = "Container";

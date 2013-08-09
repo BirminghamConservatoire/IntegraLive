@@ -37,7 +37,6 @@
 #include <dirent.h>
 
 
-using namespace ntg_api;
 using namespace ntg_internal;
 
 

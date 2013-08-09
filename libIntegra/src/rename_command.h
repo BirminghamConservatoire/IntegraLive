@@ -25,20 +25,23 @@
 #include "api/command_api.h"
 #include "path.h"
 
+using namespace ntg_api;
+
+
 
 namespace ntg_internal
 {
-	class CRenameCommand : public ntg_api::CRenameCommandApi
+	class CRenameCommand : public CRenameCommandApi
 	{
 		public:
-			CRenameCommand( const ntg_api::CPath &path, const ntg_api::string &new_name );
+			CRenameCommand( const CPath &path, const string &new_name );
 
 		private:
 			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
 
-			ntg_api::CPath m_path;
-			ntg_api::string m_new_name;
+			CPath m_path;
+			string m_new_name;
 	};
 }
 

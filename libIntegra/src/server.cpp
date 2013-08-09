@@ -49,9 +49,6 @@ extern "C"
 
 #include <assert.h>
 
-using namespace ntg_api;
-
-
 namespace ntg_api
 {
 	CServerApi *CServerApi::create_server( const ntg_api::CServerStartupInfo &startup_info )

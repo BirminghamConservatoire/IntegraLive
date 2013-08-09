@@ -29,9 +29,6 @@
 #include "trace.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CNodeEndpoint::CNodeEndpoint()

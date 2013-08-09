@@ -25,26 +25,28 @@
 #include "api/common_typedefs.h"
 #include "error.h"
 
+using namespace ntg_api;
+
 
 namespace ntg_internal
 {
 	class CFileHelper
 	{
 		public:
-			static ntg_api::string extract_filename_from_path( const ntg_api::string &path );
+			static string extract_filename_from_path( const string &path );
 
-			static ntg_api::string extract_first_directory_from_path( const ntg_api::string &path );
+			static string extract_first_directory_from_path( const string &path );
 
-			static ntg_api::string ensure_filename_has_suffix( const ntg_api::string &filename, const ntg_api::string &suffix );
+			static string ensure_filename_has_suffix( const string &filename, const string &suffix );
 
 
-			static bool is_directory( const ntg_api::string &directory_name );
-			static void delete_directory( const ntg_api::string &directory_name );
+			static bool is_directory( const string &directory_name );
+			static void delete_directory( const string &directory_name );
 
-			static ntg_api::CError copy_file( const ntg_api::string &source_path, const ntg_api::string &target_path );
-			static ntg_api::CError delete_file( const ntg_api::string &file_name );
+			static CError copy_file( const string &source_path, const string &target_path );
+			static CError delete_file( const string &file_name );
 
-			static void construct_subdirectories( const ntg_api::string &root_directory, const ntg_api::string &relative_file_path );
+			static void construct_subdirectories( const string &root_directory, const string &relative_file_path );
 
 	};
 }

@@ -49,9 +49,6 @@
 #define NTG_NODE_DIRECTORY "node_data"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	string CDataDirectory::create_for_node( const CNode &node, const CServer &server )

@@ -23,9 +23,6 @@
 #include "scene_logic.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CSceneLogic::CSceneLogic( const CNode &node )

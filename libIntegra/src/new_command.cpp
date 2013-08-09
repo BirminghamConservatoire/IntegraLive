@@ -32,8 +32,6 @@
 
 #include <assert.h>
 
-using namespace ntg_api;
-
 
 namespace ntg_api
 {

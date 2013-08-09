@@ -23,9 +23,6 @@
 #include "scaler_logic.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CScalerLogic::CScalerLogic( const CNode &node )

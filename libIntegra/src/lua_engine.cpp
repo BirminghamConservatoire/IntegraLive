@@ -40,8 +40,6 @@ extern "C"
 #include <assert.h>
 
 
-using namespace ntg_api;
-
 namespace ntg_internal
 {
 	const unsigned int CLuaEngine::s_error_color = 0xff4040;

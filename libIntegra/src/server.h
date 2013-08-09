@@ -33,13 +33,14 @@
 #include "player_handler.h"
 
 
-
 namespace ntg_api
 {
 	class CServerStartupInfo;
 	class CCommandApi;
 	class CCommandResult;
 }
+
+using namespace ntg_api;
 
 
 namespace ntg_internal
@@ -51,11 +52,11 @@ namespace ntg_internal
 	class CScratchDirectory;
 	class CLuaEngine;
 
-	class CServer : public ntg_api::CServerApi
+	class CServer : public CServerApi
 	{
 		public:
 
-			CServer( const ntg_api::CServerStartupInfo &startup_info );
+			CServer( const CServerStartupInfo &startup_info );
 			~CServer();
 
 			void block_until_shutdown_signal();
@@ -66,18 +67,18 @@ namespace ntg_internal
 			const node_map &get_nodes() const { return m_nodes; }
 			node_map &get_nodes_writable() { return m_nodes; }
 
-			const CNode *find_node( const ntg_api::string &path_string, const CNode *relative_to = NULL ) const;
+			const CNode *find_node( const string &path_string, const CNode *relative_to = NULL ) const;
 			const CNode *find_node( internal_id id ) const;
 
-			CNode *find_node_writable( const ntg_api::string &path_string, const CNode *relative_to = NULL );
+			CNode *find_node_writable( const string &path_string, const CNode *relative_to = NULL );
 
 			const node_map &get_sibling_set( const CNode &node ) const;
 			node_map &get_sibling_set_writable( CNode &node );
 
-			const CNodeEndpoint *find_node_endpoint( const ntg_api::string &path_string, const CNode *relative_to = NULL ) const;
-			CNodeEndpoint *find_node_endpoint_writable( const ntg_api::string &path_string, const CNode *relative_to = NULL );
+			const CNodeEndpoint *find_node_endpoint( const string &path_string, const CNode *relative_to = NULL ) const;
+			CNodeEndpoint *find_node_endpoint_writable( const string &path_string, const CNode *relative_to = NULL );
 
-			const ntg_api::CValue *get_value( const ntg_api::CPath &path ) const;
+			const CValue *get_value( const CPath &path ) const;
 
 			ntg_bridge_interface *get_bridge() { return m_bridge; }
 			ntg_osc_client *get_osc_client() { return m_osc_client; }
@@ -88,20 +89,20 @@ namespace ntg_internal
 			const CModuleManager &get_module_manager() const { return *m_module_manager; }
 			CModuleManager &get_module_manager_writable() { return *m_module_manager; }
 
-			const ntg_api::string &get_scratch_directory() const;
+			const string &get_scratch_directory() const;
 
 			CLuaEngine &get_lua_engine() { return *m_lua_engine; }
 
 			ntg_player_data *get_player_data() { return m_player_data; }
 			void set_player_data( ntg_player_data *player_data ) { m_player_data = player_data; }
 
-			ntg_api::CError process_command( ntg_api::CCommandApi *command, ntg_command_source command_source, ntg_api::CCommandResult *result = NULL );
+			CError process_command( CCommandApi *command, ntg_command_source command_source, CCommandResult *result = NULL );
 
 			internal_id create_internal_id();
 
 			void dump_state();
 
-			ntg_api::string get_libintegra_version() const;
+			string get_libintegra_version() const;
 
 			bool get_terminate_flag() const { return m_terminate; }
 
@@ -125,7 +126,7 @@ namespace ntg_internal
 
 			bool m_terminate;
 
-			ntg_internal::internal_id m_next_internal_id; 
+			internal_id m_next_internal_id; 
 
 	};
 }

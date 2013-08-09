@@ -42,8 +42,6 @@
 #include "server.h"
 #include "interface_definition_loader.h"
 
-using namespace ntg_api;
-
 /* 
  whilst dealing with zipped files, we always use linux-style path separators, 
  because windows can use the two interchangeably, 

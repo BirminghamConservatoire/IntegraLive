@@ -30,6 +30,8 @@
 #include "value.h"
 
 
+using namespace ntg_api;
+
 
 namespace ntg_internal
 {
@@ -49,8 +51,8 @@ namespace ntg_internal
 	typedef std::list<CEndpointDefinition *> endpoint_definition_list;
 	typedef std::list<CWidgetDefinition *> widget_definition_list;
 
-	typedef std::unordered_map<GUID, CInterfaceDefinition *, ntg_api::GuidHash> map_guid_to_interface_definition;
-	typedef std::unordered_map<ntg_api::string, CInterfaceDefinition *> map_string_to_interface_definition;
+	typedef std::unordered_map<GUID, CInterfaceDefinition *, GuidHash> map_guid_to_interface_definition;
+	typedef std::unordered_map<string, CInterfaceDefinition *> map_string_to_interface_definition;
 
 
 	class CInterfaceDefinition
@@ -74,7 +76,7 @@ namespace ntg_internal
 			const GUID &get_module_guid() const { return m_module_guid; }
 			const GUID &get_origin_guid() const { return m_origin_guid; }
 			module_source get_module_source() const { return m_source; }
-			const ntg_api::string &get_file_path() const { return m_file_path; }
+			const string &get_file_path() const { return m_file_path; }
 			const CInterfaceInfo &get_interface_info() const { return *m_interface_info; }
 			const endpoint_definition_list &get_endpoint_definitions() const { return m_endpoint_definitions; }
 			const widget_definition_list &get_widget_definitions() const { return m_widget_definitions; }
@@ -82,13 +84,13 @@ namespace ntg_internal
 
 			/* helpers */
 			bool is_core_interface() const;
-			bool is_named_core_interface( const ntg_api::string &name ) const;
+			bool is_named_core_interface( const string &name ) const;
 			bool has_implementation() const;
 			bool should_embed() const;
 
 			/* setters */
 			void set_module_source( module_source source ) { m_source = source; }
-			void set_file_path( const ntg_api::string &file_path ) { m_file_path = file_path; }
+			void set_file_path( const string &file_path ) { m_file_path = file_path; }
 			void set_implementation_checksum( unsigned int checksum );
 
 	private:
@@ -98,7 +100,7 @@ namespace ntg_internal
 			GUID m_module_guid;
 			GUID m_origin_guid;
 			module_source m_source;
-			ntg_api::string m_file_path;
+			string m_file_path;
 			CInterfaceInfo *m_interface_info;
 			endpoint_definition_list m_endpoint_definitions;
 			widget_definition_list m_widget_definitions;
@@ -114,12 +116,12 @@ namespace ntg_internal
 			CInterfaceInfo();
 			~CInterfaceInfo();
 
-			const ntg_api::string &get_name() const { return m_name; }
-			const ntg_api::string &get_label() const { return m_label; }
-			const ntg_api::string &get_description() const { return m_description; }
-			const ntg_api::string_set &get_tags() const { return m_tags; }
+			const string &get_name() const { return m_name; }
+			const string &get_label() const { return m_label; }
+			const string &get_description() const { return m_description; }
+			const string_set &get_tags() const { return m_tags; }
 			bool get_implemented_in_libintegra() const { return m_implemented_in_libintegra; }
-			const ntg_api::string &get_author() const { return m_author; }
+			const string &get_author() const { return m_author; }
 			const struct tm &get_created_date() const { return m_created_date; }
 			const struct tm &get_modified_date() const { return m_modified_date; }
 
@@ -127,12 +129,12 @@ namespace ntg_internal
 
 		private:
 
-			ntg_api::string m_name;
-			ntg_api::string m_label;
-			ntg_api::string m_description;
-			ntg_api::string_set m_tags;
+			string m_name;
+			string m_label;
+			string m_description;
+			string_set m_tags;
 			bool m_implemented_in_libintegra;
-			ntg_api::string m_author;
+			string m_author;
 			struct tm m_created_date;
 			struct tm m_modified_date;
 	};
@@ -154,9 +156,9 @@ namespace ntg_internal
 				STREAM
 			};
 
-			const ntg_api::string &get_name() const { return m_name; }
-			const ntg_api::string &get_label() const { return m_label; }
-			const ntg_api::string &get_description() const { return m_description; }
+			const string &get_name() const { return m_name; }
+			const string &get_label() const { return m_label; }
+			const string &get_description() const { return m_description; }
 			endpoint_type get_type() const { return m_type; }
 			const CControlInfo *get_control_info() const { return m_control_info; }
 			const CStreamInfo *get_stream_info() const { return m_stream_info; }
@@ -164,16 +166,16 @@ namespace ntg_internal
 			/* helpers */
 			bool should_send_to_host() const;
 			bool is_input_file() const;
-			bool should_load_from_ixd( ntg_api::CValue::type loaded_type ) const;
+			bool should_load_from_ixd( CValue::type loaded_type ) const;
 			bool is_audio_stream() const;
 
 			void propagate_defaults();
 
 		private:
 
-			ntg_api::string m_name;
-			ntg_api::string m_label;
-			ntg_api::string m_description;
+			string m_name;
+			string m_label;
+			string m_description;
 			endpoint_type m_type;
 			CControlInfo *m_control_info;
 			CStreamInfo *m_stream_info;
@@ -218,20 +220,20 @@ namespace ntg_internal
 			CStateInfo();
 			~CStateInfo();
 
-			ntg_api::CValue::type get_type() const { return m_type; }
+			CValue::type get_type() const { return m_type; }
 			const CConstraint &get_constraint() const { return *m_constraint; }
-			const ntg_api::CValue &get_default_value() const { return *m_default_value; }
+			const CValue &get_default_value() const { return *m_default_value; }
 			const CValueScale *get_value_scale() const { return m_value_scale; }
-			const ntg_api::value_map &get_state_labels() const { return m_state_labels; }
+			const value_map &get_state_labels() const { return m_state_labels; }
 			bool get_is_saved_to_file() const { return m_is_saved_to_file; }
 			bool get_is_input_file() const { return m_is_input_file; }
 
 		private:
-			ntg_api::CValue::type m_type;
+			CValue::type m_type;
 			CConstraint *m_constraint;
-			ntg_api::CValue *m_default_value;
+			CValue *m_default_value;
 			CValueScale *m_value_scale;
-			ntg_api::value_map m_state_labels;
+			value_map m_state_labels;
 			bool m_is_saved_to_file;
 			bool m_is_input_file;
 	};
@@ -246,11 +248,11 @@ namespace ntg_internal
 			~CConstraint();
 
 			const CValueRange *get_value_range() const { return m_value_range; }
-			const ntg_api::value_set *get_allowed_states() const { return m_allowed_states; }
+			const value_set *get_allowed_states() const { return m_allowed_states; }
 
 		private:
 			CValueRange *m_value_range;
-			ntg_api::value_set *m_allowed_states;
+			value_set *m_allowed_states;
 	};
 
 
@@ -262,13 +264,13 @@ namespace ntg_internal
 			CValueRange();
 			~CValueRange();
 
-			const ntg_api::CValue &get_minimum() const { return *m_minimum; }
-			const ntg_api::CValue &get_maximum() const { return *m_maximum; }
+			const CValue &get_minimum() const { return *m_minimum; }
+			const CValue &get_maximum() const { return *m_maximum; }
 
 		private:
 
-			ntg_api::CValue *m_minimum;
-			ntg_api::CValue *m_maximum;
+			CValue *m_minimum;
+			CValue *m_maximum;
 	};
 
 
@@ -332,16 +334,16 @@ namespace ntg_internal
 			CWidgetDefinition();
 			~CWidgetDefinition();
 
-			const ntg_api::string &get_type() const { return m_type; }
-			const ntg_api::string &get_label() const { return m_label; }
+			const string &get_type() const { return m_type; }
+			const string &get_label() const { return m_label; }
 			const CWidgetPosition &get_position() const { return *m_position; }
-			const ntg_api::string_map &get_attribute_mappings() const { return m_attribute_mappings; }
+			const string_map &get_attribute_mappings() const { return m_attribute_mappings; }
 
 		private:
-			ntg_api::string m_type;
-			ntg_api::string m_label;
+			string m_type;
+			string m_label;
 			CWidgetPosition *m_position;
-			ntg_api::string_map m_attribute_mappings;
+			string_map m_attribute_mappings;
 	};
 
 
@@ -374,14 +376,14 @@ namespace ntg_internal
 			CImplementationInfo();
 			~CImplementationInfo();
 
-			const ntg_api::string &get_patch_name() const { return m_patch_name; }
+			const string &get_patch_name() const { return m_patch_name; }
 			unsigned int get_checksum() const { return m_checksum; }
 
 			void set_checksum( unsigned int checksum ) { m_checksum = checksum; }
 
 		private:
 
-			ntg_api::string m_patch_name;
+			string m_patch_name;
 			unsigned int m_checksum;
 	};
 

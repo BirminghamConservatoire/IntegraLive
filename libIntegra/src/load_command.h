@@ -25,20 +25,23 @@
 #include "api/command_api.h"
 #include "path.h"
 
+using namespace ntg_api;
+
+
 
 namespace ntg_internal
 {
-	class CLoadCommand : public ntg_api::CLoadCommandApi
+	class CLoadCommand : public CLoadCommandApi
 	{
 		public:
-			CLoadCommand( const ntg_api::string &file_path, const ntg_api::CPath &parent_path );
+			CLoadCommand( const string &file_path, const CPath &parent_path );
 
 		private:
 			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
 
-			ntg_api::string m_file_path;
-			ntg_api::CPath m_parent_path;
+			string m_file_path;
+			CPath m_parent_path;
 	};
 }
 

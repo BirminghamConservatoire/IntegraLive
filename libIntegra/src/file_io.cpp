@@ -65,7 +65,6 @@
 #define _S_IFMT S_IFMT
 #endif
 
-using namespace ntg_api;
 using namespace ntg_internal;
 
 

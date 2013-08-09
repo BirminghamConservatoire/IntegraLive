@@ -27,9 +27,6 @@
 #include <assert.h>
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	const ntg_api::string CPlayerLogic::s_endpoint_play = "play";

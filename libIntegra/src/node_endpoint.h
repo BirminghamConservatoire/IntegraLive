@@ -27,6 +27,9 @@
 #include "path.h"
 
 
+using namespace ntg_api;
+
+
 namespace ntg_internal
 {
 	class CNode;
@@ -44,13 +47,13 @@ namespace ntg_internal
 			const CNode &get_node() const { return *m_node; }
 			const CEndpointDefinition &get_endpoint_definition() const { return *m_endpoint_definition; }
 
-			const ntg_api::CValue *get_value() const { return m_value; }
-			const ntg_api::CPath &get_path() const { return m_path; }
+			const CValue *get_value() const { return m_value; }
+			const CPath &get_path() const { return m_path; }
 
-			ntg_api::CValue *get_value_writable() { return m_value; }
+			CValue *get_value_writable() { return m_value; }
 
 			/* todo - this method would be better in the endpoint definition class, when it has been made */
-			bool test_constraint( const ntg_api::CValue &value ) const;
+			bool test_constraint( const CValue &value ) const;
 
 			void update_path();
 
@@ -59,11 +62,11 @@ namespace ntg_internal
 			const CNode *m_node;
 			const CEndpointDefinition *m_endpoint_definition;
 
-			ntg_api::CValue *m_value;
-			ntg_api::CPath m_path;
+			CValue *m_value;
+			CPath m_path;
 	};
 
-	typedef std::unordered_map<ntg_api::string, CNodeEndpoint *> node_endpoint_map;
+	typedef std::unordered_map<string, CNodeEndpoint *> node_endpoint_map;
 
 }
 

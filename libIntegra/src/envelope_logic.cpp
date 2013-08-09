@@ -23,9 +23,6 @@
 #include "envelope_logic.h"
 
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	CEnvelopeLogic::CEnvelopeLogic( const CNode &node )

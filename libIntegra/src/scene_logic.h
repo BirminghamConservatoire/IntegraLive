@@ -24,6 +24,9 @@
 
 #include "logic.h"
 
+using namespace ntg_api;
+
+
 
 namespace ntg_internal
 {
@@ -34,9 +37,9 @@ namespace ntg_internal
 			~CSceneLogic();
 
 			void handle_new( CServer &server, ntg_command_source source );
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const ntg_api::CValue *previous_value, ntg_command_source source );
-			void handle_rename( CServer &server, const ntg_api::string &previous_name, ntg_command_source source );
-			void handle_move( CServer &server, const ntg_api::CPath &previous_path, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
+			void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
 			void handle_delete( CServer &server, ntg_command_source source );
 	};
 }

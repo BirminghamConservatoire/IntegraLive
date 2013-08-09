@@ -28,9 +28,6 @@
 
 #define NTG_CORE_TAG "core"
 
-using namespace ntg_api;
-
-
 namespace ntg_internal
 {
 	/************************************/

@@ -25,6 +25,8 @@
 #include "api/command_api.h"
 #include "path.h"
 
+using namespace ntg_api;
+
 
 namespace ntg_internal
 {
@@ -32,20 +34,20 @@ namespace ntg_internal
 	class CInterfaceDefinition;
 
 
-	class CSetCommand : public ntg_api::CSetCommandApi
+	class CSetCommand : public CSetCommandApi
 	{
 		public:
-			CSetCommand( const ntg_api::CPath &endpoint_path, const ntg_api::CValue *value );
+			CSetCommand( const CPath &endpoint_path, const CValue *value );
 			~CSetCommand();
 
 		private:
 			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
 
 			bool should_send_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, ntg_command_source source ) const;
 
-			ntg_api::CPath m_endpoint_path;
-			ntg_api::CValue *m_value;
+			CPath m_endpoint_path;
+			CValue *m_value;
 	};
 }
 

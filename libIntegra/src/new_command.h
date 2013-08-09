@@ -25,23 +25,26 @@
 #include "api/command_api.h"
 #include "path.h"
 
+using namespace ntg_api;
+
+
 
 namespace ntg_internal
 {
-	class CNewCommand : public ntg_api::CNewCommandApi
+	class CNewCommand : public CNewCommandApi
 	{
 		public:
-			CNewCommand( const GUID &module_id, const ntg_api::string &node_name, const ntg_api::CPath &parent_path );
+			CNewCommand( const GUID &module_id, const string &node_name, const CPath &parent_path );
 
 		private:
 			
-			ntg_api::CError execute( CServer &server, ntg_command_source source, ntg_api::CCommandResult *result );
+			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
 
-			ntg_api::string make_node_name( CServer &server, const ntg_api::string &module_name ) const;
+			string make_node_name( CServer &server, const string &module_name ) const;
 
 			GUID m_module_id;
-			ntg_api::string m_node_name;
-			ntg_api::CPath m_parent_path;
+			string m_node_name;
+			CPath m_parent_path;
 	};
 }
 

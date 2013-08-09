@@ -39,13 +39,13 @@ namespace ntg_internal
 			void add( CNode &node );
 			void remove( const CNode &node );
 
-			const CNode *lookup_node( const ntg_api::string &path ) const;
-			CNode *lookup_node_writable( const ntg_api::string &path );
+			const CNode *lookup_node( const string &path ) const;
+			CNode *lookup_node_writable( const string &path );
 			
 			const CNode *lookup_node( internal_id id ) const;
 
-			const CNodeEndpoint *lookup_node_endpoint( const ntg_api::string &path ) const;
-			CNodeEndpoint *lookup_node_endpoint_writable( const ntg_api::string &path );
+			const CNodeEndpoint *lookup_node_endpoint( const string &path ) const;
+			CNodeEndpoint *lookup_node_endpoint_writable( const string &path );
 
 		private:
 

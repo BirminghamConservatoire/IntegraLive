@@ -24,6 +24,10 @@
 #include "api/common_typedefs.h"
 
 
+using namespace ntg_api;
+
+
+
 namespace ntg_internal
 {
 	class CScratchDirectory
@@ -33,11 +37,11 @@ namespace ntg_internal
 			CScratchDirectory();
 			~CScratchDirectory();
 
-			const ntg_api::string &get_scratch_directory() { return m_scratch_directory; }
+			const string &get_scratch_directory() { return m_scratch_directory; }
 
 		private:
 
-			ntg_api::string m_scratch_directory;
+			string m_scratch_directory;
 	};
 }
 

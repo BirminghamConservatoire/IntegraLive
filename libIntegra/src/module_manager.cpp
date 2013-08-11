@@ -71,7 +71,7 @@ using namespace ntg_api;
 
 namespace ntg_internal
 {
-	const string CModuleManager::s_module_suffix = "integra-module";
+	const string CModuleManager::s_module_suffix = "module";
 
 
 	CModuleManager::CModuleManager( const string &scratch_directory_root, const string &system_module_directory, const string &third_party_module_directory )

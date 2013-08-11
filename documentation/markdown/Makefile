@@ -1,4 +1,4 @@
-DOCS=quick-start-guide scripting1 scripting2 module-development acknowledgements
+DOCS=integra-live-help scripting1 scripting2 module-development-guide module-development-quickstart acknowledgements
 PICS=../page-images
 
 all: $(PICS) $(DOCS)

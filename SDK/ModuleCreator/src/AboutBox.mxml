@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		   xmlns:mx="library://ns.adobe.com/flex/mx" 
-		   width="400" height="300"
+		   width="480" height="300"
 		   creationComplete="onCreationComplete()"
 		   backgroundColor="#ffffff"
 		   borderStyle="solid" borderThickness="4" borderColor="#c0c0c0">
 	
-	<mx:Label text="Integra Module Creator" fontSize="20" left="10" top="10"/>
-
-	<mx:Label id="_versionLabel" x="10" y="50"/>
-	<mx:Label id="_licenseLabel" x="10" y="80" text="Released under "/>
-	<mx:Label id="_licenseLink" y="80"
-			  rollOver="onRollOverLicenseLink()" rollOut="onRollOutLicenseLink()" click="onClickLicenseLink()"
-			  color='#0000ff' />
-
-	<mx:Label id="_copyrightLabel" x="10" y="110"/>
+	<mx:VBox left="10" top="10" verticalGap="10">
+		<mx:HBox verticalAlign="middle">
+			<mx:Image source="{_logoImage}"/>
+			<mx:Label text="Integra Module Creator" fontSize="20"/>
+		</mx:HBox>
+		<mx:Label id="_versionLabel"/>
+		<mx:HBox horizontalGap="0">
+			<mx:Label id="_licenseLabel" text="Released under "/>
+			<mx:Label id="_licenseLink"
+					  rollOver="onRollOverLicenseLink()" rollOut="onRollOutLicenseLink()" click="onClickLicenseLink()"
+					  color='#0000ff' />
+		</mx:HBox>
+		<mx:Label id="_copyrightLabel"/>
+	</mx:VBox>
 	
 	
 	<mx:Button label="OK" horizontalCenter="0" bottom="10" click="onClose()"/>
@@ -90,6 +95,9 @@
 			
 			private const _copyrightText:String = "Copyright ©2009-2013 Birmingham City University";
 			
+			[Embed(source="icons/module-creator_128x128x32.png")]
+			[Bindable]
+			public var _logoImage:Class;			
 			
 		]]>
 	</fx:Script>			

@@ -32,24 +32,41 @@ package components.utils
 	{
 		public static function endpointValueToControlUnit( endpointValue:Number, stateInfo:StateInfo ):Number
 		{
+			const tinyErrorMargin:Number = 0.000001;
+			
 			var constraint:Constraint = stateInfo.constraint;
 			Assert.assertNotNull( constraint.range );
 			
 			var minimum:Number = constraint.minimum;
 			var maximum:Number = constraint.maximum;
 			
-			Assert.assertTrue( endpointValue >= minimum && endpointValue <= maximum );
+			Assert.assertTrue( endpointValue >= minimum - tinyErrorMargin && endpointValue <= maximum + tinyErrorMargin );
+			
+			endpointValue = Math.max( minimum, Math.min( maximum, endpointValue ) );
 
+			var unitValue:Number = 0;
+				
 			switch( stateInfo.scale.type )
 			{
-				case ControlScale.LINEAR:		return endpointValueToLinearUnit( endpointValue, minimum, maximum );
-				case ControlScale.EXPONENTIAL:	return endpointValueToExponentialUnit( endpointValue, minimum, maximum, stateInfo.scale.exponentRoot );
-				case ControlScale.DECIBEL:		return endpointValueToDecibelUnit( endpointValue, minimum, maximum );
+				case ControlScale.LINEAR:		
+					unitValue = endpointValueToLinearUnit( endpointValue, minimum, maximum );
+					break;
+				
+				case ControlScale.EXPONENTIAL:	
+					unitValue = endpointValueToExponentialUnit( endpointValue, minimum, maximum, stateInfo.scale.exponentRoot );
+					break;
+				
+				case ControlScale.DECIBEL:		
+					unitValue = endpointValueToDecibelUnit( endpointValue, minimum, maximum );
+					break;
 					
 				default:
 					Assert.assertTrue( false );
 					return 0;
 			}
+			
+			unitValue = Math.max( 0, Math.min( 1, unitValue ) );
+			return unitValue;
 		}
 		
 		

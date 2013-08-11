@@ -64,11 +64,17 @@ key:
 	fi
 
 app: IntegraLive.swf key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle Integra\ Live.app IntegraLive-app.xml IntegraLive.swf icons assets
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle Integra\ Live.app IntegraLive-app.xml IntegraLive.swf assets icons
 	# Do this separately otherwise adt complains:
 	# "is not part of a Mac OS X Native Extensions framework"
 	cp -r BlockLibrary $(PRODUCT).app/Contents/Resources
-
+	# Copy in correct .icns files - AIR XML file doesn't support 1024x1024 retina!
+	cp icons/*.icns $(PRODUCT).app/Contents/Resources
+	# Remove unused .icns and .ico files but leave PNG icons are some are used in-app
+	rm $(PRODUCT).app/Contents/Resources/icons/*.icns $(PRODUCT).app/Contents/Resources/icons/*.ico
+	# Remove everything except module_32x32x32.png which we need for the Module Manager
+	# find $(PRODUCT).app/Contents/Resources/icons -type f -not -name 'module_32x32x32.png' -not -name 'integra-live_128x128x32.png' -delete
+	
 clean:
 	-@rm -f IntegraLive.swf
 	-@rm -f *.bak
@@ -77,6 +83,7 @@ clean:
 	-@rm -f $(DESCRIPTOR)
 	-@rm -rf $(PRODUCT).app
 	-@rm -rf BlockLibrary
+	-@rm -rf *.tmp
  
 
 $(CONFIG): $(CONFIG).in

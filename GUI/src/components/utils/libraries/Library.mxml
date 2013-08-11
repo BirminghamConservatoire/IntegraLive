@@ -35,7 +35,6 @@
 	<fx:Script>
 		<![CDATA[
 			import components.utils.Utilities;
-			import components.views.ModuleLibrary.ModuleLibraryListEntry;
 			
 			import flexunit.framework.Assert;
 	

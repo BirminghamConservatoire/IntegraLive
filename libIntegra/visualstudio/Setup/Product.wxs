@@ -36,7 +36,7 @@
             <Component Id="ExecutableComponent" Guid="EDE975B4-3357-43C9-B0AB-7BD608AD6F04">
               <File Id="ExecutableFile" KeyPath="yes" Source="$(var.SourceDirectory)\gui\Integra Live.exe" />
 
-              <ProgId Id="IntegraLive.integra" Description="Integra File" Icon='DocIcon.ico'> 
+              <ProgId Id="IntegraLive.integra" Description="Integra File" Icon='IntegraIcon.ico'> 
                   <Extension Id="integra" ContentType="application/zip">
                     <Verb Id="open" Command="Open" TargetFile="ExecutableFile" Argument="%1" />
                   </Extension>
@@ -51,14 +51,14 @@
                   </Extension>
               </ProgId>
 
-              <ProgId Id="IntegraLive.integra-module" Description="Integra Module" Icon='DocIcon.ico'>
-                <Extension Id="integra-module" ContentType="application/zip">
+              <ProgId Id="IntegraLive.module" Description="Integra Module" Icon='ModuleIcon.ico'>
+                <Extension Id="module" ContentType="application/zip">
                   <Verb Id="install" Command="Install" TargetFile="ExecutableFile" Argument="%1" />
                 </Extension>
               </ProgId>
 
-              <ProgId Id="IntegraLive.integra-bundle" Description="Integra Module Bundle" Icon='DocIcon.ico'>
-                <Extension Id="integra-bundle" ContentType="application/zip">
+              <ProgId Id="IntegraLive.bundle" Description="Integra Module Bundle" Icon='BundleIcon.ico'>
+                <Extension Id="bundle" ContentType="application/zip">
                   <Verb Id="install" Command="Install" TargetFile="ExecutableFile" Argument="%1" />
                 </Extension>
               </ProgId>

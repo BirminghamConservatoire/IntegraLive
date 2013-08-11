@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<application xmlns="http://ns.adobe.com/air/application/3.1">
+<application xmlns="http://ns.adobe.com/air/application/3.8">
 
 <!-- Adobe AIR Application Descriptor File Template.
 
@@ -91,37 +91,52 @@
 	<!-- The icon the system uses for the application. For at least one resolution,
 		 specify the path to a PNG file included in the AIR package. Optional. -->
 	<icon>
-            <image16x16>icons/appIcon-16.png</image16x16>
-            <image32x32>icons/appIcon-32.png</image32x32>
-            <image48x48>icons/appIcon-48.png</image48x48>
-            <image128x128>icons/appIcon-128.png</image128x128>
+            <image16x16>icons/integra-live_16x16x32.png</image16x16>
+            <image32x32>icons/integra-live_32x32x32.png</image32x32>
+            <image48x48>icons/integra-live_48x48x32.png</image48x48>
+            <image128x128>icons/integra-live_128x128x32.png</image128x128>
+            <image512x512>icons/integra-live_512x512x32.png</image512x512>
 	</icon>
         <fileTypes> 
             <fileType> 
-                <name>org.integralive.IXD</name> 
-                <extension>ixd</extension> 
-                <description>IXD Project File</description> 
-                <contentType>application/org.integralive.ixd-file</contentType> 
+                <name>org.integralive.integra</name> 
+                <extension>integra</extension> 
+                <description>Integra File</description> 
+                <contentType>application/org.integralive.integra-file</contentType> 
                 <icon> 
-                    <image16x16>icons/docIcon-16.png</image16x16>       
-                    <image32x32>icons/docIcon-32.png</image32x32>       
-                    <image48x48>icons/docIcon-48.png</image48x48>      
-                    <image128x128>icons/docIcon-128.png</image128x128> 
+                    <image16x16>icons/integra_16x16x32.png</image16x16>       
+                    <image32x32>icons/integra_32x32x32.png</image32x32> 
+                    <image48x48>icons/integra_48x48x32.png</image48x48>             
+                    <image128x128>icons/integra_128x128x32.png</image128x128>
+                    <image512x512>icons/integra_512x512x32.png</image512x512>
                 </icon> 
             </fileType> 
             <fileType> 
-                <name>org.integralive.integra</name> 
-                <extension>integra</extension> 
-                <description>Integra Project File</description> 
-                <contentType>application/org.integralive.integra-file</contentType> 
+                <name>org.integralive.module</name> 
+                <extension>module</extension> 
+                <description>Module File</description> 
+                <contentType>application/org.integralive.module-file</contentType> 
                 <icon> 
-                    <image16x16>icons/docIcon-16.png</image16x16>       
-                    <image32x32>icons/docIcon2-32.png</image32x32>       
-                    <image48x48>icons/docIcon2-48.png</image48x48>      
-                    <image128x128>icons/docIcon2-128.png</image128x128> 
+                   <image16x16>icons/module_16x16x32.png</image16x16>       
+                    <image32x32>icons/module_32x32x32.png</image32x32> 
+                    <image48x48>icons/module_48x48x32.png</image48x48>             
+                    <image128x128>icons/module_128x128x32.png</image128x128>
+                    <image512x512>icons/module_512x512x32.png</image512x512>
                 </icon> 
             </fileType> 
-
+            <fileType> 
+            	<name>org.integralive.bundle</name> 
+            	<extension>bundle</extension> 
+            	<description>Bundle File</description> 
+            	<contentType>application/org.integralive.bundle-file</contentType> 
+            	<icon> 
+            		<image16x16>icons/bundle_16x16x32.png</image16x16>       
+            		<image32x32>icons/bundle_32x32x32.png</image32x32> 
+            		<image48x48>icons/bundle_48x48x32.png</image48x48>             
+            		<image128x128>icons/bundle_128x128x32.png</image128x128>
+            		<image512x512>icons/bundle_512x512x32.png</image512x512>
+            	</icon> 
+            </fileType> 
         </fileTypes>
 
 </application>

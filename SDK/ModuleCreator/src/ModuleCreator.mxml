@@ -131,7 +131,13 @@
 				//create top-level menus
 				
 				var testMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Test" );
-				var bundlesMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Module Bundles" );
+				
+				var bundlesMenu:NativeMenuItem = null;
+				if( Config.singleInstance.hasBundleMaker )
+				{
+					bundlesMenu = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "Module Bundles" );
+				}
+				
 				var fileMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), menuInsertionIndex, "File" );
 				var helpMenu:NativeMenuItem = _menu.addSubmenuAt( new NativeMenu(), _menu.numItems, "Help" );
 				
@@ -202,13 +208,16 @@
 				}
 				
 				//Bundles Menu
-				var createModuleBundle:NativeMenuItem = new NativeMenuItem( "Create Module Bundle..." );
-				createModuleBundle.addEventListener( Event.SELECT, _bundleMaker.createModuleBundle ); 
-				bundlesMenu.submenu.addItem( createModuleBundle );				
-
-				var extractModuleBundle:NativeMenuItem = new NativeMenuItem( "Extract Contents From Module Bundle..." );
-				extractModuleBundle.addEventListener(Event.SELECT, _bundleMaker.extractModuleBundle ); 
-				bundlesMenu.submenu.addItem( extractModuleBundle );				
+				if( bundlesMenu )
+				{
+					var createModuleBundle:NativeMenuItem = new NativeMenuItem( "Create Module Bundle..." );
+					createModuleBundle.addEventListener( Event.SELECT, _bundleMaker.createModuleBundle ); 
+					bundlesMenu.submenu.addItem( createModuleBundle );				
+	
+					var extractModuleBundle:NativeMenuItem = new NativeMenuItem( "Extract Contents From Module Bundle..." );
+					extractModuleBundle.addEventListener(Event.SELECT, _bundleMaker.extractModuleBundle ); 
+					bundlesMenu.submenu.addItem( extractModuleBundle );
+				}
 				
 				//Test menu
 				var testInIntegraLive:NativeMenuItem = new NativeMenuItem( "Test in Integra Live" );

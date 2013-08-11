@@ -189,7 +189,7 @@
 			}
 			
 
-			[ Embed( source="/assets/logo.png" ) ]
+			[ Embed( source="/icons/integra-live_128x128x32.png" ) ]
 			static private var _logoClass:Class;
 			
 			[ Embed( source="/assets/copyrightNotice.txt", mimeType="application/octet-stream" ) ]

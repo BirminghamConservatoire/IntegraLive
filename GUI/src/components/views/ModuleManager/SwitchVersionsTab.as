@@ -112,6 +112,7 @@ package components.views.ModuleManager
 			
 			_info.setStyle( "borderStyle", "solid" );
 			_info.setStyle( "borderThickness", 2 );
+			_info.setStyle( "cornerRadius", ModuleManagerList.cornerRadius );
 			addChild( _info );
 		}
 		
@@ -651,7 +652,7 @@ package components.views.ModuleManager
 
 			for each( var versionToSwitch:InterfaceDefinition in versionsToSwitch )
 			{
-				markdown += "##![](app:/assets/moduleLogo.png) " + switchableItem.toString() + "\n\n";
+				markdown += "##![](app:/icons/module_32x32x32.png) " + switchableItem.toString() + "\n\n";
 
 				if( multipleVersionsInUse )
 				{

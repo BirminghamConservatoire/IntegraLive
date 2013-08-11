@@ -71,13 +71,13 @@ package components.utils
 		
 		public static function get moduleFileExtension():String
 		{
-			return "integra-module";
+			return "module";
 		}
 
 		
 		public static function get bundleFileExtension():String
 		{
-			return "integra-bundle";
+			return "bundle";
 		}
 		
 		

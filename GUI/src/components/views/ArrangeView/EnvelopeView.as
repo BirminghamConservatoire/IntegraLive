@@ -53,6 +53,7 @@ package components.views.ArrangeView
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.MouseCapture;
 	
@@ -177,6 +178,20 @@ package components.views.ArrangeView
 		}
 		
 		
+		public function set displayOffset( displayOffset:Number ):void
+		{
+			_displayOffset = displayOffset;
+			invalidateDisplayList();
+		}
+		
+		
+		public function set blockWidth( blockWidth:Number ):void
+		{
+			_blockWidth = blockWidth;
+			invalidateDisplayList();
+		}
+		
+		
 		override public function styleChanged( style:String ):void
 		{
 			super.styleChanged( style );
@@ -208,6 +223,7 @@ package components.views.ArrangeView
 		{
 			//super.updateDisplayList( width, height );
 			
+			
 			graphics.clear();
 			
 			if( !model || !_endpoint ) return;
@@ -237,7 +253,7 @@ package components.views.ArrangeView
 					controlPointTick = controlPoint.tick; 
 					controlPointValue = controlPoint.value;
 					
-					if( getXPixelsFromTick( controlPointTick ) > width + 1 )
+					if( getXPixelsFromTick( controlPointTick ) > _blockWidth + _displayOffset + 1 )
 					{
 						//drop out of render - this should only happen when block is being resized
 						break;
@@ -452,8 +468,10 @@ package components.views.ArrangeView
 			
 			var color:uint = color;
 			var controlPointX:Number = getXPixelsFromTick( controlPointTick );
-			var controlPointY:Number = getYPixelsFromValue( controlPointValue );
+			if( controlPointX < - _controlPointRadius || controlPointX > width + _controlPointRadius ) return;
 
+			var controlPointY:Number = getYPixelsFromValue( controlPointValue );
+			
 			graphics.lineStyle( _controlPointLineThickness, color );
 			graphics.beginFill( 0, 0 );
 			graphics.drawCircle( controlPointX, controlPointY, _controlPointRadius );
@@ -465,16 +483,29 @@ package components.views.ArrangeView
 		{
 			if( fromTick == toTick && fromValue == toValue ) return;
 			
-			const xIncrement:Number = 1;
-			
 			var color:uint = color;
 			var fromX:Number = getXPixelsFromTick( fromTick );
-			var fromY:Number = getYPixelsFromValue( fromValue );
+			if( fromX > width ) return;
+			
 			var toX:Number = getXPixelsFromTick( toTick );
+			if( toX < 0 ) return;
+			
+			var fromY:Number = getYPixelsFromValue( fromValue );
 			var toY:Number = getYPixelsFromValue( toValue );
-
+			
 			graphics.lineStyle( _transitionLineThickness, color );
-			graphics.moveTo( fromX, fromY );
+			
+			if( toX > fromX && curvature != 0 && toY != fromY )
+			{
+				drawCurvedTransition( fromX, fromY, toX, toY, curvature );
+			}
+			else
+			{
+				drawStraightTransition( fromX, fromY, toX, toY );
+			}
+			
+			
+			/*graphics.moveTo( fromX, fromY );
 
 			var yRange:Number = ( toY - fromY );
 			
@@ -496,48 +527,69 @@ package components.views.ArrangeView
 			}
 			
 			graphics.lineTo( toX, toY );
+			*/
 
-			//todo - handle integer and allowed value steps
-			
-			/*switch( _endpoint.controlInfo.stateInfo.type )
+		}
+		
+		
+		private function drawStraightTransition( fromX:Number, fromY:Number, toX:Number, toY:Number ):void
+		{
+			//clip left
+			if( fromX < 0 )
 			{
-				case StateInfo.FLOAT:
-					graphics.lineTo( toX, toY );
-					break; 
+				Assert.assertTrue( toX > fromX );
 
-				case StateInfo.INTEGER:
-					var numberOfSteps:int = Math.round( Math.abs( toValue - fromValue ) );
-					if( numberOfSteps == 0 )
-					{
-						//special case for flatline
-						graphics.lineTo( toX, toY );
-					}
-					else
-					{
-						var prevY:Number = fromY;
-						for( var i:int = 0; i < numberOfSteps; i++ )
-						{
-							var interpolation:Number = ( i + 1 ) / numberOfSteps;
-							var interpolationOpposite:Number = ( 1 - interpolation );
-							
-							var nextX:Number = interpolation * toX + interpolationOpposite * fromX;
-							var nextY:Number = interpolation * toY + interpolationOpposite * fromY;
-							
-							graphics.lineTo( nextX, prevY );
-							graphics.lineTo( nextX, nextY );
-							
-							prevY = nextY;
-						}
-					}
+				var interpolation:Number = ( - fromX ) / ( toX - fromX );
+				fromY = fromY * ( 1 - interpolation ) + toY * interpolation;
+				fromX = 0;
+			}
+			
+			//clip right
+			if( toX > width )
+			{
+				Assert.assertTrue( toX > fromX );
 
-					break;
-					
-				default:
-					Assert.assertTrue( false );	//unexpected attribute type
-					break; 
-			}*/
+				interpolation = ( width - fromX ) / ( toX - fromX );
+				toY = fromY * ( 1 - interpolation ) + toY * interpolation;
+				toX = width;
+			}
+			
+			graphics.moveTo( fromX, fromY );
+			graphics.lineTo( toX, toY );
 		}
 
+		
+		private function drawCurvedTransition( fromX:Number, fromY:Number, toX:Number, toY:Number, curvature:Number ):void
+		{
+			const xIncrement:Number = 1;
+			
+			Assert.assertTrue( toX > fromX );
+			var xRangeInverse:Number = 1 /  ( toX - fromX );
+			var yRange:Number = ( toY - fromY );			
+			var exponent:Number = Math.pow( 2, -curvature );
+
+			var first:Boolean = true;
+			for( var x:Number = Math.max( 0, fromX ); x <= Math.min( toX, width ); x += xIncrement )
+			{
+				var interpolation:Number = ( x - fromX ) * xRangeInverse;
+				
+				Assert.assertTrue( interpolation >= 0 && interpolation <= 1 );
+				
+				interpolation = Math.pow( interpolation, exponent );
+				
+				var y:Number = fromY + interpolation * yRange;
+				if( first )
+				{
+					first = false;
+					graphics.moveTo( x, y );
+				}
+				else
+				{
+					graphics.lineTo( x, y );
+				}
+			}			
+		}
+		
 		
 		private function handleDragPointMouseDown( event:MouseEvent ):void
 		{
@@ -840,7 +892,7 @@ package components.views.ArrangeView
 
 		private function getXPixelsFromTick( tick:int ):Number 
 		{
-			return tick * model.project.projectUserData.timelineState.zoom;
+			return tick * model.project.projectUserData.timelineState.zoom + _displayOffset;
 		}
 		
 		
@@ -855,7 +907,7 @@ package components.views.ArrangeView
 				return 0;
 			}
 			
-			return Math.round( xPixels / model.project.projectUserData.timelineState.zoom );
+			return Math.round( ( xPixels - _displayOffset ) / model.project.projectUserData.timelineState.zoom );
 		}
 
 
@@ -1008,6 +1060,9 @@ package components.views.ArrangeView
 		private var _envelopeLock:Boolean = false;
 		private var _curvatureMode:Boolean = false;
 		
+		private var _displayOffset:Number = 0;
+		private var _blockWidth:Number = 0;
+		
 		//drag state
 		private var _isDraggingPoint:Boolean = false;
 		private var _dragPointID:int = -1;
@@ -1027,6 +1082,5 @@ package components.views.ArrangeView
 		private const _controlPointRadius:Number = 4;
 		private const _controlPointLineThickness:Number = 1.5;
 		private const _transitionLineThickness:Number = 1.5;
-		
 	}
 }

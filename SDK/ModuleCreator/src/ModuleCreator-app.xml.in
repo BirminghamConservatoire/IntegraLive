@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<application xmlns="http://ns.adobe.com/air/application/3.1">
+<application xmlns="http://ns.adobe.com/air/application/3.8">
 
 <!-- Adobe AIR Application Descriptor File Template.
 
@@ -127,16 +127,13 @@
 
 	<!-- The icon the system uses for the application. For at least one resolution,
 	specify the path to a PNG file included in the AIR package. Optional. -->
-	<!-- <icon>
-		<image16x16></image16x16>
-		<image32x32></image32x32>
-		<image36x36></image36x36>
-		<image48x48></image48x48>
-		<image57x57></image57x57>
-		<image72x72></image72x72>
-		<image114x114></image114x114>
-		<image128x128></image128x128>
-	</icon> -->
+	<icon>
+		<image16x16>icons/module-creator_16x16x32.png</image16x16>
+		<image32x32>icons/module-creator_32x32x32.png</image32x32>
+		<image48x48>icons/module-creator_48x48x32.png</image48x48>
+		<image128x128>icons/module-creator_128x128x32.png</image128x128>
+		<image512x512>icons/module-creator_512x512x32.png</image512x512>
+	</icon>
 
 	<!-- Whether the application handles the update when a user double-clicks an update version
 	of the AIR file (true), or the default AIR application installer handles the update (false).

@@ -107,8 +107,8 @@ void post_help(const char *command_name) {
 
             "\nBridge, Interface and Host options:\n"
             "  -bridge=[string]\t\tpath of server->host bridge\n"
-            "  -system_modules=[string]\t\tlocation of system-installed .integra-module files\n"
-            "  -third_party_modules=[string]\t\tlocation of third-party .integra-module files\n"
+            "  -system_modules=[string]\t\tlocation of system-installed .module files\n"
+            "  -third_party_modules=[string]\t\tlocation of third-party .module files\n"
             "  -host=[string]\t\tpath of host executable\n"
             "  -hostargs\t\t\targuments are passed into the host\n"
 

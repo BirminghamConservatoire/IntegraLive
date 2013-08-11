@@ -34,7 +34,6 @@ package components.views.ArrangeView
 	
 	import mx.containers.Canvas;
 	import mx.controls.Button;
-	import mx.controls.CheckBox;
 	import mx.controls.TextInput;
 	import mx.core.ScrollPolicy;
 	
@@ -61,7 +60,6 @@ package components.views.ArrangeView
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
-	import components.views.MouseCapture;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.AddButtonSkin;
 	import components.views.Skins.CurveButtonSkin;
@@ -78,11 +76,11 @@ package components.views.ArrangeView
 			
 			_blockID = blockID;
 			
-		 	horizontalScrollPolicy = ScrollPolicy.OFF;  // FL4U
-			verticalScrollPolicy = ScrollPolicy.OFF;    // FL4U
+		 	horizontalScrollPolicy = ScrollPolicy.OFF;
+			verticalScrollPolicy = ScrollPolicy.OFF;
 			
-			_envelopeCanvas.percentWidth = 100;
 			_envelopeCanvas.percentHeight = 100;
+			_envelopeCanvas.horizontalScrollPolicy = ScrollPolicy.OFF;
 			addChild( _envelopeCanvas );
 			
 			_nameEdit.setStyle( "bottom", 0 );
@@ -128,6 +126,7 @@ package components.views.ArrangeView
 			addEventListener( MouseEvent.DOUBLE_CLICK, onDoubleClick );
 			addEventListener( MouseEvent.MOUSE_OVER, onMouseoverBlockView );
 			addEventListener( MouseEvent.MOUSE_OUT, onMouseoutBlockView );
+			addEventListener( Event.RESIZE, onResize );
 					
 			addUpdateMethod( SetPrimarySelectedChild, onPrimarySelectionChanged );
 			addUpdateMethod( SetObjectSelection, onSelectionChanged );
@@ -244,6 +243,19 @@ package components.views.ArrangeView
  					controller.processCommand( new SetViewMode( viewMode ) );
  				}
  			}			
+		}
+		
+		
+		public function setVisiblePortion( visibleStartX:Number, visibleWidth:Number ):void
+		{
+			_visibleStartX = visibleStartX;
+			
+			_envelopeCanvas.x = visibleStartX;
+			_envelopeCanvas.width = visibleWidth;
+			for each( var envelopeView:EnvelopeView in _envelopeViews )
+			{
+				envelopeView.displayOffset = -visibleStartX;
+			}
 		}
 		
 		
@@ -625,6 +637,15 @@ package components.views.ArrangeView
 		}
 		
 		
+		private function onResize( event:Event ):void
+		{
+			for each( var envelopeView:EnvelopeView in _envelopeViews )
+			{
+				envelopeView.blockWidth = width;
+			}
+		}
+		
+		
 		private function addStageKeyboardHandlers():void
 		{
 			Assert.assertNull( _stageKeyboardHandlerOwner );
@@ -869,6 +890,8 @@ package components.views.ArrangeView
 			envelopeView.setStyle( "top", 0 );
 			envelopeView.setStyle( "bottom", _nameEdit.height );
 			envelopeView.curvatureMode = isCurvatureMode;
+			envelopeView.displayOffset = -_visibleStartX;
+			envelopeView.blockWidth = width;
 			
 			_envelopeCanvas.addChildAt( envelopeView, 0 );
 
@@ -957,6 +980,9 @@ package components.views.ArrangeView
 		private var _blockID:int;
 		private var _isPrimarySelected:Boolean = false;
 		private var _isSelected:Boolean = false;
+		
+		private var _visibleStartX:Number = 0;
+		private var _visibleWidth:Number = 0;
 		
 		private var _envelopeCanvas:Canvas = new Canvas;
 		private var _envelopeViews:Object = new Object;

@@ -57,18 +57,18 @@ package components.views.ModuleManager
 			addChild( _3rdPartyModulesLabel );
 			addChild( _embeddedModulesLabel );
 			
-			_3rdPartyModulesLabel.text = "Installed 3rd party modules:";
+			_3rdPartyModulesLabel.text = "Installed 3rd Party Modules:";
 			_3rdPartyModulesList.multiSelection = true;
 			_3rdPartyModulesList.addEventListener( ModuleManagerListItem.SELECT_EVENT, on3rdPartySelected );
 			addChild( _3rdPartyModulesList );
 			
-			_embeddedModulesLabel.text = "Embedded modules:";
+			_embeddedModulesLabel.text = "Embedded Modules:";
 			_embeddedModulesList.multiSelection = true;
 			_embeddedModulesList.addEventListener( ModuleManagerListItem.SELECT_EVENT, onEmbeddedSelected );
 			addChild( _embeddedModulesList );
 
 			_installButton.setStyle( "skin", TextButtonSkin );
-			_installButton.label = "Install From File";
+			_installButton.label = "Install From File...";
 			_installButton.addEventListener( MouseEvent.CLICK, onClickInstallButton );
 			addChild( _installButton );
 
@@ -391,7 +391,7 @@ package components.views.ModuleManager
 		{
 			var interfaceInfo:InterfaceInfo = interfaceDefinition.interfaceInfo;
 			
-			var markdown:String = "##![](app:/assets/moduleLogo.png) " + interfaceInfo.label + "\n\n";
+			var markdown:String = "##![](app:/icons/module_32x32x32.png) " + interfaceInfo.label + "\n\n";
 			
 			markdown += interfaceInfo.description + "\n\n";
 			

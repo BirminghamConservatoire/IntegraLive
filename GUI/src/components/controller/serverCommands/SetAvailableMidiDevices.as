@@ -66,8 +66,8 @@ package components.controller.serverCommands
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
 			
-			midiSettings.availableInputDevices = _availableInputDevices;
-			midiSettings.availableOutputDevices = _availableOutputDevices;
+			if( _availableInputDevices ) midiSettings.availableInputDevices = _availableInputDevices;
+			if( _availableOutputDevices ) midiSettings.availableOutputDevices = _availableOutputDevices;
 			
 			midiSettings.hasChangedSinceReset = true;
 		}

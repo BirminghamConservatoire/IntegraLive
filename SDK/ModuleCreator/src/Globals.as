@@ -34,11 +34,11 @@ package
 		
 		static public const printableCharacterRestrict:String = "A-Za-z0-9 !\"£$%\\^&*()\\-=_+[]{};'#:@~,./<>?\\\\|°±¹²³¼½¾";
 		
-		static public const moduleFileExtension:String = "integra-module";
+		static public const moduleFileExtension:String = "module";
 		static public const moduleToplevelDirectoryName:String = "integra_module_data";
 		static public const moduleImplementationDirectoryName:String = moduleToplevelDirectoryName + "/implementation";
 
-		static public const bundleFileExtension:String = "integra-bundle";
+		static public const bundleFileExtension:String = "bundle";
 		
 		static public const testingModuleFileName:String = "ModuleInDevelopment-4df2725b-f0ba-400a-9899-5f14632dd550." + moduleFileExtension;		
 

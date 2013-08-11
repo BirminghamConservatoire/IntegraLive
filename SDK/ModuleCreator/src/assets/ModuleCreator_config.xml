@@ -3,6 +3,9 @@
 	<!--  integradeveloper is an easter-egg tag which allows the use of 'core' and 'implemented in libIntegra' settings -->
 	<!--  <integradeveloper/>	 --> 
 
+	<!--  bundlemaker is an easter-egg tag which switches on Module Creator's 'bundle maker' functionality   -->
+	<!--  <bundlemaker/>	 --> 
+
 	<!-- 		standard tags - these are presented in the combo box control as defaults						-->
 	<standardtags>
 		<standardtag>simple</standardtag>
@@ -24,8 +27,6 @@
 		<standardtag>input</standardtag>
 		<standardtag>output</standardtag>
 	</standardtags>	
-	
-
 
 
 	<!--        configuration of paths 													-->
@@ -45,12 +46,10 @@
 		<mac>
 			<!--		path to template modules directory, relative to Module Creator	-->
             <templatespath>./templates/</templatespath>
-			<hostpath>./host/bin/pd_integra</hostpath>
+			<hostpath>./Integra Live.app/Contents/Resources/host/bin/pd_integra</hostpath>
 			<fileviewerpath>/usr/bin/open</fileviewerpath>
-			<documentspath>./documentation</documentspath>
-			
-			<!-- TODO: proper IL executable path here									-->
-			<integralivepath>./Integra Live.app/etc</integralivepath>
+			<documentspath>./documentation</documentspath>			
+			<integralivepath>./Integra Live.app/Contents/MacOS/Integra Live</integralivepath>
 		</mac>
 	</paths>
 
@@ -62,14 +61,17 @@
 
 	<!-- 		help links.  Can be web or local relative to documentation directory			-->
 	<helplinks>
-		<helplink name="Module Development Guide">
-			html/module-development/module-development.htm
+		<helplink name="Module Development Quick Start">
+			html/module-development-quickstart/module-development-quickstart.htm
 		</helplink>
-		<helplink name="www.integralive.org">
+		<helplink name="Module Development Guide">
+			html/module-development-guide/module-development-guide.htm
+		</helplink>
+		<helplink name="Integra Live Website">
 			http://www.integralive.org
 		</helplink>
-		<helplink name="User Forum">
-			http://integralive.uservoice.com/forums/58883-general
+		<helplink name="User Forum...">
+			http://integralive.org/forum
 		</helplink>
 	</helplinks>		
 	

@@ -88,10 +88,10 @@ server-dependencies:
 	fi
 
 server-configure-release: server-dependencies
-	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGRELEASE) && cd -
+	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGRELEASE) $(SERVERCONFIGSUFFIX) PATH=$(PATH):$(PWD)/$(LIBINTEGRADEPS_DIR)/bin && cd -
 
 server-configure-debug: server-dependencies
-	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGDEBUG) && cd -
+	cd $(LIBINTEGRAPATH) && ./configure $(SERVERCONFIGDEBUG) $(SERVERCONFIGSUFFIX) PATH=$(PATH):$(PWD)/$(LIBINTEGRADEPS_DIR)/bin && cd -
 
 server:
 	make -C $(LIBINTEGRAPATH) $(SERVERMAKESUFFIX)
@@ -116,13 +116,17 @@ gui:
 	mv $(GUIDIR)/$(APPNAME) ./
 	touch $(APPNAME)/Contents/Resources/META-INF/AIR/debug
 
-creator: host
+creator: documentation
+	@if test ! -d $(APPNAME); \
+	then echo $(APPNAME) does not exist. Run 'make release' first. && exit 2; \
+	fi
 	make -C $(CREATORDIR) app
 	rm -rf $(CREATORAPPNAME)
 	mv $(CREATORDIR)/$(CREATORAPPNAME) ./
 	cp -r $(TEMPLATESDIR) $(CREATORRESIDR)
-	mv host $(CREATORRESIDR)
-
+	cp -r $(APPNAME) $(CREATORRESIDR)
+	mv documentation $(CREATORRESIDR)
+	
 host:
 	if [ ! -e $(PD_DMG_NAME) ]; then \
 	    echo downloading $(PD_DMG_NAME); \
@@ -131,7 +135,11 @@ host:
 	yes | hdiutil mount $(PD_DMG_NAME) > /dev/null
 	cp -r $(PD_MOUNT_POINT)/*.app/Contents/Resources host
 	find ./host -type d -exec chmod 755 {} \;
+	sh remove_externals.sh
+	cp $(PD_MOUNT_POINT)/*.app/Contents/lib/libfftw3f.3.dylib host/extra/bsaylor
+	cd host/extra/bsaylor && chmod 644 partconv~.pd_darwin && install_name_tool -change @executable_path/../../lib/libfftw3f.3.dylib @loader_path/libfftw3f.3.dylib partconv~.pd_darwin && cd -
 	cp $(PD_OSC_HOST) host/extra
+	rm -rf extra
 	cd host/bin; cp -f pd pd_integra; rm -f pd; ln -s pd_integra pd
 
 modules: host server
@@ -164,6 +172,7 @@ clean: server-clean gui-clean
 	-diskutil unmount $(PRODUCT)
 	-rm -rf $(APPNAME)
 	-rm -rf $(PRODUCT).dmg
+	-rm -rf $(CREATORAPPNAME)
 
 
 maintainer-clean: clean dependencies-clean

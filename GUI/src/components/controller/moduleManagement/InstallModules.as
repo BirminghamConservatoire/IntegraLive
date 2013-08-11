@@ -34,9 +34,11 @@ package components.controller.moduleManagement
 	import components.controller.ServerCommand;
 	import components.controller.events.InstallEvent;
 	import components.controller.events.LoadCompleteEvent;
+	import components.controller.userDataCommands.PollForUpgradableModules;
 	import components.model.IntegraModel;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.modelLoader.ModelLoader;
+	import components.utils.Config;
 	import components.utils.Trace;
 	import components.utils.Utilities;
 	
@@ -65,12 +67,24 @@ package components.controller.moduleManagement
 			
 			_installer = new InstallModules();
 			
-			var typeFilter:Array = 
-				[
-					new FileFilter( "Modules and Module Bundles", "*." + Utilities.moduleFileExtension + ";*." + Utilities.bundleFileExtension ),
-					new FileFilter( "Modules", "*." + Utilities.moduleFileExtension ),
-					new FileFilter( "Module Bundles", "*." + Utilities.bundleFileExtension )
-				];
+			var typeFilter:Array;
+			
+			if( Config.singleInstance.hasModuleBundles )
+			{
+				typeFilter = 
+					[
+						new FileFilter( "Modules and Module Bundles", "*." + Utilities.moduleFileExtension + ";*." + Utilities.bundleFileExtension ),
+						new FileFilter( "Modules", "*." + Utilities.moduleFileExtension ),
+						new FileFilter( "Module Bundles", "*." + Utilities.bundleFileExtension )
+					];
+			}
+			else
+			{
+				typeFilter = 
+					[
+						new FileFilter( "Modules", "*." + Utilities.moduleFileExtension ),
+					];
+			}
 			
 			_installer._fileDialog = new File();
 			_installer._fileDialog.addEventListener( FileListEvent.SELECT_MULTIPLE, _installer.onSelectFilesToInstall );
@@ -150,12 +164,13 @@ package components.controller.moduleManagement
 			var previouslyInDevelopmentModuleGuids:Array = [];
 			var removedModuleGuids:Array = [];
 			
-			var installedModuleInDevelopment:Boolean = false;
+			_installedModuleInDevelopment = false;
 
 			
 			for( var i:int = 0; i < response.length; i++ )
 			{
 				_resultsString += "\n* " + _fileTitles[ i ];
+				_resultsString += " installed";
 					
 				var responseNode:Object = response[ i ][ 0 ];
 				
@@ -175,7 +190,7 @@ package components.controller.moduleManagement
 					
 					case "module.loadmoduleindevelopment":
 						newModuleGuids.push( responseNode.moduleid );
-						installedModuleInDevelopment = true;
+						_installedModuleInDevelopment = true;
 						if( responseNode.hasOwnProperty( "previousmoduleid" ) )
 						{
 							if( responseNode.previousremainsasembedded )
@@ -202,7 +217,7 @@ package components.controller.moduleManagement
 				}
 			}
 			
-			if( installedModuleInDevelopment )
+			if( _installedModuleInDevelopment )
 			{
 				_resultsString = "##Loaded an in-development module";
 			}
@@ -254,6 +269,11 @@ package components.controller.moduleManagement
 			_installer = null;
 			
 			IntegraController.singleInstance.dispatchEvent( new InstallEvent( InstallEvent.FINISHED, _resultsString ) );
+			
+			if( _installedModuleInDevelopment )
+			{
+				IntegraController.singleInstance.processCommand( new PollForUpgradableModules( IntegraModel.singleInstance.project.id ) );
+			}
 		}
 
 		
@@ -268,6 +288,7 @@ package components.controller.moduleManagement
 				return file.name;
 			}
 		}
+		
 		
 		private function getFilesToInstall( pickedFiles:Array ):void
 		{
@@ -364,6 +385,7 @@ package components.controller.moduleManagement
 		private var _loadCompleteDispatcher:EventDispatcher = null;
 		
 		private var _resultsString:String;
+		private var _installedModuleInDevelopment:Boolean = false;
 		
 		private static var _installer:InstallModules = null;
 		

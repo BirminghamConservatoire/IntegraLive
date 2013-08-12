@@ -40,7 +40,7 @@
 #endif
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CFileIO::file_suffix = "integra";
 

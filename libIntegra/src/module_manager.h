@@ -31,7 +31,7 @@
 #include "error.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CModuleInstallResult;
 	class CModuleUninstallResult;

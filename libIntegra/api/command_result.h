@@ -23,16 +23,16 @@
 
 #include "guid_helper.h"
 
-namespace ntg_internal
+namespace integra_internal
 {
 	//todo - use CNodeApi when it's been created!
 	class CNode;
 }
 
 
-namespace ntg_api
+namespace integra_api
 {
-	class LIBINTEGRA_API CCommandResult
+	class INTEGRA_API CCommandResult
 	{
 		protected:
 			CCommandResult() {};
@@ -42,22 +42,22 @@ namespace ntg_api
 	};
 
 
-	class LIBINTEGRA_API CNewCommandResult : public CCommandResult
+	class INTEGRA_API CNewCommandResult : public CCommandResult
 	{
 		public:
 			CNewCommandResult() { m_created_node = NULL; }
 			~CNewCommandResult() {};
 
-			const ntg_internal::CNode *get_created_node() const { return m_created_node; }
-			void set_created_node( const ntg_internal::CNode *created_node ) { m_created_node = created_node; }
+			const integra_internal::CNode *get_created_node() const { return m_created_node; }
+			void set_created_node( const integra_internal::CNode *created_node ) { m_created_node = created_node; }
 
 		private:
-			const ntg_internal::CNode *m_created_node;
+			const integra_internal::CNode *m_created_node;
 	};
 
 
 
-	class LIBINTEGRA_API CLoadCommandResult : public CCommandResult
+	class INTEGRA_API CLoadCommandResult : public CCommandResult
 	{
 		public:
 			CLoadCommandResult() {};

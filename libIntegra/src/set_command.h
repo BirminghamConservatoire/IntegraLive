@@ -25,10 +25,10 @@
 #include "api/command_api.h"
 #include "path.h"
 
-using namespace ntg_api;
+using namespace integra_api;
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CNodeEndpoint;
 	class CInterfaceDefinition;

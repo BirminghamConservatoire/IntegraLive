@@ -31,7 +31,7 @@ class CXmlRpcServerContext
 
 		CXmlRpcServerContext() { m_server = NULL; m_port = 0; m_sem_initialized = NULL; }
 
-		ntg_internal::CServer *m_server;
+		integra_internal::CServer *m_server;
 		unsigned short m_port;
 
 		sem_t *m_sem_initialized;

@@ -32,7 +32,7 @@
 #endif
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CStringHelper::node_name_character_set = "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

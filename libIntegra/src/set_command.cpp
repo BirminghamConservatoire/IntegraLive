@@ -31,16 +31,16 @@
 #include <assert.h>
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CSetCommandApi *CSetCommandApi::create( const CPath &endpoint_path, const CValue *value )
 	{
-		return new ntg_internal::CSetCommand( endpoint_path, value );
+		return new integra_internal::CSetCommand( endpoint_path, value );
 	}
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CSetCommand::CSetCommand( const CPath &endpoint_path, const CValue *value )
 	{

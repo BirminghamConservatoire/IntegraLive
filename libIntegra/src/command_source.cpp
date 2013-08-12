@@ -24,7 +24,7 @@
 #include "trace.h"
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CCommandSource::CCommandSource()
 	{
@@ -56,7 +56,7 @@ namespace ntg_api
 			case HOST:				return "host";
 			case SCRIPT:			return "script";
 			case XMLRPC_API:		return "xmlrpc_api";
-			case INTEGRA_API:		return "integra_api";
+			case PUBLIC_API:		return "public_api";
 
 			default:
 				NTG_TRACE_ERROR << "encountered unknown command source";

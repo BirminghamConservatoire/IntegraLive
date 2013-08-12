@@ -29,16 +29,16 @@
 #include <assert.h>
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CLoadCommandApi *CLoadCommandApi::create( const string &file_path, const CPath &parent_path )
 	{
-		return new ntg_internal::CLoadCommand( file_path, parent_path );
+		return new integra_internal::CLoadCommand( file_path, parent_path );
 	}
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CLoadCommand::CLoadCommand( const string &file_path, const CPath &parent_path )
 	{

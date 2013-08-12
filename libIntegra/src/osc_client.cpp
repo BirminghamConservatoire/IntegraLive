@@ -27,7 +27,7 @@
 
 #include <assert.h>
 
-using namespace ntg_internal;
+using namespace integra_internal;
 
 
 /* sure there must be a more elegant way to do this, but lo_message_add_varargs

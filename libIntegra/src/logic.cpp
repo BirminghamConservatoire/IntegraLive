@@ -42,7 +42,7 @@
 
 #include "api/command_api.h"
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CLogic::module_container = "Container";
 	const string CLogic::module_script = "Script";
@@ -252,7 +252,7 @@ namespace ntg_internal
 			case CCommandSource::CONNECTION:
 			case CCommandSource::SCRIPT:
 			case CCommandSource::XMLRPC_API:
-			case CCommandSource::INTEGRA_API:
+			case CCommandSource::PUBLIC_API:
 				{
 				/* these are the sources for which we want to copy the file to the data directory */
 
@@ -362,7 +362,7 @@ namespace ntg_internal
 			case CCommandSource::CONNECTION:
 			case CCommandSource::SCRIPT:
 			case CCommandSource::XMLRPC_API:
-			case CCommandSource::INTEGRA_API:
+			case CCommandSource::PUBLIC_API:
 				/* external command is trying to reset the data directory - should delete the old one and create a new one */
 				CDataDirectory::change( *previous_value, *node_endpoint.get_value() );
 				break;		

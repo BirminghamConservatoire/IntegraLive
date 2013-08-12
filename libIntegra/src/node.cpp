@@ -35,11 +35,11 @@
 #include "logic.h"
 
 
-using namespace ntg_internal;
+using namespace integra_internal;
 
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CNode::CNode()
 	{

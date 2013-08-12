@@ -25,20 +25,20 @@
 #include "error.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CServer;
 }
 
 
-namespace ntg_api
+namespace integra_api
 {
 	class CPath;
 	class CValue;
 	class CCommandResult;
 	class CCommandSource;
 	
-	class LIBINTEGRA_API CCommandApi
+	class INTEGRA_API CCommandApi
 	{
 		protected:
 
@@ -48,53 +48,53 @@ namespace ntg_api
 
 			virtual ~CCommandApi() {};
 
-			virtual CError execute( ntg_internal::CServer &server, CCommandSource source, CCommandResult *result ) = 0;
+			virtual CError execute( integra_internal::CServer &server, CCommandSource source, CCommandResult *result ) = 0;
 	};
 
 
-	class LIBINTEGRA_API CNewCommandApi : public CCommandApi
+	class INTEGRA_API CNewCommandApi : public CCommandApi
 	{
 		public:
 			static CNewCommandApi *create( const GUID &module_id, const string &node_name, const CPath &parent_path );
 	};
 
 
-	class LIBINTEGRA_API CDeleteCommandApi : public CCommandApi
+	class INTEGRA_API CDeleteCommandApi : public CCommandApi
 	{
 		public:
 			static CDeleteCommandApi *create( const CPath &path );
 	};
 
 
-	class LIBINTEGRA_API CSetCommandApi : public CCommandApi
+	class INTEGRA_API CSetCommandApi : public CCommandApi
 	{
 		public:
 			static CSetCommandApi *create( const CPath &endpoint_path, const CValue *value );
 	};
 
 
-	class LIBINTEGRA_API CRenameCommandApi : public CCommandApi
+	class INTEGRA_API CRenameCommandApi : public CCommandApi
 	{
 		public:
 			static CRenameCommandApi *create( const CPath &path, const string &new_name );
 	};
 
 
-	class LIBINTEGRA_API CMoveCommandApi : public CCommandApi
+	class INTEGRA_API CMoveCommandApi : public CCommandApi
 	{
 		public:
 			static CMoveCommandApi *create( const CPath &node_path, const CPath &new_parent_path );
 	};
 
 
-	class LIBINTEGRA_API CLoadCommandApi : public CCommandApi
+	class INTEGRA_API CLoadCommandApi : public CCommandApi
 	{
 		public:
 			static CLoadCommandApi *create( const string &file_path, const CPath &parent_path );
 	};
 
 
-	class LIBINTEGRA_API CSaveCommandApi : public CCommandApi
+	class INTEGRA_API CSaveCommandApi : public CCommandApi
 	{
 		public:
 			static CSaveCommandApi *create( const string &file_path, const CPath &node_path );

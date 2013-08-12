@@ -33,9 +33,9 @@
 #endif
 
 
-using namespace ntg_internal;
+using namespace integra_internal;
 
-namespace ntg_api
+namespace integra_api
 {
 	const GUID CGuidHelper::null_guid = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 

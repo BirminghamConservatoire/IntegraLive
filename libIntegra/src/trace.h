@@ -41,15 +41,15 @@
 #define NTG_LOCATION __FILE__ ": " TOSTRING(__LINE__) "(" NTG_FUNCTION ")"
 
 
-#define NTG_TRACE_ERROR				ntg_api::CTrace::error( NTG_LOCATION )
-#define NTG_TRACE_PROGRESS			ntg_api::CTrace::progress( NTG_LOCATION )
-#define NTG_TRACE_VERBOSE			ntg_api::CTrace::verbose( NTG_LOCATION )
+#define NTG_TRACE_ERROR				integra_api::CTrace::error( NTG_LOCATION )
+#define NTG_TRACE_PROGRESS			integra_api::CTrace::progress( NTG_LOCATION )
+#define NTG_TRACE_VERBOSE			integra_api::CTrace::verbose( NTG_LOCATION )
 
 
 
-namespace ntg_api
+namespace integra_api
 {
-	class LIBINTEGRA_API CTrace
+	class INTEGRA_API CTrace
 	{
 		public:
 

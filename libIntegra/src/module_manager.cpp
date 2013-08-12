@@ -45,7 +45,7 @@
 #include "MurmurHash2.h"
 #include "string_helper.h"
 
-using namespace ntg_api;
+using namespace integra_api;
 
 
 #ifndef _WINDOWS
@@ -54,7 +54,7 @@ using namespace ntg_api;
 #endif
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CModuleManager::module_suffix = "module";
 
@@ -455,7 +455,7 @@ namespace ntg_internal
 	}
 
 
-	ntg_api::CError CModuleManager::unload_orphaned_embedded_modules()
+	CError CModuleManager::unload_orphaned_embedded_modules()
 	{
 		guid_set module_ids;
 		/* first pass - collect ids of all embedded modules */
@@ -1012,7 +1012,7 @@ namespace ntg_internal
 	}
 
 
-	bool CModuleManager::is_module_in_use( const ntg_internal::node_map &search_nodes, const GUID &module_id ) const
+	bool CModuleManager::is_module_in_use( const integra_internal::node_map &search_nodes, const GUID &module_id ) const
 	{
 		for( node_map::const_iterator i = search_nodes.begin(); i != search_nodes.end(); i++ )
 		{
@@ -1033,7 +1033,7 @@ namespace ntg_internal
 	}
 
 
-	void CModuleManager::remove_in_use_module_ids_from_set( const node_map &search_nodes, ntg_api::guid_set &set ) const
+	void CModuleManager::remove_in_use_module_ids_from_set( const node_map &search_nodes, guid_set &set ) const
 	{
 		for( node_map::const_iterator i = search_nodes.begin(); i != search_nodes.end(); i++ )
 		{

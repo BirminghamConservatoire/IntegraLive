@@ -33,7 +33,7 @@
 #include <assert.h>
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CPlayerLogic::endpoint_play = "play";
 	const string CPlayerLogic::endpoint_tick = "tick";

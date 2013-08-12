@@ -32,16 +32,16 @@
 #include <assert.h>
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CNewCommandApi *CNewCommandApi::create( const GUID &module_id, const string &node_name, const CPath &parent_path )
 	{
-		return new ntg_internal::CNewCommand( module_id, node_name, parent_path );
+		return new integra_internal::CNewCommand( module_id, node_name, parent_path );
 	}
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CNewCommand::CNewCommand( const GUID &module_id, const string &node_name, const CPath &parent_path )
 	{

@@ -24,11 +24,11 @@
 #include "common_typedefs.h"
 
 
-namespace ntg_api
+namespace integra_api
 {
 	class CServerStartupInfo;
 
-	class LIBINTEGRA_API CServerApi
+	class INTEGRA_API CServerApi
 	{
 		protected:
 			CServerApi() {}

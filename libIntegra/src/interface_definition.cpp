@@ -28,7 +28,7 @@
 #include "guid_helper.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	/************************************/
 	/* INTERFACE DEFINITION             */

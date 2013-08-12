@@ -27,7 +27,7 @@
 #include "trace.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CReentranceChecker::CReentranceChecker()
 	{
@@ -86,7 +86,7 @@ namespace ntg_internal
 			case CCommandSource::LOAD:
 			case CCommandSource::HOST:
 			case CCommandSource::XMLRPC_API:
-			case CCommandSource::INTEGRA_API:
+			case CCommandSource::PUBLIC_API:
 				return false;	/* these cannot cause recursion */
 
 			default:

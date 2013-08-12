@@ -29,7 +29,7 @@
 #include "api/command_api.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CScalerLogic::endpoint_in_value = "inValue";
 	const string CScalerLogic::endpoint_out_value = "outValue";

@@ -28,16 +28,16 @@
 #include "command_source.h"
 
 
-using namespace ntg_api;
+using namespace integra_api;
 
-namespace ntg_api
+namespace integra_api
 {
 	class CPath;
 }
 
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CNode;
 	class CNodeEndpoint;

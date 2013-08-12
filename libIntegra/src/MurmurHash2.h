@@ -37,7 +37,7 @@ _resolve * USA.
 /* 2. It will not produce the same results on little-endian and big-endian */
 /*    machines. */
 
-namespace ntg_internal
+namespace integra_internal
 {
 	unsigned int MurmurHash2( const void * key, int len, unsigned int seed );
 }

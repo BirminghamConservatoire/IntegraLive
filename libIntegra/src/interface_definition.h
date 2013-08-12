@@ -31,10 +31,10 @@
 #include "value.h"
 
 
-using namespace ntg_api;
+using namespace integra_api;
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CInterfaceDefinition;
 	class CInterfaceInfo;
@@ -143,8 +143,8 @@ namespace ntg_internal
 	};
 
 
-	//todo - remove LIBINTEGRA_API from here - temporary measure to make the bridge compile */
-	class LIBINTEGRA_API CEndpointDefinition
+	//todo - remove INTEGRA_API from here - temporary measure to make the bridge compile */
+	class INTEGRA_API CEndpointDefinition
 	{
 		friend class CInterfaceDefinitionLoader;
 

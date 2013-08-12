@@ -29,10 +29,10 @@
 #include "path.h"
 #include "node.h"
 
-using namespace ntg_api;
+using namespace integra_api;
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CNode;
 	class CServer;
@@ -63,7 +63,7 @@ namespace ntg_internal
 				public:
 					CPlayerState();
 
-					ntg_internal::internal_id m_id;
+					integra_internal::internal_id m_id;
 					CPath m_tick_path;
 					CPath m_play_path;
 					int m_rate;

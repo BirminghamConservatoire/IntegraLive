@@ -38,11 +38,11 @@
 #include <dirent.h>
 
 
-using namespace ntg_internal;
+using namespace integra_internal;
 
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CScratchDirectory::scratch_directory_root_name = "libIntegra";
 

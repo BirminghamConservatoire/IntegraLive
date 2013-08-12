@@ -35,7 +35,7 @@
 
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CValue::CValue()
 	{

@@ -29,16 +29,16 @@
 #include <assert.h>
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CRenameCommandApi *CRenameCommandApi::create( const CPath &path, const string &new_name )
 	{
-		return new ntg_internal::CRenameCommand( path, new_name );
+		return new integra_internal::CRenameCommand( path, new_name );
 	}
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CRenameCommand::CRenameCommand( const CPath &path, const string &new_name )
 	{

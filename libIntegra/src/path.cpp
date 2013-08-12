@@ -25,10 +25,10 @@
 #include "string_helper.h"
 
 
-using namespace ntg_internal;
+using namespace integra_internal;
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CPath::CPath()
 	{
@@ -178,5 +178,5 @@ namespace ntg_api
 
 
 
-}	/* namespace ntg_api */
+}	/* namespace integra_api */
 

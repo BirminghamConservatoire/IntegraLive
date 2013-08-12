@@ -47,7 +47,7 @@
 #include "string_helper.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CDataDirectory::node_directory = "node_data";
 

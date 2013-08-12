@@ -25,7 +25,7 @@
 #include "logic.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CControlPointLogic : public CLogic
 	{

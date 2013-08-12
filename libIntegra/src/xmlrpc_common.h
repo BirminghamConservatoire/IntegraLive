@@ -24,9 +24,9 @@ _resolve * USA.
 #include <xmlrpc-c/base.h>
 
 
-xmlrpc_value *ntg_xmlrpc_value_new( const ntg_api::CValue &value, xmlrpc_env *env );
-xmlrpc_value *ntg_xmlrpc_value_from_path( const ntg_api::CPath &path, xmlrpc_env *env );
-ntg_api::CValue *ntg_xmlrpc_get_value( xmlrpc_env *env, xmlrpc_value *value_xmlrpc );
+xmlrpc_value *ntg_xmlrpc_value_new( const integra_api::CValue &value, xmlrpc_env *env );
+xmlrpc_value *ntg_xmlrpc_value_from_path( const integra_api::CPath &path, xmlrpc_env *env );
+integra_api::CValue *ntg_xmlrpc_get_value( xmlrpc_env *env, xmlrpc_value *value_xmlrpc );
 
 
 #endif

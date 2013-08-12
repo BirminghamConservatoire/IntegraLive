@@ -29,7 +29,7 @@
 #include "error.h"
 
 
-namespace ntg_api
+namespace integra_api
 {
 	class CGuidHelper
 	{

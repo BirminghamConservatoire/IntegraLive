@@ -30,7 +30,7 @@
 #include <assert.h>
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CEnvelopeLogic::endpoint_start_tick = "startTick";
 	const string CEnvelopeLogic::endpoint_current_tick = "currentTick";

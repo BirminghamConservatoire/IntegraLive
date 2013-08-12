@@ -24,13 +24,13 @@
 /** \file integra_bridge.h Integra bridge API */
 
 
-namespace ntg_api
+namespace integra_api
 {
 	class CValue;
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CNodeEndpoint;
 
@@ -71,14 +71,14 @@ typedef struct ntg_bridge_interface_
      that is meaningful to the module host
      *
      */
-    int (*module_load)( ntg_internal::internal_id id, const char *implementation_name);
+    int (*module_load)( integra_internal::internal_id id, const char *implementation_name);
 
     /** \brief Remove an Integra module from a target environment
      *
      * \param id: the unique session id of the module
      *
      */
-    int (*module_remove)( ntg_internal::internal_id id );
+    int (*module_remove)( integra_internal::internal_id id );
 
     /** \brief Connect two endpoints in a target environment
      *
@@ -87,13 +87,13 @@ typedef struct ntg_bridge_interface_
      * are handled by libIntegra. }
      *
      */
-    int (*module_connect)(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target);
+    int (*module_connect)(const integra_internal::CNodeEndpoint *source, const integra_internal::CNodeEndpoint *target);
 
     /** \brief Disconnect endpoints in a target environment */
-    int (*module_disconnect)(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target);
+    int (*module_disconnect)(const integra_internal::CNodeEndpoint *source, const integra_internal::CNodeEndpoint *target);
 
     /** \brief send a value to a particular port */
-    void (*send_value)(const ntg_internal::CNodeEndpoint *target);
+    void (*send_value)(const integra_internal::CNodeEndpoint *target);
 
     /** \brief Initialise the bridge 
      *
@@ -125,8 +125,8 @@ typedef struct ntg_bridge_interface_
      * to the server
      *
      * */
-    void (*server_receive_callback)(ntg_internal::internal_id id, const char *attribute_name, 
-            const ntg_api::CValue *value, void *context );
+    void (*server_receive_callback)(integra_internal::internal_id id, const char *attribute_name, 
+            const integra_api::CValue *value, void *context );
 
     /** \brief context for the server receive callback function
      *

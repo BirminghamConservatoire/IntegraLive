@@ -26,7 +26,7 @@
 #include "path.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CContainerLogic : public CLogic
 	{

@@ -26,9 +26,9 @@
 #include "api/common_typedefs.h"
 
 
-namespace ntg_api
+namespace integra_api
 {
-	class LIBINTEGRA_API CValue
+	class INTEGRA_API CValue
 	{
 		public:
 
@@ -71,7 +71,7 @@ namespace ntg_api
 	};
 
 
-	class LIBINTEGRA_API CIntegerValue : public CValue
+	class INTEGRA_API CIntegerValue : public CValue
 	{
 		public:
 
@@ -99,7 +99,7 @@ namespace ntg_api
 	};
 
 
-	class LIBINTEGRA_API CFloatValue : public CValue
+	class INTEGRA_API CFloatValue : public CValue
 	{
 		public:
 
@@ -127,7 +127,7 @@ namespace ntg_api
 	};
 
 
-	class LIBINTEGRA_API CStringValue : public CValue
+	class INTEGRA_API CStringValue : public CValue
 	{
 		public:
 

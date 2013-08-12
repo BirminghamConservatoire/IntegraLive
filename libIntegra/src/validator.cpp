@@ -27,7 +27,7 @@
 #include "string_helper.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const char *CValidator::schema_file = "CollectionSchema.xsd";
 

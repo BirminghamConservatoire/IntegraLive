@@ -23,9 +23,9 @@
 
 #include "common_typedefs.h"
 
-namespace ntg_api
+namespace integra_api
 {
-	class LIBINTEGRA_API CServerStartupInfo
+	class INTEGRA_API CServerStartupInfo
 	{
 		public:
 			CServerStartupInfo()

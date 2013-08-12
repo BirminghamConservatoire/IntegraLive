@@ -30,7 +30,7 @@
 #include <assert.h>
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CContainerLogic::CContainerLogic( const CNode &node )
 		:	CLogic( node )

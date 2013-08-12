@@ -111,7 +111,7 @@
 
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CInterfaceDefinitionLoader::CInterfaceDefinitionLoader()
 	{

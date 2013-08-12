@@ -29,16 +29,16 @@
 #include <assert.h>
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CMoveCommandApi *CMoveCommandApi::create( const CPath &node_path, const CPath &new_parent_path )
 	{
-		return new ntg_internal::CMoveCommand( node_path, new_parent_path	 );
+		return new integra_internal::CMoveCommand( node_path, new_parent_path	 );
 	}
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CMoveCommand::CMoveCommand( const CPath &node_path, const CPath &new_parent_path )
 	{

@@ -32,7 +32,7 @@
 
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CScriptLogic::endpoint_trigger = "trigger";
 	const string CScriptLogic::endpoint_text = "text";

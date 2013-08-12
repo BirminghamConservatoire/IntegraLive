@@ -31,7 +31,7 @@
 #include <libxml/xmlreader.h>
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CInterfaceDefinitionLoader
 	{

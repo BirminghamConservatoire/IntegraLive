@@ -7,7 +7,7 @@
 #include "trace.h"
 
 
-using namespace ntg_api;
+using namespace integra_api;
 
 
 

@@ -29,7 +29,7 @@
 #include "trace.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CNodeEndpoint::CNodeEndpoint()
 	{

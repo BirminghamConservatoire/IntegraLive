@@ -45,8 +45,8 @@ void lo_address_set_flags(lo_address t, int flags);
 #include "src/trace.h"
 #include "src/value.h"
 
-using namespace ntg_api;
-using namespace ntg_internal;
+using namespace integra_api;
+using namespace integra_internal;
 
 #define NTG_OSC_ERROR -1
 #define NTG_BRIDGE_LISTEN_PORT "7772"

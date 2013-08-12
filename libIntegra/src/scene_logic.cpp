@@ -32,7 +32,7 @@
 
 #include <assert.h>
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CSceneLogic::endpoint_activate = "activate";
 	const string CSceneLogic::endpoint_start = "start";

@@ -27,7 +27,7 @@
 
 
 
-namespace ntg_api
+namespace integra_api
 {
 	bool CTrace::s_trace_errors = true;
 	bool CTrace::s_trace_progress = true;

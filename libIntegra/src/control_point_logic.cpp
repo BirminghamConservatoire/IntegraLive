@@ -29,7 +29,7 @@
 #include "interface_definition.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const string CControlPointLogic::endpoint_tick = "tick";
 	const string CControlPointLogic::endpoint_value = "value";

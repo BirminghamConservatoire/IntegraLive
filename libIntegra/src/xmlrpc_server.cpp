@@ -99,8 +99,8 @@
 /*define maximum size for incoming xmlrpc (default is 500Kb and can be exceeded by large requests)*/
 #define NTG_XMLRPC_SIZE_LIMIT 1024 * 1000 * 1000
 
-using namespace ntg_api;
-using namespace ntg_internal;
+using namespace integra_api;
+using namespace integra_internal;
 
 
 static TServer abyssServer;

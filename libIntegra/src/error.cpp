@@ -23,7 +23,7 @@
 #include "error.h"
 #include "trace.h"
 
-namespace ntg_api
+namespace integra_api
 {
 	CError::CError()
 	{

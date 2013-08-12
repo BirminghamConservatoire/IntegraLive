@@ -30,16 +30,16 @@
 #include <assert.h>
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CSaveCommandApi *CSaveCommandApi::create( const string &file_path, const CPath &node_path )
 	{
-		return new ntg_internal::CSaveCommand( file_path, node_path );
+		return new integra_internal::CSaveCommand( file_path, node_path );
 	}
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	CSaveCommand::CSaveCommand( const string &file_path, const CPath &node_path )
 	{

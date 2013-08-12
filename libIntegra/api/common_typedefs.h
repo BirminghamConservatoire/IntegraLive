@@ -33,16 +33,16 @@
 
 #ifdef _WINDOWS
 	#ifdef LIBINTEGRA_EXPORTS	
-		#define LIBINTEGRA_API __declspec(dllexport)
+		#define INTEGRA_API __declspec(dllexport)
 	#else
-		#define LIBINTEGRA_API __declspec(dllimport)
+		#define INTEGRA_API __declspec(dllimport)
 	#endif
 #else
-	#define LIBINTEGRA_API 
+	#define INTEGRA_API 
 #endif
 
 
-namespace ntg_api
+namespace integra_api
 {
 	/* Strings */
 	typedef std::ostringstream ostringstream;

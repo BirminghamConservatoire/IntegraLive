@@ -31,13 +31,13 @@ extern "C"
 }
 
 
-namespace ntg_api
+namespace integra_api
 {
 	class CPath;
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CServer;
 

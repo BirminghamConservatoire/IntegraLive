@@ -40,7 +40,7 @@ INTEGRA_BRIDGE_API ntg_bridge_interface_generator interface_generator[1];
 static ntg_bridge_interface *bridge_interface = NULL;
 
 
-static int dummy_module_load(const ntg_internal::internal_id instance_id, const char *implementation_name){
+static int dummy_module_load(const integra_internal::internal_id instance_id, const char *implementation_name){
 
     fprintf(stderr, "%s(): instance_id = %d, implementation_name = %s\n",
             __FUNCTION__, (int)instance_id, implementation_name);
@@ -48,7 +48,7 @@ static int dummy_module_load(const ntg_internal::internal_id instance_id, const 
     return 0;
 }
 
-static int dummy_module_remove(const ntg_internal::internal_id id){
+static int dummy_module_remove(const integra_internal::internal_id id){
 
     fprintf(stderr, "%s(): id = %d\n", __FUNCTION__, (int)id);
 
@@ -56,7 +56,7 @@ static int dummy_module_remove(const ntg_internal::internal_id id){
 
 }
 
-static int dummy_module_connect(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target)
+static int dummy_module_connect(const integra_internal::CNodeEndpoint *source, const integra_internal::CNodeEndpoint *target)
 {
     fprintf(stderr, "%s()\n", __FUNCTION__);
 
@@ -64,7 +64,7 @@ static int dummy_module_connect(const ntg_internal::CNodeEndpoint *source, const
 
 }
 
-static int dummy_module_disconnect(const ntg_internal::CNodeEndpoint *source, const ntg_internal::CNodeEndpoint *target)
+static int dummy_module_disconnect(const integra_internal::CNodeEndpoint *source, const integra_internal::CNodeEndpoint *target)
 {
     fprintf(stderr, "%s()\n", __FUNCTION__);
 
@@ -72,7 +72,7 @@ static int dummy_module_disconnect(const ntg_internal::CNodeEndpoint *source, co
 
 }
 
-static void dummy_send_value(const ntg_internal::CNodeEndpoint *target)
+static void dummy_send_value(const integra_internal::CNodeEndpoint *target)
 {
 
     fprintf(stderr, "%s()\n", __FUNCTION__);

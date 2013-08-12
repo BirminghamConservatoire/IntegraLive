@@ -27,7 +27,7 @@
 #include "node_endpoint.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CStateTable
 	{

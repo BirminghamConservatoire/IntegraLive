@@ -29,7 +29,7 @@
 #endif
 
 
-using namespace ntg_api;
+using namespace integra_api;
 
 #define MAXIMUM_ARGUMENTS ( 50 )
 #define NUMBER_OF_PROCESSES_TO_CLOSE ( 2 )

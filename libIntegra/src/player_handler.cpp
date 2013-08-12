@@ -40,7 +40,7 @@
 #endif
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	/* 
 	 hardcoded player update rate of 40hz 

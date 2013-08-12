@@ -24,9 +24,9 @@
 
 #include "api/common_typedefs.h"
 
-namespace ntg_api
+namespace integra_api
 {
-	class LIBINTEGRA_API CCommandSource
+	class INTEGRA_API CCommandSource
 	{
 		public:
 
@@ -40,7 +40,7 @@ namespace ntg_api
 				HOST,
 				SCRIPT,
 				XMLRPC_API,
-				INTEGRA_API
+				PUBLIC_API
 			}; 
 
 			CCommandSource();

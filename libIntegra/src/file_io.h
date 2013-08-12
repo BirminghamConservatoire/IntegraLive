@@ -32,9 +32,9 @@
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
 
-using namespace ntg_api;
+using namespace integra_api;
 
-namespace ntg_internal
+namespace integra_internal
 {
 	class CServer;
 	class CModuleManager;

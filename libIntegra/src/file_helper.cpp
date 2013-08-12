@@ -36,7 +36,7 @@
 #include "trace.h"
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	string CFileHelper::extract_filename_from_path( const string &path )
 	{

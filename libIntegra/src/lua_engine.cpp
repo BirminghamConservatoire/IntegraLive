@@ -41,13 +41,13 @@ extern "C"
 #include <assert.h>
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	const unsigned int CLuaEngine::error_color = 0xff4040;
 	const unsigned int CLuaEngine::set_color = 0xc000c0;
 	const unsigned int CLuaEngine::get_color = 0xc08000;
 	const unsigned int CLuaEngine::print_color = 0x6060ff;
-	const string CLuaEngine::self_key = "ntg_internal::CLuaEngine";
+	const string CLuaEngine::self_key = "integra_internal::CLuaEngine";
 
 	CLuaEngine::CLuaEngine()
 	{

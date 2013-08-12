@@ -50,7 +50,7 @@ extern "C"
 #include <iostream>
 
 
-namespace ntg_api
+namespace integra_api
 {
 	CServerApi *CServerApi::create_server( const CServerStartupInfo &startup_info )
 	{
@@ -79,12 +79,12 @@ namespace ntg_api
 			return NULL;
 		}
 
-		return new ntg_internal::CServer( startup_info );
+		return new integra_internal::CServer( startup_info );
 	}
 }
 
 
-namespace ntg_internal
+namespace integra_internal
 {
 	#ifdef _WINDOWS
 		static void invalid_parameter_handler( const wchar_t * expression, const wchar_t * function, const wchar_t * file, unsigned int line, uintptr_t pReserved )

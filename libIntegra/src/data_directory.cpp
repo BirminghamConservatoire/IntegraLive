@@ -38,10 +38,10 @@
 #include "data_directory.h"
 #include "scratch_directory.h"
 #include "file_io.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "logic.h"
 #include "node_endpoint.h"
-#include "value.h"
+#include "api/value.h"
 #include "file_helper.h"
 #include "server.h"
 #include "string_helper.h"
@@ -85,7 +85,7 @@ namespace integra_internal
 
 			if( relative_node_path.empty() )
 			{
-				NTG_TRACE_ERROR << "Couldn't build relative node path to " << node.get_path().get_string();
+				INTEGRA_TRACE_ERROR << "Couldn't build relative node path to " << node.get_path().get_string();
 			}
 			else
 			{
@@ -99,7 +99,7 @@ namespace integra_internal
 				}
 				else
 				{
-					NTG_TRACE_ERROR << "Couldn't get data directory name for " << node.get_path().get_string();
+					INTEGRA_TRACE_ERROR << "Couldn't get data directory name for " << node.get_path().get_string();
 				}
 			}
 		}
@@ -119,7 +119,7 @@ namespace integra_internal
 		unzFile unzip_file = unzOpen( file_path.c_str() );
 		if( !unzip_file )
 		{
-			NTG_TRACE_ERROR << "Couldn't open zip file " << file_path;
+			INTEGRA_TRACE_ERROR << "Couldn't open zip file " << file_path;
 			return CError::FAILED;
 		}
 
@@ -128,7 +128,7 @@ namespace integra_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't iterate contents of " << file_path;
+			INTEGRA_TRACE_ERROR << "Couldn't iterate contents of " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
@@ -139,7 +139,7 @@ namespace integra_internal
 			char file_name[ CStringHelper::string_buffer_length ];
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR << "Couldn't extract file info for " << file_path;
+				INTEGRA_TRACE_ERROR << "Couldn't extract file info for " << file_path;
 				continue;
 			}
 
@@ -152,7 +152,7 @@ namespace integra_internal
 			string relative_node_path_string = CFileHelper::extract_first_directory_from_path( file_name + node_directory_length );
 			if( relative_node_path_string.empty() )
 			{
-				NTG_TRACE_ERROR << "unexpected content - no relative path: " << file_name;
+				INTEGRA_TRACE_ERROR << "unexpected content - no relative path: " << file_name;
 				continue;
 			}
 
@@ -161,13 +161,13 @@ namespace integra_internal
 
 			if( !node )
 			{
-				NTG_TRACE_ERROR << "couldn't resolve path: " << relative_node_path_string;
+				INTEGRA_TRACE_ERROR << "couldn't resolve path: " << relative_node_path_string;
 				continue;
 			}
 
 			if( !node->get_logic().has_data_directory() )
 			{
-				NTG_TRACE_ERROR << "found data file for node which shouldn't have data directory: " << file_name;
+				INTEGRA_TRACE_ERROR << "found data file for node which shouldn't have data directory: " << file_name;
 				continue;
 			}
 
@@ -181,7 +181,7 @@ namespace integra_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "couldn't open zip contents: " << file_name;
+				INTEGRA_TRACE_ERROR << "couldn't open zip contents: " << file_name;
 			}
 		}
 		while( unzGoToNextFile( unzip_file ) != UNZ_END_OF_LIST_OF_FILE );
@@ -212,7 +212,7 @@ namespace integra_internal
 		output_file = fopen( target_path, "wb" );
 		if( !output_file )
 		{
-			NTG_TRACE_ERROR << "Couldn't write to data directory: " << target_path;
+			INTEGRA_TRACE_ERROR << "Couldn't write to data directory: " << target_path;
 			delete[] target_path;
 			return;
 		}
@@ -230,7 +230,7 @@ namespace integra_internal
 			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, MIN( CFileIO::data_copy_buffer_size, bytes_remaining ) );
 			if( bytes_read <= 0 )
 			{
-				NTG_TRACE_ERROR << "Error decompressing file";
+				INTEGRA_TRACE_ERROR << "Error decompressing file";
 				break;
 			}
 
@@ -250,7 +250,7 @@ namespace integra_internal
 		const string *data_directory = input_file.get_node().get_logic().get_data_directory();
 		if( !data_directory )
 		{
-			NTG_TRACE_ERROR << "can't get data directory for node " << input_file.get_node().get_name();
+			INTEGRA_TRACE_ERROR << "can't get data directory for node " << input_file.get_node().get_name();
 			return NULL;
 		}
 
@@ -258,7 +258,7 @@ namespace integra_internal
 		string copied_file = CFileHelper::extract_filename_from_path( input_path );
 		if( copied_file.empty() || copied_file == input_path )
 		{
-			NTG_TRACE_ERROR << "can't extract filename from path " << input_path;
+			INTEGRA_TRACE_ERROR << "can't extract filename from path " << input_path;
 			return NULL;
 		}
 
@@ -281,7 +281,7 @@ namespace integra_internal
 
 		if( node_path_length <= root_path_length || node_path_string.substr( 0, root_path_length ) != root_path_string )
 		{
-			NTG_TRACE_ERROR << "node is not a descendant of root";
+			INTEGRA_TRACE_ERROR << "node is not a descendant of root";
 			return string();
 		}
 
@@ -328,7 +328,7 @@ namespace integra_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't iterate contents";
+			INTEGRA_TRACE_ERROR << "Couldn't iterate contents";
 			return false;
 		}
 
@@ -338,7 +338,7 @@ namespace integra_internal
 			char file_name[ CStringHelper::string_buffer_length ];
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR << "Couldn't extract file info";
+				INTEGRA_TRACE_ERROR << "Couldn't extract file info";
 				continue;
 			}
 
@@ -359,7 +359,7 @@ namespace integra_internal
 		DIR *directory_stream = opendir( source_path.c_str() );
 		if( !directory_stream )
 		{
-			NTG_TRACE_ERROR << "unable to open directory " << source_path;
+			INTEGRA_TRACE_ERROR << "unable to open directory " << source_path;
 			return;
 		}
 
@@ -385,7 +385,7 @@ namespace integra_internal
 			struct stat entry_data;
 			if( stat( full_source_path.c_str(), &entry_data ) != 0 )
 			{
-				NTG_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
+				INTEGRA_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
 				continue;
 			}
 

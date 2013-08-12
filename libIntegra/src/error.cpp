@@ -20,8 +20,8 @@
 
 #include "platform_specifics.h"
 
-#include "error.h"
-#include "trace.h"
+#include "api/error.h"
+#include "api/trace.h"
 
 namespace integra_api
 {
@@ -59,7 +59,7 @@ namespace integra_api
 			case MODULE_ALREADY_INSTALLED:	return "Module already installed";
 
 			default:						
-				NTG_TRACE_ERROR << "encountered unknown error code";
+				INTEGRA_TRACE_ERROR << "encountered unknown error code";
 				return "Unknown error";
 		}
 	}

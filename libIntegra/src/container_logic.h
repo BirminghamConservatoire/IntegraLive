@@ -23,7 +23,7 @@
 #define INTEGRA_CONTAINER_LOGIC_PRIVATE
 
 #include "logic.h"
-#include "path.h"
+#include "api/path.h"
 
 
 namespace integra_internal

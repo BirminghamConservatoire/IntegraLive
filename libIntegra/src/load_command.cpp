@@ -22,7 +22,7 @@
 
 #include "load_command.h"
 #include "server.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "file_io.h"
 #include "api/command_result.h"
 
@@ -69,7 +69,7 @@ namespace integra_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "incorrect command result type - can't store result";
+				INTEGRA_TRACE_ERROR << "incorrect command result type - can't store result";
 			}
 		}
 

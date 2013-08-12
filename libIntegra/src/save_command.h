@@ -23,7 +23,7 @@
 #define INTEGRA_SAVE_COMMAND_PRIVATE
 
 #include "api/command_api.h"
-#include "path.h"
+#include "api/path.h"
 
 using namespace integra_api;
 

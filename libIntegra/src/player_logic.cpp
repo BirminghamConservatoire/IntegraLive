@@ -25,7 +25,7 @@
 #include "server.h"
 #include "node.h"
 #include "node_endpoint.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "interface_definition.h"
 #include "player_handler.h"
 #include "api/command_api.h"
@@ -167,7 +167,7 @@ namespace integra_internal
 		{
 			if( !scene_name.empty() )
 			{
-				NTG_TRACE_ERROR << "Player doesn't have scene " << scene_name;
+				INTEGRA_TRACE_ERROR << "Player doesn't have scene " << scene_name;
 				return;
 			}
 		}
@@ -175,7 +175,7 @@ namespace integra_internal
 		{
 			if( !dynamic_cast< const CSceneLogic * > ( &scene_node->get_logic() ) )
 			{
-				NTG_TRACE_ERROR << "Object referred to by player's scene endpoint is not a scene!";
+				INTEGRA_TRACE_ERROR << "Object referred to by player's scene endpoint is not a scene!";
 				return;
 			}
 
@@ -249,7 +249,7 @@ namespace integra_internal
 			const CNode *search_scene = i->second;
 			if( !dynamic_cast< const CSceneLogic *> ( &search_scene->get_logic() ) )
 			{
-				NTG_TRACE_ERROR << "Object other than scene in player";
+				INTEGRA_TRACE_ERROR << "Object other than scene in player";
 				continue;
 			}
 
@@ -313,7 +313,7 @@ namespace integra_internal
 			const CNode *search_scene = i->second;
 			if( !dynamic_cast< const CSceneLogic *> ( &search_scene->get_logic() ) )
 			{
-				NTG_TRACE_ERROR << "Object other than scene in player";
+				INTEGRA_TRACE_ERROR << "Object other than scene in player";
 				continue;
 			}
 

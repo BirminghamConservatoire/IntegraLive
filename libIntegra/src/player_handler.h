@@ -26,7 +26,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#include "path.h"
+#include "api/path.h"
 #include "node.h"
 
 using namespace integra_api;

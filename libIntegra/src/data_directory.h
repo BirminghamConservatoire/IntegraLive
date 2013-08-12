@@ -24,7 +24,7 @@
 #include "../externals/minizip/zip.h"
 #include "../externals/minizip/unzip.h"
 
-#include "error.h"
+#include "api/error.h"
 #include "api/common_typedefs.h"
 
 using namespace integra_api;

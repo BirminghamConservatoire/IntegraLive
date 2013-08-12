@@ -19,8 +19,8 @@
  */
 
 
-#ifndef INTEGRA_ERROR
-#define INTEGRA_ERROR
+#ifndef INTEGRA_ERROR_DEFINED
+#define INTEGRA_ERROR_DEFINED
 
 #include "api/common_typedefs.h"
 
@@ -58,4 +58,4 @@ namespace integra_api
 
 
 
-#endif /*INTEGRA_ERROR*/
+#endif /*INTEGRA_ERROR_DEFINED*/

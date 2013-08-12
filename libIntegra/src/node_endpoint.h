@@ -26,8 +26,8 @@
 
 #include "api/common_typedefs.h"
 #include "Integra/integra_bridge.h"
-#include "path.h"
-#include "value.h"
+#include "api/path.h"
+#include "api/value.h"
 
 
 using namespace integra_api;

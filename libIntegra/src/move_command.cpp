@@ -22,7 +22,7 @@
 
 #include "move_command.h"
 #include "server.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "logic.h"
 
 
@@ -52,7 +52,7 @@ namespace integra_internal
 		CNode *node = server.find_node_writable( m_node_path );
 		if( !node ) 
 		{
-			NTG_TRACE_ERROR << "unable to find node given by path" << m_node_path.get_string();
+			INTEGRA_TRACE_ERROR << "unable to find node given by path" << m_node_path.get_string();
 			return CError::PATH_ERROR;
 		}
 

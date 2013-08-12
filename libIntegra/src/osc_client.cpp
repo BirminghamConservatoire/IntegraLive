@@ -22,8 +22,8 @@
 
 #include "osc_client.h"
 #include "server.h"
-#include "guid_helper.h"
-#include "value.h"
+#include "api/guid_helper.h"
+#include "api/value.h"
 
 #include <assert.h>
 

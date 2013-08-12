@@ -21,7 +21,7 @@
 #include "platform_specifics.h"
 
 #include "lua_engine.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "node.h"
 #include "server.h"
 #include "interface_definition.h"
@@ -372,7 +372,7 @@ namespace integra_internal
 
 		if( luaL_dostring( state, init_script.c_str() ) )
 		{
-			NTG_TRACE_ERROR << "Failed to initialize lua state: " << lua_tostring( state, -1 );
+			INTEGRA_TRACE_ERROR << "Failed to initialize lua state: " << lua_tostring( state, -1 );
 		}
 
 		return state;
@@ -414,7 +414,7 @@ namespace integra_internal
 			va_end(argp);
 		}
 
-		NTG_TRACE_VERBOSE << "luascript output: " << progress_string;
+		INTEGRA_TRACE_VERBOSE << "luascript output: " << progress_string;
 
 		/* replace illegal characters with space, to prevent invalid html */
 		int progress_string_length = strlen( progress_string );

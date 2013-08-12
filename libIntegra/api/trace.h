@@ -33,17 +33,17 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #ifdef _WINDOWS
-#define NTG_FUNCTION __FUNCTION__
+#define INTEGRA_FUNCTION __FUNCTION__
 #else 
-#define NTG_FUNCTION TOSTRING(__FUNCTION__)
+#define INTEGRA_FUNCTION TOSTRING(__FUNCTION__)
 #endif /*_WINDOWS*/
 
-#define NTG_LOCATION __FILE__ ": " TOSTRING(__LINE__) "(" NTG_FUNCTION ")"
+#define INTEGRA_LOCATION __FILE__ ": " TOSTRING(__LINE__) "(" INTEGRA_FUNCTION ")"
 
 
-#define NTG_TRACE_ERROR				integra_api::CTrace::error( NTG_LOCATION )
-#define NTG_TRACE_PROGRESS			integra_api::CTrace::progress( NTG_LOCATION )
-#define NTG_TRACE_VERBOSE			integra_api::CTrace::verbose( NTG_LOCATION )
+#define INTEGRA_TRACE_ERROR			integra_api::CTrace::error( INTEGRA_LOCATION )
+#define INTEGRA_TRACE_PROGRESS		integra_api::CTrace::progress( INTEGRA_LOCATION )
+#define INTEGRA_TRACE_VERBOSE		integra_api::CTrace::verbose( INTEGRA_LOCATION )
 
 
 

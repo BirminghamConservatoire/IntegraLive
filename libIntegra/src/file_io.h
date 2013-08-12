@@ -22,9 +22,9 @@
 #define INTEGRA_FILE_IO_H
 
 
-#include "api\common_typedefs.h"
-#include "guid_helper.h"
-#include "error.h"
+#include "api/common_typedefs.h"
+#include "api/guid_helper.h"
+#include "api/error.h"
 #include "node.h"
 #include "Integra\integra_bridge.h"
 

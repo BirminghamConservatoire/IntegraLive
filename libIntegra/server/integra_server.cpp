@@ -10,7 +10,7 @@
 
 #include "src/platform_specifics.h"
 
-#include "src/trace.h"
+#include "api/trace.h"
 #include "api/server_startup_info.h"
 #include "api/server_api.h"
 
@@ -63,7 +63,7 @@ void append_argument( const char **arguments, const char *argument )
 
     if( number_of_arguments >= MAXIMUM_ARGUMENTS )
     {
-        NTG_TRACE_ERROR << "too many host arguments";
+        INTEGRA_TRACE_ERROR << "too many host arguments";
         return;
     }
 
@@ -79,7 +79,7 @@ void prepend_argument( const char **arguments, const char *argument )
 
     if( number_of_arguments >= MAXIMUM_ARGUMENTS )
     {
-        NTG_TRACE_ERROR << "too many host arguments";
+        INTEGRA_TRACE_ERROR << "too many host arguments";
         return;
     }
 
@@ -288,7 +288,7 @@ int main( int argc, char *argv[] )
 	CTrace::set_details_to_trace( trace_timestamp, trace_location, trace_thread );
 
     /*close any processes that might be left over from a previous crash */
-    NTG_TRACE_PROGRESS << "closing orphaned processes";
+    INTEGRA_TRACE_PROGRESS << "closing orphaned processes";
     if( host_path != NULL && strlen( host_path ) > 0) 
 	{
         have_host_path = true;
@@ -312,12 +312,12 @@ int main( int argc, char *argv[] )
         host_process_handle = _spawnv( P_NOWAIT, host_path, host_arguments );
         if( host_process_handle < 0 )
         {
-            NTG_TRACE_ERROR << "failed to start host: " << strerror( errno );
+            INTEGRA_TRACE_ERROR << "failed to start host: " << strerror( errno );
         }
     }
     else
     {
-        NTG_TRACE_ERROR << "unable to start host - no path provided";
+        INTEGRA_TRACE_ERROR << "unable to start host - no path provided";
     }
 
 
@@ -330,12 +330,12 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		NTG_TRACE_ERROR << "failed to create server";
+		INTEGRA_TRACE_ERROR << "failed to create server";
 	}
 
     if( host_process_handle > 0 )
     {
-		NTG_TRACE_PROGRESS << "shutting down host";
+		INTEGRA_TRACE_PROGRESS << "shutting down host";
 #ifdef _WINDOWS
         TerminateProcess( (HANDLE) host_process_handle, 0 );
 #else
@@ -344,7 +344,7 @@ int main( int argc, char *argv[] )
     } 
 	else 
 	{
-        NTG_TRACE_ERROR << "couldn't kill host, PID was " << host_process_handle;
+        INTEGRA_TRACE_ERROR << "couldn't kill host, PID was " << host_process_handle;
     }
 
     return 0;

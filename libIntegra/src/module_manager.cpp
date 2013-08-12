@@ -35,10 +35,10 @@
 #include "module_manager.h"
 #include "scratch_directory.h"
 #include "interface_definition.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "file_io.h"
 #include "file_helper.h"
-#include "guid_helper.h"
+#include "api/guid_helper.h"
 #include "server.h"
 #include "interface_definition_loader.h"
 #include "file_io.h"
@@ -128,7 +128,7 @@ namespace integra_internal
 		unzip_file = unzOpen( integra_file.c_str() );
 		if( !unzip_file )
 		{
-			NTG_TRACE_ERROR << "Couldn't open zip file: " << integra_file;
+			INTEGRA_TRACE_ERROR << "Couldn't open zip file: " << integra_file;
 			return CError::FAILED;
 		}
 
@@ -136,7 +136,7 @@ namespace integra_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't iterate contents: " << integra_file;
+			INTEGRA_TRACE_ERROR << "Couldn't iterate contents: " << integra_file;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
@@ -150,7 +150,7 @@ namespace integra_internal
 
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR << "Couldn't extract file info: " << integra_file;
+				INTEGRA_TRACE_ERROR << "Couldn't extract file info: " << integra_file;
 				continue;
 			}
 
@@ -163,7 +163,7 @@ namespace integra_internal
 			temporary_file_name = tempnam( m_server.get_scratch_directory().c_str(), "embedded_module" );
 			if( !temporary_file_name )
 			{
-				NTG_TRACE_ERROR << "couldn't generate temporary filename";
+				INTEGRA_TRACE_ERROR << "couldn't generate temporary filename";
 				CError = CError::FAILED;
 				continue;
 			}
@@ -171,14 +171,14 @@ namespace integra_internal
 			temporary_file = fopen( temporary_file_name, "wb" );
 			if( !temporary_file )
 			{
-				NTG_TRACE_ERROR << "couldn't open temporary file: " << temporary_file_name;
+				INTEGRA_TRACE_ERROR << "couldn't open temporary file: " << temporary_file_name;
 				CError = CError::FAILED;
 				goto CLEANUP;
 			}
 
 			if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR << "couldn't open zip contents: " << file_name;
+				INTEGRA_TRACE_ERROR << "couldn't open zip contents: " << file_name;
 				CError = CError::FAILED;
 				goto CLEANUP;
 			}
@@ -192,7 +192,7 @@ namespace integra_internal
 				bytes_read = unzReadCurrentFile( unzip_file, copy_buffer, MIN( CFileIO::data_copy_buffer_size, bytes_remaining ) );
 				if( bytes_read <= 0 )
 				{
-					NTG_TRACE_ERROR << "Error decompressing file";
+					INTEGRA_TRACE_ERROR << "Error decompressing file";
 					CError = CError::FAILED;
 					goto CLEANUP;
 				}
@@ -259,7 +259,7 @@ namespace integra_internal
 		const CInterfaceDefinition *existing_interface = get_interface_by_module_id( module_id );
 		if( !existing_interface )
 		{
-			NTG_TRACE_ERROR << "can't lookup existing interface";
+			INTEGRA_TRACE_ERROR << "can't lookup existing interface";
 			return CError::FAILED;
 		}
 
@@ -277,7 +277,7 @@ namespace integra_internal
 
 			default:
 
-				NTG_TRACE_ERROR << "existing interface has unexpected module source";
+				INTEGRA_TRACE_ERROR << "existing interface has unexpected module source";
 				return CError::FAILED;
 		}
 	}
@@ -288,13 +288,13 @@ namespace integra_internal
 		const CInterfaceDefinition *interface_definition = get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
-			NTG_TRACE_ERROR << "Can't find interface";
+			INTEGRA_TRACE_ERROR << "Can't find interface";
 			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_EMBEDDED )
 		{
-			NTG_TRACE_ERROR << "Module isn't embedded";
+			INTEGRA_TRACE_ERROR << "Module isn't embedded";
 			return CError::INPUT_ERROR;
 		}
 
@@ -311,13 +311,13 @@ namespace integra_internal
 		const CInterfaceDefinition *interface_definition = get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
-			NTG_TRACE_ERROR << "Can't find interface";
+			INTEGRA_TRACE_ERROR << "Can't find interface";
 			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_3RD_PARTY )
 		{
-			NTG_TRACE_ERROR << "Can't uninstall module - it is not a 3rd party module";
+			INTEGRA_TRACE_ERROR << "Can't uninstall module - it is not a 3rd party module";
 			return CError::INPUT_ERROR;
 		}
 
@@ -367,7 +367,7 @@ namespace integra_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "Encountered more than one in-development module!";
+				INTEGRA_TRACE_ERROR << "Encountered more than one in-development module!";
 				return CError::FAILED;
 			}
 		}
@@ -447,7 +447,7 @@ namespace integra_internal
 		int implementation_path_length = implementation_path.length() - patch_extension.length();
 		if( implementation_path_length <= 0 || implementation_path.substr( implementation_path_length ) != patch_extension )
 		{
-			NTG_TRACE_ERROR << "Implementation path doesn't end in correct patch extension: " << implementation_path;
+			INTEGRA_TRACE_ERROR << "Implementation path doesn't end in correct patch extension: " << implementation_path;
 			return NULL;
 		}
 
@@ -495,7 +495,7 @@ namespace integra_internal
 	{
 		if( old_id >= m_legacy_module_id_table.size() )
 		{
-			NTG_TRACE_ERROR << "Can't interpret class id: " << old_id;
+			INTEGRA_TRACE_ERROR << "Can't interpret class id: " << old_id;
 			return CError::INPUT_ERROR;
 		}
 
@@ -516,7 +516,7 @@ namespace integra_internal
 		directory_stream = opendir( module_directory.c_str() );
 		if( !directory_stream )
 		{
-			NTG_TRACE_ERROR << "unable to open directory: " << module_directory;
+			INTEGRA_TRACE_ERROR << "unable to open directory: " << module_directory;
 			return;
 		}
 
@@ -534,7 +534,7 @@ namespace integra_internal
 
 			if( stat( full_path.c_str(), &entry_data ) != 0 )
 			{
-				NTG_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
+				INTEGRA_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
 				continue;
 			}
 
@@ -564,7 +564,7 @@ namespace integra_internal
 		file = fopen( legacy_class_id_filename.c_str(), "r" );
 		if( !file )
 		{
-			NTG_TRACE_ERROR << "failed to open legacy class id file: " << legacy_class_id_filename;
+			INTEGRA_TRACE_ERROR << "failed to open legacy class id file: " << legacy_class_id_filename;
 			return;
 		}
 
@@ -578,14 +578,14 @@ namespace integra_internal
 			old_id = atoi( line );
 			if( old_id == 0 )
 			{
-				NTG_TRACE_ERROR << "Error reading old id from legacy class id file line " << line;
+				INTEGRA_TRACE_ERROR << "Error reading old id from legacy class id file line " << line;
 				continue;
 			}
 
 			guid_as_string = strchr( line, ',' );
 			if( !guid_as_string )
 			{
-				NTG_TRACE_ERROR << "Error reading guid from legacy class id file line: " << line;
+				INTEGRA_TRACE_ERROR << "Error reading guid from legacy class id file line: " << line;
 				continue;
 			}
 
@@ -594,7 +594,7 @@ namespace integra_internal
 
 			if( CGuidHelper::string_to_guid( guid_as_string, guid ) != CError::SUCCESS )
 			{
-				NTG_TRACE_ERROR << "Error parsing guid: " << guid_as_string;
+				INTEGRA_TRACE_ERROR << "Error parsing guid: " << guid_as_string;
 				continue;
 			}
 
@@ -624,14 +624,14 @@ namespace integra_internal
 		unzip_file = unzOpen( filename.c_str() );
 		if( !unzip_file )
 		{
-			NTG_TRACE_ERROR << "Unable to open zip: " << filename;
+			INTEGRA_TRACE_ERROR << "Unable to open zip: " << filename;
 			return false;
 		}
 
 		CInterfaceDefinition *interface_definition = load_interface( unzip_file );
 		if( !interface_definition ) 
 		{
-			NTG_TRACE_ERROR << "Failed to load interface: " << filename;
+			INTEGRA_TRACE_ERROR << "Failed to load interface: " << filename;
 			unzClose( unzip_file );
 			return false;
 		}
@@ -640,7 +640,7 @@ namespace integra_internal
 
 		if( m_module_id_map.count( module_guid ) > 0 )
 		{
-			NTG_TRACE_VERBOSE << "Module already loaded: " << interface_definition->get_interface_info().get_name();
+			INTEGRA_TRACE_VERBOSE << "Module already loaded: " << interface_definition->get_interface_info().get_name();
 			delete interface_definition;
 			unzClose( unzip_file );
 			return false;
@@ -648,7 +648,7 @@ namespace integra_internal
 
 		if( interface_definition->get_interface_info().get_implemented_in_libintegra() && source != CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA )
 		{
-			NTG_TRACE_ERROR << "Attempt to load 'implemented in libintegra' module as 3rd party or embedded: " << interface_definition->get_interface_info().get_name();
+			INTEGRA_TRACE_ERROR << "Attempt to load 'implemented in libintegra' module as 3rd party or embedded: " << interface_definition->get_interface_info().get_name();
 			delete interface_definition;
 			unzClose( unzip_file );
 			return false;
@@ -661,7 +661,7 @@ namespace integra_internal
 
 		if( m_origin_id_map.count( interface_definition->get_origin_guid() ) > 0 )
 		{
-			NTG_TRACE_VERBOSE << "Two modules with same origin!  Leaving original in origin->interface table: " << interface_definition->get_interface_info().get_name();
+			INTEGRA_TRACE_VERBOSE << "Two modules with same origin!  Leaving original in origin->interface table: " << interface_definition->get_interface_info().get_name();
 		}
 		else
 		{
@@ -673,7 +673,7 @@ namespace integra_internal
 			const string &name = interface_definition->get_interface_info().get_name();
 			if( m_core_name_map.count( name ) > 0 )
 			{
-				NTG_TRACE_VERBOSE << "Two core modules with same name!  Leaving original in name->interface table: " << name;
+				INTEGRA_TRACE_VERBOSE << "Two core modules with same name!  Leaving original in name->interface table: " << name;
 			}
 			else
 			{
@@ -727,19 +727,19 @@ namespace integra_internal
 
 		if( unzLocateFile( unzip_file, idd_file_name.c_str(), 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to locate " << idd_file_name;
+			INTEGRA_TRACE_ERROR << "Unable to locate " << idd_file_name;
 			return NULL;
 		}
 
 		if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't get info for " << idd_file_name;
+			INTEGRA_TRACE_ERROR << "Couldn't get info for " << idd_file_name;
 			return NULL;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to open " << idd_file_name;
+			INTEGRA_TRACE_ERROR << "Unable to open " << idd_file_name;
 			return NULL;
 		}
 
@@ -748,7 +748,7 @@ namespace integra_internal
 
 		if( unzReadCurrentFile( unzip_file, buffer, buffer_size ) != buffer_size )
 		{
-			NTG_TRACE_ERROR << "Unable to read " << idd_file_name;
+			INTEGRA_TRACE_ERROR << "Unable to read " << idd_file_name;
 			delete[] buffer;
 			return NULL;
 		}
@@ -771,7 +771,7 @@ namespace integra_internal
 
 		if( CFileHelper::is_directory( implementation_directory.c_str() ) )
 		{
-			NTG_TRACE_ERROR << "Can't extract module implementation - target directory already exists: " << implementation_directory;
+			INTEGRA_TRACE_ERROR << "Can't extract module implementation - target directory already exists: " << implementation_directory;
 			return CError::FAILED;
 		}
 
@@ -779,7 +779,7 @@ namespace integra_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't iterate contents";
+			INTEGRA_TRACE_ERROR << "Couldn't iterate contents";
 			return CError::FAILED;
 		}
 
@@ -789,7 +789,7 @@ namespace integra_internal
 			char file_name_buffer[ CStringHelper::string_buffer_length ];
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name_buffer, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR << "Couldn't extract file info";
+				INTEGRA_TRACE_ERROR << "Couldn't extract file info";
 				continue;
 			}
 
@@ -824,7 +824,7 @@ namespace integra_internal
 
 					if( unzReadCurrentFile( unzip_file, output_buffer, file_info.uncompressed_size ) != file_info.uncompressed_size )
 					{
-						NTG_TRACE_ERROR << "Error decompressing file: " << file_name;
+						INTEGRA_TRACE_ERROR << "Error decompressing file: " << file_name;
 					}
 					else
 					{
@@ -839,14 +839,14 @@ namespace integra_internal
 				}
 				else
 				{
-					NTG_TRACE_ERROR << "Couldn't write to implementation file: " << target_path;
+					INTEGRA_TRACE_ERROR << "Couldn't write to implementation file: " << target_path;
 				}
 
 				unzCloseCurrentFile( unzip_file );
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "couldn't open zip contents: " << file_name;
+				INTEGRA_TRACE_ERROR << "couldn't open zip contents: " << file_name;
 			}
 		}
 		while( unzGoToNextFile( unzip_file ) != UNZ_END_OF_LIST_OF_FILE );
@@ -927,20 +927,20 @@ namespace integra_internal
 		interface_definition = ( CInterfaceDefinition * ) get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
-			NTG_TRACE_ERROR << "failed to lookup interface";
+			INTEGRA_TRACE_ERROR << "failed to lookup interface";
 			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_file_path().empty() )
 		{
-			NTG_TRACE_ERROR << "Unknown interface file path";
+			INTEGRA_TRACE_ERROR << "Unknown interface file path";
 			return CError::INPUT_ERROR;
 		}
 
 		string module_storage_path = get_storage_path( *interface_definition );
 		if( module_storage_path.empty() )
 		{
-			NTG_TRACE_ERROR << "failed to get storage path";
+			INTEGRA_TRACE_ERROR << "failed to get storage path";
 			return CError::INPUT_ERROR;
 		}
 
@@ -973,7 +973,7 @@ namespace integra_internal
 			case CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
 			case CInterfaceDefinition::MODULE_IN_DEVELOPMENT:
 			default:
-				NTG_TRACE_ERROR << "Unexpected module source";
+				INTEGRA_TRACE_ERROR << "Unexpected module source";
 				return string();
 		}
 

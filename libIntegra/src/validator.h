@@ -25,7 +25,7 @@
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
 
-#include "error.h"
+#include "api/error.h"
 
 using namespace integra_api;
 

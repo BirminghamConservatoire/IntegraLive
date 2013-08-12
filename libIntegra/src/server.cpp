@@ -34,12 +34,12 @@ extern "C"
 #include "osc_client.h"
 #include "reentrance_checker.h"
 #include "module_manager.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "xmlrpc_server.h"
-#include "value.h"
-#include "path.h"
+#include "api/value.h"
+#include "api/path.h"
 #include "bridge_host.h"
-#include "guid_helper.h"
+#include "api/guid_helper.h"
 #include "lua_engine.h"
 #include "player_handler.h"
 
@@ -56,26 +56,26 @@ namespace integra_api
 	{
 		if( startup_info.bridge_path.empty() ) 
 		{
-			NTG_TRACE_ERROR << "bridge_path is empty";
+			INTEGRA_TRACE_ERROR << "bridge_path is empty";
 			return NULL;
 		}
 
 		struct stat file_buffer;
 		if( stat( startup_info.bridge_path.c_str(), &file_buffer ) != 0 ) 
 		{
-			NTG_TRACE_ERROR << "bridge_path points to a nonexsitant file";
+			INTEGRA_TRACE_ERROR << "bridge_path points to a nonexsitant file";
 			return NULL;
 		}
 
 		if( startup_info.system_module_directory.empty() ) 
 		{
-			NTG_TRACE_ERROR << "system_module_directory is empty";
+			INTEGRA_TRACE_ERROR << "system_module_directory is empty";
 			return NULL;
 		}
 
 		if( startup_info.third_party_module_directory.empty() ) 
 		{
-			NTG_TRACE_ERROR << "third_party_module_directory is empty";
+			INTEGRA_TRACE_ERROR << "third_party_module_directory is empty";
 			return NULL;
 		}
 
@@ -89,7 +89,7 @@ namespace integra_internal
 	#ifdef _WINDOWS
 		static void invalid_parameter_handler( const wchar_t * expression, const wchar_t * function, const wchar_t * file, unsigned int line, uintptr_t pReserved )
 		{
-			NTG_TRACE_ERROR << "CRT encoutered invalid parameter!";
+			INTEGRA_TRACE_ERROR << "CRT encoutered invalid parameter!";
 		}
 	#endif
 
@@ -116,7 +116,7 @@ namespace integra_internal
 		}
 		else
 		{
-			NTG_TRACE_ERROR << "couldn't find node with id " << id;
+			INTEGRA_TRACE_ERROR << "couldn't find node with id " << id;
 		}
 
 		server->unlock();
@@ -125,7 +125,7 @@ namespace integra_internal
 
 	CServer::CServer( const CServerStartupInfo &startup_info )
 	{
-		NTG_TRACE_PROGRESS << "libIntegra version " << get_libintegra_version();
+		INTEGRA_TRACE_PROGRESS << "libIntegra version " << get_libintegra_version();
 
 		pthread_mutex_init( &m_mutex, NULL );
 
@@ -158,7 +158,7 @@ namespace integra_internal
 		} 
 		else 
 		{
-			NTG_TRACE_ERROR << "bridge failed to load";
+			INTEGRA_TRACE_ERROR << "bridge failed to load";
 		}
 
 		/* Add the server receive callback to the bridge's methods */
@@ -172,13 +172,13 @@ namespace integra_internal
 		context->m_sem_initialized = m_sem_xmlrpc_initialized;
 		pthread_create( &m_xmlrpc_thread, NULL, ntg_xmlrpc_server_run, context );
 
-		NTG_TRACE_PROGRESS << "Server construction complete";
+		INTEGRA_TRACE_PROGRESS << "Server construction complete";
 	}
 
 
 	CServer::~CServer()
 	{
-		NTG_TRACE_PROGRESS << "setting terminate flag";
+		INTEGRA_TRACE_PROGRESS << "setting terminate flag";
 
 		lock();
 		m_is_in_shutdown = true;
@@ -203,31 +203,31 @@ namespace integra_internal
 
 		delete m_player_handler;
 
-		NTG_TRACE_PROGRESS << "shutting down OSC client";
+		INTEGRA_TRACE_PROGRESS << "shutting down OSC client";
 		ntg_osc_client_destroy( m_osc_client );
 		
-		NTG_TRACE_PROGRESS << "shutting down XMLRPC interface";
+		INTEGRA_TRACE_PROGRESS << "shutting down XMLRPC interface";
 		ntg_xmlrpc_server_terminate( m_sem_xmlrpc_initialized );
 
 		/* FIX: for now we only support the old 'stable' xmlrpc-c, which can't
 		   wake up a sleeping server */
-		NTG_TRACE_PROGRESS << "joining xmlrpc thread";
+		INTEGRA_TRACE_PROGRESS << "joining xmlrpc thread";
 		pthread_join( m_xmlrpc_thread, NULL );
 
 
 
 		/* FIX: This hangs on all platforms, just comment out for now */
 		/*
-		NTG_TRACE_PROGRESS("closing bridge");
+		INTEGRA_TRACE_PROGRESS("closing bridge");
 		dlclose(bridge_handle);
 		*/
 
-		NTG_TRACE_PROGRESS << "cleaning up XML parser";
+		INTEGRA_TRACE_PROGRESS << "cleaning up XML parser";
 		xmlCleanupParser();
 		xmlCleanupGlobals();
 
 
-		NTG_TRACE_PROGRESS << "done!";
+		INTEGRA_TRACE_PROGRESS << "done!";
 
 		destroy_semaphore( m_sem_xmlrpc_initialized );
 		destroy_semaphore( m_sem_system_shutdown );
@@ -236,17 +236,17 @@ namespace integra_internal
 
 		pthread_mutex_destroy( &m_mutex );
 
-		NTG_TRACE_PROGRESS << "server destruction complete";
+		INTEGRA_TRACE_PROGRESS << "server destruction complete";
 	}
 
 
 	void CServer::block_until_shutdown_signal()
 	{
-		NTG_TRACE_PROGRESS << "server blocking until shutdown signal...";
+		INTEGRA_TRACE_PROGRESS << "server blocking until shutdown signal...";
 
 		sem_wait( m_sem_system_shutdown );
 
-		NTG_TRACE_PROGRESS << "server blocking finished...";
+		INTEGRA_TRACE_PROGRESS << "server blocking finished...";
 	}
 
 
@@ -461,7 +461,7 @@ namespace integra_internal
 			version_info = new BYTE[ size ];
 			if (!GetFileVersionInfo(file_name, handle, size, version_info))
 			{
-				NTG_TRACE_ERROR << "Failed to read version number from module";
+				INTEGRA_TRACE_ERROR << "Failed to read version number from module";
 				delete[] version_info;
 
 				return "<failed to read version number>";

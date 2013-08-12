@@ -32,7 +32,7 @@ extern "C"
 #include "Integra/integra_bridge.h"
 
 #include "bridge_host.h"
-#include "trace.h"
+#include "api/trace.h"
 
 
 void *ntg_bridge_load(const char *so_name)
@@ -41,17 +41,17 @@ void *ntg_bridge_load(const char *so_name)
 
     ntg_bridge_interface_generator *interface_generator = NULL;
 
-    NTG_TRACE_PROGRESS << "Trying to load bridge: " << so_name;
+    INTEGRA_TRACE_PROGRESS << "Trying to load bridge: " << so_name;
 
     void *handle = dlopen( so_name, RTLD_NOW | RTLD_LOCAL );
 
     if (handle != NULL) 
 	{
-        NTG_TRACE_PROGRESS << "bridge loaded";
+        INTEGRA_TRACE_PROGRESS << "bridge loaded";
     } 
 	else 
 	{
-        NTG_TRACE_ERROR << "bridge not loaded";
+        INTEGRA_TRACE_ERROR << "bridge not loaded";
         assert( false );
     }
 
@@ -60,27 +60,27 @@ void *ntg_bridge_load(const char *so_name)
     char *error = dlerror();
 
     if (error != NULL) {
-        NTG_TRACE_ERROR << "dlerror" << error;
+        INTEGRA_TRACE_ERROR << "dlerror" << error;
     }
 
     if (interface_generator != NULL) {
-        NTG_TRACE_PROGRESS << "Got interface generator, trying to load interface...";
+        INTEGRA_TRACE_PROGRESS << "Got interface generator, trying to load interface...";
         if (*interface_generator != NULL) {
             bridge_interface =
                 (ntg_bridge_interface *) interface_generator[0] ();
         } else {
-            NTG_TRACE_ERROR << "interface generator function is NULL";
+            INTEGRA_TRACE_ERROR << "interface generator function is NULL";
             assert(false);
         }
     } else {
-        NTG_TRACE_ERROR << "interface generator is NULL";
+        INTEGRA_TRACE_ERROR << "interface generator is NULL";
         assert(false);
     }
 
     if (bridge_interface != NULL) {
-        NTG_TRACE_PROGRESS << "...interface function loaded";
+        INTEGRA_TRACE_PROGRESS << "...interface function loaded";
     } else {
-        NTG_TRACE_ERROR << "bridge interface not loaded";
+        INTEGRA_TRACE_ERROR << "bridge interface not loaded";
         assert(false);
     }
 

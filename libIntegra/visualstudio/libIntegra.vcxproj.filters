@@ -197,13 +197,7 @@
     <ClInclude Include="..\src\osc_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\value.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\xmlrpc_common.h">
@@ -249,12 +243,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\file_io.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\trace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\node_endpoint.h">
@@ -347,14 +335,26 @@
     <ClInclude Include="..\src\script_logic.h">
       <Filter>Header Files\logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\guid_helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\MurmurHash2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\command_source.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\api\trace.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\value.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\command_source.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\error.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\guid_helper.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\path.h">
+      <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

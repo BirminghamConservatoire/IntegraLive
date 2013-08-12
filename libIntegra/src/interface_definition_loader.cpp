@@ -25,8 +25,8 @@
 
 #include "interface_definition_loader.h"
 #include "interface_definition.h"
-#include "trace.h"
-#include "guid_helper.h"
+#include "api/trace.h"
+#include "api/guid_helper.h"
 #include "string_helper.h"
 
 
@@ -42,7 +42,7 @@
 	{																			\
 		if( STORAGE_POINTER )													\
 		{																		\
-			NTG_TRACE_ERROR << "multiple " START_TAG " tags";					\
+			INTEGRA_TRACE_ERROR << "multiple " START_TAG " tags";					\
 			return CError::INPUT_ERROR;											\
 		}																		\
 		else																	\
@@ -80,7 +80,7 @@
 	{																			\
 		if( STORAGE_LOCATION.count( element_value ) > 0 )						\
 		{																		\
-			NTG_TRACE_ERROR << "duplicate" << element_value;					\
+			INTEGRA_TRACE_ERROR << "duplicate" << element_value;					\
 			return CError::INPUT_ERROR;											\
 		}																		\
 		else																	\
@@ -139,7 +139,7 @@ namespace integra_internal
 		m_reader = xmlReaderForMemory( (char *) &buffer, buffer_size, NULL, NULL, 0 );
 		if( !m_reader )
 		{
-			NTG_TRACE_ERROR << "unable to read file";
+			INTEGRA_TRACE_ERROR << "unable to read file";
 			cleanup();
 			return NULL;
 		}
@@ -237,14 +237,14 @@ namespace integra_internal
 		CError CError = do_sanity_check();
 		if( CError != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR << "sanity check failed";
+			INTEGRA_TRACE_ERROR << "sanity check failed";
 			cleanup();
 			return NULL;
 		}
 
 		m_interface_definition->propagate_defaults();
 
-		NTG_TRACE_VERBOSE << "Loaded ok: " << m_interface_definition->get_interface_info().get_name();
+		INTEGRA_TRACE_VERBOSE << "Loaded ok: " << m_interface_definition->get_interface_info().get_name();
 		CInterfaceDefinition *loaded_interface = m_interface_definition;
 		m_interface_definition = NULL;
 		cleanup();
@@ -422,7 +422,7 @@ namespace integra_internal
 			"InterfaceDeclaration.ImplementationInfo.PatchName",
 			m_interface_definition->m_implementation_info->m_patch_name );
 
-		NTG_TRACE_ERROR << "unhandled element: " << m_element_path;
+		INTEGRA_TRACE_ERROR << "unhandled element: " << m_element_path;
 	
 		return CError::SUCCESS;
 
@@ -498,7 +498,7 @@ namespace integra_internal
 			{
 				if( CGuidHelper::string_to_guid( module_guid_attribute, m_interface_definition->m_module_guid ) != CError::SUCCESS )
 				{
-					NTG_TRACE_ERROR << "Couldn't parse guid: " << module_guid_attribute;
+					INTEGRA_TRACE_ERROR << "Couldn't parse guid: " << module_guid_attribute;
 					error = CError::INPUT_ERROR;
 				}
 
@@ -506,7 +506,7 @@ namespace integra_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "InterfaceDeclaration lacks moduleGuid attribute";
+				INTEGRA_TRACE_ERROR << "InterfaceDeclaration lacks moduleGuid attribute";
 				error = CError::INPUT_ERROR;
 			}
 
@@ -515,7 +515,7 @@ namespace integra_internal
 			{
 				if( CGuidHelper::string_to_guid( origin_guid_attribute, m_interface_definition->m_origin_guid ) != CError::SUCCESS )
 				{
-					NTG_TRACE_ERROR << "Couldn't parse guid: " << origin_guid_attribute;
+					INTEGRA_TRACE_ERROR << "Couldn't parse guid: " << origin_guid_attribute;
 					error = CError::INPUT_ERROR;
 				}
 
@@ -523,7 +523,7 @@ namespace integra_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "InterfaceDeclaration lacks originGuid attribute";
+				INTEGRA_TRACE_ERROR << "InterfaceDeclaration lacks originGuid attribute";
 				error = CError::INPUT_ERROR;
 			}
 		}
@@ -698,7 +698,7 @@ namespace integra_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR << "invalid boolean: " << input;
+		INTEGRA_TRACE_ERROR << "invalid boolean: " << input;
 		return CError::INPUT_ERROR;
 	}
 
@@ -731,7 +731,7 @@ namespace integra_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR << "invalid endpoint type: " << input;
+		INTEGRA_TRACE_ERROR << "invalid endpoint type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -750,7 +750,7 @@ namespace integra_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR << "invalid control type: " << input;
+		INTEGRA_TRACE_ERROR << "invalid control type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -775,7 +775,7 @@ namespace integra_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR << "invalid value type: " << input;
+		INTEGRA_TRACE_ERROR << "invalid value type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -800,7 +800,7 @@ namespace integra_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR << "invalid scale type: " << input;
+		INTEGRA_TRACE_ERROR << "invalid scale type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -813,7 +813,7 @@ namespace integra_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR << "invalid stream type: " << input;
+		INTEGRA_TRACE_ERROR << "invalid stream type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -832,7 +832,7 @@ namespace integra_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR << "invalid stream direction: " << input;
+		INTEGRA_TRACE_ERROR << "invalid stream direction: " << input;
 		return CError::INPUT_ERROR;
 	}
 

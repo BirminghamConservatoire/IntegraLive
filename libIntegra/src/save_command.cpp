@@ -22,7 +22,7 @@
 
 #include "save_command.h"
 #include "server.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "file_io.h"
 #include "file_helper.h"
 #include "api/command_result.h"
@@ -59,13 +59,13 @@ namespace integra_internal
 
 		if( m_file_path.empty() ) 
 		{
-			NTG_TRACE_ERROR  <<  "file path is empty";
+			INTEGRA_TRACE_ERROR  <<  "file path is empty";
 			return CError::INPUT_ERROR;
 		}
 
 		string file_path_with_suffix = CFileHelper::ensure_filename_has_suffix( m_file_path, CFileIO::file_suffix );
 
-		NTG_TRACE_PROGRESS << "saving to " << file_path_with_suffix;
+		INTEGRA_TRACE_PROGRESS << "saving to " << file_path_with_suffix;
 
 		return CFileIO::save( server, file_path_with_suffix, *node );
 	}

@@ -22,11 +22,11 @@
 
 #include "set_command.h"
 #include "server.h"
-#include "value.h"
-#include "trace.h"
 #include "interface_definition.h"
 #include "reentrance_checker.h"
 #include "logic.h"
+#include "api/value.h"
+#include "api/trace.h"
 
 #include <assert.h>
 
@@ -71,7 +71,7 @@ namespace integra_internal
 		CNodeEndpoint *node_endpoint = server.find_node_endpoint_writable( m_endpoint_path.get_string() );
 		if( node_endpoint == NULL) 
 		{
-			NTG_TRACE_ERROR << "endpoint not found: " << m_endpoint_path.get_string();
+			INTEGRA_TRACE_ERROR << "endpoint not found: " << m_endpoint_path.get_string();
 			return CError::PATH_ERROR;
 		}
 
@@ -80,7 +80,7 @@ namespace integra_internal
 		switch( endpoint_definition.get_type() )
 		{
 			case CEndpointDefinition::STREAM:
-				NTG_TRACE_ERROR << "can't call set for a stream attribute: " << m_endpoint_path.get_string();
+				INTEGRA_TRACE_ERROR << "can't call set for a stream attribute: " << m_endpoint_path.get_string();
 				return CError::TYPE_ERROR ;
 
 			case CEndpointDefinition::CONTROL:
@@ -90,7 +90,7 @@ namespace integra_internal
 					{
 						if( !m_value )
 						{
-							NTG_TRACE_ERROR << "called set without a value for a stateful endpoint: " << m_endpoint_path.get_string();
+							INTEGRA_TRACE_ERROR << "called set without a value for a stateful endpoint: " << m_endpoint_path.get_string();
 							return CError::TYPE_ERROR;
 						}
 
@@ -103,7 +103,7 @@ namespace integra_internal
 							/* we allow passing integers to float attributes and vice-versa, but no other mismatched types */
 							if( ( value_type != CValue::INTEGER && m_value->get_type() != CValue::FLOAT ) || ( endpoint_type != CValue::INTEGER && endpoint_type != CValue::FLOAT ) )
 							{
-								NTG_TRACE_ERROR << "called set with incorrect value type: " << m_endpoint_path.get_string();
+								INTEGRA_TRACE_ERROR << "called set with incorrect value type: " << m_endpoint_path.get_string();
 								return CError::TYPE_ERROR;
 							}
 						} 
@@ -114,7 +114,7 @@ namespace integra_internal
 					case CControlInfo::BANG:
 						if( m_value )
 						{
-							NTG_TRACE_ERROR << "called set with a value for a stateless endpoint: " << m_endpoint_path.get_string();
+							INTEGRA_TRACE_ERROR << "called set with a value for a stateless endpoint: " << m_endpoint_path.get_string();
 							return CError::TYPE_ERROR;
 						}
 						break;
@@ -140,7 +140,7 @@ namespace integra_internal
 		{
 			if( !node_endpoint->test_constraint( *m_value ) )
 			{
-				NTG_TRACE_ERROR << "attempting to set value which doesn't conform to constraint - aborting set command: " << m_endpoint_path.get_string();
+				INTEGRA_TRACE_ERROR << "attempting to set value which doesn't conform to constraint - aborting set command: " << m_endpoint_path.get_string();
 				return CError::CONSTRAINT_ERROR;
 			}
 		}
@@ -148,7 +148,7 @@ namespace integra_internal
 
 		if( server.get_reentrance_checker().push( node_endpoint, source ) )
 		{
-			NTG_TRACE_ERROR << "detected reentry - aborting set command: " << m_endpoint_path.get_string();
+			INTEGRA_TRACE_ERROR << "detected reentry - aborting set command: " << m_endpoint_path.get_string();
 			return CError::REENTRANCE_ERROR;
 		}
 

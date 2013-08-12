@@ -23,7 +23,7 @@
 
 
 #include "api/common_typedefs.h"
-#include "error.h"
+#include "api/error.h"
 
 
 using namespace integra_api;

@@ -35,19 +35,19 @@
 
 
 #include "platform_specifics.h"
-#include "error.h"
-#include "value.h"
 #include "server.h"
-#include "path.h"
 #include "node.h"
 #include "xmlrpc_common.h"
 #include "xmlrpc_server.h"
 #include "module_manager.h"
 #include "interface_definition.h"
-#include "trace.h"
-#include "guid_helper.h"
+#include "api/guid_helper.h"
 #include "string_helper.h"
 
+#include "api/trace.h"
+#include "api/error.h"
+#include "api/value.h"
+#include "api/path.h"
 #include "api/common_typedefs.h"
 #include "api/command_api.h"
 #include "api/command_result.h"
@@ -139,7 +139,7 @@ static xmlrpc_value *ntg_xmlrpc_error(xmlrpc_env * env,
         xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
         xmlrpc_DECREF(xmlrpc_temp);
     } else {
-        NTG_TRACE_ERROR << "getting xmlrpc RESPONSE_LABEL";
+        INTEGRA_TRACE_ERROR << "getting xmlrpc RESPONSE_LABEL";
     }
 
     xmlrpc_temp = xmlrpc_int_new(env, error );
@@ -147,7 +147,7 @@ static xmlrpc_value *ntg_xmlrpc_error(xmlrpc_env * env,
         xmlrpc_struct_set_value(env, struct_, "errorcode", xmlrpc_temp);
         xmlrpc_DECREF(xmlrpc_temp);
     } else {
-        NTG_TRACE_ERROR << "getting xmlrpc errorcode";
+        INTEGRA_TRACE_ERROR << "getting xmlrpc errorcode";
     }
 
 	xmlrpc_temp = xmlrpc_string_new(env, error.get_text().c_str() );
@@ -155,7 +155,7 @@ static xmlrpc_value *ntg_xmlrpc_error(xmlrpc_env * env,
         xmlrpc_struct_set_value(env, struct_, "errortext", xmlrpc_temp);
         xmlrpc_DECREF(xmlrpc_temp);
     } else {
-        NTG_TRACE_ERROR << "getting xmlrpc errortext";
+        INTEGRA_TRACE_ERROR << "getting xmlrpc errortext";
     }
     return struct_;
 
@@ -512,7 +512,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 				const CValue &default_value = state_info->get_default_value();
 				if( default_value.get_type() != state_info->get_type() )
 				{
-					NTG_TRACE_ERROR << "default value missing or of incorrect type: " << endpoint_definition.get_name();
+					INTEGRA_TRACE_ERROR << "default value missing or of incorrect type: " << endpoint_definition.get_name();
 				}
 				else
 				{
@@ -834,7 +834,7 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback( CServer *server, const int ar
         const CNode *node = server->find_node( path );
         if( node == NULL ) 
 		{
-			NTG_TRACE_ERROR << "path not found: " << path.get_string().c_str();
+			INTEGRA_TRACE_ERROR << "path not found: " << path.get_string().c_str();
             return ntg_xmlrpc_error(env, CError::FAILED);
         }
 
@@ -1351,7 +1351,7 @@ static xmlrpc_value *ntg_xmlrpc_set_callback( CServer *server, const int argc, v
 
     struct_ = xmlrpc_struct_new(env);
 
-	NTG_TRACE_VERBOSE << "setting value: " << path->get_string();
+	INTEGRA_TRACE_VERBOSE << "setting value: " << path->get_string();
 
 	CError error = server->process_command( CSetCommandApi::create( *path, value ), CCommandSource::XMLRPC_API );
 	if( error != CError::SUCCESS )
@@ -1385,7 +1385,7 @@ static xmlrpc_value *ntg_xmlrpc_get_callback( CServer *server, const int argc, v
 
     struct_ = xmlrpc_struct_new(env);
 
-	NTG_TRACE_VERBOSE << "getting value: " << path->get_string();
+	INTEGRA_TRACE_VERBOSE << "getting value: " << path->get_string();
 
     value = server->get_value( *path );
 
@@ -1417,7 +1417,7 @@ static xmlrpc_value *ntg_xmlrpc_version(xmlrpc_env * const env,
         xmlrpc_value *parameter_array,
         void *user_data)
 {
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
 	CServer *server = ( CServer * ) user_data;
     return ntg_server_do_va(&ntg_xmlrpc_version_callback, server, 1, (void *)env);
@@ -1427,7 +1427,7 @@ static xmlrpc_value *ntg_xmlrpc_print_state(xmlrpc_env * const env,
         xmlrpc_value *parameter_array,
         void *user_data)
 {
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
 	CServer *server = ( CServer * ) user_data;
     return ntg_server_do_va(&ntg_xmlrpc_print_state_callback, server, 1, (void *)env);
@@ -1438,7 +1438,7 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist(xmlrpc_env * const env,
         xmlrpc_value *parameter_array,
         void *user_data)
 {
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
 	CServer *server = ( CServer * ) user_data;
     return ntg_server_do_va(&ntg_xmlrpc_interfacelist_callback, server, 1, (void *)env);
@@ -1452,7 +1452,7 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo(xmlrpc_env * const env,
     const char *name;
     size_t len;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(s#)", &name, &len);
 
@@ -1471,7 +1471,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints(xmlrpc_env * const env,
     const char *name;
     size_t len;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(s#)", &name, &len);
 
@@ -1490,7 +1490,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets(xmlrpc_env * const env,
     const char *name;
     size_t len;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(s#)", &name, &len);
 
@@ -1508,7 +1508,7 @@ static xmlrpc_value *ntg_xmlrpc_default(xmlrpc_env * const env,
         xmlrpc_value * const param_array,
         void *const user_data)
 {
-    NTG_TRACE_ERROR << "WARNING, unhandled method: " << method_name;
+    INTEGRA_TRACE_ERROR << "WARNING, unhandled method: " << method_name;
 
     return param_array;
 }
@@ -1520,7 +1520,7 @@ static xmlrpc_value *ntg_xmlrpc_nodelist(xmlrpc_env * const env,
 {
     xmlrpc_value *xmlrpc_path;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(A)", &xmlrpc_path);
 
@@ -1540,7 +1540,7 @@ static xmlrpc_value *ntg_xmlrpc_delete(xmlrpc_env * const env,
 {
     xmlrpc_value *xmlrpc_path;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(A)", &xmlrpc_path);
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
@@ -1560,7 +1560,7 @@ static xmlrpc_value *ntg_xmlrpc_rename(xmlrpc_env * const env,
     xmlrpc_value *xmlrpc_path;
     const char *name;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(As)", &xmlrpc_path, &name);
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
@@ -1580,7 +1580,7 @@ static xmlrpc_value *ntg_xmlrpc_save(xmlrpc_env * const env,
     xmlrpc_value *xmlrpc_path;
     const char *file_path;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(As)", &xmlrpc_path, &file_path);
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
@@ -1599,7 +1599,7 @@ static xmlrpc_value *ntg_xmlrpc_load(xmlrpc_env * const env,
     xmlrpc_value *xmlrpc_path;
     const char *file_path;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(sA)", &file_path, &xmlrpc_path);
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
@@ -1618,7 +1618,7 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
 {
     xmlrpc_value *xmlrpc_node_path, *xmlrpc_parent_path;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(AA)", &xmlrpc_node_path,
             &xmlrpc_parent_path);
@@ -1638,7 +1638,7 @@ static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded(xmlrpc_env * const env,
         xmlrpc_value *parameter_array,
         void *user_data)
 {
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     if (env->fault_occurred)
         return NULL;
@@ -1655,7 +1655,7 @@ static xmlrpc_value *ntg_xmlrpc_install_module_file(xmlrpc_env * const env,
     const char *file_name;
     size_t len;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(s#)", &file_name, &len);
 
@@ -1674,7 +1674,7 @@ static xmlrpc_value *ntg_xmlrpc_install_embedded_module(xmlrpc_env * const env,
     const char *module_id_string;
     size_t len;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(s#)", &module_id_string, &len);
 
@@ -1693,7 +1693,7 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module(xmlrpc_env * const env,
     const char *module_id_string;
     size_t len;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(s#)", &module_id_string, &len);
 
@@ -1712,7 +1712,7 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development(xmlrpc_env * const en
     const char *file_name;
     size_t len;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(s#)", &file_name, &len);
 
@@ -1734,7 +1734,7 @@ static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
     const char *name, *node_name;
     xmlrpc_value *xmlrpc_path;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(ssA)", &name, &node_name,
             &xmlrpc_path);
@@ -1760,7 +1760,7 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
     CValue *value;
 	int number_of_elements;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
 	number_of_elements = xmlrpc_array_size( env, parameter_array );
 	switch( number_of_elements )
@@ -1777,7 +1777,7 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 			break;
 
 		default:
-			NTG_TRACE_ERROR << "incorrect number of parameters passed into xmlrpc command.set: " << number_of_elements;
+			INTEGRA_TRACE_ERROR << "incorrect number of parameters passed into xmlrpc command.set: " << number_of_elements;
 			return NULL;
 	}
 
@@ -1798,7 +1798,7 @@ static xmlrpc_value *ntg_xmlrpc_get(xmlrpc_env * const env,
 
     xmlrpc_value *xmlrpc_path;
 
-    NTG_TRACE_VERBOSE;
+    INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(A)", &xmlrpc_path);
 
@@ -1834,7 +1834,7 @@ void *ntg_xmlrpc_server_run( void *context )
 	CServer *server = server_context->m_server;
 	delete server_context;
 
-    NTG_TRACE_PROGRESS << "Starting server on port " << port;
+    INTEGRA_TRACE_PROGRESS << "Starting server on port " << port;
 
     xmlrpc_env_init(&env);
 
@@ -1939,7 +1939,7 @@ void *ntg_xmlrpc_server_run( void *context )
 
     xmlrpc_env_clean(&env);
 
-    NTG_TRACE_PROGRESS << "XMLRPC server terminated";
+    INTEGRA_TRACE_PROGRESS << "XMLRPC server terminated";
     pthread_exit(0);
 
     return NULL;

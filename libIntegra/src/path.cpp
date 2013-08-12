@@ -19,9 +19,9 @@
  */
 
 #include "platform_specifics.h"
-#include "path.h"
+#include "api/path.h"
 
-#include "trace.h"
+#include "api/trace.h"
 #include "string_helper.h"
 
 
@@ -85,7 +85,7 @@ namespace integra_api
 	{
 		if( index < 0 || index >= m_elements.size() )
 		{
-			NTG_TRACE_ERROR << "Incorrect index:" << index;
+			INTEGRA_TRACE_ERROR << "Incorrect index:" << index;
 			static string dummy;
 			return dummy;
 		}
@@ -117,7 +117,7 @@ namespace integra_api
 		int number_of_elements = m_elements.size();
 		if( number_of_elements == 0 )
 		{
-			NTG_TRACE_ERROR << "trying to pop empty path";
+			INTEGRA_TRACE_ERROR << "trying to pop empty path";
 			return "";
 		}
 
@@ -134,7 +134,7 @@ namespace integra_api
 	{
 		if( element.find_first_not_of( CStringHelper::node_name_character_set ) != string::npos )
 		{
-			NTG_TRACE_ERROR << "Invalid element name: " << element;
+			INTEGRA_TRACE_ERROR << "Invalid element name: " << element;
 			return;
 		}
 

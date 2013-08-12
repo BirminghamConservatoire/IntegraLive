@@ -24,8 +24,8 @@
 #include <assert.h>
 
 #include "interface_definition.h"
-#include "trace.h"
-#include "guid_helper.h"
+#include "api/trace.h"
+#include "api/guid_helper.h"
 
 
 namespace integra_internal
@@ -125,7 +125,7 @@ namespace integra_internal
 	{
 		if( !m_implementation_info )
 		{
-			NTG_TRACE_ERROR << "Can't set checksum - no interface";
+			INTEGRA_TRACE_ERROR << "Can't set checksum - no interface";
 			return;
 		}
 

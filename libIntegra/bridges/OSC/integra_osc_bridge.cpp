@@ -41,9 +41,9 @@ void lo_address_set_flags(lo_address t, int flags);
 
 #include "src/interface_definition.h"
 #include "src/node.h"
-#include "src/path.h"
-#include "src/trace.h"
-#include "src/value.h"
+#include "api/path.h"
+#include "api/trace.h"
+#include "api/value.h"
 
 using namespace integra_api;
 using namespace integra_internal;
@@ -71,7 +71,7 @@ static ntg_bridge_interface *bridge_interface = NULL;
 /* ========== OSC handlers ========== */
 void handler_osc_error(int num, const char *msg, const char *path){
 
-    NTG_TRACE_ERROR << "liblo server error" << msg;
+    INTEGRA_TRACE_ERROR << "liblo server error" << msg;
 }
 
 CValue *new_value_from_lo_typed(const char lo_type, lo_arg *lo_value)
@@ -91,7 +91,7 @@ CValue *new_value_from_lo_typed(const char lo_type, lo_arg *lo_value)
             return NULL;
 
 		default:
-            NTG_TRACE_ERROR <<"unsupported type: " << lo_type;
+            INTEGRA_TRACE_ERROR <<"unsupported type: " << lo_type;
 			return NULL;
     }
 }
@@ -117,7 +117,7 @@ int handler_bridge_callback(const char *path, const char *types, lo_arg **argv,
 	}
 	else
 	{
-		NTG_TRACE_ERROR << "server_receive_callback not set";
+		INTEGRA_TRACE_ERROR << "server_receive_callback not set";
 	}
 
 	if( value )
@@ -136,13 +136,13 @@ static int osc_module_load( const internal_id instance_id, const char *implement
 	int res = 0;
 
     if(!implementation_name){
-	    NTG_TRACE_ERROR << "implementation_name is NULL";
+	    INTEGRA_TRACE_ERROR << "implementation_name is NULL";
     }
 
     /* Load the module */
     res = lo_send(module_host, "/load", "si", implementation_name, instance_id);    
     if(res==-1) {
-	    NTG_TRACE_ERROR << lo_address_errstr( module_host );
+	    INTEGRA_TRACE_ERROR << lo_address_errstr( module_host );
     }
     return 0;
 }
@@ -220,13 +220,13 @@ static int osc_module_connect( const CNodeEndpoint *source, const CNodeEndpoint 
 
 	if( !osc_get_stream_connection_name( source_name, source->get_endpoint_definition(), source->get_node().get_interface_definition() ) )
 	{
-		NTG_TRACE_ERROR << "Failed to get stream connection name";
+		INTEGRA_TRACE_ERROR << "Failed to get stream connection name";
 		return -1;
 	}
 
 	if( !osc_get_stream_connection_name( target_name, target->get_endpoint_definition(), target->get_node().get_interface_definition() ) )
 	{
-		NTG_TRACE_ERROR << "Failed to get stream connection name";
+		INTEGRA_TRACE_ERROR << "Failed to get stream connection name";
 		return -1;
 	}
 
@@ -278,7 +278,7 @@ static void osc_send_value( const CNodeEndpoint *node_endpoint )
 				break;
 
 			default:
-				NTG_TRACE_ERROR << "invalid type";
+				INTEGRA_TRACE_ERROR << "invalid type";
 				break;
 		}
 	}
@@ -296,7 +296,7 @@ static void osc_host_dsp(int status)
 void osc_bridge_init(void) 
 {
     /* print something */
-    NTG_TRACE_PROGRESS << "Integra OSC bridge init";
+    INTEGRA_TRACE_PROGRESS << "Integra OSC bridge init";
 }
 
 

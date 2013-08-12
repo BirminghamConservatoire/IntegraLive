@@ -22,7 +22,7 @@
 #include "platform_specifics.h"
 
 #include "string_helper.h"
-#include "trace.h"
+#include "api/trace.h"
 
 #include <assert.h>
 #ifdef _WINDOWS
@@ -49,7 +49,7 @@ namespace integra_internal
 	{
 		if( string.length() < 16 )
 		{
-			NTG_TRACE_ERROR << "Unexpected date/time format: " << string.c_str();
+			INTEGRA_TRACE_ERROR << "Unexpected date/time format: " << string.c_str();
 			return CError::INPUT_ERROR;
 		}
 

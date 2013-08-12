@@ -22,7 +22,7 @@
 
 #include "rename_command.h"
 #include "server.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "string_helper.h"
 #include "logic.h"
 
@@ -57,7 +57,7 @@ namespace integra_internal
 
 		if( !CStringHelper::validate_node_name( m_new_name ) )
 		{
-			NTG_TRACE_ERROR << "node name contains invalid characters: " << m_new_name;
+			INTEGRA_TRACE_ERROR << "node name contains invalid characters: " << m_new_name;
 			return CError::INPUT_ERROR;
 		}
 
@@ -65,7 +65,7 @@ namespace integra_internal
 		node_map &sibling_set = server.get_sibling_set_writable( *node );
 		while( sibling_set.count( m_new_name ) > 0 ) 
 		{
-			NTG_TRACE_PROGRESS << "node name is in use; appending underscore: " << m_new_name;
+			INTEGRA_TRACE_PROGRESS << "node name is in use; appending underscore: " << m_new_name;
 			m_new_name += "_";
 		}
 

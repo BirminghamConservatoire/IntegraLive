@@ -33,7 +33,7 @@
 
 #include "file_helper.h"
 #include "file_io.h"
-#include "trace.h"
+#include "api/trace.h"
 
 
 namespace integra_internal
@@ -96,7 +96,7 @@ namespace integra_internal
 		DIR *directory_stream = opendir( directory_name.c_str() );
 		if( !directory_stream )
 		{
-			NTG_TRACE_ERROR << "unable to open directory " << directory_name;
+			INTEGRA_TRACE_ERROR << "unable to open directory " << directory_name;
 			return;
 		}
 
@@ -121,7 +121,7 @@ namespace integra_internal
 			struct stat entry_data;
 			if( stat( full_path.c_str(), &entry_data ) != 0 )
 			{
-				NTG_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
+				INTEGRA_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
 				continue;
 			}
 
@@ -142,7 +142,7 @@ namespace integra_internal
 
 		if( rmdir( directory_name.c_str() ) != 0 )
 		{
-			NTG_TRACE_ERROR << "Failed to remove directory " << directory_name;
+			INTEGRA_TRACE_ERROR << "Failed to remove directory " << directory_name;
 		}
 	}
 
@@ -151,7 +151,7 @@ namespace integra_internal
 	{
 		if( remove( file_name.c_str() ) != 0 )
 		{
-			NTG_TRACE_ERROR << "Failed to remove file " << file_name;
+			INTEGRA_TRACE_ERROR << "Failed to remove file " << file_name;
 			return CError::FAILED;
 		}
 
@@ -166,7 +166,7 @@ namespace integra_internal
 		FILE *source_file = fopen( source_path.c_str(), "rb" );
 		if( !source_file )
 		{
-			NTG_TRACE_ERROR << "failed to open: " << source_path;
+			INTEGRA_TRACE_ERROR << "failed to open: " << source_path;
 			return CError::FAILED;
 		}
 
@@ -177,7 +177,7 @@ namespace integra_internal
 		FILE *target_file = fopen( target_path.c_str(), "wb" );
 		if( !target_file )
 		{
-			NTG_TRACE_ERROR << "couldn't open for writing: " << target_path;
+			INTEGRA_TRACE_ERROR << "couldn't open for writing: " << target_path;
 			goto CLEANUP;
 		}
 
@@ -188,7 +188,7 @@ namespace integra_internal
 			unsigned long bytes_read = fread( copy_buffer, 1, MIN( bytes_to_copy, CFileIO::data_copy_buffer_size ), source_file );
 			if( bytes_read <= 0 )
 			{
-				NTG_TRACE_ERROR << "error reading: " << source_path;
+				INTEGRA_TRACE_ERROR << "error reading: " << source_path;
 				goto CLEANUP;
 			}
 

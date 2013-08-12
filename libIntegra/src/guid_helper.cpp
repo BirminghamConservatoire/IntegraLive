@@ -21,8 +21,8 @@
 
 #include "platform_specifics.h"
 
-#include "guid_helper.h"
-#include "trace.h"
+#include "api/guid_helper.h"
+#include "api/trace.h"
 #include "MurmurHash2.h"
 
 #include <assert.h>

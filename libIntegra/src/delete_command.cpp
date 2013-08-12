@@ -22,7 +22,7 @@
 
 #include "delete_command.h"
 #include "server.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "interface_definition.h"
 #include "logic.h"
 

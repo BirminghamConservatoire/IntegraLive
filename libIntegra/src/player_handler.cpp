@@ -22,12 +22,12 @@
 
 #include "platform_specifics.h"
 #include "player_handler.h"
-#include "trace.h"
 #include "node.h"
 #include "node_endpoint.h"
 #include "player_logic.h"
 #include "server.h"
 #include "api/command_api.h"
+#include "api/trace.h"
 
 #include <assert.h>
 
@@ -73,7 +73,7 @@ namespace integra_internal
 
 	CPlayerHandler::~CPlayerHandler()
 	{
-		NTG_TRACE_PROGRESS << "stopping player thread";
+		INTEGRA_TRACE_PROGRESS << "stopping player thread";
 
 		sem_post( m_thread_shutdown_semaphore );
 		pthread_join( m_thread, NULL);
@@ -85,7 +85,7 @@ namespace integra_internal
 			delete m_thread_shutdown_semaphore;
 		#endif
 
-		NTG_TRACE_PROGRESS << "freeing player states";
+		INTEGRA_TRACE_PROGRESS << "freeing player states";
 
 		pthread_mutex_lock( &m_mutex );
 

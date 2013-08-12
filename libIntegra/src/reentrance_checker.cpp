@@ -24,7 +24,7 @@
 #include <assert.h>
 
 #include "reentrance_checker.h"
-#include "trace.h"
+#include "api/trace.h"
 
 
 namespace integra_internal
@@ -64,7 +64,7 @@ namespace integra_internal
 	{
 		if( m_stack.empty() )
 		{
-			NTG_TRACE_ERROR << "attempt to pop empty queue";
+			INTEGRA_TRACE_ERROR << "attempt to pop empty queue";
 			return;
 		}
 

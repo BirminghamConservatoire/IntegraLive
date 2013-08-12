@@ -24,7 +24,7 @@
 #include <unordered_map>
 
 #include "node_endpoint.h"
-#include "path.h"
+#include "api/path.h"
 #include "api/common_typedefs.h"
 
 using namespace integra_api;

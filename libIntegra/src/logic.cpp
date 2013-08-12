@@ -34,10 +34,10 @@
 #include "server.h"
 #include "data_directory.h"
 #include "module_manager.h"
-#include "guid_helper.h"
+#include "api/guid_helper.h"
 #include "node.h"
 #include "interface_definition.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "file_helper.h"
 
 #include "api/command_api.h"
@@ -243,7 +243,7 @@ namespace integra_internal
 	{
 		if( !input_file.get_value() || input_file.get_value()->get_type() != CValue::STRING )
 		{
-			NTG_TRACE_ERROR << "input file endpoint has no value, or value is not a string";
+			INTEGRA_TRACE_ERROR << "input file endpoint has no value, or value is not a string";
 			return false;
 		}
 
@@ -295,7 +295,7 @@ namespace integra_internal
 		const CValue *value = data_directory->get_value();
 		if( !value || value->get_type() != CValue::STRING ) 
 		{
-			NTG_TRACE_ERROR << "data directory endpoint has no value or value is of unexpected type";
+			INTEGRA_TRACE_ERROR << "data directory endpoint has no value or value is of unexpected type";
 			return NULL;
 		}
 
@@ -384,7 +384,7 @@ namespace integra_internal
 	{
 		if( !has_data_directory() )
 		{
-			NTG_TRACE_ERROR << "can't handle input file - node doesn't have data directory";
+			INTEGRA_TRACE_ERROR << "can't handle input file - node doesn't have data directory";
 			return;
 		}
 
@@ -438,7 +438,7 @@ namespace integra_internal
 			{
 				if( changed_endpoint.get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL || !changed_endpoint.get_endpoint_definition().get_control_info()->get_can_be_source() )
 				{
-					NTG_TRACE_ERROR << "aborting handling of connection from endpoint which cannot be a connection source";
+					INTEGRA_TRACE_ERROR << "aborting handling of connection from endpoint which cannot be a connection source";
 					continue;
 				}
 
@@ -454,7 +454,7 @@ namespace integra_internal
 
 					if( destination_endpoint->get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL || !destination_endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 					{
-						NTG_TRACE_ERROR << "aborting handling of connection to endpoint which cannot be a connection target";
+						INTEGRA_TRACE_ERROR << "aborting handling of connection to endpoint which cannot be a connection target";
 						continue;
 					}
 
@@ -508,7 +508,7 @@ namespace integra_internal
 			const CValue *allowed_state = *i;
 			if( value.get_type() != allowed_state->get_type() )
 			{
-				NTG_TRACE_ERROR << "Value type mismatch whilst quantizing to allowed states";
+				INTEGRA_TRACE_ERROR << "Value type mismatch whilst quantizing to allowed states";
 				continue;
 			}
 
@@ -523,7 +523,7 @@ namespace integra_internal
 
 		if( !nearest_allowed_state )
 		{
-			NTG_TRACE_ERROR << "failed to quantize to allowed states - allowed states is empty";
+			INTEGRA_TRACE_ERROR << "failed to quantize to allowed states - allowed states is empty";
 			return;
 		}
 
@@ -544,7 +544,7 @@ namespace integra_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "Failed to lookup connection interface";
+				INTEGRA_TRACE_ERROR << "Failed to lookup connection interface";
 			}
 		}
 
@@ -559,13 +559,13 @@ namespace integra_internal
 
 		if( !source_endpoint_definition.is_audio_stream() || source_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::OUTPUT )
 		{
-			NTG_TRACE_ERROR << "trying to make incorrect connection in host - source isn't an audio output";
+			INTEGRA_TRACE_ERROR << "trying to make incorrect connection in host - source isn't an audio output";
 			return CError::INPUT_ERROR;
 		}
 
 		if( !target_endpoint_definition.is_audio_stream() || target_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::INPUT )
 		{
-			NTG_TRACE_ERROR << "trying to make incorrect connection in host - target isn't an audio output";
+			INTEGRA_TRACE_ERROR << "trying to make incorrect connection in host - target isn't an audio output";
 			return CError::INPUT_ERROR;
 		}
 

@@ -25,13 +25,13 @@
 #include "node.h"
 #include "validator.h"
 #include "module_manager.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "server.h"
 #include "api/command_api.h"
 #include "api/command_result.h"
 #include "data_directory.h"
 #include "string_helper.h"
-#include "guid_helper.h"
+#include "api/guid_helper.h"
 
 #include <assert.h>
 
@@ -93,7 +93,7 @@ namespace integra_internal
 		CError error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
 		if( error != CError::SUCCESS ) 
 		{
-			NTG_TRACE_ERROR << "couldn't load modules: " << filename;
+			INTEGRA_TRACE_ERROR << "couldn't load modules: " << filename;
 			goto CLEANUP;
 		}
 
@@ -101,7 +101,7 @@ namespace integra_internal
 		error = load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
 		if( error != CError::SUCCESS ) 
 		{
-			NTG_TRACE_ERROR << "couldn't load ixd: " << filename;
+			INTEGRA_TRACE_ERROR << "couldn't load ixd: " << filename;
 			goto CLEANUP;
 		}
 
@@ -111,7 +111,7 @@ namespace integra_internal
 		error = validator.validate_ixd( (char *)ixd_buffer, ixd_buffer_length );
 		if( error != CError::SUCCESS ) 
 		{
-			NTG_TRACE_ERROR << "ixd validation failed: " << filename;
+			INTEGRA_TRACE_ERROR << "ixd validation failed: " << filename;
 			goto CLEANUP;
 		}
 
@@ -119,7 +119,7 @@ namespace integra_internal
 		reader = xmlReaderForMemory( (char *)ixd_buffer, ixd_buffer_length, NULL, NULL, 0 );
 		if( reader == NULL )
 		{
-			NTG_TRACE_ERROR << "unable to read ixd: " << filename;
+			INTEGRA_TRACE_ERROR << "unable to read ixd: " << filename;
 			error = CError::FAILED;
 			goto CLEANUP;
 		}
@@ -131,7 +131,7 @@ namespace integra_internal
 		error = load_nodes( server, parent, reader, new_nodes );
 		if( error != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR << "failed to load nodes: " << filename;
+			INTEGRA_TRACE_ERROR << "failed to load nodes: " << filename;
 			goto CLEANUP;
 		}
 
@@ -140,7 +140,7 @@ namespace integra_internal
 		{
 			if( CDataDirectory::extract_from_zip( server, filename, parent ) != CError::SUCCESS )
 			{
-				NTG_TRACE_ERROR << "failed to load data directories: " << filename;
+				INTEGRA_TRACE_ERROR << "failed to load data directories: " << filename;
 			}
 		}
 
@@ -149,7 +149,7 @@ namespace integra_internal
 		{
 			if( send_loaded_values_to_host( **new_node_iterator, server.get_bridge() ) != CError::SUCCESS)
 			{
-				NTG_TRACE_ERROR << "failed to send loaded attributes to host: " << filename;
+				INTEGRA_TRACE_ERROR << "failed to send loaded attributes to host: " << filename;
 				continue;
 			}
 		}
@@ -203,13 +203,13 @@ namespace integra_internal
 		zip_file = zipOpen( filename.c_str(), APPEND_STATUS_CREATE );
 		if( !zip_file )
 		{
-			NTG_TRACE_ERROR << "Failed to create zipfile: " << filename;
+			INTEGRA_TRACE_ERROR << "Failed to create zipfile: " << filename;
 			return CError::FAILED;
 		}
 
 		if( save_nodes( server, node, &ixd_buffer, &ixd_buffer_length ) != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR << "Failed to save node tree: " << filename;
+			INTEGRA_TRACE_ERROR << "Failed to save node tree: " << filename;
 			return CError::FAILED;
 		}
 
@@ -239,7 +239,7 @@ namespace integra_internal
 		FILE *input_file = fopen( source_path.c_str(), "rb" );
 		if( !input_file )
 		{
-			NTG_TRACE_ERROR << "couldn't open: " << source_path;
+			INTEGRA_TRACE_ERROR << "couldn't open: " << source_path;
 			return;
 		}
 
@@ -258,7 +258,7 @@ namespace integra_internal
 			{
 				if( ferror( input_file ) )
 				{
-					NTG_TRACE_ERROR << "Error reading file: " << source_path;
+					INTEGRA_TRACE_ERROR << "Error reading file: " << source_path;
 					break;
 				}
 			}
@@ -294,21 +294,21 @@ namespace integra_internal
 
 		if( unzLocateFile( unzip_file, internal_ixd_file_name.c_str(), 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to locate " << internal_ixd_file_name << " in " << file_path;
+			INTEGRA_TRACE_ERROR << "Unable to locate " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
 
 		if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't get info for " << internal_ixd_file_name << " in " << file_path;
+			INTEGRA_TRACE_ERROR << "Couldn't get info for " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to open " << internal_ixd_file_name << " in " << file_path;
+			INTEGRA_TRACE_ERROR << "Unable to open " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
@@ -318,7 +318,7 @@ namespace integra_internal
 
 		if( unzReadCurrentFile( unzip_file, *ixd_buffer, *ixd_buffer_length ) != *ixd_buffer_length )
 		{
-			NTG_TRACE_ERROR << "Unable to read " << internal_ixd_file_name << " in " << file_path;
+			INTEGRA_TRACE_ERROR << "Unable to read " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			delete[] *ixd_buffer;
 			return CError::FAILED;
@@ -340,7 +340,7 @@ namespace integra_internal
 		file = fopen( file_path.c_str(), "rb" );
 		if( !file )
 		{
-			NTG_TRACE_ERROR << "Couldn't open file: " << file_path;
+			INTEGRA_TRACE_ERROR << "Couldn't open file: " << file_path;
 			return CError::FAILED;
 		}
 
@@ -355,7 +355,7 @@ namespace integra_internal
 
 		if( bytes_loaded != *ixd_buffer_length )
 		{
-			NTG_TRACE_ERROR << "Error reading from file: " << file_path;
+			INTEGRA_TRACE_ERROR << "Error reading from file: " << file_path;
 			return CError::FAILED;
 		}
 
@@ -386,7 +386,7 @@ namespace integra_internal
 			return CError::INPUT_ERROR;
 		}
 
-		NTG_TRACE_VERBOSE << "loading... ";
+		INTEGRA_TRACE_VERBOSE << "loading... ";
 		while( rv == 1 ) 
 		{
 			string element( ( const char * ) xmlTextReaderConstName( reader ) );
@@ -451,7 +451,7 @@ namespace integra_internal
 					}
 					else
 					{
-						NTG_TRACE_ERROR << "Can't find interface - skipping element";
+						INTEGRA_TRACE_ERROR << "Can't find interface - skipping element";
 					}
 				}
 
@@ -504,9 +504,9 @@ namespace integra_internal
 			rv = xmlTextReaderRead(reader);
 		}
 
-		NTG_TRACE_VERBOSE << "done!";
+		INTEGRA_TRACE_VERBOSE << "done!";
 
-		NTG_TRACE_VERBOSE << "Setting values...";
+		INTEGRA_TRACE_VERBOSE << "Setting values...";
 
 		for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
 		{
@@ -515,7 +515,7 @@ namespace integra_internal
 			delete value_iterator->second;
 		}
 
-		NTG_TRACE_VERBOSE << "done!";
+		INTEGRA_TRACE_VERBOSE << "done!";
 
 		return CError::SUCCESS;
 	}
@@ -596,13 +596,13 @@ namespace integra_internal
 
 		if( last_dot_in_saved_version == string::npos )
 		{
-			NTG_TRACE_ERROR << "Can't parse version string: " << saved_version;
+			INTEGRA_TRACE_ERROR << "Can't parse version string: " << saved_version;
 			return false;
 		}
 
 		if( last_dot_in_current_version == string::npos )
 		{
-			NTG_TRACE_ERROR << "Can't parse version string: " << current_version;
+			INTEGRA_TRACE_ERROR << "Can't parse version string: " << current_version;
 			return false;
 		}
 
@@ -671,7 +671,7 @@ namespace integra_internal
 				{
 					if( module_manager.interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != CError::SUCCESS )
 					{
-						NTG_TRACE_ERROR << "Failed to interpret legacy class id: " << valuestr;
+						INTEGRA_TRACE_ERROR << "Failed to interpret legacy class id: " << valuestr;
 					}
 
 					xmlFree( valuestr );
@@ -718,7 +718,7 @@ namespace integra_internal
 		write_buffer = xmlBufferCreate();
 		if( !write_buffer ) 
 		{
-			NTG_TRACE_ERROR << "error creating xml write buffer";
+			INTEGRA_TRACE_ERROR << "error creating xml write buffer";
 			return CError::FAILED;
 		}
 
@@ -726,7 +726,7 @@ namespace integra_internal
 
 		if( writer == NULL ) 
 		{
-			NTG_TRACE_ERROR << "Error creating the xml writer";
+			INTEGRA_TRACE_ERROR << "Error creating the xml writer";
 			return CError::FAILED;
 		}
 
@@ -734,7 +734,7 @@ namespace integra_internal
 		rc = xmlTextWriterStartDocument( writer, NULL, xml_encoding.c_str(), NULL );
 		if (rc < 0) 
 		{
-			NTG_TRACE_ERROR << "Error at xmlTextWriterStartDocument";
+			INTEGRA_TRACE_ERROR << "Error at xmlTextWriterStartDocument";
 			return CError::FAILED;
 		}
 
@@ -747,7 +747,7 @@ namespace integra_internal
 
 		if( save_node_tree( node, writer ) != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR << "Failed to save node";
+			INTEGRA_TRACE_ERROR << "Failed to save node";
 			return CError::FAILED;
 		}
 
@@ -757,7 +757,7 @@ namespace integra_internal
 
 		if (rc < 0) 
 		{
-			NTG_TRACE_ERROR << "Error at xmlTextWriterEndDocument";
+			INTEGRA_TRACE_ERROR << "Error at xmlTextWriterEndDocument";
 			return CError::FAILED;
 		}
 		xmlFreeTextWriter(writer);
@@ -783,13 +783,13 @@ namespace integra_internal
 			const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( *i );
 			if( !interface_definition )
 			{
-				NTG_TRACE_ERROR << "Failed to retrieve interface";
+				INTEGRA_TRACE_ERROR << "Failed to retrieve interface";
 				continue;
 			}
 
 			if( interface_definition->get_file_path().empty() )
 			{
-				NTG_TRACE_ERROR << "Failed to locate module file";
+				INTEGRA_TRACE_ERROR << "Failed to locate module file";
 				continue;
 			}
 
@@ -925,7 +925,7 @@ namespace integra_internal
 
 		if (!handler) 
 		{
-			NTG_TRACE_ERROR << "ConvertInput: no encoding handler found for " << encoding;
+			INTEGRA_TRACE_ERROR << "ConvertInput: no encoding handler found for " << encoding;
 			return NULL;
 		}
 
@@ -941,11 +941,11 @@ namespace integra_internal
 			{
 				if (ret < 0) 
 				{
-					NTG_TRACE_ERROR << "ConvertInput: conversion wasn't successful.";
+					INTEGRA_TRACE_ERROR << "ConvertInput: conversion wasn't successful.";
 				} 
 				else 
 				{
-					NTG_TRACE_ERROR << "ConvertInput: conversion wasn't successful. converted octets: " << temp;
+					INTEGRA_TRACE_ERROR << "ConvertInput: conversion wasn't successful. converted octets: " << temp;
 				}
 
 				free(out);
@@ -962,7 +962,7 @@ namespace integra_internal
 		} 
 		else 
 		{
-			NTG_TRACE_ERROR << "ConvertInput: no mem";
+			INTEGRA_TRACE_ERROR << "ConvertInput: no mem";
 		}
 
 		return out;

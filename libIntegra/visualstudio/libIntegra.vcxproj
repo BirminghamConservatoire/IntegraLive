@@ -200,9 +200,15 @@
   <ItemGroup>
     <ClInclude Include="..\api\command_api.h" />
     <ClInclude Include="..\api\command_result.h" />
+    <ClInclude Include="..\api\command_source.h" />
     <ClInclude Include="..\api\common_typedefs.h" />
+    <ClInclude Include="..\api\error.h" />
+    <ClInclude Include="..\api\guid_helper.h" />
+    <ClInclude Include="..\api\path.h" />
     <ClInclude Include="..\api\server_api.h" />
     <ClInclude Include="..\api\server_startup_info.h" />
+    <ClInclude Include="..\api\trace.h" />
+    <ClInclude Include="..\api\value.h" />
     <ClInclude Include="..\externals\minizip\crypt.h" />
     <ClInclude Include="..\externals\minizip\ioapi.h" />
     <ClInclude Include="..\externals\minizip\iowin32.h" />
@@ -211,13 +217,11 @@
     <ClInclude Include="..\externals\minizip\zip.h" />
     <ClInclude Include="..\Integra\integra_bridge.h" />
     <ClInclude Include="..\src\bridge_host.h" />
-    <ClInclude Include="..\src\command_source.h" />
     <ClInclude Include="..\src\connection_logic.h" />
     <ClInclude Include="..\src\container_logic.h" />
     <ClInclude Include="..\src\control_point_logic.h" />
     <ClInclude Include="..\src\delete_command.h" />
     <ClInclude Include="..\src\envelope_logic.h" />
-    <ClInclude Include="..\src\guid_helper.h" />
     <ClInclude Include="..\src\load_command.h" />
     <ClInclude Include="..\src\logic.h" />
     <ClInclude Include="..\src\lua_engine.h" />
@@ -225,7 +229,6 @@
     <ClInclude Include="..\src\MurmurHash2.h" />
     <ClInclude Include="..\src\new_command.h" />
     <ClInclude Include="..\src\data_directory.h" />
-    <ClInclude Include="..\src\error.h" />
     <ClInclude Include="..\src\file_helper.h" />
     <ClInclude Include="..\src\file_io.h" />
     <ClInclude Include="..\src\interface_definition.h" />
@@ -234,7 +237,6 @@
     <ClInclude Include="..\src\node.h" />
     <ClInclude Include="..\src\node_endpoint.h" />
     <ClInclude Include="..\src\osc_client.h" />
-    <ClInclude Include="..\src\path.h" />
     <ClInclude Include="..\src\platform_specifics.h" />
     <ClInclude Include="..\src\player_handler.h" />
     <ClInclude Include="..\src\player_logic.h" />
@@ -249,9 +251,7 @@
     <ClInclude Include="..\src\set_command.h" />
     <ClInclude Include="..\src\state_table.h" />
     <ClInclude Include="..\src\string_helper.h" />
-    <ClInclude Include="..\src\trace.h" />
     <ClInclude Include="..\src\validator.h" />
-    <ClInclude Include="..\src\value.h" />
     <ClInclude Include="..\src\xmlrpc_common.h" />
     <ClInclude Include="..\src\xmlrpc_server.h" />
   </ItemGroup>

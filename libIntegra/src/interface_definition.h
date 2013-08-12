@@ -27,8 +27,8 @@
 #include <time.h>
 
 #include "api/common_typedefs.h"
-#include "guid_helper.h"
-#include "value.h"
+#include "api/guid_helper.h"
+#include "api/value.h"
 
 
 using namespace integra_api;

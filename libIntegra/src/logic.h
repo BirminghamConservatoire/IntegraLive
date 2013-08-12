@@ -23,9 +23,9 @@
 #define INTEGRA_LOGIC_PRIVATE
 
 #include "api/common_typedefs.h"
-#include "value.h"
-#include "error.h"
-#include "command_source.h"
+#include "api/value.h"
+#include "api/error.h"
+#include "api/command_source.h"
 
 
 using namespace integra_api;

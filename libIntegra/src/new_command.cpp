@@ -24,7 +24,7 @@
 #include "server.h"
 #include "node.h"
 #include "module_manager.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "logic.h"
 #include "string_helper.h"
 #include "api/command_result.h"
@@ -57,7 +57,7 @@ namespace integra_internal
 		const CInterfaceDefinition *interface_definition = server.get_module_manager().get_interface_by_module_id( m_module_id );
 		if( !interface_definition ) 
 		{
-			NTG_TRACE_ERROR << "unable to find interface";
+			INTEGRA_TRACE_ERROR << "unable to find interface";
 			return CError::FAILED;
 		}
 
@@ -72,14 +72,14 @@ namespace integra_internal
 		node_map &sibling_map = parent ? parent->get_children_writable() : server.get_nodes_writable();
 		while( sibling_map.count( m_node_name ) > 0 ) 
 		{
-			NTG_TRACE_PROGRESS << "node name is in use; appending underscore" << m_node_name;
+			INTEGRA_TRACE_PROGRESS << "node name is in use; appending underscore" << m_node_name;
 
 			m_node_name += "_";
 		}
 
 		if( !CStringHelper::validate_node_name( m_node_name ) )
 		{
-			NTG_TRACE_ERROR << "node name contains invalid characters" << m_node_name;
+			INTEGRA_TRACE_ERROR << "node name contains invalid characters" << m_node_name;
 			return CError::FAILED;
 		}
 
@@ -94,7 +94,7 @@ namespace integra_internal
 			string patch_path = server.get_module_manager().get_patch_path( *interface_definition );
 			if( patch_path.empty() )
 			{
-				NTG_TRACE_ERROR << "Failed to get implementation path - cannot load module in host";
+				INTEGRA_TRACE_ERROR << "Failed to get implementation path - cannot load module in host";
 			}
 			else
 			{
@@ -121,7 +121,7 @@ namespace integra_internal
 		/* handle any system class logic */
 		node->get_logic().handle_new( server, source );
 
-		NTG_TRACE_VERBOSE << "Created node: " << node->get_name();
+		INTEGRA_TRACE_VERBOSE << "Created node: " << node->get_name();
 
 		if( result )
 		{
@@ -132,7 +132,7 @@ namespace integra_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << "incorrect command result type - can't store result";
+				INTEGRA_TRACE_ERROR << "incorrect command result type - can't store result";
 			}
 		}
 

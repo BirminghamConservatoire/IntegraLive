@@ -24,9 +24,9 @@
 
 #include "node_endpoint.h"
 #include "node.h"
-#include "value.h"
+#include "api/value.h"
 #include "interface_definition.h"
-#include "trace.h"
+#include "api/trace.h"
 
 
 namespace integra_internal
@@ -76,14 +76,14 @@ namespace integra_internal
 		const CControlInfo *control_info = m_endpoint_definition->get_control_info();
 		if( !control_info ) 
 		{
-			NTG_TRACE_ERROR << "not a constrained type of endpoint";
+			INTEGRA_TRACE_ERROR << "not a constrained type of endpoint";
 			return false;
 		}
 
 		const CStateInfo *state_info = control_info->get_state_info();
 		if( !state_info )
 		{
-			NTG_TRACE_ERROR << "not a constrained type of endpoint";
+			INTEGRA_TRACE_ERROR << "not a constrained type of endpoint";
 			return false;
 		}
 
@@ -140,7 +140,7 @@ namespace integra_internal
 					}
 
 				default:
-					NTG_TRACE_ERROR << "unhandled value type";
+					INTEGRA_TRACE_ERROR << "unhandled value type";
 					return false;
 			}
 		}

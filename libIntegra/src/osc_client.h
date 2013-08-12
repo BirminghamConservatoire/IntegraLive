@@ -25,8 +25,8 @@ _resolve * USA.
 
 #include "lo/lo.h"
 
-#include "error.h"
-#include "command_source.h"
+#include "api/error.h"
+#include "api/command_source.h"
 #include "api/common_typedefs.h"
 
 

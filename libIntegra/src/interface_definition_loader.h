@@ -24,8 +24,8 @@
 
 
 #include "api/common_typedefs.h"
-#include "value.h"
-#include "error.h"
+#include "api/value.h"
+#include "api/error.h"
 #include "interface_definition.h"
 
 #include <libxml/xmlreader.h>

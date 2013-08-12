@@ -24,11 +24,11 @@
 #include "../externals/minizip/zip.h"
 #include "../externals/minizip/unzip.h"
 
-#include "api/common_typedefs.h"
-#include "guid_helper.h"
 #include "interface_definition.h"
 #include "node.h"
-#include "error.h"
+#include "api/error.h"
+#include "api/common_typedefs.h"
+#include "api/guid_helper.h"
 
 
 namespace integra_internal

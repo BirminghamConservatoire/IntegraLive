@@ -22,7 +22,7 @@
 
 #include "control_point_logic.h"
 #include "envelope_logic.h"
-#include "trace.h"
+#include "api/trace.h"
 #include "server.h"
 #include "node.h"
 #include "node_endpoint.h"
@@ -97,14 +97,14 @@ namespace integra_internal
 	{
 		if( !envelope_node )
 		{
-			NTG_TRACE_ERROR << "Control point has no parent node!";
+			INTEGRA_TRACE_ERROR << "Control point has no parent node!";
 			return;
 		}
 
 		CEnvelopeLogic *envelope_logic = dynamic_cast< CEnvelopeLogic * > ( &envelope_node->get_logic() );
 		if( !envelope_logic )
 		{
-			NTG_TRACE_ERROR << "Control point is not inside an envelope!";
+			INTEGRA_TRACE_ERROR << "Control point is not inside an envelope!";
 			return;
 		}
 

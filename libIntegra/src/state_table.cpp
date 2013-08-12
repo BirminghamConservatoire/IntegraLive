@@ -21,7 +21,7 @@
 #include "platform_specifics.h"
 
 #include "state_table.h"
-#include "trace.h"
+#include "api/trace.h"
 
 
 namespace integra_internal
@@ -42,7 +42,7 @@ namespace integra_internal
 		const string &path = node.get_path();
 		if( m_nodes.count( path ) > 0 )
 		{
-			NTG_TRACE_ERROR << "duplicate key in state table: " << path;
+			INTEGRA_TRACE_ERROR << "duplicate key in state table: " << path;
 		}
 		else
 		{
@@ -53,7 +53,7 @@ namespace integra_internal
 		internal_id id = node.get_id();
 		if( m_nodes_by_id.count( id ) > 0 )
 		{
-			NTG_TRACE_ERROR << "duplicate key in state table: " << id;
+			INTEGRA_TRACE_ERROR << "duplicate key in state table: " << id;
 		}
 		else
 		{
@@ -68,7 +68,7 @@ namespace integra_internal
 			const string &path = node_endpoint->get_path();
 			if( m_node_endpoints.count( path ) > 0 )
 			{
-				NTG_TRACE_ERROR << "duplicate key in state table: " << path;
+				INTEGRA_TRACE_ERROR << "duplicate key in state table: " << path;
 			}
 			else
 			{
@@ -92,7 +92,7 @@ namespace integra_internal
 		const string &path = node.get_path();
 		if( m_nodes.count( path ) != 1 )
 		{
-			NTG_TRACE_ERROR << "missing key in state table: " << path;
+			INTEGRA_TRACE_ERROR << "missing key in state table: " << path;
 		}
 		else
 		{
@@ -103,7 +103,7 @@ namespace integra_internal
 		internal_id id = node.get_id();
 		if( m_nodes_by_id.count( id ) != 1 )
 		{
-			NTG_TRACE_ERROR << "missing key in state table: " << id;
+			INTEGRA_TRACE_ERROR << "missing key in state table: " << id;
 		}
 		else
 		{
@@ -118,7 +118,7 @@ namespace integra_internal
 			const string &path = node_endpoint->get_path();
 			if( m_node_endpoints.count( path ) != 1 )
 			{
-				NTG_TRACE_ERROR << "missing key in state table: " << path;
+				INTEGRA_TRACE_ERROR << "missing key in state table: " << path;
 			}
 			else
 			{

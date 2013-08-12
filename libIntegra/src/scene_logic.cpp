@@ -26,8 +26,8 @@
 #include "node.h"
 #include "node_endpoint.h"
 #include "interface_definition.h"
-#include "trace.h"
 #include "server.h"
+#include "api/trace.h"
 #include "api/command_api.h"
 
 #include <assert.h>
@@ -91,7 +91,7 @@ namespace integra_internal
 		const CNode *player_node = scene_node.get_parent();
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
-			NTG_TRACE_ERROR << "scene not in a player";
+			INTEGRA_TRACE_ERROR << "scene not in a player";
 			return;
 		}
 
@@ -116,7 +116,7 @@ namespace integra_internal
 		const CNode *player_node = scene_node.get_parent();
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
-			NTG_TRACE_ERROR << "parent of deleted scene is not a player";
+			INTEGRA_TRACE_ERROR << "parent of deleted scene is not a player";
 			return;
 		}
 
@@ -136,7 +136,7 @@ namespace integra_internal
 		const CNode *player_node = get_node().get_parent();
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
-			NTG_TRACE_ERROR << "scene not inside player";
+			INTEGRA_TRACE_ERROR << "scene not inside player";
 			return;
 		}
 
@@ -193,14 +193,14 @@ namespace integra_internal
 		const CNode *parent_node = scene_node.get_parent();
 		if( !parent_node )
 		{
-			NTG_TRACE_ERROR << "Scene has no parent node";
+			INTEGRA_TRACE_ERROR << "Scene has no parent node";
 			return;
 		}
 
 		CPlayerLogic *player_logic = dynamic_cast< CPlayerLogic * > ( &parent_node->get_logic() );
 		if( !player_logic )
 		{
-			NTG_TRACE_ERROR << "Scene's parent is not a Player";
+			INTEGRA_TRACE_ERROR << "Scene's parent is not a Player";
 			return;
 		}
 
@@ -245,7 +245,7 @@ namespace integra_internal
 		const CNode *player_node = scene_node.get_parent();
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
-			NTG_TRACE_ERROR << "Scene is not inside a Player";
+			INTEGRA_TRACE_ERROR << "Scene is not inside a Player";
 			return false;
 		}
 

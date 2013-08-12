@@ -25,7 +25,7 @@
 
 #include "Integra/integra_bridge.h"
 #include "node.h"
-#include "path.h"
+#include "api/path.h"
 #include "state_table.h"
 #include "osc_client.h"
 

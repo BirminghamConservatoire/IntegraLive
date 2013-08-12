@@ -26,8 +26,8 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "value.h"
-#include "path.h"
+#include "api/value.h"
+#include "api/path.h"
 #include "node.h"
 #include "server.h"
 #include "module_manager.h"

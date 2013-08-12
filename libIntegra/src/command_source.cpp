@@ -20,8 +20,8 @@
 
 #include "platform_specifics.h"
 
-#include "command_source.h"
-#include "trace.h"
+#include "api/command_source.h"
+#include "api/trace.h"
 
 
 namespace integra_api
@@ -59,7 +59,7 @@ namespace integra_api
 			case PUBLIC_API:		return "public_api";
 
 			default:
-				NTG_TRACE_ERROR << "encountered unknown command source";
+				INTEGRA_TRACE_ERROR << "encountered unknown command source";
 				return "<unknown command source>";
 		}
 	}

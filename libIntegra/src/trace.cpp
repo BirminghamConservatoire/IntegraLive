@@ -20,7 +20,7 @@
 
 #include "platform_specifics.h"
 
-#include "trace.h"
+#include "api/trace.h"
 
 #include <pthread.h>
 #include <iostream>

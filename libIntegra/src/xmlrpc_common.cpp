@@ -2,9 +2,9 @@
 
 #include <assert.h>
 #include <xmlrpc-c/base.h>
-#include "path.h"
-#include "value.h"
-#include "trace.h"
+#include "api/path.h"
+#include "api/value.h"
+#include "api/trace.h"
 
 
 using namespace integra_api;
@@ -42,7 +42,7 @@ xmlrpc_value *ntg_xmlrpc_value_new( const CValue &value, xmlrpc_env *env )
 			return xmlrpc_string_new(env, string( value ).c_str() );
 
 		default:
-			NTG_TRACE_ERROR << "invalid value type";
+			INTEGRA_TRACE_ERROR << "invalid value type";
 			return NULL;
 	}
 }
@@ -82,7 +82,7 @@ CValue *ntg_xmlrpc_get_value( xmlrpc_env *env, xmlrpc_value *value_xmlrpc )
             break;
 
         default:
-            NTG_TRACE_ERROR << "unhandled xmlrpc value type" << value_type;
+            INTEGRA_TRACE_ERROR << "unhandled xmlrpc value type" << value_type;
             break;
     }
 

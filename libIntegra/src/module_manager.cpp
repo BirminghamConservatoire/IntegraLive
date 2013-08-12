@@ -74,10 +74,12 @@ namespace ntg_internal
 	const string CModuleManager::s_module_suffix = "module";
 
 
-	CModuleManager::CModuleManager( const string &scratch_directory_root, const string &system_module_directory, const string &third_party_module_directory )
+	CModuleManager::CModuleManager( const CServer &server, const string &system_module_directory, const string &third_party_module_directory )
+		:	m_server( server )
 	{
 		load_legacy_module_id_file();
 
+		string scratch_directory_root = server.get_scratch_directory();
 		m_implementation_directory_root = scratch_directory_root + NTG_IMPLEMENTATION_DIRECTORY_NAME;
 
 		if( !CFileHelper::is_directory( m_implementation_directory_root.c_str() ) )
@@ -161,7 +163,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			temporary_file_name = tempnam( server_->get_scratch_directory().c_str(), "embedded_module" );
+			temporary_file_name = tempnam( m_server.get_scratch_directory().c_str(), "embedded_module" );
 			if( !temporary_file_name )
 			{
 				NTG_TRACE_ERROR << "couldn't generate temporary filename";
@@ -322,7 +324,7 @@ namespace ntg_internal
 			return CError::INPUT_ERROR;
 		}
 
-		if( is_module_in_use( server_->get_nodes(), module_id ) )
+		if( is_module_in_use( m_server.get_nodes(), module_id ) )
 		{
 			result.remains_as_embedded = true;
 			return change_module_source( ( CInterfaceDefinition & ) *interface_definition, CInterfaceDefinition::MODULE_EMBEDDED );
@@ -356,7 +358,7 @@ namespace ntg_internal
 			{
 				result.previous_module_id = interface_definition.get_module_guid();
 
-				if( is_module_in_use( server_->get_nodes(), interface_definition.get_module_guid() ) )
+				if( is_module_in_use( m_server.get_nodes(), interface_definition.get_module_guid() ) )
 				{
 					change_module_source( interface_definition, CInterfaceDefinition::MODULE_EMBEDDED );
 					result.previous_remains_as_embedded = true;
@@ -471,7 +473,7 @@ namespace ntg_internal
 		}
 
 		/* second pass - walk node tree pruning any modules still in use */
-		remove_in_use_module_ids_from_set( server_->get_nodes(), module_ids );
+		remove_in_use_module_ids_from_set( m_server.get_nodes(), module_ids );
 
 		/* third pass - unload modules */
 		unload_modules( module_ids );

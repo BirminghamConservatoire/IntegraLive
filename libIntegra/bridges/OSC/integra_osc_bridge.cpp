@@ -113,7 +113,7 @@ int handler_bridge_callback(const char *path, const char *types, lo_arg **argv,
 
 	if( bridge_interface->server_receive_callback )
 	{
-	    bridge_interface->server_receive_callback(id, attribute_name, value);
+		bridge_interface->server_receive_callback( id, attribute_name, value, bridge_interface->server_receive_callback_context );
 	}
 	else
 	{

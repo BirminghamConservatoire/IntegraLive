@@ -123,20 +123,14 @@ typedef struct ntg_bridge_interface_
      * This is the mechanism by which data gets passed from the bridge *back* 
      * to the server
      *
-     * \param const ntg_internal::internal_id id The source module id
-     * \param const ntg_internal::internal_id port The source port id
-     * \param const int argc The number of elements in the array pointed to 
-     * by *mesage
-     * \param ntg_value *message An array of ntg_values to passed to the 
-     * destination port(s) as determined by the IH connection graph
-     *
-     * A pointer can be returned to the bridge via the return value of 
-     * this function. Under normal circumstances the value of the pointer 
-     * should be NULL
-     *
      * */
     void (*server_receive_callback)(ntg_internal::internal_id id, const char *attribute_name, 
-            const ntg_api::CValue *value);
+            const ntg_api::CValue *value, void *context );
+
+    /** \brief context for the server receive callback function
+     *
+     * */
+	void *server_receive_callback_context;
 
 } ntg_bridge_interface;
 

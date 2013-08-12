@@ -104,37 +104,37 @@ namespace ntg_internal
 
 
 	
-	static void host_callback( internal_id id, const char *attribute_name, const CValue *value )
+	static void host_callback( internal_id id, const char *attribute_name, const CValue *value, void *context )
 	{
-		if( server_->get_terminate_flag() ) 
+		CServer *server = ( CServer * ) context;
+
+		if( server->get_terminate_flag() ) 
 		{
 			return;
 		}
 
-		server_->lock();
+		server->lock();
 
-		const CNode *target = server_->find_node( id );
+		const CNode *target = server->find_node( id );
 		if( target ) 
 		{
 			CPath path( target->get_path() );
 			path.append_element( attribute_name );
 
-			server_->process_command( CSetCommandApi::create( path, value ), NTG_SOURCE_HOST );
+			server->process_command( CSetCommandApi::create( path, value ), NTG_SOURCE_HOST );
 		}
 		else
 		{
 			NTG_TRACE_ERROR << "couldn't find node with id " << id;
 		}
 
-		server_->unlock();
+		server->unlock();
 	}
 
 
 	CServer::CServer( const CServerStartupInfo &startup_info )
 	{
 		NTG_TRACE_PROGRESS << "libIntegra version " << get_libintegra_version();
-
-		server_ = this;
 
 		pthread_mutex_init( &m_mutex, NULL );
 
@@ -150,7 +150,7 @@ namespace ntg_internal
 
 		m_player_handler = new CPlayerHandler( *this );
 
-		m_module_manager = new CModuleManager( get_scratch_directory(), startup_info.system_module_directory, startup_info.third_party_module_directory );
+		m_module_manager = new CModuleManager( *this, startup_info.system_module_directory, startup_info.third_party_module_directory );
 
 		m_osc_client = ntg_osc_client_new( startup_info.osc_client_url.c_str(), startup_info.osc_client_port );
 		m_terminate = false;
@@ -169,11 +169,13 @@ namespace ntg_internal
 
 		/* Add the server receive callback to the bridge's methods */
 		m_bridge->server_receive_callback = host_callback;
+		m_bridge->server_receive_callback_context = this;
 
 		/* create the xmlrpc interface */
-		unsigned short *xmlport = new unsigned short;
-		*xmlport = startup_info.xmlrpc_server_port;
-		pthread_create( &m_xmlrpc_thread, NULL, ntg_xmlrpc_server_run, xmlport );
+		CXmlRpcServerContext *context = new CXmlRpcServerContext;
+		context->m_server = this;
+		context->m_port = startup_info.xmlrpc_server_port;
+		pthread_create( &m_xmlrpc_thread, NULL, ntg_xmlrpc_server_run, context );
 
 	#ifndef _WINDOWS
 		ntg_sig_setup();
@@ -235,8 +237,6 @@ namespace ntg_internal
 
 
 		NTG_TRACE_PROGRESS << "done!";
-
-		server_ = NULL;
 
 		unlock();
 

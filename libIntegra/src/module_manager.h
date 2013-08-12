@@ -36,13 +36,14 @@ namespace ntg_internal
 	class CModuleInstallResult;
 	class CModuleUninstallResult;
 	class CLoadModuleInDevelopmentResult;
+	class CServer;
 
 
 	class CModuleManager
 	{
 		public:
 
-			CModuleManager( const string &scratch_directory_root, const string &system_module_directory, const string &third_party_module_directory );
+			CModuleManager( const CServer &server, const string &system_module_directory, const string &third_party_module_directory );
 			~CModuleManager();
 
 			/* returns ids of new embedded modules in new_embedded_modules */
@@ -102,6 +103,7 @@ namespace ntg_internal
 			bool is_module_in_use( const node_map &search_nodes, const GUID &module_id ) const;
 			void remove_in_use_module_ids_from_set( const node_map &search_nodes, guid_set &set ) const;
 
+			const CServer &m_server;
 
 			guid_set m_module_ids;
 			map_guid_to_interface_definition m_module_id_map;
@@ -111,7 +113,6 @@ namespace ntg_internal
 			guid_array m_legacy_module_id_table;
 
 			string m_implementation_directory_root;
-
 			string m_third_party_module_directory;
 			string m_embedded_module_directory;
 	};

@@ -24,8 +24,21 @@ _resolve * USA.
 
 #define NTG_NULL_STRING "None"
 
-void *ntg_xmlrpc_server_run(void *port);
-void ntg_xmlrpc_server_terminate(void);
+
+class CXmlRpcServerContext
+{
+	public:
+
+		CXmlRpcServerContext() { m_server = NULL; m_port = 0; }
+
+		ntg_internal::CServer *m_server;
+		unsigned short m_port;
+
+};
+
+
+void *ntg_xmlrpc_server_run( void *context );
+void ntg_xmlrpc_server_terminate( void );
 
 
 #endif

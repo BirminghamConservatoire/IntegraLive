@@ -137,7 +137,7 @@ namespace ntg_internal
 		/* load the data directories */
 		if( is_zip_file )
 		{
-			if( CDataDirectory::extract_from_zip( filename, parent ) != CError::SUCCESS )
+			if( CDataDirectory::extract_from_zip( server, filename, parent ) != CError::SUCCESS )
 			{
 				NTG_TRACE_ERROR << "failed to load data directories: " << filename;
 			}

@@ -183,7 +183,7 @@ namespace ntg_internal
 
 			output_handler( s_set_color, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
-			error = server_->process_command( CSetCommandApi::create( path, converted_value ), NTG_SOURCE_SCRIPT );
+			error = m_server->process_command( CSetCommandApi::create( path, converted_value ), NTG_SOURCE_SCRIPT );
 
 			delete new_value;
 			delete converted_value;

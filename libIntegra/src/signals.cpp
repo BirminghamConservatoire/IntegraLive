@@ -60,7 +60,6 @@ void ntg_sig_handler(int signum)
         case SIGHUP:
         case SIGQUIT:
             sem_post(SEM_SYSTEM_SHUTDOWN);
-            /* server_->terminate_requested = true; */
             break;
             /* for now we only handle terminating sigs */
 

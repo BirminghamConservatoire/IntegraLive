@@ -41,18 +41,8 @@
 #define NTG_LONG_STRLEN    1024
 
 
-namespace ntg_internal
-{
-	class CServer;
-}
-
-GLOBAL ntg_internal::CServer *server_;
 GLOBAL void *bridge_handle;
 
-#if 0 //DEPRECATED
-GLOBAL ntg_trace_category_bits trace_category_bits;
-GLOBAL ntg_trace_options_bits trace_option_bits;
-#endif //DEPRECATED
 
 
 #ifdef __APPLE__

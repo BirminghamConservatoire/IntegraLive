@@ -113,7 +113,7 @@ namespace ntg_internal
 	}
 
 
-	CError CDataDirectory::extract_from_zip( const string &file_path, const CNode *parent_node )
+	CError CDataDirectory::extract_from_zip( const CServer &server, const string &file_path, const CNode *parent_node )
 	{
 		unzFile unzip_file = unzOpen( file_path.c_str() );
 		if( !unzip_file )
@@ -156,7 +156,7 @@ namespace ntg_internal
 			}
 
 			CPath relative_node_path = CPath( relative_node_path_string );
-			const CNode *node = server_->find_node( relative_node_path, parent_node );
+			const CNode *node = server.find_node( relative_node_path, parent_node );
 
 			if( !node )
 			{

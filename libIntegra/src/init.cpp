@@ -19,45 +19,23 @@
 
 #include "platform_specifics.h"
 
-#include <pthread.h>
-
 #define DEFINE_GLOBALS
 #include "globals.h"
-#include "server.h"
-
-void do_init()
-{
-    /** Initialise the id counter */
-    server_ = NULL;
-
-}
-
 
 #ifdef __GNUC__
 void __attribute__((constructor)) my_init(void)
 {
-	do_init();
 }
 #else
 #ifdef _WINDOWS
+#include "windows.h"
 BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved )
 {
-	switch( fdwReason )
-	{
-		case DLL_PROCESS_ATTACH:
-			do_init();
-			break;
-
-		default:
-			break;
-	}
-
 	return TRUE;
 }
 #else
 void _init()
 {
-	do_init();
 }
 #endif
 #endif

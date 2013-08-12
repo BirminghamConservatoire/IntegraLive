@@ -21,7 +21,6 @@
 #include "platform_specifics.h"
 
 #include "osc_client.h"
-#include "globals.h"
 #include "server.h"
 #include "string_helper.h"
 #include "value.h"

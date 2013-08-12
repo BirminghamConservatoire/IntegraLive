@@ -22,7 +22,6 @@
 #include "path.h"
 
 #include "trace.h"
-#include "globals.h"
 #include "string_helper.h"
 
 

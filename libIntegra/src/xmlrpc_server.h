@@ -29,16 +29,17 @@ class CXmlRpcServerContext
 {
 	public:
 
-		CXmlRpcServerContext() { m_server = NULL; m_port = 0; }
+		CXmlRpcServerContext() { m_server = NULL; m_port = 0; m_sem_initialized = NULL; }
 
 		ntg_internal::CServer *m_server;
 		unsigned short m_port;
 
+		sem_t *m_sem_initialized;
 };
 
 
 void *ntg_xmlrpc_server_run( void *context );
-void ntg_xmlrpc_server_terminate( void );
+void ntg_xmlrpc_server_terminate( sem_t *sem_initialized );
 
 
 #endif

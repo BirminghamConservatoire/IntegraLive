@@ -35,7 +35,6 @@ extern "C"
 #include "reentrance_checker.h"
 #include "module_manager.h"
 #include "trace.h"
-#include "globals.h"
 #include "xmlrpc_server.h"
 #include "value.h"
 #include "path.h"
@@ -55,14 +54,6 @@ namespace ntg_api
 {
 	CServerApi *CServerApi::create_server( const CServerStartupInfo &startup_info )
 	{
-		#ifdef __APPLE__
-			sem_abyss_init = sem_open("sem_abyss_init", O_CREAT, 0777, 0);
-			sem_system_shutdown = sem_open("sem_system_shutdown", O_CREAT, 0777, 0);
-		#else
-			sem_init(&sem_abyss_init, 0, 0);
-			sem_init(&sem_system_shutdown, 0, 0);
-		#endif
-
 		if( startup_info.bridge_path.empty() ) 
 		{
 			NTG_TRACE_ERROR << "bridge_path is empty";
@@ -108,7 +99,7 @@ namespace ntg_internal
 	{
 		CServer *server = ( CServer * ) context;
 
-		if( server->get_terminate_flag() ) 
+		if( server->is_in_shutdown() ) 
 		{
 			return;
 		}
@@ -142,6 +133,9 @@ namespace ntg_internal
 			_set_invalid_parameter_handler( invalid_parameter_handler );
 		#endif
 
+		m_sem_xmlrpc_initialized = create_semaphore( "sem_xmlrpc_initialized" );
+		m_sem_system_shutdown = create_semaphore( "sem_system_shutdown" );
+
 		m_next_internal_id = 0;
 
 		m_scratch_directory = new CScratchDirectory;
@@ -153,7 +147,7 @@ namespace ntg_internal
 		m_module_manager = new CModuleManager( *this, startup_info.system_module_directory, startup_info.third_party_module_directory );
 
 		m_osc_client = ntg_osc_client_new( startup_info.osc_client_url.c_str(), startup_info.osc_client_port );
-		m_terminate = false;
+		m_is_in_shutdown = false;
 
 		m_reentrance_checker = new CReentranceChecker();
 
@@ -175,11 +169,8 @@ namespace ntg_internal
 		CXmlRpcServerContext *context = new CXmlRpcServerContext;
 		context->m_server = this;
 		context->m_port = startup_info.xmlrpc_server_port;
+		context->m_sem_initialized = m_sem_xmlrpc_initialized;
 		pthread_create( &m_xmlrpc_thread, NULL, ntg_xmlrpc_server_run, context );
-
-	#ifndef _WINDOWS
-		ntg_sig_setup();
-	#endif
 
 		NTG_TRACE_PROGRESS << "Server construction complete";
 	}
@@ -190,7 +181,7 @@ namespace ntg_internal
 		NTG_TRACE_PROGRESS << "setting terminate flag";
 
 		lock();
-		m_terminate = true; /* FIX: use a semaphore or condition */
+		m_is_in_shutdown = true;
 
 		/* delete all nodes */
 		node_map copy_of_nodes = m_nodes;
@@ -216,7 +207,7 @@ namespace ntg_internal
 		ntg_osc_client_destroy( m_osc_client );
 		
 		NTG_TRACE_PROGRESS << "shutting down XMLRPC interface";
-		ntg_xmlrpc_server_terminate();
+		ntg_xmlrpc_server_terminate( m_sem_xmlrpc_initialized );
 
 		/* FIX: for now we only support the old 'stable' xmlrpc-c, which can't
 		   wake up a sleeping server */
@@ -238,6 +229,9 @@ namespace ntg_internal
 
 		NTG_TRACE_PROGRESS << "done!";
 
+		destroy_semaphore( m_sem_xmlrpc_initialized );
+		destroy_semaphore( m_sem_system_shutdown );
+
 		unlock();
 
 		pthread_mutex_destroy( &m_mutex );
@@ -250,7 +244,7 @@ namespace ntg_internal
 	{
 		NTG_TRACE_PROGRESS << "server blocking until shutdown signal...";
 
-		sem_wait( SEM_SYSTEM_SHUTDOWN );
+		sem_wait( m_sem_system_shutdown );
 
 		NTG_TRACE_PROGRESS << "server blocking finished...";
 	}
@@ -368,7 +362,7 @@ namespace ntg_internal
 	}
 
 
-	void CServer::dump_state( const node_map &nodes, int indentation )
+	void CServer::dump_state( const node_map &nodes, int indentation ) const 
 	{
 		for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
 		{
@@ -494,6 +488,34 @@ namespace ntg_internal
 		#endif
 	}
 
+
+	sem_t *CServer::create_semaphore( const string &name ) const
+	{
+		#ifdef __APPLE__
+			sem_t *semaphore = sem_open( name.c_str(), O_CREAT, 0777, 0 );
+		#else
+			sem_t *semaphore = new sem_t;
+			sem_init( semaphore, 0, 0 );
+		#endif
+
+		return semaphore;
+	}
+
+
+	void CServer::destroy_semaphore( sem_t *semaphore ) const
+	{
+		#ifdef __APPLE__
+			sem_close( semaphore );
+		#else
+			sem_destroy( semaphore );
+		#endif
+	}
+
+
+	void CServer::send_shutdown_signal()
+	{
+		sem_post( m_sem_system_shutdown );
+	}
 	
 }
 

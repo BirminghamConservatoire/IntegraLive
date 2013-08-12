@@ -38,7 +38,7 @@
 #include "data_directory.h"
 #include "scratch_directory.h"
 #include "file_io.h"
-#include "globals.h"
+#include "trace.h"
 #include "logic.h"
 #include "node_endpoint.h"
 #include "value.h"
@@ -135,8 +135,8 @@ namespace ntg_internal
 		do
 		{
 			unz_file_info file_info;
-			char file_name[ NTG_LONG_STRLEN ];
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
+			char file_name[ LONG_STRING_LENGTH ];
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info for " << file_path;
 				continue;
@@ -334,8 +334,8 @@ namespace ntg_internal
 		do
 		{
 			unz_file_info file_info;
-			char file_name[ NTG_LONG_STRLEN ];
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
+			char file_name[ LONG_STRING_LENGTH ];
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info";
 				continue;

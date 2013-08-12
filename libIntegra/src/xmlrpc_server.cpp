@@ -39,12 +39,12 @@
 #include "value.h"
 #include "server.h"
 #include "path.h"
-#include "globals.h"
 #include "node.h"
 #include "xmlrpc_common.h"
 #include "xmlrpc_server.h"
 #include "module_manager.h"
 #include "interface_definition.h"
+#include "trace.h"
 
 #include "string_helper.h"
 #include "api/common_typedefs.h"
@@ -1816,7 +1816,8 @@ void ntg_xmlrpc_shutdown( xmlrpc_env *const envP,
         const char * const comment,
         void *       const callInfo)
 {
-    sem_post(SEM_SYSTEM_SHUTDOWN);
+	CServer *server = ( CServer * ) context;
+	server->send_shutdown_signal();
 }
 
 
@@ -1827,6 +1828,8 @@ void *ntg_xmlrpc_server_run( void *context )
 
 	CXmlRpcServerContext *server_context = ( CXmlRpcServerContext * ) context;
 	unsigned short port = server_context->m_port;
+	sem_t *sem_initialized = server_context->m_sem_initialized;
+
 	CServer *server = server_context->m_server;
 	delete server_context;
 
@@ -1900,7 +1903,7 @@ void *ntg_xmlrpc_server_run( void *context )
         &ntg_xmlrpc_load_module_in_development, server, "S:s",
 		HELPSTR_LOAD_MODULE_IN_DEVELOPMENT);
 
-    xmlrpc_registry_set_shutdown(registryP, ntg_xmlrpc_shutdown, NULL );
+    xmlrpc_registry_set_shutdown(registryP, ntg_xmlrpc_shutdown, server );
 
     xmlrpc_registry_set_default_method(&env, registryP, &ntg_xmlrpc_default,
             NULL);
@@ -1912,7 +1915,7 @@ void *ntg_xmlrpc_server_run( void *context )
 
     ServerInit(&abyssServer);
 
-    sem_post(SEM_ABYSS_INIT);
+	sem_post( sem_initialized );
 
     /* This version processes commands concurrently */
 #if 1
@@ -1942,9 +1945,9 @@ void *ntg_xmlrpc_server_run( void *context )
 
 }
 
-void ntg_xmlrpc_server_terminate(void)
+void ntg_xmlrpc_server_terminate( sem_t *sem_initialized )
 {
     /* make sure we don't try to terminate before abyssServer init */
-    sem_wait(SEM_ABYSS_INIT);
+    sem_wait( sem_initialized );
     ServerTerminate(&abyssServer);
 }

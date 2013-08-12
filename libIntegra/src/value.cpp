@@ -31,7 +31,7 @@
 #include <libxml/xmlmemory.h>
 
 #include "value.h"
-#include "globals.h"
+#include "trace.h"
 
 
 

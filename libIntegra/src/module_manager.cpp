@@ -35,7 +35,7 @@
 #include "module_manager.h"
 #include "scratch_directory.h"
 #include "interface_definition.h"
-#include "globals.h"
+#include "trace.h"
 #include "file_io.h"
 #include "file_helper.h"
 #include "string_helper.h"
@@ -115,7 +115,7 @@ namespace ntg_internal
 	{
 		unzFile unzip_file;
 		unz_file_info file_info;
-		char file_name[ NTG_LONG_STRLEN ];
+		char file_name[ LONG_STRING_LENGTH ];
 		char *temporary_file_name;
 		FILE *temporary_file;
 		int implementation_directory_length;
@@ -151,7 +151,7 @@ namespace ntg_internal
 			temporary_file_name = NULL;
 			temporary_file = NULL;
 
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info: " << integra_file;
 				continue;
@@ -556,7 +556,7 @@ namespace ntg_internal
 
 	void CModuleManager::load_legacy_module_id_file()
 	{
-		char line[ NTG_LONG_STRLEN ];
+		char line[ LONG_STRING_LENGTH ];
 		FILE *file = NULL;
 		const char *guid_as_string;
 		internal_id old_id;
@@ -573,7 +573,7 @@ namespace ntg_internal
 
 		while( !feof( file ) )
 		{
-			if( !fgets( line, NTG_LONG_STRLEN, file ) )
+			if( !fgets( line, LONG_STRING_LENGTH, file ) )
 			{
 				break;
 			}
@@ -767,7 +767,7 @@ namespace ntg_internal
 	CError CModuleManager::extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum )
 	{
 		unz_file_info file_info;
-		char file_name[ NTG_LONG_STRLEN ];
+		char file_name[ LONG_STRING_LENGTH ];
 		const char *relative_file_path;
 		unsigned char *output_buffer;
 		FILE *output_file;
@@ -794,7 +794,7 @@ namespace ntg_internal
 
 		do
 		{
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info";
 				continue;

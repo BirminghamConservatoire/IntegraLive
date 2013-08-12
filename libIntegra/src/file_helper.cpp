@@ -34,7 +34,6 @@
 #include "file_helper.h"
 #include "file_io.h"
 #include "trace.h"
-#include "globals.h"
 
 
 namespace ntg_internal

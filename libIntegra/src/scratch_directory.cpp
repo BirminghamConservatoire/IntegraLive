@@ -23,7 +23,6 @@
 
 #include "scratch_directory.h"
 #include "file_io.h"
-#include "globals.h"
 #include "file_helper.h"
 
 
@@ -54,9 +53,9 @@ namespace ntg_internal
 	{
 		#ifdef _WINDOWS
 
-			char path_buffer[ NTG_LONG_STRLEN ];
+			char path_buffer[ LONG_STRING_LENGTH ];
 			int i;
-			GetTempPathA( NTG_LONG_STRLEN, path_buffer );
+			GetTempPathA( LONG_STRING_LENGTH, path_buffer );
 
 			/* replace windows slashes with unix slashes */
 			for( i = strlen( path_buffer ) - 1; i >= 0; i-- )

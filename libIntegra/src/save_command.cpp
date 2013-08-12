@@ -25,7 +25,6 @@
 #include "trace.h"
 #include "file_io.h"
 #include "file_helper.h"
-#include "globals.h"
 #include "api/command_result.h"
 
 #include <assert.h>

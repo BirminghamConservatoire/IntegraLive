@@ -65,6 +65,7 @@ namespace ntg_api
 	typedef std::unordered_set<GUID, GuidHash> guid_set;
 	typedef std::vector<GUID> guid_array;
 
+	const GUID NULL_GUID = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 };
 
 
@@ -91,7 +92,7 @@ namespace ntg_internal
 
 	typedef unsigned long internal_id;
 
-	const GUID NULL_GUID = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
+	const int LONG_STRING_LENGTH = 1024;
 }
 
 

@@ -22,9 +22,15 @@
 #include "platform_specifics.h"
 
 #include "string_helper.h"
-#include "globals.h"
+#include "trace.h"
 
-#include "assert.h"
+#include <assert.h>
+#ifdef _WINDOWS
+#include <time.h>
+#else
+#include <sys/time.h>
+#endif
+
 
 using namespace ntg_internal;
 

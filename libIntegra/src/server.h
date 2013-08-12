@@ -21,8 +21,6 @@
 #ifndef INTEGRA_SERVER_PRIVATE_H
 #define INTEGRA_SERVER_PRIVATE_H
 
-#include <pthread.h>
-
 #include "api/server_api.h"
 
 #include "Integra/integra_bridge.h"
@@ -30,6 +28,9 @@
 #include "path.h"
 #include "state_table.h"
 #include "osc_client.h"
+
+#include <semaphore.h>
+#include <pthread.h>
 
 
 namespace ntg_api
@@ -103,11 +104,15 @@ namespace ntg_internal
 
 			string get_libintegra_version() const;
 
-			bool get_terminate_flag() const { return m_terminate; }
+			void send_shutdown_signal();
+			bool is_in_shutdown() const { return m_is_in_shutdown; }
 
 		private:
 
-			void dump_state( const node_map &nodes, int indentation );
+			void dump_state( const node_map &nodes, int indentation ) const;
+
+			sem_t *create_semaphore( const string &name ) const;
+			void destroy_semaphore( sem_t *semaphore ) const;
 
 			pthread_mutex_t m_mutex;
 
@@ -122,8 +127,10 @@ namespace ntg_internal
 			CPlayerHandler *m_player_handler;
 
 			pthread_t m_xmlrpc_thread;
+			sem_t *m_sem_xmlrpc_initialized;
 
-			bool m_terminate;
+			sem_t *m_sem_system_shutdown;
+			bool m_is_in_shutdown;
 
 			internal_id m_next_internal_id; 
 

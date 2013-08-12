@@ -32,26 +32,18 @@ extern "C"
 #include "Integra/integra_bridge.h"
 
 #include "bridge_host.h"
-#include "globals.h"
+#include "trace.h"
+
 
 void *ntg_bridge_load(const char *so_name)
 {
-
     ntg_bridge_interface *bridge_interface = NULL;
 
     ntg_bridge_interface_generator *interface_generator = NULL;
 
-    void *handle = NULL;
-    char *error;
-
     NTG_TRACE_PROGRESS << "Trying to load bridge: " << so_name;
 
-    /* FIX: for now we just assume that a valid path has been passed in */
-    handle = dlopen(so_name, RTLD_NOW | RTLD_LOCAL);
-
-    bridge_handle = handle;
-
-    error = dlerror();
+    void *handle = dlopen( so_name, RTLD_NOW | RTLD_LOCAL );
 
     if (handle != NULL) 
 	{
@@ -60,14 +52,12 @@ void *ntg_bridge_load(const char *so_name)
 	else 
 	{
         NTG_TRACE_ERROR << "bridge not loaded";
-        assert(false);
+        assert( false );
     }
 
-    interface_generator =
-        (ntg_bridge_interface_generator *) dlsym(handle,
-                                                 "interface_generator");
+    interface_generator = (ntg_bridge_interface_generator *) dlsym( handle, "interface_generator" );
 
-    error = dlerror();
+    char *error = dlerror();
 
     if (error != NULL) {
         NTG_TRACE_ERROR << "dlerror" << error;

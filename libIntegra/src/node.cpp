@@ -28,7 +28,6 @@
 
 #include "value.h"
 #include "path.h"
-#include "globals.h"
 #include "node.h"
 #include "server.h"
 #include "module_manager.h"

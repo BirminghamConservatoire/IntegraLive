@@ -23,20 +23,19 @@
 #include <assert.h>
 
 #include "validator.h"
-#include "globals.h"
+#include "trace.h"
+
 
 namespace ntg_internal
 {
 	const char *CValidator::s_schema_file = "CollectionSchema.xsd";
 
-
-
 	static void schemaErrorCallback( void *none, const char *message, ...)
 	{
-		char trace[ NTG_LONG_STRLEN ];
+		char trace[ LONG_STRING_LENGTH ];
 		va_list varArgs;
 		va_start(varArgs, message);
-		vsnprintf( trace, NTG_LONG_STRLEN, message, varArgs);
+		vsnprintf( trace, LONG_STRING_LENGTH, message, varArgs);
 		va_end(varArgs);
 
 		NTG_TRACE_ERROR << trace;
@@ -45,10 +44,10 @@ namespace ntg_internal
 
 	static void schemaWarningCallback( void *callbackData, const char *message, ...)
 	{
-		char trace[ NTG_LONG_STRLEN ];
+		char trace[ LONG_STRING_LENGTH ];
 		va_list varArgs;
 		va_start(varArgs, message);
-		vsnprintf( trace, NTG_LONG_STRLEN, message, varArgs);
+		vsnprintf( trace, LONG_STRING_LENGTH, message, varArgs);
 		va_end(varArgs);
 
 		NTG_TRACE_ERROR << trace;

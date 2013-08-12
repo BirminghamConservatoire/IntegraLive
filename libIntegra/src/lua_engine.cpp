@@ -22,7 +22,6 @@
 
 #include "lua_engine.h"
 #include "trace.h"
-#include "globals.h"
 #include "node.h"
 #include "server.h"
 #include "interface_definition.h"
@@ -380,7 +379,7 @@ namespace ntg_internal
 
 	void CLuaEngine::error_handler( const char *fmt, ...)
 	{
-		char error_string[ NTG_LONG_STRLEN ];
+		char error_string[ LONG_STRING_LENGTH ];
 
 		assert( !m_context_stack.empty() );
 		assert( fmt );
@@ -388,7 +387,7 @@ namespace ntg_internal
 		{
 			va_list argp;
 			va_start( argp, fmt );
-			vsprintf_s( error_string, NTG_LONG_STRLEN, fmt, argp);
+			vsprintf_s( error_string, LONG_STRING_LENGTH, fmt, argp);
 			va_end(argp);
 		}
 
@@ -401,7 +400,7 @@ namespace ntg_internal
 		const char *progress_template = "%s\n\n<font color='#%x'>%s</font>";
 		const char *illegal_characters = "<>";
 
-		char progress_string[ NTG_LONG_STRLEN ];
+		char progress_string[ LONG_STRING_LENGTH ];
 
 		assert( !m_context_stack.empty() );
 		assert( fmt );
@@ -409,7 +408,7 @@ namespace ntg_internal
 		{
 			va_list argp;
 			va_start( argp, fmt );
-			vsprintf_s( progress_string, NTG_LONG_STRLEN, fmt, argp );
+			vsprintf_s( progress_string, LONG_STRING_LENGTH, fmt, argp );
 			va_end(argp);
 		}
 

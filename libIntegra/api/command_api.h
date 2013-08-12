@@ -36,6 +36,7 @@ namespace ntg_api
 	class CPath;
 	class CValue;
 	class CCommandResult;
+	class CCommandSource;
 	
 	class LIBINTEGRA_API CCommandApi
 	{
@@ -47,7 +48,7 @@ namespace ntg_api
 
 			virtual ~CCommandApi() {};
 
-			virtual CError execute( ntg_internal::CServer &server, ntg_internal::ntg_command_source source, CCommandResult *result ) = 0;
+			virtual CError execute( ntg_internal::CServer &server, CCommandSource source, CCommandResult *result ) = 0;
 	};
 
 

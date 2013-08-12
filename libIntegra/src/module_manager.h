@@ -25,8 +25,8 @@
 #include "../externals/minizip/unzip.h"
 
 #include "api/common_typedefs.h"
+#include "guid_helper.h"
 #include "interface_definition.h"
-#include "../externals/guiddef.h"
 #include "node.h"
 #include "error.h"
 
@@ -68,7 +68,7 @@ namespace ntg_internal
 
 			CError interpret_legacy_module_id( internal_id old_id, GUID &output ) const;
 
-			const static string s_module_suffix;
+			const static string module_suffix;
 
 		private:
 
@@ -117,13 +117,13 @@ namespace ntg_internal
 			string m_embedded_module_directory;
 
 
-			static const string s_module_inner_directory_name;
-			static const string s_idd_file_name;
-			static const string s_internal_implementation_directory_name;
-			static const string s_implementation_directory_name;
-			static const string s_embedded_module_directory_name;
-			static const string s_legacy_class_id_filename;
-			static const int s_checksum_seed;
+			static const string module_inner_directory_name;
+			static const string idd_file_name;
+			static const string internal_implementation_directory_name;
+			static const string implementation_directory_name;
+			static const string embedded_module_directory_name;
+			static const string legacy_class_id_filename;
+			static const int checksum_seed;
 	};
 
 

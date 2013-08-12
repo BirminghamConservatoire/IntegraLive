@@ -34,7 +34,7 @@ namespace ntg_internal
 			CContainerLogic( const CNode &node );
 			~CContainerLogic();
 
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
 
 		private:
 

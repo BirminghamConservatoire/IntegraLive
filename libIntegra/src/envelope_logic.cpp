@@ -32,9 +32,9 @@
 
 namespace ntg_internal
 {
-	const string CEnvelopeLogic::s_endpoint_start_tick = "startTick";
-	const string CEnvelopeLogic::s_endpoint_current_tick = "currentTick";
-	const string CEnvelopeLogic::s_endpoint_current_value = "currentValue";
+	const string CEnvelopeLogic::endpoint_start_tick = "startTick";
+	const string CEnvelopeLogic::endpoint_current_tick = "currentTick";
+	const string CEnvelopeLogic::endpoint_current_value = "currentValue";
 
 
 	CEnvelopeLogic::CEnvelopeLogic( const CNode &node )
@@ -48,13 +48,13 @@ namespace ntg_internal
 	}
 
 	
-	void CEnvelopeLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CEnvelopeLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
 	
-		if( endpoint_name == s_endpoint_start_tick || endpoint_name == s_endpoint_current_tick )
+		if( endpoint_name == endpoint_start_tick || endpoint_name == endpoint_current_tick )
 		{
 			update_value( server );
 			return;
@@ -76,14 +76,14 @@ namespace ntg_internal
 		}
 
 		const CNode &envelope_node = get_node();
-		const CNodeEndpoint *current_value_endpoint = envelope_node.get_node_endpoint( s_endpoint_current_value );
+		const CNodeEndpoint *current_value_endpoint = envelope_node.get_node_endpoint( endpoint_current_value );
 		assert( current_value_endpoint );
 
 		/*
 		lookup envelope current tick 
 		*/
 
-		const CNodeEndpoint *current_tick_endpoint = envelope_node.get_node_endpoint( s_endpoint_current_tick );
+		const CNodeEndpoint *current_tick_endpoint = envelope_node.get_node_endpoint( endpoint_current_tick );
 		assert( current_tick_endpoint );
 
 		int envelope_current_tick = *current_tick_endpoint->get_value();
@@ -93,7 +93,7 @@ namespace ntg_internal
 		lookup and apply envelope start tick
 		*/
 
-		const CNodeEndpoint *start_tick_endpoint = envelope_node.get_node_endpoint( s_endpoint_start_tick );
+		const CNodeEndpoint *start_tick_endpoint = envelope_node.get_node_endpoint( endpoint_start_tick );
 		assert( start_tick_endpoint );
 		int envelope_start_tick = *start_tick_endpoint->get_value();
 
@@ -120,8 +120,8 @@ namespace ntg_internal
 				continue;
 			}
 
-			const CNodeEndpoint *control_point_tick_endpoint = control_point->get_node_endpoint( CControlPointLogic::s_endpoint_tick );
-			const CNodeEndpoint *control_point_value_endpoint = control_point->get_node_endpoint( CControlPointLogic::s_endpoint_value );
+			const CNodeEndpoint *control_point_tick_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_tick );
+			const CNodeEndpoint *control_point_value_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_value );
 
 			assert( control_point_tick_endpoint && control_point_value_endpoint );
 
@@ -133,7 +133,7 @@ namespace ntg_internal
 				latest_previous_tick = control_point_tick;
 				previous_value = control_point_value;
 
-				const CNodeEndpoint *control_point_curvature_endpoint = control_point->get_node_endpoint( CControlPointLogic::s_endpoint_curvature );
+				const CNodeEndpoint *control_point_curvature_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_curvature );
 				assert( control_point_curvature_endpoint );
 
 				previous_control_point_curvature = *control_point_curvature_endpoint->get_value();
@@ -212,7 +212,7 @@ namespace ntg_internal
 
 		if( !current_value_endpoint->get_value()->is_equal( output_value ) )
 		{
-			server.process_command( CSetCommandApi::create( current_value_endpoint->get_path(), &output_value ), NTG_SOURCE_SYSTEM );
+			server.process_command( CSetCommandApi::create( current_value_endpoint->get_path(), &output_value ), CCommandSource::SYSTEM );
 		}
 	}
 

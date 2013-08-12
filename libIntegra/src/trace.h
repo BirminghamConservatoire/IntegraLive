@@ -75,7 +75,7 @@ namespace ntg_api
 			static std::ostream &s_trace_stream;
 			static std::ofstream s_null_stream;
 
-			static const int s_max_timestamp_length;
+			static const int max_timestamp_length;
 	};
 }
 

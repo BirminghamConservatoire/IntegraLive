@@ -47,7 +47,7 @@ namespace ntg_internal
 	}
 
 
-	CError CMoveCommand::execute( CServer &server, ntg_command_source source, CCommandResult *result )
+	CError CMoveCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		CNode *node = server.find_node_writable( m_node_path );
 		if( !node ) 

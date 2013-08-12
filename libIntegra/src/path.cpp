@@ -25,10 +25,11 @@
 #include "string_helper.h"
 
 
+using namespace ntg_internal;
+
+
 namespace ntg_api
 {
-
-
 	CPath::CPath()
 	{
 		m_string_is_valid = false;
@@ -131,7 +132,7 @@ namespace ntg_api
 
 	void CPath::append_element( const string &element )
 	{
-		if( element.find_first_not_of( CStringHelper::s_node_name_character_set ) != string::npos )
+		if( element.find_first_not_of( CStringHelper::node_name_character_set ) != string::npos )
 		{
 			NTG_TRACE_ERROR << "Invalid element name: " << element;
 			return;

@@ -47,7 +47,7 @@ namespace ntg_internal
 	}
 
 
-	CError CRenameCommand::execute( CServer &server, ntg_command_source source, CCommandResult *result )
+	CError CRenameCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		CNode *node = server.find_node_writable( m_path );
 		if( !node ) 

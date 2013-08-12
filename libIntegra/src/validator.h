@@ -58,7 +58,7 @@ namespace ntg_internal
 			xmlSchemaPtr m_schema;
 			xmlSchemaValidCtxtPtr m_validity_context;
 
-			static const char *s_schema_file;
+			static const char *schema_file;
 	};
 
 

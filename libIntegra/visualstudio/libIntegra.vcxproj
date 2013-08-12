@@ -152,11 +152,13 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
     </ClCompile>
     <ClCompile Include="..\src\bridge_host.cpp" />
+    <ClCompile Include="..\src\command_source.cpp" />
     <ClCompile Include="..\src\connection_logic.cpp" />
     <ClCompile Include="..\src\container_logic.cpp" />
     <ClCompile Include="..\src\control_point_logic.cpp" />
     <ClCompile Include="..\src\delete_command.cpp" />
     <ClCompile Include="..\src\envelope_logic.cpp" />
+    <ClCompile Include="..\src\guid_helper.cpp" />
     <ClCompile Include="..\src\load_command.cpp" />
     <ClCompile Include="..\src\logic.cpp" />
     <ClCompile Include="..\src\lua_engine.cpp" />
@@ -199,7 +201,6 @@
     <ClInclude Include="..\api\command_api.h" />
     <ClInclude Include="..\api\command_result.h" />
     <ClInclude Include="..\api\common_typedefs.h" />
-    <ClInclude Include="..\api\MurmurHash2.h" />
     <ClInclude Include="..\api\server_api.h" />
     <ClInclude Include="..\api\server_startup_info.h" />
     <ClInclude Include="..\externals\minizip\crypt.h" />
@@ -210,15 +211,18 @@
     <ClInclude Include="..\externals\minizip\zip.h" />
     <ClInclude Include="..\Integra\integra_bridge.h" />
     <ClInclude Include="..\src\bridge_host.h" />
+    <ClInclude Include="..\src\command_source.h" />
     <ClInclude Include="..\src\connection_logic.h" />
     <ClInclude Include="..\src\container_logic.h" />
     <ClInclude Include="..\src\control_point_logic.h" />
     <ClInclude Include="..\src\delete_command.h" />
     <ClInclude Include="..\src\envelope_logic.h" />
+    <ClInclude Include="..\src\guid_helper.h" />
     <ClInclude Include="..\src\load_command.h" />
     <ClInclude Include="..\src\logic.h" />
     <ClInclude Include="..\src\lua_engine.h" />
     <ClInclude Include="..\src\move_command.h" />
+    <ClInclude Include="..\src\MurmurHash2.h" />
     <ClInclude Include="..\src\new_command.h" />
     <ClInclude Include="..\src\data_directory.h" />
     <ClInclude Include="..\src\error.h" />

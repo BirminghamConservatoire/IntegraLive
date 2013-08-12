@@ -27,18 +27,13 @@
 #include "api/common_typedefs.h"
 #include "error.h"
 
+using namespace ntg_api;
 
-namespace ntg_api
+namespace ntg_internal
 {
 	class CStringHelper
 	{
 		public:
-
-			/* converts guid to string in lowercase hexadecimal form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
-			static string guid_to_string( const GUID &guid );
-
-			/* converts string to guid.  expects string in hexadecimal form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
-			static CError string_to_guid( const string &string, GUID &output );
 
 			/* converts date/time to ISO 8601 string */
 			static string date_to_string( const struct tm &date );
@@ -49,14 +44,9 @@ namespace ntg_api
 			/* does the node name consist entirely of valid characters? */
 			static bool validate_node_name( const string &name );
 
+			static const string node_name_character_set;
 
-			static const string s_node_name_character_set;
-
-
-		private:
-
-			static unsigned long read_hex_chars( const string &input, unsigned int number_of_bytes, CError &error );
-			static CError read_hex_char( char input, unsigned char &output );
+			static const int string_buffer_length = 1024;
 	};
 }
 

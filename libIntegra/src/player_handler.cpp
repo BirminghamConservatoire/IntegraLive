@@ -45,13 +45,13 @@ namespace ntg_internal
 	/* 
 	 hardcoded player update rate of 40hz 
 	*/
-	const int CPlayerHandler::s_player_update_microseconds = 25000;
+	const int CPlayerHandler::player_update_microseconds = 25000;
 
 	/* 
 	 in case the user updates their clock, or DST starts or ends.  
 	 When elapsed time between player updates exceeds this value, clock is reset to avoid jumping around 
 	*/
-	const int CPlayerHandler::s_player_sanity_check_seconds = 30;
+	const int CPlayerHandler::player_sanity_check_seconds = 30;
 
 
 
@@ -102,9 +102,9 @@ namespace ntg_internal
 
 	void CPlayerHandler::update( const CNode &player_node )
 	{
-		const CNodeEndpoint *play_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_play );
-		const CNodeEndpoint *active_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_active );
-		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_tick );
+		const CNodeEndpoint *play_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_play );
+		const CNodeEndpoint *active_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_active );
+		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_tick );
 		assert( play_endpoint && active_endpoint && tick_endpoint );
 
 		int play_value = *play_endpoint->get_value();
@@ -119,10 +119,10 @@ namespace ntg_internal
 		/*
 		lookup player attributes
 		*/
-		const CNodeEndpoint *rate_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_rate );
-		const CNodeEndpoint *loop_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_loop );
-		const CNodeEndpoint *start_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_start );
-		const CNodeEndpoint *end_endpoint = player_node.get_node_endpoint( CPlayerLogic::s_endpoint_end );
+		const CNodeEndpoint *rate_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_rate );
+		const CNodeEndpoint *loop_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_loop );
+		const CNodeEndpoint *start_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_start );
+		const CNodeEndpoint *end_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_end );
 
 		assert( rate_endpoint && loop_endpoint && start_endpoint && end_endpoint );
 
@@ -151,10 +151,10 @@ namespace ntg_internal
 
 		/* recreate paths, in case they have changed */
 		player_state->m_tick_path = player_node.get_path();
-		player_state->m_tick_path.append_element( CPlayerLogic::s_endpoint_tick );
+		player_state->m_tick_path.append_element( CPlayerLogic::endpoint_tick );
 
 		player_state->m_play_path = player_node.get_path();
-		player_state->m_play_path.append_element( CPlayerLogic::s_endpoint_play );
+		player_state->m_play_path.append_element( CPlayerLogic::endpoint_play );
 
 		/*
 		setup all other player state fields
@@ -184,10 +184,10 @@ namespace ntg_internal
 			CPlayerState *player_state = lookup->second;
 
 			player_state->m_tick_path = player_node.get_path();
-			player_state->m_tick_path.append_element( CPlayerLogic::s_endpoint_tick );
+			player_state->m_tick_path.append_element( CPlayerLogic::endpoint_tick );
 
 			player_state->m_play_path = player_node.get_path();
-			player_state->m_play_path.append_element( CPlayerLogic::s_endpoint_play );
+			player_state->m_play_path.append_element( CPlayerLogic::endpoint_play );
 		}
 
 		pthread_mutex_unlock( &m_mutex );	
@@ -252,7 +252,7 @@ namespace ntg_internal
 
 		while( sem_trywait( m_thread_shutdown_semaphore ) < 0 ) 
 		{
-			usleep( CPlayerHandler::s_player_update_microseconds );
+			usleep( CPlayerHandler::player_update_microseconds );
 
 			std::list<CSetCommandApi *> commands;
 
@@ -268,7 +268,7 @@ namespace ntg_internal
 			
 				int new_tick_value = player_state->m_initial_ticks + elapsed_ticks;
 
-				if( abs( new_tick_value - player_state->m_previous_ticks ) > s_player_sanity_check_seconds * player_rate )
+				if( abs( new_tick_value - player_state->m_previous_ticks ) > player_sanity_check_seconds * player_rate )
 				{
 					/* special case to handle unusual number of elapsed ticks - for example when clocks go forward or back */
 					player_state->m_start_msecs = current_msecs - ( player_state->m_previous_ticks - player_state->m_initial_ticks ) * 1000 / player_rate; 
@@ -305,7 +305,7 @@ namespace ntg_internal
 				m_server.lock();
 				for( std::list<CSetCommandApi *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
 				{
-					m_server.process_command( *i, NTG_SOURCE_SYSTEM );
+					m_server.process_command( *i, CCommandSource::SYSTEM );
 				}
 				m_server.unlock();
 			}

@@ -38,7 +38,7 @@ namespace ntg_internal
 
 		private:
 			
-			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
+			CError execute( CServer &server, CCommandSource source, CCommandResult *result );
 
 			string make_node_name( CServer &server, const string &module_name ) const;
 

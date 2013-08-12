@@ -31,9 +31,9 @@
 
 namespace ntg_internal
 {
-	const string CControlPointLogic::s_endpoint_tick = "tick";
-	const string CControlPointLogic::s_endpoint_value = "value";
-	const string CControlPointLogic::s_endpoint_curvature = "curvature";
+	const string CControlPointLogic::endpoint_tick = "tick";
+	const string CControlPointLogic::endpoint_value = "value";
+	const string CControlPointLogic::endpoint_curvature = "curvature";
 
 
 	CControlPointLogic::CControlPointLogic( const CNode &node )
@@ -47,7 +47,7 @@ namespace ntg_internal
 	}
 
 	
-	void CControlPointLogic::handle_new( CServer &server, ntg_command_source source )
+	void CControlPointLogic::handle_new( CServer &server, CCommandSource source )
 	{
 		CLogic::handle_new( server, source );
 
@@ -55,13 +55,13 @@ namespace ntg_internal
 	}
 
 
-	void CControlPointLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CControlPointLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
 	
-		if( endpoint_name == s_endpoint_value || endpoint_name == s_endpoint_tick )
+		if( endpoint_name == endpoint_value || endpoint_name == endpoint_tick )
 		{
 			update_envelope( server, get_node().get_parent() );
 			return;
@@ -69,7 +69,7 @@ namespace ntg_internal
 	}
 
 
-	void CControlPointLogic::handle_move( CServer &server, const CPath &previous_path, ntg_command_source source )
+	void CControlPointLogic::handle_move( CServer &server, const CPath &previous_path, CCommandSource source )
 	{
 		CLogic::handle_move( server, previous_path, source );
 
@@ -85,7 +85,7 @@ namespace ntg_internal
 	}
 
 
-	void CControlPointLogic::handle_delete( CServer &server, ntg_command_source source )
+	void CControlPointLogic::handle_delete( CServer &server, CCommandSource source )
 	{
 		CLogic::handle_delete( server, source );
 

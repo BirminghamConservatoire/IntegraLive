@@ -38,7 +38,7 @@ namespace ntg_internal
 
 		private:
 			
-			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
+			CError execute( CServer &server, CCommandSource source, CCommandResult *result );
 
 			CPath m_path;
 			string m_new_name;

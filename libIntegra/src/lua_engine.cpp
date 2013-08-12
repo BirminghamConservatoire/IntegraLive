@@ -26,6 +26,8 @@
 #include "server.h"
 #include "interface_definition.h"
 #include "api/command_api.h"
+#include "string_helper.h"
+
 
 #define LUA_COMPAT_MODULE
 
@@ -41,11 +43,11 @@ extern "C"
 
 namespace ntg_internal
 {
-	const unsigned int CLuaEngine::s_error_color = 0xff4040;
-	const unsigned int CLuaEngine::s_set_color = 0xc000c0;
-	const unsigned int CLuaEngine::s_get_color = 0xc08000;
-	const unsigned int CLuaEngine::s_print_color = 0x6060ff;
-	const char *CLuaEngine::s_self_key = "ntg_internal::CLuaEngine";
+	const unsigned int CLuaEngine::error_color = 0xff4040;
+	const unsigned int CLuaEngine::set_color = 0xc000c0;
+	const unsigned int CLuaEngine::get_color = 0xc08000;
+	const unsigned int CLuaEngine::print_color = 0x6060ff;
+	const string CLuaEngine::self_key = "ntg_internal::CLuaEngine";
 
 	CLuaEngine::CLuaEngine()
 	{
@@ -180,9 +182,9 @@ namespace ntg_internal
 			assert( new_value );
 			CValue *converted_value = new_value->transmogrify( endpoint->get_endpoint_definition().get_control_info()->get_state_info()->get_type() );
 
-			output_handler( s_set_color, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
+			output_handler( set_color, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
-			error = m_server->process_command( CSetCommandApi::create( path, converted_value ), NTG_SOURCE_SCRIPT );
+			error = m_server->process_command( CSetCommandApi::create( path, converted_value ), CCommandSource::SCRIPT );
 
 			delete new_value;
 			delete converted_value;
@@ -191,8 +193,8 @@ namespace ntg_internal
 		{
 			assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::BANG );
 
-			output_handler( s_set_color, "Sending bang to %s...", path.get_string().c_str() );
-			error = m_server->process_command( CSetCommandApi::create( path, NULL ), NTG_SOURCE_SCRIPT );
+			output_handler( set_color, "Sending bang to %s...", path.get_string().c_str() );
+			error = m_server->process_command( CSetCommandApi::create( path, NULL ), CCommandSource::SCRIPT );
 		}
 
 		if( error != CError::SUCCESS )
@@ -261,7 +263,7 @@ namespace ntg_internal
 
 		node_path.append_element( endpoint_name );
 		string value_string = value->get_as_string();
-		output_handler( s_get_color, "Queried %s, value = %s", node_path.get_string().c_str(), value_string.c_str() );
+		output_handler( get_color, "Queried %s, value = %s", node_path.get_string().c_str(), value_string.c_str() );
 
 		switch( value->get_type() ) 
 		{
@@ -314,7 +316,7 @@ namespace ntg_internal
 
 		if( !output.str().empty() )
 		{
-			output_handler( s_print_color, output.str().c_str() );
+			output_handler( print_color, output.str().c_str() );
 		}
 
 		return 1;
@@ -357,7 +359,7 @@ namespace ntg_internal
 		/* store pointer to self */
 
 		/* store a number */
-		lua_pushstring( state, s_self_key );  
+		lua_pushstring( state, self_key.c_str() );  
 		lua_pushlightuserdata( state, ( void * ) this );
 	    lua_settable( state, LUA_REGISTRYINDEX );
 
@@ -379,7 +381,7 @@ namespace ntg_internal
 
 	void CLuaEngine::error_handler( const char *fmt, ...)
 	{
-		char error_string[ LONG_STRING_LENGTH ];
+		char error_string[ CStringHelper::string_buffer_length ];
 
 		assert( !m_context_stack.empty() );
 		assert( fmt );
@@ -387,11 +389,11 @@ namespace ntg_internal
 		{
 			va_list argp;
 			va_start( argp, fmt );
-			vsprintf_s( error_string, LONG_STRING_LENGTH, fmt, argp);
+			vsprintf_s( error_string, CStringHelper::string_buffer_length, fmt, argp);
 			va_end(argp);
 		}
 
-		output_handler( s_error_color, "__error:__ %s", error_string );
+		output_handler( error_color, "__error:__ %s", error_string );
 	}
 
 
@@ -400,7 +402,7 @@ namespace ntg_internal
 		const char *progress_template = "%s\n\n<font color='#%x'>%s</font>";
 		const char *illegal_characters = "<>";
 
-		char progress_string[ LONG_STRING_LENGTH ];
+		char progress_string[ CStringHelper::string_buffer_length ];
 
 		assert( !m_context_stack.empty() );
 		assert( fmt );
@@ -408,7 +410,7 @@ namespace ntg_internal
 		{
 			va_list argp;
 			va_start( argp, fmt );
-			vsprintf_s( progress_string, LONG_STRING_LENGTH, fmt, argp );
+			vsprintf_s( progress_string, CStringHelper::string_buffer_length, fmt, argp );
 			va_end(argp);
 		}
 
@@ -604,7 +606,7 @@ namespace ntg_internal
 
 	CLuaEngine *CLuaEngine::from_lua_state( lua_State *state )
 	{
-		lua_pushstring( state, s_self_key );  
+		lua_pushstring( state, self_key.c_str() );  
 		lua_gettable( state, LUA_REGISTRYINDEX );  
 		CLuaEngine *self = ( CLuaEngine * ) lua_touserdata( state, -1 );  
 

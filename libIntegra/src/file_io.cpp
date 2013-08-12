@@ -31,6 +31,7 @@
 #include "api/command_result.h"
 #include "data_directory.h"
 #include "string_helper.h"
+#include "guid_helper.h"
 
 #include <assert.h>
 
@@ -41,37 +42,37 @@
 
 namespace ntg_internal
 {
-	const string CFileIO::s_file_suffix = "integra";
+	const string CFileIO::file_suffix = "integra";
 
 	/* 
 	 we use linux-style path separators for all builds, because windows can use the two interchangeably, 
 	 PD can't cope with windows separators at all, and zip files maintain the directionality of slashes 
 	 (if we used system-specific slashes in zip files, the files would not be platform-independant)
 	*/
-	const char CFileIO::s_path_separator = '/';
+	const char CFileIO::path_separator = '/';
 
-	const int CFileIO::s_data_copy_buffer_size = 16384;
+	const int CFileIO::data_copy_buffer_size = 16384;
 
-	const string CFileIO::s_data_directory_name = "integra_data/";
+	const string CFileIO::data_directory_name = "integra_data/";
 
-	const string CFileIO::s_internal_ixd_file_name = "integra_data/nodes.ixd";
+	const string CFileIO::internal_ixd_file_name = "integra_data/nodes.ixd";
 
-	const string CFileIO::s_implementation_directory_name = "integra_data/implementation/";
+	const string CFileIO::implementation_directory_name = "integra_data/implementation/";
 
-	const string CFileIO::s_xml_encoding = "ISO-8859-1";
+	const string CFileIO::xml_encoding = "ISO-8859-1";
 
-	const string CFileIO::s_integra_collection = "IntegraCollection";
-	const string CFileIO::s_integra_version = "integraVersion";
-	const string CFileIO::s_object = "object";
-	const string CFileIO::s_attribute = "attribute";
-	const string CFileIO::s_module_id = "moduleId";
-	const string CFileIO::s_origin_id = "originId";
-	const string CFileIO::s_name = "name";
-	const string CFileIO::s_type_code = "typeCode";
+	const string CFileIO::integra_collection = "IntegraCollection";
+	const string CFileIO::integra_version = "integraVersion";
+	const string CFileIO::object = "object";
+	const string CFileIO::attribute = "attribute";
+	const string CFileIO::module_id = "moduleId";
+	const string CFileIO::origin_id = "originId";
+	const string CFileIO::name_attribute = "name";
+	const string CFileIO::type_code = "typeCode";
 
 	//used in older versions
-	const string CFileIO::s_instance_id = "instanceId";
-	const string CFileIO::s_class_id = "classId";
+	const string CFileIO::instance_id = "instanceId";
+	const string CFileIO::class_id = "classId";
 
 
 
@@ -161,7 +162,7 @@ namespace ntg_internal
 
 			if( top_level_node->get_name() != top_level_node_name )
 			{
-				server.process_command( CRenameCommandApi::create( top_level_node->get_path(), top_level_node_name.c_str() ), NTG_SOURCE_SYSTEM );
+				server.process_command( CRenameCommandApi::create( top_level_node->get_path(), top_level_node_name.c_str() ), CCommandSource::SYSTEM );
 			}
 		}
 
@@ -214,7 +215,7 @@ namespace ntg_internal
 
 		init_zip_file_info( &zip_file_info );
 
-		zipOpenNewFileInZip( zip_file, s_internal_ixd_file_name.c_str(), &zip_file_info, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION );
+		zipOpenNewFileInZip( zip_file, internal_ixd_file_name.c_str(), &zip_file_info, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION );
 		zipWriteInFileInZip( zip_file, ixd_buffer, ixd_buffer_length );
 		zipCloseFileInZip( zip_file );
 
@@ -242,13 +243,13 @@ namespace ntg_internal
 			return;
 		}
 
-		unsigned char *buffer = new unsigned char[ s_data_copy_buffer_size ];
+		unsigned char *buffer = new unsigned char[ data_copy_buffer_size ];
 
 		zipOpenNewFileInZip( zip_file, target_path.c_str(), &zip_file_info, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION );
 
 		while( !feof( input_file ) )
 		{
-			size_t bytes_read = fread( buffer, 1, s_data_copy_buffer_size, input_file );
+			size_t bytes_read = fread( buffer, 1, data_copy_buffer_size, input_file );
 			if( bytes_read > 0 )
 			{
 				zipWriteInFileInZip( zip_file, buffer, bytes_read );
@@ -291,23 +292,23 @@ namespace ntg_internal
 			*is_zip_file = true;
 		}	
 
-		if( unzLocateFile( unzip_file, s_internal_ixd_file_name.c_str(), 0 ) != UNZ_OK )
+		if( unzLocateFile( unzip_file, internal_ixd_file_name.c_str(), 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to locate " << s_internal_ixd_file_name << " in " << file_path;
+			NTG_TRACE_ERROR << "Unable to locate " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
 
 		if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't get info for " << s_internal_ixd_file_name << " in " << file_path;
+			NTG_TRACE_ERROR << "Couldn't get info for " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to open " << s_internal_ixd_file_name << " in " << file_path;
+			NTG_TRACE_ERROR << "Unable to open " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
@@ -317,7 +318,7 @@ namespace ntg_internal
 
 		if( unzReadCurrentFile( unzip_file, *ixd_buffer, *ixd_buffer_length ) != *ixd_buffer_length )
 		{
-			NTG_TRACE_ERROR << "Unable to read " << s_internal_ixd_file_name << " in " << file_path;
+			NTG_TRACE_ERROR << "Unable to read " << internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			delete[] *ixd_buffer;
 			return CError::FAILED;
@@ -392,9 +393,9 @@ namespace ntg_internal
 			depth = xmlTextReaderDepth(reader);
 			type = xmlTextReaderNodeType(reader);
 
-			if( element == s_integra_collection )
+			if( element == integra_collection )
 			{
-				saved_version = ( char * ) xmlTextReaderGetAttribute( reader, BAD_CAST s_integra_version.c_str() );
+				saved_version = ( char * ) xmlTextReaderGetAttribute( reader, BAD_CAST integra_version.c_str() );
 				if( saved_version )
 				{
 					saved_version_is_more_recent = is_saved_version_newer_than_current( server, saved_version );
@@ -406,7 +407,7 @@ namespace ntg_internal
 				}
 			}
 
-			if( element == s_object ) 
+			if( element == object ) 
 			{
 				if (depth > prev_depth) 
 				{
@@ -434,14 +435,14 @@ namespace ntg_internal
 					const CInterfaceDefinition *interface_definition = find_interface( reader, server.get_module_manager() );
 					if( interface_definition )
 					{
-						name = xmlTextReaderGetAttribute(reader, BAD_CAST s_name.c_str() );
+						name = xmlTextReaderGetAttribute(reader, BAD_CAST name_attribute.c_str() );
 
 						CPath empty_path;
 						const CPath &parent_path = parent ? parent->get_path() : empty_path;
 						/* add the new node */
 
 						CNewCommandResult result;
-						server.process_command( CNewCommandApi::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), NTG_SOURCE_LOAD, &result );
+						server.process_command( CNewCommandApi::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), CCommandSource::LOAD, &result );
 						node = result.get_created_node();
 
 						xmlFree(name);
@@ -457,14 +458,14 @@ namespace ntg_internal
 				prev_depth = depth;
 			}
 
-			if( element == s_attribute ) 
+			if( element == attribute ) 
 			{
 				if( type == XML_READER_TYPE_ELEMENT ) 
 				{
 					xml_node = xmlTextReaderExpand(reader);
 					content = xmlNodeGetContent(xml_node);
-					name = xmlTextReaderGetAttribute( reader, BAD_CAST s_name.c_str() );
-					char *type_code_string = (char *)xmlTextReaderGetAttribute( reader, BAD_CAST s_type_code.c_str() );
+					name = xmlTextReaderGetAttribute( reader, BAD_CAST name_attribute.c_str() );
+					char *type_code_string = (char *)xmlTextReaderGetAttribute( reader, BAD_CAST type_code.c_str() );
 					int type_code = atoi( type_code_string );
 					xmlFree( type_code_string );
 
@@ -510,7 +511,7 @@ namespace ntg_internal
 		for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
 		{
 			CPath path( value_iterator->first );
-			server.process_command( CSetCommandApi::create( path, value_iterator->second ), NTG_SOURCE_LOAD );
+			server.process_command( CSetCommandApi::create( path, value_iterator->second ), CCommandSource::LOAD );
 			delete value_iterator->second;
 		}
 
@@ -566,8 +567,8 @@ namespace ntg_internal
 		string name = filename.substr( MAX( index_after_last_slash, index_after_last_backslash ) );
 
 		/* strip extension */
-		index_of_extension = name.length() - s_file_suffix.length() - 1;
-		if( index_of_extension > 0 && name.substr( index_of_extension ) == ( "." + s_file_suffix ) ) 
+		index_of_extension = name.length() - file_suffix.length() - 1;
+		if( index_of_extension > 0 && name.substr( index_of_extension ) == ( "." + file_suffix ) ) 
 		{
 			name = name.substr( 0, index_of_extension );
 		}
@@ -576,7 +577,7 @@ namespace ntg_internal
 		length = name.length();
 		for( i = 0; i < length; i++ )
 		{
-			if( CStringHelper::s_node_name_character_set.find_first_of( name[ i ] ) == string::npos )
+			if( CStringHelper::node_name_character_set.find_first_of( name[ i ] ) == string::npos )
 			{
 				name[ i ] = '_';
 			}
@@ -639,33 +640,33 @@ namespace ntg_internal
 
 		assert( reader );
 
-		module_guid = NULL_GUID;
-		origin_guid = NULL_GUID;
+		module_guid = CGuidHelper::null_guid;
+		origin_guid = CGuidHelper::null_guid;
 
-		valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST s_module_id.c_str() );
+		valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST module_id.c_str() );
 		if( valuestr )
 		{
-			CStringHelper::string_to_guid( valuestr, module_guid );
+			CGuidHelper::string_to_guid( valuestr, module_guid );
 			xmlFree( valuestr );
 		}
 
-		valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST s_origin_id.c_str() );
+		valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST origin_id.c_str() );
 		if( valuestr )
 		{
-			CStringHelper::string_to_guid( valuestr, origin_guid );
+			CGuidHelper::string_to_guid( valuestr, origin_guid );
 			xmlFree( valuestr );
 		}
 		else
 		{
-			valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST s_instance_id.c_str() );
+			valuestr = (char *)xmlTextReaderGetAttribute(reader, BAD_CAST instance_id.c_str() );
 			if( valuestr )
 			{
-				CStringHelper::string_to_guid( valuestr, origin_guid );
+				CGuidHelper::string_to_guid( valuestr, origin_guid );
 				xmlFree( valuestr );
 			}
 			else
 			{
-				valuestr = (char *) xmlTextReaderGetAttribute(reader, BAD_CAST s_class_id.c_str() );
+				valuestr = (char *) xmlTextReaderGetAttribute(reader, BAD_CAST class_id.c_str() );
 				if( valuestr )
 				{
 					if( module_manager.interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != CError::SUCCESS )
@@ -678,7 +679,7 @@ namespace ntg_internal
 			}
 		}
 
-		if( module_guid != NULL_GUID )
+		if( module_guid != CGuidHelper::null_guid )
 		{
 			const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( module_guid );
 			if( interface_definition )
@@ -687,7 +688,7 @@ namespace ntg_internal
 			}
 		}
 
-		if( origin_guid != NULL_GUID ) 
+		if( origin_guid != CGuidHelper::null_guid ) 
 		{
 			const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_origin_id( origin_guid );
 			return interface_definition;
@@ -730,7 +731,7 @@ namespace ntg_internal
 		}
 
 		xmlTextWriterSetIndent( writer, true );
-		rc = xmlTextWriterStartDocument( writer, NULL, s_xml_encoding.c_str(), NULL );
+		rc = xmlTextWriterStartDocument( writer, NULL, xml_encoding.c_str(), NULL );
 		if (rc < 0) 
 		{
 			NTG_TRACE_ERROR << "Error at xmlTextWriterStartDocument";
@@ -738,11 +739,11 @@ namespace ntg_internal
 		}
 
 		/* write header */
-		xmlTextWriterStartElement(writer, BAD_CAST s_integra_collection.c_str() );
+		xmlTextWriterStartElement(writer, BAD_CAST integra_collection.c_str() );
 		xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:xsi", BAD_CAST "http://www.w3.org/2001/XMLSchema-node");
 
 		string version_string = server.get_libintegra_version();
-		xmlTextWriterWriteFormatAttribute(writer, BAD_CAST s_integra_version.c_str(), "%s", version_string.c_str() );
+		xmlTextWriterWriteFormatAttribute(writer, BAD_CAST integra_version.c_str(), "%s", version_string.c_str() );
 
 		if( save_node_tree( node, writer ) != CError::SUCCESS )
 		{
@@ -795,7 +796,7 @@ namespace ntg_internal
 			string unique_interface_name = module_manager.get_unique_interface_name( *interface_definition );
 
 			ostringstream target_path;
-			target_path << s_implementation_directory_name << unique_interface_name << "." << CModuleManager::s_module_suffix;
+			target_path << implementation_directory_name << unique_interface_name << "." << CModuleManager::module_suffix;
 
 			copy_file_to_zip( zip_file, target_path.str(), interface_definition->get_file_path() );
 		}
@@ -806,23 +807,23 @@ namespace ntg_internal
 	{
 		xmlChar *tmp;
 
-		xmlTextWriterStartElement( writer, BAD_CAST s_object.c_str() );
+		xmlTextWriterStartElement( writer, BAD_CAST object.c_str() );
 
 		/* write out node->interface->module_guid */
-		string guid_string = CStringHelper::guid_to_string( node.get_interface_definition().get_module_guid() );
-		tmp = convert_input( guid_string, s_xml_encoding );
-		xmlTextWriterWriteFormatAttribute(writer, BAD_CAST s_module_id.c_str(), (char * ) tmp );
+		string guid_string = CGuidHelper::guid_to_string( node.get_interface_definition().get_module_guid() );
+		tmp = convert_input( guid_string, xml_encoding );
+		xmlTextWriterWriteFormatAttribute(writer, BAD_CAST module_id.c_str(), (char * ) tmp );
 		free( tmp );
 
 		/* write out node->interface->origin_guid */
-		guid_string = CStringHelper::guid_to_string( node.get_interface_definition().get_origin_guid() );
-		tmp = convert_input( guid_string, s_xml_encoding );
-		xmlTextWriterWriteFormatAttribute( writer, BAD_CAST s_origin_id.c_str(), (char * ) tmp );
+		guid_string = CGuidHelper::guid_to_string( node.get_interface_definition().get_origin_guid() );
+		tmp = convert_input( guid_string, xml_encoding );
+		xmlTextWriterWriteFormatAttribute( writer, BAD_CAST origin_id.c_str(), (char * ) tmp );
 		free( tmp );
 
 		/* write out node->name */
-		tmp = convert_input( node.get_name(), s_xml_encoding );
-		xmlTextWriterWriteAttribute(writer, BAD_CAST s_name.c_str(), BAD_CAST tmp);
+		tmp = convert_input( node.get_name(), xml_encoding );
+		xmlTextWriterWriteAttribute(writer, BAD_CAST name_attribute.c_str(), BAD_CAST tmp);
 		free( tmp );
 
 		const node_endpoint_map &node_endpoints = node.get_node_endpoints();
@@ -839,17 +840,17 @@ namespace ntg_internal
 			/* write attribute->name */
 			CValue::type type = value->get_type();
 
-			tmp = convert_input( endpoint_definition.get_name(), s_xml_encoding );
-			xmlTextWriterStartElement(writer, BAD_CAST s_attribute.c_str() );
-			xmlTextWriterWriteAttribute(writer, BAD_CAST s_name.c_str(), BAD_CAST tmp);
+			tmp = convert_input( endpoint_definition.get_name(), xml_encoding );
+			xmlTextWriterStartElement(writer, BAD_CAST attribute.c_str() );
+			xmlTextWriterWriteAttribute(writer, BAD_CAST name_attribute.c_str(), BAD_CAST tmp);
 			free( tmp );
 
 			/* write type */
-			xmlTextWriterWriteFormatAttribute(writer, BAD_CAST s_type_code.c_str(), "%d", CValue::type_to_ixd_code( type ) );
+			xmlTextWriterWriteFormatAttribute(writer, BAD_CAST type_code.c_str(), "%d", CValue::type_to_ixd_code( type ) );
 
 			/* write attribute->value */
 			string value_string = value->get_as_string();
-			tmp = convert_input( value_string, s_xml_encoding );
+			tmp = convert_input( value_string, xml_encoding );
 			xmlTextWriterWriteString( writer, BAD_CAST tmp );
 			xmlTextWriterEndElement( writer );
 			free( tmp );

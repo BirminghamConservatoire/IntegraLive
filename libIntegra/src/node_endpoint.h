@@ -23,8 +23,11 @@
 
 
 #include <unordered_map>
+
+#include "api/common_typedefs.h"
 #include "Integra/integra_bridge.h"
 #include "path.h"
+#include "value.h"
 
 
 using namespace ntg_api;

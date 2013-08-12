@@ -34,14 +34,14 @@
 
 namespace ntg_internal
 {
-	const string CSceneLogic::s_endpoint_activate = "activate";
-	const string CSceneLogic::s_endpoint_start = "start";
-	const string CSceneLogic::s_endpoint_length = "length";
-	const string CSceneLogic::s_endpoint_mode = "mode";
+	const string CSceneLogic::endpoint_activate = "activate";
+	const string CSceneLogic::endpoint_start = "start";
+	const string CSceneLogic::endpoint_length = "length";
+	const string CSceneLogic::endpoint_mode = "mode";
 
-	const string CSceneLogic::s_scene_mode_hold = "hold";
-	const string CSceneLogic::s_scene_mode_play = "play";
-	const string CSceneLogic::s_scene_mode_loop = "loop";
+	const string CSceneLogic::scene_mode_hold = "hold";
+	const string CSceneLogic::scene_mode_play = "play";
+	const string CSceneLogic::scene_mode_loop = "loop";
 
 
 	CSceneLogic::CSceneLogic( const CNode &node )
@@ -55,25 +55,25 @@ namespace ntg_internal
 	}
 
 	
-	void CSceneLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CSceneLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
 
-		if( endpoint_name == s_endpoint_activate )
+		if( endpoint_name == endpoint_activate )
 		{
 			activate_scene( server );
 			return;
 		}
 
-		if( endpoint_name == s_endpoint_mode )
+		if( endpoint_name == endpoint_mode )
 		{
 			handle_mode( server, *node_endpoint.get_value() );
 			return;
 		}
 
-		if( endpoint_name == s_endpoint_start || endpoint_name == s_endpoint_length )
+		if( endpoint_name == endpoint_start || endpoint_name == endpoint_length )
 		{
 			handle_start_and_length( server );
 			return;
@@ -81,7 +81,7 @@ namespace ntg_internal
 	}
 
 
-	void CSceneLogic::handle_rename( CServer &server, const string &previous_name, ntg_command_source source )
+	void CSceneLogic::handle_rename( CServer &server, const string &previous_name, CCommandSource source )
 	{
 		CLogic::handle_rename( server, previous_name, source );
 
@@ -95,18 +95,18 @@ namespace ntg_internal
 			return;
 		}
 
-		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_scene );
+		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( scene_endpoint );
 
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == previous_name )
 		{
-			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( scene_node.get_name() ) ), NTG_SOURCE_SYSTEM );
+			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( scene_node.get_name() ) ), CCommandSource::SYSTEM );
 		}
 	}
 
 
-	void CSceneLogic::handle_delete( CServer &server, ntg_command_source source )
+	void CSceneLogic::handle_delete( CServer &server, CCommandSource source )
 	{
 		CLogic::handle_delete( server, source );
 
@@ -120,13 +120,13 @@ namespace ntg_internal
 			return;
 		}
 
-		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_scene );
+		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( scene_endpoint );
 
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == scene_node.get_name() ) 
 		{
-			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( "" ) ), NTG_SOURCE_SYSTEM );
+			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( "" ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -140,10 +140,10 @@ namespace ntg_internal
 			return;
 		}
 
-		const CNodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_scene );
+		const CNodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( player_scene_endpoint );
 
-		server.process_command( CSetCommandApi::create( player_scene_endpoint->get_path(), &CStringValue( get_node().get_name() ) ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( player_scene_endpoint->get_path(), &CStringValue( get_node().get_name() ) ), CCommandSource::SYSTEM );
 	}
 
 
@@ -156,8 +156,8 @@ namespace ntg_internal
 
 		const CNode &scene_node = get_node();
 
-		const CNodeEndpoint *scene_start_endpoint = scene_node.get_node_endpoint( s_endpoint_start );
-		const CNodeEndpoint *scene_length_endpoint = scene_node.get_node_endpoint( s_endpoint_length );
+		const CNodeEndpoint *scene_start_endpoint = scene_node.get_node_endpoint( endpoint_start );
+		const CNodeEndpoint *scene_length_endpoint = scene_node.get_node_endpoint( endpoint_length );
 		assert( scene_start_endpoint && scene_length_endpoint );
 
 		int start = *scene_start_endpoint->get_value();
@@ -167,7 +167,7 @@ namespace ntg_internal
 		int play = 0;
 		int loop = 0;
 
-		if( mode == s_scene_mode_hold )
+		if( mode == scene_mode_hold )
 		{
 			tick = start;
 			play = 0;
@@ -175,13 +175,13 @@ namespace ntg_internal
 		}
 		else
 		{
-			if( mode == s_scene_mode_loop )
+			if( mode == scene_mode_loop )
 			{
 				loop = 1;
 			}
 			else
 			{
-				assert( mode == s_scene_mode_play );
+				assert( mode == scene_mode_play );
 
 				loop = 0;
 			}
@@ -217,12 +217,12 @@ namespace ntg_internal
 
 		const CNode &scene_node = get_node();
 
-		const CNodeEndpoint *scene_start = scene_node.get_node_endpoint( s_endpoint_start );
-		const CNodeEndpoint *scene_length = scene_node.get_node_endpoint( s_endpoint_length );
+		const CNodeEndpoint *scene_start = scene_node.get_node_endpoint( endpoint_start );
+		const CNodeEndpoint *scene_length = scene_node.get_node_endpoint( endpoint_length );
 
-		const CNodeEndpoint *player_tick = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::s_endpoint_tick );
-		const CNodeEndpoint *player_start = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::s_endpoint_start );
-		const CNodeEndpoint *player_end = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::s_endpoint_end );
+		const CNodeEndpoint *player_tick = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_tick );
+		const CNodeEndpoint *player_start = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_start );
+		const CNodeEndpoint *player_end = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_end );
 
 		assert( scene_start && scene_length && player_tick && player_start && player_end );
 
@@ -233,9 +233,9 @@ namespace ntg_internal
 		CIntegerValue player_start_value( start );
 		CIntegerValue player_end_value( end );
 
-		server.process_command( CSetCommandApi::create( player_tick->get_path(), &player_start_value ), NTG_SOURCE_SYSTEM );
-		server.process_command( CSetCommandApi::create( player_start->get_path(), &player_start_value ), NTG_SOURCE_SYSTEM );
-		server.process_command( CSetCommandApi::create( player_end->get_path(), &player_end_value ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( player_tick->get_path(), &player_start_value ), CCommandSource::SYSTEM );
+		server.process_command( CSetCommandApi::create( player_start->get_path(), &player_start_value ), CCommandSource::SYSTEM );
+		server.process_command( CSetCommandApi::create( player_end->get_path(), &player_end_value ), CCommandSource::SYSTEM );
 	}
 
 
@@ -249,7 +249,7 @@ namespace ntg_internal
 			return false;
 		}
 
-		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::s_endpoint_scene );
+		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( scene_endpoint );
 
 		const string &scene = *scene_endpoint->get_value();

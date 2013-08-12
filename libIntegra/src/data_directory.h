@@ -66,7 +66,7 @@ namespace ntg_internal
 
 			static void copy_directory_contents_to_zip( zipFile zip_file, const string &target_path, const string &source_path );
 
-			static const string s_node_directory;
+			static const string node_directory;
 	};
 }
 

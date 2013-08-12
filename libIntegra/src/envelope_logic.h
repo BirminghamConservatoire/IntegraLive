@@ -35,7 +35,7 @@ namespace ntg_internal
 			CEnvelopeLogic( const CNode &node );
 			~CEnvelopeLogic();
 
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
 
 		private:
 
@@ -43,9 +43,9 @@ namespace ntg_internal
 
 			void update_value( CServer &server, const CNode *control_point_to_ignore = NULL );
 
-			const static string s_endpoint_start_tick;
-			const static string s_endpoint_current_tick;
-			const static string s_endpoint_current_value;
+			const static string endpoint_start_tick;
+			const static string endpoint_current_tick;
+			const static string endpoint_current_value;
 	};
 }
 

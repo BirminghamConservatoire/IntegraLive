@@ -33,18 +33,18 @@ namespace ntg_internal
 			CScalerLogic( const CNode &node );
 			~CScalerLogic();
 
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
 
 		private:
 
 			void value_handler( CServer &server, const CValue &value );
 
-			const static string s_endpoint_in_value;
-			const static string s_endpoint_out_value;
-			const static string s_endpoint_in_range_min;
-			const static string s_endpoint_in_range_max;
-			const static string s_endpoint_out_range_min;
-			const static string s_endpoint_out_range_max;
+			const static string endpoint_in_value;
+			const static string endpoint_out_value;
+			const static string endpoint_in_range_min;
+			const static string endpoint_in_range_max;
+			const static string endpoint_out_range_min;
+			const static string endpoint_out_range_max;
 	};
 }
 

@@ -51,7 +51,7 @@ namespace ntg_internal
 	}
 
 
-	CError CNewCommand::execute( CServer &server, ntg_command_source source, CCommandResult *result )
+	CError CNewCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		/* get interface */
 		const CInterfaceDefinition *interface_definition = server.get_module_manager().get_interface_by_module_id( m_module_id );
@@ -115,7 +115,7 @@ namespace ntg_internal
 			const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_definition->get_name() );
 			assert( node_endpoint );
 
-			server.process_command( CSetCommandApi::create( node_endpoint->get_path(), &endpoint_definition->get_control_info()->get_state_info()->get_default_value() ), NTG_SOURCE_INITIALIZATION );
+			server.process_command( CSetCommandApi::create( node_endpoint->get_path(), &endpoint_definition->get_control_info()->get_state_info()->get_default_value() ), CCommandSource::INITIALIZATION );
 		}
 
 		/* handle any system class logic */

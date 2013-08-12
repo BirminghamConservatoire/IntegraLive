@@ -39,7 +39,7 @@ namespace ntg_internal
 
 		private:
 			
-			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
+			CError execute( CServer &server, CCommandSource source, CCommandResult *result );
 
 			CPath m_node_path;
 			CPath m_new_parent_path;

@@ -180,6 +180,12 @@
     <ClCompile Include="..\src\player_logic.cpp">
       <Filter>Source Files\logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\guid_helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\command_source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
@@ -269,9 +275,6 @@
     <ClInclude Include="..\api\common_typedefs.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
-    <ClInclude Include="..\api\MurmurHash2.h">
-      <Filter>Header Files\api</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\file_helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -343,6 +346,15 @@
     </ClInclude>
     <ClInclude Include="..\src\script_logic.h">
       <Filter>Header Files\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\guid_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MurmurHash2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\command_source.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

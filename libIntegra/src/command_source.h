@@ -19,43 +19,42 @@
  */
 
 
-#ifndef INTEGRA_ERROR
-#define INTEGRA_ERROR
+#ifndef INTEGRA_COMMAND_SOURCE
+#define INTEGRA_COMMAND_SOURCE
 
 #include "api/common_typedefs.h"
 
 namespace ntg_api
 {
-	class LIBINTEGRA_API CError
+	class LIBINTEGRA_API CCommandSource
 	{
 		public:
 
-			enum code 
+			enum source 
 			{
-				INPUT_ERROR = -1,
-				SUCCESS = 0,
-				FAILED = 1,
-				TYPE_ERROR = 2,
-				PATH_ERROR = 3,
-				CONSTRAINT_ERROR = 4,
-				REENTRANCE_ERROR = 5,
-				FILE_VALIDATION_ERROR = 6,
-				FILE_MORE_RECENT_ERROR = 7,
-				MODULE_ALREADY_INSTALLED = 8
-			};
+				NONE = -1,
+				INITIALIZATION,
+				LOAD,
+				SYSTEM,
+				CONNECTION,
+				HOST,
+				SCRIPT,
+				XMLRPC_API,
+				INTEGRA_API
+			}; 
 
-			CError();
-			CError( code error_code );
+			CCommandSource();
+			CCommandSource( source command_source );
 
-			operator code() const;
+			operator source() const;
 			string get_text() const;
 
 		private:
 
-			code m_error_code;
+			source m_command_source;
 	};
 }
 
 
 
-#endif /*INTEGRA_ERROR*/
+#endif /*INTEGRA_COMMAND_SOURCE*/

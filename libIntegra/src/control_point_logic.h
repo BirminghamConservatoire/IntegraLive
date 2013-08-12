@@ -35,18 +35,18 @@ namespace ntg_internal
 			CControlPointLogic( const CNode &node );
 			~CControlPointLogic();
 
-			void handle_new( CServer &server, ntg_command_source source );
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
-			void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
-			void handle_delete( CServer &server, ntg_command_source source );
+			void handle_new( CServer &server, CCommandSource source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
+			void handle_move( CServer &server, const CPath &previous_path, CCommandSource source );
+			void handle_delete( CServer &server, CCommandSource source );
 
 		private:
 
 			void update_envelope( CServer &server, const CNode *envelope_node, bool is_deleting = false );
 
-			static const string s_endpoint_tick;
-			static const string s_endpoint_value;
-			static const string s_endpoint_curvature;
+			static const string endpoint_tick;
+			static const string endpoint_value;
+			static const string endpoint_curvature;
 	};
 }
 

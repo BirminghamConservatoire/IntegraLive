@@ -21,6 +21,7 @@
 #include "platform_specifics.h"
 
 #include "error.h"
+#include "trace.h"
 
 namespace ntg_api
 {
@@ -57,7 +58,9 @@ namespace ntg_api
 			case FILE_MORE_RECENT_ERROR:	return "File was saved in a more recent version of Integra, and cannot be loaded in this version.\n\nPlease upgrade to the latest version of Integra.";
 			case MODULE_ALREADY_INSTALLED:	return "Module already installed";
 
-			default:						return "Unknown error";
+			default:						
+				NTG_TRACE_ERROR << "encountered unknown error code";
+				return "Unknown error";
 		}
 	}
 }

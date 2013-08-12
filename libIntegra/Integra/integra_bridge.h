@@ -23,17 +23,18 @@
 
 /** \file integra_bridge.h Integra bridge API */
 
-#include "../api/common_typedefs.h"
-
 
 namespace ntg_api
 {
 	class CValue;
 }
 
+
 namespace ntg_internal
 {
 	class CNodeEndpoint;
+
+	typedef unsigned long internal_id;
 }
 
 
@@ -70,14 +71,14 @@ typedef struct ntg_bridge_interface_
      that is meaningful to the module host
      *
      */
-    int (*module_load)(const ntg_internal::internal_id id, const char *implementation_name);
+    int (*module_load)( ntg_internal::internal_id id, const char *implementation_name);
 
     /** \brief Remove an Integra module from a target environment
      *
      * \param id: the unique session id of the module
      *
      */
-    int (*module_remove)(ntg_internal::internal_id id);
+    int (*module_remove)( ntg_internal::internal_id id );
 
     /** \brief Connect two endpoints in a target environment
      *

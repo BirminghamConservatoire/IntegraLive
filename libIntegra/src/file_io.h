@@ -23,6 +23,7 @@
 
 
 #include "api\common_typedefs.h"
+#include "guid_helper.h"
 #include "error.h"
 #include "node.h"
 #include "Integra\integra_bridge.h"
@@ -48,13 +49,13 @@ namespace ntg_internal
 
 			static void copy_file_to_zip( zipFile zip_file, const string &target_path, const string &source_path );
 
-			static const char s_path_separator;
-			static const string s_file_suffix;
+			static const char path_separator;
+			static const string file_suffix;
 
-			static const int s_data_copy_buffer_size;
-			static const string s_internal_ixd_file_name;
-			static const string s_data_directory_name;
-			static const string s_implementation_directory_name;
+			static const int data_copy_buffer_size;
+			static const string internal_ixd_file_name;
+			static const string data_directory_name;
+			static const string implementation_directory_name;
 
 
 		private:
@@ -79,20 +80,20 @@ namespace ntg_internal
 			static void init_zip_file_info( zip_fileinfo *info );
 
 
-			static const string s_xml_encoding;
+			static const string xml_encoding;
 
-			static const string s_integra_collection;
-			static const string s_integra_version;
-			static const string s_object;
-			static const string s_attribute;
-			static const string s_module_id;
-			static const string s_origin_id;
-			static const string s_name;
-			static const string s_type_code;
+			static const string integra_collection;
+			static const string integra_version;
+			static const string object;
+			static const string attribute;
+			static const string module_id;
+			static const string origin_id;
+			static const string name_attribute;
+			static const string type_code;
 
 			//used in older versions
-			static const string s_instance_id;
-			static const string s_class_id;
+			static const string instance_id;
+			static const string class_id;
 
 
 	};

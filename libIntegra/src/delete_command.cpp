@@ -47,7 +47,7 @@ namespace ntg_internal
 	}
 
 
-	CError CDeleteCommand::execute( CServer &server, ntg_command_source source, CCommandResult *result )
+	CError CDeleteCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		CNode *node = server.find_node_writable( m_path );
 		if( !node ) 

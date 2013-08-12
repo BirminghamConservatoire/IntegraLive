@@ -42,19 +42,19 @@ namespace ntg_internal
 	}
 
 	
-	void CConnectionLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CConnectionLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
 
-		if( endpoint_name == s_endpoint_source_path )
+		if( endpoint_name == endpoint_source_path )
 		{
 			source_path_handler( server, node_endpoint, previous_value, source );
 			return;
 		}
 
-		if( endpoint_name == s_endpoint_target_path )
+		if( endpoint_name == endpoint_target_path )
 		{
 			target_path_handler( server, node_endpoint, previous_value, source );
 			return;
@@ -62,7 +62,7 @@ namespace ntg_internal
 	}
 
 
-	void CConnectionLogic::handle_delete( CServer &server, ntg_command_source source )
+	void CConnectionLogic::handle_delete( CServer &server, CCommandSource source )
 	{
 		CLogic::handle_delete( server, source );
 
@@ -70,8 +70,8 @@ namespace ntg_internal
 		const CNode &node = get_node();
 		const CNode *connection_owner = node.get_parent();
 
-		const CNodeEndpoint *source_path = node.get_node_endpoint( s_endpoint_source_path );
-		const CNodeEndpoint *target_path = node.get_node_endpoint( s_endpoint_target_path );
+		const CNodeEndpoint *source_path = node.get_node_endpoint( endpoint_source_path );
+		const CNodeEndpoint *target_path = node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
 		const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
@@ -88,11 +88,11 @@ namespace ntg_internal
 	}
 
 
-	void CConnectionLogic::source_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, ntg_command_source source )
+	void CConnectionLogic::source_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		/* remove and/or add in host if needed */ 
 
-		if( source == NTG_SOURCE_SYSTEM )
+		if( source == CCommandSource::SYSTEM )
 		{
 			/* the connection source changed due to the connected endpoint being moved or renamed - no need to do anything in the host */
 			return;
@@ -101,8 +101,8 @@ namespace ntg_internal
 		const CNode &connection_node = endpoint.get_node();
 		const CNode *connection_owner = connection_node.get_parent();
 
-		const CNodeEndpoint *source_path = connection_node.get_node_endpoint( s_endpoint_source_path );
-		const CNodeEndpoint *target_path = connection_node.get_node_endpoint( s_endpoint_target_path );
+		const CNodeEndpoint *source_path = connection_node.get_node_endpoint( endpoint_source_path );
+		const CNodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
 		const CNodeEndpoint *old_source_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
@@ -146,11 +146,11 @@ namespace ntg_internal
 	}
 
 
-	void CConnectionLogic::target_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, ntg_command_source source )
+	void CConnectionLogic::target_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		/* remove and/or add in host if needed */ 
 
-		if( source == NTG_SOURCE_SYSTEM )
+		if( source == CCommandSource::SYSTEM )
 		{
 			/* the connection target changed due to the connected endpoint being moved or renamed - no need to do anything in the host */
 			return;
@@ -159,8 +159,8 @@ namespace ntg_internal
 		const CNode &connection_node = endpoint.get_node();
 		const CNode *connection_owner = connection_node.get_parent();
 
-		const CNodeEndpoint *source_path = connection_node.get_node_endpoint( s_endpoint_source_path );
-		const CNodeEndpoint *target_path = connection_node.get_node_endpoint( s_endpoint_target_path );
+		const CNodeEndpoint *source_path = connection_node.get_node_endpoint( endpoint_source_path );
+		const CNodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
 		const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );

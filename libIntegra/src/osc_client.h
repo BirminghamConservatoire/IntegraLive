@@ -26,6 +26,7 @@ _resolve * USA.
 #include "lo/lo.h"
 
 #include "error.h"
+#include "command_source.h"
 #include "api/common_typedefs.h"
 
 
@@ -43,43 +44,44 @@ typedef struct ntg_osc_client_ {
 
 } ntg_osc_client;
 
+using namespace ntg_api;
 
 
 ntg_osc_client *ntg_osc_client_new( const ntg_api::string &url, unsigned short port );
 void ntg_osc_client_destroy(ntg_osc_client *client);
 
 ntg_api::CError ntg_osc_client_send_new(ntg_osc_client *client,
-        ntg_internal::ntg_command_source cmd_source,
+        CCommandSource cmd_source,
         const GUID *module_id,
         const char *node_name,
         const ntg_api::CPath &path);
 
 ntg_api::CError ntg_osc_client_send_load(ntg_osc_client *client,
-        ntg_internal::ntg_command_source cmd_source,
+        CCommandSource cmd_source,
         const char *file_path,
         const ntg_api::CPath &path);
 
 ntg_api::CError ntg_osc_client_send_delete(ntg_osc_client *client,
-        ntg_internal::ntg_command_source cmd_source,
+        CCommandSource cmd_source,
         const ntg_api::CPath &path);
 
 ntg_api::CError ntg_osc_client_send_set(ntg_osc_client *client,
-        ntg_internal::ntg_command_source cmd_source,
+        CCommandSource cmd_source,
         const ntg_api::CPath &path,
         const ntg_api::CValue *value);
 
 ntg_api::CError ntg_osc_client_send_move(ntg_osc_client *client,
-        ntg_internal::ntg_command_source cmd_source,
+        CCommandSource cmd_source,
         const ntg_api::CPath &node_path,
         const ntg_api::CPath &parent_path);
 
 ntg_api::CError ntg_osc_client_send_rename(ntg_osc_client *client,
-        ntg_internal::ntg_command_source cmd_source,
+        CCommandSource cmd_source,
         const ntg_api::CPath &path,
         const char *name);
 
 
-bool ntg_should_send_to_client( ntg_internal::ntg_command_source cmd_source );
+bool ntg_should_send_to_client( CCommandSource cmd_source );
 
 
 

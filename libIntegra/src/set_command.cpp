@@ -65,7 +65,7 @@ namespace ntg_internal
 	}
 
 
-	CError CSetCommand::execute( CServer &server, ntg_command_source source, CCommandResult *result )
+	CError CSetCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		/* get node endpoint from path */
 		CNodeEndpoint *node_endpoint = server.find_node_endpoint_writable( m_endpoint_path.get_string() );
@@ -130,7 +130,7 @@ namespace ntg_internal
 				break;
 		}
 
-		if( source == NTG_SOURCE_HOST && !node_endpoint->get_node().get_logic().node_is_active() )
+		if( source == CCommandSource::HOST && !node_endpoint->get_node().get_logic().node_is_active() )
 		{
 			return CError::SUCCESS;
 		}
@@ -191,14 +191,14 @@ namespace ntg_internal
 	}
 
 
-	bool CSetCommand::should_send_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, ntg_command_source source ) const
+	bool CSetCommand::should_send_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, CCommandSource source ) const
 	{
 		switch( source )
 		{
-			case NTG_SOURCE_HOST:
+			case CCommandSource::HOST:
 				return false;	/* don't send to host if came from host */
 
-			case NTG_SOURCE_LOAD:
+			case CCommandSource::LOAD:
 				return false;	/* don't send to host when handling load - handled in a second phase */
 
 			default:

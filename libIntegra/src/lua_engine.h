@@ -89,12 +89,12 @@ namespace ntg_internal
 			CServer *m_server;
 
 
-			static const unsigned int s_error_color;
-			static const unsigned int s_set_color;
-			static const unsigned int s_get_color;
-			static const unsigned int s_print_color;
+			static const unsigned int error_color;
+			static const unsigned int set_color;
+			static const unsigned int get_color;
+			static const unsigned int print_color;
 
-			static const char *s_self_key;
+			static const string self_key;
 	};
 }
 

@@ -44,11 +44,12 @@
 #include "value.h"
 #include "file_helper.h"
 #include "server.h"
+#include "string_helper.h"
 
 
 namespace ntg_internal
 {
-	const string CDataDirectory::s_node_directory = "node_data";
+	const string CDataDirectory::node_directory = "node_data";
 
 
 
@@ -56,7 +57,7 @@ namespace ntg_internal
 	{
 		ostringstream stream;
 
-		stream << server.get_scratch_directory() << s_node_directory << node.get_id() << CFileIO::s_path_separator;
+		stream << server.get_scratch_directory() << node_directory << node.get_id() << CFileIO::path_separator;
 
 		string node_directory_name = stream.str();
 
@@ -89,7 +90,7 @@ namespace ntg_internal
 			else
 			{
 				ostringstream target_path;
-				target_path << s_node_directory << CFileIO::s_path_separator << relative_node_path;
+				target_path << node_directory << CFileIO::path_separator << relative_node_path;
 			
 				const string *data_directory_name = node.get_logic().get_data_directory();
 				if( data_directory_name )
@@ -135,8 +136,8 @@ namespace ntg_internal
 		do
 		{
 			unz_file_info file_info;
-			char file_name[ LONG_STRING_LENGTH ];
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
+			char file_name[ CStringHelper::string_buffer_length ];
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info for " << file_path;
 				continue;
@@ -218,7 +219,7 @@ namespace ntg_internal
 
 		delete[] target_path;
 
-		output_buffer = new unsigned char[ CFileIO::s_data_copy_buffer_size ];
+		output_buffer = new unsigned char[ CFileIO::data_copy_buffer_size ];
 
 		total_bytes_read = 0;
 		while( total_bytes_read < file_info->uncompressed_size )
@@ -226,7 +227,7 @@ namespace ntg_internal
 			bytes_remaining = file_info->uncompressed_size - total_bytes_read;
 			assert( bytes_remaining > 0 );
 
-			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, MIN( CFileIO::s_data_copy_buffer_size, bytes_remaining ) );
+			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, MIN( CFileIO::data_copy_buffer_size, bytes_remaining ) );
 			if( bytes_read <= 0 )
 			{
 				NTG_TRACE_ERROR << "Error decompressing file";
@@ -301,7 +302,7 @@ namespace ntg_internal
 		 of integra_data/node_data.
 		*/
 
-		string normal_node_directory_path = CFileIO::s_data_directory_name + s_node_directory + CFileIO::s_path_separator;
+		string normal_node_directory_path = CFileIO::data_directory_name + node_directory + CFileIO::path_separator;
 
 		assert( unzip_file );
 
@@ -310,12 +311,12 @@ namespace ntg_internal
 			return normal_node_directory_path;
 		}
 
-		if( does_zip_contain_directory( unzip_file, CFileIO::s_implementation_directory_name ) )
+		if( does_zip_contain_directory( unzip_file, CFileIO::implementation_directory_name ) )
 		{
 			return normal_node_directory_path;
 		}
 
-		return CFileIO::s_data_directory_name;
+		return CFileIO::data_directory_name;
 	}
 
 
@@ -334,8 +335,8 @@ namespace ntg_internal
 		do
 		{
 			unz_file_info file_info;
-			char file_name[ LONG_STRING_LENGTH ];
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
+			char file_name[ CStringHelper::string_buffer_length ];
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info";
 				continue;
@@ -389,12 +390,12 @@ namespace ntg_internal
 			}
 
 			ostringstream full_target_path;
-			full_target_path << CFileIO::s_data_directory_name << target_path << CFileIO::s_path_separator << file_name;
+			full_target_path << CFileIO::data_directory_name << target_path << CFileIO::path_separator << file_name;
 
 			switch( entry_data.st_mode & _S_IFMT )
 			{
 				case S_IFDIR:	/* directory */
-					full_source_path += CFileIO::s_path_separator;
+					full_source_path += CFileIO::path_separator;
 					copy_directory_contents_to_zip( zip_file, full_target_path.str(), full_source_path );
 					break;
 

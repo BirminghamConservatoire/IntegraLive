@@ -42,9 +42,9 @@ namespace ntg_internal
 
 		private:
 			
-			CError execute( CServer &server, ntg_command_source source, CCommandResult *result );
+			CError execute( CServer &server, CCommandSource source, CCommandResult *result );
 
-			bool should_send_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, ntg_command_source source ) const;
+			bool should_send_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, CCommandSource source ) const;
 
 			CPath m_endpoint_path;
 			CValue *m_value;

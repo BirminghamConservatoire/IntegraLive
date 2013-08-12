@@ -21,10 +21,6 @@
 #include "platform_specifics.h"
 
 #include "logic.h"
-#include "node.h"
-#include "interface_definition.h"
-#include "trace.h"
-#include "file_helper.h"
 #include "assert.h"
 #include "container_logic.h"
 #include "script_logic.h"
@@ -34,32 +30,39 @@
 #include "player_logic.h"
 #include "scene_logic.h"
 #include "connection_logic.h"
+
 #include "server.h"
 #include "data_directory.h"
 #include "module_manager.h"
+#include "guid_helper.h"
+#include "node.h"
+#include "interface_definition.h"
+#include "trace.h"
+#include "file_helper.h"
+
 #include "api/command_api.h"
 
 namespace ntg_internal
 {
-	const string CLogic::s_module_container = "Container";
-	const string CLogic::s_module_script = "Script";
-	const string CLogic::s_module_scaler = "Scaler";
-	const string CLogic::s_module_control_point = "ControlPoint";
-	const string CLogic::s_module_envelope = "Envelope";
-	const string CLogic::s_module_player = "Player";
-	const string CLogic::s_module_scene = "Scene";
-	const string CLogic::s_module_connection = "Connection";
+	const string CLogic::module_container = "Container";
+	const string CLogic::module_script = "Script";
+	const string CLogic::module_scaler = "Scaler";
+	const string CLogic::module_control_point = "ControlPoint";
+	const string CLogic::module_envelope = "Envelope";
+	const string CLogic::module_player = "Player";
+	const string CLogic::module_scene = "Scene";
+	const string CLogic::module_connection = "Connection";
 
-	const string CLogic::s_endpoint_active = "active";
-	const string CLogic::s_endpoint_data_directory = "dataDirectory";
-	const string CLogic::s_endpoint_source_path = "sourcePath";
-	const string CLogic::s_endpoint_target_path = "targetPath";
+	const string CLogic::endpoint_active = "active";
+	const string CLogic::endpoint_data_directory = "dataDirectory";
+	const string CLogic::endpoint_source_path = "sourcePath";
+	const string CLogic::endpoint_target_path = "targetPath";
 
 
 	CLogic::CLogic( const CNode &node )
 		:	m_node( node )
 	{
-		m_connection_interface_guid = NULL_GUID;
+		m_connection_interface_guid = CGuidHelper::null_guid;
 	}
 
 
@@ -72,42 +75,42 @@ namespace ntg_internal
 	{
 		const CInterfaceDefinition &interface_definition = node.get_interface_definition();
 
-		if( interface_definition.is_named_core_interface( s_module_container ) )
+		if( interface_definition.is_named_core_interface( module_container ) )
 		{
 			return new CContainerLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( s_module_script ) )
+		if( interface_definition.is_named_core_interface( module_script ) )
 		{
 			return new CScriptLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( s_module_scaler ) )
+		if( interface_definition.is_named_core_interface( module_scaler ) )
 		{
 			return new CScalerLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( s_module_control_point ) )
+		if( interface_definition.is_named_core_interface( module_control_point ) )
 		{
 			return new CControlPointLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( s_module_envelope ) )
+		if( interface_definition.is_named_core_interface( module_envelope ) )
 		{
 			return new CEnvelopeLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( s_module_player ) )
+		if( interface_definition.is_named_core_interface( module_player ) )
 		{
 			return new CPlayerLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( s_module_scene ) )
+		if( interface_definition.is_named_core_interface( module_scene ) )
 		{
 			return new CSceneLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( s_module_connection ) )
+		if( interface_definition.is_named_core_interface( module_connection ) )
 		{
 			return new CConnectionLogic( node );
 		}
@@ -120,7 +123,7 @@ namespace ntg_internal
 	}
 
 	
-	void CLogic::handle_new( CServer &server, ntg_command_source source )
+	void CLogic::handle_new( CServer &server, CCommandSource source )
 	{
 		/* add connections in host if needed */ 
 
@@ -135,8 +138,8 @@ namespace ntg_internal
 				{
 					/* found a connection which might target the new node */
 
-					const CNodeEndpoint *source_path = sibling->get_node_endpoint( s_endpoint_source_path );
-					const CNodeEndpoint *target_path = sibling->get_node_endpoint( s_endpoint_target_path );
+					const CNodeEndpoint *source_path = sibling->get_node_endpoint( endpoint_source_path );
+					const CNodeEndpoint *target_path = sibling->get_node_endpoint( endpoint_target_path );
 					assert( source_path && target_path );
 
 					const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), ancestor->get_parent() );
@@ -162,22 +165,22 @@ namespace ntg_internal
 	}
 
 
-	void CLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		const CEndpointDefinition &endpoint_definition = node_endpoint.get_endpoint_definition();
 		const string &endpoint_name = endpoint_definition.get_name();
-		if( source == NTG_SOURCE_INITIALIZATION )
+		if( source == CCommandSource::INITIALIZATION )
 		{
-			if( endpoint_name == s_endpoint_active )
+			if( endpoint_name == endpoint_active )
 			{
-				if( !m_node.get_interface_definition().is_named_core_interface( s_module_container ) )
+				if( !m_node.get_interface_definition().is_named_core_interface( module_container ) )
 				{
 					non_container_active_initializer( server );
 				}
 			}
 		}
 
-		if( endpoint_name == s_endpoint_data_directory )
+		if( endpoint_name == endpoint_data_directory )
 		{
 			data_directory_handler( server, node_endpoint, previous_value, source );
 		}
@@ -189,8 +192,8 @@ namespace ntg_internal
 
 		switch( source )
 		{
-			case NTG_SOURCE_INITIALIZATION:
-			case NTG_SOURCE_LOAD:
+			case CCommandSource::INITIALIZATION:
+			case CCommandSource::LOAD:
 				break;
 
 			default:
@@ -199,7 +202,7 @@ namespace ntg_internal
 	}
 
 
-	void CLogic::handle_rename( CServer &server, const string &previous_name, ntg_command_source source )
+	void CLogic::handle_rename( CServer &server, const string &previous_name, CCommandSource source )
 	{
 		update_connections_on_rename( server, m_node, previous_name, m_node.get_name() );
 
@@ -207,7 +210,7 @@ namespace ntg_internal
 	}
 
 
-	void CLogic::handle_move( CServer &server, const CPath &previous_path, ntg_command_source source )
+	void CLogic::handle_move( CServer &server, const CPath &previous_path, CCommandSource source )
 	{
 		update_connections_on_move( server, m_node, previous_path, m_node.get_path() );
 
@@ -215,7 +218,7 @@ namespace ntg_internal
 	}
 
 
-	void CLogic::handle_delete( CServer &server, ntg_command_source source )
+	void CLogic::handle_delete( CServer &server, CCommandSource source )
 	{
 		/* no implementation currently needed */
 	}
@@ -223,7 +226,7 @@ namespace ntg_internal
 
 	bool CLogic::node_is_active() const
 	{
-		const CNodeEndpoint *active_endpoint = m_node.get_node_endpoint( s_endpoint_active );
+		const CNodeEndpoint *active_endpoint = m_node.get_node_endpoint( endpoint_active );
 		if( active_endpoint )
 		{
 			int active = *active_endpoint->get_value();
@@ -236,7 +239,7 @@ namespace ntg_internal
 	}
 
 
-	bool CLogic::should_copy_input_file( const CNodeEndpoint &input_file, ntg_command_source source ) const
+	bool CLogic::should_copy_input_file( const CNodeEndpoint &input_file, CCommandSource source ) const
 	{
 		if( !input_file.get_value() || input_file.get_value()->get_type() != CValue::STRING )
 		{
@@ -246,10 +249,10 @@ namespace ntg_internal
 
 		switch( source )
 		{
-			case NTG_SOURCE_CONNECTION:
-			case NTG_SOURCE_SCRIPT:
-			case NTG_SOURCE_XMLRPC_API:
-			case NTG_SOURCE_C_API:
+			case CCommandSource::CONNECTION:
+			case CCommandSource::SCRIPT:
+			case CCommandSource::XMLRPC_API:
+			case CCommandSource::INTEGRA_API:
 				{
 				/* these are the sources for which we want to copy the file to the data directory */
 
@@ -259,12 +262,12 @@ namespace ntg_internal
 				return ( CFileHelper::extract_filename_from_path( path ) != path );
 				}
 
-			case NTG_SOURCE_INITIALIZATION:
-			case NTG_SOURCE_LOAD:
-			case NTG_SOURCE_SYSTEM:
+			case CCommandSource::INITIALIZATION:
+			case CCommandSource::LOAD:
+			case CCommandSource::SYSTEM:
 				return false;		/* these sources are not external set commands - do nothing */
 
-			case NTG_SOURCE_HOST:
+			case CCommandSource::HOST:
 				assert( false );
 				return false;		/* we don't expect input file to be set by host! */
 
@@ -277,13 +280,13 @@ namespace ntg_internal
 
 	bool CLogic::has_data_directory() const
 	{
-		return ( m_node.get_node_endpoint( s_endpoint_data_directory ) != NULL );
+		return ( m_node.get_node_endpoint( endpoint_data_directory ) != NULL );
 	}
 
 
 	const string *CLogic::get_data_directory() const
 	{
-		const CNodeEndpoint *data_directory = m_node.get_node_endpoint( s_endpoint_data_directory );
+		const CNodeEndpoint *data_directory = m_node.get_node_endpoint( endpoint_data_directory );
 		if( !data_directory )
 		{
 			return NULL;
@@ -307,7 +310,7 @@ namespace ntg_internal
 		sets 'active' endpoint to false if any ancestor's active endpoint is false
 		*/
 
-		const CNodeEndpoint *active_endpoint = m_node.get_node_endpoint( s_endpoint_active );
+		const CNodeEndpoint *active_endpoint = m_node.get_node_endpoint( endpoint_active );
 		if( !active_endpoint )
 		{
 			return;
@@ -316,7 +319,7 @@ namespace ntg_internal
 		if( !are_all_ancestors_active() )
 		{
 			CIntegerValue value( 0 );
-			server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), NTG_SOURCE_SYSTEM );
+			server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
 		}	
 	}
 
@@ -329,7 +332,7 @@ namespace ntg_internal
 			return true;
 		}
 
-		const CNodeEndpoint *parent_active = parent->get_node_endpoint( s_endpoint_active );
+		const CNodeEndpoint *parent_active = parent->get_node_endpoint( endpoint_active );
 		if( parent_active && ( int ) *parent_active->get_value() == 0 )
 		{
 			return false;
@@ -339,32 +342,32 @@ namespace ntg_internal
 	}
 
 
-	void CLogic::data_directory_handler( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CLogic::data_directory_handler( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		switch( source )
 		{
-			case NTG_SOURCE_INITIALIZATION:
+			case CCommandSource::INITIALIZATION:
 				/* create and set data directory when the endpoint is initialized */
 				{
 				string data_directory = CDataDirectory::create_for_node( m_node, server );
-				server.process_command( CSetCommandApi::create( node_endpoint.get_path(), &CStringValue( data_directory ) ), NTG_SOURCE_SYSTEM );
+				server.process_command( CSetCommandApi::create( node_endpoint.get_path(), &CStringValue( data_directory ) ), CCommandSource::SYSTEM );
 				}
 				break;
 
-			case NTG_SOURCE_LOAD:
-			case NTG_SOURCE_SYSTEM:
+			case CCommandSource::LOAD:
+			case CCommandSource::SYSTEM:
 				/* these sources are not external set commands - do nothing */
 				break;	
 
-			case NTG_SOURCE_CONNECTION:
-			case NTG_SOURCE_SCRIPT:
-			case NTG_SOURCE_XMLRPC_API:
-			case NTG_SOURCE_C_API:
+			case CCommandSource::CONNECTION:
+			case CCommandSource::SCRIPT:
+			case CCommandSource::XMLRPC_API:
+			case CCommandSource::INTEGRA_API:
 				/* external command is trying to reset the data directory - should delete the old one and create a new one */
 				CDataDirectory::change( *previous_value, *node_endpoint.get_value() );
 				break;		
 
-			case NTG_SOURCE_HOST:
+			case CCommandSource::HOST:
 				/* we don't expect data directory to be set by host! */
 				assert( false );
 				break;				
@@ -388,7 +391,7 @@ namespace ntg_internal
 		string filename = CDataDirectory::copy_file_to_data_directory( input_file );
 		if( !filename.empty() )
 		{
-			server.process_command( CSetCommandApi::create( input_file.get_path(), &CStringValue( filename ) ), NTG_SOURCE_SYSTEM );
+			server.process_command( CSetCommandApi::create( input_file.get_path(), &CStringValue( filename ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -427,7 +430,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( s_endpoint_source_path );
+			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( endpoint_source_path );
 			assert( source_endpoint );
 
 			const string &source_endpoint_value = *source_endpoint->get_value();
@@ -440,7 +443,7 @@ namespace ntg_internal
 				}
 
 				/* found a connection! */
-				const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( s_endpoint_target_path );
+				const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
 				assert( target_endpoint );
 
 				const CNodeEndpoint *destination_endpoint = server.find_node_endpoint( *target_endpoint->get_value(), parent );
@@ -481,7 +484,7 @@ namespace ntg_internal
 						converted_value = NULL;
 					}
 
-					server.process_command( CSetCommandApi::create( destination_endpoint->get_path(), converted_value ), NTG_SOURCE_CONNECTION );
+					server.process_command( CSetCommandApi::create( destination_endpoint->get_path(), converted_value ), CCommandSource::CONNECTION );
 				
 					if( converted_value )
 					{
@@ -532,9 +535,9 @@ namespace ntg_internal
 
 	const GUID &CLogic::get_connection_interface_guid( CServer &server )
 	{
-		if( m_connection_interface_guid == NULL_GUID )
+		if( m_connection_interface_guid == CGuidHelper::null_guid )
 		{
-			const CInterfaceDefinition *connection_interface = server.get_module_manager().get_core_interface_by_name( s_module_connection );
+			const CInterfaceDefinition *connection_interface = server.get_module_manager().get_core_interface_by_name( module_connection );
 			if( connection_interface )
 			{
 				m_connection_interface_guid = connection_interface->get_module_guid();
@@ -598,7 +601,7 @@ namespace ntg_internal
 
 		string new_connection_path = new_name + path_after_renamed_node;
 
-		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path ) ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path ) ), CCommandSource::SYSTEM );
 	}
 
 
@@ -617,8 +620,8 @@ namespace ntg_internal
 				continue;
 			}
 
-			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( s_endpoint_source_path );
-			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( s_endpoint_target_path );
+			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( endpoint_source_path );
+			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
 			assert( source_endpoint && target_endpoint );
 
 			update_connection_path_on_rename( server, *source_endpoint, previous_name, new_name );
@@ -651,8 +654,8 @@ namespace ntg_internal
 				continue;
 			}
 
-			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( s_endpoint_source_path );
-			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( s_endpoint_target_path );
+			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( endpoint_source_path );
+			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
 			assert( source_endpoint && target_endpoint );
 
 			update_connection_path_on_move( server, *source_endpoint, previous_path, new_path );
@@ -716,7 +719,7 @@ namespace ntg_internal
 		ostringstream new_connection_path;
 		new_connection_path << new_relative_path.get_string() << absolute_path.substr( previous_path_length );
 
-		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path.str() ) ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path.str() ) ), CCommandSource::SYSTEM );
 	}
 
 

@@ -48,7 +48,7 @@ namespace ntg_internal
 	}
 
 
-	CError CSaveCommand::execute( CServer &server, ntg_command_source source, CCommandResult *result )
+	CError CSaveCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		const CNode *node = server.find_node( m_node_path );
 		if( !node ) 
@@ -63,7 +63,7 @@ namespace ntg_internal
 			return CError::INPUT_ERROR;
 		}
 
-		string file_path_with_suffix = CFileHelper::ensure_filename_has_suffix( m_file_path, CFileIO::s_file_suffix );
+		string file_path_with_suffix = CFileHelper::ensure_filename_has_suffix( m_file_path, CFileIO::file_suffix );
 
 		NTG_TRACE_PROGRESS << "saving to " << file_path_with_suffix;
 

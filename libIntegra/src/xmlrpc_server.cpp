@@ -45,8 +45,9 @@
 #include "module_manager.h"
 #include "interface_definition.h"
 #include "trace.h"
-
+#include "guid_helper.h"
 #include "string_helper.h"
+
 #include "api/common_typedefs.h"
 #include "api/command_api.h"
 #include "api/command_result.h"
@@ -196,7 +197,7 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist_callback( CServer *server, const i
     array_ = xmlrpc_array_new(env);
 	for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ ) 
 	{
-		string module_id_string = CStringHelper::guid_to_string( *i );
+		string module_id_string = CGuidHelper::guid_to_string( *i );
         array_item = xmlrpc_string_new( env, module_id_string.c_str() );
         xmlrpc_array_append_item(env, array_, array_item);
         xmlrpc_DECREF(array_item);
@@ -233,7 +234,7 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
         return NULL;
 	}
 
-	if( CStringHelper::string_to_guid( module_id_string, guid ) != CError::SUCCESS ) 
+	if( CGuidHelper::string_to_guid( module_id_string, guid ) != CError::SUCCESS ) 
 	{
 	    free(module_id_string);
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
@@ -301,7 +302,7 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
     xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-	string origin_id_string = CStringHelper::guid_to_string( interface_definition->get_origin_guid() );
+	string origin_id_string = CGuidHelper::guid_to_string( interface_definition->get_origin_guid() );
     xmlrpc_temp = xmlrpc_string_new( env, origin_id_string.c_str() );
     xmlrpc_struct_set_value(env, struct_, "originid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
@@ -367,7 +368,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
         return NULL;
 	}
 
-	if( CStringHelper::string_to_guid( module_id_string, guid ) != CError::SUCCESS ) 
+	if( CGuidHelper::string_to_guid( module_id_string, guid ) != CError::SUCCESS ) 
 	{
 	    free(module_id_string);
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
@@ -692,7 +693,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServer *server, const int arg
         return NULL;
 	}
 
-	if( CStringHelper::string_to_guid( module_id_string, guid ) != CError::SUCCESS ) 
+	if( CGuidHelper::string_to_guid( module_id_string, guid ) != CError::SUCCESS ) 
 	{
 	    free(module_id_string);
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
@@ -837,7 +838,7 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback( CServer *server, const int ar
             return ntg_xmlrpc_error(env, CError::FAILED);
         }
 
-		string module_id_string = CStringHelper::guid_to_string( node->get_interface_definition().get_module_guid() );
+		string module_id_string = CGuidHelper::guid_to_string( node->get_interface_definition().get_module_guid() );
 
         /* construct the node struct and append to nodes array */
         node_struct = xmlrpc_struct_new(env);
@@ -915,7 +916,7 @@ static xmlrpc_value *ntg_xmlrpc_delete_callback( CServer *server, const int argc
 
     struct_ = xmlrpc_struct_new(env);
 
-	CError error = server->process_command( CDeleteCommandApi::create( *path ), NTG_SOURCE_XMLRPC_API );
+	CError error = server->process_command( CDeleteCommandApi::create( *path ), CCommandSource::XMLRPC_API );
     if(error != CError::SUCCESS) 
 	{
         return ntg_xmlrpc_error(env, error);
@@ -945,7 +946,7 @@ static xmlrpc_value *ntg_xmlrpc_rename_callback( CServer *server, const int argc
     const CPath *path = va_arg(argv, CPath *);
     const char *name = va_arg(argv, char *);
 
-	CError error = server->process_command( CRenameCommandApi::create( *path, name ), NTG_SOURCE_XMLRPC_API );
+	CError error = server->process_command( CRenameCommandApi::create( *path, name ), CCommandSource::XMLRPC_API );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error(env, error );
@@ -979,7 +980,7 @@ static xmlrpc_value *ntg_xmlrpc_save_callback( CServer *server, const int argc, 
     const CPath *path = va_arg(argv, CPath  *);
     const char *file_path = va_arg(argv, char *);
 
-	CError error = server->process_command( CSaveCommandApi::create( file_path, *path ), NTG_SOURCE_XMLRPC_API );
+	CError error = server->process_command( CSaveCommandApi::create( file_path, *path ), CCommandSource::XMLRPC_API );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error(env, error);
@@ -1013,7 +1014,7 @@ static xmlrpc_value *ntg_xmlrpc_load_callback( CServer *server, const int argc, 
     const CPath *path = va_arg(argv, CPath *);
 
 	CLoadCommandResult result;
-	CError error = server->process_command( CLoadCommandApi::create( file_path, *path ), NTG_SOURCE_XMLRPC_API, &result );
+	CError error = server->process_command( CLoadCommandApi::create( file_path, *path ), CCommandSource::XMLRPC_API, &result );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error( env, error );
@@ -1036,7 +1037,7 @@ static xmlrpc_value *ntg_xmlrpc_load_callback( CServer *server, const int argc, 
 	const guid_set &new_embedded_module_ids = result.get_new_embedded_module_ids();
 	for( guid_set::const_iterator i = new_embedded_module_ids.begin(); i != new_embedded_module_ids.end(); i++ )
 	{
-		string module_id_string = CStringHelper::guid_to_string( *i );
+		string module_id_string = CGuidHelper::guid_to_string( *i );
 		xmlrpc_temp = xmlrpc_string_new( env, module_id_string.c_str() );
 		xmlrpc_array_append_item( env, xmlrpc_array, xmlrpc_temp);
 		xmlrpc_DECREF( xmlrpc_temp );
@@ -1063,7 +1064,7 @@ static xmlrpc_value *ntg_xmlrpc_move_callback( CServer *server, const int argc, 
     const CPath *node_path = va_arg(argv, CPath *);
     const CPath *parent_path = va_arg(argv, CPath *);
 
-	CError error = server->process_command( CMoveCommandApi::create( *node_path, *parent_path ), NTG_SOURCE_XMLRPC_API );
+	CError error = server->process_command( CMoveCommandApi::create( *node_path, *parent_path ), CCommandSource::XMLRPC_API );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error( env, error );
@@ -1133,7 +1134,7 @@ static xmlrpc_value *ntg_xmlrpc_install_module_callback( CServer *server, const 
 
     struct_ = xmlrpc_struct_new( env );
 
-	string module_id_string = CStringHelper::guid_to_string( result.module_id );
+	string module_id_string = CGuidHelper::guid_to_string( result.module_id );
 
     xmlrpc_temp = xmlrpc_string_new( env, "module.installintegramodulefile" );
     xmlrpc_struct_set_value( env, struct_, RESPONSE_LABEL, xmlrpc_temp );
@@ -1176,7 +1177,7 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( CServer *se
 
     struct_ = xmlrpc_struct_new(env);
 
-	string module_id_string = CStringHelper::guid_to_string( result.module_id );
+	string module_id_string = CGuidHelper::guid_to_string( result.module_id );
 
     xmlrpc_temp = xmlrpc_string_new(env, "module.loadmoduleindevelopment");
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
@@ -1186,9 +1187,9 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( CServer *se
     xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-	if( result.previous_module_id != NULL_GUID )
+	if( result.previous_module_id != CGuidHelper::null_guid )
 	{
-		string previous_module_id_string = CStringHelper::guid_to_string( result.previous_module_id );
+		string previous_module_id_string = CGuidHelper::guid_to_string( result.previous_module_id );
 		xmlrpc_temp = xmlrpc_string_new(env, previous_module_id_string.c_str() );
 	    xmlrpc_struct_set_value(env, struct_, "previousmoduleid", xmlrpc_temp );
 	    xmlrpc_DECREF( xmlrpc_temp );
@@ -1217,7 +1218,7 @@ static xmlrpc_value *ntg_xmlrpc_install_embedded_module_callback( CServer *serve
     env = va_arg( argv, xmlrpc_env * );
     module_id_string = va_arg( argv, char * );
 
-	if( CStringHelper::string_to_guid( module_id_string, module_id ) != CError::SUCCESS )
+	if( CGuidHelper::string_to_guid( module_id_string, module_id ) != CError::SUCCESS )
 	{
         free( module_id_string );
 		return ntg_xmlrpc_error( env, CError::INPUT_ERROR );
@@ -1252,7 +1253,7 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module_callback( CServer *server, cons
     env = va_arg( argv, xmlrpc_env * );
     module_id_string = va_arg( argv, char * );
 
-	if( CStringHelper::string_to_guid( module_id_string, module_id ) != CError::SUCCESS )
+	if( CGuidHelper::string_to_guid( module_id_string, module_id ) != CError::SUCCESS )
 	{
         free( module_id_string );
 		return ntg_xmlrpc_error( env, CError::INPUT_ERROR );
@@ -1296,10 +1297,10 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(CServer *server, const int argc, va
     node_name = va_arg(argv, char *);
     path = va_arg(argv, CPath *);
 
-	CStringHelper::string_to_guid( module_id_string, module_id );
+	CGuidHelper::string_to_guid( module_id_string, module_id );
 
 	CNewCommandResult result;
-	CError error = server->process_command( CNewCommandApi::create( module_id, node_name, *path ), NTG_SOURCE_XMLRPC_API, &result );
+	CError error = server->process_command( CNewCommandApi::create( module_id, node_name, *path ), CCommandSource::XMLRPC_API, &result );
 
 	const CNode *node = result.get_created_node();
 	if( error != CError::SUCCESS || !node ) 
@@ -1352,7 +1353,7 @@ static xmlrpc_value *ntg_xmlrpc_set_callback( CServer *server, const int argc, v
 
 	NTG_TRACE_VERBOSE << "setting value: " << path->get_string();
 
-	CError error = server->process_command( CSetCommandApi::create( *path, value ), NTG_SOURCE_XMLRPC_API );
+	CError error = server->process_command( CSetCommandApi::create( *path, value ), CCommandSource::XMLRPC_API );
 	if( error != CError::SUCCESS )
 	{
 		return ntg_xmlrpc_error (env, error );

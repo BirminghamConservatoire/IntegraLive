@@ -96,7 +96,7 @@ namespace ntg_internal
 
 			CPlayerHandler &get_player_handler() { return *m_player_handler; }
 
-			CError process_command( CCommandApi *command, ntg_command_source command_source, CCommandResult *result = NULL );
+			CError process_command( CCommandApi *command, CCommandSource source, CCommandResult *result = NULL );
 
 			internal_id create_internal_id();
 
@@ -133,7 +133,6 @@ namespace ntg_internal
 			bool m_is_in_shutdown;
 
 			internal_id m_next_internal_id; 
-
 	};
 }
 

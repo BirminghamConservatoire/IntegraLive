@@ -27,6 +27,7 @@
 #include <semaphore.h>
 
 #include "path.h"
+#include "node.h"
 
 using namespace ntg_api;
 
@@ -86,8 +87,8 @@ namespace ntg_internal
 
 			CServer &m_server;
 
-			static const int s_player_update_microseconds;
-			static const int s_player_sanity_check_seconds;
+			static const int player_update_microseconds;
+			static const int player_sanity_check_seconds;
 	};
 }
 

@@ -43,12 +43,12 @@ namespace ntg_internal
 	}
 
 	
-	void CContainerLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CContainerLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
-		if( endpoint_name == s_endpoint_active )
+		if( endpoint_name == endpoint_active )
 		{
 			active_handler( server, ( int ) *node_endpoint.get_value() != 0 );
 			return;
@@ -97,7 +97,7 @@ namespace ntg_internal
 
 		int value_i = 0;
 
-		const CNodeEndpoint *active_endpoint = node.get_node_endpoint( s_endpoint_active );
+		const CNodeEndpoint *active_endpoint = node.get_node_endpoint( endpoint_active );
 
 		if( dynamic_cast< CContainerLogic * > ( &node.get_logic() ) )
 		{
@@ -114,7 +114,7 @@ namespace ntg_internal
 
 				if( !active_endpoint->get_value()->is_equal( value ) )
 				{
-					server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), NTG_SOURCE_SYSTEM );
+					server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
 
 					if( activate )
 					{

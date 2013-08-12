@@ -21,7 +21,7 @@
 #ifndef COMMAND_RESULT_API_H
 #define COMMAND_RESULT_API_H
 
-#include "common_typedefs.h"
+#include "guid_helper.h"
 
 namespace ntg_internal
 {

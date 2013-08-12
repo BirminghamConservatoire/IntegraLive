@@ -25,8 +25,8 @@
 
 #include "interface_definition.h"
 #include "trace.h"
+#include "guid_helper.h"
 
-#define NTG_CORE_TAG "core"
 
 namespace ntg_internal
 {
@@ -34,10 +34,13 @@ namespace ntg_internal
 	/* INTERFACE DEFINITION             */
 	/************************************/
 
+	const string CInterfaceDefinition::core_tag = "core";
+
+
 	CInterfaceDefinition::CInterfaceDefinition()
 	{
-		m_module_guid = NULL_GUID;
-		m_origin_guid = NULL_GUID;
+		m_module_guid = CGuidHelper::null_guid;
+		m_origin_guid = CGuidHelper::null_guid;
 		m_interface_info = new CInterfaceInfo;
 		m_implementation_info = NULL;
 	}
@@ -81,7 +84,7 @@ namespace ntg_internal
 	bool CInterfaceDefinition::is_core_interface() const
 	{
 		assert( m_interface_info );
-		return ( m_interface_info->get_tags().count( NTG_CORE_TAG ) > 0 );
+		return ( m_interface_info->get_tags().count( core_tag ) > 0 );
 	}
 
 

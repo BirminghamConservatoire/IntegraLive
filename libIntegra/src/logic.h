@@ -25,6 +25,8 @@
 #include "api/common_typedefs.h"
 #include "value.h"
 #include "error.h"
+#include "command_source.h"
+
 
 using namespace ntg_api;
 
@@ -53,14 +55,14 @@ namespace ntg_internal
 
 			virtual ~CLogic();
 
-			virtual void handle_new( CServer &server, ntg_command_source source );
-			virtual void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
-			virtual void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
-			virtual void handle_move( CServer &server, const CPath &previous_path, ntg_command_source source );
-			virtual void handle_delete( CServer &server, ntg_command_source source );
+			virtual void handle_new( CServer &server, CCommandSource source );
+			virtual void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
+			virtual void handle_rename( CServer &server, const string &previous_name, CCommandSource source );
+			virtual void handle_move( CServer &server, const CPath &previous_path, CCommandSource source );
+			virtual void handle_delete( CServer &server, CCommandSource source );
 
 			bool node_is_active() const;
-			bool should_copy_input_file( const CNodeEndpoint &input_file, ntg_command_source source ) const;
+			bool should_copy_input_file( const CNodeEndpoint &input_file, CCommandSource source ) const;
 			bool has_data_directory() const;
 			const string *get_data_directory() const;
 
@@ -75,15 +77,15 @@ namespace ntg_internal
 
 			CError connect_audio_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect );
 
-			static const string s_endpoint_active;
-			static const string s_endpoint_data_directory; 
-			static const string s_endpoint_source_path;
-			static const string s_endpoint_target_path;
+			static const string endpoint_active;
+			static const string endpoint_data_directory; 
+			static const string endpoint_source_path;
+			static const string endpoint_target_path;
 
 		private:
 
 			void non_container_active_initializer( CServer &server );
-			void data_directory_handler( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void data_directory_handler( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
 			void handle_input_file( CServer &server, const CNodeEndpoint &input_file );
 			void handle_connections( CServer &server, const CNode &search_node, const CNodeEndpoint &changed_endpoint );
 
@@ -102,14 +104,14 @@ namespace ntg_internal
 			/* store a cache of connection's guid since we refer to it very often, to prevent multiple lookups */
 			GUID m_connection_interface_guid;
 
-			static const string s_module_container;
-			static const string s_module_script;
-			static const string s_module_scaler;
-			static const string s_module_control_point;
-			static const string s_module_envelope;
-			static const string s_module_player;
-			static const string s_module_scene;
-			static const string s_module_connection;
+			static const string module_container;
+			static const string module_script;
+			static const string module_scaler;
+			static const string module_control_point;
+			static const string module_envelope;
+			static const string module_player;
+			static const string module_scene;
+			static const string module_connection;
 
 	};
 }

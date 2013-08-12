@@ -24,14 +24,11 @@
 
 #include <sstream>
 #include <string>
-#include <string>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
 
 #include "../externals/guiddef.h"
-
-#include "MurmurHash2.h"
 
 
 #ifdef _WINDOWS
@@ -54,46 +51,7 @@ namespace ntg_api
 	typedef std::unordered_set<string> string_set;
 	typedef std::unordered_map<string, string> string_map;
 
-
-	/* Guids */ 
-	struct GuidHash 
-	{
-		size_t operator()(const GUID& x) const { return MurmurHash2( &x, sizeof( GUID ), 53 ); }
-	};
-
-
-	typedef std::unordered_set<GUID, GuidHash> guid_set;
-	typedef std::vector<GUID> guid_array;
-
-	const GUID NULL_GUID = { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 };
-
-
-
-
-namespace ntg_internal
-{
-	/* todo - don't define this here eventually! */
-
-	typedef enum ntg_command_source_ 
-	{
-		NTG_SOURCE_NONE = -1,
-		NTG_SOURCE_INITIALIZATION,
-		NTG_SOURCE_LOAD,
-		NTG_SOURCE_SYSTEM,
-		NTG_SOURCE_CONNECTION,
-		NTG_SOURCE_HOST,
-		NTG_SOURCE_SCRIPT,
-		NTG_SOURCE_XMLRPC_API,
-		NTG_SOURCE_C_API,
-		NTG_COMMAND_SOURCE_end
-	} ntg_command_source;
-
-
-	typedef unsigned long internal_id;
-
-	const int LONG_STRING_LENGTH = 1024;
-}
 
 
 

@@ -40,7 +40,7 @@ namespace ntg_api
 	std::ofstream CTrace::s_null_stream;
 	std::ostream &CTrace::s_trace_stream = std::cout;
 
-	const int CTrace::s_max_timestamp_length = 32;
+	const int CTrace::max_timestamp_length = 32;
 
 
 	std::ostream &CTrace::error( const char *location )
@@ -103,9 +103,9 @@ namespace ntg_api
 		if( s_trace_timestamp )
 		{
 			time_t rawtime;
-			char timestamp_string[ s_max_timestamp_length ];
+			char timestamp_string[ max_timestamp_length ];
 			time( &rawtime );
-			strftime( timestamp_string, s_max_timestamp_length, "%X %x", localtime( &rawtime ) );
+			strftime( timestamp_string, max_timestamp_length, "%X %x", localtime( &rawtime ) );
 			s_trace_stream << " [" << timestamp_string << "]";
 		}
 

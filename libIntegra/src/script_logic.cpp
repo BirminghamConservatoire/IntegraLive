@@ -34,9 +34,9 @@
 
 namespace ntg_internal
 {
-	const string CScriptLogic::s_endpoint_trigger = "trigger";
-	const string CScriptLogic::s_endpoint_text = "text";
-	const string CScriptLogic::s_endpoint_info = "info";
+	const string CScriptLogic::endpoint_trigger = "trigger";
+	const string CScriptLogic::endpoint_text = "text";
+	const string CScriptLogic::endpoint_info = "info";
 
 
 
@@ -51,13 +51,13 @@ namespace ntg_internal
 	}
 
 	
-	void CScriptLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CScriptLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
 	
-		if( endpoint_name == s_endpoint_trigger )
+		if( endpoint_name == endpoint_trigger )
 		{
 			trigger_handler( server );
 			return;
@@ -69,7 +69,7 @@ namespace ntg_internal
 	{
 		const CNode &script_node = get_node();
 
-		const CNodeEndpoint *text_endpoint = script_node.get_node_endpoint( s_endpoint_text );
+		const CNodeEndpoint *text_endpoint = script_node.get_node_endpoint( endpoint_text );
 		assert( text_endpoint );
 
 		const string &script = *text_endpoint->get_value();
@@ -79,7 +79,7 @@ namespace ntg_internal
 		const CPath &parent_path = script_node.get_parent_path();
 	
 		string script_output = server.get_lua_engine().run_script( server, parent_path, script );
-		server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( s_endpoint_info )->get_path(), &CStringValue( script_output ) ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( endpoint_info )->get_path(), &CStringValue( script_output ) ), CCommandSource::SYSTEM );
 
 		NTG_TRACE_VERBOSE << "script finished";
 	}

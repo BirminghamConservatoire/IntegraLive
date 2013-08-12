@@ -38,9 +38,9 @@ namespace ntg_internal
 			CSceneLogic( const CNode &node );
 			~CSceneLogic();
 
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
-			void handle_rename( CServer &server, const string &previous_name, ntg_command_source source );
-			void handle_delete( CServer &server, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
+			void handle_rename( CServer &server, const string &previous_name, CCommandSource source );
+			void handle_delete( CServer &server, CCommandSource source );
 
 		private:
 
@@ -51,14 +51,14 @@ namespace ntg_internal
 			bool is_scene_selected() const;
 
 
-			static const string s_endpoint_activate;
-			static const string s_endpoint_start;
-			static const string s_endpoint_length;
-			static const string s_endpoint_mode;
+			static const string endpoint_activate;
+			static const string endpoint_start;
+			static const string endpoint_length;
+			static const string endpoint_mode;
 
-			static const string s_scene_mode_hold;
-			static const string s_scene_mode_play;
-			static const string s_scene_mode_loop;
+			static const string scene_mode_hold;
+			static const string scene_mode_play;
+			static const string scene_mode_loop;
 	};
 }
 

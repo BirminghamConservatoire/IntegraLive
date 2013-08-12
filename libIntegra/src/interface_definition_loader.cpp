@@ -26,6 +26,7 @@
 #include "interface_definition_loader.h"
 #include "interface_definition.h"
 #include "trace.h"
+#include "guid_helper.h"
 #include "string_helper.h"
 
 
@@ -495,7 +496,7 @@ namespace ntg_internal
 			char *module_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST "moduleGuid" );
 			if( module_guid_attribute )
 			{
-				if( CStringHelper::string_to_guid( module_guid_attribute, m_interface_definition->m_module_guid ) != CError::SUCCESS )
+				if( CGuidHelper::string_to_guid( module_guid_attribute, m_interface_definition->m_module_guid ) != CError::SUCCESS )
 				{
 					NTG_TRACE_ERROR << "Couldn't parse guid: " << module_guid_attribute;
 					error = CError::INPUT_ERROR;
@@ -512,7 +513,7 @@ namespace ntg_internal
 			char *origin_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST "originGuid" );
 			if( origin_guid_attribute )
 			{
-				if( CStringHelper::string_to_guid( origin_guid_attribute, m_interface_definition->m_origin_guid ) != CError::SUCCESS )
+				if( CGuidHelper::string_to_guid( origin_guid_attribute, m_interface_definition->m_origin_guid ) != CError::SUCCESS )
 				{
 					NTG_TRACE_ERROR << "Couldn't parse guid: " << origin_guid_attribute;
 					error = CError::INPUT_ERROR;

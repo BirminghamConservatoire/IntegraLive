@@ -24,6 +24,7 @@
 #include "scratch_directory.h"
 #include "file_io.h"
 #include "file_helper.h"
+#include "string_helper.h"
 
 
 #include <assert.h>
@@ -43,15 +44,15 @@ using namespace ntg_internal;
 
 namespace ntg_internal
 {
-	const string CScratchDirectory::s_scratch_directory_root_name = "libIntegra";
+	const string CScratchDirectory::scratch_directory_root_name = "libIntegra";
 
 	CScratchDirectory::CScratchDirectory()
 	{
 		#ifdef _WINDOWS
 
-			char path_buffer[ LONG_STRING_LENGTH ];
+			char path_buffer[ CStringHelper::string_buffer_length ];
 			int i;
-			GetTempPathA( LONG_STRING_LENGTH, path_buffer );
+			GetTempPathA( CStringHelper::string_buffer_length, path_buffer );
 
 			/* replace windows slashes with unix slashes */
 			for( i = strlen( path_buffer ) - 1; i >= 0; i-- )
@@ -69,7 +70,7 @@ namespace ntg_internal
 			const char *tmp_dir = getenv( "TMPDIR" );
 			if( tmp_dir )
 			{
-				m_scratch_directory = string( tmp_dir ) + CFileIO::s_path_separator + ".";
+				m_scratch_directory = string( tmp_dir ) + CFileIO::path_separator + ".";
 			}
 			else
 			{
@@ -77,14 +78,14 @@ namespace ntg_internal
 			}
 		#endif
 	
-			m_scratch_directory += s_scratch_directory_root_name;
+			m_scratch_directory += scratch_directory_root_name;
 
 			if( CFileHelper::is_directory( m_scratch_directory ) )
 			{
 				CFileHelper::delete_directory( m_scratch_directory );
 			}
 
-			m_scratch_directory += CFileIO::s_path_separator;
+			m_scratch_directory += CFileIO::path_separator;
 
 			mkdir( m_scratch_directory.c_str() );
 	}

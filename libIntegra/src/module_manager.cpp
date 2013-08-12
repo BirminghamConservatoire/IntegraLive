@@ -38,10 +38,12 @@
 #include "trace.h"
 #include "file_io.h"
 #include "file_helper.h"
-#include "string_helper.h"
+#include "guid_helper.h"
 #include "server.h"
 #include "interface_definition_loader.h"
 #include "file_io.h"
+#include "MurmurHash2.h"
+#include "string_helper.h"
 
 using namespace ntg_api;
 
@@ -54,19 +56,19 @@ using namespace ntg_api;
 
 namespace ntg_internal
 {
-	const string CModuleManager::s_module_suffix = "module";
+	const string CModuleManager::module_suffix = "module";
 
 
-	const string CModuleManager::s_module_inner_directory_name = "integra_module_data/";
-	const string CModuleManager::s_idd_file_name = "integra_module_data/interface_definition.iid";
-	const string CModuleManager::s_internal_implementation_directory_name =  "integra_module_data/implementation/";
+	const string CModuleManager::module_inner_directory_name = "integra_module_data/";
+	const string CModuleManager::idd_file_name = "integra_module_data/interface_definition.iid";
+	const string CModuleManager::internal_implementation_directory_name =  "integra_module_data/implementation/";
 
-	const string CModuleManager::s_implementation_directory_name = "implementations/";
-	const string CModuleManager::s_embedded_module_directory_name = "loaded_embedded_modules/";
+	const string CModuleManager::implementation_directory_name = "implementations/";
+	const string CModuleManager::embedded_module_directory_name = "loaded_embedded_modules/";
 
-	const string CModuleManager::s_legacy_class_id_filename = "id2guid.csv";
+	const string CModuleManager::legacy_class_id_filename = "id2guid.csv";
 
-	const int CModuleManager::s_checksum_seed = 53;
+	const int CModuleManager::checksum_seed = 53;
 
 
 	CModuleManager::CModuleManager( const CServer &server, const string &system_module_directory, const string &third_party_module_directory )
@@ -75,14 +77,14 @@ namespace ntg_internal
 		load_legacy_module_id_file();
 
 		string scratch_directory_root = server.get_scratch_directory();
-		m_implementation_directory_root = scratch_directory_root + s_implementation_directory_name;
+		m_implementation_directory_root = scratch_directory_root + implementation_directory_name;
 
 		if( !CFileHelper::is_directory( m_implementation_directory_root.c_str() ) )
 		{
 			mkdir( m_implementation_directory_root.c_str() );
 		}
 
-		m_embedded_module_directory = scratch_directory_root + s_embedded_module_directory_name;
+		m_embedded_module_directory = scratch_directory_root + embedded_module_directory_name;
 
 		if( !CFileHelper::is_directory( m_embedded_module_directory.c_str() ) )
 		{
@@ -92,7 +94,7 @@ namespace ntg_internal
 		load_modules_from_directory( system_module_directory, CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA );
 
 		load_modules_from_directory( third_party_module_directory, CInterfaceDefinition::MODULE_3RD_PARTY );
-		m_third_party_module_directory = third_party_module_directory + CFileIO::s_path_separator;
+		m_third_party_module_directory = third_party_module_directory + CFileIO::path_separator;
 	}
 
 
@@ -110,7 +112,7 @@ namespace ntg_internal
 	{
 		unzFile unzip_file;
 		unz_file_info file_info;
-		char file_name[ LONG_STRING_LENGTH ];
+		char file_name[ CStringHelper::string_buffer_length ];
 		char *temporary_file_name;
 		FILE *temporary_file;
 		int implementation_directory_length;
@@ -130,7 +132,7 @@ namespace ntg_internal
 			return CError::FAILED;
 		}
 
-		implementation_directory_length = CFileIO::s_implementation_directory_name.length();
+		implementation_directory_length = CFileIO::implementation_directory_name.length();
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
@@ -139,20 +141,20 @@ namespace ntg_internal
 			return CError::FAILED;
 		}
 
-		copy_buffer = new unsigned char[ CFileIO::s_data_copy_buffer_size ];
+		copy_buffer = new unsigned char[ CFileIO::data_copy_buffer_size ];
 
 		do
 		{
 			temporary_file_name = NULL;
 			temporary_file = NULL;
 
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info: " << integra_file;
 				continue;
 			}
 
-			if( strlen( file_name ) <= implementation_directory_length || string( file_name ).substr( 0, implementation_directory_length ) != CFileIO::s_implementation_directory_name )
+			if( strlen( file_name ) <= implementation_directory_length || string( file_name ).substr( 0, implementation_directory_length ) != CFileIO::implementation_directory_name )
 			{
 				/* skip file not in node directory */
 				continue;
@@ -187,7 +189,7 @@ namespace ntg_internal
 				bytes_remaining = file_info.uncompressed_size - total_bytes_read;
 				assert( bytes_remaining > 0 );
 
-				bytes_read = unzReadCurrentFile( unzip_file, copy_buffer, MIN( CFileIO::s_data_copy_buffer_size, bytes_remaining ) );
+				bytes_read = unzReadCurrentFile( unzip_file, copy_buffer, MIN( CFileIO::data_copy_buffer_size, bytes_remaining ) );
 				if( bytes_read <= 0 )
 				{
 					NTG_TRACE_ERROR << "Error decompressing file";
@@ -238,7 +240,7 @@ namespace ntg_internal
 	CError CModuleManager::install_module( const string &module_file, CModuleInstallResult &result )
 	{
 		bool module_was_loaded = false;
-		GUID module_id = NULL_GUID;
+		GUID module_id = CGuidHelper::null_guid;
 	
 		memset( &result, 0, sizeof( CModuleInstallResult ) );
 
@@ -249,7 +251,7 @@ namespace ntg_internal
 			return store_module( module_id );
 		}
 
-		if( module_id == NULL_GUID )
+		if( module_id == CGuidHelper::null_guid )
 		{
 			return CError::FILE_VALIDATION_ERROR;
 		}
@@ -349,7 +351,7 @@ namespace ntg_internal
 				continue;
 			}
 
-			if( result.previous_module_id == NULL_GUID )
+			if( result.previous_module_id == CGuidHelper::null_guid )
 			{
 				result.previous_module_id = interface_definition.get_module_guid();
 
@@ -424,7 +426,7 @@ namespace ntg_internal
 
 	string CModuleManager::get_unique_interface_name( const CInterfaceDefinition &interface_definition ) const
 	{
-		string module_guid = CStringHelper::guid_to_string( interface_definition.get_module_guid() );
+		string module_guid = CGuidHelper::guid_to_string( interface_definition.get_module_guid() );
 
 		ostringstream unique_name;
 		unique_name << interface_definition.get_interface_info().get_name() << "-" << module_guid;
@@ -499,7 +501,7 @@ namespace ntg_internal
 
 		output = m_legacy_module_id_table[ old_id ];
 
-		return ( output == NULL_GUID ) ? CError::INPUT_ERROR : CError::SUCCESS;
+		return ( output == CGuidHelper::null_guid ) ? CError::INPUT_ERROR : CError::SUCCESS;
 	}
 
 
@@ -528,7 +530,7 @@ namespace ntg_internal
 
 			name = directory_entry->d_name;
 
-			string full_path = module_directory + CFileIO::s_path_separator + name;
+			string full_path = module_directory + CFileIO::path_separator + name;
 
 			if( stat( full_path.c_str(), &entry_data ) != 0 )
 			{
@@ -551,7 +553,7 @@ namespace ntg_internal
 
 	void CModuleManager::load_legacy_module_id_file()
 	{
-		char line[ LONG_STRING_LENGTH ];
+		char line[ CStringHelper::string_buffer_length ];
 		FILE *file = NULL;
 		const char *guid_as_string;
 		internal_id old_id;
@@ -559,16 +561,16 @@ namespace ntg_internal
 
 		m_legacy_module_id_table.clear();
 
-		file = fopen( s_legacy_class_id_filename.c_str(), "r" );
+		file = fopen( legacy_class_id_filename.c_str(), "r" );
 		if( !file )
 		{
-			NTG_TRACE_ERROR << "failed to open legacy class id file: " << s_legacy_class_id_filename;
+			NTG_TRACE_ERROR << "failed to open legacy class id file: " << legacy_class_id_filename;
 			return;
 		}
 
 		while( !feof( file ) )
 		{
-			if( !fgets( line, LONG_STRING_LENGTH, file ) )
+			if( !fgets( line, CStringHelper::string_buffer_length, file ) )
 			{
 				break;
 			}
@@ -590,7 +592,7 @@ namespace ntg_internal
 			/* skip comma and space */
 			guid_as_string += 2;	
 
-			if( CStringHelper::string_to_guid( guid_as_string, guid ) != CError::SUCCESS )
+			if( CGuidHelper::string_to_guid( guid_as_string, guid ) != CError::SUCCESS )
 			{
 				NTG_TRACE_ERROR << "Error parsing guid: " << guid_as_string;
 				continue;
@@ -598,7 +600,7 @@ namespace ntg_internal
 
 			for( int i = m_legacy_module_id_table.size(); i <= old_id; i++ )
 			{
-				m_legacy_module_id_table.push_back( NULL_GUID ); 
+				m_legacy_module_id_table.push_back( CGuidHelper::null_guid ); 
 			}
 
 			m_legacy_module_id_table[ old_id ] = guid;
@@ -617,7 +619,7 @@ namespace ntg_internal
 	{
 		unzFile unzip_file;
 
-		module_guid = NULL_GUID;
+		module_guid = CGuidHelper::null_guid;
 
 		unzip_file = unzOpen( filename.c_str() );
 		if( !unzip_file )
@@ -723,21 +725,21 @@ namespace ntg_internal
 
 		assert( unzip_file );
 
-		if( unzLocateFile( unzip_file, s_idd_file_name.c_str(), 0 ) != UNZ_OK )
+		if( unzLocateFile( unzip_file, idd_file_name.c_str(), 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to locate " << s_idd_file_name;
+			NTG_TRACE_ERROR << "Unable to locate " << idd_file_name;
 			return NULL;
 		}
 
 		if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't get info for " << s_idd_file_name;
+			NTG_TRACE_ERROR << "Couldn't get info for " << idd_file_name;
 			return NULL;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to open " << s_idd_file_name;
+			NTG_TRACE_ERROR << "Unable to open " << idd_file_name;
 			return NULL;
 		}
 
@@ -746,7 +748,7 @@ namespace ntg_internal
 
 		if( unzReadCurrentFile( unzip_file, buffer, buffer_size ) != buffer_size )
 		{
-			NTG_TRACE_ERROR << "Unable to read " << s_idd_file_name;
+			NTG_TRACE_ERROR << "Unable to read " << idd_file_name;
 			delete[] buffer;
 			return NULL;
 		}
@@ -784,8 +786,8 @@ namespace ntg_internal
 		do
 		{
 			unz_file_info file_info;
-			char file_name_buffer[ LONG_STRING_LENGTH ];
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name_buffer, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
+			char file_name_buffer[ CStringHelper::string_buffer_length ];
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name_buffer, CStringHelper::string_buffer_length, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info";
 				continue;
@@ -793,25 +795,25 @@ namespace ntg_internal
 
 			string file_name( file_name_buffer );
 
-			if( file_name.substr( 0, s_internal_implementation_directory_name.length() ) != s_internal_implementation_directory_name )
+			if( file_name.substr( 0, internal_implementation_directory_name.length() ) != internal_implementation_directory_name )
 			{
 				/* skip files not in NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME */
 				continue;
 			}
 
-			if( file_name.back() == CFileIO::s_path_separator )
+			if( file_name.back() == CFileIO::path_separator )
 			{
 				/* skip directories */
 				continue;
 			}
 
-			string relative_file_path = file_name.substr( s_internal_implementation_directory_name.length() );
+			string relative_file_path = file_name.substr( internal_implementation_directory_name.length() );
 
 			CFileHelper::construct_subdirectories( implementation_directory, relative_file_path );
 
 			string target_path = implementation_directory + relative_file_path;
 
-			checksum ^= MurmurHash2( relative_file_path.c_str(), relative_file_path.length(), s_checksum_seed );
+			checksum ^= MurmurHash2( relative_file_path.c_str(), relative_file_path.length(), checksum_seed );
 
 			if( unzOpenCurrentFile( unzip_file ) == UNZ_OK )
 			{
@@ -826,7 +828,7 @@ namespace ntg_internal
 					}
 					else
 					{
-						checksum ^= MurmurHash2( output_buffer, file_info.uncompressed_size, s_checksum_seed );
+						checksum ^= MurmurHash2( output_buffer, file_info.uncompressed_size, checksum_seed );
 
 						fwrite( output_buffer, 1, file_info.uncompressed_size, output_file );
 					}
@@ -907,7 +909,7 @@ namespace ntg_internal
 
 	string CModuleManager::get_implementation_directory_name( const CInterfaceDefinition &interface_definition ) const
 	{
-		return get_unique_interface_name( interface_definition ) + CFileIO::s_path_separator;
+		return get_unique_interface_name( interface_definition ) + CFileIO::path_separator;
 	}
 
 
@@ -977,7 +979,7 @@ namespace ntg_internal
 
 		string unique_name = get_unique_interface_name( interface_definition );
 
-		return storage_directory + unique_name + "." + s_module_suffix;
+		return storage_directory + unique_name + "." + module_suffix;
 	}
 
 

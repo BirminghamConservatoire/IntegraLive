@@ -39,7 +39,7 @@ extern "C"
 #include "value.h"
 #include "path.h"
 #include "bridge_host.h"
-#include "string_helper.h"
+#include "guid_helper.h"
 #include "lua_engine.h"
 #include "player_handler.h"
 
@@ -112,7 +112,7 @@ namespace ntg_internal
 			CPath path( target->get_path() );
 			path.append_element( attribute_name );
 
-			server->process_command( CSetCommandApi::create( path, value ), NTG_SOURCE_HOST );
+			server->process_command( CSetCommandApi::create( path, value ), CCommandSource::HOST );
 		}
 		else
 		{
@@ -187,7 +187,7 @@ namespace ntg_internal
 		node_map copy_of_nodes = m_nodes;
 		for( node_map::const_iterator i = copy_of_nodes.begin(); i != copy_of_nodes.end(); i++ )
 		{
-			process_command( CDeleteCommandApi::create( i->second->get_path() ), NTG_SOURCE_SYSTEM );
+			process_command( CDeleteCommandApi::create( i->second->get_path() ), CCommandSource::SYSTEM );
 		}
 	
 		/* de-reference bridge */
@@ -374,7 +374,7 @@ namespace ntg_internal
 			}
 
 			const CInterfaceDefinition &interface_definition = node->get_interface_definition();
-			string module_id_string = CStringHelper::guid_to_string( interface_definition.get_module_guid() );
+			string module_id_string = CGuidHelper::guid_to_string( interface_definition.get_module_guid() );
 			std::cout << "  Node: \"" << node->get_name() << "\".\t module name: " << interface_definition.get_interface_info().get_name() << ".\t module id: " << module_id_string << ".\t Path: " << node->get_path().get_string() << std::endl;
 
 			bool has_children = !node->get_children().empty();
@@ -424,7 +424,7 @@ namespace ntg_internal
 	}
 
 
-	CError CServer::process_command( CCommandApi *command, ntg_command_source command_source, CCommandResult *result )
+	CError CServer::process_command( CCommandApi *command, CCommandSource command_source, CCommandResult *result )
 	{
 		assert( command );
 

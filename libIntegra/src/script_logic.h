@@ -35,15 +35,15 @@ namespace ntg_internal
 			CScriptLogic( const CNode &node );
 			~CScriptLogic();
 
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
 
 		private:
 
 			void trigger_handler( CServer &server );
 
-			const static string s_endpoint_trigger;
-			const static string s_endpoint_text;
-			const static string s_endpoint_info;
+			const static string endpoint_trigger;
+			const static string endpoint_text;
+			const static string endpoint_info;
 	};
 }
 

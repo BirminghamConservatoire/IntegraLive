@@ -38,8 +38,9 @@ namespace ntg_internal
 
 	typedef std::list<const CNode *> node_list;
 	typedef std::unordered_map<string, CNode *> node_map;
-	typedef std::unordered_map<internal_id, const CNode *> map_id_to_node;
 
+	typedef unsigned long internal_id;
+	typedef std::unordered_map<internal_id, const CNode *> map_id_to_node;
 
 	class CNode
 	{

@@ -27,6 +27,7 @@
 #include <time.h>
 
 #include "api/common_typedefs.h"
+#include "guid_helper.h"
 #include "value.h"
 
 
@@ -105,6 +106,8 @@ namespace ntg_internal
 			endpoint_definition_list m_endpoint_definitions;
 			widget_definition_list m_widget_definitions;
 			CImplementationInfo *m_implementation_info;
+
+			const static string core_tag;
 	};
 
 

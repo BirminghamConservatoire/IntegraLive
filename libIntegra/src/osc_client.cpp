@@ -22,24 +22,12 @@
 
 #include "osc_client.h"
 #include "server.h"
-#include "string_helper.h"
+#include "guid_helper.h"
 #include "value.h"
 
 #include <assert.h>
 
 using namespace ntg_internal;
-
-
-static const char *ntg_command_source_text[NTG_COMMAND_SOURCE_end] =  {
-    "initialization",
-	"load",
-	"system",
-	"connection",
-    "host",
-    "script",
-    "xmlrpc_api",
-    "c_api" };
-
 
 
 /* sure there must be a more elegant way to do this, but lo_message_add_varargs
@@ -120,17 +108,14 @@ void ntg_osc_client_destroy(ntg_osc_client *client)
     delete client;
 }
 
-CError ntg_osc_client_send_set(ntg_osc_client *client,
-        ntg_command_source cmd_source,
-        const CPath &path,
-        const CValue *value)
+
+CError ntg_osc_client_send_set(ntg_osc_client *client, CCommandSource source, const CPath &path, const CValue *value )
 {
 	const char *methodName = "/command.set";
-	const char *cmd_source_s = NULL;
 
     assert(client != NULL);
 
-    cmd_source_s = ntg_command_source_text[cmd_source];
+    string source_string = source.get_text();
 
 	const char *path_s = path.get_string().c_str();
 
@@ -139,15 +124,15 @@ CError ntg_osc_client_send_set(ntg_osc_client *client,
 		switch( value->get_type() ) 
 		{
 			case CValue::INTEGER:
-				ntg_osc_send_ssi(client->address, methodName, cmd_source_s, path_s, *value );
+				ntg_osc_send_ssi(client->address, methodName, source_string.c_str(), path_s, *value );
 				break;
 			case CValue::FLOAT:
-				ntg_osc_send_ssf(client->address, methodName, cmd_source_s, path_s, *value );
+				ntg_osc_send_ssf(client->address, methodName, source_string.c_str(), path_s, *value );
 				break;
 			case CValue::STRING:
 				{
 					const string &value_string = *value;
-					ntg_osc_send_sss(client->address, methodName, cmd_source_s, path_s, value_string.c_str() );
+					ntg_osc_send_sss(client->address, methodName, source_string.c_str(), path_s, value_string.c_str() );
 				}
 				break;
 
@@ -158,7 +143,7 @@ CError ntg_osc_client_send_set(ntg_osc_client *client,
 	}
 	else
 	{
-		ntg_osc_send_ssN(client->address, methodName, cmd_source_s, path_s);
+		ntg_osc_send_ssN(client->address, methodName, source_string.c_str(), path_s);
 	}
 
     return CError::SUCCESS;
@@ -166,94 +151,91 @@ CError ntg_osc_client_send_set(ntg_osc_client *client,
 
 
 CError ntg_osc_client_send_new(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        CCommandSource source,
         const GUID *module_id,
         const char *node_name,
         const CPath &path)
 {
     const char *methodName = "/command.new";
-    const char *cmd_source_s = NULL;
 
 	assert(client != NULL);
     assert(module_id != NULL);
     assert(node_name != NULL);
 
-    cmd_source_s = ntg_command_source_text[cmd_source];
+    string source_string = source.get_text();
 
-	string module_id_string = CStringHelper::guid_to_string( *module_id );
+	string module_id_string = CGuidHelper::guid_to_string( *module_id );
 
-    ntg_osc_send_ssss(client->address, methodName, cmd_source_s,
-			module_id_string.c_str(), node_name, path.get_string().c_str() );
+    ntg_osc_send_ssss(client->address, methodName, source_string.c_str(), module_id_string.c_str(), node_name, path.get_string().c_str() );
 
     return CError::SUCCESS;
 }
 
 CError ntg_osc_client_send_load(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        CCommandSource source,
         const char *file_path,
         const CPath &path)
 {
     char *const methodName = "/command.load";
-    const char *cmd_source_s = ntg_command_source_text[cmd_source];
+    string source_string = source.get_text();
 
     assert(client != NULL);
     assert(file_path != NULL);
 
-    return ntg_osc_send_sss(client->address, methodName, cmd_source_s,
-            file_path, path.get_string().c_str() );
+    return ntg_osc_send_sss(client->address, methodName, source_string.c_str(), file_path, path.get_string().c_str() );
 }
 
 CError ntg_osc_client_send_delete(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        CCommandSource source,
         const CPath &path)
 {
     char *const methodName = "/command.delete";
-    const char *cmd_source_s = ntg_command_source_text[cmd_source];
+    string source_string = source.get_text();
 
     assert(client != NULL);
 
-    return ntg_osc_send_ss(client->address, methodName, cmd_source_s, path.get_string().c_str() );
+    return ntg_osc_send_ss(client->address, methodName, source_string.c_str(), path.get_string().c_str() );
 }
    
 CError ntg_osc_client_send_move(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        CCommandSource source,
         const CPath &node_path,
         const CPath &parent_path)
 {
     char *const methodName = "/command.move";
-    const char *cmd_source_s = ntg_command_source_text[cmd_source];
+    string source_string = source.get_text();
 
     assert(client != NULL);
 
-	return ntg_osc_send_sss(client->address, methodName, cmd_source_s, node_path.get_string().c_str(), parent_path.get_string().c_str() );
+	return ntg_osc_send_sss(client->address, methodName, source_string.c_str(), node_path.get_string().c_str(), parent_path.get_string().c_str() );
 
 }
 
 CError ntg_osc_client_send_rename(ntg_osc_client *client,
-        ntg_command_source cmd_source,
+        CCommandSource source,
         const CPath &path,
         const char *name)
 {
     char *const methodName = "/command.rename";
-    const char *cmd_source_s = ntg_command_source_text[cmd_source];
+    string source_string = source.get_text();
 
     assert(client != NULL);
     assert(name != NULL);
 
-    return ntg_osc_send_sss(client->address, methodName, cmd_source_s, path.get_string().c_str(), name);
+    return ntg_osc_send_sss(client->address, methodName, source_string.c_str(), path.get_string().c_str(), name);
 
 }
 
 
-bool ntg_should_send_to_client( ntg_command_source cmd_source ) 
+bool ntg_should_send_to_client( CCommandSource source ) 
 {
-	switch( cmd_source )
+	switch( source )
 	{
-		case NTG_SOURCE_INITIALIZATION:
+		case CCommandSource::INITIALIZATION:
 			/* don't send to client on initialization - client infers from known default values */
 			return false;
 
-		case NTG_SOURCE_LOAD:
+		case CCommandSource::LOAD:
 			/* don't send to client on load - calls nodelist and get explicitly */
 			return false;
 

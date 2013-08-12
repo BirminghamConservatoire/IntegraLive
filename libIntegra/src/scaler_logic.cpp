@@ -31,12 +31,12 @@
 
 namespace ntg_internal
 {
-	const string CScalerLogic::s_endpoint_in_value = "inValue";
-	const string CScalerLogic::s_endpoint_out_value = "outValue";
-	const string CScalerLogic::s_endpoint_in_range_min = "inRangeMin";
-	const string CScalerLogic::s_endpoint_in_range_max = "inRangeMax";
-	const string CScalerLogic::s_endpoint_out_range_min = "outRangeMin";
-	const string CScalerLogic::s_endpoint_out_range_max = "outRangeMax";
+	const string CScalerLogic::endpoint_in_value = "inValue";
+	const string CScalerLogic::endpoint_out_value = "outValue";
+	const string CScalerLogic::endpoint_in_range_min = "inRangeMin";
+	const string CScalerLogic::endpoint_in_range_max = "inRangeMax";
+	const string CScalerLogic::endpoint_out_range_min = "outRangeMin";
+	const string CScalerLogic::endpoint_out_range_max = "outRangeMax";
 
 
 	CScalerLogic::CScalerLogic( const CNode &node )
@@ -50,13 +50,13 @@ namespace ntg_internal
 	}
 
 
-	void CScalerLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source )
+	void CScalerLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
 		CLogic::handle_set( server, node_endpoint, previous_value, source );
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
 	
-		if( endpoint_name == s_endpoint_in_value )
+		if( endpoint_name == endpoint_in_value )
 		{
 			const CValue *value = node_endpoint.get_value();
 			assert( value );
@@ -76,11 +76,11 @@ namespace ntg_internal
 
 		const CNode &scaler_node = get_node();
 
-		const CNodeEndpoint *in_range_min_endpoint = scaler_node.get_node_endpoint( s_endpoint_in_range_min );
-		const CNodeEndpoint *in_range_max_endpoint = scaler_node.get_node_endpoint( s_endpoint_in_range_max );
-		const CNodeEndpoint *out_range_min_endpoint = scaler_node.get_node_endpoint( s_endpoint_out_range_min );
-		const CNodeEndpoint *out_range_max_endpoint = scaler_node.get_node_endpoint( s_endpoint_out_range_max );
-		const CNodeEndpoint *out_value_endpoint = scaler_node.get_node_endpoint( s_endpoint_out_value );
+		const CNodeEndpoint *in_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_min );
+		const CNodeEndpoint *in_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_max );
+		const CNodeEndpoint *out_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_min );
+		const CNodeEndpoint *out_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_max );
+		const CNodeEndpoint *out_value_endpoint = scaler_node.get_node_endpoint( endpoint_out_value );
 		assert( in_range_min_endpoint && in_range_max_endpoint && out_range_min_endpoint && out_range_max_endpoint && out_value_endpoint);
 
 		assert( value.get_type() == CValue::FLOAT );
@@ -117,6 +117,6 @@ namespace ntg_internal
 		scaled_value = ( scaled_value - in_range_min ) * out_range_total / in_range_total + out_range_min;
 
 		/*store result*/
-		server.process_command( CSetCommandApi::create( out_value_endpoint->get_path(), &CFloatValue( scaled_value ) ), NTG_SOURCE_SYSTEM );
+		server.process_command( CSetCommandApi::create( out_value_endpoint->get_path(), &CFloatValue( scaled_value ) ), CCommandSource::SYSTEM );
 	}
 }

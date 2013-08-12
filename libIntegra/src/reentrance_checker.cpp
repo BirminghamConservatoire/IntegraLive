@@ -39,7 +39,7 @@ namespace ntg_internal
 	}
 
 
-	bool CReentranceChecker::push( const CNodeEndpoint *node_endpoint, ntg_command_source source )
+	bool CReentranceChecker::push( const CNodeEndpoint *node_endpoint, CCommandSource source )
 	{
 		if( cares_about_source( source ) )
 		{
@@ -73,20 +73,20 @@ namespace ntg_internal
 	}
 
 
-	bool CReentranceChecker::cares_about_source( ntg_command_source source )
+	bool CReentranceChecker::cares_about_source( CCommandSource source )
 	{
 		switch( source )
 		{
-			case NTG_SOURCE_SYSTEM:
-			case NTG_SOURCE_CONNECTION:
-			case NTG_SOURCE_SCRIPT:
+			case CCommandSource::SYSTEM:
+			case CCommandSource::CONNECTION:
+			case CCommandSource::SCRIPT:
 				return true;	/* these are potential sources of recursion */
 
-			case NTG_SOURCE_INITIALIZATION:
-			case NTG_SOURCE_LOAD:
-			case NTG_SOURCE_HOST:
-			case NTG_SOURCE_XMLRPC_API:
-			case NTG_SOURCE_C_API:
+			case CCommandSource::INITIALIZATION:
+			case CCommandSource::LOAD:
+			case CCommandSource::HOST:
+			case CCommandSource::XMLRPC_API:
+			case CCommandSource::INTEGRA_API:
 				return false;	/* these cannot cause recursion */
 
 			default:

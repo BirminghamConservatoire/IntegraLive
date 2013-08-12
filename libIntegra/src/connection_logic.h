@@ -33,13 +33,13 @@ namespace ntg_internal
 			CConnectionLogic( const CNode &node );
 			~CConnectionLogic();
 
-			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, ntg_command_source source );
-			void handle_delete( CServer &server, ntg_command_source source );
+			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
+			void handle_delete( CServer &server, CCommandSource source );
 
 		private:
 
-			void source_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, ntg_command_source source );
-			void target_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, ntg_command_source source );
+			void source_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, CCommandSource source );
+			void target_path_handler( CServer &server, const CNodeEndpoint &endpoint, const CValue *previous_value, CCommandSource source );
 	};
 }
 

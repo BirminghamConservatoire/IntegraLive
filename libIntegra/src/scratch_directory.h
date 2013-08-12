@@ -43,7 +43,7 @@ namespace ntg_internal
 
 			string m_scratch_directory;
 
-			static const string s_scratch_directory_root_name;
+			static const string scratch_directory_root_name;
 	};
 }
 

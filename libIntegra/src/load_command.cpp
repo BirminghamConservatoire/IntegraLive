@@ -47,7 +47,7 @@ namespace ntg_internal
 	}
 
 
-	CError CLoadCommand::execute( CServer &server, ntg_command_source source, CCommandResult *result )
+	CError CLoadCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		const CNode *parent = server.find_node( m_parent_path );
 

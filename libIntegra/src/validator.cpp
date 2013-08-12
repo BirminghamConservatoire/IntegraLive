@@ -24,18 +24,19 @@
 
 #include "validator.h"
 #include "trace.h"
+#include "string_helper.h"
 
 
 namespace ntg_internal
 {
-	const char *CValidator::s_schema_file = "CollectionSchema.xsd";
+	const char *CValidator::schema_file = "CollectionSchema.xsd";
 
 	static void schemaErrorCallback( void *none, const char *message, ...)
 	{
-		char trace[ LONG_STRING_LENGTH ];
+		char trace[ CStringHelper::string_buffer_length ];
 		va_list varArgs;
 		va_start(varArgs, message);
-		vsnprintf( trace, LONG_STRING_LENGTH, message, varArgs);
+		vsnprintf( trace, CStringHelper::string_buffer_length, message, varArgs);
 		va_end(varArgs);
 
 		NTG_TRACE_ERROR << trace;
@@ -44,10 +45,10 @@ namespace ntg_internal
 
 	static void schemaWarningCallback( void *callbackData, const char *message, ...)
 	{
-		char trace[ LONG_STRING_LENGTH ];
+		char trace[ CStringHelper::string_buffer_length ];
 		va_list varArgs;
 		va_start(varArgs, message);
-		vsnprintf( trace, LONG_STRING_LENGTH, message, varArgs);
+		vsnprintf( trace, CStringHelper::string_buffer_length, message, varArgs);
 		va_end(varArgs);
 
 		NTG_TRACE_ERROR << trace;
@@ -60,7 +61,7 @@ namespace ntg_internal
 		m_schema = NULL;
 		m_validity_context = NULL;
 
-		m_schema_parser_context = xmlSchemaNewParserCtxt( s_schema_file );
+		m_schema_parser_context = xmlSchemaNewParserCtxt( schema_file );
 
 		if( m_schema_parser_context )
 		{

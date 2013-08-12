@@ -71,9 +71,7 @@ namespace ntg_api
 
 	void CValue::handle_incorrect_cast( type cast_target ) const
 	{
-		ostringstream error;
-		error << "Attempt to cast" << get_type_name( type() ) << " to " << get_type_name( cast_target );
-		NTG_TRACE_ERROR( error.str().c_str() );
+		NTG_TRACE_ERROR << "Attempt to cast " << get_type_name( type() ) << " to " << get_type_name( cast_target );
 
 		assert( false );
 	}
@@ -205,7 +203,7 @@ namespace ntg_api
 				break;
 
 			default:
-				NTG_TRACE_ERROR( "unhandled value type" );
+				NTG_TRACE_ERROR << "unhandled value type";
 				break;
 		}
 	}
@@ -225,7 +223,7 @@ namespace ntg_api
 		const CIntegerValue *other_int = dynamic_cast<const CIntegerValue *>( &other );
 		if( !other_int ) 
 		{
-			NTG_TRACE_ERROR( "type mismatch" );
+			NTG_TRACE_ERROR << "type mismatch";
 		}
 
 		return m_value - other_int->m_value;
@@ -245,7 +243,7 @@ namespace ntg_api
         m_value = strtol( source.c_str(), NULL, 0 );
 		if( errno == ERANGE )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "value too large to convert to int - truncating", source.c_str() );
+			NTG_TRACE_ERROR << "value too large to convert to int - truncating" << source;
 			m_value = source[ 0 ] == '-' ? INT_MIN : INT_MAX;
 		}
 	}
@@ -311,7 +309,7 @@ namespace ntg_api
 				break;
 
 			default:
-				NTG_TRACE_ERROR( "unhandled value type" );
+				NTG_TRACE_ERROR << "unhandled value type";
 				break;
 		}
 	}
@@ -331,7 +329,7 @@ namespace ntg_api
 		const CFloatValue *other_float = dynamic_cast<const CFloatValue *>( &other );
 		if( !other_float ) 
 		{
-			NTG_TRACE_ERROR( "type mismatch" );
+			NTG_TRACE_ERROR << "type mismatch";
 		}
 
 		return m_value - other_float->m_value;
@@ -423,7 +421,7 @@ namespace ntg_api
 				break;
 
 			default:
-				NTG_TRACE_ERROR( "unhandled value type" );
+				NTG_TRACE_ERROR << "unhandled value type";
 				break;
 		}
 	}
@@ -443,7 +441,7 @@ namespace ntg_api
 		const CStringValue *other_string = dynamic_cast<const CStringValue *>( &other );
 		if( !other_string ) 
 		{
-			NTG_TRACE_ERROR( "type mismatch" );
+			NTG_TRACE_ERROR << "type mismatch";
 		}
 
 		return levenshtein_distance( m_value.c_str(), other_string->m_value.c_str() );

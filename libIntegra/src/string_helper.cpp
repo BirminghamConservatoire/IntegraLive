@@ -96,7 +96,7 @@ namespace ntg_api
 	{
 		if( string.length() < 16 )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Unexpected date/time format", string.c_str() );
+			NTG_TRACE_ERROR << "Unexpected date/time format: " << string.c_str();
 			return CError::INPUT_ERROR;
 		}
 

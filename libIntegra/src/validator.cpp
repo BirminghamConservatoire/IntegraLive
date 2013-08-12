@@ -39,7 +39,7 @@ namespace ntg_internal
 		vsnprintf( trace, NTG_LONG_STRLEN, message, varArgs);
 		va_end(varArgs);
 
-		NTG_TRACE_ERROR( trace );
+		NTG_TRACE_ERROR << trace;
 	}
 
 
@@ -51,7 +51,7 @@ namespace ntg_internal
 		vsnprintf( trace, NTG_LONG_STRLEN, message, varArgs);
 		va_end(varArgs);
 
-		NTG_TRACE_ERROR( trace );
+		NTG_TRACE_ERROR << trace;
 	}
 
 
@@ -69,7 +69,7 @@ namespace ntg_internal
 		}
 		else 
 		{
-			NTG_TRACE_ERROR( "Unable to get schema parser context" );
+			NTG_TRACE_ERROR << "Unable to get schema parser context";
 			return;
 		}
 
@@ -79,7 +79,7 @@ namespace ntg_internal
 		}
 		else 
 		{
-			NTG_TRACE_ERROR( "Unable to get schema from schema parser context" );
+			NTG_TRACE_ERROR << "Unable to get schema from schema parser context";
 			return;
 		}
 	}
@@ -117,7 +117,7 @@ namespace ntg_internal
 
 		if( validation_code != CError::SUCCESS ) 
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "validation failed", validation_code.get_text().c_str() );
+			NTG_TRACE_ERROR << "validation failed: " << validation_code.get_text();
 			return CError::FILE_VALIDATION_ERROR;
 		}
 
@@ -135,7 +135,7 @@ namespace ntg_internal
 
 		if( !cur ) 
 		{
-			NTG_TRACE_ERROR("XML document is empty");
+			NTG_TRACE_ERROR << "XML document is empty";
 			document_free( doc );
 			return NULL;
 		}
@@ -153,7 +153,7 @@ namespace ntg_internal
 		} 
 		else 
 		{
-			NTG_TRACE_ERROR( "XML document pointer is NULL, no resource freed." );
+			NTG_TRACE_ERROR << "XML document pointer is NULL, no resource freed.";
 			return CError::INPUT_ERROR;
 		}
 	}
@@ -165,7 +165,7 @@ namespace ntg_internal
 
 		if( !m_validity_context ) 
 		{
-			NTG_TRACE_ERROR( "XML validity context is NULL" );
+			NTG_TRACE_ERROR << "XML validity context is NULL";
 			return CError::FAILED;
 		}
 

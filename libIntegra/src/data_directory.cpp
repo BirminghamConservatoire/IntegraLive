@@ -84,7 +84,7 @@ namespace ntg_internal
 
 			if( relative_node_path.empty() )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Couldn't build relative node path to", node.get_path().get_string().c_str() );
+				NTG_TRACE_ERROR << "Couldn't build relative node path to " << node.get_path().get_string();
 			}
 			else
 			{
@@ -98,7 +98,7 @@ namespace ntg_internal
 				}
 				else
 				{
-					NTG_TRACE_ERROR_WITH_STRING( "Couldn't get data directory name", node.get_path().get_string().c_str() );
+					NTG_TRACE_ERROR << "Couldn't get data directory name for " << node.get_path().get_string();
 				}
 			}
 		}
@@ -118,7 +118,7 @@ namespace ntg_internal
 		unzFile unzip_file = unzOpen( file_path.c_str() );
 		if( !unzip_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't open zip file", file_path.c_str() );
+			NTG_TRACE_ERROR << "Couldn't open zip file " << file_path;
 			return CError::FAILED;
 		}
 
@@ -127,7 +127,7 @@ namespace ntg_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't iterate contents", file_path.c_str() );
+			NTG_TRACE_ERROR << "Couldn't iterate contents of " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
@@ -138,7 +138,7 @@ namespace ntg_internal
 			char file_name[ NTG_LONG_STRLEN ];
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Couldn't extract file info", file_path.c_str() );
+				NTG_TRACE_ERROR << "Couldn't extract file info for " << file_path;
 				continue;
 			}
 
@@ -151,7 +151,7 @@ namespace ntg_internal
 			string relative_node_path_string = CFileHelper::extract_first_directory_from_path( file_name + node_directory_length );
 			if( relative_node_path_string.empty() )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "unexpected content - no relative path", file_name );
+				NTG_TRACE_ERROR << "unexpected content - no relative path: " << file_name;
 				continue;
 			}
 
@@ -160,13 +160,13 @@ namespace ntg_internal
 
 			if( !node )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "couldn't resolve path", relative_node_path_string.c_str() );
+				NTG_TRACE_ERROR << "couldn't resolve path: " << relative_node_path_string;
 				continue;
 			}
 
 			if( !node->get_logic().has_data_directory() )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "found data file for node which shouldn't have data directory", file_name );
+				NTG_TRACE_ERROR << "found data file for node which shouldn't have data directory: " << file_name;
 				continue;
 			}
 
@@ -180,7 +180,7 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "couldn't open zip contents", file_name );
+				NTG_TRACE_ERROR << "couldn't open zip contents: " << file_name;
 			}
 		}
 		while( unzGoToNextFile( unzip_file ) != UNZ_END_OF_LIST_OF_FILE );
@@ -211,7 +211,7 @@ namespace ntg_internal
 		output_file = fopen( target_path, "wb" );
 		if( !output_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't write to data directory", target_path );
+			NTG_TRACE_ERROR << "Couldn't write to data directory: " << target_path;
 			delete[] target_path;
 			return;
 		}
@@ -229,7 +229,7 @@ namespace ntg_internal
 			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, MIN( CFileIO::s_data_copy_buffer_size, bytes_remaining ) );
 			if( bytes_read <= 0 )
 			{
-				NTG_TRACE_ERROR( "Error decompressing file" );
+				NTG_TRACE_ERROR << "Error decompressing file";
 				break;
 			}
 
@@ -249,7 +249,7 @@ namespace ntg_internal
 		const string *data_directory = input_file.get_node().get_logic().get_data_directory();
 		if( !data_directory )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "can't get data directory for node", input_file.get_node().get_name().c_str() );
+			NTG_TRACE_ERROR << "can't get data directory for node " << input_file.get_node().get_name();
 			return NULL;
 		}
 
@@ -257,7 +257,7 @@ namespace ntg_internal
 		string copied_file = CFileHelper::extract_filename_from_path( input_path );
 		if( copied_file.empty() || copied_file == input_path )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "can't extract filename from path", input_path.c_str() );
+			NTG_TRACE_ERROR << "can't extract filename from path " << input_path;
 			return NULL;
 		}
 
@@ -280,7 +280,7 @@ namespace ntg_internal
 
 		if( node_path_length <= root_path_length || node_path_string.substr( 0, root_path_length ) != root_path_string )
 		{
-			NTG_TRACE_ERROR( "node is not a descendant of root" );
+			NTG_TRACE_ERROR << "node is not a descendant of root";
 			return string();
 		}
 
@@ -327,7 +327,7 @@ namespace ntg_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR( "Couldn't iterate contents" );
+			NTG_TRACE_ERROR << "Couldn't iterate contents";
 			return false;
 		}
 
@@ -337,7 +337,7 @@ namespace ntg_internal
 			char file_name[ NTG_LONG_STRLEN ];
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR( "Couldn't extract file info" );
+				NTG_TRACE_ERROR << "Couldn't extract file info";
 				continue;
 			}
 
@@ -358,7 +358,7 @@ namespace ntg_internal
 		DIR *directory_stream = opendir( source_path.c_str() );
 		if( !directory_stream )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "unable to open directory", source_path.c_str() );
+			NTG_TRACE_ERROR << "unable to open directory " << source_path;
 			return;
 		}
 
@@ -384,7 +384,7 @@ namespace ntg_internal
 			struct stat entry_data;
 			if( stat( full_source_path.c_str(), &entry_data ) != 0 )
 			{
-				NTG_TRACE_ERROR_WITH_ERRNO( "couldn't read directory entry data" );
+				NTG_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
 				continue;
 			}
 

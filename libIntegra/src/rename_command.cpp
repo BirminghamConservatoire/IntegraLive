@@ -57,7 +57,7 @@ namespace ntg_internal
 
 		if( !CStringHelper::validate_node_name( m_new_name ) )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "node name contains invalid characters", m_new_name.c_str() );
+			NTG_TRACE_ERROR << "node name contains invalid characters: " << m_new_name;
 			return CError::INPUT_ERROR;
 		}
 
@@ -65,7 +65,7 @@ namespace ntg_internal
 		node_map &sibling_set = server.get_sibling_set_writable( *node );
 		while( sibling_set.count( m_new_name ) > 0 ) 
 		{
-			NTG_TRACE_PROGRESS_WITH_STRING( "node name is in use; appending underscore", m_new_name.c_str() );
+			NTG_TRACE_PROGRESS << "node name is in use; appending underscore: " << m_new_name;
 			m_new_name += "_";
 		}
 

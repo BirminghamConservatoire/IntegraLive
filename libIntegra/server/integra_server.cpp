@@ -63,7 +63,7 @@ void append_argument( const char **arguments, const char *argument )
 
     if( number_of_arguments >= MAXIMUM_ARGUMENTS )
     {
-        NTG_TRACE_ERROR("too many host arguments" );
+        NTG_TRACE_ERROR << "too many host arguments";
         return;
     }
 
@@ -79,7 +79,7 @@ void prepend_argument( const char **arguments, const char *argument )
 
     if( number_of_arguments >= MAXIMUM_ARGUMENTS )
     {
-        NTG_TRACE_ERROR("too many host arguments" );
+        NTG_TRACE_ERROR << "too many host arguments";
         return;
     }
 
@@ -137,9 +137,7 @@ int main( int argc, char *argv[] )
     const char *host_path = NULL;
     const char *host_arguments[ MAXIMUM_ARGUMENTS + 1 ];
 
-    ntg_trace_category_bits trace_category_bits = NO_TRACE_CATEGORY_BITS;
-    ntg_trace_options_bits trace_option_bits = NO_TRACE_OPTIONS_BITS;
-    unsigned short number_of_processes_to_close = 0;
+	unsigned short number_of_processes_to_close = 0;
 
     const char *process_names_to_close[ NUMBER_OF_PROCESSES_TO_CLOSE ];
 
@@ -156,6 +154,11 @@ int main( int argc, char *argv[] )
     bool trace_progress = true;
     bool trace_verbose = false;
 
+	bool trace_timestamp = false;
+	bool trace_location = false;
+	bool trace_thread = false;
+
+
     host_arguments[ 0 ] = NULL;
     command_name = base_name( argv[0] );
 
@@ -165,6 +168,7 @@ int main( int argc, char *argv[] )
         return -1;
     }
 
+	Sleep( 10000 );
 
     /*deal with commandline arguments */
     for( i = 1; i < argc; i++ )
@@ -228,19 +232,19 @@ int main( int argc, char *argv[] )
 
             if( memcmp( argument, "-trace_errors", flag_length ) == 0 )
             {
-                trace_errors = ( atoi(equals + 1) != 0 );
+                trace_errors = ( atoi( equals + 1 ) != 0 );
                 continue;
             }
 
             if( memcmp( argument, "-trace_progress", flag_length ) == 0 )
             {
-                trace_progress = ( atoi(equals + 1) != 0 );
+                trace_progress = ( atoi( equals + 1 ) != 0 );
                 continue;
             }
 
             if( memcmp( argument, "-trace_verbose", flag_length ) == 0 )
             {
-                trace_verbose = ( atoi(equals + 1) != 0 );
+                trace_verbose = ( atoi( equals + 1 ) != 0 );
                 continue;
             }
         }
@@ -249,19 +253,19 @@ int main( int argc, char *argv[] )
             /*test for options without values here: */
             if( strcmp( argument, "-timestamp_trace" ) == 0 )
             {
-                trace_option_bits = static_cast<ntg_trace_options_bits> ( trace_option_bits | TRACE_TIMESTAMP_BITS );
+				trace_timestamp = true;
                 continue;
             }
 
             if( strcmp( argument, "-locationstamp_trace" ) == 0 )
             {
-                trace_option_bits = static_cast<ntg_trace_options_bits> ( trace_option_bits | TRACE_LOCATION_BITS );
+				trace_location = true;
                 continue;
             }
 
             if( strcmp( argument, "-threadstamp_trace" ) == 0 )
             {
-                trace_option_bits = static_cast<ntg_trace_options_bits> ( trace_option_bits | TRACE_THREADSTAMP_BITS );
+				trace_thread = true;
                 continue;
             }
 
@@ -280,14 +284,11 @@ int main( int argc, char *argv[] )
     }
 
     /*set the tracing settings */
-    if( trace_errors ) trace_category_bits = static_cast<ntg_trace_category_bits>( trace_category_bits | TRACE_ERROR_BITS );
-    if( trace_progress ) trace_category_bits = static_cast<ntg_trace_category_bits>( trace_category_bits | TRACE_PROGRESS_BITS );
-    if( trace_verbose ) trace_category_bits = static_cast<ntg_trace_category_bits>( trace_category_bits | TRACE_VERBOSE_BITS );
-
-    ntg_set_trace_options(trace_category_bits, trace_option_bits);
+	CTrace::set_categories_to_trace( trace_errors, trace_progress, trace_verbose );
+	CTrace::set_details_to_trace( trace_timestamp, trace_location, trace_thread );
 
     /*close any processes that might be left over from a previous crash */
-    NTG_TRACE_PROGRESS("closing orphaned processes");
+    NTG_TRACE_PROGRESS << "closing orphaned processes";
     if( host_path != NULL && strlen( host_path ) > 0) 
 	{
         have_host_path = true;
@@ -311,15 +312,13 @@ int main( int argc, char *argv[] )
         host_process_handle = _spawnv( P_NOWAIT, host_path, host_arguments );
         if( host_process_handle < 0 )
         {
-            NTG_TRACE_ERROR_WITH_ERRNO("failed to start host: ");
+            NTG_TRACE_ERROR << "failed to start host: " << strerror( errno );
         }
     }
     else
     {
-        NTG_TRACE_ERROR("unable to start host - no path provided" );
+        NTG_TRACE_ERROR << "unable to start host - no path provided";
     }
-
-	Sleep( 10000 );
 
 
 	CServerApi *server = CServerApi::create_server( startup_info );
@@ -331,12 +330,12 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		NTG_TRACE_ERROR( "failed to create server" );
+		NTG_TRACE_ERROR << "failed to create server";
 	}
 
     if( host_process_handle > 0 )
     {
-		NTG_TRACE_PROGRESS("shutting down host");
+		NTG_TRACE_PROGRESS << "shutting down host";
 #ifdef _WINDOWS
         TerminateProcess( (HANDLE) host_process_handle, 0 );
 #else
@@ -345,7 +344,7 @@ int main( int argc, char *argv[] )
     } 
 	else 
 	{
-        NTG_TRACE_ERROR_WITH_INT( "couldn't kill host, PID was:", host_process_handle );
+        NTG_TRACE_ERROR << "couldn't kill host, PID was " << host_process_handle;
     }
 
     return 0;

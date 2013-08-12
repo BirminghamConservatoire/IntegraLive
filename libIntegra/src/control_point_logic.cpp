@@ -97,14 +97,14 @@ namespace ntg_internal
 	{
 		if( !envelope_node )
 		{
-			NTG_TRACE_ERROR( "Control point has no parent node!" );
+			NTG_TRACE_ERROR << "Control point has no parent node!";
 			return;
 		}
 
 		CEnvelopeLogic *envelope_logic = dynamic_cast< CEnvelopeLogic * > ( &envelope_node->get_logic() );
 		if( !envelope_logic )
 		{
-			NTG_TRACE_ERROR( "Control point is not inside an envelope!" );
+			NTG_TRACE_ERROR << "Control point is not inside an envelope!";
 			return;
 		}
 

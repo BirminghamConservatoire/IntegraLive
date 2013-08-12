@@ -92,7 +92,7 @@ namespace ntg_internal
 		CError error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
 		if( error != CError::SUCCESS ) 
 		{
-			NTG_TRACE_ERROR_WITH_STRING("couldn't load modules", filename.c_str() );
+			NTG_TRACE_ERROR << "couldn't load modules: " << filename;
 			goto CLEANUP;
 		}
 
@@ -100,7 +100,7 @@ namespace ntg_internal
 		error = load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
 		if( error != CError::SUCCESS ) 
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "couldn't load ixd", filename.c_str() );
+			NTG_TRACE_ERROR << "couldn't load ixd: " << filename;
 			goto CLEANUP;
 		}
 
@@ -110,7 +110,7 @@ namespace ntg_internal
 		error = validator.validate_ixd( (char *)ixd_buffer, ixd_buffer_length );
 		if( error != CError::SUCCESS ) 
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "ixd validation failed", filename.c_str() );
+			NTG_TRACE_ERROR << "ixd validation failed: " << filename;
 			goto CLEANUP;
 		}
 
@@ -118,7 +118,7 @@ namespace ntg_internal
 		reader = xmlReaderForMemory( (char *)ixd_buffer, ixd_buffer_length, NULL, NULL, 0 );
 		if( reader == NULL )
 		{
-			NTG_TRACE_ERROR_WITH_STRING("unable to read ixd", filename.c_str() );
+			NTG_TRACE_ERROR << "unable to read ixd: " << filename;
 			error = CError::FAILED;
 			goto CLEANUP;
 		}
@@ -130,7 +130,7 @@ namespace ntg_internal
 		error = load_nodes( server, parent, reader, new_nodes );
 		if( error != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "failed to load nodes", filename.c_str() );
+			NTG_TRACE_ERROR << "failed to load nodes: " << filename;
 			goto CLEANUP;
 		}
 
@@ -139,7 +139,7 @@ namespace ntg_internal
 		{
 			if( CDataDirectory::extract_from_zip( filename, parent ) != CError::SUCCESS )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "failed to load data directories", filename.c_str() );
+				NTG_TRACE_ERROR << "failed to load data directories: " << filename;
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace ntg_internal
 		{
 			if( send_loaded_values_to_host( **new_node_iterator, server.get_bridge() ) != CError::SUCCESS)
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "failed to send loaded attributes to host", filename.c_str() );
+				NTG_TRACE_ERROR << "failed to send loaded attributes to host: " << filename;
 				continue;
 			}
 		}
@@ -202,13 +202,13 @@ namespace ntg_internal
 		zip_file = zipOpen( filename.c_str(), APPEND_STATUS_CREATE );
 		if( !zip_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Failed to create zipfile", filename.c_str() );
+			NTG_TRACE_ERROR << "Failed to create zipfile: " << filename;
 			return CError::FAILED;
 		}
 
 		if( save_nodes( server, node, &ixd_buffer, &ixd_buffer_length ) != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Failed to save node tree", filename.c_str() );
+			NTG_TRACE_ERROR << "Failed to save node tree: " << filename;
 			return CError::FAILED;
 		}
 
@@ -238,7 +238,7 @@ namespace ntg_internal
 		FILE *input_file = fopen( source_path.c_str(), "rb" );
 		if( !input_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "couldn't open", source_path.c_str() );
+			NTG_TRACE_ERROR << "couldn't open: " << source_path;
 			return;
 		}
 
@@ -257,7 +257,7 @@ namespace ntg_internal
 			{
 				if( ferror( input_file ) )
 				{
-					NTG_TRACE_ERROR_WITH_STRING( "Error reading file", source_path.c_str() );
+					NTG_TRACE_ERROR << "Error reading file: " << source_path;
 					break;
 				}
 			}
@@ -293,21 +293,21 @@ namespace ntg_internal
 
 		if( unzLocateFile( unzip_file, s_internal_ixd_file_name.c_str(), 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( ( "Unable to locate " + s_internal_ixd_file_name ).c_str(), file_path.c_str() );
+			NTG_TRACE_ERROR << "Unable to locate " << s_internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
 
 		if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( ( "Couldn't get info for " + s_internal_ixd_file_name ).c_str(), file_path.c_str() );
+			NTG_TRACE_ERROR << "Couldn't get info for " << s_internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( ( "Unable to open " + s_internal_ixd_file_name ).c_str(), file_path.c_str() );
+			NTG_TRACE_ERROR << "Unable to open " << s_internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
@@ -317,7 +317,7 @@ namespace ntg_internal
 
 		if( unzReadCurrentFile( unzip_file, *ixd_buffer, *ixd_buffer_length ) != *ixd_buffer_length )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( ( "Unable to read " + s_internal_ixd_file_name ).c_str(), file_path.c_str() );
+			NTG_TRACE_ERROR << "Unable to read " << s_internal_ixd_file_name << " in " << file_path;
 			unzClose( unzip_file );
 			delete[] *ixd_buffer;
 			return CError::FAILED;
@@ -339,7 +339,7 @@ namespace ntg_internal
 		file = fopen( file_path.c_str(), "rb" );
 		if( !file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't open file", file_path.c_str() );
+			NTG_TRACE_ERROR << "Couldn't open file: " << file_path;
 			return CError::FAILED;
 		}
 
@@ -354,7 +354,7 @@ namespace ntg_internal
 
 		if( bytes_loaded != *ixd_buffer_length )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Error reading from file", file_path.c_str() );
+			NTG_TRACE_ERROR << "Error reading from file: " << file_path;
 			return CError::FAILED;
 		}
 
@@ -385,7 +385,7 @@ namespace ntg_internal
 			return CError::INPUT_ERROR;
 		}
 
-		NTG_TRACE_VERBOSE("loading... ");
+		NTG_TRACE_VERBOSE << "loading... ";
 		while( rv == 1 ) 
 		{
 			string element( ( const char * ) xmlTextReaderConstName( reader ) );
@@ -450,7 +450,7 @@ namespace ntg_internal
 					}
 					else
 					{
-						NTG_TRACE_ERROR( "Can't find interface - skipping element" );
+						NTG_TRACE_ERROR << "Can't find interface - skipping element";
 					}
 				}
 
@@ -503,9 +503,9 @@ namespace ntg_internal
 			rv = xmlTextReaderRead(reader);
 		}
 
-		NTG_TRACE_VERBOSE( "done!" );
+		NTG_TRACE_VERBOSE << "done!";
 
-		NTG_TRACE_VERBOSE( "Setting values..." );
+		NTG_TRACE_VERBOSE << "Setting values...";
 
 		for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
 		{
@@ -514,7 +514,7 @@ namespace ntg_internal
 			delete value_iterator->second;
 		}
 
-		NTG_TRACE_VERBOSE("done!");
+		NTG_TRACE_VERBOSE << "done!";
 
 		return CError::SUCCESS;
 	}
@@ -595,13 +595,13 @@ namespace ntg_internal
 
 		if( last_dot_in_saved_version == string::npos )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Can't parse version string", saved_version.c_str() );
+			NTG_TRACE_ERROR << "Can't parse version string: " << saved_version;
 			return false;
 		}
 
 		if( last_dot_in_current_version == string::npos )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Can't parse version string", current_version.c_str() );
+			NTG_TRACE_ERROR << "Can't parse version string: " << current_version;
 			return false;
 		}
 
@@ -670,7 +670,7 @@ namespace ntg_internal
 				{
 					if( module_manager.interpret_legacy_module_id( atoi( valuestr ), origin_guid ) != CError::SUCCESS )
 					{
-						NTG_TRACE_ERROR_WITH_STRING( "Failed to interpret legacy class id", valuestr );
+						NTG_TRACE_ERROR << "Failed to interpret legacy class id: " << valuestr;
 					}
 
 					xmlFree( valuestr );
@@ -717,7 +717,7 @@ namespace ntg_internal
 		write_buffer = xmlBufferCreate();
 		if( !write_buffer ) 
 		{
-			NTG_TRACE_ERROR( "error creating xml write buffer" );
+			NTG_TRACE_ERROR << "error creating xml write buffer";
 			return CError::FAILED;
 		}
 
@@ -725,7 +725,7 @@ namespace ntg_internal
 
 		if( writer == NULL ) 
 		{
-			NTG_TRACE_ERROR("Error creating the xml writer");
+			NTG_TRACE_ERROR << "Error creating the xml writer";
 			return CError::FAILED;
 		}
 
@@ -733,7 +733,7 @@ namespace ntg_internal
 		rc = xmlTextWriterStartDocument( writer, NULL, s_xml_encoding.c_str(), NULL );
 		if (rc < 0) 
 		{
-			NTG_TRACE_ERROR("Error at xmlTextWriterStartDocument");
+			NTG_TRACE_ERROR << "Error at xmlTextWriterStartDocument";
 			return CError::FAILED;
 		}
 
@@ -746,7 +746,7 @@ namespace ntg_internal
 
 		if( save_node_tree( node, writer ) != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR( "Failed to save node" );
+			NTG_TRACE_ERROR << "Failed to save node";
 			return CError::FAILED;
 		}
 
@@ -756,7 +756,7 @@ namespace ntg_internal
 
 		if (rc < 0) 
 		{
-			NTG_TRACE_ERROR("Error at xmlTextWriterEndDocument");
+			NTG_TRACE_ERROR << "Error at xmlTextWriterEndDocument";
 			return CError::FAILED;
 		}
 		xmlFreeTextWriter(writer);
@@ -782,13 +782,13 @@ namespace ntg_internal
 			const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( *i );
 			if( !interface_definition )
 			{
-				NTG_TRACE_ERROR( "Failed to retrieve interface" );
+				NTG_TRACE_ERROR << "Failed to retrieve interface";
 				continue;
 			}
 
 			if( interface_definition->get_file_path().empty() )
 			{
-				NTG_TRACE_ERROR( "Failed to locate module file" );
+				NTG_TRACE_ERROR << "Failed to locate module file";
 				continue;
 			}
 
@@ -924,7 +924,7 @@ namespace ntg_internal
 
 		if (!handler) 
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "ConvertInput: no encoding handler found for", encoding.c_str() );
+			NTG_TRACE_ERROR << "ConvertInput: no encoding handler found for " << encoding;
 			return NULL;
 		}
 
@@ -940,11 +940,11 @@ namespace ntg_internal
 			{
 				if (ret < 0) 
 				{
-					NTG_TRACE_ERROR("ConvertInput: conversion wasn't successful.");
+					NTG_TRACE_ERROR << "ConvertInput: conversion wasn't successful.";
 				} 
 				else 
 				{
-					NTG_TRACE_ERROR_WITH_INT( "ConvertInput: conversion wasn't successful. converted octets", temp );
+					NTG_TRACE_ERROR << "ConvertInput: conversion wasn't successful. converted octets: " << temp;
 				}
 
 				free(out);
@@ -961,7 +961,7 @@ namespace ntg_internal
 		} 
 		else 
 		{
-			NTG_TRACE_ERROR( "ConvertInput: no mem" );
+			NTG_TRACE_ERROR << "ConvertInput: no mem";
 		}
 
 		return out;

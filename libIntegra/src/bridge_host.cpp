@@ -44,7 +44,7 @@ void *ntg_bridge_load(const char *so_name)
     void *handle = NULL;
     char *error;
 
-    NTG_TRACE_PROGRESS_WITH_STRING("Trying to load bridge", so_name);
+    NTG_TRACE_PROGRESS << "Trying to load bridge: " << so_name;
 
     /* FIX: for now we just assume that a valid path has been passed in */
     handle = dlopen(so_name, RTLD_NOW | RTLD_LOCAL);
@@ -53,10 +53,13 @@ void *ntg_bridge_load(const char *so_name)
 
     error = dlerror();
 
-    if (handle != NULL) {
-        NTG_TRACE_PROGRESS("bridge loaded");
-    } else {
-        NTG_TRACE_ERROR("bridge not loaded");
+    if (handle != NULL) 
+	{
+        NTG_TRACE_PROGRESS << "bridge loaded";
+    } 
+	else 
+	{
+        NTG_TRACE_ERROR << "bridge not loaded";
         assert(false);
     }
 
@@ -67,27 +70,27 @@ void *ntg_bridge_load(const char *so_name)
     error = dlerror();
 
     if (error != NULL) {
-        NTG_TRACE_ERROR_WITH_STRING("dlerror", error);
+        NTG_TRACE_ERROR << "dlerror" << error;
     }
 
     if (interface_generator != NULL) {
-        NTG_TRACE_PROGRESS("Got interface generator, trying to load interface...");
+        NTG_TRACE_PROGRESS << "Got interface generator, trying to load interface...";
         if (*interface_generator != NULL) {
             bridge_interface =
                 (ntg_bridge_interface *) interface_generator[0] ();
         } else {
-            NTG_TRACE_ERROR("interface generator function is NULL");
+            NTG_TRACE_ERROR << "interface generator function is NULL";
             assert(false);
         }
     } else {
-        NTG_TRACE_ERROR("interface generator is NULL");
+        NTG_TRACE_ERROR << "interface generator is NULL";
         assert(false);
     }
 
     if (bridge_interface != NULL) {
-        NTG_TRACE_PROGRESS("...interface function loaded");
+        NTG_TRACE_PROGRESS << "...interface function loaded";
     } else {
-        NTG_TRACE_ERROR("bridge interface not loaded");
+        NTG_TRACE_ERROR << "bridge interface not loaded";
         assert(false);
     }
 

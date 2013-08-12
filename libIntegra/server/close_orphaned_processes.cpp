@@ -60,7 +60,7 @@ char *build_absolute_path(const char *filename)
 
 	if(getcwd(absolute_path, LONG_STRLEN) == NULL)
 	{
-		NTG_TRACE_ERROR("getcwd() failed");
+		NTG_TRACE_ERROR << "getcwd() failed";
 		free( absolute_path );
 		return NULL;
 	}
@@ -74,7 +74,7 @@ char *build_absolute_path(const char *filename)
 		last_separator = strrchr(absolute_path, PATH_SEPARATOR);
 		if(!last_separator)
 		{
-			NTG_TRACE_ERROR("failed to resolve absolute path - too many 'directory up' markers");
+			NTG_TRACE_ERROR << "failed to resolve absolute path - too many 'directory up' markers";
 			free( absolute_path );
 			return NULL;
 		}
@@ -92,7 +92,7 @@ char *build_absolute_path(const char *filename)
 	/*append filename*/
 	if(length_of_path + length_of_filename + 1 >= LONG_STRLEN)
 	{
-		NTG_TRACE_ERROR("failed to resolve absolute path - too long");
+		NTG_TRACE_ERROR << "failed to resolve absolute path - too long";
 		free( absolute_path );
 		return NULL;
 	}
@@ -141,7 +141,7 @@ void close_orphaned_processes(const char **filenames, int number_of_filenames)
 			absolute_paths_wide[number_of_absolute_paths] = new WCHAR[ LONG_STRLEN ];
 			if( mbstowcs_s( &number_of_characters, absolute_paths_wide[number_of_absolute_paths], LONG_STRLEN, absolute_path, LONG_STRLEN ) != 0 )
 			{
-				NTG_TRACE_ERROR("failed to convert path to wide-string");
+				NTG_TRACE_ERROR << "failed to convert path to wide-string";
 
 				/*failsafe - reset the string*/
 				*absolute_paths_wide[number_of_absolute_paths] = 0;
@@ -178,19 +178,19 @@ void close_orphaned_processes(const char **filenames, int number_of_filenames)
 								{
 									if(TerminateProcess(process_handle, 0) != 0)
 									{
-										NTG_TRACE_PROGRESS_WITH_STRING("Killed orphaned process", absolute_paths[i]);
+										NTG_TRACE_PROGRESS << "Killed orphaned process" << absolute_paths[ i ];
 										terminated = true;
 									}
 									else
 									{
-										NTG_TRACE_ERROR_WITH_INT("failed to terminate orphaned process.  Error", GetLastError());
+										NTG_TRACE_ERROR << "failed to terminate orphaned process.  Error:" << GetLastError();
 									}
 
 									CloseHandle(process_handle);
 								}
 								else
 								{
-									NTG_TRACE_ERROR_WITH_INT("failed to kill orphaned process - couldn't open process handle.  Error", GetLastError());
+									NTG_TRACE_ERROR << "failed to kill orphaned process - couldn't open process handle.  Error: " << GetLastError();
 								}
 							}
 						}
@@ -301,7 +301,7 @@ void close_orphaned_processes(const char **filenames, int number_of_filenames)
 #else
 void close_orphaned_processes(const char **filenames, int number_of_filenames)
 {
-	NTG_TRACE_ERROR("close_orphaned_processes not implemented on this OS, orphaned processes must be killed manually");
+	NTG_TRACE_ERROR << "close_orphaned_processes not implemented on this OS, orphaned processes must be killed manually";
 }
 #endif	
 #endif

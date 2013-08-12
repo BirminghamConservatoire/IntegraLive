@@ -114,7 +114,7 @@
 	{																			\
 		if( STORAGE_POINTER )													\
 		{																		\
-			NTG_TRACE_ERROR( "multiple " START_TAG " tags" );					\
+			NTG_TRACE_ERROR << "multiple " START_TAG " tags";					\
 			return CError::INPUT_ERROR;											\
 		}																		\
 		else																	\
@@ -152,7 +152,7 @@
 	{																			\
 		if( STORAGE_LOCATION.count( element_value ) > 0 )						\
 		{																		\
-			NTG_TRACE_ERROR_WITH_STRING( "duplicate", element_value.c_str());	\
+			NTG_TRACE_ERROR << "duplicate" << element_value;					\
 			return CError::INPUT_ERROR;											\
 		}																		\
 		else																	\
@@ -211,7 +211,7 @@ namespace ntg_internal
 		m_reader = xmlReaderForMemory( (char *) &buffer, buffer_size, NULL, NULL, 0 );
 		if( !m_reader )
 		{
-			NTG_TRACE_ERROR( "unable to read file" );
+			NTG_TRACE_ERROR << "unable to read file";
 			cleanup();
 			return NULL;
 		}
@@ -309,14 +309,14 @@ namespace ntg_internal
 		CError CError = do_sanity_check();
 		if( CError != CError::SUCCESS )
 		{
-			NTG_TRACE_ERROR( "sanity check failed" );
+			NTG_TRACE_ERROR << "sanity check failed";
 			cleanup();
 			return NULL;
 		}
 
 		m_interface_definition->propagate_defaults();
 
-		NTG_TRACE_VERBOSE_WITH_STRING( "Loaded ok", m_interface_definition->get_interface_info().get_name().c_str() );
+		NTG_TRACE_VERBOSE << "Loaded ok: " << m_interface_definition->get_interface_info().get_name();
 		CInterfaceDefinition *loaded_interface = m_interface_definition;
 		m_interface_definition = NULL;
 		cleanup();
@@ -494,7 +494,7 @@ namespace ntg_internal
 			INTERFACE DOT IMPLEMENTATION_INFO DOT PATCH_NAME,
 			m_interface_definition->m_implementation_info->m_patch_name );
 
-		NTG_TRACE_ERROR_WITH_STRING( "unhandled element", m_element_path.c_str() );
+		NTG_TRACE_ERROR << "unhandled element: " << m_element_path;
 	
 		return CError::SUCCESS;
 
@@ -586,7 +586,7 @@ namespace ntg_internal
 			{
 				if( CStringHelper::string_to_guid( module_guid_attribute, m_interface_definition->m_module_guid ) != CError::SUCCESS )
 				{
-					NTG_TRACE_ERROR_WITH_STRING( "Couldn't parse guid", module_guid_attribute );
+					NTG_TRACE_ERROR << "Couldn't parse guid: " << module_guid_attribute;
 					error = CError::INPUT_ERROR;
 				}
 
@@ -594,7 +594,7 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR( INTERFACE " lacks " ATTRIBUTE_MODULE_GUID " attribute" );
+				NTG_TRACE_ERROR << INTERFACE " lacks " ATTRIBUTE_MODULE_GUID " attribute";
 				error = CError::INPUT_ERROR;
 			}
 
@@ -603,7 +603,7 @@ namespace ntg_internal
 			{
 				if( CStringHelper::string_to_guid( origin_guid_attribute, m_interface_definition->m_origin_guid ) != CError::SUCCESS )
 				{
-					NTG_TRACE_ERROR_WITH_STRING( "Couldn't parse guid", origin_guid_attribute );
+					NTG_TRACE_ERROR << "Couldn't parse guid: " << origin_guid_attribute;
 					error = CError::INPUT_ERROR;
 				}
 
@@ -611,7 +611,7 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR( INTERFACE " lacks " ATTRIBUTE_ORIGIN_GUID " attribute" );
+				NTG_TRACE_ERROR << INTERFACE " lacks " ATTRIBUTE_ORIGIN_GUID " attribute";
 				error = CError::INPUT_ERROR;
 			}
 		}
@@ -786,7 +786,7 @@ namespace ntg_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR_WITH_STRING( "invalid boolean", input.c_str() );
+		NTG_TRACE_ERROR << "invalid boolean: " << input;
 		return CError::INPUT_ERROR;
 	}
 
@@ -819,7 +819,7 @@ namespace ntg_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR_WITH_STRING( "invalid endpoint type", input.c_str() );
+		NTG_TRACE_ERROR << "invalid endpoint type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -838,7 +838,7 @@ namespace ntg_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR_WITH_STRING( "invalid control type", input.c_str() );
+		NTG_TRACE_ERROR << "invalid control type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -863,7 +863,7 @@ namespace ntg_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR_WITH_STRING( "invalid value type", input.c_str() );
+		NTG_TRACE_ERROR << "invalid value type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -888,7 +888,7 @@ namespace ntg_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR_WITH_STRING( "invalid scale type", input.c_str() );
+		NTG_TRACE_ERROR << "invalid scale type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -901,7 +901,7 @@ namespace ntg_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR_WITH_STRING( "invalid stream type", input.c_str() );
+		NTG_TRACE_ERROR << "invalid stream type: " << input;
 		return CError::INPUT_ERROR;	
 	}
 
@@ -920,7 +920,7 @@ namespace ntg_internal
 			return CError::SUCCESS;
 		}
 
-		NTG_TRACE_ERROR_WITH_STRING( "invalid stream direction", input.c_str() );
+		NTG_TRACE_ERROR << "invalid stream direction: " << input;
 		return CError::INPUT_ERROR;
 	}
 

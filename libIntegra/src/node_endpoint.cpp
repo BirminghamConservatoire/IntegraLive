@@ -76,14 +76,14 @@ namespace ntg_internal
 		const CControlInfo *control_info = m_endpoint_definition->get_control_info();
 		if( !control_info ) 
 		{
-			NTG_TRACE_ERROR( "not a constrained type of endpoint" );
+			NTG_TRACE_ERROR << "not a constrained type of endpoint";
 			return false;
 		}
 
 		const CStateInfo *state_info = control_info->get_state_info();
 		if( !state_info )
 		{
-			NTG_TRACE_ERROR( "not a constrained type of endpoint" );
+			NTG_TRACE_ERROR << "not a constrained type of endpoint";
 			return false;
 		}
 
@@ -140,7 +140,7 @@ namespace ntg_internal
 					}
 
 				default:
-					NTG_TRACE_ERROR( "unhandled value type" );
+					NTG_TRACE_ERROR << "unhandled value type";
 					return false;
 			}
 		}

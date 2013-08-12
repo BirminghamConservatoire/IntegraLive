@@ -122,7 +122,7 @@ namespace ntg_internal
 	{
 		if( !m_implementation_info )
 		{
-			NTG_TRACE_ERROR( "Can't set checksum - no interface" );
+			NTG_TRACE_ERROR << "Can't set checksum - no interface";
 			return;
 		}
 

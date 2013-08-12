@@ -42,7 +42,7 @@ namespace ntg_internal
 		const string &path = node.get_path();
 		if( m_nodes.count( path ) > 0 )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "duplicate key in state table", path.c_str() );
+			NTG_TRACE_ERROR << "duplicate key in state table: " << path;
 		}
 		else
 		{
@@ -53,7 +53,7 @@ namespace ntg_internal
 		internal_id id = node.get_id();
 		if( m_nodes_by_id.count( id ) > 0 )
 		{
-			NTG_TRACE_ERROR_WITH_INT( "duplicate key in state table", id );
+			NTG_TRACE_ERROR << "duplicate key in state table: " << id;
 		}
 		else
 		{
@@ -68,7 +68,7 @@ namespace ntg_internal
 			const string &path = node_endpoint->get_path();
 			if( m_node_endpoints.count( path ) > 0 )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "duplicate key in state table", path.c_str() );
+				NTG_TRACE_ERROR << "duplicate key in state table: " << path;
 			}
 			else
 			{
@@ -92,7 +92,7 @@ namespace ntg_internal
 		const string &path = node.get_path();
 		if( m_nodes.count( path ) != 1 )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "missing key in state table", path.c_str() );
+			NTG_TRACE_ERROR << "missing key in state table: " << path;
 		}
 		else
 		{
@@ -103,7 +103,7 @@ namespace ntg_internal
 		internal_id id = node.get_id();
 		if( m_nodes_by_id.count( id ) != 1 )
 		{
-			NTG_TRACE_ERROR_WITH_INT( "missing key in state table", id );
+			NTG_TRACE_ERROR << "missing key in state table: " << id;
 		}
 		else
 		{
@@ -118,7 +118,7 @@ namespace ntg_internal
 			const string &path = node_endpoint->get_path();
 			if( m_node_endpoints.count( path ) != 1 )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "missing key in state table", path.c_str() );
+				NTG_TRACE_ERROR << "missing key in state table: " << path;
 			}
 			else
 			{

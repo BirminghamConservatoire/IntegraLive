@@ -69,7 +69,7 @@ namespace ntg_api
 
 	std::ostream &CTrace::verbose( const char *location )
 	{
-		if( !s_trace_progress )
+		if( !s_trace_verbose )
 		{
 			return s_null_stream;
 		}
@@ -109,12 +109,6 @@ namespace ntg_api
 			s_trace_stream << " [" << timestamp_string << "]";
 		}
 
-		if( s_trace_location )
-		{
-			s_trace_stream << " " << location;
-		}
-
-
 		if( s_trace_thread )
 		{
 			pthread_t thread_id = pthread_self();
@@ -124,10 +118,15 @@ namespace ntg_api
 
 			for( int i = 0; i < sizeof( thread_id ); i++ )
 			{
-				s_trace_stream << thread_id_bytes[ i ];
+				s_trace_stream << ( int ) ( thread_id_bytes[ i ] );
 			}
 
 			s_trace_stream << std::dec;
+		}
+
+		if( s_trace_location )
+		{
+			s_trace_stream << " " << location;
 		}
 
 		s_trace_stream << "     ";
@@ -135,148 +134,3 @@ namespace ntg_api
 }
 
 
-
-
-#if 0 //deprecated
-
-
-#include "globals.h"
-
-#define VALUE_SEPARATOR ": "
-#define MAX_NUMBER_LENGTH 32
-#define MAX_TIMESTAMP_LENGTH 32
-
-
-void ntg_trace(ntg_trace_category_bits trace_category, const char *location, const char *message)
-{
-	time_t rawtime;
-	char timestamp_string[ MAX_TIMESTAMP_LENGTH ];
-
-	pthread_t thread_id;
-	const unsigned char *thread_id_bytes;
-	int i;
-
-	if( (trace_category_bits & trace_category) == 0)
-	{
-		return;
-	}
-
-	switch( trace_category )
-	{
-		case TRACE_ERROR_BITS:
-			printf("Error");
-			break;
-
-		case TRACE_PROGRESS_BITS:
-			printf("Progress");
-			break;
-
-		case TRACE_VERBOSE_BITS:
-			printf("Verbose");
-			break;
-
-		default:
-			printf("<unknown trace category>");
-			break;
-	}
-
-	if(trace_option_bits & TRACE_TIMESTAMP_BITS)
-	{
-		time(&rawtime);
-		strftime(timestamp_string, MAX_TIMESTAMP_LENGTH, "%X %x", localtime(&rawtime));
-		printf(" [%s]", timestamp_string);
-	}
-
-	if(trace_option_bits & TRACE_LOCATION_BITS)
-	{
-		printf(" %s", location);
-	}
-
-	if(trace_option_bits & TRACE_THREADSTAMP_BITS)
-	{
-		printf(" threadID: 0x");
-
-		thread_id = pthread_self();
-		thread_id_bytes = (const unsigned char *)(&thread_id);
-
-		for(i=0; i<sizeof(thread_id); i++)
-		{
-			printf("%02x", thread_id_bytes[ i ] );
-		}
-	}
-
-	printf("     %s\n", message);
-
-	fflush(stdout);
-}
-
-
-void ntg_trace_with_int(ntg_trace_category_bits trace_category, const char *location, const char *message, int int_value)
-{
-	char *trace_string = NULL;
-	int max_length = 0;
-
-	if( (trace_category_bits & trace_category) == 0)
-	{
-		return;
-	}
-
-	max_length = strlen( message ) + strlen( VALUE_SEPARATOR ) + MAX_NUMBER_LENGTH;
-	trace_string = new char[ max_length ];
-	snprintf( trace_string, max_length, "%s%s%i", message, VALUE_SEPARATOR, int_value );
-
-	ntg_trace( trace_category, location, trace_string );
-
-	delete[] trace_string;
-}
-
-
-void ntg_trace_with_float(ntg_trace_category_bits trace_category, const char *location, const char *message, float float_value)
-{
-	char *trace_string = NULL;
-	int max_length = 0;
-
-	if( (trace_category_bits & trace_category) == 0)
-	{
-		return;
-	}
-
-	max_length = strlen( message ) + strlen( VALUE_SEPARATOR ) + MAX_NUMBER_LENGTH;
-	trace_string = new char[ max_length ];
-	snprintf( trace_string, max_length, "%s%s%.3f", message, VALUE_SEPARATOR, float_value );
-
-	ntg_trace( trace_category, location, trace_string );
-
-	delete[] trace_string;
-}
-
-
-void ntg_trace_with_string(ntg_trace_category_bits trace_category, const char *location, const char *message, const char *string_value)
-{
-	char *trace_string = NULL;
-	int max_length = 0;
-
-	if( (trace_category_bits & trace_category) == 0)
-	{
-		return;
-	}
-
-	max_length = strlen( message ) + strlen( VALUE_SEPARATOR ) + strlen( string_value ) + 1;
-	trace_string = new char[ max_length ];
-	snprintf( trace_string, max_length, "%s%s%s", message, VALUE_SEPARATOR, string_value );
-
-	ntg_trace( trace_category, location, trace_string );
-
-	delete [] trace_string;
-}
-
-
-void ntg_set_trace_options(ntg_trace_category_bits categories_to_trace, ntg_trace_options_bits trace_options)
-{
-	trace_category_bits = categories_to_trace;
-	trace_option_bits = trace_options;
-}
-
-
-
-#endif //deprecated

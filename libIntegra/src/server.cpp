@@ -48,6 +48,8 @@ extern "C"
 #include "api/command_api.h"
 
 #include <assert.h>
+#include <iostream>
+
 
 namespace ntg_api
 {
@@ -63,26 +65,26 @@ namespace ntg_api
 
 		if( startup_info.bridge_path.empty() ) 
 		{
-			NTG_TRACE_ERROR("bridge_path is empty" );
+			NTG_TRACE_ERROR << "bridge_path is empty";
 			return NULL;
 		}
 
 		struct stat file_buffer;
 		if( stat( startup_info.bridge_path.c_str(), &file_buffer ) != 0 ) 
 		{
-			NTG_TRACE_ERROR( "bridge_path points to a nonexsitant file" );
+			NTG_TRACE_ERROR << "bridge_path points to a nonexsitant file";
 			return NULL;
 		}
 
 		if( startup_info.system_module_directory.empty() ) 
 		{
-			NTG_TRACE_ERROR("system_module_directory is empty" );
+			NTG_TRACE_ERROR << "system_module_directory is empty";
 			return NULL;
 		}
 
 		if( startup_info.third_party_module_directory.empty() ) 
 		{
-			NTG_TRACE_ERROR("third_party_module_directory is empty" );
+			NTG_TRACE_ERROR << "third_party_module_directory is empty";
 			return NULL;
 		}
 
@@ -96,7 +98,7 @@ namespace ntg_internal
 	#ifdef _WINDOWS
 		static void invalid_parameter_handler( const wchar_t * expression, const wchar_t * function, const wchar_t * file, unsigned int line, uintptr_t pReserved )
 		{
-			NTG_TRACE_ERROR( "CRT encoutered invalid parameter!" );
+			NTG_TRACE_ERROR << "CRT encoutered invalid parameter!";
 		}
 	#endif
 
@@ -121,7 +123,7 @@ namespace ntg_internal
 		}
 		else
 		{
-			NTG_TRACE_ERROR_WITH_INT("couldn't find node with id", id );
+			NTG_TRACE_ERROR << "couldn't find node with id " << id;
 		}
 
 		server_->unlock();
@@ -130,7 +132,7 @@ namespace ntg_internal
 
 	CServer::CServer( const CServerStartupInfo &startup_info )
 	{
-		NTG_TRACE_PROGRESS_WITH_STRING( "libIntegra version", get_libintegra_version().c_str() );
+		NTG_TRACE_PROGRESS << "libIntegra version " << get_libintegra_version();
 
 		server_ = this;
 
@@ -162,7 +164,7 @@ namespace ntg_internal
 		} 
 		else 
 		{
-			NTG_TRACE_ERROR( "bridge failed to load" );
+			NTG_TRACE_ERROR << "bridge failed to load";
 		}
 
 		/* Add the server receive callback to the bridge's methods */
@@ -177,13 +179,13 @@ namespace ntg_internal
 		ntg_sig_setup();
 	#endif
 
-		NTG_TRACE_PROGRESS( "Server construction complete" );
+		NTG_TRACE_PROGRESS << "Server construction complete";
 	}
 
 
 	CServer::~CServer()
 	{
-		NTG_TRACE_PROGRESS("setting terminate flag");
+		NTG_TRACE_PROGRESS << "setting terminate flag";
 
 		lock();
 		m_terminate = true; /* FIX: use a semaphore or condition */
@@ -208,15 +210,15 @@ namespace ntg_internal
 
 		delete m_player_handler;
 
-		NTG_TRACE_PROGRESS( "shutting down OSC client" );
+		NTG_TRACE_PROGRESS << "shutting down OSC client";
 		ntg_osc_client_destroy( m_osc_client );
 		
-		NTG_TRACE_PROGRESS("shutting down XMLRPC interface");
+		NTG_TRACE_PROGRESS << "shutting down XMLRPC interface";
 		ntg_xmlrpc_server_terminate();
 
 		/* FIX: for now we only support the old 'stable' xmlrpc-c, which can't
 		   wake up a sleeping server */
-		NTG_TRACE_PROGRESS("joining xmlrpc thread");
+		NTG_TRACE_PROGRESS << "joining xmlrpc thread";
 		pthread_join( m_xmlrpc_thread, NULL );
 
 
@@ -227,12 +229,12 @@ namespace ntg_internal
 		dlclose(bridge_handle);
 		*/
 
-		NTG_TRACE_PROGRESS( "cleaning up XML parser" );
+		NTG_TRACE_PROGRESS << "cleaning up XML parser";
 		xmlCleanupParser();
 		xmlCleanupGlobals();
 
 
-		NTG_TRACE_PROGRESS( "done!" );
+		NTG_TRACE_PROGRESS << "done!";
 
 		server_ = NULL;
 
@@ -240,17 +242,17 @@ namespace ntg_internal
 
 		pthread_mutex_destroy( &m_mutex );
 
-		NTG_TRACE_PROGRESS( "server destruction complete" );
+		NTG_TRACE_PROGRESS << "server destruction complete";
 	}
 
 
 	void CServer::block_until_shutdown_signal()
 	{
-		NTG_TRACE_PROGRESS("server blocking until shutdown signal...");
+		NTG_TRACE_PROGRESS << "server blocking until shutdown signal...";
 
 		sem_wait( SEM_SYSTEM_SHUTDOWN );
 
-		NTG_TRACE_PROGRESS("server blocking finished...");
+		NTG_TRACE_PROGRESS << "server blocking finished...";
 	}
 
 
@@ -374,12 +376,12 @@ namespace ntg_internal
 
 			for( int i = 0; i < indentation; i++ )
 			{
-				printf("  |");
+				std::cout << "  |";
 			}
 
 			const CInterfaceDefinition &interface_definition = node->get_interface_definition();
 			string module_id_string = CStringHelper::guid_to_string( interface_definition.get_module_guid() );
-			printf("  Node: \"%s\".\t module name: %s.\t module id: %s.\t Path: %s\n", node->get_name(), interface_definition.get_interface_info().get_name().c_str(), module_id_string.c_str(), node->get_path().get_string().c_str() );
+			std::cout << "  Node: \"" << node->get_name() << "\".\t module name: " << interface_definition.get_interface_info().get_name() << ".\t module id: " << module_id_string << ".\t Path: " << node->get_path().get_string() << std::endl;
 
 			bool has_children = !node->get_children().empty();
 
@@ -392,14 +394,14 @@ namespace ntg_internal
 
 				for( int i = 0; i < indentation; i++ )
 				{
-					printf("  |");
+					std::cout << "  |";
 				}
 
-				printf( has_children ? "  |" : "   ");
+				std::cout << ( has_children ? "  |" : "   " );
 
 				string value_string = value->get_as_string();
 
-				printf("   -Attribute:  %s = %s\n", node_endpoint->get_endpoint_definition().get_name().c_str(), value_string.c_str() );
+				std::cout << "   -Attribute:  " << node_endpoint->get_endpoint_definition().get_name() << " = " << value_string << std::endl;
 			}
 		
 			if( has_children )
@@ -412,10 +414,11 @@ namespace ntg_internal
 
 	void CServer::dump_state()
 	{
-		printf("Print State:\n");
-		printf("***********:\n\n");
-		dump_state( server_->get_nodes(), 0 );
-		fflush( stdout );
+		std::cout << std::endl;
+		std::cout << "Print State:" << std::endl;
+		std::cout << "************" << std::endl;
+		std::cout << std::endl;
+		dump_state( get_nodes(), 0 );
 	}
 
 
@@ -464,7 +467,7 @@ namespace ntg_internal
 			version_info = new BYTE[ size ];
 			if (!GetFileVersionInfo(file_name, handle, size, version_info))
 			{
-				NTG_TRACE_ERROR( "Failed to read version number from module" );
+				NTG_TRACE_ERROR << "Failed to read version number from module";
 				delete[] version_info;
 
 				return "<failed to read version number>";

@@ -73,7 +73,7 @@ namespace ntg_internal
 
 	CPlayerHandler::~CPlayerHandler()
 	{
-		NTG_TRACE_PROGRESS( "stopping player thread" );
+		NTG_TRACE_PROGRESS << "stopping player thread";
 
 		sem_post( m_thread_shutdown_semaphore );
 		pthread_join( m_thread, NULL);
@@ -85,7 +85,7 @@ namespace ntg_internal
 			delete m_thread_shutdown_semaphore;
 		#endif
 
-		NTG_TRACE_PROGRESS( "freeing player states" );
+		NTG_TRACE_PROGRESS << "freeing player states";
 
 		pthread_mutex_lock( &m_mutex );
 

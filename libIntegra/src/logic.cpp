@@ -240,7 +240,7 @@ namespace ntg_internal
 	{
 		if( !input_file.get_value() || input_file.get_value()->get_type() != CValue::STRING )
 		{
-			NTG_TRACE_ERROR( "input file endpoint has no value, or value is not a string" );
+			NTG_TRACE_ERROR << "input file endpoint has no value, or value is not a string";
 			return false;
 		}
 
@@ -292,7 +292,7 @@ namespace ntg_internal
 		const CValue *value = data_directory->get_value();
 		if( !value || value->get_type() != CValue::STRING ) 
 		{
-			NTG_TRACE_ERROR( "data directory endpoint has no value or value is of unexpected type" );
+			NTG_TRACE_ERROR << "data directory endpoint has no value or value is of unexpected type";
 			return NULL;
 		}
 
@@ -381,7 +381,7 @@ namespace ntg_internal
 	{
 		if( !has_data_directory() )
 		{
-			NTG_TRACE_ERROR( "can't handle input file - node doesn't have data directory" );
+			NTG_TRACE_ERROR << "can't handle input file - node doesn't have data directory";
 			return;
 		}
 
@@ -435,7 +435,7 @@ namespace ntg_internal
 			{
 				if( changed_endpoint.get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL || !changed_endpoint.get_endpoint_definition().get_control_info()->get_can_be_source() )
 				{
-					NTG_TRACE_ERROR( "aborting handling of connection from endpoint which cannot be a connection source" );
+					NTG_TRACE_ERROR << "aborting handling of connection from endpoint which cannot be a connection source";
 					continue;
 				}
 
@@ -451,7 +451,7 @@ namespace ntg_internal
 
 					if( destination_endpoint->get_endpoint_definition().get_type() != CEndpointDefinition::CONTROL || !destination_endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 					{
-						NTG_TRACE_ERROR( "aborting handling of connection to endpoint which cannot be a connection target" );
+						NTG_TRACE_ERROR << "aborting handling of connection to endpoint which cannot be a connection target";
 						continue;
 					}
 
@@ -505,7 +505,7 @@ namespace ntg_internal
 			const CValue *allowed_state = *i;
 			if( value.get_type() != allowed_state->get_type() )
 			{
-				NTG_TRACE_ERROR( "Value type mismatch whilst quantizing to allowed states" );
+				NTG_TRACE_ERROR << "Value type mismatch whilst quantizing to allowed states";
 				continue;
 			}
 
@@ -520,7 +520,7 @@ namespace ntg_internal
 
 		if( !nearest_allowed_state )
 		{
-			NTG_TRACE_ERROR( "failed to quantize to allowed states - allowed states is empty" );
+			NTG_TRACE_ERROR << "failed to quantize to allowed states - allowed states is empty";
 			return;
 		}
 
@@ -541,7 +541,7 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR( "Failed to lookup connection interface" );
+				NTG_TRACE_ERROR << "Failed to lookup connection interface";
 			}
 		}
 
@@ -556,13 +556,13 @@ namespace ntg_internal
 
 		if( !source_endpoint_definition.is_audio_stream() || source_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::OUTPUT )
 		{
-			NTG_TRACE_ERROR( "trying to make incorrect connection in host - source isn't an audio output" );
+			NTG_TRACE_ERROR << "trying to make incorrect connection in host - source isn't an audio output";
 			return CError::INPUT_ERROR;
 		}
 
 		if( !target_endpoint_definition.is_audio_stream() || target_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::INPUT )
 		{
-			NTG_TRACE_ERROR( "trying to make incorrect connection in host - target isn't an audio output" );
+			NTG_TRACE_ERROR << "trying to make incorrect connection in host - target isn't an audio output";
 			return CError::INPUT_ERROR;
 		}
 

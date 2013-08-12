@@ -111,7 +111,7 @@ namespace ntg_internal
 
 		if( new_source_endpoint && new_source_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_source_endpoint->get_endpoint_definition().get_control_info()->get_can_be_source() )
 		{
-			NTG_TRACE_ERROR( "Setting connection source to an endpoint which should not be a connection source!" );
+			NTG_TRACE_ERROR << "Setting connection source to an endpoint which should not be a connection source!";
 		}
 
 		if( !target_endpoint || !target_endpoint->get_endpoint_definition().is_audio_stream() )
@@ -169,7 +169,7 @@ namespace ntg_internal
 
 		if( new_target_endpoint && new_target_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_target_endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 		{
-			NTG_TRACE_ERROR( "Setting connection target to an endpoint which should not be a connection target!" );
+			NTG_TRACE_ERROR << "Setting connection target to an endpoint which should not be a connection target!";
 		}
 
 

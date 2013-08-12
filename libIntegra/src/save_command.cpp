@@ -60,13 +60,13 @@ namespace ntg_internal
 
 		if( m_file_path.empty() ) 
 		{
-			NTG_TRACE_ERROR( "file path is empty " );
+			NTG_TRACE_ERROR  <<  "file path is empty";
 			return CError::INPUT_ERROR;
 		}
 
 		string file_path_with_suffix = CFileHelper::ensure_filename_has_suffix( m_file_path, CFileIO::s_file_suffix );
 
-		NTG_TRACE_PROGRESS_WITH_STRING( "saving to", file_path_with_suffix.c_str() );
+		NTG_TRACE_PROGRESS << "saving to " << file_path_with_suffix;
 
 		return CFileIO::save( server, file_path_with_suffix, *node );
 	}

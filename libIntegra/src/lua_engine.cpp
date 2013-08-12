@@ -371,7 +371,7 @@ namespace ntg_internal
 
 		if( luaL_dostring( state, init_script.c_str() ) )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Failed to initialize lua state", lua_tostring( state, -1 ) );
+			NTG_TRACE_ERROR << "Failed to initialize lua state: " << lua_tostring( state, -1 );
 		}
 
 		return state;
@@ -413,7 +413,7 @@ namespace ntg_internal
 			va_end(argp);
 		}
 
-		NTG_TRACE_VERBOSE_WITH_STRING( "luascript output", progress_string );
+		NTG_TRACE_VERBOSE << "luascript output: " << progress_string;
 
 		/* replace illegal characters with space, to prevent invalid html */
 		int progress_string_length = strlen( progress_string );

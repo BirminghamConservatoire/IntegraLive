@@ -97,7 +97,7 @@ namespace ntg_internal
 		DIR *directory_stream = opendir( directory_name.c_str() );
 		if( !directory_stream )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "unable to open directory", directory_name.c_str() );
+			NTG_TRACE_ERROR << "unable to open directory " << directory_name;
 			return;
 		}
 
@@ -122,7 +122,7 @@ namespace ntg_internal
 			struct stat entry_data;
 			if( stat( full_path.c_str(), &entry_data ) != 0 )
 			{
-				NTG_TRACE_ERROR_WITH_ERRNO( "couldn't read directory entry data" );
+				NTG_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
 				continue;
 			}
 
@@ -143,7 +143,7 @@ namespace ntg_internal
 
 		if( rmdir( directory_name.c_str() ) != 0 )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Failed to remove directory", directory_name.c_str() );
+			NTG_TRACE_ERROR << "Failed to remove directory " << directory_name;
 		}
 	}
 
@@ -152,7 +152,7 @@ namespace ntg_internal
 	{
 		if( remove( file_name.c_str() ) != 0 )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Failed to remove file", file_name.c_str() );
+			NTG_TRACE_ERROR << "Failed to remove file " << file_name;
 			return CError::FAILED;
 		}
 
@@ -167,7 +167,7 @@ namespace ntg_internal
 		FILE *source_file = fopen( source_path.c_str(), "rb" );
 		if( !source_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "failed to open", source_path.c_str() );
+			NTG_TRACE_ERROR << "failed to open: " << source_path;
 			return CError::FAILED;
 		}
 
@@ -178,7 +178,7 @@ namespace ntg_internal
 		FILE *target_file = fopen( target_path.c_str(), "wb" );
 		if( !target_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "couldn't open for writing", target_path.c_str() );
+			NTG_TRACE_ERROR << "couldn't open for writing: " << target_path;
 			goto CLEANUP;
 		}
 
@@ -189,7 +189,7 @@ namespace ntg_internal
 			unsigned long bytes_read = fread( copy_buffer, 1, MIN( bytes_to_copy, CFileIO::s_data_copy_buffer_size ), source_file );
 			if( bytes_read <= 0 )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "error reading", source_path.c_str() );
+				NTG_TRACE_ERROR << "error reading: " << source_path;
 				goto CLEANUP;
 			}
 

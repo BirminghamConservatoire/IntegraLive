@@ -85,7 +85,7 @@ namespace ntg_api
 	{
 		if( index < 0 || index >= m_elements.size() )
 		{
-			NTG_TRACE_ERROR_WITH_INT( "Incorrect index", index );
+			NTG_TRACE_ERROR << "Incorrect index:" << index;
 			static string dummy;
 			return dummy;
 		}
@@ -117,7 +117,7 @@ namespace ntg_api
 		int number_of_elements = m_elements.size();
 		if( number_of_elements == 0 )
 		{
-			NTG_TRACE_ERROR( "trying to pop empty path" );
+			NTG_TRACE_ERROR << "trying to pop empty path";
 			return "";
 		}
 
@@ -134,7 +134,7 @@ namespace ntg_api
 	{
 		if( element.find_first_not_of( CStringHelper::s_node_name_character_set ) != string::npos )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Invalid element name", element.c_str() );
+			NTG_TRACE_ERROR << "Invalid element name: " << element;
 			return;
 		}
 

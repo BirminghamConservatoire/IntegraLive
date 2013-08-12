@@ -64,7 +64,7 @@ namespace ntg_internal
 	{
 		if( m_stack.empty() )
 		{
-			NTG_TRACE_ERROR( "attempt to pop empty queue" );
+			NTG_TRACE_ERROR << "attempt to pop empty queue";
 			return;
 		}
 

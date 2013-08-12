@@ -129,7 +129,7 @@ namespace ntg_internal
 		unzip_file = unzOpen( integra_file.c_str() );
 		if( !unzip_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't open zip file", integra_file.c_str() );
+			NTG_TRACE_ERROR << "Couldn't open zip file: " << integra_file;
 			return CError::FAILED;
 		}
 
@@ -137,7 +137,7 @@ namespace ntg_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Couldn't iterate contents", integra_file.c_str() );
+			NTG_TRACE_ERROR << "Couldn't iterate contents: " << integra_file;
 			unzClose( unzip_file );
 			return CError::FAILED;
 		}
@@ -151,7 +151,7 @@ namespace ntg_internal
 
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Couldn't extract file info", integra_file.c_str() );
+				NTG_TRACE_ERROR << "Couldn't extract file info: " << integra_file;
 				continue;
 			}
 
@@ -164,7 +164,7 @@ namespace ntg_internal
 			temporary_file_name = tempnam( server_->get_scratch_directory().c_str(), "embedded_module" );
 			if( !temporary_file_name )
 			{
-				NTG_TRACE_ERROR( "couldn't generate temporary filename" );
+				NTG_TRACE_ERROR << "couldn't generate temporary filename";
 				CError = CError::FAILED;
 				continue;
 			}
@@ -172,14 +172,14 @@ namespace ntg_internal
 			temporary_file = fopen( temporary_file_name, "wb" );
 			if( !temporary_file )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "couldn't open temporary file", temporary_file_name );
+				NTG_TRACE_ERROR << "couldn't open temporary file: " << temporary_file_name;
 				CError = CError::FAILED;
 				goto CLEANUP;
 			}
 
 			if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "couldn't open zip contents", file_name );
+				NTG_TRACE_ERROR << "couldn't open zip contents: " << file_name;
 				CError = CError::FAILED;
 				goto CLEANUP;
 			}
@@ -193,7 +193,7 @@ namespace ntg_internal
 				bytes_read = unzReadCurrentFile( unzip_file, copy_buffer, MIN( CFileIO::s_data_copy_buffer_size, bytes_remaining ) );
 				if( bytes_read <= 0 )
 				{
-					NTG_TRACE_ERROR( "Error decompressing file" );
+					NTG_TRACE_ERROR << "Error decompressing file";
 					CError = CError::FAILED;
 					goto CLEANUP;
 				}
@@ -260,7 +260,7 @@ namespace ntg_internal
 		const CInterfaceDefinition *existing_interface = get_interface_by_module_id( module_id );
 		if( !existing_interface )
 		{
-			NTG_TRACE_ERROR( "can't lookup existing interface" );
+			NTG_TRACE_ERROR << "can't lookup existing interface";
 			return CError::FAILED;
 		}
 
@@ -278,7 +278,7 @@ namespace ntg_internal
 
 			default:
 
-				NTG_TRACE_ERROR( "existing interface has unexpected module source" );
+				NTG_TRACE_ERROR << "existing interface has unexpected module source";
 				return CError::FAILED;
 		}
 	}
@@ -289,13 +289,13 @@ namespace ntg_internal
 		const CInterfaceDefinition *interface_definition = get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
-			NTG_TRACE_ERROR( "Can't find interface" );
+			NTG_TRACE_ERROR << "Can't find interface";
 			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_EMBEDDED )
 		{
-			NTG_TRACE_ERROR( "Module isn't embedded" );
+			NTG_TRACE_ERROR << "Module isn't embedded";
 			return CError::INPUT_ERROR;
 		}
 
@@ -312,13 +312,13 @@ namespace ntg_internal
 		const CInterfaceDefinition *interface_definition = get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
-			NTG_TRACE_ERROR( "Can't find interface" );
+			NTG_TRACE_ERROR << "Can't find interface";
 			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_module_source() != CInterfaceDefinition::MODULE_3RD_PARTY )
 		{
-			NTG_TRACE_ERROR( "Can't uninstall module - it is not a 3rd party module" );
+			NTG_TRACE_ERROR << "Can't uninstall module - it is not a 3rd party module";
 			return CError::INPUT_ERROR;
 		}
 
@@ -368,7 +368,7 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR( "Encountered more than one in-development module!" );
+				NTG_TRACE_ERROR << "Encountered more than one in-development module!";
 				return CError::FAILED;
 			}
 		}
@@ -448,7 +448,7 @@ namespace ntg_internal
 		int implementation_path_length = implementation_path.length() - patch_extension.length();
 		if( implementation_path_length <= 0 || implementation_path.substr( implementation_path_length ) != patch_extension )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Implementation path doesn't end in correct patch extension", implementation_path.c_str() );
+			NTG_TRACE_ERROR << "Implementation path doesn't end in correct patch extension: " << implementation_path;
 			return NULL;
 		}
 
@@ -496,7 +496,7 @@ namespace ntg_internal
 	{
 		if( old_id >= m_legacy_module_id_table.size() )
 		{
-			NTG_TRACE_ERROR_WITH_INT( "Can't interpret class id", old_id );
+			NTG_TRACE_ERROR << "Can't interpret class id: " << old_id;
 			return CError::INPUT_ERROR;
 		}
 
@@ -517,7 +517,7 @@ namespace ntg_internal
 		directory_stream = opendir( module_directory.c_str() );
 		if( !directory_stream )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "unable to open directory", module_directory.c_str() );
+			NTG_TRACE_ERROR << "unable to open directory: " << module_directory;
 			return;
 		}
 
@@ -535,7 +535,7 @@ namespace ntg_internal
 
 			if( stat( full_path.c_str(), &entry_data ) != 0 )
 			{
-				NTG_TRACE_ERROR_WITH_ERRNO( "couldn't read directory entry data" );
+				NTG_TRACE_ERROR << "couldn't read directory entry data: " << strerror( errno );
 				continue;
 			}
 
@@ -565,7 +565,7 @@ namespace ntg_internal
 		file = fopen( NTG_LEGACY_CLASS_ID_FILENAME, "r" );
 		if( !file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "failed to open legacy class id file", NTG_LEGACY_CLASS_ID_FILENAME );
+			NTG_TRACE_ERROR << "failed to open legacy class id file: " << NTG_LEGACY_CLASS_ID_FILENAME;
 			return;
 		}
 
@@ -579,14 +579,14 @@ namespace ntg_internal
 			old_id = atoi( line );
 			if( old_id == 0 )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Error reading old id from legacy class id file line", line );
+				NTG_TRACE_ERROR << "Error reading old id from legacy class id file line " << line;
 				continue;
 			}
 
 			guid_as_string = strchr( line, ',' );
 			if( !guid_as_string )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Error reading guid from legacy class id file line", line );
+				NTG_TRACE_ERROR << "Error reading guid from legacy class id file line: " << line;
 				continue;
 			}
 
@@ -595,7 +595,7 @@ namespace ntg_internal
 
 			if( CStringHelper::string_to_guid( guid_as_string, guid ) != CError::SUCCESS )
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "Error parsing guid", guid_as_string );
+				NTG_TRACE_ERROR << "Error parsing guid: " << guid_as_string;
 				continue;
 			}
 
@@ -625,14 +625,14 @@ namespace ntg_internal
 		unzip_file = unzOpen( filename.c_str() );
 		if( !unzip_file )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Unable to open zip", filename.c_str() );
+			NTG_TRACE_ERROR << "Unable to open zip: " << filename;
 			return false;
 		}
 
 		CInterfaceDefinition *interface_definition = load_interface( unzip_file );
 		if( !interface_definition ) 
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Failed to load interface", filename.c_str() );
+			NTG_TRACE_ERROR << "Failed to load interface: " << filename;
 			unzClose( unzip_file );
 			return false;
 		}
@@ -641,7 +641,7 @@ namespace ntg_internal
 
 		if( m_module_id_map.count( module_guid ) > 0 )
 		{
-			NTG_TRACE_VERBOSE_WITH_STRING( "Module already loaded", interface_definition->get_interface_info().get_name().c_str() );
+			NTG_TRACE_VERBOSE << "Module already loaded: " << interface_definition->get_interface_info().get_name();
 			delete interface_definition;
 			unzClose( unzip_file );
 			return false;
@@ -649,7 +649,7 @@ namespace ntg_internal
 
 		if( interface_definition->get_interface_info().get_implemented_in_libintegra() && source != CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Attempt to load 'implemented in libintegra' module as 3rd party or embedded", interface_definition->get_interface_info().get_name().c_str() )
+			NTG_TRACE_ERROR << "Attempt to load 'implemented in libintegra' module as 3rd party or embedded: " << interface_definition->get_interface_info().get_name();
 			delete interface_definition;
 			unzClose( unzip_file );
 			return false;
@@ -662,7 +662,7 @@ namespace ntg_internal
 
 		if( m_origin_id_map.count( interface_definition->get_origin_guid() ) > 0 )
 		{
-			NTG_TRACE_VERBOSE_WITH_STRING( "Two modules with same origin!  Leaving original in origin->interface table", interface_definition->get_interface_info().get_name().c_str() );
+			NTG_TRACE_VERBOSE << "Two modules with same origin!  Leaving original in origin->interface table: " << interface_definition->get_interface_info().get_name();
 		}
 		else
 		{
@@ -674,7 +674,7 @@ namespace ntg_internal
 			const string &name = interface_definition->get_interface_info().get_name();
 			if( m_core_name_map.count( name ) > 0 )
 			{
-				NTG_TRACE_VERBOSE_WITH_STRING( "Two core modules with same name!  Leaving original in name->interface table", name.c_str() );
+				NTG_TRACE_VERBOSE << "Two core modules with same name!  Leaving original in name->interface table: " << name;
 			}
 			else
 			{
@@ -728,19 +728,19 @@ namespace ntg_internal
 
 		if( unzLocateFile( unzip_file, NTG_IDD_FILE_NAME, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR( "Unable to locate " NTG_IDD_FILE_NAME );
+			NTG_TRACE_ERROR << "Unable to locate " NTG_IDD_FILE_NAME;
 			return NULL;
 		}
 
 		if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR( "Couldn't get info for " NTG_IDD_FILE_NAME );
+			NTG_TRACE_ERROR << "Couldn't get info for " NTG_IDD_FILE_NAME;
 			return NULL;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR( "Unable to open " NTG_IDD_FILE_NAME );
+			NTG_TRACE_ERROR << "Unable to open " NTG_IDD_FILE_NAME;
 			return NULL;
 		}
 
@@ -749,7 +749,7 @@ namespace ntg_internal
 
 		if( unzReadCurrentFile( unzip_file, buffer, buffer_size ) != buffer_size )
 		{
-			NTG_TRACE_ERROR( "Unable to read " NTG_IDD_FILE_NAME );
+			NTG_TRACE_ERROR << "Unable to read " NTG_IDD_FILE_NAME;
 			delete[] buffer;
 			return NULL;
 		}
@@ -778,7 +778,7 @@ namespace ntg_internal
 
 		if( CFileHelper::is_directory( implementation_directory.c_str() ) )
 		{
-			NTG_TRACE_ERROR_WITH_STRING( "Can't extract module implementation - target directory already exists", implementation_directory.c_str() );
+			NTG_TRACE_ERROR << "Can't extract module implementation - target directory already exists: " << implementation_directory;
 			return CError::FAILED;
 		}
 
@@ -786,7 +786,7 @@ namespace ntg_internal
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR( "Couldn't iterate contents" );
+			NTG_TRACE_ERROR << "Couldn't iterate contents";
 			return CError::FAILED;
 		}
 
@@ -794,7 +794,7 @@ namespace ntg_internal
 		{
 			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, NTG_LONG_STRLEN, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
-				NTG_TRACE_ERROR( "Couldn't extract file info" );
+				NTG_TRACE_ERROR << "Couldn't extract file info";
 				continue;
 			}
 
@@ -827,7 +827,7 @@ namespace ntg_internal
 
 					if( unzReadCurrentFile( unzip_file, output_buffer, file_info.uncompressed_size ) != file_info.uncompressed_size )
 					{
-						NTG_TRACE_ERROR_WITH_STRING( "Error decompressing file", file_name );
+						NTG_TRACE_ERROR << "Error decompressing file: " << file_name;
 					}
 					else
 					{
@@ -842,14 +842,14 @@ namespace ntg_internal
 				}
 				else
 				{
-					NTG_TRACE_ERROR_WITH_STRING( "Couldn't write to implementation file", target_path.c_str() );
+					NTG_TRACE_ERROR << "Couldn't write to implementation file: " << target_path;
 				}
 
 				unzCloseCurrentFile( unzip_file );
 			}
 			else
 			{
-				NTG_TRACE_ERROR_WITH_STRING( "couldn't open zip contents", file_name );
+				NTG_TRACE_ERROR << "couldn't open zip contents: " << file_name;
 			}
 		}
 		while( unzGoToNextFile( unzip_file ) != UNZ_END_OF_LIST_OF_FILE );
@@ -930,20 +930,20 @@ namespace ntg_internal
 		interface_definition = ( CInterfaceDefinition * ) get_interface_by_module_id( module_id );
 		if( !interface_definition )
 		{
-			NTG_TRACE_ERROR( "failed to lookup interface" );
+			NTG_TRACE_ERROR << "failed to lookup interface";
 			return CError::INPUT_ERROR;
 		}
 
 		if( interface_definition->get_file_path().empty() )
 		{
-			NTG_TRACE_ERROR( "Unknown interface file path" );
+			NTG_TRACE_ERROR << "Unknown interface file path";
 			return CError::INPUT_ERROR;
 		}
 
 		string module_storage_path = get_storage_path( *interface_definition );
 		if( module_storage_path.empty() )
 		{
-			NTG_TRACE_ERROR( "failed to get storage path" );
+			NTG_TRACE_ERROR << "failed to get storage path";
 			return CError::INPUT_ERROR;
 		}
 
@@ -976,7 +976,7 @@ namespace ntg_internal
 			case CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
 			case CInterfaceDefinition::MODULE_IN_DEVELOPMENT:
 			default:
-				NTG_TRACE_ERROR( "Unexpected module source" );
+				NTG_TRACE_ERROR << "Unexpected module source";
 				return string();
 		}
 

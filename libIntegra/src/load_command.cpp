@@ -69,7 +69,7 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR( "incorrect command result type - can't store result" );
+				NTG_TRACE_ERROR << "incorrect command result type - can't store result";
 			}
 		}
 

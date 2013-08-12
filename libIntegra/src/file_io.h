@@ -48,7 +48,7 @@ namespace ntg_internal
 
 			static void copy_file_to_zip( zipFile zip_file, const string &target_path, const string &source_path );
 
-			static const string s_path_separator;
+			static const char s_path_separator;
 			static const string s_file_suffix;
 
 			static const int s_data_copy_buffer_size;

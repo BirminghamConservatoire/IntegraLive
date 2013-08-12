@@ -45,20 +45,6 @@
 
 using namespace ntg_api;
 
-/* 
- whilst dealing with zipped files, we always use linux-style path separators, 
- because windows can use the two interchangeably, 
- and PD can't cope with windows separators at all
-*/
-
-#define NTG_MODULE_INNER_DIRECTORY_NAME "integra_module_data/" 
-#define NTG_IDD_FILE_NAME NTG_MODULE_INNER_DIRECTORY_NAME "interface_definition.iid"
-#define NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME NTG_MODULE_INNER_DIRECTORY_NAME "implementation/"
-
-#define NTG_IMPLEMENTATION_DIRECTORY_NAME "implementations/"
-#define NTG_EMBEDDED_MODULE_DIRECTORY_NAME "loaded_embedded_modules/"
-
-#define NTG_CHECKSUM_SEED 53
 
 #ifndef _WINDOWS
 #include <sys/stat.h>
@@ -66,12 +52,21 @@ using namespace ntg_api;
 #endif
 
 
-#define NTG_LEGACY_CLASS_ID_FILENAME "id2guid.csv"
-
-
 namespace ntg_internal
 {
 	const string CModuleManager::s_module_suffix = "module";
+
+
+	const string CModuleManager::s_module_inner_directory_name = "integra_module_data/";
+	const string CModuleManager::s_idd_file_name = "integra_module_data/interface_definition.iid";
+	const string CModuleManager::s_internal_implementation_directory_name =  "integra_module_data/implementation/";
+
+	const string CModuleManager::s_implementation_directory_name = "implementations/";
+	const string CModuleManager::s_embedded_module_directory_name = "loaded_embedded_modules/";
+
+	const string CModuleManager::s_legacy_class_id_filename = "id2guid.csv";
+
+	const int CModuleManager::s_checksum_seed = 53;
 
 
 	CModuleManager::CModuleManager( const CServer &server, const string &system_module_directory, const string &third_party_module_directory )
@@ -80,14 +75,14 @@ namespace ntg_internal
 		load_legacy_module_id_file();
 
 		string scratch_directory_root = server.get_scratch_directory();
-		m_implementation_directory_root = scratch_directory_root + NTG_IMPLEMENTATION_DIRECTORY_NAME;
+		m_implementation_directory_root = scratch_directory_root + s_implementation_directory_name;
 
 		if( !CFileHelper::is_directory( m_implementation_directory_root.c_str() ) )
 		{
 			mkdir( m_implementation_directory_root.c_str() );
 		}
 
-		m_embedded_module_directory = scratch_directory_root + NTG_EMBEDDED_MODULE_DIRECTORY_NAME;
+		m_embedded_module_directory = scratch_directory_root + s_embedded_module_directory_name;
 
 		if( !CFileHelper::is_directory( m_embedded_module_directory.c_str() ) )
 		{
@@ -564,10 +559,10 @@ namespace ntg_internal
 
 		m_legacy_module_id_table.clear();
 
-		file = fopen( NTG_LEGACY_CLASS_ID_FILENAME, "r" );
+		file = fopen( s_legacy_class_id_filename.c_str(), "r" );
 		if( !file )
 		{
-			NTG_TRACE_ERROR << "failed to open legacy class id file: " << NTG_LEGACY_CLASS_ID_FILENAME;
+			NTG_TRACE_ERROR << "failed to open legacy class id file: " << s_legacy_class_id_filename;
 			return;
 		}
 
@@ -728,21 +723,21 @@ namespace ntg_internal
 
 		assert( unzip_file );
 
-		if( unzLocateFile( unzip_file, NTG_IDD_FILE_NAME, 0 ) != UNZ_OK )
+		if( unzLocateFile( unzip_file, s_idd_file_name.c_str(), 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to locate " NTG_IDD_FILE_NAME;
+			NTG_TRACE_ERROR << "Unable to locate " << s_idd_file_name;
 			return NULL;
 		}
 
 		if( unzGetCurrentFileInfo( unzip_file, &file_info, NULL, 0, NULL, 0, NULL, 0 ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Couldn't get info for " NTG_IDD_FILE_NAME;
+			NTG_TRACE_ERROR << "Couldn't get info for " << s_idd_file_name;
 			return NULL;
 		}
 
 		if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 		{
-			NTG_TRACE_ERROR << "Unable to open " NTG_IDD_FILE_NAME;
+			NTG_TRACE_ERROR << "Unable to open " << s_idd_file_name;
 			return NULL;
 		}
 
@@ -751,7 +746,7 @@ namespace ntg_internal
 
 		if( unzReadCurrentFile( unzip_file, buffer, buffer_size ) != buffer_size )
 		{
-			NTG_TRACE_ERROR << "Unable to read " NTG_IDD_FILE_NAME;
+			NTG_TRACE_ERROR << "Unable to read " << s_idd_file_name;
 			delete[] buffer;
 			return NULL;
 		}
@@ -766,12 +761,6 @@ namespace ntg_internal
 
 	CError CModuleManager::extract_implementation( unzFile unzip_file, const CInterfaceDefinition &interface_definition, unsigned int &checksum )
 	{
-		unz_file_info file_info;
-		char file_name[ LONG_STRING_LENGTH ];
-		const char *relative_file_path;
-		unsigned char *output_buffer;
-		FILE *output_file;
-
 		assert( unzip_file );
 
 		checksum = 0;
@@ -794,38 +783,42 @@ namespace ntg_internal
 
 		do
 		{
-			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
+			unz_file_info file_info;
+			char file_name_buffer[ LONG_STRING_LENGTH ];
+			if( unzGetCurrentFileInfo( unzip_file, &file_info, file_name_buffer, LONG_STRING_LENGTH, NULL, 0, NULL, 0 ) != UNZ_OK )
 			{
 				NTG_TRACE_ERROR << "Couldn't extract file info";
 				continue;
 			}
 
-			if( strlen( file_name ) <= strlen( NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME ) || memcmp( file_name, NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME, strlen( NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME ) ) != 0 )
+			string file_name( file_name_buffer );
+
+			if( file_name.substr( 0, s_internal_implementation_directory_name.length() ) != s_internal_implementation_directory_name )
 			{
 				/* skip files not in NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME */
 				continue;
 			}
 
-			if( strcmp( file_name + strlen( file_name ) - 1, CFileIO::s_path_separator.c_str() ) == 0 )
+			if( file_name.back() == CFileIO::s_path_separator )
 			{
 				/* skip directories */
 				continue;
 			}
 
-			relative_file_path = file_name + strlen( NTG_INTERNAL_IMPLEMENTATION_DIRECTORY_NAME );
+			string relative_file_path = file_name.substr( s_internal_implementation_directory_name.length() );
 
 			CFileHelper::construct_subdirectories( implementation_directory, relative_file_path );
 
 			string target_path = implementation_directory + relative_file_path;
 
-			checksum ^= MurmurHash2( relative_file_path, strlen( relative_file_path ), NTG_CHECKSUM_SEED );
+			checksum ^= MurmurHash2( relative_file_path.c_str(), relative_file_path.length(), s_checksum_seed );
 
 			if( unzOpenCurrentFile( unzip_file ) == UNZ_OK )
 			{
-				output_file = fopen( target_path.c_str(), "wb" );
+				FILE *output_file = fopen( target_path.c_str(), "wb" );
 				if( output_file )
 				{
-					output_buffer = new unsigned char[ file_info.uncompressed_size ];
+					unsigned char *output_buffer = new unsigned char[ file_info.uncompressed_size ];
 
 					if( unzReadCurrentFile( unzip_file, output_buffer, file_info.uncompressed_size ) != file_info.uncompressed_size )
 					{
@@ -833,7 +826,7 @@ namespace ntg_internal
 					}
 					else
 					{
-						checksum ^= MurmurHash2( output_buffer, file_info.uncompressed_size, NTG_CHECKSUM_SEED );
+						checksum ^= MurmurHash2( output_buffer, file_info.uncompressed_size, s_checksum_seed );
 
 						fwrite( output_buffer, 1, file_info.uncompressed_size, output_file );
 					}

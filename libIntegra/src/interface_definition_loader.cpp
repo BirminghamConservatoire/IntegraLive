@@ -28,79 +28,6 @@
 #include "trace.h"
 #include "string_helper.h"
 
-#define INTERFACE					"InterfaceDeclaration"
-#define INTERFACE_INFO				"InterfaceInfo"			
-#define NAME						"Name"
-#define LABEL						"Label"
-#define DESCRIPTION					"Description"
-#define TAGS						"Tags"
-#define TAG							"Tag"
-#define IMPLEMENTED_IN_LIBINTEGRA	"ImplementedInLibIntegra"
-#define AUTHOR						"Author"
-#define CREATED_DATE				"CreatedDate"
-#define MODIFIED_DATE				"ModifiedDate"
-#define ENDPOINT_INFO				"EndpointInfo"
-#define ENDPOINT					"Endpoint"
-#define TYPE						"Type"
-#define CONTROL_INFO				"ControlInfo"
-#define CONTROL_TYPE				"ControlType"
-#define STATE_INFO					"StateInfo"
-#define STATE_TYPE					"StateType"
-#define CONSTRAINT					"Constraint"
-#define RANGE						"Range"
-#define MINIMUM						"Minimum"
-#define MAXIMUM						"Maximum"
-#define SCALE						"Scale"
-#define SCALE_TYPE					"ScaleType"
-#define BASE						"Base"
-#define ALLOWED_STATES				"AllowedStates"
-#define STATE						"State"
-#define DEFAULT						"Default"
-#define STATE_LABELS				"StateLabels"
-#define LABEL						"Label"
-#define TEXT						"Text"
-#define IS_INPUT_FILE				"IsInputFile"
-#define IS_SAVED_TO_FILE			"IsSavedToFile"
-#define CAN_BE_SOURCE				"CanBeSource"
-#define CAN_BE_TARGET				"CanBeTarget"
-#define IS_SENT_TO_HOST				"IsSentToHost"
-#define STREAM_INFO					"StreamInfo"
-#define STREAM_TYPE					"StreamType"
-#define STREAM_DIRECTION			"StreamDirection"
-#define WIDGET_INFO					"WidgetInfo"
-#define WIDGET						"Widget"
-#define WIDGET_TYPE					"WidgetType"
-#define POSITION					"Position"
-#define X							"X"
-#define Y							"Y"
-#define WIDTH						"Width"
-#define HEIGHT						"Height"
-#define ATTRIBUTE_MAPPINGS			"AttributeMappings"
-#define ATTRIBUTE_MAPPING			"AttributeMapping"
-#define WIDGET_ATTRIBUTE			"WidgetAttribute"
-#define IMPLEMENTATION_INFO			"ImplementationInfo"
-#define PATCH_NAME					"PatchName"
-
-#define STR_FALSE					"false"
-#define STR_TRUE					"true"
-#define STR_CONTROL					"control"
-#define STR_STREAM					"stream"
-#define STR_STATE					"state"
-#define STR_BANG					"bang"
-#define STR_FLOAT					"float"
-#define STR_INTEGER					"integer"
-#define STR_STRING					"string"
-#define STR_LINEAR					"linear"
-#define STR_EXPONENTIAL				"exponential"
-#define STR_DECIBEL					"decibel"
-#define STR_AUDIO					"audio"
-#define STR_INPUT					"input"
-#define STR_OUTPUT					"output"
-
-#define ATTRIBUTE_MODULE_GUID		"moduleGuid"
-#define ATTRIBUTE_ORIGIN_GUID		"originGuid"
-
-#define DOT							"."
 
 
 /* 
@@ -109,7 +36,7 @@
 */
 
 
-#define CREATE_CHILD_OBJECT( START_TAG, STORAGE_POINTER, TYPE )					\
+#define CREATE_CHILD_OBJECT( START_TAG, STORAGE_POINTER, Type )					\
 	if( m_element_path == START_TAG )											\
 	{																			\
 		if( STORAGE_POINTER )													\
@@ -119,16 +46,16 @@
 		}																		\
 		else																	\
 		{																		\
-			STORAGE_POINTER = new TYPE;											\
+			STORAGE_POINTER = new Type;											\
 			return CError::SUCCESS;												\
 		}																		\
 	}	
 
 
-#define CREATE_LIST_ENTRY( START_TAG, LIST, TYPE )								\
+#define CREATE_LIST_ENTRY( START_TAG, LIST, Type )								\
 	if( m_element_path == START_TAG )											\
 	{																			\
-		TYPE *entry = new TYPE;													\
+		Type *entry = new Type;													\
 		LIST.push_back( entry );												\
 		return CError::SUCCESS;													\
 	}
@@ -331,167 +258,167 @@ namespace ntg_internal
 
 		/* interface info */
 		READ_MEMBER( 
-			INTERFACE DOT INTERFACE_INFO DOT NAME, 
+			"InterfaceDeclaration.InterfaceInfo.Name", 
 			m_interface_definition->m_interface_info->m_name );
 
 		READ_MEMBER( 
-			INTERFACE DOT INTERFACE_INFO DOT LABEL, 
+			"InterfaceDeclaration.InterfaceInfo.Label", 
 			m_interface_definition->m_interface_info->m_label );
 
 		READ_MEMBER( 
-			INTERFACE DOT INTERFACE_INFO DOT DESCRIPTION, 
+			"InterfaceDeclaration.InterfaceInfo.Description", 
 			m_interface_definition->m_interface_info->m_description );
 
 		READ_SET_CONTENT( 
-			INTERFACE DOT INTERFACE_INFO DOT TAGS DOT TAG, 
+			"InterfaceDeclaration.InterfaceInfo.Tags.Tag", 
 			m_interface_definition->m_interface_info->m_tags );
 
 		READ_MEMBER( 
-			INTERFACE DOT INTERFACE_INFO DOT IMPLEMENTED_IN_LIBINTEGRA, 
+			"InterfaceDeclaration.InterfaceInfo.ImplementedInLibIntegra", 
 			m_interface_definition->m_interface_info->m_implemented_in_libintegra );
 
 		READ_MEMBER( 
-			INTERFACE DOT INTERFACE_INFO DOT AUTHOR, 
+			"InterfaceDeclaration.InterfaceInfo.Author", 
 			m_interface_definition->m_interface_info->m_author );
 
 		READ_MEMBER( 
-			INTERFACE DOT INTERFACE_INFO DOT CREATED_DATE, 
+			"InterfaceDeclaration.InterfaceInfo.CreatedDate", 
 			m_interface_definition->m_interface_info->m_created_date );
 
 		READ_MEMBER( 
-			INTERFACE DOT INTERFACE_INFO DOT MODIFIED_DATE, 
+			"InterfaceDeclaration.InterfaceInfo.ModifiedDate", 
 			m_interface_definition->m_interface_info->m_modified_date );
 
 
 		/* endpoint info */
 		READ_MEMBER( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT NAME, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.Name", 
 			m_interface_definition->m_endpoint_definitions.back()->m_name );
 
 		READ_MEMBER( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT LABEL, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.Label", 
 			m_interface_definition->m_endpoint_definitions.back()->m_label );
 
 		READ_MEMBER( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT DESCRIPTION, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.Description", 
 			m_interface_definition->m_endpoint_definitions.back()->m_description );
 
 		READ_MEMBER( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT TYPE, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.Type", 
 			m_interface_definition->m_endpoint_definitions.back()->m_type );
 
 		READ_MEMBER( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT CONTROL_TYPE, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.ControlType", 
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_type );
 
 		READ_MEMBER( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT STATE_TYPE, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.StateType", 
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_type );
 
 		READ_VALUE( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT CONSTRAINT DOT RANGE DOT MINIMUM,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.Range.Minimum",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_value_range->m_minimum,
 			get_range_type() );
 
 		READ_VALUE( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT CONSTRAINT DOT RANGE DOT MAXIMUM,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.Range.Maximum",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_value_range->m_maximum,
 			get_range_type() );
 
 		READ_VALUE_SET_CONTENT( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT CONSTRAINT DOT ALLOWED_STATES DOT STATE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.AllowedStates.State",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_allowed_states,
 			get_state_type() );
 	
 		READ_VALUE( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT DEFAULT,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Default",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_default_value,
 			get_state_type() );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT SCALE DOT SCALE_TYPE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.ScaleType",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_value_scale->m_type );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT SCALE DOT BASE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.Base",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_value_scale->m_exponent_root );
 
 		READ_VALUE( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT STATE_LABELS DOT LABEL DOT STATE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.StateLabels.Label.State",
 			m_last_state_label_value,
 			get_state_type() );
 
 		READ_MEMBER( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT STATE_LABELS DOT LABEL DOT TEXT,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.StateLabels.Label.Text",
 			m_last_state_label_key );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT IS_INPUT_FILE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.IsInputFile",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_is_input_file );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT IS_SAVED_TO_FILE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.IsSavedToFile",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_is_saved_to_file );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT CAN_BE_SOURCE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.CanBeSource",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_can_be_source );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT CAN_BE_TARGET,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.CanBeTarget",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_can_be_target );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT IS_SENT_TO_HOST,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.IsSentToHost",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_is_sent_to_host );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT STREAM_INFO DOT STREAM_TYPE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.StreamInfo.StreamType",
 			m_interface_definition->m_endpoint_definitions.back()->m_stream_info->m_type );
 
 		READ_MEMBER(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT STREAM_INFO DOT STREAM_DIRECTION,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.StreamInfo.StreamDirection",
 			m_interface_definition->m_endpoint_definitions.back()->m_stream_info->m_direction );
 
 
 		/* widget info */
 
 		READ_MEMBER( 
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT WIDGET_TYPE,
+			"InterfaceDeclaration.WidgetInfo.Widget.WidgetType",
 			m_interface_definition->m_widget_definitions.back()->m_type );
 
 		READ_MEMBER(
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT LABEL,
+			"InterfaceDeclaration.WidgetInfo.Widget.Label",
 			m_interface_definition->m_widget_definitions.back()->m_label );
 
 		READ_MEMBER(
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT POSITION DOT X,
+			"InterfaceDeclaration.WidgetInfo.Widget.Position.X",
 			m_interface_definition->m_widget_definitions.back()->m_position->m_x );
 
 		READ_MEMBER(
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT POSITION DOT Y,
+			"InterfaceDeclaration.WidgetInfo.Widget.Position.Y",
 			m_interface_definition->m_widget_definitions.back()->m_position->m_y );
 
 		READ_MEMBER(
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT POSITION DOT WIDTH,
+			"InterfaceDeclaration.WidgetInfo.Widget.Position.Width",
 			m_interface_definition->m_widget_definitions.back()->m_position->m_width );
 
 		READ_MEMBER(
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT POSITION DOT HEIGHT,
+			"InterfaceDeclaration.WidgetInfo.Widget.Position.Height",
 			m_interface_definition->m_widget_definitions.back()->m_position->m_height );
 
 		READ_MEMBER(
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT ATTRIBUTE_MAPPINGS DOT ATTRIBUTE_MAPPING DOT WIDGET_ATTRIBUTE,
+			"InterfaceDeclaration.WidgetInfo.Widget.AttributeMappings.AttributeMapping.WidgetAttribute",
 			m_last_widget_key );
 
 		READ_MEMBER(
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT ATTRIBUTE_MAPPINGS DOT ATTRIBUTE_MAPPING DOT ENDPOINT,
+			"InterfaceDeclaration.WidgetInfo.Widget.AttributeMappings.AttributeMapping.Endpoint",
 			m_last_widget_value );
 
 		/* implementation info */
 
 		READ_MEMBER( 
-			INTERFACE DOT IMPLEMENTATION_INFO DOT PATCH_NAME,
+			"InterfaceDeclaration.ImplementationInfo.PatchName",
 			m_interface_definition->m_implementation_info->m_patch_name );
 
 		NTG_TRACE_ERROR << "unhandled element: " << m_element_path;
@@ -507,66 +434,50 @@ namespace ntg_internal
 
 		/* handle child objects */
 		CREATE_CHILD_OBJECT( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo", 
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info,
 			CControlInfo );
 
 		CREATE_CHILD_OBJECT( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo", 
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info, 
 			CStateInfo );
 
 		CREATE_CHILD_OBJECT( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT STREAM_INFO, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.StreamInfo", 
 			m_interface_definition->m_endpoint_definitions.back()->m_stream_info, 
 			CStreamInfo );
 
 		CREATE_CHILD_OBJECT( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT CONSTRAINT DOT RANGE, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.Range", 
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_value_range, 
 			CValueRange );
 
 		CREATE_CHILD_OBJECT( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT CONSTRAINT DOT ALLOWED_STATES, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.AllowedStates", 
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_allowed_states, 
 			value_set );
 
 		CREATE_CHILD_OBJECT(
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT SCALE,
+			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale",
 			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_value_scale,
 			CValueScale );
 
 		CREATE_CHILD_OBJECT( 
-			INTERFACE DOT IMPLEMENTATION_INFO, 
+			"InterfaceDeclaration.ImplementationInfo", 
 			m_interface_definition->m_implementation_info, 
 			CImplementationInfo );
 
 		/* handle list entries */
-
-		/*CREATE_LIST_ENTRY( 
-			INTERFACE DOT INTERFACE_INFO DOT TAGS DOT TAG, 
-			m_interface_definition->m_interface_m_interface_info->m_m_tags 
-			ntg_tag );*/
-
 		CREATE_LIST_ENTRY( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT, 
+			"InterfaceDeclaration.EndpointInfo.Endpoint", 
 			m_interface_definition->m_endpoint_definitions, 
 			CEndpointDefinition );
 
-		/*CREATE_LIST_ENTRY( 
-			INTERFACE DOT ENDPOINT_INFO DOT ENDPOINT DOT CONTROL_INFO DOT STATE_INFO DOT STATE_LABELS DOT LABEL, 
-			m_interface_definition->endpoint_list->control_m_interface_info->m_state_m_interface_info->m_state_labels, 
-			ntg_state_label );*/
-
 		CREATE_LIST_ENTRY( 
-			INTERFACE DOT WIDGET_INFO DOT WIDGET, 
+			"InterfaceDeclaration.WidgetInfo.Widget", 
 			m_interface_definition->m_widget_definitions, 
 			CWidgetDefinition );
-
-		/*CREATE_LIST_ENTRY( 
-			INTERFACE DOT WIDGET_INFO DOT WIDGET DOT ATTRIBUTE_MAPPINGS DOT ATTRIBUTE_MAPPING, 
-			m_interface_definition->widget_list->mapping_list, 
-			ntg_widget_attribute_mapping );*/
 
 		return CError::SUCCESS;
 	}
@@ -579,9 +490,9 @@ namespace ntg_internal
 
 		assert( m_interface_definition && m_reader && !m_element_path.empty() );
 
-		if( m_element_path == INTERFACE )
+		if( m_element_path == "InterfaceDeclaration" )
 		{
-			char *module_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST ATTRIBUTE_MODULE_GUID );
+			char *module_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST "moduleGuid" );
 			if( module_guid_attribute )
 			{
 				if( CStringHelper::string_to_guid( module_guid_attribute, m_interface_definition->m_module_guid ) != CError::SUCCESS )
@@ -594,11 +505,11 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << INTERFACE " lacks " ATTRIBUTE_MODULE_GUID " attribute";
+				NTG_TRACE_ERROR << "InterfaceDeclaration lacks moduleGuid attribute";
 				error = CError::INPUT_ERROR;
 			}
 
-			char *origin_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST ATTRIBUTE_ORIGIN_GUID );
+			char *origin_guid_attribute = ( char * ) xmlTextReaderGetAttribute( m_reader, BAD_CAST "originGuid" );
 			if( origin_guid_attribute )
 			{
 				if( CStringHelper::string_to_guid( origin_guid_attribute, m_interface_definition->m_origin_guid ) != CError::SUCCESS )
@@ -611,7 +522,7 @@ namespace ntg_internal
 			}
 			else
 			{
-				NTG_TRACE_ERROR << INTERFACE " lacks " ATTRIBUTE_ORIGIN_GUID " attribute";
+				NTG_TRACE_ERROR << "InterfaceDeclaration lacks originGuid attribute";
 				error = CError::INPUT_ERROR;
 			}
 		}
@@ -642,7 +553,7 @@ namespace ntg_internal
 	{
 		if( !m_element_path.empty() )
 		{
-			m_element_path += DOT;
+			m_element_path += '.';
 		}
 
 		m_element_path += element;
@@ -651,7 +562,7 @@ namespace ntg_internal
 
 	void CInterfaceDefinitionLoader::pop_element_name()
 	{
-		size_t last_dot = m_element_path.find_last_of( DOT );
+		size_t last_dot = m_element_path.find_last_of( '.' );
 		if( last_dot == string::npos )
 		{
 			m_element_path.clear();
@@ -774,13 +685,13 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, bool &output )
 	{
-		if( input == STR_FALSE )
+		if( input == "false" )
 		{
 			output = false;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_TRUE )
+		if( input == "true" )
 		{
 			output = true;
 			return CError::SUCCESS;
@@ -807,13 +718,13 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, CEndpointDefinition::endpoint_type &output )
 	{
-		if( input == STR_CONTROL )
+		if( input == "control" )
 		{
 			output = CEndpointDefinition::CONTROL;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_STREAM )
+		if( input == "stream" )
 		{
 			output = CEndpointDefinition::STREAM;
 			return CError::SUCCESS;
@@ -826,13 +737,13 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, CControlInfo::control_type &output )
 	{
-		if( input == STR_STATE )
+		if( input == "state" )
 		{
 			output = CControlInfo::STATEFUL;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_BANG )
+		if( input == "bang" )
 		{
 			output = CControlInfo::BANG;
 			return CError::SUCCESS;
@@ -845,19 +756,19 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, CValue::type &output )
 	{
-		if( input == STR_FLOAT )
+		if( input == "float" )
 		{
 			output = CValue::FLOAT;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_INTEGER )
+		if( input == "integer" )
 		{
 			output = CValue::INTEGER;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_STRING )
+		if( input == "string" )
 		{
 			output = CValue::STRING;
 			return CError::SUCCESS;
@@ -870,19 +781,19 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, CValueScale::scale_type &output )
 	{
-		if( input == STR_LINEAR )
+		if( input == "linear" )
 		{
 			output = CValueScale::LINEAR;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_EXPONENTIAL )
+		if( input == "exponential" )
 		{
 			output = CValueScale::EXPONENTIAL;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_DECIBEL )
+		if( input == "decibel" )
 		{
 			output = CValueScale::DECIBEL;
 			return CError::SUCCESS;
@@ -895,7 +806,7 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, CStreamInfo::stream_type &output )
 	{
-		if( input == STR_AUDIO )
+		if( input == "audio" )
 		{
 			output = CStreamInfo::AUDIO;
 			return CError::SUCCESS;
@@ -908,13 +819,13 @@ namespace ntg_internal
 
 	CError CInterfaceDefinitionLoader::converter( const string &input, CStreamInfo::stream_direction &output )
 	{
-		if( input == STR_INPUT )
+		if( input == "input" )
 		{
 			output = CStreamInfo::INPUT;
 			return CError::SUCCESS;
 		}
 
-		if( input == STR_OUTPUT )
+		if( input == "output" )
 		{
 			output = CStreamInfo::OUTPUT;
 			return CError::SUCCESS;

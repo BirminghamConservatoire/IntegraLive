@@ -115,6 +115,15 @@ namespace ntg_internal
 			string m_implementation_directory_root;
 			string m_third_party_module_directory;
 			string m_embedded_module_directory;
+
+
+			static const string s_module_inner_directory_name;
+			static const string s_idd_file_name;
+			static const string s_internal_implementation_directory_name;
+			static const string s_implementation_directory_name;
+			static const string s_embedded_module_directory_name;
+			static const string s_legacy_class_id_filename;
+			static const int s_checksum_seed;
 	};
 
 

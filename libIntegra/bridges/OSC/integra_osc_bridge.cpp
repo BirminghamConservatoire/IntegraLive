@@ -284,7 +284,7 @@ static void osc_send_value( const CNodeEndpoint *node_endpoint )
 	}
 	else
 	{
-		lo_send(module_host, "/send", "iss", module_id, endpoint_name, "bang");
+		lo_send( module_host, "/send", "iss", module_id, endpoint_name.c_str(), "bang" );
 	}
 }
 

@@ -19,6 +19,7 @@
 
 #include "platform_specifics.h"
 
+
 #ifdef __GNUC__
 void __attribute__((constructor)) my_init(void)
 {

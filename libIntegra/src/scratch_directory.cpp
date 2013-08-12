@@ -40,15 +40,11 @@
 using namespace ntg_internal;
 
 
-#ifdef _WINDOWS
-	#define NTG_SCRATCH_DIRECTORY_ROOT "libIntegra" 
-#else
-	#define NTG_SCRATCH_DIRECTORY_ROOT ".libIntegra" 
-#endif
-
 
 namespace ntg_internal
 {
+	const string CScratchDirectory::s_scratch_directory_root_name = "libIntegra";
+
 	CScratchDirectory::CScratchDirectory()
 	{
 		#ifdef _WINDOWS
@@ -73,15 +69,15 @@ namespace ntg_internal
 			const char *tmp_dir = getenv( "TMPDIR" );
 			if( tmp_dir )
 			{
-				m_scratch_directory = string( tmp_dir ) + NTG_PATH_SEPARATOR;
+				m_scratch_directory = string( tmp_dir ) + CFileIO::s_path_separator + ".";
 			}
 			else
 			{
-				m_scratch_directory = "~/";
+				m_scratch_directory = "~/.";
 			}
 		#endif
 	
-			m_scratch_directory += NTG_SCRATCH_DIRECTORY_ROOT;
+			m_scratch_directory += s_scratch_directory_root_name;
 
 			if( CFileHelper::is_directory( m_scratch_directory ) )
 			{

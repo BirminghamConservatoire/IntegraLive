@@ -48,7 +48,7 @@ namespace ntg_internal
 	 PD can't cope with windows separators at all, and zip files maintain the directionality of slashes 
 	 (if we used system-specific slashes in zip files, the files would not be platform-independant)
 	*/
-	const string CFileIO::s_path_separator = "/";
+	const char CFileIO::s_path_separator = '/';
 
 	const int CFileIO::s_data_copy_buffer_size = 16384;
 

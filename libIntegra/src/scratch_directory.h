@@ -42,6 +42,8 @@ namespace ntg_internal
 		private:
 
 			string m_scratch_directory;
+
+			static const string s_scratch_directory_root_name;
 	};
 }
 

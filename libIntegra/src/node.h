@@ -27,16 +27,6 @@
 #include "path.h"
 #include "api/common_typedefs.h"
 
-#if 0 //DEPRECATED
-#ifndef __XML_XMLREADER_H__
-#ifndef NTG_TEXTREADER_TYPEDEF
-typedef struct _xmlTextReader xmlTextReader;
-typedef xmlTextReader *xmlTextReaderPtr;
-#define NTG_TEXTREADER_TYPEDEF
-#endif 
-#endif
-#endif //DEPRECATED
-
 using namespace ntg_api;
 
 

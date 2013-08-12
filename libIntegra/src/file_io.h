@@ -100,15 +100,4 @@ namespace ntg_internal
 
 
 
-#if 0 //DEPRECATED
-ntg_api::CError ntg_file_load( const char *filename, const ntg_internal::CNode *parent, ntg_internal::CModuleManager &module_manager, ntg_api::guid_set &new_embedded_module_ids );
-
-ntg_api::CError ntg_file_save( const char *filename, const ntg_internal::CNode &node, const ntg_internal::CModuleManager &module_manager );
-
-
-void ntg_copy_directory_contents_to_zip( zipFile zip_file, const ntg_api::string &target_path, const ntg_api::string &source_path );
-
-#endif //DEPRECATED
-
-
 #endif /*INTEGRA_FILE_IO_H*/

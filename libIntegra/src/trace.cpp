@@ -20,8 +20,125 @@
 
 #include "platform_specifics.h"
 
-#include <stdio.h>
-#include <string.h>
+#include "trace.h"
+
+#include <pthread.h>
+#include <iostream>
+
+
+
+namespace ntg_api
+{
+	bool CTrace::s_trace_errors = true;
+	bool CTrace::s_trace_progress = true;
+	bool CTrace::s_trace_verbose = false;
+
+	bool CTrace::s_trace_timestamp = true;
+	bool CTrace::s_trace_location = true;
+	bool CTrace::s_trace_thread = false;
+
+	std::ofstream CTrace::s_null_stream;
+	std::ostream &CTrace::s_trace_stream = std::cout;
+
+	const int CTrace::s_max_timestamp_length = 32;
+
+
+	std::ostream &CTrace::error( const char *location )
+	{
+		if( !s_trace_errors ) 
+		{
+			return s_null_stream;
+		}
+
+		do_trace( "Error", location );
+		return s_trace_stream;
+	}
+
+
+	std::ostream &CTrace::progress( const char *location )
+	{
+		if( !s_trace_progress )
+		{
+			return s_null_stream;
+		}
+
+		do_trace( "Progress", location );
+		return s_trace_stream;
+	}
+
+
+	std::ostream &CTrace::verbose( const char *location )
+	{
+		if( !s_trace_progress )
+		{
+			return s_null_stream;
+		}
+
+		do_trace( "Verbose", location );
+		return s_trace_stream;
+	}
+
+
+	void CTrace::set_categories_to_trace( bool errors, bool progress, bool verbose )
+	{
+		s_trace_errors = errors;
+		s_trace_progress = progress;
+		s_trace_verbose = verbose;
+	}
+
+
+	void CTrace::set_details_to_trace( bool timestamp, bool location, bool thread )
+	{
+		s_trace_timestamp = timestamp;
+		s_trace_location = location;
+		s_trace_thread = thread;
+	}
+
+
+	void CTrace::do_trace( const char *category, const char *location )
+	{
+		s_trace_stream << std::unitbuf << std::endl;
+		s_trace_stream << category;
+
+		if( s_trace_timestamp )
+		{
+			time_t rawtime;
+			char timestamp_string[ s_max_timestamp_length ];
+			time( &rawtime );
+			strftime( timestamp_string, s_max_timestamp_length, "%X %x", localtime( &rawtime ) );
+			s_trace_stream << " [" << timestamp_string << "]";
+		}
+
+		if( s_trace_location )
+		{
+			s_trace_stream << " " << location;
+		}
+
+
+		if( s_trace_thread )
+		{
+			pthread_t thread_id = pthread_self();
+			const unsigned char *thread_id_bytes = (const unsigned char *) ( &thread_id );
+
+			s_trace_stream << " threadID: 0x" << std::hex;
+
+			for( int i = 0; i < sizeof( thread_id ); i++ )
+			{
+				s_trace_stream << thread_id_bytes[ i ];
+			}
+
+			s_trace_stream << std::dec;
+		}
+
+		s_trace_stream << "     ";
+	}
+}
+
+
+
+
+#if 0 //deprecated
+
 
 #include "globals.h"
 
@@ -162,3 +279,4 @@ void ntg_set_trace_options(ntg_trace_category_bits categories_to_trace, ntg_trac
 
 
 
+#endif //deprecated

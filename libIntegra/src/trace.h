@@ -23,6 +23,64 @@
 #define INTEGRA_TRACING_PRIVATE
 
 #include "api/common_typedefs.h"
+#include <ostream>
+#include <fstream>
+
+
+/*! \def TOSTRING(x)
+ * Macro to convert an integer to a string at compile time
+ */
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#ifdef _WINDOWS
+#define NTG_FUNCTION __FUNCTION__
+#else 
+#define NTG_FUNCTION TOSTRING(__FUNCTION__)
+#endif /*_WINDOWS*/
+
+#define NTG_LOCATION __FILE__ ": " TOSTRING(__LINE__) "(" NTG_FUNCTION ")"
+
+
+#define NTG_TRACE_ERROR				ntg_api::CTrace::error( NTG_LOCATION )
+#define NTG_TRACE_PROGRESS			ntg_api::CTrace::error( NTG_LOCATION )
+#define NTG_TRACE_VERBOSE			ntg_api::CTrace::error( NTG_LOCATION )
+
+
+
+namespace ntg_api
+{
+	class LIBINTEGRA_API CTrace
+	{
+		public:
+
+			static std::ostream &error( const char *location );
+			static std::ostream &progress( const char *location );
+			static std::ostream &verbose( const char *location );
+
+			static void set_categories_to_trace( bool errors, bool progress, bool verbose );
+			static void set_details_to_trace( bool timestamp, bool location, bool thread );
+
+		private:
+
+			static void do_trace( const char *category, const char *location ); 
+
+			static bool s_trace_errors;
+			static bool s_trace_progress;
+			static bool s_trace_verbose;
+
+			static bool s_trace_timestamp;
+			static bool s_trace_location;
+			static bool s_trace_thread;
+
+			static std::ostream &s_trace_stream;
+			static std::ofstream s_null_stream;
+
+			static const int s_max_timestamp_length;
+	};
+}
+
+
+#if 0 // deprecated
 
 /*
  * Tracing System
@@ -108,6 +166,6 @@ LIBINTEGRA_API void ntg_set_trace_options(ntg_trace_category_bits categories_to_
 #define NTG_TRACE_VERBOSE_WITH_FLOAT(message, float_value) ntg_trace_with_float(TRACE_VERBOSE_BITS, NTG_LOCATION, message, float_value);
 #define NTG_TRACE_VERBOSE_WITH_STRING(message, string_value) ntg_trace_with_string(TRACE_VERBOSE_BITS, NTG_LOCATION, message, string_value);
 
-
+#endif //deprecated
 
 #endif /*INTEGRA_TRACING_PRIVATE*/

@@ -42,7 +42,7 @@ extern "C"
 #include "player_handler.h"
 
 #include "api/server_startup_info.h"
-#include "api/command_api.h"
+#include "api/command.h"
 
 #include <assert.h>
 #include <iostream>
@@ -76,7 +76,7 @@ namespace integra_internal
 			CPath path( target->get_path() );
 			path.append_element( attribute_name );
 
-			server->process_command( CSetCommandApi::create( path, value ), CCommandSource::HOST );
+			server->process_command( ISetCommand::create( path, value ), CCommandSource::HOST );
 		}
 		else
 		{
@@ -152,7 +152,7 @@ namespace integra_internal
 		node_map copy_of_nodes = m_nodes;
 		for( node_map::const_iterator i = copy_of_nodes.begin(); i != copy_of_nodes.end(); i++ )
 		{
-			process_command( CDeleteCommandApi::create( i->second->get_path() ), CCommandSource::SYSTEM );
+			process_command( IDeleteCommand::create( i->second->get_path() ), CCommandSource::SYSTEM );
 		}
 	
 		/* de-reference bridge */
@@ -236,7 +236,7 @@ namespace integra_internal
 	}
 
 
-	const CNode *CServer::find_node( const string &path_string, const CNode *relative_to ) const
+	const INode *CServer::find_node( const string &path_string, const INode *relative_to ) const
 	{
 		if( relative_to )
 		{
@@ -268,9 +268,9 @@ namespace integra_internal
 	}
 
 
-	const node_map &CServer::get_sibling_set( const CNode &node ) const
+	const node_map &CServer::get_siblings( const INode &node ) const
 	{
-		const CNode *parent = node.get_parent();
+		const INode *parent = node.get_parent();
 		if( parent )
 		{
 			return parent->get_children();
@@ -296,7 +296,7 @@ namespace integra_internal
 	}
 
 
-	const CNodeEndpoint *CServer::find_node_endpoint( const string &path_string, const CNode *relative_to ) const
+	const INodeEndpoint *CServer::find_node_endpoint( const string &path_string, const INode *relative_to ) const
 	{
 		if( relative_to )
 		{
@@ -324,7 +324,7 @@ namespace integra_internal
 
 	const CValue *CServer::get_value( const CPath &path ) const
 	{
-		const CNodeEndpoint *node_endpoint = find_node_endpoint( path.get_string() );
+		const INodeEndpoint *node_endpoint = find_node_endpoint( path.get_string() );
 		
 		return node_endpoint ? node_endpoint->get_value() : NULL;
 	}
@@ -340,7 +340,7 @@ namespace integra_internal
 	{
 		for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
 		{
-			const CNode *node = i->second;
+			const INode *node = i->second;
 
 			for( int i = 0; i < indentation; i++ )
 			{
@@ -356,7 +356,7 @@ namespace integra_internal
 			const node_endpoint_map &node_endpoints = node->get_node_endpoints();
 			for( node_endpoint_map::const_iterator node_endpoint_iterator = node_endpoints.begin(); node_endpoint_iterator != node_endpoints.end(); node_endpoint_iterator++ )
 			{
-				const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
+				const INodeEndpoint *node_endpoint = node_endpoint_iterator->second;
 				const CValue *value = node_endpoint->get_value();
 				if( !value ) continue;
 
@@ -398,7 +398,7 @@ namespace integra_internal
 	}
 
 
-	CError CServer::process_command( CCommandApi *command, CCommandSource command_source, CCommandResult *result )
+	CError CServer::process_command( ICommand *command, CCommandSource command_source, CCommandResult *result )
 	{
 		assert( command );
 

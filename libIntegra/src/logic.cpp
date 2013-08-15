@@ -40,7 +40,7 @@
 #include "api/trace.h"
 #include "file_helper.h"
 
-#include "api/command_api.h"
+#include "api/command.h"
 
 namespace integra_internal
 {
@@ -127,27 +127,30 @@ namespace integra_internal
 	{
 		/* add connections in host if needed */ 
 
-		for( const CNode *ancestor = &m_node; ancestor; ancestor = ancestor->get_parent() )
+		for( const INode *ancestor = &m_node; ancestor; ancestor = ancestor->get_parent() )
 		{
-			const node_map &siblings = server.get_sibling_set( *ancestor );
+			const node_map &siblings = server.get_siblings( *ancestor );
 			for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 			{
-				const CNode *sibling = i->second;
+				const INode *sibling = i->second;
 
 				if( sibling != ancestor && sibling->get_interface_definition().get_module_guid() == get_connection_interface_guid( server ) ) 
 				{
 					/* found a connection which might target the new node */
 
-					const CNodeEndpoint *source_path = sibling->get_node_endpoint( endpoint_source_path );
-					const CNodeEndpoint *target_path = sibling->get_node_endpoint( endpoint_target_path );
+					const INodeEndpoint *source_path = sibling->get_node_endpoint( endpoint_source_path );
+					const INodeEndpoint *target_path = sibling->get_node_endpoint( endpoint_target_path );
 					assert( source_path && target_path );
 
-					const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), ancestor->get_parent() );
-					const CNodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), ancestor->get_parent() );
+					const INodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), ancestor->get_parent() );
+					const INodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), ancestor->get_parent() );
 	
 					if( source_endpoint && target_endpoint )
 					{
-						if( source_endpoint->get_node().get_id() == m_node.get_id() || target_endpoint->get_node().get_id() == m_node.get_id() )
+						internal_id source_node_id = CNode::downcast( &source_endpoint->get_node() )->get_id();
+						internal_id target_node_id = CNode::downcast( &target_endpoint->get_node() )->get_id();
+
+						if( m_node.get_id() == source_node_id || m_node.get_id() == target_node_id )
 						{
 							if( source_endpoint->get_endpoint_definition().is_audio_stream() && source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 							{
@@ -226,7 +229,7 @@ namespace integra_internal
 
 	bool CLogic::node_is_active() const
 	{
-		const CNodeEndpoint *active_endpoint = m_node.get_node_endpoint( endpoint_active );
+		const INodeEndpoint *active_endpoint = m_node.get_node_endpoint( endpoint_active );
 		if( active_endpoint )
 		{
 			int active = *active_endpoint->get_value();
@@ -286,7 +289,7 @@ namespace integra_internal
 
 	const string *CLogic::get_data_directory() const
 	{
-		const CNodeEndpoint *data_directory = m_node.get_node_endpoint( endpoint_data_directory );
+		const INodeEndpoint *data_directory = m_node.get_node_endpoint( endpoint_data_directory );
 		if( !data_directory )
 		{
 			return NULL;
@@ -310,7 +313,7 @@ namespace integra_internal
 		sets 'active' endpoint to false if any ancestor's active endpoint is false
 		*/
 
-		const CNodeEndpoint *active_endpoint = m_node.get_node_endpoint( endpoint_active );
+		const INodeEndpoint *active_endpoint = m_node.get_node_endpoint( endpoint_active );
 		if( !active_endpoint )
 		{
 			return;
@@ -319,26 +322,26 @@ namespace integra_internal
 		if( !are_all_ancestors_active() )
 		{
 			CIntegerValue value( 0 );
-			server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
 		}	
 	}
 
 
 	bool CLogic::are_all_ancestors_active() const
 	{
-		const CNode *parent = m_node.get_parent();
+		const INode *parent = m_node.get_parent();
 		if( !parent )
 		{
 			return true;
 		}
 
-		const CNodeEndpoint *parent_active = parent->get_node_endpoint( endpoint_active );
+		const INodeEndpoint *parent_active = parent->get_node_endpoint( endpoint_active );
 		if( parent_active && ( int ) *parent_active->get_value() == 0 )
 		{
 			return false;
 		}
 
-		return parent->get_logic().are_all_ancestors_active();
+		return CNode::downcast( parent )->get_logic().are_all_ancestors_active();
 	}
 
 
@@ -350,7 +353,7 @@ namespace integra_internal
 				/* create and set data directory when the endpoint is initialized */
 				{
 				string data_directory = CDataDirectory::create_for_node( m_node, server );
-				server.process_command( CSetCommandApi::create( node_endpoint.get_path(), &CStringValue( data_directory ) ), CCommandSource::SYSTEM );
+				server.process_command( ISetCommand::create( node_endpoint.get_path(), &CStringValue( data_directory ) ), CCommandSource::SYSTEM );
 				}
 				break;
 
@@ -391,14 +394,14 @@ namespace integra_internal
 		string filename = CDataDirectory::copy_file_to_data_directory( input_file );
 		if( !filename.empty() )
 		{
-			server.process_command( CSetCommandApi::create( input_file.get_path(), &CStringValue( filename ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( input_file.get_path(), &CStringValue( filename ) ), CCommandSource::SYSTEM );
 		}
 	}
 
 
 	void CLogic::handle_connections( CServer &server, const CNode &search_node, const CNodeEndpoint &changed_endpoint )
 	{
-		const CNode *parent = search_node.get_parent();
+		const CNode *parent = CNode::downcast( search_node.get_parent() );
 
 		/* recurse up the tree first, so that higher-level connections are evaluated first */
 		if( parent ) 
@@ -414,10 +417,10 @@ namespace integra_internal
 		}
 
 		/* search amongst sibling nodes */
-		const node_map &siblings = server.get_sibling_set( search_node );
+		const node_map &siblings = server.get_siblings( search_node );
 		for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 		{
-			const CNode *sibling = i->second;
+			const CNode *sibling = CNode::downcast( i->second );
 			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
 			{
 				/* not a connection */
@@ -430,7 +433,7 @@ namespace integra_internal
 				continue;
 			}
 
-			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( endpoint_source_path );
+			const INodeEndpoint *source_endpoint = sibling->get_node_endpoint( endpoint_source_path );
 			assert( source_endpoint );
 
 			const string &source_endpoint_value = *source_endpoint->get_value();
@@ -443,10 +446,10 @@ namespace integra_internal
 				}
 
 				/* found a connection! */
-				const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
+				const INodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
 				assert( target_endpoint );
 
-				const CNodeEndpoint *destination_endpoint = server.find_node_endpoint( *target_endpoint->get_value(), parent );
+				const INodeEndpoint *destination_endpoint = server.find_node_endpoint( *target_endpoint->get_value(), parent );
 
 				if( destination_endpoint )
 				{
@@ -484,7 +487,7 @@ namespace integra_internal
 						converted_value = NULL;
 					}
 
-					server.process_command( CSetCommandApi::create( destination_endpoint->get_path(), converted_value ), CCommandSource::CONNECTION );
+					server.process_command( ISetCommand::create( destination_endpoint->get_path(), converted_value ), CCommandSource::CONNECTION );
 				
 					if( converted_value )
 					{
@@ -552,7 +555,7 @@ namespace integra_internal
 	}
 
 
-	CError CLogic::connect_audio_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect )
+	CError CLogic::connect_audio_in_host( CServer &server, const INodeEndpoint &source, const INodeEndpoint &target, bool connect )
 	{
 		const CEndpointDefinition &source_endpoint_definition = source.get_endpoint_definition();
 		const CEndpointDefinition &target_endpoint_definition = target.get_endpoint_definition();
@@ -571,11 +574,11 @@ namespace integra_internal
 
 		if( connect ) 
 		{
-			server.get_bridge()->module_connect( &source, &target );
+			server.get_bridge()->module_connect( CNodeEndpoint::downcast( &source ), CNodeEndpoint::downcast( &target ) );
 		} 
 		else 
 		{
-			server.get_bridge()->module_disconnect( &source, &target );
+			server.get_bridge()->module_disconnect( CNodeEndpoint::downcast( &source ), CNodeEndpoint::downcast( &target ) );
 		}
 
 		return CError::SUCCESS;
@@ -601,18 +604,18 @@ namespace integra_internal
 
 		string new_connection_path = new_name + path_after_renamed_node;
 
-		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( connection_path.get_path(), &CStringValue( new_connection_path ) ), CCommandSource::SYSTEM );
 	}
 
 
 	void CLogic::update_connections_on_rename( CServer &server, const CNode &search_node, const string &previous_name, const string &new_name )
 	{
-		const node_map &siblings = server.get_sibling_set( search_node );
+		const node_map &siblings = server.get_siblings( search_node );
 
 		/* search amongst sibling nodes */
 		for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 		{
-			const CNode *sibling = i->second;
+			const INode *sibling = i->second;
 
 			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
 			{
@@ -620,8 +623,8 @@ namespace integra_internal
 				continue;
 			}
 
-			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( endpoint_source_path );
-			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
+			const CNodeEndpoint *source_endpoint = CNodeEndpoint::downcast( sibling->get_node_endpoint( endpoint_source_path ) );
+			const CNodeEndpoint *target_endpoint = CNodeEndpoint::downcast( sibling->get_node_endpoint( endpoint_target_path ) );
 			assert( source_endpoint && target_endpoint );
 
 			update_connection_path_on_rename( server, *source_endpoint, previous_name, new_name );
@@ -629,7 +632,7 @@ namespace integra_internal
 		}
 	
 		/* recurse up the tree */
-		const CNode *parent = search_node.get_parent();
+		const CNode *parent = CNode::downcast( search_node.get_parent() );
 		if( parent ) 
 		{
 			string previous_name_in_parent_scope = parent->get_name() + "." + previous_name;
@@ -642,20 +645,20 @@ namespace integra_internal
 
 	void CLogic::update_connections_on_move( CServer &server, const CNode &search_node, const CPath &previous_path, const CPath &new_path )
 	{
-		const node_map &siblings = server.get_sibling_set( search_node );
+		const node_map &siblings = server.get_siblings( search_node );
 
 		/* search amongst sibling nodes */
 		for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 		{
-			const CNode *sibling = i->second;
+			const INode *sibling = i->second;
 			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
 			{
 				/* current is not a connection */
 				continue;
 			}
 
-			const CNodeEndpoint *source_endpoint = sibling->get_node_endpoint( endpoint_source_path );
-			const CNodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
+			const CNodeEndpoint *source_endpoint = CNodeEndpoint::downcast( sibling->get_node_endpoint( endpoint_source_path ) );
+			const CNodeEndpoint *target_endpoint = CNodeEndpoint::downcast( sibling->get_node_endpoint( endpoint_target_path ) );
 			assert( source_endpoint && target_endpoint );
 
 			update_connection_path_on_move( server, *source_endpoint, previous_path, new_path );
@@ -663,7 +666,7 @@ namespace integra_internal
 		}
 	
 		/* recurse up the tree */
-		const CNode *parent = search_node.get_parent();
+		const CNode *parent = CNode::downcast( search_node.get_parent() );
 		if( parent ) 
 		{
 			update_connections_on_move( server, *parent, previous_path, new_path );
@@ -677,7 +680,7 @@ namespace integra_internal
 		int absolute_path_length;
 		int characters_after_old_path;
 
-		const CNode *parent = connection_path.get_node().get_parent();
+		const CNode *parent = CNode::downcast( connection_path.get_node().get_parent() );
 		const string &connection_path_string = *connection_path.get_value();
 
 		ostringstream absolute_path_stream;
@@ -719,7 +722,7 @@ namespace integra_internal
 		ostringstream new_connection_path;
 		new_connection_path << new_relative_path.get_string() << absolute_path.substr( previous_path_length );
 
-		server.process_command( CSetCommandApi::create( connection_path.get_path(), &CStringValue( new_connection_path.str() ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( connection_path.get_path(), &CStringValue( new_connection_path.str() ) ), CCommandSource::SYSTEM );
 	}
 
 
@@ -728,7 +731,7 @@ namespace integra_internal
 		const node_map &children = m_node.get_children();
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			const CNode *child = i->second;
+			const CNode *child = CNode::downcast( i->second );
 			child->get_logic().update_on_path_change( server );
 		}
 	}	

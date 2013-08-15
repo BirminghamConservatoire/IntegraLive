@@ -71,7 +71,7 @@ namespace integra_internal
 			void output_handler( unsigned int color, const char *fmt, ... );
 
 			void declare_child_objects( string &init_script, const node_map &children, const CPath &parent_path ) const;
-			string get_child_metatable( const CNode &node, const CPath &parent_path ) const;
+			string get_child_metatable( const INode &node, const CPath &parent_path ) const;
 			void declare_child_metatables( string &init_script, const node_map &children, const CPath &parent_path ) const;
 			string get_lua_object_name( const CPath &child_path, const CPath &parent_path ) const;
 			string get_lua_parameter_string( const CPath &child_path, const CPath &parent_path ) const;

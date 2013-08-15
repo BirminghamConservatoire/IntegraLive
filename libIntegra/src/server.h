@@ -36,7 +36,7 @@
 namespace integra_api
 {
 	class CServerStartupInfo;
-	class CCommandApi;
+	class ICommand;
 	class CCommandResult;
 }
 
@@ -68,18 +68,20 @@ namespace integra_internal
 			const node_map &get_nodes() const { return m_nodes; }
 			node_map &get_nodes_writable() { return m_nodes; }
 
-			const CNode *find_node( const string &path_string, const CNode *relative_to = NULL ) const;
+			const INode *find_node( const string &path_string, const INode *relative_to = NULL ) const;
 			const CNode *find_node( internal_id id ) const;
 
 			CNode *find_node_writable( const string &path_string, const CNode *relative_to = NULL );
 
-			const node_map &get_sibling_set( const CNode &node ) const;
+			const node_map &get_siblings( const INode &node ) const;
 			node_map &get_sibling_set_writable( CNode &node );
 
-			const CNodeEndpoint *find_node_endpoint( const string &path_string, const CNode *relative_to = NULL ) const;
+			const INodeEndpoint *find_node_endpoint( const string &path_string, const INode *relative_to = NULL ) const;
 			CNodeEndpoint *find_node_endpoint_writable( const string &path_string, const CNode *relative_to = NULL );
 
 			const CValue *get_value( const CPath &path ) const;
+
+			CError process_command( ICommand *command, CCommandSource source, CCommandResult *result = NULL );
 
 			ntg_bridge_interface *get_bridge() { return m_bridge; }
 			ntg_osc_client *get_osc_client() { return m_osc_client; }
@@ -95,8 +97,6 @@ namespace integra_internal
 			CLuaEngine &get_lua_engine() { return *m_lua_engine; }
 
 			CPlayerHandler &get_player_handler() { return *m_player_handler; }
-
-			CError process_command( CCommandApi *command, CCommandSource source, CCommandResult *result = NULL );
 
 			internal_id create_internal_id();
 

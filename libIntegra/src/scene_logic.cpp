@@ -28,7 +28,7 @@
 #include "interface_definition.h"
 #include "server.h"
 #include "api/trace.h"
-#include "api/command_api.h"
+#include "api/command.h"
 
 #include <assert.h>
 
@@ -88,20 +88,20 @@ namespace integra_internal
 		/* if this is the selected scene, need to update the player's scene endpoint */
 
 		const CNode &scene_node = get_node();
-		const CNode *player_node = scene_node.get_parent();
+		const CNode *player_node = CNode::downcast( scene_node.get_parent() );
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
 			INTEGRA_TRACE_ERROR << "scene not in a player";
 			return;
 		}
 
-		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
+		const INodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( scene_endpoint );
 
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == previous_name )
 		{
-			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( scene_node.get_name() ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( scene_node.get_name() ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -113,37 +113,37 @@ namespace integra_internal
 		/* if this is the selected scene, need to clear the player's scene endpoint */
 
 		const CNode &scene_node = get_node();
-		const CNode *player_node = scene_node.get_parent();
+		const CNode *player_node = CNode::downcast( scene_node.get_parent() );
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
 			INTEGRA_TRACE_ERROR << "parent of deleted scene is not a player";
 			return;
 		}
 
-		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
+		const INodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( scene_endpoint );
 
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == scene_node.get_name() ) 
 		{
-			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( "" ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( "" ) ), CCommandSource::SYSTEM );
 		}
 	}
 
 
 	void CSceneLogic::activate_scene( CServer &server )
 	{
-		const CNode *player_node = get_node().get_parent();
+		const CNode *player_node = CNode::downcast( get_node().get_parent() );
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
 			INTEGRA_TRACE_ERROR << "scene not inside player";
 			return;
 		}
 
-		const CNodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
+		const INodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( player_scene_endpoint );
 
-		server.process_command( CSetCommandApi::create( player_scene_endpoint->get_path(), &CStringValue( get_node().get_name() ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_scene_endpoint->get_path(), &CStringValue( get_node().get_name() ) ), CCommandSource::SYSTEM );
 	}
 
 
@@ -156,8 +156,8 @@ namespace integra_internal
 
 		const CNode &scene_node = get_node();
 
-		const CNodeEndpoint *scene_start_endpoint = scene_node.get_node_endpoint( endpoint_start );
-		const CNodeEndpoint *scene_length_endpoint = scene_node.get_node_endpoint( endpoint_length );
+		const INodeEndpoint *scene_start_endpoint = scene_node.get_node_endpoint( endpoint_start );
+		const INodeEndpoint *scene_length_endpoint = scene_node.get_node_endpoint( endpoint_length );
 		assert( scene_start_endpoint && scene_length_endpoint );
 
 		int start = *scene_start_endpoint->get_value();
@@ -190,7 +190,7 @@ namespace integra_internal
 			play = 1;
 		}
 
-		const CNode *parent_node = scene_node.get_parent();
+		const CNode *parent_node = CNode::downcast( scene_node.get_parent() );
 		if( !parent_node )
 		{
 			INTEGRA_TRACE_ERROR << "Scene has no parent node";
@@ -217,12 +217,12 @@ namespace integra_internal
 
 		const CNode &scene_node = get_node();
 
-		const CNodeEndpoint *scene_start = scene_node.get_node_endpoint( endpoint_start );
-		const CNodeEndpoint *scene_length = scene_node.get_node_endpoint( endpoint_length );
+		const INodeEndpoint *scene_start = scene_node.get_node_endpoint( endpoint_start );
+		const INodeEndpoint *scene_length = scene_node.get_node_endpoint( endpoint_length );
 
-		const CNodeEndpoint *player_tick = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_tick );
-		const CNodeEndpoint *player_start = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_start );
-		const CNodeEndpoint *player_end = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_end );
+		const INodeEndpoint *player_tick = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_tick );
+		const INodeEndpoint *player_start = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_start );
+		const INodeEndpoint *player_end = scene_node.get_parent()->get_node_endpoint( CPlayerLogic::endpoint_end );
 
 		assert( scene_start && scene_length && player_tick && player_start && player_end );
 
@@ -233,23 +233,23 @@ namespace integra_internal
 		CIntegerValue player_start_value( start );
 		CIntegerValue player_end_value( end );
 
-		server.process_command( CSetCommandApi::create( player_tick->get_path(), &player_start_value ), CCommandSource::SYSTEM );
-		server.process_command( CSetCommandApi::create( player_start->get_path(), &player_start_value ), CCommandSource::SYSTEM );
-		server.process_command( CSetCommandApi::create( player_end->get_path(), &player_end_value ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_tick->get_path(), &player_start_value ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_start->get_path(), &player_start_value ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_end->get_path(), &player_end_value ), CCommandSource::SYSTEM );
 	}
 
 
 	bool CSceneLogic::is_scene_selected() const
 	{
 		const CNode &scene_node = get_node();
-		const CNode *player_node = scene_node.get_parent();
+		const CNode *player_node = CNode::downcast( scene_node.get_parent() );
 		if( !player_node || !dynamic_cast< const CPlayerLogic * >( &player_node->get_logic() ) )
 		{
 			INTEGRA_TRACE_ERROR << "Scene is not inside a Player";
 			return false;
 		}
 
-		const CNodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
+		const INodeEndpoint *scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( scene_endpoint );
 
 		const string &scene = *scene_endpoint->get_value();

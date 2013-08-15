@@ -22,7 +22,7 @@
 #ifndef INTEGRA_RENAME_COMMAND_PRIVATE
 #define INTEGRA_RENAME_COMMAND_PRIVATE
 
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/path.h"
 
 using namespace integra_api;
@@ -31,7 +31,7 @@ using namespace integra_api;
 
 namespace integra_internal
 {
-	class CRenameCommand : public CRenameCommandApi
+	class CRenameCommand : public IRenameCommand
 	{
 		public:
 			CRenameCommand( const CPath &path, const string &new_name );

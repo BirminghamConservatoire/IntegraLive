@@ -31,7 +31,7 @@
 
 namespace integra_api
 {
-	CLoadCommandApi *CLoadCommandApi::create( const string &file_path, const CPath &parent_path )
+	ILoadCommand *ILoadCommand::create( const string &file_path, const CPath &parent_path )
 	{
 		return new integra_internal::CLoadCommand( file_path, parent_path );
 	}
@@ -49,7 +49,7 @@ namespace integra_internal
 
 	CError CLoadCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
-		const CNode *parent = server.find_node( m_parent_path );
+		const CNode *parent = CNode::downcast( server.find_node( m_parent_path ) );
 
 		guid_set new_embedded_module_ids;
 

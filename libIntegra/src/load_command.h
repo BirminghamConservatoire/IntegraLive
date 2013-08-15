@@ -22,7 +22,7 @@
 #ifndef INTEGRA_LOAD_COMMAND_PRIVATE
 #define INTEGRA_LOAD_COMMAND_PRIVATE
 
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/path.h"
 
 using namespace integra_api;
@@ -31,7 +31,7 @@ using namespace integra_api;
 
 namespace integra_internal
 {
-	class CLoadCommand : public CLoadCommandApi
+	class CLoadCommand : public ILoadCommand
 	{
 		public:
 			CLoadCommand( const string &file_path, const CPath &parent_path );

@@ -25,7 +25,7 @@
 #include "node.h"
 #include "server.h"
 #include "interface_definition.h"
-#include "api/command_api.h"
+#include "api/command.h"
 #include "string_helper.h"
 
 
@@ -130,14 +130,14 @@ namespace integra_internal
 		CPath node_path = path;
 		string endpoint_name = node_path.pop_element();
 
-		const CNode *node = m_server->find_node( node_path );
+		const INode *node = m_server->find_node( node_path );
 		if( !node )
 		{
 			error_handler( "Can't find node: %s", node_path.get_string().c_str() );
 			return 0;
 		}
 
-		const CNodeEndpoint *endpoint = node->get_node_endpoint( endpoint_name );
+		const INodeEndpoint *endpoint = node->get_node_endpoint( endpoint_name );
 		if( !endpoint )
 		{
 			error_handler( "Can't find endpoint: %s", path.get_string().c_str() );
@@ -184,7 +184,7 @@ namespace integra_internal
 
 			output_handler( set_color, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
-			error = m_server->process_command( CSetCommandApi::create( path, converted_value ), CCommandSource::SCRIPT );
+			error = m_server->process_command( ISetCommand::create( path, converted_value ), CCommandSource::SCRIPT );
 
 			delete new_value;
 			delete converted_value;
@@ -194,7 +194,7 @@ namespace integra_internal
 			assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::BANG );
 
 			output_handler( set_color, "Sending bang to %s...", path.get_string().c_str() );
-			error = m_server->process_command( CSetCommandApi::create( path, NULL ), CCommandSource::SCRIPT );
+			error = m_server->process_command( ISetCommand::create( path, NULL ), CCommandSource::SCRIPT );
 		}
 
 		if( error != CError::SUCCESS )
@@ -222,14 +222,14 @@ namespace integra_internal
 		CPath node_path( path );
 		string endpoint_name = node_path.pop_element();
 
-		const CNode *node = m_server->find_node( node_path );
+		const INode *node = m_server->find_node( node_path );
 		if( !node )
 		{
 			error_handler( "Can't find node: %s", node_path.get_string().c_str() );
 			return 0;
 		}
 
-		const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_name );
+		const INodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_name );
 		if( !node_endpoint )
 		{
 			error_handler( "Can't find endpoint: %s", node_path.get_string().c_str() );
@@ -485,7 +485,7 @@ namespace integra_internal
 			init_script += "\n";
 		}
 
-		const CNode *parent_node = server.find_node( parent_path );
+		const INode *parent_node = server.find_node( parent_path );
 		const node_map &child_nodes = parent_node ? parent_node->get_children() : m_server->get_nodes();
 	
 		declare_child_objects( init_script, child_nodes, parent_path );
@@ -503,7 +503,7 @@ namespace integra_internal
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
 			//declare child object
-			const CNode *child = i->second;
+			const INode *child = i->second;
 			string child_declaration = get_lua_object_name( child->get_path(), parent_path );
 
 			child_declaration += child_initializer;
@@ -515,7 +515,7 @@ namespace integra_internal
 	}
 
 
-	string CLuaEngine::get_child_metatable( const CNode &node, const CPath &parent_path ) const
+	string CLuaEngine::get_child_metatable( const INode &node, const CPath &parent_path ) const
 	{
 		const char *metatable_template = 
 			"setmetatable(%s,\n"
@@ -547,7 +547,7 @@ namespace integra_internal
 	{
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			const CNode *child = i->second;
+			const INode *child = i->second;
 
 			string child_metatable = get_child_metatable( *child, parent_path );
 

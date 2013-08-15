@@ -22,7 +22,7 @@
 #ifndef INTEGRA_NEW_COMMAND_PRIVATE
 #define INTEGRA_NEW_COMMAND_PRIVATE
 
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/path.h"
 
 using namespace integra_api;
@@ -31,7 +31,7 @@ using namespace integra_api;
 
 namespace integra_internal
 {
-	class CNewCommand : public CNewCommandApi
+	class CNewCommand : public INewCommand
 	{
 		public:
 			CNewCommand( const GUID &module_id, const string &node_name, const CPath &parent_path );

@@ -68,14 +68,14 @@ namespace integra_internal
 
 		/* remove in host if needed */ 
 		const CNode &node = get_node();
-		const CNode *connection_owner = node.get_parent();
+		const CNode *connection_owner = CNode::downcast( node.get_parent() );
 
-		const CNodeEndpoint *source_path = node.get_node_endpoint( endpoint_source_path );
-		const CNodeEndpoint *target_path = node.get_node_endpoint( endpoint_target_path );
+		const INodeEndpoint *source_path = node.get_node_endpoint( endpoint_source_path );
+		const INodeEndpoint *target_path = node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
-		const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
-		const CNodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
+		const INodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
+		const INodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
 	
 		if( source_endpoint && source_endpoint->get_endpoint_definition().is_audio_stream() && source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 		{
@@ -98,16 +98,16 @@ namespace integra_internal
 			return;
 		}
 
-		const CNode &connection_node = endpoint.get_node();
-		const CNode *connection_owner = connection_node.get_parent();
+		const CNode &connection_node = *CNode::downcast( &endpoint.get_node() );
+		const CNode *connection_owner = CNode::downcast( connection_node.get_parent() );
 
-		const CNodeEndpoint *source_path = connection_node.get_node_endpoint( endpoint_source_path );
-		const CNodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
+		const INodeEndpoint *source_path = connection_node.get_node_endpoint( endpoint_source_path );
+		const INodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
-		const CNodeEndpoint *old_source_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
-		const CNodeEndpoint *new_source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
-		const CNodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
+		const INodeEndpoint *old_source_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
+		const INodeEndpoint *new_source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
+		const INodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
 
 		if( new_source_endpoint && new_source_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_source_endpoint->get_endpoint_definition().get_control_info()->get_can_be_source() )
 		{
@@ -156,16 +156,16 @@ namespace integra_internal
 			return;
 		}
 
-		const CNode &connection_node = endpoint.get_node();
-		const CNode *connection_owner = connection_node.get_parent();
+		const CNode &connection_node = *CNode::downcast( &endpoint.get_node() );
+		const CNode *connection_owner = CNode::downcast( connection_node.get_parent() );
 
-		const CNodeEndpoint *source_path = connection_node.get_node_endpoint( endpoint_source_path );
-		const CNodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
+		const INodeEndpoint *source_path = connection_node.get_node_endpoint( endpoint_source_path );
+		const INodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
-		const CNodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
-		const CNodeEndpoint *old_target_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
-		const CNodeEndpoint *new_target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
+		const INodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
+		const INodeEndpoint *old_target_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
+		const INodeEndpoint *new_target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
 
 		if( new_target_endpoint && new_target_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_target_endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 		{
@@ -203,9 +203,4 @@ namespace integra_internal
 			}
 		}
 	}
-
-
-
-
-
 }

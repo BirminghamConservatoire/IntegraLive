@@ -26,7 +26,7 @@
 #include "assert.h"
 #include "server.h"
 #include "interface_definition.h"
-#include "api/command_api.h"
+#include "api/command.h"
 
 
 namespace integra_internal
@@ -76,11 +76,11 @@ namespace integra_internal
 
 		const CNode &scaler_node = get_node();
 
-		const CNodeEndpoint *in_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_min );
-		const CNodeEndpoint *in_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_max );
-		const CNodeEndpoint *out_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_min );
-		const CNodeEndpoint *out_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_max );
-		const CNodeEndpoint *out_value_endpoint = scaler_node.get_node_endpoint( endpoint_out_value );
+		const INodeEndpoint *in_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_min );
+		const INodeEndpoint *in_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_max );
+		const INodeEndpoint *out_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_min );
+		const INodeEndpoint *out_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_max );
+		const INodeEndpoint *out_value_endpoint = scaler_node.get_node_endpoint( endpoint_out_value );
 		assert( in_range_min_endpoint && in_range_max_endpoint && out_range_min_endpoint && out_range_max_endpoint && out_value_endpoint);
 
 		assert( value.get_type() == CValue::FLOAT );
@@ -117,6 +117,6 @@ namespace integra_internal
 		scaled_value = ( scaled_value - in_range_min ) * out_range_total / in_range_total + out_range_min;
 
 		/*store result*/
-		server.process_command( CSetCommandApi::create( out_value_endpoint->get_path(), &CFloatValue( scaled_value ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( out_value_endpoint->get_path(), &CFloatValue( scaled_value ) ), CCommandSource::SYSTEM );
 	}
 }

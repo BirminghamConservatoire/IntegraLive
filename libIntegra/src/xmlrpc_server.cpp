@@ -49,7 +49,7 @@
 #include "api/value.h"
 #include "api/path.h"
 #include "api/common_typedefs.h"
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/command_result.h"
 
 #define HELPSTR_VERSION "Return the current version of libIntegra\n\\return {'response':'system.version', 'version':<string>\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
@@ -808,7 +808,7 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback( CServer *server, const int ar
     struct_ = xmlrpc_struct_new(env);
 
 	path_list paths;
-	const CNode *parent = server->find_node( *path );
+	const INode *parent = server->find_node( *path );
 	const node_map &nodes = parent ? parent->get_children() : server->get_nodes();
 	for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
 	{
@@ -831,7 +831,7 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback( CServer *server, const int ar
         }
 
         /* get the class id */
-        const CNode *node = server->find_node( path );
+        const INode *node = server->find_node( path );
         if( node == NULL ) 
 		{
 			INTEGRA_TRACE_ERROR << "path not found: " << path.get_string().c_str();
@@ -916,7 +916,7 @@ static xmlrpc_value *ntg_xmlrpc_delete_callback( CServer *server, const int argc
 
     struct_ = xmlrpc_struct_new(env);
 
-	CError error = server->process_command( CDeleteCommandApi::create( *path ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( IDeleteCommand::create( *path ), CCommandSource::XMLRPC_API );
     if(error != CError::SUCCESS) 
 	{
         return ntg_xmlrpc_error(env, error);
@@ -946,7 +946,7 @@ static xmlrpc_value *ntg_xmlrpc_rename_callback( CServer *server, const int argc
     const CPath *path = va_arg(argv, CPath *);
     const char *name = va_arg(argv, char *);
 
-	CError error = server->process_command( CRenameCommandApi::create( *path, name ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( IRenameCommand::create( *path, name ), CCommandSource::XMLRPC_API );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error(env, error );
@@ -980,7 +980,7 @@ static xmlrpc_value *ntg_xmlrpc_save_callback( CServer *server, const int argc, 
     const CPath *path = va_arg(argv, CPath  *);
     const char *file_path = va_arg(argv, char *);
 
-	CError error = server->process_command( CSaveCommandApi::create( file_path, *path ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( ISaveCommand::create( file_path, *path ), CCommandSource::XMLRPC_API );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error(env, error);
@@ -1014,7 +1014,7 @@ static xmlrpc_value *ntg_xmlrpc_load_callback( CServer *server, const int argc, 
     const CPath *path = va_arg(argv, CPath *);
 
 	CLoadCommandResult result;
-	CError error = server->process_command( CLoadCommandApi::create( file_path, *path ), CCommandSource::XMLRPC_API, &result );
+	CError error = server->process_command( ILoadCommand::create( file_path, *path ), CCommandSource::XMLRPC_API, &result );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error( env, error );
@@ -1064,7 +1064,7 @@ static xmlrpc_value *ntg_xmlrpc_move_callback( CServer *server, const int argc, 
     const CPath *node_path = va_arg(argv, CPath *);
     const CPath *parent_path = va_arg(argv, CPath *);
 
-	CError error = server->process_command( CMoveCommandApi::create( *node_path, *parent_path ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( IMoveCommand::create( *node_path, *parent_path ), CCommandSource::XMLRPC_API );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error( env, error );
@@ -1300,7 +1300,7 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(CServer *server, const int argc, va
 	CGuidHelper::string_to_guid( module_id_string, module_id );
 
 	CNewCommandResult result;
-	CError error = server->process_command( CNewCommandApi::create( module_id, node_name, *path ), CCommandSource::XMLRPC_API, &result );
+	CError error = server->process_command( INewCommand::create( module_id, node_name, *path ), CCommandSource::XMLRPC_API, &result );
 
 	const CNode *node = result.get_created_node();
 	if( error != CError::SUCCESS || !node ) 
@@ -1353,7 +1353,7 @@ static xmlrpc_value *ntg_xmlrpc_set_callback( CServer *server, const int argc, v
 
 	INTEGRA_TRACE_VERBOSE << "setting value: " << path->get_string();
 
-	CError error = server->process_command( CSetCommandApi::create( *path, value ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( ISetCommand::create( *path, value ), CCommandSource::XMLRPC_API );
 	if( error != CError::SUCCESS )
 	{
 		return ntg_xmlrpc_error (env, error );

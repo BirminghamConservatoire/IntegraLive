@@ -34,7 +34,7 @@
 
 namespace integra_api
 {
-	CNewCommandApi *CNewCommandApi::create( const GUID &module_id, const string &node_name, const CPath &parent_path )
+	INewCommand *INewCommand::create( const GUID &module_id, const string &node_name, const CPath &parent_path )
 	{
 		return new integra_internal::CNewCommand( module_id, node_name, parent_path );
 	}
@@ -112,10 +112,10 @@ namespace integra_internal
 				continue;
 			}
 
-			const CNodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_definition->get_name() );
+			const INodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_definition->get_name() );
 			assert( node_endpoint );
 
-			server.process_command( CSetCommandApi::create( node_endpoint->get_path(), &endpoint_definition->get_control_info()->get_state_info()->get_default_value() ), CCommandSource::INITIALIZATION );
+			server.process_command( ISetCommand::create( node_endpoint->get_path(), &endpoint_definition->get_control_info()->get_state_info()->get_default_value() ), CCommandSource::INITIALIZATION );
 		}
 
 		/* handle any system class logic */

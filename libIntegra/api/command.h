@@ -38,66 +38,66 @@ namespace integra_api
 	class CCommandResult;
 	class CCommandSource;
 	
-	class INTEGRA_API CCommandApi
+	class INTEGRA_API ICommand
 	{
 		protected:
 
-			CCommandApi() {}
+			ICommand() {}
 
 		public:
 
-			virtual ~CCommandApi() {};
+			virtual ~ICommand() {};
 
 			virtual CError execute( integra_internal::CServer &server, CCommandSource source, CCommandResult *result ) = 0;
 	};
 
 
-	class INTEGRA_API CNewCommandApi : public CCommandApi
+	class INTEGRA_API INewCommand : public ICommand
 	{
 		public:
-			static CNewCommandApi *create( const GUID &module_id, const string &node_name, const CPath &parent_path );
+			static INewCommand *create( const GUID &module_id, const string &node_name, const CPath &parent_path );
 	};
 
 
-	class INTEGRA_API CDeleteCommandApi : public CCommandApi
+	class INTEGRA_API IDeleteCommand : public ICommand
 	{
 		public:
-			static CDeleteCommandApi *create( const CPath &path );
+			static IDeleteCommand *create( const CPath &path );
 	};
 
 
-	class INTEGRA_API CSetCommandApi : public CCommandApi
+	class INTEGRA_API ISetCommand : public ICommand
 	{
 		public:
-			static CSetCommandApi *create( const CPath &endpoint_path, const CValue *value );
+			static ISetCommand *create( const CPath &endpoint_path, const CValue *value );
 	};
 
 
-	class INTEGRA_API CRenameCommandApi : public CCommandApi
+	class INTEGRA_API IRenameCommand : public ICommand
 	{
 		public:
-			static CRenameCommandApi *create( const CPath &path, const string &new_name );
+			static IRenameCommand *create( const CPath &path, const string &new_name );
 	};
 
 
-	class INTEGRA_API CMoveCommandApi : public CCommandApi
+	class INTEGRA_API IMoveCommand : public ICommand
 	{
 		public:
-			static CMoveCommandApi *create( const CPath &node_path, const CPath &new_parent_path );
+			static IMoveCommand *create( const CPath &node_path, const CPath &new_parent_path );
 	};
 
 
-	class INTEGRA_API CLoadCommandApi : public CCommandApi
+	class INTEGRA_API ILoadCommand : public ICommand
 	{
 		public:
-			static CLoadCommandApi *create( const string &file_path, const CPath &parent_path );
+			static ILoadCommand *create( const string &file_path, const CPath &parent_path );
 	};
 
 
-	class INTEGRA_API CSaveCommandApi : public CCommandApi
+	class INTEGRA_API ISaveCommand : public ICommand
 	{
 		public:
-			static CSaveCommandApi *create( const string &file_path, const CPath &node_path );
+			static ISaveCommand *create( const string &file_path, const CPath &node_path );
 	};
 }
 

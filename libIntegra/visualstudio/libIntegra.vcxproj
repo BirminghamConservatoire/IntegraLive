@@ -200,13 +200,15 @@
     <ClCompile Include="..\src\xmlrpc_server.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\api\command_api.h" />
+    <ClInclude Include="..\api\command.h" />
     <ClInclude Include="..\api\command_result.h" />
     <ClInclude Include="..\api\command_source.h" />
     <ClInclude Include="..\api\common_typedefs.h" />
     <ClInclude Include="..\api\error.h" />
     <ClInclude Include="..\api\guid_helper.h" />
     <ClInclude Include="..\api\integra_session.h" />
+    <ClInclude Include="..\api\node.h" />
+    <ClInclude Include="..\api\node_endpoint.h" />
     <ClInclude Include="..\api\path.h" />
     <ClInclude Include="..\api\server.h" />
     <ClInclude Include="..\api\server_lock.h" />

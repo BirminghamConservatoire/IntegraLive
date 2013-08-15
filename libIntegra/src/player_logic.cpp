@@ -28,7 +28,7 @@
 #include "api/trace.h"
 #include "interface_definition.h"
 #include "player_handler.h"
-#include "api/command_api.h"
+#include "api/command.h"
 
 #include <assert.h>
 
@@ -131,10 +131,10 @@ namespace integra_internal
 	{
 		CLogic::update_on_activation( server );
 
-		const CNodeEndpoint *tick = get_node().get_node_endpoint( endpoint_tick );
+		const INodeEndpoint *tick = get_node().get_node_endpoint( endpoint_tick );
 		assert( tick );
 
-		server.process_command( CSetCommandApi::create( tick->get_path(), tick->get_value() ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( tick->get_path(), tick->get_value() ), CCommandSource::SYSTEM );
 	}
 
 
@@ -158,11 +158,11 @@ namespace integra_internal
 
 		/* handle scene selection */
 		const CNode &player_node = get_node();
-		const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( endpoint_scene );
+		const INodeEndpoint *scene_endpoint = player_node.get_node_endpoint( endpoint_scene );
 		assert( scene_endpoint );
 		string scene_name = *scene_endpoint->get_value();
 
-		const CNode *scene_node = player_node.get_child( scene_name );
+		const CNode *scene_node = CNode::downcast( player_node.get_child( scene_name ) );
 		if( !scene_node )	
 		{
 			if( !scene_name.empty() )
@@ -179,9 +179,9 @@ namespace integra_internal
 				return;
 			}
 
-			const CNodeEndpoint *scene_start_endpoint = scene_node->get_node_endpoint( CSceneLogic::endpoint_start );
-			const CNodeEndpoint *scene_length_endpoint = scene_node->get_node_endpoint( CSceneLogic::endpoint_length );
-			const CNodeEndpoint *scene_mode_endpoint = scene_node->get_node_endpoint( CSceneLogic::endpoint_mode );
+			const INodeEndpoint *scene_start_endpoint = scene_node->get_node_endpoint( CSceneLogic::endpoint_start );
+			const INodeEndpoint *scene_length_endpoint = scene_node->get_node_endpoint( CSceneLogic::endpoint_length );
+			const INodeEndpoint *scene_mode_endpoint = scene_node->get_node_endpoint( CSceneLogic::endpoint_mode );
 			assert( scene_start_endpoint && scene_length_endpoint && scene_mode_endpoint );
 
 			string scene_mode = *scene_mode_endpoint->get_value();
@@ -218,14 +218,14 @@ namespace integra_internal
 		const CNode &player_node = get_node();
 
 		/* find selected scene start*/
-		const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( endpoint_scene );
-		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( endpoint_tick );
+		const INodeEndpoint *scene_endpoint = player_node.get_node_endpoint( endpoint_scene );
+		const INodeEndpoint *tick_endpoint = player_node.get_node_endpoint( endpoint_tick );
 		assert( scene_endpoint && tick_endpoint );
 
 		int player_tick = *tick_endpoint->get_value();
 	
-		const CNode *selected_scene = NULL;
-		const CNodeEndpoint *scene_start_endpoint = NULL;
+		const INode *selected_scene = NULL;
+		const INodeEndpoint *scene_start_endpoint = NULL;
 
 		const string &selected_scene_name = *scene_endpoint->get_value();
 
@@ -246,7 +246,7 @@ namespace integra_internal
 		const node_map &scenes = player_node.get_children();
 		for( node_map::const_iterator i = scenes.begin(); i != scenes.end(); i++ )
 		{
-			const CNode *search_scene = i->second;
+			const CNode *search_scene = CNode::downcast( i->second );
 			if( !dynamic_cast< const CSceneLogic *> ( &search_scene->get_logic() ) )
 			{
 				INTEGRA_TRACE_ERROR << "Object other than scene in player";
@@ -255,7 +255,7 @@ namespace integra_internal
 
 			if( search_scene != selected_scene )
 			{
-				const CNodeEndpoint *start_endpoint = search_scene->get_node_endpoint( endpoint_start );
+				const INodeEndpoint *start_endpoint = search_scene->get_node_endpoint( endpoint_start );
 				assert( start_endpoint );
 				search_scene_start = *start_endpoint->get_value();
 
@@ -272,7 +272,7 @@ namespace integra_internal
 
 		if( next_scene_name )
 		{
-			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -282,14 +282,14 @@ namespace integra_internal
 		const CNode &player_node = get_node();
 
 		/* find selected scene start*/
-		const CNodeEndpoint *scene_endpoint = player_node.get_node_endpoint( endpoint_scene );
-		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( endpoint_tick );
+		const INodeEndpoint *scene_endpoint = player_node.get_node_endpoint( endpoint_scene );
+		const INodeEndpoint *tick_endpoint = player_node.get_node_endpoint( endpoint_tick );
 		assert( scene_endpoint && tick_endpoint );
 
 		int player_tick = *tick_endpoint->get_value();
 	
-		const CNode *selected_scene = NULL;
-		const CNodeEndpoint *scene_start_endpoint = NULL;
+		const INode *selected_scene = NULL;
+		const INodeEndpoint *scene_start_endpoint = NULL;
 
 		const string &selected_scene_name = *scene_endpoint->get_value();
 
@@ -310,7 +310,7 @@ namespace integra_internal
 		const node_map &scenes = player_node.get_children();
 		for( node_map::const_iterator i = scenes.begin(); i != scenes.end(); i++ )
 		{
-			const CNode *search_scene = i->second;
+			const CNode *search_scene = CNode::downcast( i->second );
 			if( !dynamic_cast< const CSceneLogic *> ( &search_scene->get_logic() ) )
 			{
 				INTEGRA_TRACE_ERROR << "Object other than scene in player";
@@ -319,7 +319,7 @@ namespace integra_internal
 
 			if( search_scene != selected_scene )
 			{
-				const CNodeEndpoint *start_endpoint = search_scene->get_node_endpoint( endpoint_start );
+				const INodeEndpoint *start_endpoint = search_scene->get_node_endpoint( endpoint_start );
 				assert( start_endpoint );
 				search_scene_start = *start_endpoint->get_value();
 
@@ -336,7 +336,7 @@ namespace integra_internal
 
 		if( next_scene_name )
 		{
-			server.process_command( CSetCommandApi::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
 		}	
 	}
 
@@ -350,11 +350,11 @@ namespace integra_internal
 		const CNode &player_node = get_node();
 
 		/* look up the player endpoints to set */
-		const CNodeEndpoint *player_tick_endpoint = player_node.get_node_endpoint( endpoint_tick );
-		const CNodeEndpoint *player_play_endpoint = player_node.get_node_endpoint( endpoint_play );
-		const CNodeEndpoint *player_loop_endpoint = player_node.get_node_endpoint( endpoint_loop );
-		const CNodeEndpoint *player_start_endpoint = player_node.get_node_endpoint( endpoint_start );
-		const CNodeEndpoint *player_end_endpoint = player_node.get_node_endpoint( endpoint_end );
+		const INodeEndpoint *player_tick_endpoint = player_node.get_node_endpoint( endpoint_tick );
+		const INodeEndpoint *player_play_endpoint = player_node.get_node_endpoint( endpoint_play );
+		const INodeEndpoint *player_loop_endpoint = player_node.get_node_endpoint( endpoint_loop );
+		const INodeEndpoint *player_start_endpoint = player_node.get_node_endpoint( endpoint_start );
+		const INodeEndpoint *player_end_endpoint = player_node.get_node_endpoint( endpoint_end );
 
 		assert( player_tick_endpoint && player_play_endpoint && player_loop_endpoint && player_start_endpoint && player_end_endpoint );
 
@@ -364,16 +364,16 @@ namespace integra_internal
 		We can prevent this from being a problem by setting tick after start & end, and setting play last
 		*/
 
-		server.process_command( CSetCommandApi::create( player_loop_endpoint->get_path(), &CIntegerValue( loop ) ), CCommandSource::SYSTEM );
-		server.process_command( CSetCommandApi::create( player_start_endpoint->get_path(), &CIntegerValue( start ) ), CCommandSource::SYSTEM );
-		server.process_command( CSetCommandApi::create( player_end_endpoint->get_path(), &CIntegerValue( end ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_loop_endpoint->get_path(), &CIntegerValue( loop ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_start_endpoint->get_path(), &CIntegerValue( start ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_end_endpoint->get_path(), &CIntegerValue( end ) ), CCommandSource::SYSTEM );
 
 		/* don't set tick unless >= 0.  Allows calling functions to skip setting tick */
 		if( tick >= 0 )
 		{
-			server.process_command( CSetCommandApi::create( player_tick_endpoint->get_path(), &CIntegerValue( tick ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( player_tick_endpoint->get_path(), &CIntegerValue( tick ) ), CCommandSource::SYSTEM );
 		}
 
-		server.process_command( CSetCommandApi::create( player_play_endpoint->get_path(), &CIntegerValue( play ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_play_endpoint->get_path(), &CIntegerValue( play ) ), CCommandSource::SYSTEM );
 	}
 }

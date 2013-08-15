@@ -231,7 +231,9 @@ static int osc_module_connect( const CNodeEndpoint *source, const CNodeEndpoint 
 	}
 
 	/* Make the connection */
-    lo_send(module_host, "/connect", "isis", source->get_node().get_id(), source_name, target->get_node().get_id(), target_name );
+	internal_id source_id = CNode::downcast( &source->get_node() )->get_id();
+	internal_id target_id = CNode::downcast( &target->get_node() )->get_id();
+	lo_send(module_host, "/connect", "isis", source_id, source_name, target_id, target_name );
 
     return 0;
 
@@ -247,7 +249,10 @@ static int osc_module_disconnect(const CNodeEndpoint *source, const CNodeEndpoin
 	osc_get_stream_connection_name( target_name, target->get_endpoint_definition(), target->get_node().get_interface_definition() );
 
 	/* remove the connection */
-    lo_send(module_host, "/disconnect", "isis", source->get_node().get_id(), source_name, target->get_node().get_id(), target_name );
+	internal_id source_id = CNode::downcast( &source->get_node() )->get_id();
+	internal_id target_id = CNode::downcast( &target->get_node() )->get_id();
+
+    lo_send(module_host, "/disconnect", "isis", source_id, source_name, target_id, target_name );
 
 	return 0;
 }
@@ -257,7 +262,7 @@ static void osc_send_value( const CNodeEndpoint *node_endpoint )
 {
 	assert( node_endpoint );
 
-	int module_id = node_endpoint->get_node().get_id();
+	int module_id = CNode::downcast( &node_endpoint->get_node() )->get_id();
 	const string &endpoint_name = node_endpoint->get_endpoint_definition().get_name();
 	const CValue *value = node_endpoint->get_value();
 

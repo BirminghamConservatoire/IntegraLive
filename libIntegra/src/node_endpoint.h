@@ -25,9 +25,10 @@
 #include <unordered_map>
 
 #include "api/common_typedefs.h"
-#include "Integra/integra_bridge.h"
 #include "api/path.h"
 #include "api/value.h"
+#include "api/node_endpoint.h"
+//#include "Integra/integra_bridge.h"
 
 
 using namespace integra_api;
@@ -38,16 +39,20 @@ namespace integra_internal
 	class CNode;
 	class CEndpointDefinition;	
 
-	class CNodeEndpoint
+	class CNodeEndpoint : public INodeEndpoint
 	{
 		public: 
 			
 			CNodeEndpoint();
 			~CNodeEndpoint();
 
+			static const CNodeEndpoint *downcast( const INodeEndpoint *node );
+			static CNodeEndpoint *downcast_writable( INodeEndpoint *node );
+
 			void initialize( const CNode &node, const CEndpointDefinition &endpoint_definition );
 
-			const CNode &get_node() const { return *m_node; }
+			const INode &get_node() const;
+
 			const CEndpointDefinition &get_endpoint_definition() const { return *m_endpoint_definition; }
 
 			const CValue *get_value() const { return m_value; }
@@ -68,9 +73,6 @@ namespace integra_internal
 			CValue *m_value;
 			CPath m_path;
 	};
-
-	typedef std::unordered_map<string, CNodeEndpoint *> node_endpoint_map;
-
 }
 
 

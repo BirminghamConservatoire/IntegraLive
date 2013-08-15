@@ -31,7 +31,7 @@
 
 namespace integra_api
 {
-	CRenameCommandApi *CRenameCommandApi::create( const CPath &path, const string &new_name )
+	IRenameCommand *IRenameCommand::create( const CPath &path, const string &new_name )
 	{
 		return new integra_internal::CRenameCommand( path, new_name );
 	}

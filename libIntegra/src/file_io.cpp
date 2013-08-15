@@ -27,7 +27,7 @@
 #include "module_manager.h"
 #include "api/trace.h"
 #include "server.h"
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/command_result.h"
 #include "data_directory.h"
 #include "string_helper.h"
@@ -162,7 +162,7 @@ namespace integra_internal
 
 			if( top_level_node->get_name() != top_level_node_name )
 			{
-				server.process_command( CRenameCommandApi::create( top_level_node->get_path(), top_level_node_name.c_str() ), CCommandSource::SYSTEM );
+				server.process_command( IRenameCommand::create( top_level_node->get_path(), top_level_node_name.c_str() ), CCommandSource::SYSTEM );
 			}
 		}
 
@@ -420,13 +420,13 @@ namespace integra_internal
 					{
 						/* step back up the node graph */
 						assert( node->get_parent() );
-						node = node->get_parent();
-						parent = node->get_parent();
+						node = CNode::downcast( node->get_parent() );
+						parent = CNode::downcast( node->get_parent() );
 					} 
 					else 
 					{
 						/* nesting level hasn't changed since last object */
-						parent = node->get_parent();
+						parent = CNode::downcast( node->get_parent() );
 					}
 				}
 
@@ -442,7 +442,7 @@ namespace integra_internal
 						/* add the new node */
 
 						CNewCommandResult result;
-						server.process_command( CNewCommandApi::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), CCommandSource::LOAD, &result );
+						server.process_command( INewCommand::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), CCommandSource::LOAD, &result );
 						node = result.get_created_node();
 
 						xmlFree(name);
@@ -479,7 +479,7 @@ namespace integra_internal
 						content = NULL;
 					}
 
-					const CNodeEndpoint *existing_node_endpoint = node->get_node_endpoint( ( char * ) name );
+					const INodeEndpoint *existing_node_endpoint = node->get_node_endpoint( ( char * ) name );
 					if( existing_node_endpoint && existing_node_endpoint->get_endpoint_definition().should_load_from_ixd( value->get_type() ) )
 					{
 						/* 
@@ -511,7 +511,7 @@ namespace integra_internal
 		for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
 		{
 			CPath path( value_iterator->first );
-			server.process_command( CSetCommandApi::create( path, value_iterator->second ), CCommandSource::LOAD );
+			server.process_command( ISetCommand::create( path, value_iterator->second ), CCommandSource::LOAD );
 			delete value_iterator->second;
 		}
 
@@ -539,7 +539,7 @@ namespace integra_internal
 				continue;
 			}
 
-			const CNodeEndpoint *node_endpoint = node.get_node_endpoint( endpoint_definition.get_name() );
+			const CNodeEndpoint *node_endpoint = CNodeEndpoint::downcast( node.get_node_endpoint( endpoint_definition.get_name() ) );
 			assert( node_endpoint );
 
 			bridge->send_value( node_endpoint );
@@ -699,11 +699,6 @@ namespace integra_internal
 
 
 
-
-
-
-
-
 	CError CFileIO::save_nodes( const CServer &server, const CNode &node, unsigned char **buffer, unsigned int *buffer_length )
 	{
 		xmlTextWriterPtr writer;
@@ -829,7 +824,7 @@ namespace integra_internal
 		const node_endpoint_map &node_endpoints = node.get_node_endpoints();
 		for( node_endpoint_map::const_iterator node_endpoint_iterator = node_endpoints.begin(); node_endpoint_iterator != node_endpoints.end(); node_endpoint_iterator++ )
 		{
-			const CNodeEndpoint *node_endpoint = node_endpoint_iterator->second;
+			const INodeEndpoint *node_endpoint = node_endpoint_iterator->second;
 			const CValue *value = node_endpoint->get_value();
 			const CEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
 			if( !value || !endpoint_definition.get_control_info()->get_state_info()->get_is_saved_to_file() ) 
@@ -860,7 +855,7 @@ namespace integra_internal
 		const node_map &children = node.get_children();
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			save_node_tree( *i->second, writer );
+			save_node_tree( *CNode::downcast( i->second ), writer );
 		}
 
 		xmlTextWriterEndElement( writer );
@@ -879,7 +874,7 @@ namespace integra_internal
 		const node_map &children = node.get_children();
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			find_module_guids_to_embed( *i->second, module_guids_to_embed );
+			find_module_guids_to_embed( *CNode::downcast( i->second ), module_guids_to_embed );
 		}
 	}
 

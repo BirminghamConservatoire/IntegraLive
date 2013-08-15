@@ -26,7 +26,7 @@
 #include "node_endpoint.h"
 #include "player_logic.h"
 #include "server.h"
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/trace.h"
 
 #include <assert.h>
@@ -102,9 +102,9 @@ namespace integra_internal
 
 	void CPlayerHandler::update( const CNode &player_node )
 	{
-		const CNodeEndpoint *play_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_play );
-		const CNodeEndpoint *active_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_active );
-		const CNodeEndpoint *tick_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_tick );
+		const INodeEndpoint *play_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_play );
+		const INodeEndpoint *active_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_active );
+		const INodeEndpoint *tick_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_tick );
 		assert( play_endpoint && active_endpoint && tick_endpoint );
 
 		int play_value = *play_endpoint->get_value();
@@ -119,10 +119,10 @@ namespace integra_internal
 		/*
 		lookup player attributes
 		*/
-		const CNodeEndpoint *rate_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_rate );
-		const CNodeEndpoint *loop_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_loop );
-		const CNodeEndpoint *start_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_start );
-		const CNodeEndpoint *end_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_end );
+		const INodeEndpoint *rate_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_rate );
+		const INodeEndpoint *loop_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_loop );
+		const INodeEndpoint *start_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_start );
+		const INodeEndpoint *end_endpoint = player_node.get_node_endpoint( CPlayerLogic::endpoint_end );
 
 		assert( rate_endpoint && loop_endpoint && start_endpoint && end_endpoint );
 
@@ -254,7 +254,7 @@ namespace integra_internal
 		{
 			usleep( CPlayerHandler::player_update_microseconds );
 
-			std::list<CSetCommandApi *> commands;
+			std::list<ISetCommand *> commands;
 
 			pthread_mutex_lock( &m_mutex );
 
@@ -287,13 +287,13 @@ namespace integra_internal
 					}
 					else
 					{
-						commands.push_back( CSetCommandApi::create( player_state->m_play_path, &CIntegerValue( 0 ) ) );
+						commands.push_back( ISetCommand::create( player_state->m_play_path, &CIntegerValue( 0 ) ) );
 					}
 				}
 
 				if( new_tick_value != player_state->m_previous_ticks )
 				{
-					commands.push_back( CSetCommandApi::create( player_state->m_tick_path, &CIntegerValue( new_tick_value ) ) );
+					commands.push_back( ISetCommand::create( player_state->m_tick_path, &CIntegerValue( new_tick_value ) ) );
 					player_state->m_previous_ticks = new_tick_value;
 				}
 			}
@@ -303,7 +303,7 @@ namespace integra_internal
 			if( !commands.empty() )
 			{
 				m_server.lock();
-				for( std::list<CSetCommandApi *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
+				for( std::list<ISetCommand *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
 				{
 					m_server.process_command( *i, CCommandSource::SYSTEM );
 				}

@@ -26,7 +26,7 @@
 #include "lua_engine.h"
 #include "interface_definition.h"
 #include "api/trace.h"
-#include "api/command_api.h"
+#include "api/command.h"
 
 #include <assert.h>
 
@@ -69,7 +69,7 @@ namespace integra_internal
 	{
 		const CNode &script_node = get_node();
 
-		const CNodeEndpoint *text_endpoint = script_node.get_node_endpoint( endpoint_text );
+		const INodeEndpoint *text_endpoint = script_node.get_node_endpoint( endpoint_text );
 		assert( text_endpoint );
 
 		const string &script = *text_endpoint->get_value();
@@ -79,7 +79,7 @@ namespace integra_internal
 		const CPath &parent_path = script_node.get_parent_path();
 	
 		string script_output = server.get_lua_engine().run_script( server, parent_path, script );
-		server.process_command( CSetCommandApi::create( script_node.get_node_endpoint( endpoint_info )->get_path(), &CStringValue( script_output ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( script_node.get_node_endpoint( endpoint_info )->get_path(), &CStringValue( script_output ) ), CCommandSource::SYSTEM );
 
 		INTEGRA_TRACE_VERBOSE << "script finished";
 	}

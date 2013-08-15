@@ -31,7 +31,7 @@
 
 namespace integra_api
 {
-	CMoveCommandApi *CMoveCommandApi::create( const CPath &node_path, const CPath &new_parent_path )
+	IMoveCommand *IMoveCommand::create( const CPath &node_path, const CPath &new_parent_path )
 	{
 		return new integra_internal::CMoveCommand( node_path, new_parent_path	 );
 	}

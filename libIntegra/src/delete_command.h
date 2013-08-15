@@ -22,7 +22,7 @@
 #ifndef INTEGRA_DELETE_COMMAND_PRIVATE
 #define INTEGRA_DELETE_COMMAND_PRIVATE
 
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/path.h"
 
 using namespace integra_api;
@@ -30,7 +30,7 @@ using namespace integra_api;
 
 namespace integra_internal
 {
-	class CDeleteCommand : public CDeleteCommandApi
+	class CDeleteCommand : public IDeleteCommand
 	{
 		public:
 			CDeleteCommand( const CPath &path );

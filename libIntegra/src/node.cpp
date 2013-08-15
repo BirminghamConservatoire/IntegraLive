@@ -124,7 +124,7 @@ namespace integra_internal
 	}
 
 
-	const CNode *CNode::get_child( const string &child_name ) const
+	const INode *CNode::get_child( const string &child_name ) const
 	{
 		node_map::const_iterator lookup = m_children.find( child_name );
 		if( lookup == m_children.end() )
@@ -137,7 +137,7 @@ namespace integra_internal
 	}
 
 
-	const CNodeEndpoint *CNode::get_node_endpoint( const string &endpoint_name ) const
+	const INodeEndpoint *CNode::get_node_endpoint( const string &endpoint_name ) const
 	{
 		node_endpoint_map::const_iterator lookup = m_node_endpoints.find( endpoint_name );
 		if( lookup == m_node_endpoints.end() )
@@ -164,12 +164,12 @@ namespace integra_internal
 		node_endpoint_map &node_endpoints = m_node_endpoints;
 		for( node_endpoint_map::iterator i = node_endpoints.begin(); i != node_endpoints.end(); i++ )
 		{
-			i->second->update_path();
+			CNodeEndpoint::downcast_writable( i->second )->update_path();
 		}
 
 		for( node_map::iterator i = m_children.begin(); i != m_children.end(); i++ )
 		{
-			i->second->update_all_paths();
+			CNode::downcast_writable( i->second )->update_all_paths();
 		}
 	}
 

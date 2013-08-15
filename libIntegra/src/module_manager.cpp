@@ -1012,11 +1012,11 @@ namespace integra_internal
 	}
 
 
-	bool CModuleManager::is_module_in_use( const integra_internal::node_map &search_nodes, const GUID &module_id ) const
+	bool CModuleManager::is_module_in_use( const node_map &search_nodes, const GUID &module_id ) const
 	{
 		for( node_map::const_iterator i = search_nodes.begin(); i != search_nodes.end(); i++ )
 		{
-			const CNode *node = i->second;
+			const INode *node = i->second;
 
 			if( node->get_interface_definition().get_module_guid() == module_id )
 			{
@@ -1037,7 +1037,7 @@ namespace integra_internal
 	{
 		for( node_map::const_iterator i = search_nodes.begin(); i != search_nodes.end(); i++ )
 		{
-			const CNode *node = i->second;
+			const INode *node = i->second;
 			
 			set.erase( node->get_interface_definition().get_module_guid() );
 

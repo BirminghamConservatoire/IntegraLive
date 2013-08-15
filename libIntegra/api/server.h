@@ -22,27 +22,36 @@
 #define INTEGRA_SERVER_API_H
 
 #include "common_typedefs.h"
+#include "node.h"
+#include "node_endpoint.h"
+#include "command_source.h"
+#include "error.h"
+
 
 
 namespace integra_api
 {
 	class CServerStartupInfo;
-	class CValue;
-	class CPath;
+	class ICommand;
+	class CCommandResult;
 
 	class INTEGRA_API IServer
 	{
-		protected:
-			IServer() {}
-
 		public:
 
-			virtual ~IServer() {}
-			
 			//todo - move out of libintegra
 			virtual void block_until_shutdown_signal() = 0;
 
+			virtual const node_map &get_nodes() const = 0;
+			virtual const INode *find_node( const string &path_string, const INode *relative_to = NULL ) const = 0;
+			virtual const node_map &get_siblings( const INode &node ) const = 0;
+
+			virtual const INodeEndpoint *find_node_endpoint( const string &path_string, const INode *relative_to = NULL ) const = 0;
+
 			virtual const CValue *get_value( const CPath &path ) const = 0;
+
+			virtual CError process_command( ICommand *command, CCommandSource source, CCommandResult *result = NULL ) = 0;
+
 	};
 }
 

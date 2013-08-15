@@ -171,8 +171,6 @@ int main( int argc, char *argv[] )
         return -1;
     }
 
-	Sleep( 10000 );
-
     /*deal with commandline arguments */
     for( i = 1; i < argc; i++ )
     {
@@ -323,30 +321,9 @@ int main( int argc, char *argv[] )
         INTEGRA_TRACE_ERROR << "unable to start host - no path provided";
     }
 
-	Sleep( 10000 );
-
 	CIntegraSession integra_session;
 	if( integra_session.start_session( startup_info ) == CError::SUCCESS )
 	{
-		{
-			CServerLock server_handle = integra_session.get_server();
-
-			INTEGRA_TRACE_PROGRESS << "got server handle";
-
-			{
-				CServerLock server_handle = integra_session.get_server();
-			}
-		}
-		
-		{
-			const CValue *value = integra_session.get_server()->get_value( CPath( "test.nowhere.woteva" ) );
-
-			INTEGRA_TRACE_PROGRESS << "got server handle";
-		}
-
-
-		INTEGRA_TRACE_PROGRESS << "destroyed server handle";
-
 		integra_session.block_until_shutdown_signal();
 
 		integra_session.end_session();

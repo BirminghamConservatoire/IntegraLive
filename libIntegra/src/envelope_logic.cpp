@@ -25,7 +25,7 @@
 #include "node_endpoint.h"
 #include "interface_definition.h"
 #include "server.h"
-#include "api/command_api.h"
+#include "api/command.h"
 
 #include <assert.h>
 
@@ -76,14 +76,14 @@ namespace integra_internal
 		}
 
 		const CNode &envelope_node = get_node();
-		const CNodeEndpoint *current_value_endpoint = envelope_node.get_node_endpoint( endpoint_current_value );
+		const INodeEndpoint *current_value_endpoint = envelope_node.get_node_endpoint( endpoint_current_value );
 		assert( current_value_endpoint );
 
 		/*
 		lookup envelope current tick 
 		*/
 
-		const CNodeEndpoint *current_tick_endpoint = envelope_node.get_node_endpoint( endpoint_current_tick );
+		const INodeEndpoint *current_tick_endpoint = envelope_node.get_node_endpoint( endpoint_current_tick );
 		assert( current_tick_endpoint );
 
 		int envelope_current_tick = *current_tick_endpoint->get_value();
@@ -93,7 +93,7 @@ namespace integra_internal
 		lookup and apply envelope start tick
 		*/
 
-		const CNodeEndpoint *start_tick_endpoint = envelope_node.get_node_endpoint( endpoint_start_tick );
+		const INodeEndpoint *start_tick_endpoint = envelope_node.get_node_endpoint( endpoint_start_tick );
 		assert( start_tick_endpoint );
 		int envelope_start_tick = *start_tick_endpoint->get_value();
 
@@ -114,14 +114,14 @@ namespace integra_internal
 		const node_map &control_points = envelope_node.get_children();
 		for( node_map::const_iterator i = control_points.begin(); i != control_points.end(); i++ )
 		{
-			const CNode *control_point = i->second;
+			const INode *control_point = i->second;
 			if( control_point == control_point_to_ignore )
 			{
 				continue;
 			}
 
-			const CNodeEndpoint *control_point_tick_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_tick );
-			const CNodeEndpoint *control_point_value_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_value );
+			const INodeEndpoint *control_point_tick_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_tick );
+			const INodeEndpoint *control_point_value_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_value );
 
 			assert( control_point_tick_endpoint && control_point_value_endpoint );
 
@@ -133,7 +133,7 @@ namespace integra_internal
 				latest_previous_tick = control_point_tick;
 				previous_value = control_point_value;
 
-				const CNodeEndpoint *control_point_curvature_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_curvature );
+				const INodeEndpoint *control_point_curvature_endpoint = control_point->get_node_endpoint( CControlPointLogic::endpoint_curvature );
 				assert( control_point_curvature_endpoint );
 
 				previous_control_point_curvature = *control_point_curvature_endpoint->get_value();
@@ -212,7 +212,7 @@ namespace integra_internal
 
 		if( !current_value_endpoint->get_value()->is_equal( output_value ) )
 		{
-			server.process_command( CSetCommandApi::create( current_value_endpoint->get_path(), &output_value ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( current_value_endpoint->get_path(), &output_value ), CCommandSource::SYSTEM );
 		}
 	}
 

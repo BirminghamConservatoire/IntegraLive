@@ -32,7 +32,7 @@
 
 namespace integra_api
 {
-	CSaveCommandApi *CSaveCommandApi::create( const string &file_path, const CPath &node_path )
+	ISaveCommand *ISaveCommand::create( const string &file_path, const CPath &node_path )
 	{
 		return new integra_internal::CSaveCommand( file_path, node_path );
 	}
@@ -50,12 +50,11 @@ namespace integra_internal
 
 	CError CSaveCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
-		const CNode *node = server.find_node( m_node_path );
+		const CNode *node = CNode::downcast( server.find_node( m_node_path ) );
 		if( !node ) 
 		{
 			return CError::PATH_ERROR;
 		}
-
 
 		if( m_file_path.empty() ) 
 		{

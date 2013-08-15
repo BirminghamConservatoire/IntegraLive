@@ -108,7 +108,7 @@ namespace integra_internal
 		const node_map &children = node.get_children();
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			const CNode *child = i->second;
+			const CNode *child = CNode::downcast( i->second );
 			copy_to_zip( zip_file, *child, path_root );
 		}
 	}
@@ -157,7 +157,7 @@ namespace integra_internal
 			}
 
 			CPath relative_node_path = CPath( relative_node_path_string );
-			const CNode *node = server.find_node( relative_node_path, parent_node );
+			const CNode *node = CNode::downcast( server.find_node( relative_node_path, parent_node ) );
 
 			if( !node )
 			{
@@ -247,7 +247,7 @@ namespace integra_internal
 
 	string CDataDirectory::copy_file_to_data_directory( const CNodeEndpoint &input_file )
 	{
-		const string *data_directory = input_file.get_node().get_logic().get_data_directory();
+		const string *data_directory = CNode::downcast( &input_file.get_node() )->get_logic().get_data_directory();
 		if( !data_directory )
 		{
 			INTEGRA_TRACE_ERROR << "can't get data directory for node " << input_file.get_node().get_name();

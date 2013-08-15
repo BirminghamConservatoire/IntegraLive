@@ -33,7 +33,7 @@
 
 namespace integra_api
 {
-	CSetCommandApi *CSetCommandApi::create( const CPath &endpoint_path, const CValue *value )
+	ISetCommand *ISetCommand::create( const CPath &endpoint_path, const CValue *value )
 	{
 		return new integra_internal::CSetCommand( endpoint_path, value );
 	}
@@ -130,7 +130,7 @@ namespace integra_internal
 				break;
 		}
 
-		if( source == CCommandSource::HOST && !node_endpoint->get_node().get_logic().node_is_active() )
+		if( source == CCommandSource::HOST && !CNode::downcast( &node_endpoint->get_node() )->get_logic().node_is_active() )
 		{
 			return CError::SUCCESS;
 		}
@@ -167,7 +167,7 @@ namespace integra_internal
 
 		
 		/* handle any system class logic */
-		node_endpoint->get_node().get_logic().handle_set( server, *node_endpoint, previous_value, source );
+		CNode::downcast( &node_endpoint->get_node() )->get_logic().handle_set( server, *node_endpoint, previous_value, source );
 
 		if( previous_value )
 		{
@@ -205,7 +205,7 @@ namespace integra_internal
 				break;		
 		}
 
-		if( endpoint.get_endpoint_definition().is_input_file() && endpoint.get_node().get_logic().should_copy_input_file( endpoint, source ) )
+		if( endpoint.get_endpoint_definition().is_input_file() && CNode::downcast( &endpoint.get_node() )->get_logic().should_copy_input_file( endpoint, source ) )
 		{
 			return false;
 		}

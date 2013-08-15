@@ -64,7 +64,7 @@ namespace integra_internal
 		node_endpoint_map node_endpoints = node.get_node_endpoints_writable();
 		for( node_endpoint_map::const_iterator i = node_endpoints.begin(); i != node_endpoints.end(); i++ )
 		{
-			CNodeEndpoint *node_endpoint = i->second;
+			INodeEndpoint *node_endpoint = i->second;
 			const string &path = node_endpoint->get_path();
 			if( m_node_endpoints.count( path ) > 0 )
 			{
@@ -80,8 +80,7 @@ namespace integra_internal
 		node_map &children = node.get_children_writable();
 		for( node_map::iterator i = children.begin(); i != children.end(); i++ )
 		{
-			CNode *child = i->second;
-			add( *child );
+			add( *CNode::downcast_writable( i->second ) );
 		}
 	}
 
@@ -114,7 +113,7 @@ namespace integra_internal
 		const node_endpoint_map node_endpoints = node.get_node_endpoints();
 		for( node_endpoint_map::const_iterator i = node_endpoints.begin(); i != node_endpoints.end(); i++ )
 		{
-			const CNodeEndpoint *node_endpoint = i->second;
+			const INodeEndpoint *node_endpoint = i->second;
 			const string &path = node_endpoint->get_path();
 			if( m_node_endpoints.count( path ) != 1 )
 			{
@@ -130,8 +129,7 @@ namespace integra_internal
 		const node_map &children = node.get_children();
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			const CNode *child = i->second;
-			remove( *child );
+			remove( *CNode::downcast_writable( i->second ) );
 		}
 	}
 
@@ -145,7 +143,7 @@ namespace integra_internal
 			return NULL;
 		}
 
-		return lookup->second;
+		return CNode::downcast( lookup->second );
 	}
 
 
@@ -158,7 +156,7 @@ namespace integra_internal
 			return NULL;
 		}
 
-		return lookup->second;
+		return CNode::downcast_writable( lookup->second );
 	}
 			
 
@@ -184,7 +182,7 @@ namespace integra_internal
 			return NULL;
 		}
 
-		return lookup->second;
+		return CNodeEndpoint::downcast( lookup->second );
 	}
 
 
@@ -197,11 +195,7 @@ namespace integra_internal
 			return NULL;
 		}
 
-		return lookup->second;
+		return CNodeEndpoint::downcast_writable( lookup->second );
 	}
-
-
-
-
 }	
 

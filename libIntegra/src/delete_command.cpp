@@ -32,7 +32,7 @@
 
 namespace integra_api
 {
-	CDeleteCommandApi *CDeleteCommandApi::create( const CPath &path )
+	IDeleteCommand *IDeleteCommand::create( const CPath &path )
 	{
 		return new integra_internal::CDeleteCommand( path );
 	}
@@ -59,8 +59,8 @@ namespace integra_internal
 		node_map copy_of_children( node->get_children() );
 		for( node_map::iterator i = copy_of_children.begin(); i != copy_of_children.end(); i++ )
 		{
-			CNode *child = i->second;
-			server.process_command( CDeleteCommandApi::create( child->get_path() ), source );
+			INode *child = i->second;
+			server.process_command( IDeleteCommand::create( child->get_path() ), source );
 		}
 
 		/* system class logic */

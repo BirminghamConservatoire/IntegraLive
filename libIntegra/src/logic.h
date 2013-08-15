@@ -33,6 +33,8 @@ using namespace integra_api;
 namespace integra_api
 {
 	class CPath;
+	class INode;
+	class INodeEndpoint;
 }
 
 
@@ -75,7 +77,7 @@ namespace integra_internal
 
 			bool are_all_ancestors_active() const;
 
-			CError connect_audio_in_host( CServer &server, const CNodeEndpoint &source, const CNodeEndpoint &target, bool connect );
+			CError connect_audio_in_host( CServer &server, const INodeEndpoint &source, const INodeEndpoint &target, bool connect );
 
 			static const string endpoint_active;
 			static const string endpoint_data_directory; 

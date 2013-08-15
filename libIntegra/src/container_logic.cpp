@@ -25,7 +25,7 @@
 #include "node_endpoint.h"
 #include "server.h"
 #include "interface_definition.h"
-#include "api/command_api.h"
+#include "api/command.h"
 
 #include <assert.h>
 
@@ -63,7 +63,7 @@ namespace integra_internal
 		const node_map &children = get_node().get_children();
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			activate_tree( server, *i->second, active && are_all_ancestors_active(), activated_nodes );
+			activate_tree( server, *CNode::downcast( i->second ), active && are_all_ancestors_active(), activated_nodes );
 		}
 
 		/* 
@@ -75,7 +75,7 @@ namespace integra_internal
 		for( path_list::const_iterator i = activated_nodes.begin(); i != activated_nodes.end(); i++ )
 		{
 			const CPath &path = *i;
-			const CNode *activated_node = server.find_node( path );
+			const CNode *activated_node = CNode::downcast( server.find_node( path ) );
 			assert( activated_node );
 
 			activated_node->get_logic().update_on_activation( server );
@@ -97,7 +97,7 @@ namespace integra_internal
 
 		int value_i = 0;
 
-		const CNodeEndpoint *active_endpoint = node.get_node_endpoint( endpoint_active );
+		const INodeEndpoint *active_endpoint = node.get_node_endpoint( endpoint_active );
 
 		if( dynamic_cast< CContainerLogic * > ( &node.get_logic() ) )
 		{
@@ -114,7 +114,7 @@ namespace integra_internal
 
 				if( !active_endpoint->get_value()->is_equal( value ) )
 				{
-					server.process_command( CSetCommandApi::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
+					server.process_command( ISetCommand::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
 
 					if( activate )
 					{
@@ -127,7 +127,7 @@ namespace integra_internal
 		const node_map &children = node.get_children();
 		for( node_map::const_iterator i = children.begin(); i != children.end(); i++ )
 		{
-			activate_tree( server, *i->second, activate, activated_nodes );
+			activate_tree( server, *CNode::downcast( i->second ), activate, activated_nodes );
 		}
 	}
 }

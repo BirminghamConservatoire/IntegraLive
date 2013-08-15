@@ -22,7 +22,7 @@
 #ifndef INTEGRA_SET_COMMAND_PRIVATE
 #define INTEGRA_SET_COMMAND_PRIVATE
 
-#include "api/command_api.h"
+#include "api/command.h"
 #include "api/path.h"
 
 using namespace integra_api;
@@ -34,7 +34,7 @@ namespace integra_internal
 	class CInterfaceDefinition;
 
 
-	class CSetCommand : public CSetCommandApi
+	class CSetCommand : public ISetCommand
 	{
 		public:
 			CSetCommand( const CPath &endpoint_path, const CValue *value );

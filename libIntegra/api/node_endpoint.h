@@ -18,34 +18,41 @@
  * USA.
  */
 
+#ifndef INTEGRA_NODE_ENDPOINT_API_H
+#define INTEGRA_NODE_ENDPOINT_API_H
 
-#ifndef INTEGRA_MOVE_COMMAND_PRIVATE
-#define INTEGRA_MOVE_COMMAND_PRIVATE
-
-#include "api/command.h"
-#include "api/path.h"
-
-using namespace integra_api;
-
-
+#include "common_typedefs.h"
 
 
 namespace integra_internal
 {
-	class CMoveCommand : public IMoveCommand
+	//todo - get rid
+	class CEndpointDefinition;
+}
+
+
+namespace integra_api
+{
+	class INode;
+	class CValue;
+	class CPath;
+
+
+	class INodeEndpoint
 	{
-		public:
-			CMoveCommand( const CPath &node_path, const CPath &new_parent_path );
-
-		private:
+		public: 
 			
-			CError execute( CServer &server, CCommandSource source, CCommandResult *result );
+			virtual const INode &get_node() const = 0;
+			virtual const integra_internal::CEndpointDefinition &get_endpoint_definition() const = 0;
 
-			CPath m_node_path;
-			CPath m_new_parent_path;
+			virtual const CValue *get_value() const = 0;
+			virtual const CPath &get_path() const = 0;
 	};
+
+
+	typedef std::unordered_map<string, INodeEndpoint *> node_endpoint_map;
 }
 
 
 
-#endif /*INTEGRA_MOVE_COMMAND_PRIVATE*/
+#endif

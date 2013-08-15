@@ -275,9 +275,6 @@
     <ClInclude Include="..\src\interface_definition_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\api\command_api.h">
-      <Filter>Header Files\api</Filter>
-    </ClInclude>
     <ClInclude Include="..\api\command_result.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
@@ -366,6 +363,15 @@
       <Filter>Header Files\api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\server.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\node_endpoint.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\node.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\command.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>

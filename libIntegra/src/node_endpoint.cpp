@@ -47,7 +47,19 @@ namespace integra_internal
 		}
 	}
 
-		
+
+	const CNodeEndpoint *CNodeEndpoint::downcast( const INodeEndpoint *node )
+	{
+		return dynamic_cast< const CNodeEndpoint * > ( node );
+	}
+
+
+	CNodeEndpoint *CNodeEndpoint::downcast_writable( INodeEndpoint *node )
+	{
+		return dynamic_cast< CNodeEndpoint * > ( node );
+	}
+	
+
 	void CNodeEndpoint::initialize( const CNode &node, const CEndpointDefinition &endpoint_definition )
 	{
 		m_node = &node;
@@ -158,6 +170,13 @@ namespace integra_internal
 
 			return false;	//not found
 		}
+	}
+
+
+	const INode &CNodeEndpoint::get_node() const
+	{
+		assert( m_node );
+		return *m_node;
 	}
 
 

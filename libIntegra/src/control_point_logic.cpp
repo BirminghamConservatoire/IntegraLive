@@ -51,7 +51,7 @@ namespace integra_internal
 	{
 		CLogic::handle_new( server, source );
 
-		update_envelope( server, get_node().get_parent() );
+		update_envelope( server, CNode::downcast( get_node().get_parent() ) );
 	}
 
 
@@ -63,7 +63,7 @@ namespace integra_internal
 	
 		if( endpoint_name == endpoint_value || endpoint_name == endpoint_tick )
 		{
-			update_envelope( server, get_node().get_parent() );
+			update_envelope( server, CNode::downcast( get_node().get_parent() ) );
 			return;
 		}	
 	}
@@ -78,10 +78,10 @@ namespace integra_internal
 		/* update the previous envelope */
 		CPath old_parent_path( previous_path );
 		old_parent_path.pop_element();
-		update_envelope( server, server.find_node( old_parent_path ) );
+		update_envelope( server, CNode::downcast( server.find_node( old_parent_path ) ) );
 
 		/* update the new envelope */
-		update_envelope( server, get_node().get_parent() );
+		update_envelope( server, CNode::downcast( get_node().get_parent() ) );
 	}
 
 
@@ -89,7 +89,7 @@ namespace integra_internal
 	{
 		CLogic::handle_delete( server, source );
 
-		update_envelope( server, get_node().get_parent(), true );
+		update_envelope( server, CNode::downcast( get_node().get_parent() ), true );
 	}
 
 

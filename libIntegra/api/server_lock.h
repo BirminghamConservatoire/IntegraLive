@@ -18,34 +18,30 @@
  * USA.
  */
 
-#ifndef INTEGRA_SERVER_API_H
-#define INTEGRA_SERVER_API_H
+#ifndef INTEGRA_SERVER_LOCK_H
+#define INTEGRA_SERVER_LOCK_H
 
 #include "common_typedefs.h"
 
 
 namespace integra_api
 {
-	class CServerStartupInfo;
-	class CValue;
-	class CPath;
+	class CServerApi;
 
-	class INTEGRA_API CServerApi
+	class INTEGRA_API CServerLock
 	{
-		protected:
-			CServerApi() {}
-
 		public:
+			CServerLock( CServerApi *server );
+			~CServerLock();
 
-			virtual ~CServerApi() {}
-			
-			//todo - move out of libintegra
-			virtual void block_until_shutdown_signal() = 0;
+			CServerApi &operator*();
+			CServerApi *operator->();
 
-			virtual const CValue *get_value( const CPath &path ) const = 0;
+		private:	
+
+			CServerApi *m_server;
 	};
 }
-
 
 
 #endif 

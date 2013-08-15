@@ -25,8 +25,6 @@ extern "C"
 #include <dlfcn.h>
 }
 
-#include <sys/stat.h>
-
 #include <libxml/xmlreader.h>
 
 #include "server.h"
@@ -48,40 +46,6 @@ extern "C"
 
 #include <assert.h>
 #include <iostream>
-
-
-namespace integra_api
-{
-	CServerApi *CServerApi::create_server( const CServerStartupInfo &startup_info )
-	{
-		if( startup_info.bridge_path.empty() ) 
-		{
-			INTEGRA_TRACE_ERROR << "bridge_path is empty";
-			return NULL;
-		}
-
-		struct stat file_buffer;
-		if( stat( startup_info.bridge_path.c_str(), &file_buffer ) != 0 ) 
-		{
-			INTEGRA_TRACE_ERROR << "bridge_path points to a nonexsitant file";
-			return NULL;
-		}
-
-		if( startup_info.system_module_directory.empty() ) 
-		{
-			INTEGRA_TRACE_ERROR << "system_module_directory is empty";
-			return NULL;
-		}
-
-		if( startup_info.third_party_module_directory.empty() ) 
-		{
-			INTEGRA_TRACE_ERROR << "third_party_module_directory is empty";
-			return NULL;
-		}
-
-		return new integra_internal::CServer( startup_info );
-	}
-}
 
 
 namespace integra_internal
@@ -128,6 +92,7 @@ namespace integra_internal
 		INTEGRA_TRACE_PROGRESS << "libIntegra version " << get_libintegra_version();
 
 		pthread_mutex_init( &m_mutex, NULL );
+		memset( &m_mutex_owner, 0, sizeof( pthread_t ) );
 
 		#ifdef _WINDOWS
 			_set_invalid_parameter_handler( invalid_parameter_handler );
@@ -252,12 +217,21 @@ namespace integra_internal
 
 	void CServer::lock()
 	{
+		pthread_t current_thread = pthread_self();
+		if( memcmp( &current_thread, &m_mutex_owner, sizeof( pthread_t ) ) == 0 )
+		{
+			INTEGRA_TRACE_ERROR << "Attempt to lock server in thread which has already locked it!  Deadlock!";
+			assert( false );
+		}
+
 	    pthread_mutex_lock( &m_mutex );
+		m_mutex_owner = current_thread;
 	}
 
 
 	void CServer::unlock()
 	{
+		memset( &m_mutex_owner, 0, sizeof( pthread_t ) );
 		pthread_mutex_unlock( &m_mutex );
 	}
 
@@ -452,7 +426,7 @@ namespace integra_internal
 
 			GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS| 
 							GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-							(LPCTSTR) CServerApi::create_server, 
+							(LPCTSTR) CTrace::error, 
 							&module_handle);
 
 			size = GetModuleFileName(module_handle, file_name, _MAX_PATH);

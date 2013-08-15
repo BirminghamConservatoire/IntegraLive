@@ -186,6 +186,12 @@
     <ClCompile Include="..\src\command_source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\integra_session.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server_lock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
@@ -354,6 +360,12 @@
       <Filter>Header Files\api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\path.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\integra_session.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\server_lock.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>

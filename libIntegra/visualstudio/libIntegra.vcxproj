@@ -159,6 +159,7 @@
     <ClCompile Include="..\src\delete_command.cpp" />
     <ClCompile Include="..\src\envelope_logic.cpp" />
     <ClCompile Include="..\src\guid_helper.cpp" />
+    <ClCompile Include="..\src\integra_session.cpp" />
     <ClCompile Include="..\src\load_command.cpp" />
     <ClCompile Include="..\src\logic.cpp" />
     <ClCompile Include="..\src\lua_engine.cpp" />
@@ -188,6 +189,7 @@
     <ClCompile Include="..\src\scratch_directory.cpp" />
     <ClCompile Include="..\src\script_logic.cpp" />
     <ClCompile Include="..\src\server.cpp" />
+    <ClCompile Include="..\src\server_lock.cpp" />
     <ClCompile Include="..\src\set_command.cpp" />
     <ClCompile Include="..\src\state_table.cpp" />
     <ClCompile Include="..\src\string_helper.cpp" />
@@ -204,8 +206,10 @@
     <ClInclude Include="..\api\common_typedefs.h" />
     <ClInclude Include="..\api\error.h" />
     <ClInclude Include="..\api\guid_helper.h" />
+    <ClInclude Include="..\api\integra_session.h" />
     <ClInclude Include="..\api\path.h" />
     <ClInclude Include="..\api\server_api.h" />
+    <ClInclude Include="..\api\server_lock.h" />
     <ClInclude Include="..\api\server_startup_info.h" />
     <ClInclude Include="..\api\trace.h" />
     <ClInclude Include="..\api\value.h" />

@@ -12,7 +12,10 @@
 
 #include "api/trace.h"
 #include "api/server_startup_info.h"
+#include "api/integra_session.h"
 #include "api/server_api.h"
+#include "api/value.h"
+#include "api/path.h"
 
 #include "close_orphaned_processes.h"
 
@@ -320,17 +323,37 @@ int main( int argc, char *argv[] )
         INTEGRA_TRACE_ERROR << "unable to start host - no path provided";
     }
 
+	Sleep( 10000 );
 
-	CServerApi *server = CServerApi::create_server( startup_info );
-	if( server )
+	CIntegraSession integra_session;
+	if( integra_session.start_session( startup_info ) == CError::SUCCESS )
 	{
-		server->block_until_shutdown_signal();
+		{
+			CServerLock server_handle = integra_session.get_server();
 
-		delete server;
+			INTEGRA_TRACE_PROGRESS << "got server handle";
+
+			{
+				CServerLock server_handle = integra_session.get_server();
+			}
+		}
+		
+		{
+			const CValue *value = integra_session.get_server()->get_value( CPath( "test.nowhere.woteva" ) );
+
+			INTEGRA_TRACE_PROGRESS << "got server handle";
+		}
+
+
+		INTEGRA_TRACE_PROGRESS << "destroyed server handle";
+
+		integra_session.block_until_shutdown_signal();
+
+		integra_session.end_session();
 	}
 	else
 	{
-		INTEGRA_TRACE_ERROR << "failed to create server";
+		INTEGRA_TRACE_ERROR << "failed to start integra session";
 	}
 
     if( host_process_handle > 0 )

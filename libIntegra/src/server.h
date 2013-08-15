@@ -115,6 +115,7 @@ namespace integra_internal
 			void destroy_semaphore( sem_t *semaphore ) const;
 
 			pthread_mutex_t m_mutex;
+			pthread_t m_mutex_owner;
 
 			node_map m_nodes;
 			ntg_bridge_interface *m_bridge;

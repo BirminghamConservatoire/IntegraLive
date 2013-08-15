@@ -192,7 +192,7 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist_callback( CServer *server, const i
 
     env = va_arg(argv, xmlrpc_env *);
 
-	const guid_set &module_ids = server->get_module_manager().get_all_module_ids();
+	const guid_set &module_ids = server->get_all_module_ids();
 
     array_ = xmlrpc_array_new(env);
 	for( guid_set::const_iterator i = module_ids.begin(); i != module_ids.end(); i++ ) 
@@ -240,7 +240,7 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
 	}
 
-	const CInterfaceDefinition *interface_definition = server->get_module_manager().get_interface_by_module_id( guid );
+	const CInterfaceDefinition *interface_definition = server->find_interface( guid );
     if( !interface_definition )	
 	{
 	    free( module_id_string );
@@ -374,7 +374,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
 	}
 
-	const CInterfaceDefinition *interface_definition = server->get_module_manager().get_interface_by_module_id( guid );
+	const CInterfaceDefinition *interface_definition = server->find_interface( guid );
     if( !interface_definition )	
 	{
 	    free(module_id_string);
@@ -699,7 +699,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServer *server, const int arg
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
 	}
 
-	const CInterfaceDefinition *interface_definition = server->get_module_manager().get_interface_by_module_id( guid );
+	const CInterfaceDefinition *interface_definition = server->find_interface( guid );
     if( !interface_definition )	
 	{
 	    free(module_id_string);
@@ -1097,7 +1097,7 @@ static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded_callback( CServer *serv
 
     struct_ = xmlrpc_struct_new(env);
 
-	CError error = server->get_module_manager_writable().unload_orphaned_embedded_modules();
+	CError error = server->get_module_manager().unload_orphaned_embedded_modules();
 
     if (error != CError::SUCCESS ) 
 	{
@@ -1124,7 +1124,7 @@ static xmlrpc_value *ntg_xmlrpc_install_module_callback( CServer *server, const 
     file_path = va_arg( argv, char * );
 
 	CModuleInstallResult result;
-	CError error = server->get_module_manager_writable().install_module( file_path, result );
+	CError error = server->get_module_manager().install_module( file_path, result );
 
 	if( error != CError::SUCCESS )
 	{
@@ -1167,7 +1167,7 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( CServer *se
     char *file_path = va_arg( argv, char * );
 
 	CLoadModuleInDevelopmentResult result;
-	CError error = server->get_module_manager_writable().load_module_in_development( file_path, result );
+	CError error = server->get_module_manager().load_module_in_development( file_path, result );
 
 	if( error != CError::SUCCESS )
 	{
@@ -1226,7 +1226,7 @@ static xmlrpc_value *ntg_xmlrpc_install_embedded_module_callback( CServer *serve
 
     free( module_id_string );
 
-	CError error = server->get_module_manager_writable().install_embedded_module( module_id );
+	CError error = server->get_module_manager().install_embedded_module( module_id );
 	if( error != CError::SUCCESS )
 	{
 		return ntg_xmlrpc_error( env, error );
@@ -1262,7 +1262,7 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module_callback( CServer *server, cons
     free( module_id_string );
 
 	CModuleUninstallResult result;
-	CError error = server->get_module_manager_writable().uninstall_module( module_id, result );
+	CError error = server->get_module_manager().uninstall_module( module_id, result );
 
 	if( error != CError::SUCCESS )
 	{

@@ -26,14 +26,22 @@
 #include "node_endpoint.h"
 #include "command_source.h"
 #include "error.h"
+#include "guid_helper.h"
 
+
+//todo - get rid
+namespace integra_internal
+{
+	class CInterfaceDefinition;
+}
 
 
 namespace integra_api
 {
 	class CServerStartupInfo;
-	class ICommand;
 	class CCommandResult;
+	class ICommand;
+	class IModuleManager;
 
 	class INTEGRA_API IServer
 	{
@@ -41,6 +49,9 @@ namespace integra_api
 
 			//todo - move out of libintegra
 			virtual void block_until_shutdown_signal() = 0;
+
+			virtual const guid_set &get_all_module_ids() const = 0;
+			virtual const integra_internal::CInterfaceDefinition *find_interface( const GUID &module_id ) const = 0;
 
 			virtual const node_map &get_nodes() const = 0;
 			virtual const INode *find_node( const string &path_string, const INode *relative_to = NULL ) const = 0;
@@ -52,6 +63,7 @@ namespace integra_api
 
 			virtual CError process_command( ICommand *command, CCommandSource source, CCommandResult *result = NULL ) = 0;
 
+			virtual IModuleManager &get_module_manager() const = 0;
 	};
 }
 

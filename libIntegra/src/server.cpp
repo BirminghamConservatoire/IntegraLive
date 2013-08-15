@@ -336,6 +336,24 @@ namespace integra_internal
 	}
 
 
+	IModuleManager &CServer::get_module_manager() const
+	{
+		return *m_module_manager;
+	}
+
+
+	const guid_set &CServer::get_all_module_ids() const
+	{
+		return m_module_manager->get_all_module_ids();
+	}
+
+
+	const CInterfaceDefinition *CServer::find_interface( const GUID &module_id ) const
+	{
+		return m_module_manager->get_interface_by_module_id( module_id );
+	}
+
+
 	void CServer::dump_state( const node_map &nodes, int indentation ) const 
 	{
 		for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )

@@ -54,7 +54,7 @@ namespace integra_internal
 	CError CNewCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		/* get interface */
-		const CInterfaceDefinition *interface_definition = server.get_module_manager().get_interface_by_module_id( m_module_id );
+		const CInterfaceDefinition *interface_definition = server.find_interface( m_module_id );
 		if( !interface_definition ) 
 		{
 			INTEGRA_TRACE_ERROR << "unable to find interface";
@@ -91,7 +91,8 @@ namespace integra_internal
 		if( interface_definition->has_implementation() )
 		{
 			/* load implementation in module host */
-			string patch_path = server.get_module_manager().get_patch_path( *interface_definition );
+			CModuleManager &module_manager = CModuleManager::downcast( server.get_module_manager() );
+			string patch_path = module_manager.get_patch_path( *interface_definition );
 			if( patch_path.empty() )
 			{
 				INTEGRA_TRACE_ERROR << "Failed to get implementation path - cannot load module in host";

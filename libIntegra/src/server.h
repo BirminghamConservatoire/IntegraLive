@@ -89,8 +89,10 @@ namespace integra_internal
 
 			CReentranceChecker &get_reentrance_checker() const { return *m_reentrance_checker; }
 
-			const CModuleManager &get_module_manager() const { return *m_module_manager; }
-			CModuleManager &get_module_manager_writable() { return *m_module_manager; }
+			IModuleManager &get_module_manager() const;
+
+			const guid_set &get_all_module_ids() const;
+			const CInterfaceDefinition *find_interface( const GUID &module_id ) const;
 
 			const string &get_scratch_directory() const;
 

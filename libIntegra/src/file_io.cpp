@@ -88,7 +88,7 @@ namespace integra_internal
 
 		LIBXML_TEST_VERSION;
 
-		CModuleManager &module_manager = server.get_module_manager_writable();
+		CModuleManager &module_manager = CModuleManager::downcast( server.get_module_manager() );
 
 		CError error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
 		if( error != CError::SUCCESS ) 
@@ -223,7 +223,8 @@ namespace integra_internal
 
 		CDataDirectory::copy_to_zip( zip_file, node, node.get_parent_path() );
 
-		copy_node_modules_to_zip( zip_file, node, server.get_module_manager() );
+		CModuleManager &module_manager = CModuleManager::downcast( server.get_module_manager() );
+		copy_node_modules_to_zip( zip_file, node, module_manager );
 
 		zipClose( zip_file, NULL );
 
@@ -432,7 +433,9 @@ namespace integra_internal
 
 				if( type == XML_READER_TYPE_ELEMENT ) 
 				{
-					const CInterfaceDefinition *interface_definition = find_interface( reader, server.get_module_manager() );
+					CModuleManager &module_manager = CModuleManager::downcast( server.get_module_manager() );
+
+					const CInterfaceDefinition *interface_definition = find_interface( reader, module_manager );
 					if( interface_definition )
 					{
 						name = xmlTextReaderGetAttribute(reader, BAD_CAST name_attribute.c_str() );

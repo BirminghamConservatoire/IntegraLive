@@ -108,6 +108,12 @@ namespace integra_internal
 	}
 
 
+	CModuleManager &CModuleManager::downcast( IModuleManager &module_manager )
+	{
+		return dynamic_cast<CModuleManager &>( module_manager );
+	}
+
+
 	CError CModuleManager::load_from_integra_file( const string &integra_file, guid_set &new_embedded_modules )
 	{
 		unzFile unzip_file;

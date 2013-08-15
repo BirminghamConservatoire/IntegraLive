@@ -26,25 +26,21 @@
 
 #include "interface_definition.h"
 #include "node.h"
-#include "api/error.h"
-#include "api/common_typedefs.h"
-#include "api/guid_helper.h"
+#include "api/module_manager.h"
 
 
 namespace integra_internal
 {
-	class CModuleInstallResult;
-	class CModuleUninstallResult;
-	class CLoadModuleInDevelopmentResult;
 	class CServer;
 
-
-	class CModuleManager
+	class CModuleManager : public IModuleManager
 	{
 		public:
 
 			CModuleManager( const CServer &server, const string &system_module_directory, const string &third_party_module_directory );
 			~CModuleManager();
+
+			static CModuleManager &downcast( IModuleManager &module_manager );
 
 			/* returns ids of new embedded modules in new_embedded_modules */
 			CError load_from_integra_file( const string &integra_file, guid_set &new_embedded_modules );
@@ -124,31 +120,6 @@ namespace integra_internal
 			static const string embedded_module_directory_name;
 			static const string legacy_class_id_filename;
 			static const int checksum_seed;
-	};
-
-
-
-	class CModuleInstallResult
-	{
-		public:
-			GUID module_id;
-			bool was_previously_embedded;
-	};
-
-
-	class CModuleUninstallResult
-	{
-		public:
-			bool remains_as_embedded;
-	};
-
-
-	class CLoadModuleInDevelopmentResult
-	{
-		public:
-			GUID module_id;
-			GUID previous_module_id;
-			bool previous_remains_as_embedded;
 	};
 }
 

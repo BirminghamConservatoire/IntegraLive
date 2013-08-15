@@ -540,7 +540,9 @@ namespace integra_internal
 	{
 		if( m_connection_interface_guid == CGuidHelper::null_guid )
 		{
-			const CInterfaceDefinition *connection_interface = server.get_module_manager().get_core_interface_by_name( module_connection );
+			CModuleManager &module_manager = CModuleManager::downcast( server.get_module_manager() );
+
+			const CInterfaceDefinition *connection_interface = module_manager.get_core_interface_by_name( module_connection );
 			if( connection_interface )
 			{
 				m_connection_interface_guid = connection_interface->get_module_guid();

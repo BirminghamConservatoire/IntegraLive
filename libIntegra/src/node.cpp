@@ -72,7 +72,7 @@ namespace integra_internal
 	}
 
 
-	void CNode::initialize( const CInterfaceDefinition &interface_definition, const string &name, internal_id id, CNode *parent )
+	void CNode::initialize( const IInterfaceDefinition &interface_definition, const string &name, internal_id id, CNode *parent )
 	{
 		m_id = id;
 		m_interface_definition = &interface_definition;
@@ -84,7 +84,7 @@ namespace integra_internal
 		const endpoint_definition_list &endpoint_definitions = interface_definition.get_endpoint_definitions();
 		for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 		{
-			const CEndpointDefinition &endpoint_definition = **i;
+			const IEndpointDefinition &endpoint_definition = **i;
 
 			CNodeEndpoint *node_endpoint = new CNodeEndpoint;
 			node_endpoint->initialize( *this, endpoint_definition );

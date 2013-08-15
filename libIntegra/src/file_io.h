@@ -38,6 +38,7 @@ namespace integra_internal
 {
 	class CServer;
 	class CModuleManager;
+	class CInterfaceDefinition;
 
 
 	class CFileIO

@@ -33,8 +33,6 @@ package components.model.interfaceDefinitions
 		public function get label():String 							{ return _label; }
 		public function get description():String 					{ return _description; }
 		public function get tags():Vector.<String> 					{ return _tags; }
-		public function get implementedInLibintegra():Boolean 		{ return _implementedInLibintegra; }
-		public function get implementationList():Vector.<String> 	{ return _implementationList; }
 		public function get author():String							{ return _author; }
 		public function get createdDate():Date						{ return _createdDate; }
 		public function get modifiedDate():Date 					{ return _modifiedDate; }
@@ -68,8 +66,6 @@ package components.model.interfaceDefinitions
 		}
 		
 		public function set tags( tags:Vector.<String> ):void 		{ _tags = tags; }
-		public function set implementedInLibintegra( implementedInLibintegra:Boolean ):void { _implementedInLibintegra = implementedInLibintegra; }
-		public function set implementationList( implementationList:Vector.<String> ):void { _implementationList = implementationList; }
 		public function set author( author:String ):void 			{ _author = author; }
 		public function set createdDate( createdDate:Date ):void 	{ _createdDate = createdDate; }
 		public function set modifiedDate( modifiedDate:Date ):void 	{ _modifiedDate = modifiedDate; }
@@ -79,8 +75,6 @@ package components.model.interfaceDefinitions
 		private var _label:String;
 		private var _description:String;
 		private var _tags:Vector.<String> = new Vector.<String>;
-		private var _implementedInLibintegra:Boolean;
-		private var _implementationList:Vector.<String> = new Vector.<String>;
 		private var _author:String;
 		private var _createdDate:Date;
 		private var _modifiedDate:Date;

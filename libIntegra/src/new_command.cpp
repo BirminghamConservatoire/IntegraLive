@@ -54,7 +54,7 @@ namespace integra_internal
 	CError CNewCommand::execute( CServer &server, CCommandSource source, CCommandResult *result )
 	{
 		/* get interface */
-		const CInterfaceDefinition *interface_definition = server.find_interface( m_module_id );
+		const CInterfaceDefinition *interface_definition = CInterfaceDefinition::downcast( server.find_interface( m_module_id ) );
 		if( !interface_definition ) 
 		{
 			INTEGRA_TRACE_ERROR << "unable to find interface";
@@ -107,7 +107,7 @@ namespace integra_internal
 		const endpoint_definition_list &endpoint_definitions = interface_definition->get_endpoint_definitions();
 		for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 		{
-			const CEndpointDefinition *endpoint_definition = *i;
+			const IEndpointDefinition *endpoint_definition = *i;
 			if( endpoint_definition->get_type() != CEndpointDefinition::CONTROL || endpoint_definition->get_control_info()->get_type() != CControlInfo::STATEFUL )
 			{
 				continue;

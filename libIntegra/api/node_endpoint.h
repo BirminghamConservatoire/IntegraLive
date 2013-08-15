@@ -24,26 +24,27 @@
 #include "common_typedefs.h"
 
 
-namespace integra_internal
-{
-	//todo - get rid
-	class CEndpointDefinition;
-}
-
 
 namespace integra_api
 {
+	class IEndpointDefinition;
 	class INode;
 	class CValue;
 	class CPath;
 
 
-	class INodeEndpoint
+	class INTEGRA_API INodeEndpoint
 	{
+		protected:
+
+			INodeEndpoint() {}
+
 		public: 
 			
+			virtual ~INodeEndpoint() {}
+
 			virtual const INode &get_node() const = 0;
-			virtual const integra_internal::CEndpointDefinition &get_endpoint_definition() const = 0;
+			virtual const IEndpointDefinition &get_endpoint_definition() const = 0;
 
 			virtual const CValue *get_value() const = 0;
 			virtual const CPath &get_path() const = 0;

@@ -73,7 +73,7 @@ namespace integra_internal
 
 	CLogic *CLogic::create( const CNode &node )
 	{
-		const CInterfaceDefinition &interface_definition = node.get_interface_definition();
+		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node.get_interface_definition() );
 
 		if( interface_definition.is_named_core_interface( module_container ) )
 		{
@@ -170,13 +170,15 @@ namespace integra_internal
 
 	void CLogic::handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source )
 	{
-		const CEndpointDefinition &endpoint_definition = node_endpoint.get_endpoint_definition();
+		const CEndpointDefinition &endpoint_definition = CEndpointDefinition::downcast( node_endpoint.get_endpoint_definition() );
 		const string &endpoint_name = endpoint_definition.get_name();
 		if( source == CCommandSource::INITIALIZATION )
 		{
 			if( endpoint_name == endpoint_active )
 			{
-				if( !m_node.get_interface_definition().is_named_core_interface( module_container ) )
+				const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( m_node.get_interface_definition() );
+
+				if( !interface_definition.is_named_core_interface( module_container ) )
 				{
 					non_container_active_initializer( server );
 				}
@@ -559,8 +561,8 @@ namespace integra_internal
 
 	CError CLogic::connect_audio_in_host( CServer &server, const INodeEndpoint &source, const INodeEndpoint &target, bool connect )
 	{
-		const CEndpointDefinition &source_endpoint_definition = source.get_endpoint_definition();
-		const CEndpointDefinition &target_endpoint_definition = target.get_endpoint_definition();
+		const CEndpointDefinition &source_endpoint_definition = CEndpointDefinition::downcast( source.get_endpoint_definition() );
+		const CEndpointDefinition &target_endpoint_definition = CEndpointDefinition::downcast( target.get_endpoint_definition() );
 
 		if( !source_endpoint_definition.is_audio_stream() || source_endpoint_definition.get_stream_info()->get_direction() != CStreamInfo::OUTPUT )
 		{

@@ -29,12 +29,6 @@
 #include "guid_helper.h"
 
 
-//todo - get rid
-namespace integra_internal
-{
-	class CInterfaceDefinition;
-}
-
 
 namespace integra_api
 {
@@ -42,16 +36,24 @@ namespace integra_api
 	class CCommandResult;
 	class ICommand;
 	class IModuleManager;
+	class IInterfaceDefinition;
+
 
 	class INTEGRA_API IServer
 	{
+		protected:
+
+			IServer() {}
+
 		public:
+
+			virtual ~IServer() {}
 
 			//todo - move out of libintegra
 			virtual void block_until_shutdown_signal() = 0;
 
 			virtual const guid_set &get_all_module_ids() const = 0;
-			virtual const integra_internal::CInterfaceDefinition *find_interface( const GUID &module_id ) const = 0;
+			virtual const IInterfaceDefinition *find_interface( const GUID &module_id ) const = 0;
 
 			virtual const node_map &get_nodes() const = 0;
 			virtual const INode *find_node( const string &path_string, const INode *relative_to = NULL ) const = 0;

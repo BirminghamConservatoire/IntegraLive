@@ -348,7 +348,7 @@ namespace integra_internal
 	}
 
 
-	const CInterfaceDefinition *CServer::find_interface( const GUID &module_id ) const
+	const IInterfaceDefinition *CServer::find_interface( const GUID &module_id ) const
 	{
 		return m_module_manager->get_interface_by_module_id( module_id );
 	}
@@ -365,7 +365,7 @@ namespace integra_internal
 				std::cout << "  |";
 			}
 
-			const CInterfaceDefinition &interface_definition = node->get_interface_definition();
+			const IInterfaceDefinition &interface_definition = node->get_interface_definition();
 			string module_id_string = CGuidHelper::guid_to_string( interface_definition.get_module_guid() );
 			std::cout << "  Node: \"" << node->get_name() << "\".\t module name: " << interface_definition.get_interface_info().get_name() << ".\t module id: " << module_id_string << ".\t Path: " << node->get_path().get_string() << std::endl;
 

@@ -158,7 +158,7 @@ static int osc_module_remove(const internal_id id)
 }
 
 
-static bool osc_get_stream_connection_name( char *dest, const CEndpointDefinition &endpoint_definition, const CInterfaceDefinition &interface_definition )
+static bool osc_get_stream_connection_name( char *dest, const IEndpointDefinition &endpoint_definition, const IInterfaceDefinition &interface_definition )
 {
 	bool found( false );
 	int index = 1;
@@ -168,7 +168,7 @@ static bool osc_get_stream_connection_name( char *dest, const CEndpointDefinitio
 	endpoint_definition_list endpoint_definitions = interface_definition.get_endpoint_definitions();
 	for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 	{
-		const CEndpointDefinition *prior_endpoint = *i;
+		const IEndpointDefinition *prior_endpoint = *i;
 		
 		if( prior_endpoint == &endpoint_definition )
 		{
@@ -181,8 +181,8 @@ static bool osc_get_stream_connection_name( char *dest, const CEndpointDefinitio
 			continue;
 		}
 
-		const CStreamInfo *prior_stream = prior_endpoint->get_stream_info();
-		const CStreamInfo *my_stream = endpoint_definition.get_stream_info();
+		const IStreamInfo *prior_stream = prior_endpoint->get_stream_info();
+		const IStreamInfo *my_stream = endpoint_definition.get_stream_info();
 
 		if( prior_stream->get_type() == my_stream->get_type() && prior_stream->get_direction() == my_stream->get_direction() )
 		{

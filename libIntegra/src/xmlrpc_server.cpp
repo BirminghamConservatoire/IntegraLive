@@ -240,14 +240,14 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
 	}
 
-	const CInterfaceDefinition *interface_definition = server->find_interface( guid );
+	const IInterfaceDefinition *interface_definition = server->find_interface( guid );
     if( !interface_definition )	
 	{
 	    free( module_id_string );
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
 	}
 
-	const CInterfaceInfo &info = interface_definition->get_interface_info();
+	const IInterfaceInfo &info = interface_definition->get_interface_info();
 
     info_struct = xmlrpc_struct_new(env);
     struct_ = xmlrpc_struct_new(env);
@@ -273,10 +273,6 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
 	}
 	xmlrpc_struct_set_value(env, info_struct, "tags", xmlrpc_array );
 	xmlrpc_DECREF(xmlrpc_array);
-
-	xmlrpc_temp = xmlrpc_int_new(env, info.get_implemented_in_libintegra() ? 1 : 0 );
-    xmlrpc_struct_set_value(env, info_struct, "implementedinlibintegra", xmlrpc_temp);
-    xmlrpc_DECREF(xmlrpc_temp);
 
 	xmlrpc_temp = xmlrpc_string_new(env, info.get_author().c_str() );
 	xmlrpc_struct_set_value(env, info_struct, "author", xmlrpc_temp);
@@ -336,7 +332,7 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
     xmlrpc_struct_set_value(env, struct_, "interfaceinfo", info_struct);
     xmlrpc_DECREF(info_struct);
 
-	const CImplementationInfo *implementation_info = interface_definition->get_implementation_info();
+	const IImplementationInfo *implementation_info = interface_definition->get_implementation_info();
 	if( implementation_info )
 	{
 		xmlrpc_temp = xmlrpc_int_new( env, ( int ) implementation_info->get_checksum() );
@@ -374,7 +370,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
 	}
 
-	const CInterfaceDefinition *interface_definition = server->find_interface( guid );
+	const IInterfaceDefinition *interface_definition = server->find_interface( guid );
     if( !interface_definition )	
 	{
 	    free(module_id_string);
@@ -388,7 +384,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 
 	for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 	{
-		const CEndpointDefinition &endpoint_definition = **i;
+		const IEndpointDefinition &endpoint_definition = **i;
 
 		xmlrpc_endpoint = xmlrpc_struct_new( env );
 
@@ -422,7 +418,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 		xmlrpc_struct_set_value(env, xmlrpc_endpoint, "type", xmlrpc_temp);
 		xmlrpc_DECREF(xmlrpc_temp);
 
-		const CControlInfo *control_info = endpoint_definition.get_control_info();
+		const IControlInfo *control_info = endpoint_definition.get_control_info();
 		if( control_info )
 		{
 			xmlrpc_control_info = xmlrpc_struct_new( env );
@@ -444,7 +440,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 			xmlrpc_struct_set_value(env, xmlrpc_control_info, "type", xmlrpc_temp);
 			xmlrpc_DECREF(xmlrpc_temp);
 
-			const CStateInfo *state_info = control_info->get_state_info();
+			const IStateInfo *state_info = control_info->get_state_info();
 			if( state_info )
 			{
 				xmlrpc_state_info = xmlrpc_struct_new( env );
@@ -473,7 +469,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 				
 				xmlrpc_constraint = xmlrpc_struct_new( env );
 
-				const CValueRange *value_range = state_info->get_constraint().get_value_range();
+				const IValueRange *value_range = state_info->get_constraint().get_value_range();
 				if( value_range )
 				{
 					xmlrpc_range = xmlrpc_struct_new( env );
@@ -521,7 +517,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 					xmlrpc_DECREF(xmlrpc_temp);
 				}
 
-				const CValueScale *value_scale = state_info->get_value_scale();
+				const IValueScale *value_scale = state_info->get_value_scale();
 				if( value_scale )
 				{
 					xmlrpc_scale = xmlrpc_struct_new( env );
@@ -581,14 +577,6 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 				xmlrpc_struct_set_value( env, xmlrpc_state_info, "statelabels", xmlrpc_state_labels );
 				xmlrpc_DECREF(xmlrpc_state_labels);
 
-				xmlrpc_temp = xmlrpc_int_new( env, state_info->get_is_input_file() ? 1 : 0 );
-				xmlrpc_struct_set_value( env, xmlrpc_state_info, "isinputfile", xmlrpc_temp );
-				xmlrpc_DECREF(xmlrpc_temp);
-
-				xmlrpc_temp = xmlrpc_int_new( env, state_info->get_is_saved_to_file() ? 1 : 0 );
-				xmlrpc_struct_set_value( env, xmlrpc_state_info, "issavedtofile", xmlrpc_temp );
-				xmlrpc_DECREF(xmlrpc_temp);
-
 				/* store built state info struct */
 				xmlrpc_struct_set_value(env, xmlrpc_control_info, "stateinfo", xmlrpc_state_info);
 				xmlrpc_DECREF(xmlrpc_state_info);
@@ -602,16 +590,12 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 			xmlrpc_struct_set_value(env, xmlrpc_control_info, "canbetarget", xmlrpc_temp);
 			xmlrpc_DECREF(xmlrpc_temp);
 
-			xmlrpc_temp = xmlrpc_int_new( env, control_info->get_is_sent_to_host() ? 1 : 0 );
-			xmlrpc_struct_set_value(env, xmlrpc_control_info, "issenttohost", xmlrpc_temp);
-			xmlrpc_DECREF(xmlrpc_temp);
-
 			/* store built control info struct */
 			xmlrpc_struct_set_value(env, xmlrpc_endpoint, "controlinfo", xmlrpc_control_info);
 			xmlrpc_DECREF(xmlrpc_control_info);
 		}
 
-		const CStreamInfo *stream_info = endpoint_definition.get_stream_info();
+		const IStreamInfo *stream_info = endpoint_definition.get_stream_info();
 		if( stream_info )
 		{
 			xmlrpc_stream_info = xmlrpc_struct_new( env );
@@ -699,7 +683,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServer *server, const int arg
 		return ntg_xmlrpc_error(env, CError::INPUT_ERROR);
 	}
 
-	const CInterfaceDefinition *interface_definition = server->find_interface( guid );
+	const IInterfaceDefinition *interface_definition = server->find_interface( guid );
     if( !interface_definition )	
 	{
 	    free(module_id_string);
@@ -713,7 +697,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServer *server, const int arg
 	const widget_definition_list &widget_definitions = interface_definition->get_widget_definitions();
 	for( widget_definition_list::const_iterator i = widget_definitions.begin(); i != widget_definitions.end(); i++ )
 	{
-		const CWidgetDefinition &widget_definition = **i;
+		const IWidgetDefinition &widget_definition = **i;
 
 		xmlrpc_widget = xmlrpc_struct_new( env );
 
@@ -727,7 +711,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServer *server, const int arg
 
 		xmlrpc_position = xmlrpc_struct_new( env );
 
-		const CWidgetPosition &widget_position = widget_definition.get_position();
+		const IWidgetPosition &widget_position = widget_definition.get_position();
 		xmlrpc_temp = xmlrpc_double_new( env, widget_position.get_x() );
 		xmlrpc_struct_set_value(env, xmlrpc_position, "x", xmlrpc_temp);
 		xmlrpc_DECREF(xmlrpc_temp);
@@ -1302,7 +1286,7 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(CServer *server, const int argc, va
 	CNewCommandResult result;
 	CError error = server->process_command( INewCommand::create( module_id, node_name, *path ), CCommandSource::XMLRPC_API, &result );
 
-	const CNode *node = result.get_created_node();
+	const INode *node = result.get_created_node();
 	if( error != CError::SUCCESS || !node ) 
 	{
         /* free out-of-place memory */

@@ -31,7 +31,7 @@
 
 namespace integra_api
 {
-	class CGuidHelper
+	class INTEGRA_API CGuidHelper
 	{
 		public:
 

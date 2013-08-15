@@ -75,7 +75,7 @@ namespace integra_internal
 			return CError::PATH_ERROR;
 		}
 
-		const CEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
+		const IEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
 
 		switch( endpoint_definition.get_type() )
 		{
@@ -177,7 +177,8 @@ namespace integra_internal
 		server.get_reentrance_checker().pop();
 
 		/* send the attribute value to the host if needed */
-		if( should_send_to_host( *node_endpoint, node_endpoint->get_node().get_interface_definition(), source ) ) 
+		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node_endpoint->get_node().get_interface_definition() );
+		if( should_send_to_host( *node_endpoint, interface_definition, source ) ) 
 		{
 			server.get_bridge()->send_value( node_endpoint );
 		}
@@ -205,7 +206,9 @@ namespace integra_internal
 				break;		
 		}
 
-		if( endpoint.get_endpoint_definition().is_input_file() && CNode::downcast( &endpoint.get_node() )->get_logic().should_copy_input_file( endpoint, source ) )
+		const CEndpointDefinition &endpoint_definition = CEndpointDefinition::downcast( endpoint.get_endpoint_definition() );
+
+		if( endpoint_definition.is_input_file() && CNode::downcast( &endpoint.get_node() )->get_logic().should_copy_input_file( endpoint, source ) )
 		{
 			return false;
 		}
@@ -215,7 +218,7 @@ namespace integra_internal
 			return false;
 		}
 
-		if( !endpoint.get_endpoint_definition().should_send_to_host() )
+		if( !endpoint_definition.should_send_to_host() )
 		{
 			return false;
 		}

@@ -294,55 +294,55 @@ namespace integra_internal
 		/* endpoint info */
 		READ_MEMBER( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.Name", 
-			m_interface_definition->m_endpoint_definitions.back()->m_name );
+			current_endpoint().m_name );
 
 		READ_MEMBER( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.Label", 
-			m_interface_definition->m_endpoint_definitions.back()->m_label );
+			current_endpoint().m_label );
 
 		READ_MEMBER( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.Description", 
-			m_interface_definition->m_endpoint_definitions.back()->m_description );
+			current_endpoint().m_description );
 
 		READ_MEMBER( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.Type", 
-			m_interface_definition->m_endpoint_definitions.back()->m_type );
+			current_endpoint().m_type );
 
 		READ_MEMBER( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.ControlType", 
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_type );
+			current_endpoint().m_control_info->m_type );
 
 		READ_MEMBER( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.StateType", 
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_type );
+			current_endpoint().m_control_info->m_state_info->m_type );
 
 		READ_VALUE( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.Range.Minimum",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_value_range->m_minimum,
+			current_endpoint().m_control_info->m_state_info->m_constraint->m_value_range->m_minimum,
 			get_range_type() );
 
 		READ_VALUE( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.Range.Maximum",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_value_range->m_maximum,
+			current_endpoint().m_control_info->m_state_info->m_constraint->m_value_range->m_maximum,
 			get_range_type() );
 
 		READ_VALUE_SET_CONTENT( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.AllowedStates.State",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_allowed_states,
+			current_endpoint().m_control_info->m_state_info->m_constraint->m_allowed_states,
 			get_state_type() );
 	
 		READ_VALUE( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Default",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_default_value,
+			current_endpoint().m_control_info->m_state_info->m_default_value,
 			get_state_type() );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.ScaleType",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_value_scale->m_type );
+			current_endpoint().m_control_info->m_state_info->m_value_scale->m_type );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.Base",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_value_scale->m_exponent_root );
+			current_endpoint().m_control_info->m_state_info->m_value_scale->m_exponent_root );
 
 		READ_VALUE( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.StateLabels.Label.State",
@@ -355,58 +355,58 @@ namespace integra_internal
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.IsInputFile",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_is_input_file );
+			current_endpoint().m_control_info->m_state_info->m_is_input_file );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.IsSavedToFile",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_is_saved_to_file );
+			current_endpoint().m_control_info->m_state_info->m_is_saved_to_file );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.CanBeSource",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_can_be_source );
+			current_endpoint().m_control_info->m_can_be_source );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.CanBeTarget",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_can_be_target );
+			current_endpoint().m_control_info->m_can_be_target );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.IsSentToHost",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_is_sent_to_host );
+			current_endpoint().m_control_info->m_is_sent_to_host );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.StreamInfo.StreamType",
-			m_interface_definition->m_endpoint_definitions.back()->m_stream_info->m_type );
+			current_endpoint().m_stream_info->m_type );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.StreamInfo.StreamDirection",
-			m_interface_definition->m_endpoint_definitions.back()->m_stream_info->m_direction );
+			current_endpoint().m_stream_info->m_direction );
 
 
 		/* widget info */
 
 		READ_MEMBER( 
 			"InterfaceDeclaration.WidgetInfo.Widget.WidgetType",
-			m_interface_definition->m_widget_definitions.back()->m_type );
+			current_widget().m_type );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.WidgetInfo.Widget.Label",
-			m_interface_definition->m_widget_definitions.back()->m_label );
+			current_widget().m_label );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.WidgetInfo.Widget.Position.X",
-			m_interface_definition->m_widget_definitions.back()->m_position->m_x );
+			current_widget().m_position->m_x );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.WidgetInfo.Widget.Position.Y",
-			m_interface_definition->m_widget_definitions.back()->m_position->m_y );
+			current_widget().m_position->m_y );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.WidgetInfo.Widget.Position.Width",
-			m_interface_definition->m_widget_definitions.back()->m_position->m_width );
+			current_widget().m_position->m_width );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.WidgetInfo.Widget.Position.Height",
-			m_interface_definition->m_widget_definitions.back()->m_position->m_height );
+			current_widget().m_position->m_height );
 
 		READ_MEMBER(
 			"InterfaceDeclaration.WidgetInfo.Widget.AttributeMappings.AttributeMapping.WidgetAttribute",
@@ -436,32 +436,32 @@ namespace integra_internal
 		/* handle child objects */
 		CREATE_CHILD_OBJECT( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo", 
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info,
+			current_endpoint().m_control_info,
 			CControlInfo );
 
 		CREATE_CHILD_OBJECT( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo", 
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info, 
+			current_endpoint().m_control_info->m_state_info, 
 			CStateInfo );
 
 		CREATE_CHILD_OBJECT( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.StreamInfo", 
-			m_interface_definition->m_endpoint_definitions.back()->m_stream_info, 
+			current_endpoint().m_stream_info, 
 			CStreamInfo );
 
 		CREATE_CHILD_OBJECT( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.Range", 
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_value_range, 
+			current_endpoint().m_control_info->m_state_info->m_constraint->m_value_range, 
 			CValueRange );
 
 		CREATE_CHILD_OBJECT( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Constraint.AllowedStates", 
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_constraint->m_allowed_states, 
+			current_endpoint().m_control_info->m_state_info->m_constraint->m_allowed_states, 
 			value_set );
 
 		CREATE_CHILD_OBJECT(
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale",
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_value_scale,
+			current_endpoint().m_control_info->m_state_info->m_value_scale,
 			CValueScale );
 
 		CREATE_CHILD_OBJECT( 
@@ -536,14 +536,14 @@ namespace integra_internal
 	{
 		if( m_last_state_label_value && !m_last_state_label_key.empty() )
 		{
-			m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_state_labels[ m_last_state_label_key ] = m_last_state_label_value;
+			current_endpoint().m_control_info->m_state_info->m_state_labels[ m_last_state_label_key ] = m_last_state_label_value;
 			m_last_state_label_key.clear();
 			m_last_state_label_value = NULL;
 		}
 
 		if( !m_last_widget_key.empty() && !m_last_widget_value.empty() )
 		{
-			m_interface_definition->m_widget_definitions.back()->m_attribute_mappings[ m_last_widget_key ] = m_last_widget_value;
+			current_widget().m_attribute_mappings[ m_last_widget_key ] = m_last_widget_value;
 			m_last_widget_key.clear();
 			m_last_widget_value.clear();
 		}
@@ -595,7 +595,7 @@ namespace integra_internal
 	{
 		assert( m_interface_definition && !m_interface_definition->m_endpoint_definitions.empty() );
 
-		return m_interface_definition->m_endpoint_definitions.back()->m_control_info->m_state_info->m_type;
+		return current_endpoint().m_control_info->m_state_info->m_type;
 	}
 
 
@@ -614,7 +614,7 @@ namespace integra_internal
 		const endpoint_definition_list &endpoint_definitions = m_interface_definition->get_endpoint_definitions();
 		for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 		{
-			const CEndpointDefinition &endpoint_definition = **i;
+			const IEndpointDefinition &endpoint_definition = **i;
 
 			if( endpoint_definition.get_name().empty() )	
 			{
@@ -625,7 +625,7 @@ namespace integra_internal
 			{
 				case CEndpointDefinition::CONTROL:	
 					{
-						const CControlInfo *control_info = endpoint_definition.get_control_info();
+						const IControlInfo *control_info = endpoint_definition.get_control_info();
 
 						if( !control_info )
 						{
@@ -666,7 +666,7 @@ namespace integra_internal
 
 		for( widget_definition_list::const_iterator i = widget_definitions.begin(); i != widget_definitions.end(); i++ )
 		{
-			const CWidgetDefinition &widget_definition = **i;
+			const IWidgetDefinition &widget_definition = **i;
 			if( widget_definition.get_type().empty() || widget_definition.get_label().empty() )
 			{
 				return CError::INPUT_ERROR;
@@ -864,6 +864,22 @@ namespace integra_internal
 		}
 
 		m_element_path.clear();
+	}
+
+
+	CEndpointDefinition &CInterfaceDefinitionLoader::current_endpoint()
+	{
+		assert( !m_interface_definition->m_endpoint_definitions.empty() );
+
+		return CEndpointDefinition::downcast_writable( *m_interface_definition->m_endpoint_definitions.back() );
+	}
+
+
+	CWidgetDefinition &CInterfaceDefinitionLoader::current_widget()
+	{
+		assert( !m_interface_definition->m_widget_definitions.empty() );
+
+		return CWidgetDefinition::downcast_writable( *m_interface_definition->m_widget_definitions.back() );
 	}
 
 }

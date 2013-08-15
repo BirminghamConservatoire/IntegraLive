@@ -60,7 +60,7 @@ namespace integra_internal
 	}
 	
 
-	void CNodeEndpoint::initialize( const CNode &node, const CEndpointDefinition &endpoint_definition )
+	void CNodeEndpoint::initialize( const CNode &node, const IEndpointDefinition &endpoint_definition )
 	{
 		m_node = &node;
 		m_endpoint_definition = &endpoint_definition;
@@ -73,7 +73,7 @@ namespace integra_internal
 
 		if( endpoint_definition.get_type() == CEndpointDefinition::CONTROL && endpoint_definition.get_control_info()->get_type() == CControlInfo::STATEFUL )
 		{
-			const CStateInfo *state_info = endpoint_definition.get_control_info()->get_state_info();
+			const IStateInfo *state_info = endpoint_definition.get_control_info()->get_state_info();
 			assert( state_info );
 
 			m_value = CValue::factory( state_info->get_type() );
@@ -85,14 +85,14 @@ namespace integra_internal
 
 	bool CNodeEndpoint::test_constraint( const CValue &value ) const
 	{
-		const CControlInfo *control_info = m_endpoint_definition->get_control_info();
+		const IControlInfo *control_info = m_endpoint_definition->get_control_info();
 		if( !control_info ) 
 		{
 			INTEGRA_TRACE_ERROR << "not a constrained type of endpoint";
 			return false;
 		}
 
-		const CStateInfo *state_info = control_info->get_state_info();
+		const IStateInfo *state_info = control_info->get_state_info();
 		if( !state_info )
 		{
 			INTEGRA_TRACE_ERROR << "not a constrained type of endpoint";
@@ -110,9 +110,9 @@ namespace integra_internal
 			return test_result;
 		}
 
-		const CConstraint &constraint = state_info->get_constraint();
+		const IConstraint &constraint = state_info->get_constraint();
 
-		const CValueRange *range = constraint.get_value_range();
+		const IValueRange *range = constraint.get_value_range();
 		if( range )
 		{
 			switch( value.get_type() )

@@ -207,6 +207,7 @@
     <ClInclude Include="..\api\error.h" />
     <ClInclude Include="..\api\guid_helper.h" />
     <ClInclude Include="..\api\integra_session.h" />
+    <ClInclude Include="..\api\interface_definition.h" />
     <ClInclude Include="..\api\module_manager.h" />
     <ClInclude Include="..\api\node.h" />
     <ClInclude Include="..\api\node_endpoint.h" />

@@ -68,6 +68,36 @@ namespace integra_internal
 	}
 
 
+	const CInterfaceDefinition *CInterfaceDefinition::downcast( const IInterfaceDefinition *interface_definition )
+	{
+		return dynamic_cast< const CInterfaceDefinition * > ( interface_definition );
+	}
+
+
+	const CInterfaceDefinition &CInterfaceDefinition::downcast( const IInterfaceDefinition &interface_definition )
+	{
+		return dynamic_cast< const CInterfaceDefinition & > ( interface_definition );
+	}
+
+
+	CInterfaceDefinition &CInterfaceDefinition::downcast_writable( IInterfaceDefinition &interface_definition )
+	{
+		return dynamic_cast< CInterfaceDefinition & > ( interface_definition );
+	}
+
+
+	const IInterfaceInfo &CInterfaceDefinition::get_interface_info() const
+	{
+		return *m_interface_info;
+	}
+
+
+	const IImplementationInfo *CInterfaceDefinition::get_implementation_info() const
+	{
+		return m_implementation_info;
+	}
+
+
 	void CInterfaceDefinition::propagate_defaults()
 	{
 		assert( m_interface_info );
@@ -75,7 +105,8 @@ namespace integra_internal
 
 		for( endpoint_definition_list::iterator i = m_endpoint_definitions.begin(); i != m_endpoint_definitions.end(); i++ )
 		{
-			( *i )->propagate_defaults();
+			CEndpointDefinition &endpoint_definition = CEndpointDefinition::downcast_writable( **i );
+			endpoint_definition.propagate_defaults();
 		}
 	}
 
@@ -150,6 +181,12 @@ namespace integra_internal
 	}
 
 
+	const CInterfaceInfo &CInterfaceInfo::downcast( const IInterfaceInfo &interface_info )
+	{
+		return dynamic_cast< const CInterfaceInfo & > ( interface_info );
+	}
+
+
 	void CInterfaceInfo::propagate_defaults()
 	{
 		if( m_label.empty() )
@@ -184,6 +221,35 @@ namespace integra_internal
 	}
 
 
+	const CEndpointDefinition *CEndpointDefinition::downcast( const IEndpointDefinition *endpoint_definition )
+	{
+		return dynamic_cast< const CEndpointDefinition * > ( endpoint_definition );
+	}
+
+
+	const CEndpointDefinition &CEndpointDefinition::downcast( const IEndpointDefinition &endpoint_definition )
+	{
+		return dynamic_cast< const CEndpointDefinition & > ( endpoint_definition );
+	}
+
+
+	CEndpointDefinition &CEndpointDefinition::downcast_writable( IEndpointDefinition &endpoint_definition )
+	{
+		return dynamic_cast< CEndpointDefinition & > ( endpoint_definition );
+	}
+
+
+	const IControlInfo *CEndpointDefinition::get_control_info() const
+	{
+		return m_control_info;
+	}
+
+
+	const IStreamInfo *CEndpointDefinition::get_stream_info() const
+	{
+		return m_stream_info;
+	}
+
 
 	bool CEndpointDefinition::should_send_to_host() const
 	{
@@ -198,7 +264,8 @@ namespace integra_internal
 		if( !m_control_info ) return false;
 		if( !m_control_info->get_state_info() ) return false;
 
-		return m_control_info->get_state_info()->get_is_input_file();
+		const CStateInfo &state_info = CStateInfo::downcast( *m_control_info->get_state_info() );
+		return state_info.get_is_input_file();
 	}
 
 
@@ -211,8 +278,11 @@ namespace integra_internal
 
 		if( m_type != CONTROL ) return false;
 		if( m_control_info->get_type() != CControlInfo::STATEFUL ) return false;
-		if( !m_control_info->get_state_info()->get_is_saved_to_file() ) return false;
-		if( m_control_info->get_state_info()->get_type() != loaded_type ) return false;
+
+		const CStateInfo &state_info = CStateInfo::downcast( *m_control_info->get_state_info() );
+
+		if( !state_info.get_is_saved_to_file() ) return false;
+		if( state_info.get_type() != loaded_type ) return false;
 
 		return true;
 	}
@@ -258,6 +328,12 @@ namespace integra_internal
 	}
 
 
+	const IStateInfo *CControlInfo::get_state_info() const
+	{
+		return m_state_info;
+	}
+
+
 	/************************************/
 	/* STATE INFO                       */
 	/************************************/
@@ -294,6 +370,24 @@ namespace integra_internal
 	}
 
 
+	const CStateInfo &CStateInfo::downcast( const IStateInfo &state_info )
+	{
+		return dynamic_cast< const CStateInfo & > ( state_info );
+	}
+
+
+	const IConstraint &CStateInfo::get_constraint() const
+	{
+		return *m_constraint;
+	}
+
+
+	const IValueScale *CStateInfo::get_value_scale() const
+	{
+		return m_value_scale;
+	}
+
+
 	/************************************/
 	/* CONSTRAINT                       */
 	/************************************/
@@ -322,6 +416,12 @@ namespace integra_internal
 
 			delete m_allowed_states;
 		}
+	}
+
+
+	const IValueRange *CConstraint::get_value_range() const
+	{
+		return m_value_range;
 	}
 
 
@@ -401,6 +501,18 @@ namespace integra_internal
 	}
 
 
+	CWidgetDefinition &CWidgetDefinition::downcast_writable( IWidgetDefinition &widget_definition )
+	{
+		return dynamic_cast< CWidgetDefinition & > ( widget_definition );
+	}
+
+
+	const IWidgetPosition &CWidgetDefinition::get_position() const
+	{
+		return *m_position;
+	}
+
+
 	/************************************/
 	/* WIDGET POSITION                  */
 	/************************************/
@@ -431,6 +543,12 @@ namespace integra_internal
 
 	CImplementationInfo::~CImplementationInfo()
 	{
+	}
+
+
+	const CImplementationInfo *CImplementationInfo::downcast( const IImplementationInfo *interface_definition )
+	{
+		return dynamic_cast< const CImplementationInfo * > ( interface_definition );
 	}
 }
 

@@ -30,11 +30,15 @@
 
 using namespace integra_api;
 
+namespace integra_api
+{
+	class IInterfaceDefinition;
+}
+
 
 namespace integra_internal
 {
 	class CLogic;
-	class CInterfaceDefinition;
 
 	typedef unsigned long internal_id;
 
@@ -47,13 +51,13 @@ namespace integra_internal
 			static const CNode *downcast( const INode *node ) { return dynamic_cast< const CNode * > ( node ); }
 			static CNode *downcast_writable( INode *node ) { return dynamic_cast< CNode * > ( node ); }
 
-			void initialize( const CInterfaceDefinition &interface_definition, const string &name, internal_id id, CNode *parent );
+			void initialize( const IInterfaceDefinition &interface_definition, const string &name, internal_id id, CNode *parent );
 
 			void rename( const string &new_name );
 			void reparent( CNode *new_parent );
 
 			internal_id get_id() const { return m_id; }
-			const CInterfaceDefinition &get_interface_definition() const { return *m_interface_definition; }
+			const IInterfaceDefinition &get_interface_definition() const { return *m_interface_definition; }
 
 			const string &get_name() const { return m_name; }
 			const CPath &get_path() const { return m_path; }
@@ -84,7 +88,7 @@ namespace integra_internal
 			void update_all_paths();
 
 			internal_id m_id;
-			const CInterfaceDefinition *m_interface_definition;
+			const IInterfaceDefinition *m_interface_definition;
 
 			string m_name;
 			CPath m_path;

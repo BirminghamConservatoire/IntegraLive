@@ -28,16 +28,19 @@
 #include "api/path.h"
 #include "api/value.h"
 #include "api/node_endpoint.h"
-//#include "Integra/integra_bridge.h"
 
 
 using namespace integra_api;
+
+namespace integra_api
+{
+	class IEndpointDefinition;
+}
 
 
 namespace integra_internal
 {
 	class CNode;
-	class CEndpointDefinition;	
 
 	class CNodeEndpoint : public INodeEndpoint
 	{
@@ -49,11 +52,11 @@ namespace integra_internal
 			static const CNodeEndpoint *downcast( const INodeEndpoint *node );
 			static CNodeEndpoint *downcast_writable( INodeEndpoint *node );
 
-			void initialize( const CNode &node, const CEndpointDefinition &endpoint_definition );
+			void initialize( const CNode &node, const IEndpointDefinition &endpoint_definition );
 
 			const INode &get_node() const;
 
-			const CEndpointDefinition &get_endpoint_definition() const { return *m_endpoint_definition; }
+			const IEndpointDefinition &get_endpoint_definition() const { return *m_endpoint_definition; }
 
 			const CValue *get_value() const { return m_value; }
 			const CPath &get_path() const { return m_path; }
@@ -68,7 +71,7 @@ namespace integra_internal
 		private:
 
 			const CNode *m_node;
-			const CEndpointDefinition *m_endpoint_definition;
+			const IEndpointDefinition *m_endpoint_definition;
 
 			CValue *m_value;
 			CPath m_path;

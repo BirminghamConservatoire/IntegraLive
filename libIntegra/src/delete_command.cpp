@@ -70,7 +70,9 @@ namespace integra_internal
 		server.get_state_table().remove( *node );
 
 		/* remove in host */
-		if( node->get_interface_definition().has_implementation() )
+		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node->get_interface_definition() );
+
+		if( interface_definition.has_implementation() )
 		{
 			server.get_bridge()->module_remove( node->get_id() );
 		}

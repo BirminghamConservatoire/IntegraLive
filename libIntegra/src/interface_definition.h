@@ -26,6 +26,7 @@
 #include "../externals/guiddef.h"
 #include <time.h>
 
+#include "api/interface_definition.h"
 #include "api/common_typedefs.h"
 #include "api/guid_helper.h"
 #include "api/value.h"
@@ -49,14 +50,7 @@ namespace integra_internal
 	class CWidgetDefinition;
 	class CWidgetPosition;
 
-	typedef std::list<CEndpointDefinition *> endpoint_definition_list;
-	typedef std::list<CWidgetDefinition *> widget_definition_list;
-
-	typedef std::unordered_map<GUID, CInterfaceDefinition *, GuidHash> map_guid_to_interface_definition;
-	typedef std::unordered_map<string, CInterfaceDefinition *> map_string_to_interface_definition;
-
-
-	class CInterfaceDefinition
+	class CInterfaceDefinition : public IInterfaceDefinition
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -65,23 +59,19 @@ namespace integra_internal
 			CInterfaceDefinition();
 			~CInterfaceDefinition();
 
-			enum module_source
-			{
-				MODULE_SHIPPED_WITH_INTEGRA = 1,	
-				MODULE_3RD_PARTY,
-				MODULE_EMBEDDED,
-				MODULE_IN_DEVELOPMENT 
-			};
+			static const CInterfaceDefinition *downcast( const IInterfaceDefinition *interface_definition );
+			static const CInterfaceDefinition &downcast( const IInterfaceDefinition &interface_definition );
+			static CInterfaceDefinition &downcast_writable( IInterfaceDefinition &interface_definition );
 
 			/* queries */
 			const GUID &get_module_guid() const { return m_module_guid; }
 			const GUID &get_origin_guid() const { return m_origin_guid; }
 			module_source get_module_source() const { return m_source; }
 			const string &get_file_path() const { return m_file_path; }
-			const CInterfaceInfo &get_interface_info() const { return *m_interface_info; }
+			const IInterfaceInfo &get_interface_info() const;
 			const endpoint_definition_list &get_endpoint_definitions() const { return m_endpoint_definitions; }
 			const widget_definition_list &get_widget_definitions() const { return m_widget_definitions; }
-			const CImplementationInfo *get_implementation_info() const { return m_implementation_info; }
+			const IImplementationInfo *get_implementation_info() const;
 
 			/* helpers */
 			bool is_core_interface() const;
@@ -111,13 +101,15 @@ namespace integra_internal
 	};
 
 
-	class CInterfaceInfo
+	class CInterfaceInfo : public IInterfaceInfo
 	{
 		friend class CInterfaceDefinitionLoader;
 
 		public:
 			CInterfaceInfo();
 			~CInterfaceInfo();
+
+			static const CInterfaceInfo &downcast( const IInterfaceInfo &interface_info );
 
 			const string &get_name() const { return m_name; }
 			const string &get_label() const { return m_label; }
@@ -143,8 +135,7 @@ namespace integra_internal
 	};
 
 
-	//todo - remove INTEGRA_API from here - temporary measure to make the bridge compile */
-	class INTEGRA_API CEndpointDefinition
+	class CEndpointDefinition : public IEndpointDefinition
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -153,18 +144,16 @@ namespace integra_internal
 			CEndpointDefinition();
 			~CEndpointDefinition();
 
-			enum endpoint_type
-			{
-			    CONTROL = 1,
-				STREAM
-			};
+			static const CEndpointDefinition *downcast( const IEndpointDefinition *endpoint_definition );
+			static const CEndpointDefinition &downcast( const IEndpointDefinition &endpoint_definition );
+			static CEndpointDefinition &downcast_writable( IEndpointDefinition &endpoint_definition );
 
 			const string &get_name() const { return m_name; }
 			const string &get_label() const { return m_label; }
 			const string &get_description() const { return m_description; }
 			endpoint_type get_type() const { return m_type; }
-			const CControlInfo *get_control_info() const { return m_control_info; }
-			const CStreamInfo *get_stream_info() const { return m_stream_info; }
+			const IControlInfo *get_control_info() const;
+			const IStreamInfo *get_stream_info() const;
 
 			/* helpers */
 			bool should_send_to_host() const;
@@ -185,7 +174,7 @@ namespace integra_internal
 	};
 
 
-	class CControlInfo
+	class CControlInfo : public IControlInfo
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -193,14 +182,8 @@ namespace integra_internal
 			CControlInfo();
 			~CControlInfo();
 
-			enum control_type
-			{
-				STATEFUL = 1,
-				BANG
-			};
-
 			control_type get_type() const { return m_type; }
-			const CStateInfo *get_state_info() const { return m_state_info; }
+			const IStateInfo *get_state_info() const;
 			bool get_can_be_source() const { return m_can_be_source; }
 			bool get_can_be_target() const { return m_can_be_target; }
 			bool get_is_sent_to_host() const { return m_is_sent_to_host; }
@@ -215,7 +198,7 @@ namespace integra_internal
 	};
 
 
-	class CStateInfo
+	class CStateInfo : public IStateInfo
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -223,10 +206,12 @@ namespace integra_internal
 			CStateInfo();
 			~CStateInfo();
 
+			static const CStateInfo &downcast( const IStateInfo &state_info );
+
 			CValue::type get_type() const { return m_type; }
-			const CConstraint &get_constraint() const { return *m_constraint; }
+			const IConstraint &get_constraint() const;
 			const CValue &get_default_value() const { return *m_default_value; }
-			const CValueScale *get_value_scale() const { return m_value_scale; }
+			const IValueScale *get_value_scale() const;
 			const value_map &get_state_labels() const { return m_state_labels; }
 			bool get_is_saved_to_file() const { return m_is_saved_to_file; }
 			bool get_is_input_file() const { return m_is_input_file; }
@@ -242,7 +227,7 @@ namespace integra_internal
 	};
 
 
-	class CConstraint
+	class CConstraint : public IConstraint
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -250,7 +235,7 @@ namespace integra_internal
 			CConstraint();
 			~CConstraint();
 
-			const CValueRange *get_value_range() const { return m_value_range; }
+			const IValueRange *get_value_range() const;
 			const value_set *get_allowed_states() const { return m_allowed_states; }
 
 		private:
@@ -259,7 +244,7 @@ namespace integra_internal
 	};
 
 
-	class CValueRange
+	class CValueRange : public IValueRange
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -277,20 +262,13 @@ namespace integra_internal
 	};
 
 
-	class CValueScale
+	class CValueScale : public IValueScale
 	{
 		friend class CInterfaceDefinitionLoader;
 
 		public:
 			CValueScale();
 			~CValueScale();
-
-			enum scale_type
-			{
-				LINEAR = 1,
-				EXPONENTIAL,
-				DECIBEL
-			};
 
 			scale_type get_scale_type() const { return m_type; }
 			int get_exponent_root() const { return m_exponent_root; }
@@ -301,24 +279,13 @@ namespace integra_internal
 	};
 
 
-	class CStreamInfo
+	class CStreamInfo : public IStreamInfo
 	{
 		friend class CInterfaceDefinitionLoader;
 
 		public:
 			CStreamInfo();
 			~CStreamInfo();
-
-			enum stream_type
-			{
-				AUDIO = 1
-			};
-
-			enum stream_direction
-			{
-				INPUT = 1,
-				OUTPUT
-			};
 
 			stream_type get_type() const { return m_type; }
 			stream_direction get_direction() const { return m_direction; }
@@ -329,7 +296,7 @@ namespace integra_internal
 	};
 
 
-	class CWidgetDefinition
+	class CWidgetDefinition : public IWidgetDefinition
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -337,9 +304,11 @@ namespace integra_internal
 			CWidgetDefinition();
 			~CWidgetDefinition();
 
+			static CWidgetDefinition &downcast_writable( IWidgetDefinition &widget_definition );
+
 			const string &get_type() const { return m_type; }
 			const string &get_label() const { return m_label; }
-			const CWidgetPosition &get_position() const { return *m_position; }
+			const IWidgetPosition &get_position() const;
 			const string_map &get_attribute_mappings() const { return m_attribute_mappings; }
 
 		private:
@@ -350,7 +319,7 @@ namespace integra_internal
 	};
 
 
-	class CWidgetPosition
+	class CWidgetPosition : public IWidgetPosition
 	{
 		friend class CInterfaceDefinitionLoader;
 
@@ -371,13 +340,15 @@ namespace integra_internal
 	};
 
 
-	class CImplementationInfo
+	class CImplementationInfo : public IImplementationInfo
 	{
 		friend class CInterfaceDefinitionLoader;
 
 		public:
 			CImplementationInfo();
 			~CImplementationInfo();
+
+			static const CImplementationInfo *downcast( const IImplementationInfo *interface_definition );
 
 			const string &get_patch_name() const { return m_patch_name; }
 			unsigned int get_checksum() const { return m_checksum; }

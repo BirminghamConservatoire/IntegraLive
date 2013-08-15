@@ -493,13 +493,6 @@ package components.model.modelLoader
 				interfaceDefinition.interfaceInfo.tags.push( tag );
 			}
 			
-			interfaceDefinition.interfaceInfo.implementedInLibintegra = ( info.implementedinlibintegra > 0 );
-
-			for each( var implementation:String in info.implementations )
-			{
-				interfaceDefinition.interfaceInfo.implementationList.push( implementation );
-			}
-			
 			interfaceDefinition.interfaceInfo.author = info.author;
 			interfaceDefinition.interfaceInfo.createdDate = parseDateTime( info.createddate );
 			interfaceDefinition.interfaceInfo.modifiedDate = parseDateTime( info.modifieddate );
@@ -652,9 +645,6 @@ package components.model.modelLoader
 				
 				stateInfo.stateLabels.push( stateLabel );
 			}
-			
-			stateInfo.isInputFile = ( info.isinputfile > 0 );
-			stateInfo.isSavedToFile = ( info.issavedtofile > 0 );
 			
 			return stateInfo;
 		}

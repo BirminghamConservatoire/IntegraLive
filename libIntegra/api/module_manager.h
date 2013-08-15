@@ -26,13 +26,6 @@
 #include "api/guid_helper.h"
 
 
-//todo - get rid
-namespace integra_internal
-{
-	class CInterfaceDefinition;
-}
-
-
 namespace integra_api
 {
 	class CModuleInstallResult;
@@ -41,7 +34,13 @@ namespace integra_api
 
 	class INTEGRA_API IModuleManager
 	{
+		protected:
+
+			IModuleManager() {}
+
 		public:
+
+			virtual ~IModuleManager() {}
 
 			virtual CError install_module( const string &module_file, CModuleInstallResult &result ) = 0;
 			virtual CError install_embedded_module( const GUID &module_id ) = 0;
@@ -51,7 +50,7 @@ namespace integra_api
 	};
 
 
-	class CModuleInstallResult
+	class INTEGRA_API CModuleInstallResult
 	{
 		public:
 			GUID module_id;
@@ -59,14 +58,14 @@ namespace integra_api
 	};
 
 
-	class CModuleUninstallResult
+	class INTEGRA_API CModuleUninstallResult
 	{
 		public:
 			bool remains_as_embedded;
 	};
 
 
-	class CLoadModuleInDevelopmentResult
+	class INTEGRA_API CLoadModuleInDevelopmentResult
 	{
 		public:
 			GUID module_id;

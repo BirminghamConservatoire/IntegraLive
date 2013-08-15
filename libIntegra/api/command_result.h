@@ -23,20 +23,16 @@
 
 #include "guid_helper.h"
 
-namespace integra_internal
-{
-	//todo - use CNodeApi when it's been created!
-	class CNode;
-}
-
 
 namespace integra_api
 {
+	class INode;
+
+
 	class INTEGRA_API CCommandResult
 	{
 		protected:
 			CCommandResult() {};
-
 		public:
 			virtual ~CCommandResult() {};
 	};
@@ -48,15 +44,14 @@ namespace integra_api
 			CNewCommandResult() { m_created_node = NULL; }
 			~CNewCommandResult() {};
 
-			const integra_internal::CNode *get_created_node() const { return m_created_node; }
-			void set_created_node( const integra_internal::CNode *created_node ) { m_created_node = created_node; }
+			const INode *get_created_node() const { return m_created_node; }
+			void set_created_node( const INode *created_node ) { m_created_node = created_node; }
 
 		private:
-			const integra_internal::CNode *m_created_node;
+			const INode *m_created_node;
 	};
 
-
-
+	
 	class INTEGRA_API CLoadCommandResult : public CCommandResult
 	{
 		public:

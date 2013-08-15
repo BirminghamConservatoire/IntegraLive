@@ -92,7 +92,7 @@ namespace integra_internal
 			IModuleManager &get_module_manager() const;
 
 			const guid_set &get_all_module_ids() const;
-			const CInterfaceDefinition *find_interface( const GUID &module_id ) const;
+			const IInterfaceDefinition *find_interface( const GUID &module_id ) const;
 
 			const string &get_scratch_directory() const;
 

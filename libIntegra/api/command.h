@@ -41,12 +41,10 @@ namespace integra_api
 	class INTEGRA_API ICommand
 	{
 		protected:
-
 			ICommand() {}
-
 		public:
 
-			virtual ~ICommand() {};
+			virtual ~ICommand() {}
 
 			virtual CError execute( integra_internal::CServer &server, CCommandSource source, CCommandResult *result ) = 0;
 	};
@@ -54,49 +52,77 @@ namespace integra_api
 
 	class INTEGRA_API INewCommand : public ICommand
 	{
+		protected:
+			INewCommand() {}
 		public:
+			virtual ~INewCommand() {}
+
 			static INewCommand *create( const GUID &module_id, const string &node_name, const CPath &parent_path );
 	};
 
 
 	class INTEGRA_API IDeleteCommand : public ICommand
 	{
+		protected:
+			IDeleteCommand() {}
 		public:
+			virtual ~IDeleteCommand() {}
+
 			static IDeleteCommand *create( const CPath &path );
 	};
 
 
 	class INTEGRA_API ISetCommand : public ICommand
 	{
+		protected:
+			ISetCommand() {}
 		public:
+			virtual ~ISetCommand() {}
+
 			static ISetCommand *create( const CPath &endpoint_path, const CValue *value );
 	};
 
 
 	class INTEGRA_API IRenameCommand : public ICommand
 	{
+		protected:
+			IRenameCommand() {}
 		public:
+			virtual ~IRenameCommand() {}
+
 			static IRenameCommand *create( const CPath &path, const string &new_name );
 	};
 
 
 	class INTEGRA_API IMoveCommand : public ICommand
 	{
+		protected:
+			IMoveCommand() {}
 		public:
+			virtual ~IMoveCommand() {}
+
 			static IMoveCommand *create( const CPath &node_path, const CPath &new_parent_path );
 	};
 
 
 	class INTEGRA_API ILoadCommand : public ICommand
 	{
+		protected:
+			ILoadCommand() {}
 		public:
+			virtual ~ILoadCommand() {}
+
 			static ILoadCommand *create( const string &file_path, const CPath &parent_path );
 	};
 
 
 	class INTEGRA_API ISaveCommand : public ICommand
 	{
+		protected:
+			ISaveCommand() {}
 		public:
+			virtual ~ISaveCommand() {}
+
 			static ISaveCommand *create( const string &file_path, const CPath &node_path );
 	};
 }

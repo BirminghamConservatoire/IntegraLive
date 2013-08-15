@@ -47,6 +47,10 @@ namespace integra_internal
 			CError handle_element();
 			CError handle_element_attributes();
 
+			CEndpointDefinition &current_endpoint();
+			CWidgetDefinition &current_widget();
+
+
 			void store_map_entries();
 
 			void push_element_name( const string &element );

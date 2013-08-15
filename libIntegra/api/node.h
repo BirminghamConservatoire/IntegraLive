@@ -26,24 +26,24 @@
 #include "path.h"
 
 
-namespace integra_internal
-{
-	//todo - get rid
-	class CInterfaceDefinition;
-}
-
-
 namespace integra_api
 {
 	class INode;
+	class IInterfaceDefinition;
 	typedef std::unordered_map<string, INode *> node_map;
 
 
-	class INode
+	class INTEGRA_API INode
 	{
+		protected:
+
+			INode() {}
+
 		public:
 
-			virtual const integra_internal::CInterfaceDefinition &get_interface_definition() const = 0;
+			virtual ~INode() {}
+
+			virtual const IInterfaceDefinition &get_interface_definition() const = 0;
 
 			virtual const string &get_name() const = 0;
 			virtual const CPath &get_path() const = 0;

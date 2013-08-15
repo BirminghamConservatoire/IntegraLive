@@ -350,7 +350,7 @@ namespace integra_internal
 	{
 		for( map_guid_to_interface_definition::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
-			CInterfaceDefinition &interface_definition = *i->second;
+			CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast_writable( *i->second );
 
 			if( interface_definition.get_module_source() != CInterfaceDefinition::MODULE_IN_DEVELOPMENT )
 			{
@@ -397,7 +397,7 @@ namespace integra_internal
 		}
 		else
 		{
-			return lookup->second;
+			return CInterfaceDefinition::downcast( lookup->second );
 		}
 	}
 
@@ -411,7 +411,7 @@ namespace integra_internal
 		}
 		else
 		{
-			return lookup->second;
+			return CInterfaceDefinition::downcast( lookup->second );
 		}
 	}
 
@@ -425,7 +425,7 @@ namespace integra_internal
 		}
 		else
 		{
-			return lookup->second;
+			return CInterfaceDefinition::downcast( lookup->second );
 		}
 	}
 
@@ -445,9 +445,11 @@ namespace integra_internal
 	{
 		const string patch_extension = ".pd";
 
-		assert( interface_definition.get_implementation_info() && !interface_definition.get_implementation_info()->get_patch_name().empty() );
+		const CImplementationInfo *implementation_info = CImplementationInfo::downcast( interface_definition.get_implementation_info() );
 
-		string implementation_path = get_implementation_path( interface_definition ) + interface_definition.get_implementation_info()->get_patch_name();
+		assert( implementation_info && !implementation_info->get_patch_name().empty() );
+
+		string implementation_path = get_implementation_path( interface_definition ) + implementation_info->get_patch_name();
 
 		/* chop off patch extension */
 		int implementation_path_length = implementation_path.length() - patch_extension.length();
@@ -467,7 +469,7 @@ namespace integra_internal
 		/* first pass - collect ids of all embedded modules */
 		for( map_guid_to_interface_definition::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
-			const CInterfaceDefinition *interface_definition = i->second;
+			const IInterfaceDefinition *interface_definition = i->second;
 
 			if( interface_definition->get_module_source() == CInterfaceDefinition::MODULE_EMBEDDED )
 			{
@@ -652,7 +654,8 @@ namespace integra_internal
 			return false;
 		}
 
-		if( interface_definition->get_interface_info().get_implemented_in_libintegra() && source != CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA )
+		const CInterfaceInfo &interface_info = CInterfaceInfo::downcast( interface_definition->get_interface_info() );
+		if( interface_info.get_implemented_in_libintegra() && source != CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA )
 		{
 			INTEGRA_TRACE_ERROR << "Attempt to load 'implemented in libintegra' module as 3rd party or embedded: " << interface_definition->get_interface_info().get_name();
 			delete interface_definition;

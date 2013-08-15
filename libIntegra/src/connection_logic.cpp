@@ -76,7 +76,7 @@ namespace integra_internal
 
 		const INodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
 		const INodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
-	
+
 		if( source_endpoint && source_endpoint->get_endpoint_definition().is_audio_stream() && source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 		{
 			if( target_endpoint && target_endpoint->get_endpoint_definition().is_audio_stream() && target_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::INPUT )
@@ -112,6 +112,7 @@ namespace integra_internal
 		if( new_source_endpoint && new_source_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_source_endpoint->get_endpoint_definition().get_control_info()->get_can_be_source() )
 		{
 			INTEGRA_TRACE_ERROR << "Setting connection source to an endpoint which should not be a connection source!";
+			return;
 		}
 
 		if( !target_endpoint || !target_endpoint->get_endpoint_definition().is_audio_stream() )

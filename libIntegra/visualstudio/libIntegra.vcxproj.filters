@@ -377,6 +377,9 @@
     <ClInclude Include="..\api\module_manager.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
+    <ClInclude Include="..\api\interface_definition.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libIntegra.rc">

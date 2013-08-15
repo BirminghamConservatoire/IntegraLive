@@ -446,7 +446,7 @@ namespace integra_internal
 
 						CNewCommandResult result;
 						server.process_command( INewCommand::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), CCommandSource::LOAD, &result );
-						node = result.get_created_node();
+						node = CNode::downcast( result.get_created_node() );
 
 						xmlFree(name);
 
@@ -483,7 +483,7 @@ namespace integra_internal
 					}
 
 					const INodeEndpoint *existing_node_endpoint = node->get_node_endpoint( ( char * ) name );
-					if( existing_node_endpoint && existing_node_endpoint->get_endpoint_definition().should_load_from_ixd( value->get_type() ) )
+					if( existing_node_endpoint && CEndpointDefinition::downcast( existing_node_endpoint->get_endpoint_definition() ).should_load_from_ixd( value->get_type() ) )
 					{
 						/* 
 						only store attribute if it exists and is of reasonable type 
@@ -526,7 +526,7 @@ namespace integra_internal
 
 	CError CFileIO::send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge )
 	{
-		const CInterfaceDefinition &interface_definition = node.get_interface_definition();
+		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node.get_interface_definition() );
 
 		if( !interface_definition.has_implementation() )
 		{
@@ -536,7 +536,7 @@ namespace integra_internal
 		const endpoint_definition_list &endpoint_definitions = interface_definition.get_endpoint_definitions();
 		for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
 		{
-			const CEndpointDefinition &endpoint_definition = **i;
+			const CEndpointDefinition &endpoint_definition = CEndpointDefinition::downcast( **i );
 			if( !endpoint_definition.should_send_to_host() || endpoint_definition.get_control_info()->get_type() != CControlInfo::STATEFUL )
 			{
 				continue;
@@ -829,8 +829,15 @@ namespace integra_internal
 		{
 			const INodeEndpoint *node_endpoint = node_endpoint_iterator->second;
 			const CValue *value = node_endpoint->get_value();
-			const CEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
-			if( !value || !endpoint_definition.get_control_info()->get_state_info()->get_is_saved_to_file() ) 
+			if( !value )
+			{
+				continue;
+			}
+
+			const IEndpointDefinition &endpoint_definition = node_endpoint->get_endpoint_definition();
+			const CStateInfo &state_info = CStateInfo::downcast( *endpoint_definition.get_control_info()->get_state_info() );
+
+			if( !state_info.get_is_saved_to_file() ) 
 			{
 				continue;
 			}
@@ -868,7 +875,8 @@ namespace integra_internal
 
 	void CFileIO::find_module_guids_to_embed( const CNode &node, guid_set &module_guids_to_embed )
 	{
-		if( node.get_interface_definition().should_embed() )
+		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node.get_interface_definition() );
+		if( interface_definition.should_embed() )
 		{
 			module_guids_to_embed.insert( node.get_interface_definition().get_module_guid() );
 		}

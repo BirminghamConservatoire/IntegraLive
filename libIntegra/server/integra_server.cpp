@@ -13,7 +13,7 @@
 #include "api/trace.h"
 #include "api/server_startup_info.h"
 #include "api/integra_session.h"
-#include "api/server_api.h"
+#include "api/server.h"
 #include "api/value.h"
 #include "api/path.h"
 

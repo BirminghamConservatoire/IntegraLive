@@ -29,7 +29,7 @@ using namespace integra_internal;
 
 namespace integra_api
 {
-	CServerLock::CServerLock( CServerApi *server )
+	CServerLock::CServerLock( IServer *server )
 	{
 		m_server = server;
 
@@ -45,13 +45,13 @@ namespace integra_api
 	}
 
 
-	CServerApi &CServerLock::operator*()
+	IServer &CServerLock::operator*()
 	{
 		return *m_server;
 	}
 
 
-	CServerApi *CServerLock::operator->()
+	IServer *CServerLock::operator->()
 	{
 		return m_server;
 	}

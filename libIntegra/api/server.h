@@ -30,14 +30,14 @@ namespace integra_api
 	class CValue;
 	class CPath;
 
-	class INTEGRA_API CServerApi
+	class INTEGRA_API IServer
 	{
 		protected:
-			CServerApi() {}
+			IServer() {}
 
 		public:
 
-			virtual ~CServerApi() {}
+			virtual ~IServer() {}
 			
 			//todo - move out of libintegra
 			virtual void block_until_shutdown_signal() = 0;

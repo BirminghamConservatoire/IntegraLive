@@ -26,20 +26,20 @@
 
 namespace integra_api
 {
-	class CServerApi;
+	class IServer;
 
 	class INTEGRA_API CServerLock
 	{
 		public:
-			CServerLock( CServerApi *server );
+			CServerLock( IServer *server );
 			~CServerLock();
 
-			CServerApi &operator*();
-			CServerApi *operator->();
+			IServer &operator*();
+			IServer *operator->();
 
 		private:	
 
-			CServerApi *m_server;
+			IServer *m_server;
 	};
 }
 

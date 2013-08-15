@@ -21,7 +21,7 @@
 #ifndef INTEGRA_SERVER_PRIVATE_H
 #define INTEGRA_SERVER_PRIVATE_H
 
-#include "api/server_api.h"
+#include "api/server.h"
 
 #include "Integra/integra_bridge.h"
 #include "node.h"
@@ -53,7 +53,7 @@ namespace integra_internal
 	class CLuaEngine;
 	class CPlayerHandler;
 
-	class CServer : public CServerApi
+	class CServer : public IServer
 	{
 		public:
 

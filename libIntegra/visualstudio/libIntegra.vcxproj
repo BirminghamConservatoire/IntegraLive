@@ -208,7 +208,7 @@
     <ClInclude Include="..\api\guid_helper.h" />
     <ClInclude Include="..\api\integra_session.h" />
     <ClInclude Include="..\api\path.h" />
-    <ClInclude Include="..\api\server_api.h" />
+    <ClInclude Include="..\api\server.h" />
     <ClInclude Include="..\api\server_lock.h" />
     <ClInclude Include="..\api\server_startup_info.h" />
     <ClInclude Include="..\api\trace.h" />

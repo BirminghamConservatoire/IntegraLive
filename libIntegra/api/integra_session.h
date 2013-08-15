@@ -29,7 +29,7 @@
 namespace integra_api
 {
 	class CServerStartupInfo;
-	class CServerApi;
+	class IServer;
 
 	class INTEGRA_API CIntegraSession
 	{
@@ -47,7 +47,7 @@ namespace integra_api
 
 		private:	
 
-			CServerApi *m_server;
+			IServer *m_server;
 	};
 }
 

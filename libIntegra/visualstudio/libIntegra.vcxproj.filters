@@ -260,9 +260,6 @@
     <ClInclude Include="..\src\state_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\api\server_api.h">
-      <Filter>Header Files\api</Filter>
-    </ClInclude>
     <ClInclude Include="..\api\server_startup_info.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
@@ -366,6 +363,9 @@
       <Filter>Header Files\api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\server_lock.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\server.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>

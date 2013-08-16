@@ -19,39 +19,28 @@
  */
 
 
-#ifndef INTEGRA_COMMAND_SOURCE
-#define INTEGRA_COMMAND_SOURCE
+#ifndef INTEGRA_NOTIFICATION_SINK_API
+#define INTEGRA_NOTIFICATION_SINK_API
 
 #include "common_typedefs.h"
 
+
 namespace integra_api
 {
-	class INTEGRA_API CCommandSource
+	class CCommandSource;
+	class IServer;
+
+	class INTEGRA_API INotificationSink
 	{
+		protected:
+
+			INotificationSink() {}
+
 		public:
 
-			enum source 
-			{
-				NONE = -1,
-				INITIALIZATION,
-				LOAD,
-				SYSTEM,
-				CONNECTION,
-				HOST,
-				SCRIPT,
-				XMLRPC_API,
-				PUBLIC_API
-			}; 
+			virtual ~INotificationSink() {}
 
-			CCommandSource();
-			CCommandSource( source command_source );
-
-			operator source() const;
-			string get_text() const;
-
-		private:
-
-			source m_command_source;
+			virtual void on_set_command( const IServer &server, const CPath &endpoint_path, const CCommandSource &source ) = 0;
 	};
 }
 

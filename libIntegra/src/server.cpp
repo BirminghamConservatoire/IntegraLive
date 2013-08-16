@@ -29,23 +29,28 @@ extern "C"
 
 #include "server.h"
 #include "scratch_directory.h"
-#include "osc_client.h"
 #include "reentrance_checker.h"
 #include "module_manager.h"
-#include "api/trace.h"
 #include "xmlrpc_server.h"
-#include "api/value.h"
-#include "api/path.h"
 #include "bridge_host.h"
-#include "api/guid_helper.h"
 #include "lua_engine.h"
 #include "player_handler.h"
 
 #include "api/server_startup_info.h"
 #include "api/command.h"
+#include "api/guid_helper.h"
+#include "api/value.h"
+#include "api/path.h"
+#include "api/trace.h"
+#include "api/notification_sink.h"
 
 #include <assert.h>
 #include <iostream>
+
+#ifdef _WINDOWS
+#include <windows.h>
+#endif
+
 
 
 namespace integra_internal
@@ -111,8 +116,9 @@ namespace integra_internal
 
 		m_module_manager = new CModuleManager( *this, startup_info.system_module_directory, startup_info.third_party_module_directory );
 
-		m_osc_client = ntg_osc_client_new( startup_info.osc_client_url.c_str(), startup_info.osc_client_port );
 		m_is_in_shutdown = false;
+
+		m_notification_sink = startup_info.notification_sink;
 
 		m_reentrance_checker = new CReentranceChecker();
 
@@ -168,9 +174,6 @@ namespace integra_internal
 
 		delete m_player_handler;
 
-		INTEGRA_TRACE_PROGRESS << "shutting down OSC client";
-		ntg_osc_client_destroy( m_osc_client );
-		
 		INTEGRA_TRACE_PROGRESS << "shutting down XMLRPC interface";
 		ntg_xmlrpc_server_terminate( m_sem_xmlrpc_initialized );
 
@@ -416,11 +419,17 @@ namespace integra_internal
 	}
 
 
-	CError CServer::process_command( ICommand *command, CCommandSource command_source, CCommandResult *result )
+	CError CServer::process_command( ICommand *command, CCommandResult *result )
+	{
+		return process_command( command, CCommandSource::PUBLIC_API, result );
+	}
+
+
+	CError CServer::process_command( ICommand *command, CCommandSource source, CCommandResult *result )
 	{
 		assert( command );
 
-		CError error = command->execute( *this, command_source, result );
+		CError error = command->execute( *this, source, result );
 
 		delete command;
 

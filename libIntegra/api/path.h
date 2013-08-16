@@ -22,7 +22,7 @@
 #ifndef INTEGRA_PATH_H
 #define INTEGRA_PATH_H
 
-#include "api/common_typedefs.h"
+#include "common_typedefs.h"
 
 
 namespace integra_api

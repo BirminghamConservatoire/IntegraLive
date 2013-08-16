@@ -73,14 +73,7 @@ namespace integra_internal
 
 		node->get_logic().handle_move( server, m_node_path, source );
 
-		if( ntg_should_send_to_client( source ) ) 
-		{
-			ntg_osc_client_send_move( server.get_osc_client(), source, m_node_path, m_new_parent_path );
-		}
-
 		return CError::SUCCESS;
 	}
-
-
 }
 

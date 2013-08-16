@@ -18,6 +18,7 @@
 #include "api/path.h"
 
 #include "close_orphaned_processes.h"
+#include "osc_client.h"
 
 #ifdef _WINDOWS
 #include <windows.h>
@@ -144,6 +145,9 @@ int main( int argc, char *argv[] )
 
     const char *process_names_to_close[ NUMBER_OF_PROCESSES_TO_CLOSE ];
 
+	string osc_client_url;
+	unsigned short osc_client_port = 0;
+
     int host_process_handle = -1;
     int i = 0;
     const char *argument = NULL;
@@ -221,13 +225,13 @@ int main( int argc, char *argv[] )
 
             if( memcmp( argument, "-osc_client_url", flag_length ) == 0 )
             {
-                startup_info.osc_client_url = equals + 1;
+                osc_client_url = equals + 1;
                 continue;
             }
 
             if( memcmp( argument, "-osc_client_port", flag_length ) == 0 )
             {
-                startup_info.osc_client_port = atoi( equals + 1 );
+                osc_client_port = atoi( equals + 1 );
                 continue;
             }
 
@@ -321,6 +325,14 @@ int main( int argc, char *argv[] )
         INTEGRA_TRACE_ERROR << "unable to start host - no path provided";
     }
 
+
+	/* start the osc client */
+
+	COscClient *osc_client = new COscClient( osc_client_url, osc_client_port );
+	startup_info.notification_sink = osc_client;
+
+	/*start the integra session */
+
 	CIntegraSession integra_session;
 	if( integra_session.start_session( startup_info ) == CError::SUCCESS )
 	{
@@ -332,6 +344,12 @@ int main( int argc, char *argv[] )
 	{
 		INTEGRA_TRACE_ERROR << "failed to start integra session";
 	}
+
+	/* stop the osc client */
+	delete osc_client;
+
+
+	/* stop the host */
 
     if( host_process_handle > 0 )
     {

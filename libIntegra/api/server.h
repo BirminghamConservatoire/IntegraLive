@@ -24,7 +24,6 @@
 #include "common_typedefs.h"
 #include "node.h"
 #include "node_endpoint.h"
-#include "command_source.h"
 #include "error.h"
 #include "guid_helper.h"
 
@@ -63,7 +62,7 @@ namespace integra_api
 
 			virtual const CValue *get_value( const CPath &path ) const = 0;
 
-			virtual CError process_command( ICommand *command, CCommandSource source, CCommandResult *result = NULL ) = 0;
+			virtual CError process_command( ICommand *command, CCommandResult *result = NULL ) = 0;
 
 			virtual IModuleManager &get_module_manager() const = 0;
 	};

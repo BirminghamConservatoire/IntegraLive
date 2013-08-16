@@ -75,9 +75,6 @@
     <ClCompile Include="..\src\node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\osc_client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -198,9 +195,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\server.h">
@@ -378,6 +372,9 @@
       <Filter>Header Files\api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\interface_definition.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\notification_sink.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>

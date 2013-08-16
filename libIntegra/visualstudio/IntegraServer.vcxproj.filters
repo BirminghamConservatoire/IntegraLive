@@ -21,6 +21,9 @@
     <ClInclude Include="..\server\close_orphaned_processes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\server\osc_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IntegraServer.rc">
@@ -32,6 +35,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\server\close_orphaned_processes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\server\osc_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

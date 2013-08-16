@@ -137,11 +137,6 @@ namespace integra_internal
 			}
 		}
 
-		if( ntg_should_send_to_client( source ) ) 
-		{
-			ntg_osc_client_send_new( server.get_osc_client(), source, &m_module_id, m_node_name.c_str(), node->get_parent_path() );
-		}
-
 		return CError::SUCCESS;
 	}
 

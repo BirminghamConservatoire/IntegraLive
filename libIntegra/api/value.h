@@ -23,7 +23,7 @@
 
 #include <unordered_map>
 
-#include "api/common_typedefs.h"
+#include "common_typedefs.h"
 
 
 namespace integra_api

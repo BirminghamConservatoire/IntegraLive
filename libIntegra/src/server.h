@@ -25,9 +25,10 @@
 
 #include "Integra/integra_bridge.h"
 #include "node.h"
-#include "api/path.h"
 #include "state_table.h"
-#include "osc_client.h"
+
+#include "api/path.h"
+#include "api/command_source.h"
 
 #include <semaphore.h>
 #include <pthread.h>
@@ -38,6 +39,7 @@ namespace integra_api
 	class CServerStartupInfo;
 	class ICommand;
 	class CCommandResult;
+	class INotificationSink;
 }
 
 using namespace integra_api;
@@ -52,6 +54,7 @@ namespace integra_internal
 	class CScratchDirectory;
 	class CLuaEngine;
 	class CPlayerHandler;
+	
 
 	class CServer : public IServer
 	{
@@ -81,10 +84,13 @@ namespace integra_internal
 
 			const CValue *get_value( const CPath &path ) const;
 
+			/* exposed in IServer, to process commands from the public api */
+			CError CServer::process_command( ICommand *command, CCommandResult *result );
+
+			/* internal command processor, to process all commands */
 			CError process_command( ICommand *command, CCommandSource source, CCommandResult *result = NULL );
 
 			ntg_bridge_interface *get_bridge() { return m_bridge; }
-			ntg_osc_client *get_osc_client() { return m_osc_client; }
 			CStateTable &get_state_table() { return m_state_table;  }
 
 			CReentranceChecker &get_reentrance_checker() const { return *m_reentrance_checker; }
@@ -99,6 +105,8 @@ namespace integra_internal
 			CLuaEngine &get_lua_engine() { return *m_lua_engine; }
 
 			CPlayerHandler &get_player_handler() { return *m_player_handler; }
+
+			INotificationSink *get_notification_sink() { return m_notification_sink; }
 
 			internal_id create_internal_id();
 
@@ -121,7 +129,6 @@ namespace integra_internal
 
 			node_map m_nodes;
 			ntg_bridge_interface *m_bridge;
-			ntg_osc_client *m_osc_client;
 			CStateTable m_state_table; 
 			CReentranceChecker *m_reentrance_checker;
 			CModuleManager *m_module_manager;
@@ -131,6 +138,8 @@ namespace integra_internal
 
 			pthread_t m_xmlrpc_thread;
 			sem_t *m_sem_xmlrpc_initialized;
+
+			INotificationSink *m_notification_sink;
 
 			sem_t *m_sem_system_shutdown;
 			bool m_is_in_shutdown;

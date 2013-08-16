@@ -25,6 +25,7 @@
 
 #include <pthread.h>
 #include <semaphore.h>
+#include <unistd.h>
 
 #include "api/path.h"
 #include "node.h"

@@ -23,7 +23,7 @@
 
 #include "common_typedefs.h"
 #include "error.h"
-#include "api/guid_helper.h"
+#include "guid_helper.h"
 
 
 namespace integra_api

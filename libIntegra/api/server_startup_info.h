@@ -25,8 +25,12 @@
 
 namespace integra_api
 {
+	class INotificationSink;
+
+
 	class INTEGRA_API CServerStartupInfo
 	{
+		
 		public:
 			CServerStartupInfo()
 			{
@@ -36,8 +40,7 @@ namespace integra_api
 		
 				xmlrpc_server_port = 0;
 		
-				osc_client_url = "";
-				unsigned short osc_client_port = 0;
+				notification_sink = NULL;
 			}
 
 			string bridge_path;
@@ -46,8 +49,7 @@ namespace integra_api
 			
 			unsigned short xmlrpc_server_port;
 			
-			string osc_client_url;
-			unsigned short osc_client_port;
+			INotificationSink *notification_sink;
 	};
 }
 

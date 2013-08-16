@@ -25,8 +25,8 @@
 #include <stdio.h>
 
 #include "../externals/guiddef.h"
-#include "api/common_typedefs.h"
-#include "api/error.h"
+#include "common_typedefs.h"
+#include "error.h"
 
 
 namespace integra_api

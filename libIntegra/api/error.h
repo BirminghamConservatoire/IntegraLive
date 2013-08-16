@@ -22,7 +22,7 @@
 #ifndef INTEGRA_ERROR_DEFINED
 #define INTEGRA_ERROR_DEFINED
 
-#include "api/common_typedefs.h"
+#include "common_typedefs.h"
 
 namespace integra_api
 {

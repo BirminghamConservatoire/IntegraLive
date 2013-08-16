@@ -84,11 +84,6 @@ namespace integra_internal
 
 		node->get_logic().handle_rename( server, previous_name, source );
 
-		if( ntg_should_send_to_client( source ) ) 
-		{
-			ntg_osc_client_send_rename( server.get_osc_client(), source, m_path, m_new_name.c_str() );
-		}
-
 		return CError::SUCCESS;
 	}
 

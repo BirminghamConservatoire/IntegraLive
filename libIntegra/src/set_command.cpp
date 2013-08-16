@@ -27,6 +27,7 @@
 #include "logic.h"
 #include "api/value.h"
 #include "api/trace.h"
+#include "api/notification_sink.h"
 
 #include <assert.h>
 
@@ -165,6 +166,19 @@ namespace integra_internal
 			m_value->convert( *node_endpoint->get_value_writable() );
 		}
 
+		/* send the attribute value to the host if needed */
+		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node_endpoint->get_node().get_interface_definition() );
+		if( should_send_to_host( *node_endpoint, interface_definition, source ) ) 
+		{
+			server.get_bridge()->send_value( node_endpoint );
+		}
+
+		/* callback into the notification sink */
+		INotificationSink *notification_sink = server.get_notification_sink();
+		if( notification_sink )
+		{
+			notification_sink->on_set_command( server, m_endpoint_path, source );
+		}
 		
 		/* handle any system class logic */
 		CNode::downcast( &node_endpoint->get_node() )->get_logic().handle_set( server, *node_endpoint, previous_value, source );
@@ -175,18 +189,6 @@ namespace integra_internal
 		}
 
 		server.get_reentrance_checker().pop();
-
-		/* send the attribute value to the host if needed */
-		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node_endpoint->get_node().get_interface_definition() );
-		if( should_send_to_host( *node_endpoint, interface_definition, source ) ) 
-		{
-			server.get_bridge()->send_value( node_endpoint );
-		}
-
-		if( ntg_should_send_to_client( source ) ) 
-		{
-			ntg_osc_client_send_set( server.get_osc_client(), source, m_endpoint_path, node_endpoint->get_value() );
-		}
 
 		return CError::SUCCESS;
 	}

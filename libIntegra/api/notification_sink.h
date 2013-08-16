@@ -29,6 +29,7 @@ namespace integra_api
 {
 	class CCommandSource;
 	class IServer;
+	class CPath;
 
 	class INTEGRA_API INotificationSink
 	{
@@ -46,4 +47,4 @@ namespace integra_api
 
 
 
-#endif /*INTEGRA_COMMAND_SOURCE*/
+#endif 

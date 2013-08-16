@@ -180,6 +180,7 @@
     <ClCompile Include="..\src\platform_specifics.cpp" />
     <ClCompile Include="..\src\player_handler.cpp" />
     <ClCompile Include="..\src\player_logic.cpp" />
+    <ClCompile Include="..\src\polling_notification_sink.cpp" />
     <ClCompile Include="..\src\reentrance_checker.cpp" />
     <ClCompile Include="..\src\rename_command.cpp" />
     <ClCompile Include="..\src\save_command.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="..\api\server.h" />
     <ClInclude Include="..\api\server_lock.h" />
     <ClInclude Include="..\api\server_startup_info.h" />
+    <ClInclude Include="..\api\polling_notification_sink.h" />
     <ClInclude Include="..\api\trace.h" />
     <ClInclude Include="..\api\value.h" />
     <ClInclude Include="..\externals\minizip\crypt.h" />

@@ -189,6 +189,9 @@
     <ClCompile Include="..\src\server_lock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\polling_notification_sink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\bridge_host.h">
@@ -375,6 +378,9 @@
       <Filter>Header Files\api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\notification_sink.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\polling_notification_sink.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>

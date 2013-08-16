@@ -256,7 +256,6 @@ namespace integra_internal
 		{
 			case CCommandSource::CONNECTION:
 			case CCommandSource::SCRIPT:
-			case CCommandSource::XMLRPC_API:
 			case CCommandSource::PUBLIC_API:
 				{
 				/* these are the sources for which we want to copy the file to the data directory */
@@ -272,8 +271,8 @@ namespace integra_internal
 			case CCommandSource::SYSTEM:
 				return false;		/* these sources are not external set commands - do nothing */
 
-			case CCommandSource::HOST:
-				assert( false );
+			case CCommandSource::MODULE_IMPLEMENTATION:
+				INTEGRA_TRACE_ERROR << "Module Implementation attempting to set input file endpoint!  Module Implementations should not do this";
 				return false;		/* we don't expect input file to be set by host! */
 
 			default:
@@ -366,15 +365,14 @@ namespace integra_internal
 
 			case CCommandSource::CONNECTION:
 			case CCommandSource::SCRIPT:
-			case CCommandSource::XMLRPC_API:
 			case CCommandSource::PUBLIC_API:
 				/* external command is trying to reset the data directory - should delete the old one and create a new one */
 				CDataDirectory::change( *previous_value, *node_endpoint.get_value() );
 				break;		
 
-			case CCommandSource::HOST:
+			case CCommandSource::MODULE_IMPLEMENTATION:
 				/* we don't expect data directory to be set by host! */
-				assert( false );
+				INTEGRA_TRACE_ERROR << "Module Implementation is trying to set data directory!  Module Implementations should not try to do this!";
 				break;				
 
 			default:

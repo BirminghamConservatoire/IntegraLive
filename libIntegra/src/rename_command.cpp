@@ -23,7 +23,7 @@
 #include "rename_command.h"
 #include "server.h"
 #include "api/trace.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 #include "logic.h"
 
 #include <assert.h>

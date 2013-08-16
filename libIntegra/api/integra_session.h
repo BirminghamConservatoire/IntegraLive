@@ -42,9 +42,6 @@ namespace integra_api
 
 			CServerLock get_server();
 
-			//todo - move out of libintegra
-			void block_until_shutdown_signal();
-
 		private:	
 
 			IServer *m_server;

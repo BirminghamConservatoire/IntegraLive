@@ -15,13 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\server\spawn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\server\close_orphaned_processes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\server\osc_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\xmlrpc_server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\xmlrpc_common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,6 +41,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\server\osc_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\server\xmlrpc_common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\server\xmlrpc_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

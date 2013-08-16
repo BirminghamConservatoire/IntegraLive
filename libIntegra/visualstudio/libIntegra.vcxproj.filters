@@ -99,12 +99,6 @@
     <ClCompile Include="..\src\value.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\xmlrpc_common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\xmlrpc_server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\node_endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -203,12 +197,6 @@
     <ClInclude Include="..\src\server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\xmlrpc_common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\xmlrpc_server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\platform_specifics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -274,9 +262,6 @@
     </ClInclude>
     <ClInclude Include="..\api\command_result.h">
       <Filter>Header Files\api</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\string_helper.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\lua_engine.h">
       <Filter>Header Files</Filter>
@@ -381,6 +366,9 @@
       <Filter>Header Files\api</Filter>
     </ClInclude>
     <ClInclude Include="..\api\polling_notification_sink.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\api\string_helper.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
   </ItemGroup>

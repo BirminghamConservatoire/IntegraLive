@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *
+/** IntegraServer - console app to expose xmlrpc interface to libIntegra
+ *  
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,27 +14,34 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
-_resolve * USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+ * USA.
  */
 
 #ifndef NTG_XMLRPC_SERVER_PRIVATE_H
 #define NTG_XMLRPC_SERVER_PRIVATE_H
 
+#include <semaphore.h>
 
-#define NTG_NULL_STRING "None"
 
+namespace integra_api
+{
+	class CIntegraSession;
+}
+
+using namespace integra_api;
 
 class CXmlRpcServerContext
 {
 	public:
 
-		CXmlRpcServerContext() { m_server = NULL; m_port = 0; m_sem_initialized = NULL; }
+		CXmlRpcServerContext() { m_integra_session = NULL; m_port = 0; m_sem_initialized = NULL; m_sem_shutdown = NULL; }
 
-		integra_internal::CServer *m_server;
+		CIntegraSession *m_integra_session;
 		unsigned short m_port;
 
 		sem_t *m_sem_initialized;
+		sem_t *m_sem_shutdown;
 };
 
 

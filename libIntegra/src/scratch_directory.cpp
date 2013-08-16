@@ -24,7 +24,7 @@
 #include "scratch_directory.h"
 #include "file_io.h"
 #include "file_helper.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 
 
 #include <assert.h>

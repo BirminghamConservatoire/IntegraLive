@@ -63,8 +63,6 @@ namespace integra_internal
 			CServer( const CServerStartupInfo &startup_info );
 			~CServer();
 
-			void block_until_shutdown_signal();
-
 			void lock();
 			void unlock();
 
@@ -114,15 +112,11 @@ namespace integra_internal
 
 			string get_libintegra_version() const;
 
-			void send_shutdown_signal();
 			bool is_in_shutdown() const { return m_is_in_shutdown; }
 
 		private:
 
 			void dump_state( const node_map &nodes, int indentation ) const;
-
-			sem_t *create_semaphore( const string &name ) const;
-			void destroy_semaphore( sem_t *semaphore ) const;
 
 			pthread_mutex_t m_mutex;
 			pthread_t m_mutex_owner;
@@ -136,12 +130,8 @@ namespace integra_internal
 			CLuaEngine *m_lua_engine;
 			CPlayerHandler *m_player_handler;
 
-			pthread_t m_xmlrpc_thread;
-			sem_t *m_sem_xmlrpc_initialized;
-
 			INotificationSink *m_notification_sink;
 
-			sem_t *m_sem_system_shutdown;
 			bool m_is_in_shutdown;
 
 			internal_id m_next_internal_id; 

@@ -26,7 +26,7 @@
 #include "server.h"
 #include "interface_definition.h"
 #include "api/command.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 
 
 #define LUA_COMPAT_MODULE

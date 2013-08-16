@@ -24,14 +24,12 @@
 
 #include <stdio.h>
 
-#include "api/common_typedefs.h"
-#include "api/error.h"
+#include "common_typedefs.h"
+#include "error.h"
 
-using namespace integra_api;
-
-namespace integra_internal
+namespace integra_api
 {
-	class CStringHelper
+	class INTEGRA_API CStringHelper
 	{
 		public:
 

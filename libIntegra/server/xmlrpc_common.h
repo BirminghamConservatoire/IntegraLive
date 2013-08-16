@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *
+/** IntegraServer - console app to expose xmlrpc interface to libIntegra
+ *  
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
-_resolve * USA.
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+ * USA.
  */
 
 #ifndef NTG_XMLRPC_COMMON_PRIVATE_H
@@ -23,6 +23,10 @@ _resolve * USA.
 
 #include <xmlrpc-c/base.h>
 
+#include "api/value.h"
+#include "api/path.h"
+
+using namespace integra_api;
 
 xmlrpc_value *ntg_xmlrpc_value_new( const integra_api::CValue &value, xmlrpc_env *env );
 xmlrpc_value *ntg_xmlrpc_value_from_path( const integra_api::CPath &path, xmlrpc_env *env );

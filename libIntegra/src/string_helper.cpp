@@ -21,7 +21,7 @@
 
 #include "platform_specifics.h"
 
-#include "string_helper.h"
+#include "api/string_helper.h"
 #include "api/trace.h"
 
 #include <assert.h>
@@ -32,7 +32,7 @@
 #endif
 
 
-namespace integra_internal
+namespace integra_api
 {
 	const string CStringHelper::node_name_character_set = "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

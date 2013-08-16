@@ -131,7 +131,7 @@ namespace integra_internal
 				break;
 		}
 
-		if( source == CCommandSource::HOST && !CNode::downcast( &node_endpoint->get_node() )->get_logic().node_is_active() )
+		if( source == CCommandSource::MODULE_IMPLEMENTATION && !CNode::downcast( &node_endpoint->get_node() )->get_logic().node_is_active() )
 		{
 			return CError::SUCCESS;
 		}
@@ -198,7 +198,7 @@ namespace integra_internal
 	{
 		switch( source )
 		{
-			case CCommandSource::HOST:
+			case CCommandSource::MODULE_IMPLEMENTATION:
 				return false;	/* don't send to host if came from host */
 
 			case CCommandSource::LOAD:

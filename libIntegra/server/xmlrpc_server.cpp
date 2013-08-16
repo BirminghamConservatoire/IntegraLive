@@ -1,5 +1,5 @@
-/** libIntegra multimedia module interface
- * 
+/** IntegraServer - console app to expose xmlrpc interface to libIntegra
+ *  
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
 
@@ -34,23 +34,19 @@
 #include <xmlrpc-c/server_abyss.h>
 
 
-#include "platform_specifics.h"
-#include "server.h"
-#include "node.h"
+#include "src/platform_specifics.h"
 #include "xmlrpc_common.h"
 #include "xmlrpc_server.h"
-#include "module_manager.h"
-#include "interface_definition.h"
-#include "api/guid_helper.h"
-#include "string_helper.h"
-
+#include "api/server.h"
+#include "api/server_lock.h"
+#include "api/integra_session.h"
 #include "api/trace.h"
-#include "api/error.h"
-#include "api/value.h"
-#include "api/path.h"
-#include "api/common_typedefs.h"
+#include "api/interface_definition.h"
+#include "api/string_helper.h"
 #include "api/command.h"
 #include "api/command_result.h"
+#include "api/module_manager.h"
+
 
 #define HELPSTR_VERSION "Return the current version of libIntegra\n\\return {'response':'system.version', 'version':<string>\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
 
@@ -94,34 +90,28 @@
 
 
 #define RESPONSE_LABEL      "response"
-#define NTG_NULL_STRING     "None"
 
 /*define maximum size for incoming xmlrpc (default is 500Kb and can be exceeded by large requests)*/
 #define NTG_XMLRPC_SIZE_LIMIT 1024 * 1000 * 1000
 
-using namespace integra_api;
-using namespace integra_internal;
-
 
 static TServer abyssServer;
-typedef xmlrpc_value *(* ntg_server_callback_va)( CServer *, int, va_list);
+typedef xmlrpc_value *(* ntg_server_callback_va)( CServerLock &, int, va_list);
 
 
 
 /* run server command -- blocking version
  * call this if you want a return value -- e.g. to XMLRPC interface */
-xmlrpc_value *ntg_server_do_va( ntg_server_callback_va callback, CServer *server, const int argc, ...)
+xmlrpc_value *ntg_server_do_va( ntg_server_callback_va callback, CIntegraSession &integra_session, const int argc, ...)
 {
     xmlrpc_value *rv;
     va_list argv;
 
-    server->lock();
+	CServerLock server = integra_session.get_server();
 
     va_start(argv, argc);
     rv = callback( server, argc, argv);
     va_end(argv);
-
-    server->unlock();
 
     return rv;
 }
@@ -184,7 +174,7 @@ static CPath ntg_xmlrpc_get_path( xmlrpc_env *env, xmlrpc_value *xmlrpc_path )
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_interfacelist_callback( CServer *server, const int argc, va_list argv)
+static xmlrpc_value *ntg_xmlrpc_interfacelist_callback( CServerLock &server, const int argc, va_list argv)
 {
     xmlrpc_value *array_ = NULL,
                  *array_item = NULL, *xmlrpc_name = NULL, *struct_ = NULL;
@@ -219,7 +209,7 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist_callback( CServer *server, const i
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const int argc, va_list argv)
+static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServerLock &server, const int argc, va_list argv)
 {
 	xmlrpc_value *info_struct = NULL, *xmlrpc_temp = NULL, *xmlrpc_array = NULL, *struct_ = NULL;
     xmlrpc_env *env;
@@ -305,19 +295,19 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
 
 	switch( interface_definition->get_module_source() )
 	{
-		case CInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
+		case IInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
 			xmlrpc_temp = xmlrpc_string_new(env, "shippedwithintegra" );
 			break;
 
-		case CInterfaceDefinition::MODULE_3RD_PARTY:
+		case IInterfaceDefinition::MODULE_3RD_PARTY:
 			xmlrpc_temp = xmlrpc_string_new(env, "thirdparty" );
 			break;
 
-		case CInterfaceDefinition::MODULE_EMBEDDED:
+		case IInterfaceDefinition::MODULE_EMBEDDED:
 			xmlrpc_temp = xmlrpc_string_new(env, "embedded" );
 			break;
 
-		case CInterfaceDefinition::MODULE_IN_DEVELOPMENT:
+		case IInterfaceDefinition::MODULE_IN_DEVELOPMENT:
 			xmlrpc_temp = xmlrpc_string_new(env, "indevelopment" );
 			break;
 
@@ -347,7 +337,7 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo_callback( CServer *server, const i
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServerLock &server, const int argc, va_list argv )
 {
 	xmlrpc_value *xmlrpc_temp = NULL, *endpoints_array = NULL, *xmlrpc_endpoint = NULL, *struct_ = NULL;
 	xmlrpc_value *xmlrpc_control_info = NULL, *xmlrpc_state_info = NULL, *xmlrpc_stream_info = NULL;
@@ -402,11 +392,11 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 
 		switch( endpoint_definition.get_type() )
 		{
-			case CEndpointDefinition::CONTROL:
+			case IEndpointDefinition::CONTROL:
 				xmlrpc_temp = xmlrpc_string_new(env, "control" );
 				break;
 
-			case CEndpointDefinition::STREAM:
+			case IEndpointDefinition::STREAM:
 				xmlrpc_temp = xmlrpc_string_new(env, "stream" );
 				break;
 
@@ -425,11 +415,11 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 
 			switch( control_info->get_type() )
 			{
-				case CControlInfo::STATEFUL:
+				case IControlInfo::STATEFUL:
 					xmlrpc_temp = xmlrpc_string_new(env, "state" );
 					break;
 
-				case CControlInfo::BANG:
+				case IControlInfo::BANG:
 					xmlrpc_temp = xmlrpc_string_new(env, "bang" );
 					break;
 
@@ -524,17 +514,17 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 
 					switch( value_scale->get_scale_type() )
 					{
-						case CValueScale::LINEAR:
+						case IValueScale::LINEAR:
 							xmlrpc_temp = xmlrpc_string_new(env, "linear" );
 							xmlrpc_scale_exponent_root = NULL;
 							break;
 
-						case CValueScale::EXPONENTIAL:
+						case IValueScale::EXPONENTIAL:
 							xmlrpc_temp = xmlrpc_string_new(env, "exponential" );
 							xmlrpc_scale_exponent_root = xmlrpc_int_new( env, value_scale->get_exponent_root() );
 							break;
 
-						case CValueScale::DECIBEL:
+						case IValueScale::DECIBEL:
 							xmlrpc_temp = xmlrpc_string_new(env, "decibel" );
 							xmlrpc_scale_exponent_root = NULL;
 							break;
@@ -602,7 +592,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 
 			switch( stream_info->get_type() )
 			{
-				case CStreamInfo::AUDIO:
+				case IStreamInfo::AUDIO:
 					xmlrpc_temp = xmlrpc_string_new(env, "audio" );
 					break;
 
@@ -616,11 +606,11 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 
 			switch( stream_info->get_direction() )
 			{
-				case CStreamInfo::INPUT:
+				case IStreamInfo::INPUT:
 					xmlrpc_temp = xmlrpc_string_new(env, "input" );
 					break;
 
-				case CStreamInfo::OUTPUT:
+				case IStreamInfo::OUTPUT:
 					xmlrpc_temp = xmlrpc_string_new(env, "output" );
 					break;
 
@@ -661,7 +651,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServer *server, const int a
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServerLock &server, const int argc, va_list argv )
 {
 	xmlrpc_value *xmlrpc_temp = NULL, *widgets_array = NULL, *xmlrpc_widget, *xmlrpc_position, *struct_ = NULL;
 	xmlrpc_value *xmlrpc_mapping_list, *xmlrpc_mapping;
@@ -776,7 +766,7 @@ static xmlrpc_value *ntg_xmlrpc_widgets_callback( CServer *server, const int arg
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_nodelist_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_nodelist_callback( CServerLock &server, const int argc, va_list argv )
 {
 	xmlrpc_env *env;
     xmlrpc_value *xmlrpc_nodes = NULL,
@@ -846,7 +836,7 @@ static xmlrpc_value *ntg_xmlrpc_nodelist_callback( CServer *server, const int ar
 
 }
 
-static xmlrpc_value *ntg_xmlrpc_version_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_version_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
@@ -869,7 +859,7 @@ static xmlrpc_value *ntg_xmlrpc_version_callback( CServer *server, const int arg
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_print_state_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_print_state_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
@@ -888,7 +878,7 @@ static xmlrpc_value *ntg_xmlrpc_print_state_callback( CServer *server, const int
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_delete_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_delete_callback( CServerLock &server, const int argc, va_list argv )
 {
 
 
@@ -900,7 +890,7 @@ static xmlrpc_value *ntg_xmlrpc_delete_callback( CServer *server, const int argc
 
     struct_ = xmlrpc_struct_new(env);
 
-	CError error = server->process_command( IDeleteCommand::create( *path ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( IDeleteCommand::create( *path ) );
     if(error != CError::SUCCESS) 
 	{
         return ntg_xmlrpc_error(env, error);
@@ -919,7 +909,7 @@ static xmlrpc_value *ntg_xmlrpc_delete_callback( CServer *server, const int argc
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_rename_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_rename_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
@@ -930,7 +920,7 @@ static xmlrpc_value *ntg_xmlrpc_rename_callback( CServer *server, const int argc
     const CPath *path = va_arg(argv, CPath *);
     const char *name = va_arg(argv, char *);
 
-	CError error = server->process_command( IRenameCommand::create( *path, name ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( IRenameCommand::create( *path, name ) );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error(env, error );
@@ -953,7 +943,7 @@ static xmlrpc_value *ntg_xmlrpc_rename_callback( CServer *server, const int argc
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_save_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_save_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL;
@@ -964,7 +954,7 @@ static xmlrpc_value *ntg_xmlrpc_save_callback( CServer *server, const int argc, 
     const CPath *path = va_arg(argv, CPath  *);
     const char *file_path = va_arg(argv, char *);
 
-	CError error = server->process_command( ISaveCommand::create( file_path, *path ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( ISaveCommand::create( file_path, *path ) );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error(env, error);
@@ -986,7 +976,7 @@ static xmlrpc_value *ntg_xmlrpc_save_callback( CServer *server, const int argc, 
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_load_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_load_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL, *xmlrpc_path = NULL, *xmlrpc_array = NULL;
@@ -998,7 +988,7 @@ static xmlrpc_value *ntg_xmlrpc_load_callback( CServer *server, const int argc, 
     const CPath *path = va_arg(argv, CPath *);
 
 	CLoadCommandResult result;
-	CError error = server->process_command( ILoadCommand::create( file_path, *path ), CCommandSource::XMLRPC_API, &result );
+	CError error = server->process_command( ILoadCommand::create( file_path, *path ), &result );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error( env, error );
@@ -1035,7 +1025,7 @@ static xmlrpc_value *ntg_xmlrpc_load_callback( CServer *server, const int argc, 
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_move_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_move_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL,
@@ -1048,7 +1038,7 @@ static xmlrpc_value *ntg_xmlrpc_move_callback( CServer *server, const int argc, 
     const CPath *node_path = va_arg(argv, CPath *);
     const CPath *parent_path = va_arg(argv, CPath *);
 
-	CError error = server->process_command( IMoveCommand::create( *node_path, *parent_path ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( IMoveCommand::create( *node_path, *parent_path ) );
     if( error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error( env, error );
@@ -1072,7 +1062,7 @@ static xmlrpc_value *ntg_xmlrpc_move_callback( CServer *server, const int argc, 
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
@@ -1096,13 +1086,11 @@ static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded_callback( CServer *serv
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_install_module_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_install_module_callback( CServerLock &server, const int argc, va_list argv )
 {
     char *file_path;
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
-
-	assert( server );
 
     env = va_arg( argv, xmlrpc_env * );
     file_path = va_arg( argv, char * );
@@ -1140,12 +1128,10 @@ static xmlrpc_value *ntg_xmlrpc_install_module_callback( CServer *server, const 
 
 
 
-static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
-
-	assert( server );
 
     env = va_arg( argv, xmlrpc_env * );
     char *file_path = va_arg( argv, char * );
@@ -1190,14 +1176,12 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( CServer *se
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_install_embedded_module_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_install_embedded_module_callback( CServerLock &server, const int argc, va_list argv )
 {
     char *module_id_string;
 	GUID module_id;
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
-
-	assert( server );
 
     env = va_arg( argv, xmlrpc_env * );
     module_id_string = va_arg( argv, char * );
@@ -1225,14 +1209,12 @@ static xmlrpc_value *ntg_xmlrpc_install_embedded_module_callback( CServer *serve
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_uninstall_module_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_uninstall_module_callback( CServerLock &server, const int argc, va_list argv )
 {
     char *module_id_string;
 	GUID module_id;
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
-
-	assert( server );
 
     env = va_arg( argv, xmlrpc_env * );
     module_id_string = va_arg( argv, char * );
@@ -1268,7 +1250,7 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module_callback( CServer *server, cons
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_new_callback(CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_new_callback(CServerLock &server, const int argc, va_list argv )
 {
     char *module_id_string, *node_name;
 	GUID module_id;
@@ -1284,7 +1266,7 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(CServer *server, const int argc, va
 	CGuidHelper::string_to_guid( module_id_string, module_id );
 
 	CNewCommandResult result;
-	CError error = server->process_command( INewCommand::create( module_id, node_name, *path ), CCommandSource::XMLRPC_API, &result );
+	CError error = server->process_command( INewCommand::create( module_id, node_name, *path ), &result );
 
 	const INode *node = result.get_created_node();
 	if( error != CError::SUCCESS || !node ) 
@@ -1321,7 +1303,7 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(CServer *server, const int argc, va
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_set_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_set_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL;
@@ -1337,7 +1319,7 @@ static xmlrpc_value *ntg_xmlrpc_set_callback( CServer *server, const int argc, v
 
 	INTEGRA_TRACE_VERBOSE << "setting value: " << path->get_string();
 
-	CError error = server->process_command( ISetCommand::create( *path, value ), CCommandSource::XMLRPC_API );
+	CError error = server->process_command( ISetCommand::create( *path, value ) );
 	if( error != CError::SUCCESS )
 	{
 		return ntg_xmlrpc_error (env, error );
@@ -1355,7 +1337,7 @@ static xmlrpc_value *ntg_xmlrpc_set_callback( CServer *server, const int argc, v
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_get_callback( CServer *server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_get_callback( CServerLock &server, const int argc, va_list argv )
 {
 
     xmlrpc_env *env;
@@ -1403,8 +1385,9 @@ static xmlrpc_value *ntg_xmlrpc_version(xmlrpc_env * const env,
 {
     INTEGRA_TRACE_VERBOSE;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_version_callback, server, 1, (void *)env);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_version_callback, *integra_session, 1, (void *)env);
 }
 
 static xmlrpc_value *ntg_xmlrpc_print_state(xmlrpc_env * const env,
@@ -1413,8 +1396,9 @@ static xmlrpc_value *ntg_xmlrpc_print_state(xmlrpc_env * const env,
 {
     INTEGRA_TRACE_VERBOSE;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_print_state_callback, server, 1, (void *)env);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_print_state_callback, *integra_session, 1, (void *)env);
 }
 
 
@@ -1424,8 +1408,9 @@ static xmlrpc_value *ntg_xmlrpc_interfacelist(xmlrpc_env * const env,
 {
     INTEGRA_TRACE_VERBOSE;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_interfacelist_callback, server, 1, (void *)env);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_interfacelist_callback, *integra_session, 1, (void *)env);
 }
 
 
@@ -1443,8 +1428,9 @@ static xmlrpc_value *ntg_xmlrpc_interfaceinfo(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_interfaceinfo_callback, server, 2, (void *)env, name);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_interfaceinfo_callback, *integra_session, 2, (void *)env, name);
 }
 
 
@@ -1462,8 +1448,9 @@ static xmlrpc_value *ntg_xmlrpc_endpoints(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_endpoints_callback, server, 2, (void *)env, name);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_endpoints_callback, *integra_session, 2, (void *)env, name);
 }
 
 
@@ -1481,8 +1468,9 @@ static xmlrpc_value *ntg_xmlrpc_widgets(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_widgets_callback, server, 2, (void *)env, name);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_widgets_callback, *integra_session, 2, (void *)env, name);
 }
 
 
@@ -1513,8 +1501,9 @@ static xmlrpc_value *ntg_xmlrpc_nodelist(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_nodelist_callback, server, 2, (void *)env, &path);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_nodelist_callback, *integra_session, 2, (void *)env, &path);
 
 }
 
@@ -1532,8 +1521,9 @@ static xmlrpc_value *ntg_xmlrpc_delete(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_delete_callback, server, 2, (void *)env, &path);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_delete_callback, *integra_session, 2, (void *)env, &path);
 
 }
 
@@ -1552,8 +1542,9 @@ static xmlrpc_value *ntg_xmlrpc_rename(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_rename_callback, server, 3, (void *)env, &path, name);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_rename_callback, *integra_session, 3, (void *)env, &path, name);
 
 }
 
@@ -1572,8 +1563,9 @@ static xmlrpc_value *ntg_xmlrpc_save(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_save_callback, server, 3, (void *)env, &path, file_path);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_save_callback, *integra_session, 3, (void *)env, &path, file_path);
 }
 
 static xmlrpc_value *ntg_xmlrpc_load(xmlrpc_env * const env,
@@ -1591,8 +1583,9 @@ static xmlrpc_value *ntg_xmlrpc_load(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_load_callback, server, 3, (void *)env, file_path, &path);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_load_callback, *integra_session, 3, (void *)env, file_path, &path);
 
 }
 
@@ -1613,8 +1606,9 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_move_callback, server, 3, (void *)env, &node_path, &parent_path);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_move_callback, *integra_session, 3, (void *)env, &node_path, &parent_path);
 
 }
 
@@ -1627,8 +1621,9 @@ static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_unload_orphaned_embedded_callback, server, 1, (void *)env );
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_unload_orphaned_embedded_callback, *integra_session, 1, (void *)env );
 }
 
 
@@ -1646,8 +1641,9 @@ static xmlrpc_value *ntg_xmlrpc_install_module_file(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_install_module_callback, server, 2, (void *)env, file_name );
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_install_module_callback, *integra_session, 2, (void *)env, file_name );
 }
 
 
@@ -1665,8 +1661,9 @@ static xmlrpc_value *ntg_xmlrpc_install_embedded_module(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_install_embedded_module_callback, server, 2, (void *)env, module_id_string );
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_install_embedded_module_callback, *integra_session, 2, (void *)env, module_id_string );
 }
 
 
@@ -1684,8 +1681,9 @@ static xmlrpc_value *ntg_xmlrpc_uninstall_module(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_uninstall_module_callback, server, 2, (void *)env, module_id_string );
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_uninstall_module_callback, *integra_session, 2, (void *)env, module_id_string );
 }
 
 
@@ -1703,8 +1701,9 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development(xmlrpc_env * const en
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_load_module_in_development_callback, server, 2, (void *)env, file_name );
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_load_module_in_development_callback, *integra_session, 2, (void *)env, file_name );
 }
 
 
@@ -1730,8 +1729,9 @@ static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
     if (env->fault_occurred)
         return NULL;
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_new_callback, server, 4, (void *)env, name, node_name, &path );
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_new_callback, *integra_session, 4, (void *)env, name, node_name, &path );
 }
 
 
@@ -1767,8 +1767,9 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
-	CServer *server = ( CServer * ) user_data;
-	xmlrpc_rv = ntg_server_do_va( &ntg_xmlrpc_set_callback, server, 3, (void *)env, &path, value );
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+	xmlrpc_rv = ntg_server_do_va( &ntg_xmlrpc_set_callback, *integra_session, 3, (void *)env, &path, value );
 
 	delete value;
 
@@ -1790,19 +1791,19 @@ static xmlrpc_value *ntg_xmlrpc_get(xmlrpc_env * const env,
 
     xmlrpc_DECREF(xmlrpc_path);
 
-	CServer *server = ( CServer * ) user_data;
-    return ntg_server_do_va(&ntg_xmlrpc_get_callback, server, 2, (void *)env, &path);
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_get_callback, *integra_session, 2, (void *)env, &path);
 
 }
 
 
-void ntg_xmlrpc_shutdown( xmlrpc_env *const envP, 
-        void *       const context,
-        const char * const comment,
-        void *       const callInfo)
+void ntg_xmlrpc_shutdown( xmlrpc_env *const envP, void *const context, const char *comment, void *const callInfo )
 {
-	CServer *server = ( CServer * ) context;
-	server->send_shutdown_signal();
+	CXmlRpcServerContext *xmlrpc_server_context = ( CXmlRpcServerContext * ) context;
+
+	assert( xmlrpc_server_context->m_sem_shutdown );
+	sem_post( xmlrpc_server_context->m_sem_shutdown );
 }
 
 
@@ -1815,8 +1816,7 @@ void *ntg_xmlrpc_server_run( void *context )
 	unsigned short port = server_context->m_port;
 	sem_t *sem_initialized = server_context->m_sem_initialized;
 
-	CServer *server = server_context->m_server;
-	delete server_context;
+	CIntegraSession *integra_session = server_context->m_integra_session;
 
     INTEGRA_TRACE_PROGRESS << "Starting server on port " << port;
 
@@ -1826,85 +1826,43 @@ void *ntg_xmlrpc_server_run( void *context )
 
     xmlrpc_limit_set( XMLRPC_XML_SIZE_LIMIT_ID, NTG_XMLRPC_SIZE_LIMIT );
 
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "system.version",
-            &ntg_xmlrpc_version, server,
-            "S:", HELPSTR_VERSION);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "system.printstate",
-            &ntg_xmlrpc_print_state, server,
-            "S:", HELPSTR_PRINTSTATE);
-	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.interfacelist",
-            &ntg_xmlrpc_interfacelist, server, "S:",
-            HELPSTR_INTERFACELIST);
-	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.interfaceinfo",
-            &ntg_xmlrpc_interfaceinfo, server, "S:s",
-            HELPSTR_INTERFACEINFO);
-	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.endpoints",
-            &ntg_xmlrpc_endpoints, server, "S:s",
-            HELPSTR_ENDPOINTS);
-	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.widgets",
-            &ntg_xmlrpc_widgets, server, "S:s",
-            HELPSTR_WIDGETS);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.nodelist",
-            &ntg_xmlrpc_nodelist, server, "S:A",
-            HELPSTR_NODELIST);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "query.get",
-            &ntg_xmlrpc_get, server, "S:A",
-            HELPSTR_GET);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.set",
-            &ntg_xmlrpc_set, server,
-            "S:As,S:Ai,S:Ad,S:A6", HELPSTR_SET);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.new",
-            &ntg_xmlrpc_new, server, "S:ssA",
-            HELPSTR_NEW);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.delete",
-            &ntg_xmlrpc_delete, server, "S:A",
-            HELPSTR_DELETE);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.rename",
-            &ntg_xmlrpc_rename, server, "S:As",
-            HELPSTR_RENAME);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.save",
-            &ntg_xmlrpc_save, server, "S:As",
-            HELPSTR_SAVE);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.load",
-            &ntg_xmlrpc_load, server, "S:sA",
-            HELPSTR_LOAD);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "command.move",
-            &ntg_xmlrpc_move, server, "S:AA",
-            HELPSTR_MOVE);
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.version", &ntg_xmlrpc_version, integra_session, "S:", HELPSTR_VERSION );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.printstate", &ntg_xmlrpc_print_state, integra_session, "S:", HELPSTR_PRINTSTATE );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfacelist", &ntg_xmlrpc_interfacelist, integra_session, "S:", HELPSTR_INTERFACELIST );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfaceinfo", &ntg_xmlrpc_interfaceinfo, integra_session, "S:s", HELPSTR_INTERFACEINFO );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.endpoints", &ntg_xmlrpc_endpoints, integra_session, "S:s", HELPSTR_ENDPOINTS );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.widgets", &ntg_xmlrpc_widgets, integra_session, "S:s", HELPSTR_WIDGETS );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.nodelist", &ntg_xmlrpc_nodelist, integra_session, "S:A", HELPSTR_NODELIST );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.get", &ntg_xmlrpc_get, integra_session, "S:A", HELPSTR_GET );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.set", &ntg_xmlrpc_set, integra_session, "S:As,S:Ai,S:Ad,S:A6", HELPSTR_SET );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.new", &ntg_xmlrpc_new, integra_session, "S:ssA", HELPSTR_NEW );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.delete", &ntg_xmlrpc_delete, integra_session, "S:A", HELPSTR_DELETE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.rename", &ntg_xmlrpc_rename, integra_session, "S:As", HELPSTR_RENAME );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.save", &ntg_xmlrpc_save, integra_session, "S:As", HELPSTR_SAVE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.load", &ntg_xmlrpc_load, integra_session, "S:sA", HELPSTR_LOAD );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.move", &ntg_xmlrpc_move, integra_session, "S:AA", HELPSTR_MOVE );
 
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.unloadorphanedembedded",
-            &ntg_xmlrpc_unload_orphaned_embedded, server, "S:",
-            HELPSTR_UNLOAD_ORPHANED_EMBEDDED);
-	xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.installintegramodulefile",
-        &ntg_xmlrpc_install_module_file, server, "S:s",
-        HELPSTR_INSTALL_INTEGRA_MODULE_FILE);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.installembeddedmodule",
-        &ntg_xmlrpc_install_embedded_module, server, "S:s",
-        HELPSTR_INSTALL_EMBEDDED_MODULE);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.uninstallmodule",
-        &ntg_xmlrpc_uninstall_module, server, "S:s",
-        HELPSTR_UNINSTALL_MODULE);
-    xmlrpc_registry_add_method_w_doc(&env, registryP, NULL, "module.loadmoduleindevelopment",
-        &ntg_xmlrpc_load_module_in_development, server, "S:s",
-		HELPSTR_LOAD_MODULE_IN_DEVELOPMENT);
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.unloadorphanedembedded", &ntg_xmlrpc_unload_orphaned_embedded, integra_session, "S:", HELPSTR_UNLOAD_ORPHANED_EMBEDDED );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installintegramodulefile", &ntg_xmlrpc_install_module_file, integra_session, "S:s", HELPSTR_INSTALL_INTEGRA_MODULE_FILE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installembeddedmodule", &ntg_xmlrpc_install_embedded_module, integra_session, "S:s", HELPSTR_INSTALL_EMBEDDED_MODULE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.uninstallmodule", &ntg_xmlrpc_uninstall_module, integra_session, "S:s", HELPSTR_UNINSTALL_MODULE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.loadmoduleindevelopment", &ntg_xmlrpc_load_module_in_development, integra_session, "S:s", HELPSTR_LOAD_MODULE_IN_DEVELOPMENT );
 
-    xmlrpc_registry_set_shutdown(registryP, ntg_xmlrpc_shutdown, server );
+    xmlrpc_registry_set_shutdown( registryP, ntg_xmlrpc_shutdown, server_context );
 
-    xmlrpc_registry_set_default_method(&env, registryP, &ntg_xmlrpc_default,
-            NULL);
+    xmlrpc_registry_set_default_method( &env, registryP, &ntg_xmlrpc_default, NULL );
 
-    ServerCreate(&abyssServer, "XmlRpcServer", port, NULL, 
-            NULL);
+    ServerCreate( &abyssServer, "XmlRpcServer", port, NULL, NULL );
 
-    xmlrpc_server_abyss_set_handlers2(&abyssServer, "/", registryP);
+    xmlrpc_server_abyss_set_handlers2( &abyssServer, "/", registryP );
 
-    ServerInit(&abyssServer);
+    ServerInit( &abyssServer );
 
 	sem_post( sem_initialized );
 
     /* This version processes commands concurrently */
 #if 1
-    ServerRun(&abyssServer);
+    ServerRun( &abyssServer );
 #else
     while (true){
         ServerRunOnce(&abyssServer);
@@ -1915,16 +1873,16 @@ void *ntg_xmlrpc_server_run( void *context )
     }
 #endif
 
-    ServerFree(&abyssServer);
-    xmlrpc_registry_free(registryP);
+    ServerFree( &abyssServer );
+    xmlrpc_registry_free( registryP );
 
     /* FIX: for now we support the old 'stable' version of xmlrpc-c */
     /* AbyssTerm(); */
 
-    xmlrpc_env_clean(&env);
+    xmlrpc_env_clean( &env );
 
     INTEGRA_TRACE_PROGRESS << "XMLRPC server terminated";
-    pthread_exit(0);
+    pthread_exit( 0 );
 
     return NULL;
 

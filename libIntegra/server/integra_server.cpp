@@ -1,5 +1,23 @@
+/** IntegraServer - console app to expose xmlrpc interface to libIntegra
+ *  
+ * Copyright (C) 2007 Birmingham City University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+ * USA.
+ */
 
-/* run the server indefinitely with an osc bridge */
 
 #include <unistd.h>
 #include <stdio.h>
@@ -18,7 +36,10 @@
 #include "api/path.h"
 
 #include "close_orphaned_processes.h"
+#include "xmlrpc_server.h"
 #include "osc_client.h"
+
+#include <pthread.h>
 
 #ifdef _WINDOWS
 #include <windows.h>
@@ -133,6 +154,30 @@ void post_help(const char *command_name) {
 
 }
 
+
+sem_t *create_semaphore( const string &name ) 
+{
+	#ifdef __APPLE__
+		sem_t *semaphore = sem_open( name.c_str(), O_CREAT, 0777, 0 );
+	#else
+		sem_t *semaphore = new sem_t;
+		sem_init( semaphore, 0, 0 );
+	#endif
+
+	return semaphore;
+}
+
+
+void destroy_semaphore( sem_t *semaphore ) 
+{
+	#ifdef __APPLE__
+		sem_close( semaphore );
+	#else
+		sem_destroy( semaphore );
+	#endif
+}
+
+
 int main( int argc, char *argv[] )
 {
 	CServerStartupInfo startup_info;
@@ -147,6 +192,8 @@ int main( int argc, char *argv[] )
 
 	string osc_client_url;
 	unsigned short osc_client_port = 0;
+
+	unsigned short xmlrpc_server_port = 0;
 
     int host_process_handle = -1;
     int i = 0;
@@ -219,7 +266,7 @@ int main( int argc, char *argv[] )
 
             if( memcmp( argument, "-xmlrpc_server_port", flag_length ) == 0 )
             {
-                startup_info.xmlrpc_server_port = atoi( equals + 1 );
+                xmlrpc_server_port = atoi( equals + 1 );
                 continue;
             }
 
@@ -334,20 +381,52 @@ int main( int argc, char *argv[] )
 	/*start the integra session */
 
 	CIntegraSession integra_session;
-	if( integra_session.start_session( startup_info ) == CError::SUCCESS )
+	CError error = integra_session.start_session( startup_info );
+	if( error != CError::SUCCESS )
 	{
-		integra_session.block_until_shutdown_signal();
-
-		integra_session.end_session();
+		INTEGRA_TRACE_ERROR << "failed to start integra session: " << error.get_text();
 	}
 	else
 	{
-		INTEGRA_TRACE_ERROR << "failed to start integra session";
+		sem_t *sem_xmlrpc_initialized = create_semaphore( "sem_xmlrpc_initialized" );
+		sem_t *sem_system_shutdown = create_semaphore( "sem_system_shutdown" );
+
+		pthread_t xmlrpc_thread;
+
+		/* create the xmlrpc interface */
+		INTEGRA_TRACE_PROGRESS << "creating xmlrpc interface...";
+		CXmlRpcServerContext xmlrpc_context;
+		xmlrpc_context.m_integra_session = &integra_session;
+		xmlrpc_context.m_port = xmlrpc_server_port;
+		xmlrpc_context.m_sem_initialized = sem_xmlrpc_initialized;
+		xmlrpc_context.m_sem_shutdown = sem_system_shutdown;
+		pthread_create( &xmlrpc_thread, NULL, ntg_xmlrpc_server_run, &xmlrpc_context );
+
+		INTEGRA_TRACE_PROGRESS << "blocking until shutdown signal...";
+		sem_wait( sem_system_shutdown );
+		
+		INTEGRA_TRACE_PROGRESS << "received shutdown signal...";
+
+		ntg_xmlrpc_server_terminate( sem_xmlrpc_initialized );
+
+		/* FIX: for now we only support the old 'stable' xmlrpc-c, which can't
+		   wake up a sleeping server */
+		pthread_join( xmlrpc_thread, NULL );
+
+		INTEGRA_TRACE_PROGRESS << "XMLRPC interface closed";
+
+		destroy_semaphore( sem_xmlrpc_initialized );
+		destroy_semaphore( sem_system_shutdown );
+		
+		INTEGRA_TRACE_PROGRESS << "ending integra session...";
+
+		integra_session.end_session();
+
+		INTEGRA_TRACE_PROGRESS << "integra session ended";
 	}
 
 	/* stop the osc client */
 	delete osc_client;
-
 
 	/* stop the host */
 

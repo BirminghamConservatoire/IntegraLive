@@ -43,7 +43,7 @@
 #include "interface_definition_loader.h"
 #include "file_io.h"
 #include "MurmurHash2.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 
 using namespace integra_api;
 

@@ -38,16 +38,12 @@ namespace integra_api
 				system_module_directory = "";
 				third_party_module_directory = "";
 		
-				xmlrpc_server_port = 0;
-		
 				notification_sink = NULL;
 			}
 
 			string bridge_path;
 			string system_module_directory;
 			string third_party_module_directory;
-			
-			unsigned short xmlrpc_server_port;
 			
 			INotificationSink *notification_sink;
 	};

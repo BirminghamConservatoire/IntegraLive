@@ -48,9 +48,6 @@ namespace integra_api
 
 			virtual ~IServer() {}
 
-			//todo - move out of libintegra
-			virtual void block_until_shutdown_signal() = 0;
-
 			virtual const guid_set &get_all_module_ids() const = 0;
 			virtual const IInterfaceDefinition *find_interface( const GUID &module_id ) const = 0;
 
@@ -65,6 +62,10 @@ namespace integra_api
 			virtual CError process_command( ICommand *command, CCommandResult *result = NULL ) = 0;
 
 			virtual IModuleManager &get_module_manager() const = 0;
+
+			virtual string get_libintegra_version() const = 0;
+
+			virtual void dump_state() = 0;
 	};
 }
 

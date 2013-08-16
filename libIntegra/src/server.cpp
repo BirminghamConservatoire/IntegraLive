@@ -31,7 +31,6 @@ extern "C"
 #include "scratch_directory.h"
 #include "reentrance_checker.h"
 #include "module_manager.h"
-#include "xmlrpc_server.h"
 #include "bridge_host.h"
 #include "lua_engine.h"
 #include "player_handler.h"
@@ -81,7 +80,7 @@ namespace integra_internal
 			CPath path( target->get_path() );
 			path.append_element( attribute_name );
 
-			server->process_command( ISetCommand::create( path, value ), CCommandSource::HOST );
+			server->process_command( ISetCommand::create( path, value ), CCommandSource::MODULE_IMPLEMENTATION );
 		}
 		else
 		{
@@ -102,9 +101,6 @@ namespace integra_internal
 		#ifdef _WINDOWS
 			_set_invalid_parameter_handler( invalid_parameter_handler );
 		#endif
-
-		m_sem_xmlrpc_initialized = create_semaphore( "sem_xmlrpc_initialized" );
-		m_sem_system_shutdown = create_semaphore( "sem_system_shutdown" );
 
 		m_next_internal_id = 0;
 
@@ -135,13 +131,6 @@ namespace integra_internal
 		/* Add the server receive callback to the bridge's methods */
 		m_bridge->server_receive_callback = host_callback;
 		m_bridge->server_receive_callback_context = this;
-
-		/* create the xmlrpc interface */
-		CXmlRpcServerContext *context = new CXmlRpcServerContext;
-		context->m_server = this;
-		context->m_port = startup_info.xmlrpc_server_port;
-		context->m_sem_initialized = m_sem_xmlrpc_initialized;
-		pthread_create( &m_xmlrpc_thread, NULL, ntg_xmlrpc_server_run, context );
 
 		INTEGRA_TRACE_PROGRESS << "Server construction complete";
 	}
@@ -174,16 +163,6 @@ namespace integra_internal
 
 		delete m_player_handler;
 
-		INTEGRA_TRACE_PROGRESS << "shutting down XMLRPC interface";
-		ntg_xmlrpc_server_terminate( m_sem_xmlrpc_initialized );
-
-		/* FIX: for now we only support the old 'stable' xmlrpc-c, which can't
-		   wake up a sleeping server */
-		INTEGRA_TRACE_PROGRESS << "joining xmlrpc thread";
-		pthread_join( m_xmlrpc_thread, NULL );
-
-
-
 		/* FIX: This hangs on all platforms, just comment out for now */
 		/*
 		INTEGRA_TRACE_PROGRESS("closing bridge");
@@ -194,27 +173,13 @@ namespace integra_internal
 		xmlCleanupParser();
 		xmlCleanupGlobals();
 
-
 		INTEGRA_TRACE_PROGRESS << "done!";
-
-		destroy_semaphore( m_sem_xmlrpc_initialized );
-		destroy_semaphore( m_sem_system_shutdown );
 
 		unlock();
 
 		pthread_mutex_destroy( &m_mutex );
 
 		INTEGRA_TRACE_PROGRESS << "server destruction complete";
-	}
-
-
-	void CServer::block_until_shutdown_signal()
-	{
-		INTEGRA_TRACE_PROGRESS << "server blocking until shutdown signal...";
-
-		sem_wait( m_sem_system_shutdown );
-
-		INTEGRA_TRACE_PROGRESS << "server blocking finished...";
 	}
 
 
@@ -488,36 +453,6 @@ namespace integra_internal
 
 		#endif
 	}
-
-
-	sem_t *CServer::create_semaphore( const string &name ) const
-	{
-		#ifdef __APPLE__
-			sem_t *semaphore = sem_open( name.c_str(), O_CREAT, 0777, 0 );
-		#else
-			sem_t *semaphore = new sem_t;
-			sem_init( semaphore, 0, 0 );
-		#endif
-
-		return semaphore;
-	}
-
-
-	void CServer::destroy_semaphore( sem_t *semaphore ) const
-	{
-		#ifdef __APPLE__
-			sem_close( semaphore );
-		#else
-			sem_destroy( semaphore );
-		#endif
-	}
-
-
-	void CServer::send_shutdown_signal()
-	{
-		sem_post( m_sem_system_shutdown );
-	}
-	
 }
 
 

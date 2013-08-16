@@ -424,6 +424,6 @@ package components.controller
 
 		private static var _singleInstance:RemoteCommandHandler = null;
 		
-		private static const XMLRPC_COMMAND:String = "xmlrpc_api";
+		private static const XMLRPC_COMMAND:String = "public_api";
 	}
 }

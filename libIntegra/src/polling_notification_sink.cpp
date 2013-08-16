@@ -55,8 +55,6 @@ namespace integra_api
 	{
 	    pthread_mutex_lock( &m_mutex );
 
-		CCommandSource target;
-		target = source;
 		m_changed_endpoints[ endpoint_path.get_string() ] = source;
 
 	    pthread_mutex_unlock( &m_mutex );

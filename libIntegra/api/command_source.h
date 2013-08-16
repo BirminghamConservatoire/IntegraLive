@@ -37,9 +37,8 @@ namespace integra_api
 				LOAD,
 				SYSTEM,
 				CONNECTION,
-				HOST,
 				SCRIPT,
-				XMLRPC_API,
+				MODULE_IMPLEMENTATION,
 				PUBLIC_API
 			}; 
 

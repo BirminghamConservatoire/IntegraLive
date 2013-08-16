@@ -22,10 +22,7 @@
 #include "api/path.h"
 
 #include "api/trace.h"
-#include "string_helper.h"
-
-
-using namespace integra_internal;
+#include "api/string_helper.h"
 
 
 namespace integra_api

@@ -84,9 +84,8 @@ namespace integra_internal
 
 			case CCommandSource::INITIALIZATION:
 			case CCommandSource::LOAD:
-			case CCommandSource::HOST:
-			case CCommandSource::XMLRPC_API:
 			case CCommandSource::PUBLIC_API:
+			case CCommandSource::MODULE_IMPLEMENTATION:
 				return false;	/* these cannot cause recursion */
 
 			default:

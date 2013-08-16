@@ -105,14 +105,6 @@ namespace integra_api
 	{
 		return CServerLock( m_server );
 	}
-
-
-	//todo - move out of libintegra
-	void CIntegraSession::block_until_shutdown_signal()
-	{
-		m_server->block_until_shutdown_signal();
-	}
-
 }
 
 

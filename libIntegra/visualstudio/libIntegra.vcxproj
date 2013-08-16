@@ -50,7 +50,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/xmlrpc-c/include;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;INTEGRA_DEBUG=1;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
@@ -64,8 +64,8 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;lua52.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/xmlrpc-c/bin/Debug-Win32;../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -101,7 +101,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/xmlrpc-c/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -111,8 +111,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;lua52.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/xmlrpc-c/bin/Release-Win32;../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
     </Link>
@@ -196,8 +196,6 @@
     <ClCompile Include="..\src\trace.cpp" />
     <ClCompile Include="..\src\validator.cpp" />
     <ClCompile Include="..\src\value.cpp" />
-    <ClCompile Include="..\src\xmlrpc_common.cpp" />
-    <ClCompile Include="..\src\xmlrpc_server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\api\command.h" />
@@ -217,6 +215,7 @@
     <ClInclude Include="..\api\server_lock.h" />
     <ClInclude Include="..\api\server_startup_info.h" />
     <ClInclude Include="..\api\polling_notification_sink.h" />
+    <ClInclude Include="..\api\string_helper.h" />
     <ClInclude Include="..\api\trace.h" />
     <ClInclude Include="..\api\value.h" />
     <ClInclude Include="..\externals\minizip\crypt.h" />
@@ -259,10 +258,7 @@
     <ClInclude Include="..\src\server.h" />
     <ClInclude Include="..\src\set_command.h" />
     <ClInclude Include="..\src\state_table.h" />
-    <ClInclude Include="..\src\string_helper.h" />
     <ClInclude Include="..\src\validator.h" />
-    <ClInclude Include="..\src\xmlrpc_common.h" />
-    <ClInclude Include="..\src\xmlrpc_server.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libIntegra.rc" />

@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../;../../libIntegra_dependencies/liblo-master;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;../../libIntegra_dependencies/liblo-master;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/xmlrpc-c/include;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -67,8 +67,8 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libIntegra.lib;liblo_d.lib;Ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../build/Debug/server;../../libIntegra_dependencies/liblo-master/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libIntegra.lib;liblo_d.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;pthreadVC2.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../build/Debug/server;../../libIntegra_dependencies/xmlrpc-c/bin/Debug-Win32;../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/liblo-master/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -95,7 +95,7 @@ rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\M
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../libIntegra_dependencies/liblo-master;../;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libIntegra_dependencies/liblo-master;../;../../libIntegra_dependencies/xmlrpc-c/include;../../libIntegra_dependencies/pthreads-win32/include;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -104,8 +104,8 @@ rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\M
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libIntegra.lib;liblo.lib;Ws2_32.lib;Iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/liblo-master/lib/releaselib;../../build/Release/server/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libIntegra.lib;liblo.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libIntegra_dependencies/xmlrpc-c/bin/Release-Win32;../../libIntegra_dependencies/liblo-master/lib/releaselib;../../libIntegra_dependencies/pthreads-win32/lib;../../build/Release/server/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -141,7 +141,8 @@ call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk\Mod
   <ItemGroup>
     <ClInclude Include="..\server\close_orphaned_processes.h" />
     <ClInclude Include="..\server\osc_client.h" />
-    <ClInclude Include="..\server\spawn.h" />
+    <ClInclude Include="..\server\xmlrpc_common.h" />
+    <ClInclude Include="..\server\xmlrpc_server.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="IntegraServer.rc" />
@@ -150,6 +151,8 @@ call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk\Mod
     <ClCompile Include="..\server\close_orphaned_processes.cpp" />
     <ClCompile Include="..\server\integra_server.cpp" />
     <ClCompile Include="..\server\osc_client.cpp" />
+    <ClCompile Include="..\server\xmlrpc_common.cpp" />
+    <ClCompile Include="..\server\xmlrpc_server.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,4 @@
-/** libIntegra multimedia module interface
+/** IntegraServer - console app to expose xmlrpc interface to libIntegra
  *  
  * Copyright (C) 2007 Birmingham City University
  *

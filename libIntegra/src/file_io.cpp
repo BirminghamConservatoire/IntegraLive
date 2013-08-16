@@ -30,7 +30,7 @@
 #include "api/command.h"
 #include "api/command_result.h"
 #include "data_directory.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 #include "api/guid_helper.h"
 
 #include <assert.h>

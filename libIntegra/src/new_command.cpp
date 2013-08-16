@@ -26,7 +26,7 @@
 #include "module_manager.h"
 #include "api/trace.h"
 #include "logic.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 #include "api/command_result.h"
 
 #include <assert.h>

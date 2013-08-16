@@ -27,7 +27,7 @@
 #include "interface_definition.h"
 #include "api/trace.h"
 #include "api/guid_helper.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 
 
 

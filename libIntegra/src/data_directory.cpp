@@ -44,7 +44,7 @@
 #include "api/value.h"
 #include "file_helper.h"
 #include "server.h"
-#include "string_helper.h"
+#include "api/string_helper.h"
 
 
 namespace integra_internal

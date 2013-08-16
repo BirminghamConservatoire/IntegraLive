@@ -48,15 +48,14 @@ namespace integra_api
 	{
 		switch( m_command_source ) 
 		{
-			case NONE:				return "none";
-			case INITIALIZATION:	return "initialization";
-			case LOAD:				return "load";
-			case SYSTEM:			return "system";
-			case CONNECTION:		return "connection";
-			case HOST:				return "host";
-			case SCRIPT:			return "script";
-			case XMLRPC_API:		return "xmlrpc_api";
-			case PUBLIC_API:		return "public_api";
+			case NONE:						return "none";
+			case INITIALIZATION:			return "initialization";
+			case LOAD:						return "load";
+			case SYSTEM:					return "system";
+			case CONNECTION:				return "connection";
+			case SCRIPT:					return "script";
+			case MODULE_IMPLEMENTATION:		return "module implementation";
+			case PUBLIC_API:				return "public_api";
 
 			default:
 				INTEGRA_TRACE_ERROR << "encountered unknown command source";

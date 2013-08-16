@@ -151,6 +151,8 @@ namespace integra_api
 			virtual const CValue &get_default_value() const = 0;
 			virtual const IValueScale *get_value_scale() const = 0;
 			virtual const value_map &get_state_labels() const = 0;
+
+			virtual bool test_constraint( const CValue &value ) const = 0;
 	};
 
 

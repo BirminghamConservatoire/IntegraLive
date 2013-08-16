@@ -63,9 +63,6 @@ namespace integra_internal
 
 			CValue *get_value_writable() { return m_value; }
 
-			/* todo - this method would be better in the endpoint definition class, when it has been made */
-			bool test_constraint( const CValue &value ) const;
-
 			void update_path();
 
 		private:

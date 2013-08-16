@@ -139,7 +139,8 @@ namespace integra_internal
 		/* test constraint */
 		if( m_value )
 		{
-			if( !node_endpoint->test_constraint( *m_value ) )
+			const IStateInfo *state_info = node_endpoint->get_endpoint_definition().get_control_info()->get_state_info();
+			if( !state_info->test_constraint( *m_value ) )
 			{
 				INTEGRA_TRACE_ERROR << "attempting to set value which doesn't conform to constraint - aborting set command: " << m_endpoint_path.get_string();
 				return CError::CONSTRAINT_ERROR;

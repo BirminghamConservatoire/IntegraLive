@@ -216,6 +216,8 @@ namespace integra_internal
 			bool get_is_saved_to_file() const { return m_is_saved_to_file; }
 			bool get_is_input_file() const { return m_is_input_file; }
 
+			bool test_constraint( const CValue &value ) const;
+
 		private:
 			CValue::type m_type;
 			CConstraint *m_constraint;

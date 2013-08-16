@@ -388,6 +388,82 @@ namespace integra_internal
 	}
 
 
+	bool CStateInfo::test_constraint( const CValue &value ) const
+	{
+		CValue::type endpoint_type = get_type();
+
+		if( value.get_type() != endpoint_type )
+		{
+			CValue *fixed_type = value.transmogrify( endpoint_type );
+
+			bool test_result = test_constraint( *fixed_type );
+			delete fixed_type;
+			return test_result;
+		}
+
+		const IConstraint &constraint = get_constraint();
+
+		const IValueRange *range = constraint.get_value_range();
+		if( range )
+		{
+			switch( value.get_type() )
+			{
+				case CValue::STRING:
+					{
+						/* for strings, range constraint defines min/max length */
+						const string &string_value = value;
+						int string_length = string_value.length();
+			
+						if( string_length < ( int ) range->get_minimum() ) return false;
+						if( string_length > ( int ) range->get_maximum() ) return false;
+
+						return true;
+					}
+
+				case CValue::INTEGER:
+					{
+						/* for integers, range constraint defines min/max value */
+						int int_value = value;
+
+						if( int_value < ( int ) range->get_minimum() ) return false;
+						if( int_value > ( int ) range->get_maximum() ) return false;
+
+						return true;
+					}
+
+				case CValue::FLOAT:
+					{
+						/* for floats, range constraint defines min/max value */
+						float float_value = value;
+
+						if( float_value < ( float ) range->get_minimum() ) return false;
+						if( float_value > ( float ) range->get_maximum() ) return false;
+
+						return true;
+					}
+
+				default:
+					INTEGRA_TRACE_ERROR << "unhandled value type";
+					return false;
+			}
+		}
+		else	/* allowed value constraint */
+		{
+			const value_set *allowed_states = constraint.get_allowed_states();
+			assert( allowed_states );
+			for( value_set::const_iterator i = allowed_states->begin(); i != allowed_states->end(); i++ )
+			{
+				if( value.is_equal( **i ) ) 
+				{
+					return true;
+				}
+			}
+
+			return false;	//not found
+		}
+	}
+
+
 	/************************************/
 	/* CONSTRAINT                       */
 	/************************************/

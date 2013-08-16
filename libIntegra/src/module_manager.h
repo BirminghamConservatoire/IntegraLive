@@ -49,7 +49,7 @@ namespace integra_internal
 			CError install_embedded_module( const GUID &module_id );
 			CError uninstall_module( const GUID &module_id, CModuleUninstallResult &result );
 			CError load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result );
-			CError unload_orphaned_embedded_modules();
+			CError unload_unused_embedded_modules();
 
 			void unload_modules( const guid_set &module_ids );
 

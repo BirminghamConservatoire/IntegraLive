@@ -215,11 +215,11 @@ package components.controller
 			newProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
 			newProjectCall.callQueued( "command.delete" );
 			
-			//unload orphaned embedded modules
-			var unloadOrphanedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( Event.COMPLETE, newProjectHandler );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			unloadOrphanedEmbeddedModulesCall.callQueued( "module.unloadorphanedembedded" );
+			//unload unused embedded modules
+			var unloadUnusedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			unloadUnusedEmbeddedModulesCall.addEventListener( Event.COMPLETE, newProjectHandler );
+			unloadUnusedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			unloadUnusedEmbeddedModulesCall.callQueued( "module.unloadunusedembedded" );
 		}
 
 
@@ -231,10 +231,10 @@ package components.controller
 			newProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
 			newProjectCall.callQueued( "command.delete" );
 
-			//unload orphaned embedded modules
-			var unloadOrphanedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			unloadOrphanedEmbeddedModulesCall.callQueued( "module.unloadorphanedembedded" );
+			//unload unused embedded modules
+			var unloadUnusedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			unloadUnusedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			unloadUnusedEmbeddedModulesCall.callQueued( "module.unloadunusedembedded" );
 			
 			//load the new project
 			var loadProjectCall:IntegraConnection = new IntegraConnection( _serverUrl );

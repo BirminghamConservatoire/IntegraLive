@@ -46,7 +46,7 @@ namespace integra_api
 			virtual CError install_embedded_module( const GUID &module_id ) = 0;
 			virtual CError uninstall_module( const GUID &module_id, CModuleUninstallResult &result ) = 0;
 			virtual CError load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result ) = 0;
-			virtual CError unload_orphaned_embedded_modules() = 0;
+			virtual CError unload_unused_embedded_modules() = 0;
 	};
 
 

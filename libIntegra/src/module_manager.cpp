@@ -463,7 +463,7 @@ namespace integra_internal
 	}
 
 
-	CError CModuleManager::unload_orphaned_embedded_modules()
+	CError CModuleManager::unload_unused_embedded_modules()
 	{
 		guid_set module_ids;
 		/* first pass - collect ids of all embedded modules */

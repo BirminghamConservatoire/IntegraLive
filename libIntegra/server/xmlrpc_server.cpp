@@ -79,7 +79,7 @@
 
 #define HELPSTR_MOVE "Move a node on the server\n\\param <array node path>\n\\param <array new node parent path>\n\\return {'response':'command.move', 'instancepath':<array path>, 'parentpath':<array path>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
-#define HELPSTR_UNLOAD_ORPHANED_EMBEDDED "Remove orphaned embedded modules\n\\return {'response':'module.unloadorphanedembedded'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+#define HELPSTR_UNLOAD_UNUSED_EMBEDDED "Remove orphaned embedded modules\n\\return {'response':'module.unloadorphanedembedded'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
 #define HELPSTR_INSTALL_INTEGRA_MODULE_FILE "Install 3rd party module from module file\n\\param <string module file path>\n\\return {'response':'module.installintegramodulefile', moduleid:<string>, waspreviouslyembedded:<boolean>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
@@ -1063,7 +1063,7 @@ static xmlrpc_value *ntg_xmlrpc_move_callback( CServerLock &server, const int ar
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded_callback( CServerLock &server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_unload_unused_embedded_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
@@ -1072,14 +1072,14 @@ static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded_callback( CServerLock &
 
     struct_ = xmlrpc_struct_new(env);
 
-	CError error = server->get_module_manager().unload_orphaned_embedded_modules();
+	CError error = server->get_module_manager().unload_unused_embedded_modules();
 
     if (error != CError::SUCCESS ) 
 	{
         return ntg_xmlrpc_error( env, error );
     }
 
-    xmlrpc_temp = xmlrpc_string_new(env, "module.unloadorphanedembedded" );
+    xmlrpc_temp = xmlrpc_string_new(env, "module.unloadunusedembedded" );
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
@@ -1613,7 +1613,7 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
 
 }
 
-static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded(xmlrpc_env * const env,
+static xmlrpc_value *ntg_xmlrpc_unload_unused_embedded(xmlrpc_env * const env,
         xmlrpc_value *parameter_array,
         void *user_data)
 {
@@ -1624,7 +1624,7 @@ static xmlrpc_value *ntg_xmlrpc_unload_orphaned_embedded(xmlrpc_env * const env,
 
 	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
 
-    return ntg_server_do_va(&ntg_xmlrpc_unload_orphaned_embedded_callback, *integra_session, 1, (void *)env );
+    return ntg_server_do_va(&ntg_xmlrpc_unload_unused_embedded_callback, *integra_session, 1, (void *)env );
 }
 
 
@@ -1843,7 +1843,7 @@ void *ntg_xmlrpc_server_run( void *context )
     xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.load", &ntg_xmlrpc_load, integra_session, "S:sA", HELPSTR_LOAD );
     xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.move", &ntg_xmlrpc_move, integra_session, "S:AA", HELPSTR_MOVE );
 
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.unloadorphanedembedded", &ntg_xmlrpc_unload_orphaned_embedded, integra_session, "S:", HELPSTR_UNLOAD_ORPHANED_EMBEDDED );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.unloadunusedembedded", &ntg_xmlrpc_unload_unused_embedded, integra_session, "S:", HELPSTR_UNLOAD_UNUSED_EMBEDDED );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installintegramodulefile", &ntg_xmlrpc_install_module_file, integra_session, "S:s", HELPSTR_INSTALL_INTEGRA_MODULE_FILE );
     xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installembeddedmodule", &ntg_xmlrpc_install_embedded_module, integra_session, "S:s", HELPSTR_INSTALL_EMBEDDED_MODULE );
     xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.uninstallmodule", &ntg_xmlrpc_uninstall_module, integra_session, "S:s", HELPSTR_UNINSTALL_MODULE );

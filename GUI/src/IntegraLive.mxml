@@ -368,7 +368,6 @@
 				serverArguments.push( "-third_party_modules=" + Utilities.get3rdPartyModulesDirectory() );
 				serverArguments.push( "-host=" + config.hostPath );
 				serverArguments.push( "-xmlrpc_server_port=" + config.xmlrpcServerPort );
-				serverArguments.push( "-osc_server_port=" + config.oscServerPort );
 				serverArguments.push( "-osc_client_port=" + config.oscClientPort );
 
 				serverArguments.push( "-trace_errors=" + ( config.traceErrors ? "1" : "0" ) );

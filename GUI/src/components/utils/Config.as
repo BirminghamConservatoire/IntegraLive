@@ -53,7 +53,6 @@ package components.utils
 		public function get serverUrl():String				{ return _serverUrl; }
 		public function get guiUrl():String					{ return _guiUrl; }
 		public function get xmlrpcServerPort():int			{ return _xmlrpcServerPort; }
-		public function get oscServerPort():int				{ return _oscServerPort; }
 		public function get oscClientPort():int				{ return _oscClientPort; }
 
 		public function get acknowledgementsPath():String 	{ return _acknowledgementsPath; }
@@ -160,11 +159,6 @@ package components.utils
 				if( connections.hasOwnProperty( "xmlrpcserverport" ) )
 				{
 					_xmlrpcServerPort = connections.child( "xmlrpcserverport" ).toString();
-				}				
-
-				if( connections.hasOwnProperty( "oscserverport" ) )
-				{
-					_oscServerPort = connections.child( "oscserverport" ).toString();
 				}				
 
 				if( connections.hasOwnProperty( "oscclientport" ) )
@@ -361,7 +355,6 @@ package components.utils
 		private var _serverUrl:String = null;
 		private var _guiUrl:String = null;
 		private var _xmlrpcServerPort:int = 0;
-		private var _oscServerPort:int = 0;
 		private var _oscClientPort:int = 0;
 		
 		private var _documentationDirectory:File = null;

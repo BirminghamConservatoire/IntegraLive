@@ -59,9 +59,6 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<!-- 		port on which libIntegra's xmlrpc interface listens for connections 			-->
 		<xmlrpcserverport>8003</xmlrpcserverport>
 
-		<!-- 		port on which libIntegra's osc interface listens for connections	 			-->
-		<oscserverport>8004</oscserverport>
-		
 		<!-- 		port on which libIntegra sends osc feedback about executed server commands		-->
 		<oscclientport>8005</oscclientport>
 	</connections>

@@ -19,7 +19,10 @@
  */
 
 
-#include "src/platform_specifics.h"
+#ifdef _WINDOWS
+#pragma warning(disable : 4251)		//disable warnings about exported classes which use stl
+#endif
+
 
 #include <assert.h>
 #include <xmlrpc-c/base.h>

@@ -60,10 +60,5 @@ class COscClient : public INotificationSink
 };
 
 
-
-
-
-
-
 #endif
 

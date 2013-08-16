@@ -26,7 +26,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "src/platform_specifics.h"
+#ifdef _WINDOWS
+#pragma warning(disable : 4251)		/* disable warnings about exported classes which use stl */
+#endif
 
 #include "api/trace.h"
 #include "api/server_startup_info.h"
@@ -43,8 +45,7 @@
 
 #ifdef _WINDOWS
 #include <windows.h>
-/* disable warnings about deprecated string functions */
-#pragma warning(disable : 4996)
+#pragma warning(disable : 4996)		/* disable warnings about deprecated string functions */
 #define PATH_SEPARATOR '\\'
 #else
 #include <signal.h> /* for kill() */

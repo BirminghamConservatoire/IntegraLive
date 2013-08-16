@@ -27,11 +27,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "src/platform_specifics.h"
-
-#include "api/trace.h"
-
-
 #ifdef _WINDOWS
 
 #include <windows.h>
@@ -39,6 +34,8 @@
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4047)
 #pragma warning(disable : 4024)
+#pragma warning(disable : 4251)		/* disable warnings about exported classes which use stl */
+
 #define PATH_SEPARATOR '\\'
 
 #else
@@ -52,6 +49,9 @@ char *strcpy_s(char *s1, size_t n, const char *s2)
 }
 
 #endif
+
+#include "api/trace.h"
+
 
 #define LONG_STRLEN (1024)
 #define MAX_ORPHANS 1000

@@ -26,6 +26,8 @@
 
 #ifdef _WINDOWS
 #include <winsock2.h>
+#pragma warning(disable : 4251)		//disable warnings about exporting classes which use stl
+#pragma warning(disable : 4800)
 #endif
 
 #include <xmlrpc-c/base.h>
@@ -34,7 +36,6 @@
 #include <xmlrpc-c/server_abyss.h>
 
 
-#include "src/platform_specifics.h"
 #include "xmlrpc_common.h"
 #include "xmlrpc_server.h"
 #include "api/server.h"

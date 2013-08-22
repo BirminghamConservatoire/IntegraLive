@@ -54,6 +54,7 @@ namespace integra_internal
 	class CScratchDirectory;
 	class CLuaEngine;
 	class CPlayerHandler;
+	class CDspEngine;
 	
 
 	class CServer : public IServer
@@ -129,6 +130,7 @@ namespace integra_internal
 			CScratchDirectory *m_scratch_directory;
 			CLuaEngine *m_lua_engine;
 			CPlayerHandler *m_player_handler;
+			CDspEngine *m_dsp_engine;
 
 			INotificationSink *m_notification_sink;
 

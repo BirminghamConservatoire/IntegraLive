@@ -10,6 +10,7 @@ copy "..\..\libIntegra_dependencies\pthreads-win32\lib\pthreadVC2.dll" "..\..\bu
 copy "..\..\libIntegra_dependencies\bin\iconv.dll" "..\..\build\Release\server\"
 copy "..\..\libIntegra_dependencies\zlib-1.2.5\bin\zlib1.dll" "..\..\build\Release\server\"
 copy "..\..\libIntegra_dependencies\lua-5.2.0\lua52.dll" "..\..\build\Release\server\"
+copy "..\..\..\libpd\libs\libpd.dll" "..\..\build\Release\server\"
 
 copy "..\data\CollectionSchema.xsd" "..\..\build\Release\server\"
 copy "..\data\id2guid.csv" "..\..\build\Release\server"

@@ -43,14 +43,14 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(TargetName)\</IntDir>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
-    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Rebuild</CustomBuildBeforeTargets>
-    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Rebuild</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Clean</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Clean</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;../../../libpd/libpd_wrapper;../../../libpd/libpd_wrapper/util;../../../libpd/pure-data/src;../../../libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;INTEGRA_DEBUG=1;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
@@ -64,8 +64,8 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;../../../libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -82,18 +82,19 @@
       </Message>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>
-      </Command>
+      <Command>call libpd_autobuild/build_libpd.bat</Command>
     </PreLinkEvent>
     <PreBuildEvent>
       <Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>rd /s /q ..\..\build\Debug\documentation</Command>
+      <Command>rd /s /q ..\..\build\Debug\documentation
+call libpd_autobuild/clean_libpd.bat
+</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Removing Compiled Documentation...</Message>
+      <Message>Removing Compiled Documentation and forcing rebuild of libpd</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>nothing</Outputs>
@@ -101,7 +102,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;../../../libpd/libpd_wrapper;../../../libpd/libpd_wrapper/util;../../../libpd/pure-data/src;../../../libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
 ;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -111,8 +112,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libdl.a;pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/lib;../../../libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
     </Link>
@@ -126,24 +127,29 @@
       </Message>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>
-      </Command>
+      <Command>call libpd_autobuild/build_libpd.bat</Command>
     </PreLinkEvent>
     <PreBuildEvent>
       <Command>
       </Command>
     </PreBuildEvent>
     <CustomBuildStep>
-      <Command>rd /s /q ..\..\build\Release\documentation</Command>
+      <Command>rd /s /q ..\..\build\Release\documentation
+call libpd_autobuild/clean_libpd.bat</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Message>Removing Compiled Documentation...</Message>
+      <Message>Removing Compiled Documentation and forcing rebuild of libpd</Message>
     </CustomBuildStep>
     <CustomBuildStep>
       <Outputs>nothing</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\libpd\cpp\PdBase.cpp" />
+    <ClCompile Include="..\..\..\libpd\cpp\PdTypes.cpp" />
+    <ClCompile Include="..\..\..\libpd\libpd_wrapper\util\z_print_util.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+    </ClCompile>
     <ClCompile Include="..\externals\minizip\ioapi.c" />
     <ClCompile Include="..\externals\minizip\iowin32.c" />
     <ClCompile Include="..\externals\minizip\mztools.c" />
@@ -157,6 +163,7 @@
     <ClCompile Include="..\src\container_logic.cpp" />
     <ClCompile Include="..\src\control_point_logic.cpp" />
     <ClCompile Include="..\src\delete_command.cpp" />
+    <ClCompile Include="..\src\dsp_engine.cpp" />
     <ClCompile Include="..\src\envelope_logic.cpp" />
     <ClCompile Include="..\src\guid_helper.cpp" />
     <ClCompile Include="..\src\integra_session.cpp" />
@@ -230,6 +237,7 @@
     <ClInclude Include="..\src\container_logic.h" />
     <ClInclude Include="..\src\control_point_logic.h" />
     <ClInclude Include="..\src\delete_command.h" />
+    <ClInclude Include="..\src\dsp_engine.h" />
     <ClInclude Include="..\src\envelope_logic.h" />
     <ClInclude Include="..\src\load_command.h" />
     <ClInclude Include="..\src\logic.h" />

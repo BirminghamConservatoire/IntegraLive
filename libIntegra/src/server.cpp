@@ -34,6 +34,7 @@ extern "C"
 #include "bridge_host.h"
 #include "lua_engine.h"
 #include "player_handler.h"
+#include "dsp_engine.h"
 
 #include "api/server_startup_info.h"
 #include "api/command.h"
@@ -112,6 +113,8 @@ namespace integra_internal
 
 		m_module_manager = new CModuleManager( *this, startup_info.system_module_directory, startup_info.third_party_module_directory );
 
+		m_dsp_engine = new CDspEngine;
+
 		m_is_in_shutdown = false;
 
 		m_notification_sink = startup_info.notification_sink;
@@ -152,6 +155,8 @@ namespace integra_internal
 	
 		/* de-reference bridge */
 	    m_bridge = NULL;
+
+		delete m_dsp_engine;
 
 		delete m_module_manager;
 

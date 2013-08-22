@@ -34,6 +34,9 @@
     <Filter Include="Source Files\logic">
       <UniqueIdentifier>{ecd5274d-8586-4162-8349-60b75ba27bf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Externals\libpd">
+      <UniqueIdentifier>{0d72a5e1-99c1-40f0-94a0-404da763dd54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\externals\minizip\ioapi.c">
@@ -184,6 +187,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\polling_notification_sink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpd\cpp\PdTypes.cpp">
+      <Filter>Externals\libpd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpd\cpp\PdBase.cpp">
+      <Filter>Externals\libpd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpd\libpd_wrapper\util\z_print_util.c">
+      <Filter>Externals\libpd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dsp_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -370,6 +385,9 @@
     </ClInclude>
     <ClInclude Include="..\api\string_helper.h">
       <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dsp_engine.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

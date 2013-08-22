@@ -186,17 +186,17 @@
     <ClCompile Include="..\src\polling_notification_sink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpd\cpp\PdTypes.cpp">
-      <Filter>Externals\libpd</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpd\cpp\PdBase.cpp">
-      <Filter>Externals\libpd</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpd\libpd_wrapper\util\z_print_util.c">
-      <Filter>Externals\libpd</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\dsp_engine.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\cpp\PdTypes.cpp">
+      <Filter>Externals\libpd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\cpp\PdBase.cpp">
+      <Filter>Externals\libpd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\libpd_wrapper\util\z_print_util.c">
+      <Filter>Externals\libpd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

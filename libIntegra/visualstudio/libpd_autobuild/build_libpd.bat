@@ -2,7 +2,7 @@ echo building libpd...
 
 set olddirectory=%CD%
 
-cd ../../../libpd
+cd ../externals/libpd
 
 make
 

@@ -2,7 +2,7 @@ echo cleaning libpd...
 
 set olddirectory=%CD%
 
-cd ../../../libpd
+cd ../externals/libpd
 
 make clean
 

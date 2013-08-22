@@ -30,6 +30,7 @@
 #include "player_logic.h"
 #include "scene_logic.h"
 #include "connection_logic.h"
+#include "dsp_engine.h"
 
 #include "server.h"
 #include "data_directory.h"
@@ -576,11 +577,11 @@ namespace integra_internal
 
 		if( connect ) 
 		{
-			server.get_bridge()->module_connect( CNodeEndpoint::downcast( &source ), CNodeEndpoint::downcast( &target ) );
+			server.get_dsp_engine().connect_modules( CNodeEndpoint::downcast( source ), CNodeEndpoint::downcast( target ) );
 		} 
 		else 
 		{
-			server.get_bridge()->module_disconnect( CNodeEndpoint::downcast( &source ), CNodeEndpoint::downcast( &target ) );
+			server.get_dsp_engine().disconnect_modules( CNodeEndpoint::downcast( source ), CNodeEndpoint::downcast( target ) );
 		}
 
 		return CError::SUCCESS;

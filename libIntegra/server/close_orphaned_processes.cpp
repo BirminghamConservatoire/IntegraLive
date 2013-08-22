@@ -130,77 +130,56 @@ char *build_absolute_path(const char *filename)
 
 /* Windows implementation of close_orphaned_processes*/
 
-void close_orphaned_processes(const char **filenames, int number_of_filenames)
+void close_orphaned_processes( const std::list<std::string> &filenames )
 {
-	PROCESSENTRY32 process_entry;
-	MODULEENTRY32 module_entry;
-
-	HANDLE process_snapshot = NULL;
-	HANDLE module_snapshot = NULL;
-
-	HANDLE process_handle = NULL;
-
-	int i = 0;
-	bool terminated = false;
-
-	char *absolute_path = NULL;
-	char **absolute_paths = NULL;
-	WCHAR **absolute_paths_wide = NULL;
-	int number_of_absolute_paths = 0;
-	size_t number_of_characters = 0;
-
 	/*build absolute paths and convert to wide-char*/
 	
-	absolute_paths = new char *[ number_of_filenames ];
-	absolute_paths_wide = new WCHAR *[ number_of_filenames ];
+	std::list<std::string> absolute_paths;
 
-	for(i = 0; i < number_of_filenames; i++)
+	for( std::list<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); i++ )
 	{
-		absolute_path = build_absolute_path(filenames[i]);
-		if(absolute_path)
+		char *absolute_path = build_absolute_path( i->c_str() );
+		if( absolute_path )
 		{
-			absolute_paths[number_of_absolute_paths] = absolute_path;
-			absolute_paths_wide[number_of_absolute_paths] = new WCHAR[ LONG_STRLEN ];
-			if( mbstowcs_s( &number_of_characters, absolute_paths_wide[number_of_absolute_paths], LONG_STRLEN, absolute_path, LONG_STRLEN ) != 0 )
-			{
-				INTEGRA_TRACE_ERROR << "failed to convert path to wide-string";
-
-				/*failsafe - reset the string*/
-				*absolute_paths_wide[number_of_absolute_paths] = 0;
-			}
-			number_of_absolute_paths++;
+			absolute_paths.push_back( absolute_path );
+			delete absolute_path;
 		}
 	}
 
 	/*look for processes matching these absolute paths, and kill them*/
 
-    process_entry.dwSize = sizeof(PROCESSENTRY32);
+    PROCESSENTRY32 process_entry;
+	process_entry.dwSize = sizeof( PROCESSENTRY32 );
 
-    process_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+    HANDLE process_snapshot = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, NULL );
 
-	if(Process32First(process_snapshot, &process_entry) == TRUE)
+	if( Process32First( process_snapshot, &process_entry ) == TRUE )
 	{
 		do{
-			terminated = false;
-			if(process_entry.th32ProcessID > 0)
+			bool terminated = false;
+			if( process_entry.th32ProcessID > 0 )
 			{
-				module_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, process_entry.th32ProcessID);
+				HANDLE module_snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, process_entry.th32ProcessID);
 
-				module_entry.dwSize = sizeof(MODULEENTRY32);
-				if(Module32First(module_snapshot, &module_entry) == TRUE)
+				MODULEENTRY32 module_entry;
+				module_entry.dwSize = sizeof( MODULEENTRY32 );
+				if( Module32First( module_snapshot, &module_entry ) == TRUE )
 				{
-					for(i = 0; i < number_of_absolute_paths; i++)
+					for( std::list<std::string>::const_iterator i = absolute_paths.begin(); i != absolute_paths.end(); i++ )
 					{
-						if(wcscmp(absolute_paths_wide[i], module_entry.szExePath) == 0)
+						std::wstring absolute_path_wide;
+						absolute_path_wide.assign( i->begin(), i->end() );
+
+						if( absolute_path_wide == module_entry.szExePath )
 						{
-							if(process_entry.th32ProcessID != GetCurrentProcessId())
+							if( process_entry.th32ProcessID != GetCurrentProcessId() )
 							{
-								process_handle = OpenProcess(PROCESS_TERMINATE, FALSE, process_entry.th32ProcessID);
-								if(process_handle)
+								HANDLE process_handle = OpenProcess( PROCESS_TERMINATE, FALSE, process_entry.th32ProcessID );
+								if( process_handle )
 								{
-									if(TerminateProcess(process_handle, 0) != 0)
+									if( TerminateProcess( process_handle, 0 ) != 0 )
 									{
-										INTEGRA_TRACE_PROGRESS << "Killed orphaned process" << absolute_paths[ i ];
+										INTEGRA_TRACE_PROGRESS << "Killed orphaned process " << *i;
 										terminated = true;
 									}
 									else
@@ -208,7 +187,7 @@ void close_orphaned_processes(const char **filenames, int number_of_filenames)
 										INTEGRA_TRACE_ERROR << "failed to terminate orphaned process.  Error:" << GetLastError();
 									}
 
-									CloseHandle(process_handle);
+									CloseHandle( process_handle );
 								}
 								else
 								{
@@ -217,31 +196,22 @@ void close_orphaned_processes(const char **filenames, int number_of_filenames)
 							}
 						}
 
-						if(terminated)
+						if( terminated )
 						{
 							break;
 						}
 
 					}
-					while(!terminated && Module32Next(module_snapshot, &module_entry) == TRUE);
+					while( !terminated && Module32Next( module_snapshot, &module_entry ) == TRUE );
 				}
 
-				CloseHandle(module_snapshot);
+				CloseHandle( module_snapshot );
 			}
 		}
-		while(Process32Next(process_snapshot, &process_entry) == TRUE);
+		while( Process32Next( process_snapshot, &process_entry ) == TRUE );
 	}
 
-    CloseHandle(process_snapshot);
-
-	for(i = 0; i < number_of_absolute_paths; i++)
-	{
-		free(absolute_paths[i]);
-		free(absolute_paths_wide[i]);
-	}
-
-	free(absolute_paths);
-	free(absolute_paths_wide);
+    CloseHandle( process_snapshot );
 }
 
 #else
@@ -293,16 +263,15 @@ void get_pids_by_name(const char *name, int *pids)
     free(proc_list);
 }
 
-void close_orphaned_processes(const char **filenames, int number_of_filenames)
+void close_orphaned_processes( const std::list<std::string> &filenames )
 {
     pid_t my_pid      = getpid();
-    unsigned int i = 0;
     int orphans[MAX_ORPHANS] = {0};
     int *orphan_marker = orphans;
 
-    for( i = 0; i < number_of_filenames; ++i )
+    for( std::list<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); i++ )
     {
-        const char *filename = filenames[i];
+        const char *filename = i->c_str();
         get_pids_by_name(basename(filename), orphan_marker);
     }
 
@@ -321,7 +290,7 @@ void close_orphaned_processes(const char **filenames, int number_of_filenames)
 }
 
 #else
-void close_orphaned_processes(const char **filenames, int number_of_filenames)
+void close_orphaned_processes(  const std::list<std::string> &filenames )
 {
 	INTEGRA_TRACE_ERROR << "close_orphaned_processes not implemented on this OS, orphaned processes must be killed manually";
 }

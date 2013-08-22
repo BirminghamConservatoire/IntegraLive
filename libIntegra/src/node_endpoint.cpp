@@ -48,6 +48,12 @@ namespace integra_internal
 	}
 
 
+	const CNodeEndpoint &CNodeEndpoint::downcast( const INodeEndpoint &node )
+	{
+		return dynamic_cast< const CNodeEndpoint & > ( node );
+	}
+
+
 	const CNodeEndpoint *CNodeEndpoint::downcast( const INodeEndpoint *node )
 	{
 		return dynamic_cast< const CNodeEndpoint * > ( node );

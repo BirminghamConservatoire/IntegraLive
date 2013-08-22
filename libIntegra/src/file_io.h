@@ -26,7 +26,6 @@
 #include "api/guid_helper.h"
 #include "api/error.h"
 #include "node.h"
-#include "Integra\integra_bridge.h"
 
 #include "../externals/minizip/zip.h"
 #include <libxml/xmlreader.h>
@@ -39,6 +38,7 @@ namespace integra_internal
 	class CServer;
 	class CModuleManager;
 	class CInterfaceDefinition;
+	class CDspEngine;
 
 
 	class CFileIO
@@ -65,7 +65,7 @@ namespace integra_internal
 			static CError load_ixd_buffer_directly( const string &file_path, unsigned char **ixd_buffer, unsigned int *ixd_buffer_length );
 
 			static CError load_nodes( CServer &server, const CNode *node, xmlTextReaderPtr reader, node_list &loaded_nodes );
-			static CError send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge );
+			static CError send_loaded_values_to_module( const CNode &node, CDspEngine &dsp_engine );
 			static string get_top_level_node_name( const string &filename );
 
 			static const CInterfaceDefinition *find_interface( xmlTextReaderPtr reader, const CModuleManager &module_manager );

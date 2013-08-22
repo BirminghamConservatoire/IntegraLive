@@ -25,6 +25,7 @@
 #include "interface_definition.h"
 #include "reentrance_checker.h"
 #include "logic.h"
+#include "dsp_engine.h"
 #include "api/value.h"
 #include "api/trace.h"
 #include "api/notification_sink.h"
@@ -171,7 +172,7 @@ namespace integra_internal
 		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node_endpoint->get_node().get_interface_definition() );
 		if( should_send_to_host( *node_endpoint, interface_definition, source ) ) 
 		{
-			server.get_bridge()->send_value( node_endpoint );
+			server.get_dsp_engine().send_value( *node_endpoint );
 		}
 
 		/* callback into the notification sink */

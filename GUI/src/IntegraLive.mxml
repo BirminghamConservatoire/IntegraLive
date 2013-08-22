@@ -363,10 +363,8 @@
 				}
 				
 				var serverArguments:Vector.<String> = new Vector.<String>;
-				serverArguments.push( "-bridge=" + config.bridgePath );
 				serverArguments.push( "-system_modules=" + config.modulesPath );
 				serverArguments.push( "-third_party_modules=" + Utilities.get3rdPartyModulesDirectory() );
-				serverArguments.push( "-host=" + config.hostPath );
 				serverArguments.push( "-xmlrpc_server_port=" + config.xmlrpcServerPort );
 				serverArguments.push( "-osc_client_port=" + config.oscClientPort );
 
@@ -377,13 +375,6 @@
 				if( config.locationstampTrace ) serverArguments.push( "-locationstamp_trace" );
 				if( config.threadstampTrace )  serverArguments.push( "-threadstamp_trace" );
 
-				serverArguments.push( "-hostargs" );
-				
-				for each( var hostArgument:String in config.hostArgs )
-				{
-					serverArguments.push( hostArgument );
-				}
-				
 				var serverStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 				serverStartupInfo.executable = serverFile;
 				serverStartupInfo.arguments = serverArguments;

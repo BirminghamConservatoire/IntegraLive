@@ -20,8 +20,6 @@
 
 #include "platform_specifics.h"
 
-#include <sys/stat.h>
-
 #include "api/integra_session.h"
 #include "api/trace.h"
 #include "api/server_startup_info.h"
@@ -54,19 +52,6 @@ namespace integra_api
 		{
 			INTEGRA_TRACE_ERROR << "Can't start session - session already started";
 			return CError::FAILED;
-		}
-
-		if( startup_info.bridge_path.empty() ) 
-		{
-			INTEGRA_TRACE_ERROR << "bridge_path is empty";
-			return CError::INPUT_ERROR;
-		}
-
-		struct stat file_buffer;
-		if( stat( startup_info.bridge_path.c_str(), &file_buffer ) != 0 ) 
-		{
-			INTEGRA_TRACE_ERROR << "bridge_path points to a nonexsitant file";
-			return CError::INPUT_ERROR;
 		}
 
 		if( startup_info.system_module_directory.empty() ) 

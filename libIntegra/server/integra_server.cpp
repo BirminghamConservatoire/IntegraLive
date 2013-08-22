@@ -44,99 +44,41 @@
 #include <pthread.h>
 
 #ifdef _WINDOWS
-#include <windows.h>
-#pragma warning(disable : 4996)		/* disable warnings about deprecated string functions */
+//#include <windows.h>
+//#pragma warning(disable : 4996)		/* disable warnings about deprecated string functions */
 #define PATH_SEPARATOR '\\'
 #else
-#include <signal.h> /* for kill() */
-#include "spawn_.h"
-#define _spawnv spawnv
 #define PATH_SEPARATOR '/'
 #endif
 
 
 using namespace integra_api;
 
-#define MAXIMUM_ARGUMENTS ( 50 )
-#define NUMBER_OF_PROCESSES_TO_CLOSE ( 2 )
 
-
-const char *base_name(const char *pathname)
+const char *base_name( const char *pathname )
 {
     const char *lastsep = strrchr(pathname, PATH_SEPARATOR);
     return lastsep ? lastsep+1 : pathname;
 }
 
 
-int count_arguments( const char **arguments )
+
+void post_command_line_options( const char *command_name ) 
 {
-    int number_of_arguments;
-    for( number_of_arguments = 0; number_of_arguments < MAXIMUM_ARGUMENTS; number_of_arguments++ )
-    {
-        if( arguments[ number_of_arguments ] == NULL )
-        {
-            return number_of_arguments;
-        }
-    }
-
-    return number_of_arguments;
-}
-
-
-void append_argument( const char **arguments, const char *argument )
-{
-    int number_of_arguments = count_arguments( arguments );
-
-    if( number_of_arguments >= MAXIMUM_ARGUMENTS )
-    {
-        INTEGRA_TRACE_ERROR << "too many host arguments";
-        return;
-    }
-
-    arguments[ number_of_arguments ] = argument;
-    arguments[ number_of_arguments + 1 ] = NULL;
-}
-
-
-void prepend_argument( const char **arguments, const char *argument )
-{
-    int number_of_arguments = count_arguments( arguments );
-    int i = 0;
-
-    if( number_of_arguments >= MAXIMUM_ARGUMENTS )
-    {
-        INTEGRA_TRACE_ERROR << "too many host arguments";
-        return;
-    }
-
-    for( i = number_of_arguments; i >= 0; i-- )
-    {
-        arguments[ i + 1 ] = arguments[ i ];
-    }
-
-    arguments[ 0 ] = argument;
-}
-
-void post_command_line_options(const char *command_name) 
-{
-    printf("Usage: %s [OPTION]...\nTry `%s -help for more information.\n",
-            command_name, command_name);
+    printf( "Usage: %s [OPTION]...\nTry `%s -help for more information.\n", command_name, command_name );
 
 }
 
-void post_help(const char *command_name) {
-
+void post_help( const char *command_name ) 
+{
     printf(
             "Usage: %s [OPTION]...\n"
             "Run the Integra server until terminated\n"
-            "Example: %s -bridge=../integra_osc_bridge.so -host ../bin/pd\n"
+			"Example: %s -system_modules=../system_modules -third_party_modules=../third_party_modules\n"
 
-            "\nBridge, Interface and Host options:\n"
-            "  -bridge=[string]\t\tpath of server->host bridge\n"
+            "\nModule directory options:\n"
             "  -system_modules=[string]\t\tlocation of system-installed .module files\n"
             "  -third_party_modules=[string]\t\tlocation of third-party .module files\n"
-            "  -host=[string]\t\tpath of host executable\n"
-            "  -hostargs\t\t\targuments are passed into the host\n"
 
             "\nNetwork port options:\n"
             "  -xmlrpc_server_port=[integer]\tlibIntegra xmlrpc port\n"
@@ -184,25 +126,16 @@ int main( int argc, char *argv[] )
 	CServerStartupInfo startup_info;
 
 	const char *command_name = NULL;
-    const char *host_path = NULL;
-    const char *host_arguments[ MAXIMUM_ARGUMENTS + 1 ];
-
-	unsigned short number_of_processes_to_close = 0;
-
-    const char *process_names_to_close[ NUMBER_OF_PROCESSES_TO_CLOSE ];
 
 	string osc_client_url;
 	unsigned short osc_client_port = 0;
 
 	unsigned short xmlrpc_server_port = 0;
 
-    int host_process_handle = -1;
     int i = 0;
     const char *argument = NULL;
     const char *equals = NULL;
     int flag_length = 0;
-    bool in_host_arguments = false;
-    bool have_host_path = false;
 
     /* defaults */
     bool trace_errors = true;
@@ -213,8 +146,6 @@ int main( int argc, char *argv[] )
 	bool trace_location = false;
 	bool trace_thread = false;
 
-
-    host_arguments[ 0 ] = NULL;
     command_name = base_name( argv[0] );
 
     if(argc == 1) 
@@ -228,24 +159,12 @@ int main( int argc, char *argv[] )
     {
         argument = argv[ i ];
 
-        if( in_host_arguments )
-        {
-            append_argument( host_arguments, argument );
-            continue;
-        }
-
         equals = strchr( argument, '=' );
         if( equals != NULL )
         {
             flag_length = ( equals - argument );
 
             /*test for options with values here: */
-
-            if( memcmp( argument, "-bridge", flag_length ) == 0 )
-            {
-                startup_info.bridge_path = equals + 1;
-                continue;
-            }
 
 			if( memcmp( argument, "-system_modules", flag_length ) == 0 )
 			{
@@ -259,12 +178,6 @@ int main( int argc, char *argv[] )
 				continue;
 			}
 			
-			if( memcmp( argument, "-host", flag_length ) == 0 )
-            {
-                host_path = equals + 1;
-                continue;
-            }
-
             if( memcmp( argument, "-xmlrpc_server_port", flag_length ) == 0 )
             {
                 xmlrpc_server_port = atoi( equals + 1 );
@@ -327,14 +240,19 @@ int main( int argc, char *argv[] )
                 post_help(command_name);
                 return 0;
             }
-
-            if( strcmp( argument, "-hostargs" ) == 0 )
-            {
-                in_host_arguments = true;
-                continue;
-            }
         }
     }
+
+	#ifdef _WINDOWS
+		/*initialize windows socket API */
+		WORD socket_api_version = MAKEWORD( 2, 2 );
+		WSADATA socket_api_data;
+		if( WSAStartup( socket_api_version, &socket_api_data ) != 0 )
+		{
+			INTEGRA_TRACE_ERROR << "Error starting windows socket API";
+			return 0;
+		}
+	#endif
 
     /*set the tracing settings */
 	CTrace::set_categories_to_trace( trace_errors, trace_progress, trace_verbose );
@@ -342,45 +260,16 @@ int main( int argc, char *argv[] )
 
     /*close any processes that might be left over from a previous crash */
     INTEGRA_TRACE_PROGRESS << "closing orphaned processes";
-    if( host_path != NULL && strlen( host_path ) > 0) 
-	{
-        have_host_path = true;
-        number_of_processes_to_close = NUMBER_OF_PROCESSES_TO_CLOSE;
-    } else 
-	{
-        number_of_processes_to_close = NUMBER_OF_PROCESSES_TO_CLOSE - 1;
-    }
 
-    process_names_to_close[ 0 ] = command_name;
-    process_names_to_close[ 1 ] = host_path;
-    close_orphaned_processes( process_names_to_close, number_of_processes_to_close );
-
-    /*host's 0th argument should be it's own executable path */
-    prepend_argument( host_arguments, host_path );
-
-
-    /*start the host */
-    if( have_host_path )
-    {
-        host_process_handle = _spawnv( P_NOWAIT, host_path, host_arguments );
-        if( host_process_handle < 0 )
-        {
-            INTEGRA_TRACE_ERROR << "failed to start host: " << strerror( errno );
-        }
-    }
-    else
-    {
-        INTEGRA_TRACE_ERROR << "unable to start host - no path provided";
-    }
-
+	std::list<std::string> process_names_to_close;
+	process_names_to_close.push_back( command_name );
+    close_orphaned_processes( process_names_to_close );
 
 	/* start the osc client */
-
 	COscClient *osc_client = new COscClient( osc_client_url, osc_client_port );
 	startup_info.notification_sink = osc_client;
 
 	/*start the integra session */
-
 	CIntegraSession integra_session;
 	CError error = integra_session.start_session( startup_info );
 	if( error != CError::SUCCESS )
@@ -429,21 +318,10 @@ int main( int argc, char *argv[] )
 	/* stop the osc client */
 	delete osc_client;
 
-	/* stop the host */
-
-    if( host_process_handle > 0 )
-    {
-		INTEGRA_TRACE_PROGRESS << "shutting down host";
-#ifdef _WINDOWS
-        TerminateProcess( (HANDLE) host_process_handle, 0 );
-#else
-        kill( host_process_handle, SIGKILL );
-#endif
-    } 
-	else 
-	{
-        INTEGRA_TRACE_ERROR << "couldn't kill host, PID was " << host_process_handle;
-    }
+	#ifdef _WINDOWS
+		/*cleanup windows socket API */
+		WSACleanup();
+	#endif
 
     return 0;
 }

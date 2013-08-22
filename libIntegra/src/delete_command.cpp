@@ -25,6 +25,7 @@
 #include "api/trace.h"
 #include "interface_definition.h"
 #include "logic.h"
+#include "dsp_engine.h"
 
 
 #include <assert.h>
@@ -74,7 +75,7 @@ namespace integra_internal
 
 		if( interface_definition.has_implementation() )
 		{
-			server.get_bridge()->module_remove( node->get_id() );
+			server.get_dsp_engine().remove_module( node->get_id() );
 		}
 
 		/* remove from owning container */

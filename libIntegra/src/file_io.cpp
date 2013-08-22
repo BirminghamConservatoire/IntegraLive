@@ -25,11 +25,12 @@
 #include "node.h"
 #include "validator.h"
 #include "module_manager.h"
-#include "api/trace.h"
 #include "server.h"
+#include "data_directory.h"
+#include "dsp_engine.h"
+#include "api/trace.h"
 #include "api/command.h"
 #include "api/command_result.h"
-#include "data_directory.h"
 #include "api/string_helper.h"
 #include "api/guid_helper.h"
 
@@ -124,9 +125,6 @@ namespace integra_internal
 			goto CLEANUP;
 		}
 
-		/* stop DSP in the host */
-		server.get_bridge()->host_dsp( 0 );
-
 		/* actually load the data */
 		error = load_nodes( server, parent, reader, new_nodes );
 		if( error != CError::SUCCESS )
@@ -147,7 +145,7 @@ namespace integra_internal
 		/* send the loaded attributes to the host */
 		for( new_node_iterator = new_nodes.begin(); new_node_iterator != new_nodes.end(); new_node_iterator++ )
 		{
-			if( send_loaded_values_to_host( **new_node_iterator, server.get_bridge() ) != CError::SUCCESS)
+			if( send_loaded_values_to_module( **new_node_iterator, server.get_dsp_engine() ) != CError::SUCCESS)
 			{
 				INTEGRA_TRACE_ERROR << "failed to send loaded attributes to host: " << filename;
 				continue;
@@ -185,9 +183,6 @@ namespace integra_internal
 			module_manager.unload_modules( new_embedded_module_ids );
 			new_embedded_module_ids.clear();
 		}
-
-		/* restart DSP in the host */
-		server.get_bridge()->host_dsp( 1 );
 
 		return error;
 	}
@@ -524,7 +519,7 @@ namespace integra_internal
 	}
 
 
-	CError CFileIO::send_loaded_values_to_host( const CNode &node, ntg_bridge_interface *bridge )
+	CError CFileIO::send_loaded_values_to_module( const CNode &node, CDspEngine &dsp_engine )
 	{
 		const CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast( node.get_interface_definition() );
 
@@ -545,7 +540,7 @@ namespace integra_internal
 			const CNodeEndpoint *node_endpoint = CNodeEndpoint::downcast( node.get_node_endpoint( endpoint_definition.get_name() ) );
 			assert( node_endpoint );
 
-			bridge->send_value( node_endpoint );
+			dsp_engine.send_value( *node_endpoint );
 		}
 
 		return CError::SUCCESS;

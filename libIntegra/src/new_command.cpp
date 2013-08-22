@@ -24,6 +24,7 @@
 #include "server.h"
 #include "node.h"
 #include "module_manager.h"
+#include "dsp_engine.h"
 #include "api/trace.h"
 #include "logic.h"
 #include "api/string_helper.h"
@@ -99,7 +100,7 @@ namespace integra_internal
 			}
 			else
 			{
-				server.get_bridge()->module_load( node->get_id(), patch_path.c_str() );
+				server.get_dsp_engine().add_module( node->get_id(), patch_path );
 			}
 		}
 

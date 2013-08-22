@@ -23,7 +23,6 @@
 
 #include "api/server.h"
 
-#include "Integra/integra_bridge.h"
 #include "node.h"
 #include "state_table.h"
 
@@ -89,12 +88,13 @@ namespace integra_internal
 			/* internal command processor, to process all commands */
 			CError process_command( ICommand *command, CCommandSource source, CCommandResult *result = NULL );
 
-			ntg_bridge_interface *get_bridge() { return m_bridge; }
 			CStateTable &get_state_table() { return m_state_table;  }
 
 			CReentranceChecker &get_reentrance_checker() const { return *m_reentrance_checker; }
 
 			IModuleManager &get_module_manager() const;
+
+			CDspEngine &get_dsp_engine() const { return *m_dsp_engine; }
 
 			const guid_set &get_all_module_ids() const;
 			const IInterfaceDefinition *find_interface( const GUID &module_id ) const;
@@ -123,7 +123,6 @@ namespace integra_internal
 			pthread_t m_mutex_owner;
 
 			node_map m_nodes;
-			ntg_bridge_interface *m_bridge;
 			CStateTable m_state_table; 
 			CReentranceChecker *m_reentrance_checker;
 			CModuleManager *m_module_manager;

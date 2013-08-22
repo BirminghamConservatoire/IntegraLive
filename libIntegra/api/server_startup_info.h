@@ -34,14 +34,12 @@ namespace integra_api
 		public:
 			CServerStartupInfo()
 			{
-				bridge_path = "";
 				system_module_directory = "";
 				third_party_module_directory = "";
 		
 				notification_sink = NULL;
 			}
 
-			string bridge_path;
 			string system_module_directory;
 			string third_party_module_directory;
 			

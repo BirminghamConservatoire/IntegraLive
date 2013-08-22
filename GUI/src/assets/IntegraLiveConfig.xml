@@ -15,14 +15,8 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<!--		path and filename of server executable, relative to gui						-->
          	<serverpath>..\server\IntegraServer.exe</serverpath>						    									 
 		
-			<!--		path and filename of server->host bridge, relative to server				-->
-			<bridgepath>OscBridge.dll</bridgepath>
-
 			<!--		path to modules directory, relative to server									-->
 			<modulespath>..\modules</modulespath>
-			
-			<!-- 		path and filename of host executable, relative to serve						-->
-			<hostpath>..\host\bin\pd.exe</hostpath>
 		</windows>
 		
 		<!--			mac-specific filename settings												-->
@@ -30,22 +24,10 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<!--		path and filename of server executable, relative to gui						-->
                         <serverpath>server/bin/integra_server</serverpath>
 		
-			<!--		path and filename of server->host bridge, relative to server				-->
-                        <bridgepath>../lib/integra/integra_osc_bridge.so</bridgepath>
-			
 			<!--		path to modules directory, relative to server									-->
                         <modulespath>../../modules</modulespath>
-
-			<!-- 		path and filename of host executable, relative to serve						-->
-                        <hostpath>../../host/bin/pd_integra</hostpath>
 		</mac>
 	
-		<!-- 		arguments to be passed into host executable on startup							-->
-		<hostargs>
-	   		<hostarg>-nogui</hostarg>				   
-			<hostarg>-noprefs</hostarg>
-			<hostarg>Integra_Host.pd</hostarg>
-		</hostargs>
 	</startup>
 
 	<!--        configuration of connections between components:									-->

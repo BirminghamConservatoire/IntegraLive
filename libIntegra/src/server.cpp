@@ -20,18 +20,12 @@
 
 #include "platform_specifics.h"
 
-extern "C" 
-{
-#include <dlfcn.h>
-}
-
 #include <libxml/xmlreader.h>
 
 #include "server.h"
 #include "scratch_directory.h"
 #include "reentrance_checker.h"
 #include "module_manager.h"
-#include "bridge_host.h"
 #include "lua_engine.h"
 #include "player_handler.h"
 #include "dsp_engine.h"
@@ -121,20 +115,6 @@ namespace integra_internal
 
 		m_reentrance_checker = new CReentranceChecker();
 
-		m_bridge = ( ntg_bridge_interface * ) ntg_bridge_load( startup_info.bridge_path.c_str() );
-		if( m_bridge ) 
-		{
-			m_bridge->bridge_init();
-		} 
-		else 
-		{
-			INTEGRA_TRACE_ERROR << "bridge failed to load";
-		}
-
-		/* Add the server receive callback to the bridge's methods */
-		m_bridge->server_receive_callback = host_callback;
-		m_bridge->server_receive_callback_context = this;
-
 		INTEGRA_TRACE_PROGRESS << "Server construction complete";
 	}
 
@@ -153,9 +133,6 @@ namespace integra_internal
 			process_command( IDeleteCommand::create( i->second->get_path() ), CCommandSource::SYSTEM );
 		}
 	
-		/* de-reference bridge */
-	    m_bridge = NULL;
-
 		delete m_dsp_engine;
 
 		delete m_module_manager;
@@ -167,12 +144,6 @@ namespace integra_internal
 		delete m_lua_engine;
 
 		delete m_player_handler;
-
-		/* FIX: This hangs on all platforms, just comment out for now */
-		/*
-		INTEGRA_TRACE_PROGRESS("closing bridge");
-		dlclose(bridge_handle);
-		*/
 
 		INTEGRA_TRACE_PROGRESS << "cleaning up XML parser";
 		xmlCleanupParser();

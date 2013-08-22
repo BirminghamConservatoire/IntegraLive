@@ -22,6 +22,8 @@
 #define INTEGRA_DSP_ENGINE_H
 
 #include "api/common_typedefs.h"
+#include "api/error.h"
+#include "node.h"
 
 
 namespace integra_internal
@@ -33,10 +35,18 @@ namespace integra_internal
 			CDspEngine();
 			~CDspEngine();
 
+			CError add_module( internal_id id, const string &patch_path );
+			CError remove_module( internal_id id );
+			CError connect_modules( const CNodeEndpoint &source, const CNodeEndpoint &target );
+			CError disconnect_modules( const CNodeEndpoint &source, const CNodeEndpoint &target );
+			CError send_value( const CNodeEndpoint &target );
 
 		private:
 
 			void test_libpd();
+
+
+			string get_stream_connection_name( const IEndpointDefinition &endpoint_definition, const IInterfaceDefinition &interface_definition ) const;
 	};
 }
 

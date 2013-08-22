@@ -24,6 +24,8 @@
 #ifndef INTEGRA_CLOSE_ORPHANED_PROCESSES_H
 #define INTEGRA_CLOSE_ORPHANED_PROCESSES_H
 
+#include <string>
+#include <list>
 
 
 /* 
@@ -31,7 +33,7 @@ closes all processes whose filenames match these in filenames.
 filenames can be provided as a complete path or as a relative path from the current working directory
 */
 	
-void close_orphaned_processes(const char **filenames, int number_of_filenames);
+void close_orphaned_processes( const std::list<std::string> &filenames );
 
 
 

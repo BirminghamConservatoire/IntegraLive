@@ -49,6 +49,7 @@ namespace integra_internal
 			CNodeEndpoint();
 			~CNodeEndpoint();
 
+			static const CNodeEndpoint &downcast( const INodeEndpoint &node );
 			static const CNodeEndpoint *downcast( const INodeEndpoint *node );
 			static CNodeEndpoint *downcast_writable( INodeEndpoint *node );
 

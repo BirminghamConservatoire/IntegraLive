@@ -22,11 +22,14 @@
 #include "platform_specifics.h"
 
 #include "dsp_engine.h"
-#include "PdBase.hpp"
+#include "interface_definition.h"
+#include "api/trace.h"
 
 #ifdef _WINDOWS
 #include "windows.h"	//for test_libpd()
 #endif
+
+#include "PdBase.hpp"
 
 using namespace integra_api;
 
@@ -41,6 +44,56 @@ namespace integra_internal
 
 	CDspEngine::~CDspEngine()
 	{
+	}
+
+
+	CError CDspEngine::add_module( internal_id id, const string &patch_path )
+	{
+		INTEGRA_TRACE_PROGRESS << "add module id " << id << " as " << patch_path;
+
+		//todo - implement
+
+		return CError::SUCCESS;
+	}
+
+
+	CError CDspEngine::remove_module( internal_id id )
+	{
+		INTEGRA_TRACE_PROGRESS << "remove module id " << id;
+
+		//todo - implement
+
+		return CError::SUCCESS;
+	}
+
+
+	CError CDspEngine::connect_modules( const CNodeEndpoint &source, const CNodeEndpoint &target )
+	{
+		INTEGRA_TRACE_PROGRESS << "connect " << source.get_path().get_string() << " to " << target.get_path().get_string();
+
+		//todo - implement
+
+		return CError::SUCCESS;
+	}
+
+
+	CError CDspEngine::disconnect_modules( const CNodeEndpoint &source, const CNodeEndpoint &target )
+	{
+		INTEGRA_TRACE_PROGRESS << "disconnect " << source.get_path().get_string() << " from " << target.get_path().get_string();
+
+		//todo - implement
+
+		return CError::SUCCESS;
+	}
+
+
+	CError CDspEngine::send_value( const CNodeEndpoint &target )
+	{
+		INTEGRA_TRACE_PROGRESS << "send value to " << target.get_path().get_string();
+
+		//todo - implement
+
+		return CError::SUCCESS;
 	}
 
 
@@ -122,5 +175,70 @@ namespace integra_internal
 			delete pd;
 		#endif
 	}
+
+
+	string CDspEngine::get_stream_connection_name( const IEndpointDefinition &endpoint_definition, const IInterfaceDefinition &interface_definition ) const
+	{
+		bool found( false );
+		int index = 1;
+
+		if( !endpoint_definition.is_audio_stream() )
+		{
+			INTEGRA_TRACE_ERROR << "can't get stream connection name for non-audio stream!";
+			return string();
+		}
+
+		endpoint_definition_list endpoint_definitions = interface_definition.get_endpoint_definitions();
+		for( endpoint_definition_list::const_iterator i = endpoint_definitions.begin(); i != endpoint_definitions.end(); i++ )
+		{
+			const IEndpointDefinition *prior_endpoint = *i;
+		
+			if( prior_endpoint == &endpoint_definition )
+			{
+				found = true;
+				break;
+			}
+
+			if( prior_endpoint->is_audio_stream() ) 
+			{
+				continue;
+			}
+
+			const IStreamInfo *prior_stream = prior_endpoint->get_stream_info();
+			const IStreamInfo *my_stream = endpoint_definition.get_stream_info();
+
+			if( prior_stream->get_type() == my_stream->get_type() && prior_stream->get_direction() == my_stream->get_direction() )
+			{
+				index ++;
+			}
+		}
+
+		if( !found )
+		{
+			/* endpoint not found! */
+			return false;
+		}
+
+		ostringstream stream;
+
+		switch( endpoint_definition.get_stream_info()->get_direction() )
+		{
+			case CStreamInfo::INPUT:
+				stream << "in";
+				break;
+
+			case CStreamInfo::OUTPUT:
+				stream << "out";
+				break;
+
+			default:
+				INTEGRA_TRACE_ERROR << "unhandled stream direction";
+				return string();
+		}
+
+		stream << index;
+		return stream.str();
+	}
+
 }
 

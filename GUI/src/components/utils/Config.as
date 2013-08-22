@@ -45,10 +45,7 @@ package components.utils
 
 
 		public function get serverPath():String 			{ return _serverPath; }
-		public function get bridgePath():String 			{ return _bridgePath; }
 		public function get modulesPath():String			{ return _modulesPath; }
-		public function get hostPath():String				{ return _hostPath; }
-		public function get hostArgs():Vector.<String>		{ return _hostArgs; }
 		
 		public function get serverUrl():String				{ return _serverUrl; }
 		public function get guiUrl():String					{ return _guiUrl; }
@@ -130,14 +127,6 @@ package components.utils
 					if( startup.hasOwnProperty( "mac" ) )
 					{
 						loadOsSpecificStartupFields( startup.child( "mac" ) );
-					}
-				}
-				
-				if( startup.hasOwnProperty( "hostargs" ) )
-				{
-					for each( var hostArg:XML in startup.hostargs.hostarg ) 
-					{ 
-						_hostArgs.push( hostArg.toString() );
 					}
 				}
 			}
@@ -285,19 +274,9 @@ package components.utils
 				_serverPath = osSpecificStartupFields.child( "serverpath" ).toString();
 			}
 			
-			if( osSpecificStartupFields.hasOwnProperty( "bridgepath" ) )
-			{
-				_bridgePath = osSpecificStartupFields.child( "bridgepath" ).toString();
-			}
-			
 			if( osSpecificStartupFields.hasOwnProperty( "modulespath" ) )
 			{
 				_modulesPath = osSpecificStartupFields.child( "modulespath" ).toString();
-			}
-
-			if( osSpecificStartupFields.hasOwnProperty( "hostpath" ) )
-			{
-				_hostPath = osSpecificStartupFields.child( "hostpath" ).toString();
 			}
 		}
 		
@@ -347,10 +326,7 @@ package components.utils
 		private static var _singleInstance:Config = null;
 		
 		private var _serverPath:String = null;
-		private var _bridgePath:String = null;
 		private var _modulesPath:String = null;
-		private var _hostPath:String = null;
-		private var _hostArgs:Vector.<String> = new Vector.<String>;
 		
 		private var _serverUrl:String = null;
 		private var _guiUrl:String = null;

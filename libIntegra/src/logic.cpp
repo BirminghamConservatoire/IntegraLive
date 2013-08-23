@@ -21,7 +21,7 @@
 #include "platform_specifics.h"
 
 #include "logic.h"
-#include "assert.h"
+
 #include "container_logic.h"
 #include "script_logic.h"
 #include "scaler_logic.h"
@@ -30,18 +30,23 @@
 #include "player_logic.h"
 #include "scene_logic.h"
 #include "connection_logic.h"
+#include "audio_settings_logic.h"
+
 #include "dsp_engine.h"
 
 #include "server.h"
 #include "data_directory.h"
 #include "module_manager.h"
-#include "api/guid_helper.h"
 #include "node.h"
 #include "interface_definition.h"
-#include "api/trace.h"
 #include "file_helper.h"
 
+#include "api/guid_helper.h"
+#include "api/trace.h"
 #include "api/command.h"
+
+#include "assert.h"
+
 
 namespace integra_internal
 {
@@ -53,6 +58,7 @@ namespace integra_internal
 	const string CLogic::module_player = "Player";
 	const string CLogic::module_scene = "Scene";
 	const string CLogic::module_connection = "Connection";
+	const string CLogic::module_audio_settings = "AudioSettings";
 
 	const string CLogic::endpoint_active = "active";
 	const string CLogic::endpoint_data_directory = "dataDirectory";
@@ -114,6 +120,11 @@ namespace integra_internal
 		if( interface_definition.is_named_core_interface( module_connection ) )
 		{
 			return new CConnectionLogic( node );
+		}
+
+		if( interface_definition.is_named_core_interface( module_audio_settings ) )
+		{
+			return new CAudioSettingsLogic( node );
 		}
 
 		/* 

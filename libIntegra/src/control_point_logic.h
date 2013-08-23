@@ -52,4 +52,4 @@ namespace integra_internal
 
 
 
-#endif /*INTEGRA_NEW_COMMAND_PRIVATE*/
+#endif /*INTEGRA_CONTROLPOINT_LOGIC_PRIVATE*/

@@ -29,6 +29,7 @@
 #include "lua_engine.h"
 #include "player_handler.h"
 #include "dsp_engine.h"
+#include "audio_engine.h"
 
 #include "api/server_startup_info.h"
 #include "api/command.h"
@@ -109,6 +110,8 @@ namespace integra_internal
 
 		m_dsp_engine = new CDspEngine;
 
+		m_audio_engine = IAudioEngine::create_audio_engine( *m_dsp_engine );
+
 		m_is_in_shutdown = false;
 
 		m_notification_sink = startup_info.notification_sink;
@@ -133,6 +136,8 @@ namespace integra_internal
 			process_command( IDeleteCommand::create( i->second->get_path() ), CCommandSource::SYSTEM );
 		}
 	
+		delete m_audio_engine;
+
 		delete m_dsp_engine;
 
 		delete m_module_manager;

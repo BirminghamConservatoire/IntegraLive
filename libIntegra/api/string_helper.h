@@ -42,6 +42,12 @@ namespace integra_api
 			/* does the node name consist entirely of valid characters? */
 			static bool validate_node_name( const string &name );
 
+			/* 
+			 Creates a list represented as a single string, with each element prepended by its length and a colon
+			 Example: { "First Item", "Second Item" } becomes "10:First Item11:Second Item"
+			*/
+			static string string_vector_to_string( const string_vector &strings );
+
 			static const string node_name_character_set;
 
 			static const int string_buffer_length = 1024;

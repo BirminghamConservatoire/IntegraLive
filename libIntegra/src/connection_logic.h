@@ -45,4 +45,4 @@ namespace integra_internal
 
 
 
-#endif /*INTEGRA_NEW_COMMAND_PRIVATE*/
+#endif /*INTEGRA_CONNECTION_LOGIC_PRIVATE*/

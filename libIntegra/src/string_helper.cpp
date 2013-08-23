@@ -87,6 +87,18 @@ namespace integra_api
 
 		return true;	
 	}
+
+
+	string CStringHelper::string_vector_to_string( const string_vector &strings )
+	{
+		ostringstream output;
+		for( string_vector::const_iterator i = strings.begin(); i != strings.end(); i++ )
+		{
+			output << i->length() << ":" << *i;
+		}
+
+		return output.str();
+	}
 }
 
 

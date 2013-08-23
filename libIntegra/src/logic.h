@@ -114,10 +114,11 @@ namespace integra_internal
 			static const string module_player;
 			static const string module_scene;
 			static const string module_connection;
+			static const string module_audio_settings;
 
 	};
 }
 
 
 
-#endif /*INTEGRA_NEW_COMMAND_PRIVATE*/
+#endif /*INTEGRA_LOGIC_PRIVATE*/

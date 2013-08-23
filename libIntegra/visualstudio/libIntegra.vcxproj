@@ -158,6 +158,8 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClCompile Include="..\externals\minizip\zip.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
     </ClCompile>
+    <ClCompile Include="..\src\audio_engine.cpp" />
+    <ClCompile Include="..\src\audio_settings_logic.cpp" />
     <ClCompile Include="..\src\command_source.cpp" />
     <ClCompile Include="..\src\connection_logic.cpp" />
     <ClCompile Include="..\src\container_logic.cpp" />
@@ -188,6 +190,7 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClCompile Include="..\src\player_handler.cpp" />
     <ClCompile Include="..\src\player_logic.cpp" />
     <ClCompile Include="..\src\polling_notification_sink.cpp" />
+    <ClCompile Include="..\src\portaudio_engine.cpp" />
     <ClCompile Include="..\src\reentrance_checker.cpp" />
     <ClCompile Include="..\src\rename_command.cpp" />
     <ClCompile Include="..\src\save_command.cpp" />
@@ -231,6 +234,8 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClInclude Include="..\externals\minizip\mztools.h" />
     <ClInclude Include="..\externals\minizip\unzip.h" />
     <ClInclude Include="..\externals\minizip\zip.h" />
+    <ClInclude Include="..\src\audio_engine.h" />
+    <ClInclude Include="..\src\audio_settings_logic.h" />
     <ClInclude Include="..\src\connection_logic.h" />
     <ClInclude Include="..\src\container_logic.h" />
     <ClInclude Include="..\src\control_point_logic.h" />
@@ -254,6 +259,7 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClInclude Include="..\src\platform_specifics.h" />
     <ClInclude Include="..\src\player_handler.h" />
     <ClInclude Include="..\src\player_logic.h" />
+    <ClInclude Include="..\src\portaudio_engine.h" />
     <ClInclude Include="..\src\reentrance_checker.h" />
     <ClInclude Include="..\src\rename_command.h" />
     <ClInclude Include="..\src\save_command.h" />

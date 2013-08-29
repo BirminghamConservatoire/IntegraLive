@@ -299,21 +299,17 @@ package components.controller
 						break;
 					
 					case "sampleRate":
-						command = new SetAudioSettings( int( value ), audioSettings.inputChannels, audioSettings.outputChannels, audioSettings.bufferSize ); 
+						command = new SetAudioSettings( int( value ), audioSettings.inputChannels, audioSettings.outputChannels ); 
 						break;
 						
 					case "inputChannels":
-						command = new SetAudioSettings( audioSettings.sampleRate, int( value ), audioSettings.outputChannels, audioSettings.bufferSize ); 
+						command = new SetAudioSettings( audioSettings.sampleRate, int( value ), audioSettings.outputChannels ); 
 						break;
 						
 					case "outputChannels":
-						command = new SetAudioSettings( audioSettings.sampleRate, audioSettings.inputChannels, int( value ), audioSettings.bufferSize ); 
+						command = new SetAudioSettings( audioSettings.sampleRate, audioSettings.inputChannels, int( value ) ); 
 						break;
 
-					case "bufferSize":
-						command = new SetAudioSettings( audioSettings.sampleRate, audioSettings.inputChannels, audioSettings.outputChannels, int( value ) ); 
-						break;
-						
 					default:
 						break;					
 				}

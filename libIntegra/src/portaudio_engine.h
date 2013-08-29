@@ -22,6 +22,9 @@
 #define INTEGRA_PORT_AUDIO_ENGINE_H
 
 #include "audio_engine.h"
+#include "portaudio.h"
+
+#include <unordered_map>
 
 namespace integra_internal
 {
@@ -53,6 +56,56 @@ namespace integra_internal
 			int get_sample_rate() const;
 			int get_number_of_input_channels() const;
 			int get_number_of_output_channels() const;
+
+		private:
+
+			typedef std::unordered_map<string, PaHostApiTypeId> api_map;
+			typedef std::unordered_map<string, PaDeviceIndex> device_map;
+
+			void update_available_apis();
+			void update_available_devices();
+
+			string_vector get_available_devices( const device_map &device_map ) const;
+
+			void close_all_streams();
+
+			PaHostApiTypeId api_none() const;
+
+			PaHostApiIndex get_selected_api_index() const;
+
+			bool m_initialized_ok;
+
+			api_map m_available_apis;
+			device_map m_available_input_devices;
+			device_map m_available_output_devices;
+
+			PaHostApiTypeId m_selected_api;
+			PaDeviceIndex m_selected_input_device;
+			PaDeviceIndex m_selected_output_device;
+
+			static const string none;
+
+			class CCompareApiNames : public std::binary_function<string, string, bool>
+			{
+				public:
+					CCompareApiNames( const api_map &context );
+					bool operator()( const string &api_name_1, const string &api_name_2 ) const;
+
+				private:
+					const api_map &m_context;
+
+			};
+
+			class CCompareDeviceNames : public std::binary_function<string, string, bool>
+			{
+				public:
+					CCompareDeviceNames( const device_map &context );
+					bool operator()( const string &device_name_1, const string &device_name_2 ) const;
+
+				private:
+					const device_map &m_context;
+
+			};
 	};
 }
 

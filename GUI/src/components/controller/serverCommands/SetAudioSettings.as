@@ -30,21 +30,19 @@ package components.controller.serverCommands
 
 	public class SetAudioSettings extends ServerCommand
 	{
-		public function SetAudioSettings ( sampleRate:int, inputChannels:int, outputChannels:int, bufferSize:int )
+		public function SetAudioSettings ( sampleRate:int, inputChannels:int, outputChannels:int	 )
 		{
 			super();
 
 			_sampleRate = sampleRate;
 			_inputChannels = inputChannels;
 			_outputChannels = outputChannels;
-            _bufferSize = bufferSize;
 		}
 
 		
 		public function get sampleRate():int { return _sampleRate; }
 		public function get inputChannels():int { return _inputChannels; }
 		public function get outputChannels():int { return _outputChannels; }
-		public function get bufferSize():int { return _bufferSize; }
 		
 	
 		public override function initialize( model:IntegraModel ):Boolean
@@ -54,7 +52,6 @@ package components.controller.serverCommands
 			if( _sampleRate != settings.sampleRate ) return true;
 			if( _inputChannels != settings.inputChannels ) return true;
 			if( _outputChannels != settings.outputChannels ) return true;
-			if( _bufferSize != settings.bufferSize ) return true;
 
 			return false;
 		}
@@ -64,7 +61,7 @@ package components.controller.serverCommands
 		{
 			var settings:AudioSettings = model.audioSettings;
 			
-			pushInverseCommand( new SetAudioSettings( settings.sampleRate, settings.inputChannels, settings.outputChannels, settings.bufferSize ) );
+			pushInverseCommand( new SetAudioSettings( settings.sampleRate, settings.inputChannels, settings.outputChannels ) );
 		}
 		
 		
@@ -76,7 +73,6 @@ package components.controller.serverCommands
 			settings.sampleRate = _sampleRate;
 			settings.inputChannels = _inputChannels;
 			settings.outputChannels = _outputChannels;
-			settings.bufferSize = _bufferSize;
 			
 			settings.hasChangedSinceReset = true;
 		}
@@ -100,10 +96,6 @@ package components.controller.serverCommands
 			methodCalls[ 2 ].methodName = "command.set";
 			methodCalls[ 2 ].params = [ settingsPath.concat( "outputChannels" ), _outputChannels ]; 
 	
-			methodCalls[ 3 ] = new Object;
-			methodCalls[ 3 ].methodName = "command.set";
-			methodCalls[ 3 ].params = [ settingsPath.concat( "bufferSize" ), _bufferSize ]; 
-
 			connection.addArrayParam( methodCalls );
 			connection.callQueued( "system.multicall" );						
 		}
@@ -112,7 +104,6 @@ package components.controller.serverCommands
 		override public function getAttributesChangedByThisCommand( model:IntegraModel, changedAttributes:Vector.<String> ):void
 		{
 			changedAttributes.push( model.getPathStringFromID( model.audioSettings.id ) + ".sampleRate" );
-			changedAttributes.push( model.getPathStringFromID( model.audioSettings.id ) + ".bufferSize" );
 			changedAttributes.push( model.getPathStringFromID( model.audioSettings.id ) + ".inputChannels" );
 			changedAttributes.push( model.getPathStringFromID( model.audioSettings.id ) + ".outputChannels" );
 		}	
@@ -123,12 +114,11 @@ package components.controller.serverCommands
 			var responseArray:Array = response as Array;
 			Assert.assertNotNull( responseArray );
 
-			if( responseArray.length != 4 ) return false;
+			if( responseArray.length != 3 ) return false;
 
 			if( responseArray[ 0 ][ 0 ].response != "command.set" ) return false;
 			if( responseArray[ 1 ][ 0 ].response != "command.set" ) return false;
 			if( responseArray[ 2 ][ 0 ].response != "command.set" ) return false;
-			if( responseArray[ 3 ][ 0 ].response != "command.set" ) return false;
 			
 			return true;
 		}
@@ -137,6 +127,5 @@ package components.controller.serverCommands
 		private var _sampleRate:int;
 		private var _inputChannels:int;
 		private var _outputChannels:int		
-		private var _bufferSize:int		
 	}
 }

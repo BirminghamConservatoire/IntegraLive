@@ -100,7 +100,6 @@ package components.views.Preferences
 			initializeLabel( _audioInChannelsLabel, "Input Channels" );
 			initializeLabel( _audioOutLabel, "Audio Output" );
 			initializeLabel( _audioOutChannelsLabel, "Output Channels" );
-			initializeLabel( _audioBufferSizeLabel, "Audio Latency" );
 			initializeLabel( _sampleRateLabel, "Sample Rate" );
 			initializeLabel( _midiDriverLabel, "MIDI Driver" );
 			initializeLabel( _midiInLabel, "MIDI Input" );
@@ -108,7 +107,6 @@ package components.views.Preferences
 
 			initializeIntegerEdit( _audioInChannelsEdit, onFocusOutAudioIntegerEdit );
 			initializeIntegerEdit( _audioOutChannelsEdit, onFocusOutAudioIntegerEdit );
-			initializeIntegerEdit( _audioBufferSizeEdit, onFocusOutAudioIntegerEdit );
 			
 			_resetButton.label = "Reset to Defaults";
 			_resetButton.setStyle( "right", 20 );
@@ -146,7 +144,6 @@ package components.views.Preferences
 						_audioInChannelsLabel.setStyle( "color", 0x747474 );
 						_audioOutLabel.setStyle( "color", 0x747474 );
 						_audioOutChannelsLabel.setStyle( "color", 0x747474 );
-						_audioBufferSizeLabel.setStyle( "color", 0x747474 );
 						_sampleRateLabel.setStyle( "color", 0x747474 );
 						_midiDriverLabel.setStyle( "color", 0x747474 );
 						_midiInLabel.setStyle( "color", 0x747474 );
@@ -154,7 +151,6 @@ package components.views.Preferences
 						
 						_audioInChannelsEdit.setStyle( "color", 0xcfcfcf );
 						_audioOutChannelsEdit.setStyle( "color", 0xcfcfcf );
-						_audioBufferSizeEdit.setStyle( "color", 0xcfcfcf );
 						
 						setButtonTextColor( _resetButton, 0x6D6D6D );
 						
@@ -172,7 +168,6 @@ package components.views.Preferences
 						_audioInChannelsLabel.setStyle( "color", 0x8c8c8c );
 						_audioOutLabel.setStyle( "color", 0x8c8c8c );
 						_audioOutChannelsLabel.setStyle( "color", 0x8c8c8c );
-						_audioBufferSizeLabel.setStyle( "color", 0x8c8c8c );
 						_sampleRateLabel.setStyle( "color", 0x8c8c8c );
 
 						_midiDriverLabel.setStyle( "color", 0x8c8c8c );
@@ -181,7 +176,6 @@ package components.views.Preferences
 						
 						_audioInChannelsEdit.setStyle( "color", 0x313131 );
 						_audioOutChannelsEdit.setStyle( "color", 0x313131 );
-						_audioBufferSizeEdit.setStyle( "color", 0x313131 );
 
 						setButtonTextColor( _resetButton, 0x939393 );
 
@@ -225,25 +219,25 @@ package components.views.Preferences
 			rowHeight = Math.min( rowHeight, controlRect.height / 9 );
 						
 			_audioDriverLabel.x = _audioInLabel.x = _audioOutLabel.x = _sampleRateLabel.x = controlRect.left;
-			_audioInChannelsLabel.x = _audioOutChannelsLabel.x = _audioBufferSizeLabel.x = controlRect.left;
+			_audioInChannelsLabel.x = _audioOutChannelsLabel.x = controlRect.left;
             _midiDriverLabel.x = _midiInLabel.x = _midiOutLabel.x = controlRect.left;
 			
 			_audioDriverLabel.height = _audioInLabel.height = _audioOutLabel.height = _sampleRateLabel.height = rowHeight;
-			_audioInChannelsLabel.height = _audioOutChannelsLabel.height = _audioBufferSizeLabel.height = rowHeight;
+			_audioInChannelsLabel.height = _audioOutChannelsLabel.height = rowHeight;
 			_midiDriverLabel.height = _midiInLabel.height = _midiOutLabel.height = rowHeight;
 
 			var controlLeft:Number = controlRect.left + FontSize.getTextRowHeight( this ) * 5;
 			_audioDriverCombo.x = _audioInCombo.x = _audioOutCombo.x = _sampleRateCombo.x = controlLeft;
-			_audioInChannelsEdit.x = _audioOutChannelsEdit.x = _audioBufferSizeEdit.x = controlLeft;
+			_audioInChannelsEdit.x = _audioOutChannelsEdit.x = controlLeft;
 			_midiDriverCombo.x = _midiInCombo.x = _midiOutCombo.x = controlLeft;
 			
 			var controlWidth:Number = controlRect.right - controlLeft;
 			_audioDriverCombo.width = _audioInCombo.width = _audioOutCombo.width = _sampleRateCombo.width = controlWidth; 
-			_audioInChannelsEdit.width = _audioOutChannelsEdit.width = _audioBufferSizeEdit.width = controlWidth;
+			_audioInChannelsEdit.width = _audioOutChannelsEdit.width = controlWidth;
 			_midiDriverCombo.width = _midiInCombo.width = _midiOutCombo.width = controlWidth;
 
 			_audioDriverCombo.height = _audioInCombo.height = _audioOutCombo.height = _sampleRateCombo.height = rowHeight; 
-			_audioInChannelsEdit.height = _audioOutChannelsEdit.height = _audioBufferSizeEdit.height = rowHeight;
+			_audioInChannelsEdit.height = _audioOutChannelsEdit.height = rowHeight;
 			_midiDriverCombo.height = _midiInCombo.height = _midiOutCombo.height = rowHeight;
 
 			_audioDriverLabel.y = _audioDriverCombo.y = controlRect.y;
@@ -254,7 +248,6 @@ package components.views.Preferences
 			_audioOutChannelsLabel.y = _audioOutChannelsEdit.y = controlRect.y + rowHeight * 5.3;
 
 			_sampleRateLabel.y = _sampleRateCombo.y = controlRect.y + rowHeight * 7.3;
-            _audioBufferSizeLabel.y = _audioBufferSizeEdit.y = controlRect.y + rowHeight * 8.4;
 
 			_midiDriverLabel.y = _midiDriverCombo.y = controlRect.y + rowHeight * 10.4;
 			_midiInLabel.y = _midiInCombo.y = controlRect.y + rowHeight * 11.5;
@@ -459,7 +452,6 @@ package components.views.Preferences
 			_sampleRateCombo.selectedItem = audioSettings.sampleRate;
 			_audioInChannelsEdit.text = String( audioSettings.inputChannels );
 			_audioOutChannelsEdit.text = String( audioSettings.outputChannels );
-			_audioBufferSizeEdit.text = String( audioSettings.bufferSize );
 
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
@@ -582,17 +574,15 @@ package components.views.Preferences
 
 			var inputChannelsEndpointDefinition:EndpointDefinition = audioSettingsDefinition.getEndpointDefinition( "inputChannels" );
 			var outputChannelsEndpointDefinition:EndpointDefinition = audioSettingsDefinition.getEndpointDefinition( "outputChannels" );
-			var bufferSizeEndpointDefinition:EndpointDefinition = audioSettingsDefinition.getEndpointDefinition( "bufferSize" );
 			
 			var inputChannels:int = Math.max( inputChannelsEndpointDefinition.controlInfo.stateInfo.constraint.minimum, Math.min( inputChannelsEndpointDefinition.controlInfo.stateInfo.constraint.maximum, int( _audioInChannelsEdit.text ) ) );
 			var outputChannels:int = Math.max( outputChannelsEndpointDefinition.controlInfo.stateInfo.constraint.minimum, Math.min( outputChannelsEndpointDefinition.controlInfo.stateInfo.constraint.maximum, int( _audioOutChannelsEdit.text ) ) );
-			var bufferSize:int = Math.max( bufferSizeEndpointDefinition.controlInfo.stateInfo.constraint.minimum, Math.min( bufferSizeEndpointDefinition.controlInfo.stateInfo.constraint.maximum, int( _audioBufferSizeEdit.text ) ) );
 
 			var sampleRate:int = int( _sampleRateCombo.selectedItem );
 			
 			controller.activateUndoStack = false;
 
-			controller.processCommand( new SetAudioSettings( sampleRate, inputChannels, outputChannels, bufferSize ) );	
+			controller.processCommand( new SetAudioSettings( sampleRate, inputChannels, outputChannels ) );	
 
 			controller.activateUndoStack = true;
 		}
@@ -640,7 +630,6 @@ package components.views.Preferences
 		private var _sampleRateCombo:ComboBox = null;
 		private var _audioInChannelsEdit:TextInput = new TextInput;
 		private var _audioOutChannelsEdit:TextInput = new TextInput;
-		private var _audioBufferSizeEdit:TextInput = new TextInput;
 		private var _midiDriverCombo:ComboBox = null;
 		private var _midiInCombo:ComboBox = null;
 		private var _midiOutCombo:ComboBox = null;
@@ -651,7 +640,6 @@ package components.views.Preferences
 		private var _audioOutLabel:Label = new Label;
 		private var _audioInChannelsLabel:Label = new Label;
 		private var _audioOutChannelsLabel:Label = new Label;
-		private var _audioBufferSizeLabel:Label = new Label;
 		private var _sampleRateLabel:Label = new Label;
 		private var _midiDriverLabel:Label = new Label;
 		private var _midiInLabel:Label = new Label;

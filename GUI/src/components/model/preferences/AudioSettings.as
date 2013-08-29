@@ -42,7 +42,6 @@ package components.model.preferences
 		public function get selectedInputDevice():String { return _selectedInputDevice; }
 		public function get selectedOutputDevice():String { return _selectedOutputDevice; }
 
-		public function get bufferSize():int { return _bufferSize; }
 		public function get sampleRate():int { return _sampleRate; }
 		public function get inputChannels():int { return _inputChannels; }
 		public function get outputChannels():int { return _outputChannels; }
@@ -57,7 +56,6 @@ package components.model.preferences
 		public function set selectedInputDevice( inputDevice:String ):void { _selectedInputDevice = inputDevice; }
 		public function set selectedOutputDevice( outputDevice:String ):void { _selectedOutputDevice = outputDevice; }
 
-		public function set bufferSize( bufferSize:int ):void { _bufferSize = bufferSize; }
 		public function set sampleRate( sampleRate:int ):void { _sampleRate = sampleRate; }
 		public function set inputChannels( inputChannels:int ):void { _inputChannels = inputChannels; }
 		public function set outputChannels( outputChannels:int ):void { _outputChannels = outputChannels; }
@@ -96,10 +94,6 @@ package components.model.preferences
 				
 				case "selectedOutputDevice":
 					_selectedOutputDevice = String( value );
-					break;
-				
-				case "bufferSize":
-					_bufferSize = int( value );
 					break;
 				
 				case "sampleRate":
@@ -148,7 +142,6 @@ package components.model.preferences
 		private var _selectedInputDevice:String = "";
 		private var _selectedOutputDevice:String = "";
 		
-		private var _bufferSize:int = 0;
 		private var _sampleRate:int = 0
 		private var _inputChannels:int = 0;
 		private var _outputChannels:int = 0;

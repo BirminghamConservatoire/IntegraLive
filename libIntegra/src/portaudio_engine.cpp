@@ -27,6 +27,8 @@
 #include <assert.h>
 #include <algorithm>	
 
+#include <windows.h>		//todo - remove - for Sleep()
+
 
 namespace integra_internal
 {
@@ -35,6 +37,8 @@ namespace integra_internal
 
 	CPortAudioEngine::CPortAudioEngine()
 	{
+		Sleep( 10000 );
+
 		PaError error_code = Pa_Initialize();
 		m_initialized_ok = ( error_code == paNoError );
 		if( !m_initialized_ok )
@@ -56,7 +60,7 @@ namespace integra_internal
 			return;
 		}
 
-		close_all_streams();
+		close_streams();
 
 		PaError error_code = Pa_Terminate();
 		if( error_code != paNoError )
@@ -85,25 +89,14 @@ namespace integra_internal
 			return CError::SUCCESS;		
 		}
 
-		close_all_streams();
+		close_streams();
 
 		m_selected_api = lookup->second;
 
-		m_selected_output_device = paNoDevice;
+		m_selected_input_device = paNoDevice;
 		m_selected_output_device = paNoDevice;
 
 		update_available_devices();
-
-		return CError::SUCCESS;
-	}
-
-
-	CError CPortAudioEngine::set_output_device( const string &output_device )
-	{
-		if( !m_initialized_ok ) 
-		{
-			return CError::FAILED;
-		}
 
 		return CError::SUCCESS;
 	}
@@ -116,9 +109,55 @@ namespace integra_internal
 			return CError::FAILED;
 		}
 
+		device_map::const_iterator lookup = m_available_input_devices.find( input_device );
+		if( lookup == m_available_input_devices.end() )
+		{
+			return CError::INPUT_ERROR;
+		}
+
+		if( lookup->second == m_selected_input_device )
+		{
+			/* reselecting existing device */
+			return CError::SUCCESS;		
+		}
+
+		close_streams();
+
+		m_selected_input_device = lookup->second;
+
+		open_streams();
+
 		return CError::SUCCESS;
 	}
 
+
+	CError CPortAudioEngine::set_output_device( const string &output_device )
+	{
+		if( !m_initialized_ok ) 
+		{
+			return CError::FAILED;
+		}
+
+		device_map::const_iterator lookup = m_available_output_devices.find( output_device );
+		if( lookup == m_available_output_devices.end() )
+		{
+			return CError::INPUT_ERROR;
+		}
+
+		if( lookup->second == m_selected_output_device )
+		{
+			/* reselecting existing device */
+			return CError::SUCCESS;		
+		}
+
+		close_streams();
+
+		m_selected_output_device = lookup->second;
+
+		open_streams();
+
+		return CError::SUCCESS;
+	}
 
 
 	CError CPortAudioEngine::set_sample_rate( int sample_rate )
@@ -227,13 +266,37 @@ namespace integra_internal
 
 	string CPortAudioEngine::get_selected_input_device() const
 	{
-		return "none";		//todo - implement
+		if( m_selected_input_device == paNoDevice )
+		{
+			return none;
+		}
+
+		const PaDeviceInfo *device_info = Pa_GetDeviceInfo( m_selected_input_device );
+		if( !device_info )
+		{
+			INTEGRA_TRACE_ERROR << "can't get device info";
+			return none;
+		}
+
+		return device_info->name;
 	}
 
 
 	string CPortAudioEngine::get_selected_output_device() const
 	{
-		return "none";		//todo - implement
+		if( m_selected_output_device == paNoDevice )
+		{
+			return none;
+		}
+
+		const PaDeviceInfo *device_info = Pa_GetDeviceInfo( m_selected_output_device );
+		if( !device_info )
+		{
+			INTEGRA_TRACE_ERROR << "can't get device info";
+			return none;
+		}
+
+		return device_info->name;
 	}
 
 
@@ -331,7 +394,15 @@ namespace integra_internal
 
 	}
 
-	void CPortAudioEngine::close_all_streams()
+
+	void CPortAudioEngine::open_streams()
+	{
+		//todo - implement
+
+	}
+
+
+	void CPortAudioEngine::close_streams()
 	{
 		//todo - implement
 

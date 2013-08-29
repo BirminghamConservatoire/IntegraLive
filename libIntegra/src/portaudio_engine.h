@@ -36,8 +36,8 @@ namespace integra_internal
 			~CPortAudioEngine();
 
 			CError set_driver( const string &driver );
-			CError set_output_device( const string &output_device );
 			CError set_input_device( const string &input_device );
+			CError set_output_device( const string &output_device );
 
 			CError set_sample_rate( int sample_rate );
 			CError set_number_of_input_channels( int input_channels );
@@ -67,7 +67,8 @@ namespace integra_internal
 
 			string_vector get_available_devices( const device_map &device_map ) const;
 
-			void close_all_streams();
+			void open_streams();
+			void close_streams();
 
 			PaHostApiTypeId api_none() const;
 

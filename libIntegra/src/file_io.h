@@ -80,6 +80,8 @@ namespace integra_internal
 
 			static void init_zip_file_info( zip_fileinfo *info );
 
+			typedef std::unordered_map<internal_id, value_map *> map_id_to_value_map;
+
 
 			static const string xml_encoding;
 
@@ -95,8 +97,6 @@ namespace integra_internal
 			//used in older versions
 			static const string instance_id;
 			static const string class_id;
-
-
 	};
 }
 

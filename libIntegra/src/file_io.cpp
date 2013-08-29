@@ -375,7 +375,7 @@ namespace integra_internal
 		prev_depth      = 0;
 		rv              = xmlTextReaderRead(reader);
 	
-		value_map loaded_values;
+		map_id_to_value_map loaded_values;
 
 		if (!rv) 
 		{
@@ -437,8 +437,8 @@ namespace integra_internal
 
 						CPath empty_path;
 						const CPath &parent_path = parent ? parent->get_path() : empty_path;
+						
 						/* add the new node */
-
 						CNewCommandResult result;
 						server.process_command( INewCommand::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), CCommandSource::LOAD, &result );
 						node = CNode::downcast( result.get_created_node() );
@@ -485,10 +485,20 @@ namespace integra_internal
 						(could've been removed or changed from interface since ixd was written) 
 						*/
 
-						CPath path( node->get_path() );
-						path.append_element( existing_node_endpoint->get_endpoint_definition().get_name() );
+						value_map *values_for_node = NULL;
 
-						loaded_values[ path.get_string() ] = value;
+						map_id_to_value_map::const_iterator lookup = loaded_values.find( node->get_id() );
+						if( lookup == loaded_values.end() )
+						{
+							values_for_node = new value_map;
+							loaded_values[ node->get_id() ] = values_for_node;
+						}
+						else
+						{
+							values_for_node = lookup->second;
+						}
+
+						( *values_for_node ) [ existing_node_endpoint->get_endpoint_definition().get_name() ] = value;
 					}
 					else
 					{
@@ -506,11 +516,35 @@ namespace integra_internal
 
 		INTEGRA_TRACE_VERBOSE << "Setting values...";
 
-		for( value_map::iterator value_iterator = loaded_values.begin(); value_iterator != loaded_values.end(); value_iterator++ )
+		for( map_id_to_value_map::iterator node_iterator = loaded_values.begin(); node_iterator != loaded_values.end(); node_iterator++ )
 		{
-			CPath path( value_iterator->first );
-			server.process_command( ISetCommand::create( path, value_iterator->second ), CCommandSource::LOAD );
-			delete value_iterator->second;
+			const CNode *node = server.find_node( node_iterator->first );
+			assert( node );
+
+			value_map *values_for_node = node_iterator->second;
+
+			const IInterfaceDefinition &interface_definition = node->get_interface_definition();
+			const endpoint_definition_list &endpoint_definitions = interface_definition.get_endpoint_definitions();
+
+			for( endpoint_definition_list::const_iterator endpoint_iterator = endpoint_definitions.begin(); endpoint_iterator != endpoint_definitions.end(); endpoint_iterator++ )
+			{
+				const IEndpointDefinition &endpoint_definition = **endpoint_iterator;
+				if( endpoint_definition.get_type() != IEndpointDefinition::CONTROL || endpoint_definition.get_control_info()->get_type() != CControlInfo::STATEFUL )
+				{
+					continue;
+				}
+
+				value_map::iterator value_lookup = values_for_node->find( endpoint_definition.get_name() );
+				if( value_lookup != values_for_node->end() )
+				{
+					CPath endpoint_path( node->get_path() );
+					endpoint_path.append_element( value_lookup->first );
+					server.process_command( ISetCommand::create( endpoint_path, value_lookup->second ), CCommandSource::LOAD );
+					delete value_lookup->second;
+				}
+			}
+
+			delete values_for_node;
 		}
 
 		INTEGRA_TRACE_VERBOSE << "done!";

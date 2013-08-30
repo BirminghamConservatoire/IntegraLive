@@ -31,6 +31,10 @@
 #include <sys/time.h>
 #endif
 
+#include <algorithm> 
+#include <functional> 
+#include <locale>
+
 
 namespace integra_api
 {
@@ -99,6 +103,24 @@ namespace integra_api
 
 		return output.str();
 	}
+
+
+	string CStringHelper::trim( const string &input )
+	{
+		static const string whitespace_chars = " \t\n\v\f\r";
+		
+		size_t first_non_whitespace = input.find_first_not_of( whitespace_chars );
+		if( first_non_whitespace == string::npos ) 
+		{
+			return string();
+		}
+
+		size_t last_non_whitespace = input.find_last_not_of( whitespace_chars );
+		assert( last_non_whitespace != string::npos );
+
+		return input.substr( first_non_whitespace, last_non_whitespace + 1 );
+	}
+	
 }
 
 

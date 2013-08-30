@@ -22,7 +22,9 @@
 #include "platform_specifics.h"
 
 #include "portaudio_engine.h"
+#include "dsp_engine.h"
 #include "api/trace.h"
+#include "api/string_helper.h"
 
 #include <assert.h>
 #include <algorithm>	
@@ -33,37 +35,6 @@
 namespace integra_internal
 {
 	const string CPortAudioEngine::none = "none";
-
-
-	static int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
-	{
-		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
-		assert( port_audio_engine );
-
-		port_audio_engine->input_handler( input_buffer, frames_per_buffer, time_info, status_flags );
-		return paContinue;
-	}
-
-
-	static int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
-	{
-		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
-		assert( port_audio_engine );
-
-		port_audio_engine->output_handler( output_buffer, frames_per_buffer, time_info, status_flags );
-		return paContinue;
-	}
-
-
-	static int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
-	{
-		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
-		assert( port_audio_engine );
-
-		port_audio_engine->duplex_handler( input_buffer, output_buffer, frames_per_buffer, time_info, status_flags );
-		return paContinue;
-	}
-
 
 
 	CPortAudioEngine::CPortAudioEngine()
@@ -327,7 +298,7 @@ namespace integra_internal
 			return none;
 		}
 
-		return api_info->name;
+		return CStringHelper::trim( api_info->name );
 	}
 
 
@@ -345,7 +316,7 @@ namespace integra_internal
 			return none;
 		}
 
-		return device_info->name;
+		return CStringHelper::trim( device_info->name );
 	}
 
 
@@ -363,7 +334,7 @@ namespace integra_internal
 			return none;
 		}
 
-		return device_info->name;
+		return CStringHelper::trim( device_info->name );
 	}
 
 
@@ -409,7 +380,7 @@ namespace integra_internal
 				continue;
 			}
 
-			m_available_apis[ api_info->name ] = api_info->type;
+			m_available_apis[ CStringHelper::trim( api_info->name ) ] = api_info->type;
 		}
 	}
 
@@ -449,12 +420,12 @@ namespace integra_internal
 
 			if( device_info->maxInputChannels > 0 )
 			{
-				m_available_input_devices[ device_info->name ] = i;
+				m_available_input_devices[ CStringHelper::trim( device_info->name ) ] = i;
 			}
 
 			if( device_info->maxOutputChannels > 0 )
 			{
-				m_available_output_devices[ device_info->name ] = i;
+				m_available_output_devices[ CStringHelper::trim( device_info->name ) ] = i;
 			}
 		}
 	}
@@ -462,7 +433,9 @@ namespace integra_internal
 
 	void CPortAudioEngine::open_streams()
 	{
-		HRESULT result = CoInitialize( NULL );
+		#ifdef _WINDOWS
+			CoInitialize( NULL );
+		#endif
 
 		const double SAMPLE_RATE = 44100;	//todo - implement properly
 
@@ -481,7 +454,7 @@ namespace integra_internal
 					INTEGRA_TRACE_ERROR << "Format not supported: " << Pa_GetErrorText( supported );
 				}
 
-				PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, SAMPLE_RATE, paFramesPerBufferUnspecified, paNoFlag, duplex_callback, this );
+				PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, SAMPLE_RATE, CDspEngine::samples_per_buffer, paNoFlag, duplex_callback, this );
 				if( result == paNoError )
 				{
 					result = Pa_StartStream( m_duplex_stream );
@@ -509,7 +482,7 @@ namespace integra_internal
 				PaStreamParameters input_parameters;
 				initialize_stream_parameters( input_parameters, m_selected_input_device, false );
 
-				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, SAMPLE_RATE, paFramesPerBufferUnspecified, paNoFlag, input_callback, this );
+				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, SAMPLE_RATE, CDspEngine::samples_per_buffer, paNoFlag, input_callback, this );
 				if( result == paNoError )
 				{
 					result = Pa_StartStream( m_input_stream );
@@ -537,7 +510,7 @@ namespace integra_internal
 			PaStreamParameters output_parameters;
 			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
 
-			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, SAMPLE_RATE, paFramesPerBufferUnspecified, paNoFlag, output_callback, this );
+			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, SAMPLE_RATE, CDspEngine::samples_per_buffer, paNoFlag, output_callback, this );
 			if( result == paNoError )
 			{
 				result = Pa_StartStream( m_output_stream );
@@ -562,6 +535,10 @@ namespace integra_internal
 				m_selected_output_device = paNoDevice;
 			}
 		}	
+
+		#ifdef _WINDOWS
+			CoUninitialize();
+		#endif
 	}
 
 
@@ -791,6 +768,35 @@ namespace integra_internal
 		return lookup1->second < lookup2->second;
 	}
 
+
+	static int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	{
+		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
+		assert( port_audio_engine );
+
+		port_audio_engine->input_handler( input_buffer, frames_per_buffer, time_info, status_flags );
+		return paContinue;
+	}
+
+
+	static int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	{
+		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
+		assert( port_audio_engine );
+
+		port_audio_engine->output_handler( output_buffer, frames_per_buffer, time_info, status_flags );
+		return paContinue;
+	}
+
+
+	static int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	{
+		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
+		assert( port_audio_engine );
+
+		port_audio_engine->duplex_handler( input_buffer, output_buffer, frames_per_buffer, time_info, status_flags );
+		return paContinue;
+	}
 }
 
  

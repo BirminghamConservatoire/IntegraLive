@@ -41,6 +41,8 @@ namespace integra_internal
 			CError disconnect_modules( const CNodeEndpoint &source, const CNodeEndpoint &target );
 			CError send_value( const CNodeEndpoint &target );
 
+			static const int samples_per_buffer;
+
 		private:
 
 			void test_libpd();

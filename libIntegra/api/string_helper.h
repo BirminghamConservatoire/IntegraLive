@@ -48,6 +48,9 @@ namespace integra_api
 			*/
 			static string string_vector_to_string( const string_vector &strings );
 
+			/* trim whitespace from start and end of a string */
+			static string trim( const string &input );
+
 			static const string node_name_character_set;
 
 			static const int string_buffer_length = 1024;

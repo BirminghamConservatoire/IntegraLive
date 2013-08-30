@@ -36,6 +36,9 @@ using namespace integra_api;
 
 namespace integra_internal
 {
+	const int CDspEngine::samples_per_buffer = 64;
+
+
 	CDspEngine::CDspEngine()
 	{
 		test_libpd();

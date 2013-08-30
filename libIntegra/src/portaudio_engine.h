@@ -30,6 +30,10 @@ namespace integra_internal
 {
 	class CPortAudioEngine : public IAudioEngine
 	{
+		friend int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
+		friend int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
+		friend int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
+
 		public:
 
 			CPortAudioEngine();
@@ -70,6 +74,13 @@ namespace integra_internal
 			void open_streams();
 			void close_streams();
 
+			void initialize_stream_parameters( PaStreamParameters &parameters, int device_index, bool is_output );
+
+			void input_handler( const void *input_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
+			void output_handler( void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
+			void duplex_handler( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
+
+
 			PaHostApiTypeId api_none() const;
 
 			PaHostApiIndex get_selected_api_index() const;
@@ -83,6 +94,10 @@ namespace integra_internal
 			PaHostApiTypeId m_selected_api;
 			PaDeviceIndex m_selected_input_device;
 			PaDeviceIndex m_selected_output_device;
+
+			PaStream *m_input_stream;
+			PaStream *m_output_stream;
+			PaStream *m_duplex_stream;
 
 			static const string none;
 

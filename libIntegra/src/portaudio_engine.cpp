@@ -35,9 +35,44 @@ namespace integra_internal
 	const string CPortAudioEngine::none = "none";
 
 
+	static int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	{
+		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
+		assert( port_audio_engine );
+
+		port_audio_engine->input_handler( input_buffer, frames_per_buffer, time_info, status_flags );
+		return paContinue;
+	}
+
+
+	static int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	{
+		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
+		assert( port_audio_engine );
+
+		port_audio_engine->output_handler( output_buffer, frames_per_buffer, time_info, status_flags );
+		return paContinue;
+	}
+
+
+	static int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	{
+		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
+		assert( port_audio_engine );
+
+		port_audio_engine->duplex_handler( input_buffer, output_buffer, frames_per_buffer, time_info, status_flags );
+		return paContinue;
+	}
+
+
+
 	CPortAudioEngine::CPortAudioEngine()
 	{
 		Sleep( 10000 );
+
+		m_input_stream = NULL;
+		m_output_stream = NULL;
+		m_duplex_stream = NULL;
 
 		PaError error_code = Pa_Initialize();
 		m_initialized_ok = ( error_code == paNoError );
@@ -50,6 +85,8 @@ namespace integra_internal
 		update_available_apis();
 
 		set_driver( none );
+
+		INTEGRA_TRACE_PROGRESS << "Created PortAudio engine";
 	}
 
 
@@ -67,6 +104,8 @@ namespace integra_internal
 		{
 			INTEGRA_TRACE_ERROR << "PortAudio termination error: " << Pa_GetErrorText( error_code );
 		}
+
+		INTEGRA_TRACE_PROGRESS << "Destroyed PortAudio engine";
 	}
 
 
@@ -115,7 +154,9 @@ namespace integra_internal
 			return CError::INPUT_ERROR;
 		}
 
-		if( lookup->second == m_selected_input_device )
+		PaDeviceIndex new_input_device = lookup->second;
+
+		if( new_input_device == m_selected_input_device )
 		{
 			/* reselecting existing device */
 			return CError::SUCCESS;		
@@ -123,8 +164,20 @@ namespace integra_internal
 
 		close_streams();
 
-		m_selected_input_device = lookup->second;
+		if( new_input_device == paNoDevice && m_selected_output_device == m_selected_input_device )
+		{
+			/* deselecting duplex device */
+			m_selected_output_device = paNoDevice;
+		}
 
+		m_selected_input_device = new_input_device;
+
+		if( new_input_device != paNoDevice && m_available_output_devices.count( input_device ) > 0 )
+		{
+			/* selecting duplex device */
+			m_selected_output_device = new_input_device;
+		}
+	
 		open_streams();
 
 		return CError::SUCCESS;
@@ -144,7 +197,9 @@ namespace integra_internal
 			return CError::INPUT_ERROR;
 		}
 
-		if( lookup->second == m_selected_output_device )
+		PaDeviceIndex new_output_device = lookup->second;
+
+		if( new_output_device == m_selected_output_device )
 		{
 			/* reselecting existing device */
 			return CError::SUCCESS;		
@@ -152,8 +207,20 @@ namespace integra_internal
 
 		close_streams();
 
-		m_selected_output_device = lookup->second;
+		if( new_output_device == paNoDevice && m_selected_input_device == m_selected_output_device )
+		{
+			/* deselecting duplex device */
+			m_selected_input_device = paNoDevice;
+		}
 
+		m_selected_output_device = new_output_device;
+
+		if( new_output_device != paNoDevice && m_available_input_devices.count( output_device ) > 0 )
+		{
+			/* selecting duplex device */
+			m_selected_input_device = new_output_device;
+		}
+	
 		open_streams();
 
 		return CError::SUCCESS;
@@ -390,22 +457,274 @@ namespace integra_internal
 				m_available_output_devices[ device_info->name ] = i;
 			}
 		}
-
-
 	}
 
 
 	void CPortAudioEngine::open_streams()
 	{
-		//todo - implement
+		HRESULT result = CoInitialize( NULL );
 
+		const double SAMPLE_RATE = 44100;	//todo - implement properly
+
+		if( m_selected_input_device != paNoDevice )
+		{
+			if( m_selected_output_device == m_selected_input_device )
+			{
+				//open duplex stream
+				PaStreamParameters input_parameters, output_parameters;
+				initialize_stream_parameters( input_parameters, m_selected_input_device, false );
+				initialize_stream_parameters( output_parameters, m_selected_output_device, true );
+
+				PaError supported = Pa_IsFormatSupported( &input_parameters, &output_parameters, SAMPLE_RATE );
+				if( supported != paFormatIsSupported )
+				{
+					INTEGRA_TRACE_ERROR << "Format not supported: " << Pa_GetErrorText( supported );
+				}
+
+				PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, SAMPLE_RATE, paFramesPerBufferUnspecified, paNoFlag, duplex_callback, this );
+				if( result == paNoError )
+				{
+					result = Pa_StartStream( m_duplex_stream );
+					if( result == paNoError )
+					{
+						INTEGRA_TRACE_PROGRESS << "Started Duplex Audio Stream";
+					}
+					else
+					{
+						INTEGRA_TRACE_ERROR << "Error starting duplex stream: " << Pa_GetErrorText( result );
+						m_selected_input_device = paNoDevice;
+						m_selected_output_device = paNoDevice;
+					}
+				}
+				else
+				{
+					INTEGRA_TRACE_ERROR << "Error opening duplex stream: " << Pa_GetErrorText( result );
+					m_selected_input_device = paNoDevice;
+					m_selected_output_device = paNoDevice;
+				}
+			}
+			else
+			{
+				//open input stream
+				PaStreamParameters input_parameters;
+				initialize_stream_parameters( input_parameters, m_selected_input_device, false );
+
+				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, SAMPLE_RATE, paFramesPerBufferUnspecified, paNoFlag, input_callback, this );
+				if( result == paNoError )
+				{
+					result = Pa_StartStream( m_input_stream );
+					if( result == paNoError )
+					{
+						INTEGRA_TRACE_PROGRESS << "Started Audio Input Stream";
+					}
+					else
+					{
+						INTEGRA_TRACE_ERROR << "Error starting input stream: " << Pa_GetErrorText( result );
+						m_selected_input_device = paNoDevice;
+					}
+				}
+				else
+				{
+					INTEGRA_TRACE_ERROR << "Error opening input stream: " << Pa_GetErrorText( result );
+					m_selected_input_device = paNoDevice;
+				}
+			}
+		}
+
+		if( m_selected_output_device != paNoDevice && m_selected_output_device != m_selected_input_device )
+		{
+			//open output stream
+			PaStreamParameters output_parameters;
+			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
+
+			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, SAMPLE_RATE, paFramesPerBufferUnspecified, paNoFlag, output_callback, this );
+			if( result == paNoError )
+			{
+				result = Pa_StartStream( m_output_stream );
+				if( result == paNoError )
+				{
+					INTEGRA_TRACE_PROGRESS << "Started Audio Output Stream";
+
+					/*if( m_selected_input_device != paNoDevice )
+					{
+						m_ring_buffer = new CRingBuffer;
+					}*/
+				}
+				else
+				{
+					INTEGRA_TRACE_ERROR << "Error starting output stream: " << Pa_GetErrorText( result );
+					m_selected_output_device = paNoDevice;
+				}
+			}
+			else
+			{
+				INTEGRA_TRACE_ERROR << "Error opening output stream: " << Pa_GetErrorText( result );
+				m_selected_output_device = paNoDevice;
+			}
+		}	
 	}
 
 
 	void CPortAudioEngine::close_streams()
 	{
-		//todo - implement
+		if( m_input_stream ) 
+		{
+			Pa_CloseStream( m_input_stream );
+			m_input_stream = NULL;
 
+			INTEGRA_TRACE_PROGRESS << "Closed input stream";
+		}
+
+		if( m_output_stream ) 
+		{
+			Pa_CloseStream( m_output_stream );
+			m_output_stream = NULL;
+
+			INTEGRA_TRACE_PROGRESS << "Closed output stream";
+		}
+
+		if( m_duplex_stream ) 
+		{
+			Pa_CloseStream( m_duplex_stream );
+			m_duplex_stream = NULL;
+
+			INTEGRA_TRACE_PROGRESS << "Closed duplex stream";
+		}
+	}
+
+
+	void CPortAudioEngine::initialize_stream_parameters( PaStreamParameters &parameters, int device_index, bool is_output )
+	{
+		const int NUMBER_OF_CHANNELS = 2;  //todo - implement properly
+
+		parameters.device = device_index;
+		parameters.channelCount = NUMBER_OF_CHANNELS;
+		parameters.sampleFormat = paFloat32;
+	
+		const PaDeviceInfo *info = Pa_GetDeviceInfo( device_index );
+		parameters.suggestedLatency = is_output ? info->defaultLowOutputLatency : info->defaultLowInputLatency;
+
+		parameters.hostApiSpecificStreamInfo = NULL;
+	}
+
+
+	void CPortAudioEngine::input_handler( const void *input_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags )
+	{
+		if( status_flags & paInputUnderflow )
+		{
+			INTEGRA_TRACE_ERROR << "input underflow";
+		}
+
+		if( status_flags & paInputOverflow )
+		{
+			INTEGRA_TRACE_ERROR << "input overflow";
+		}
+
+		/*if( dlg->m_outputDeviceIndex >= 0 )
+		{
+			ASSERT( dlg->m_ringBuffer );
+			dlg->m_ringBuffer->write( ( const SAMPLE * ) inputBuffer, framesPerBuffer * NUMBER_OF_CHANNELS );
+		}
+		else
+		{
+			dlg->doSomeProcessing( ( const SAMPLE * ) inputBuffer, NULL, framesPerBuffer );
+		}*/
+	}
+
+
+	void CPortAudioEngine::output_handler( void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags )
+	{
+		if( status_flags & paOutputUnderflow )
+		{
+			INTEGRA_TRACE_ERROR << "output underflow";
+		}
+
+		if( status_flags & paOutputOverflow )
+		{
+			INTEGRA_TRACE_ERROR << "output overflow";
+		}
+
+		static float theta = 0;
+		float *output = ( float * ) output_buffer;
+		for( int i = 0; i < frames_per_buffer; i++ )
+		{
+			float value = sin( theta );
+			output[ i * 2 ] = value;
+			output[ i * 2 + 1 ] = value;
+
+			theta += 0.05;
+			if( theta >= 6.283185307179586476925286766559 )
+			{
+				theta -= 6.283185307179586476925286766559;
+			}
+		}
+
+		//ensure process buffer exists and is large enough
+		/*int sizeNeeded = framesPerBuffer * NUMBER_OF_CHANNELS;
+		if( dlg->m_processBuffer ) 
+		{
+			if( dlg->m_processBufferSize < sizeNeeded )
+			{
+				delete[] dlg->m_processBuffer;
+				dlg->m_processBuffer = new float[ sizeNeeded ];
+				dlg->m_processBufferSize = sizeNeeded;
+			}
+		}
+		else
+		{
+			dlg->m_processBuffer = new float[ sizeNeeded ];
+			dlg->m_processBufferSize = sizeNeeded;
+		}
+
+		if( dlg->m_ringBuffer )
+		{
+			dlg->m_ringBuffer->read( dlg->m_processBuffer, framesPerBuffer * NUMBER_OF_CHANNELS );
+		}
+
+		dlg->doSomeProcessing( dlg->m_processBuffer, ( SAMPLE * ) outputBuffer, framesPerBuffer );
+
+		return paContinue;*/
+	}
+
+
+	void CPortAudioEngine::duplex_handler( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags )
+	{
+		if( status_flags & paInputUnderflow )
+		{
+			INTEGRA_TRACE_ERROR << "input underflow";
+		}
+
+		if( status_flags & paInputOverflow )
+		{
+			INTEGRA_TRACE_ERROR << "input overflow";
+		}
+
+		if( status_flags & paOutputUnderflow )
+		{
+			INTEGRA_TRACE_ERROR << "output underflow";
+		}
+
+		if( status_flags & paOutputOverflow )
+		{
+			INTEGRA_TRACE_ERROR << "output overflow";
+		}
+
+		//todo
+
+		static float theta = 0;
+		float *output = ( float * ) output_buffer;
+		for( int i = 0; i < frames_per_buffer; i++ )
+		{
+			float value = sin( theta );
+			output[ i * 2 ] = value;
+			output[ i * 2 + 1 ] = value;
+
+			theta += 0.1;
+			if( theta >= 6.283185307179586476925286766559 )
+			{
+				theta -= 6.283185307179586476925286766559;
+			}
+		}
 	}
 
 

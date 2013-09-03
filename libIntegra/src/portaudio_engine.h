@@ -95,6 +95,9 @@ namespace integra_internal
 			PaDeviceIndex m_selected_input_device;
 			PaDeviceIndex m_selected_output_device;
 
+			int m_number_of_input_channels;
+			int m_number_of_output_channels;
+
 			PaStream *m_input_stream;
 			PaStream *m_output_stream;
 			PaStream *m_duplex_stream;

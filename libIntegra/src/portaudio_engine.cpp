@@ -41,6 +41,13 @@ namespace integra_internal
 	{
 		Sleep( 10000 );
 
+		m_selected_api = api_none();
+		m_selected_input_device = paNoDevice;
+		m_selected_output_device = paNoDevice;
+
+		m_number_of_input_channels = -1;
+		m_number_of_output_channels = -1;
+
 		m_input_stream = NULL;
 		m_output_stream = NULL;
 		m_duplex_stream = NULL;
@@ -106,6 +113,9 @@ namespace integra_internal
 		m_selected_input_device = paNoDevice;
 		m_selected_output_device = paNoDevice;
 
+		m_number_of_input_channels = -1;
+		m_number_of_output_channels = -1;
+
 		update_available_devices();
 
 		return CError::SUCCESS;
@@ -135,19 +145,27 @@ namespace integra_internal
 
 		close_streams();
 
+#if 0
 		if( new_input_device == paNoDevice && m_selected_output_device == m_selected_input_device )
 		{
 			/* deselecting duplex device */
 			m_selected_output_device = paNoDevice;
+			m_number_of_output_channels = -1;
 		}
+#endif
+
 
 		m_selected_input_device = new_input_device;
+		m_number_of_input_channels = -1;
 
+#if 0
 		if( new_input_device != paNoDevice && m_available_output_devices.count( input_device ) > 0 )
 		{
 			/* selecting duplex device */
 			m_selected_output_device = new_input_device;
+			m_number_of_output_channels = -1;
 		}
+#endif
 	
 		open_streams();
 
@@ -178,19 +196,26 @@ namespace integra_internal
 
 		close_streams();
 
+#if 0
 		if( new_output_device == paNoDevice && m_selected_input_device == m_selected_output_device )
 		{
 			/* deselecting duplex device */
 			m_selected_input_device = paNoDevice;
+			m_number_of_input_channels = -1;
 		}
+#endif
 
 		m_selected_output_device = new_output_device;
+		m_number_of_output_channels = -1;
 
+#if 0
 		if( new_output_device != paNoDevice && m_available_input_devices.count( output_device ) > 0 )
 		{
 			/* selecting duplex device */
 			m_selected_input_device = new_output_device;
+			m_number_of_input_channels = -1;
 		}
+#endif
 	
 		open_streams();
 
@@ -216,6 +241,12 @@ namespace integra_internal
 			return CError::FAILED;
 		}
 
+		close_streams();
+
+		m_number_of_input_channels = input_channels;
+
+		open_streams();
+
 		return CError::SUCCESS;
 	}
 
@@ -226,6 +257,12 @@ namespace integra_internal
 		{
 			return CError::FAILED;
 		}
+
+		close_streams();
+
+		m_number_of_output_channels = output_channels;
+
+		open_streams();
 
 		return CError::SUCCESS;
 	}
@@ -346,13 +383,13 @@ namespace integra_internal
 
 	int CPortAudioEngine::get_number_of_input_channels() const
 	{
-		return 2;		//todo - implement
+		return m_number_of_input_channels;
 	}
 
 
 	int CPortAudioEngine::get_number_of_output_channels() const
 	{
-		return 2;		//todo - implement
+		return m_number_of_output_channels;
 	}
 
 
@@ -572,13 +609,25 @@ namespace integra_internal
 
 	void CPortAudioEngine::initialize_stream_parameters( PaStreamParameters &parameters, int device_index, bool is_output )
 	{
-		const int NUMBER_OF_CHANNELS = 2;  //todo - implement properly
+		const PaDeviceInfo *info = Pa_GetDeviceInfo( device_index );
+		assert( info );
+
+		int &number_of_channels = is_output ? m_number_of_output_channels : m_number_of_input_channels;
+		const int &max_number_of_channels = is_output ? info->maxOutputChannels : info->maxInputChannels;
+
+		if( number_of_channels <= 0 )
+		{
+			number_of_channels = max_number_of_channels;
+		}
+		else
+		{
+			number_of_channels = MIN( number_of_channels, max_number_of_channels );
+		}
 
 		parameters.device = device_index;
-		parameters.channelCount = NUMBER_OF_CHANNELS;
+		parameters.channelCount = number_of_channels;
 		parameters.sampleFormat = paFloat32;
 	
-		const PaDeviceInfo *info = Pa_GetDeviceInfo( device_index );
 		parameters.suggestedLatency = is_output ? info->defaultLowOutputLatency : info->defaultLowInputLatency;
 
 		parameters.hostApiSpecificStreamInfo = NULL;
@@ -621,18 +670,21 @@ namespace integra_internal
 			INTEGRA_TRACE_ERROR << "output overflow";
 		}
 
-		static float theta = 0;
+		static float theta[ 32 ];
+
 		float *output = ( float * ) output_buffer;
 		for( int i = 0; i < frames_per_buffer; i++ )
 		{
-			float value = sin( theta );
-			output[ i * 2 ] = value;
-			output[ i * 2 + 1 ] = value;
-
-			theta += 0.05;
-			if( theta >= 6.283185307179586476925286766559 )
+			for( int channel = 0; channel < m_number_of_output_channels; channel++ )
 			{
-				theta -= 6.283185307179586476925286766559;
+				float value = sin( theta[ channel ] );
+				output[ i * m_number_of_output_channels + channel ] = value;
+
+				theta[ channel ] += 0.05 * ( channel + 1 );
+				if( theta[ channel ] >= 6.283185307179586476925286766559 )
+				{
+					theta[ channel ] -= 6.283185307179586476925286766559;
+				}
 			}
 		}
 
@@ -688,18 +740,21 @@ namespace integra_internal
 
 		//todo
 
-		static float theta = 0;
+		static float theta[ 32 ];
+
 		float *output = ( float * ) output_buffer;
 		for( int i = 0; i < frames_per_buffer; i++ )
 		{
-			float value = sin( theta );
-			output[ i * 2 ] = value;
-			output[ i * 2 + 1 ] = value;
-
-			theta += 0.1;
-			if( theta >= 6.283185307179586476925286766559 )
+			for( int channel = 0; channel < m_number_of_output_channels; channel++ )
 			{
-				theta -= 6.283185307179586476925286766559;
+				float value = sin( theta[ channel ] );
+				output[ i * m_number_of_output_channels + channel ] = value;
+
+				theta[ channel ] += 0.08 * ( channel + 1 );
+				if( theta[ channel ] >= 6.283185307179586476925286766559 )
+				{
+					theta[ channel ] -= 6.283185307179586476925286766559;
+				}
 			}
 		}
 	}

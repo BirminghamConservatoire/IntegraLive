@@ -30,7 +30,7 @@ package components.controller.serverCommands
 
 	public class SetAudioSettings extends ServerCommand
 	{
-		public function SetAudioSettings ( sampleRate:int, inputChannels:int, outputChannels:int	 )
+		public function SetAudioSettings ( sampleRate:int = -1, inputChannels:int = -1, outputChannels:int = -1 )
 		{
 			super();
 
@@ -49,9 +49,9 @@ package components.controller.serverCommands
 		{
 			var settings:AudioSettings = model.audioSettings;
 			
-			if( _sampleRate != settings.sampleRate ) return true;
-			if( _inputChannels != settings.inputChannels ) return true;
-			if( _outputChannels != settings.outputChannels ) return true;
+			if( _sampleRate >= 0 && _sampleRate != settings.sampleRate ) return true;
+			if( _inputChannels >= 0 && _inputChannels != settings.inputChannels ) return true;
+			if( _outputChannels >= 0 && _outputChannels != settings.outputChannels ) return true;
 
 			return false;
 		}
@@ -70,9 +70,9 @@ package components.controller.serverCommands
 			var settings:AudioSettings = model.audioSettings;
 			Assert.assertNotNull( settings );
 			
-			settings.sampleRate = _sampleRate;
-			settings.inputChannels = _inputChannels;
-			settings.outputChannels = _outputChannels;
+			if( _sampleRate >= 0 ) settings.sampleRate = _sampleRate;
+			if( _inputChannels >= 0 ) settings.inputChannels = _inputChannels;
+			if( _outputChannels >= 0 ) settings.outputChannels = _outputChannels;
 			
 			settings.hasChangedSinceReset = true;
 		}
@@ -84,17 +84,26 @@ package components.controller.serverCommands
 			
 			var settingsPath:Array = [ model.audioSettings.name ];
 
-			methodCalls[ 0 ] = new Object;
-			methodCalls[ 0 ].methodName = "command.set";
-			methodCalls[ 0 ].params = [ settingsPath.concat( "sampleRate" ), _sampleRate ]; 
+			if( _sampleRate >= 0 ) 
+			{
+				methodCalls[ 0 ] = new Object;
+				methodCalls[ 0 ].methodName = "command.set";
+				methodCalls[ 0 ].params = [ settingsPath.concat( "sampleRate" ), _sampleRate ];
+			}
 	
-			methodCalls[ 1 ] = new Object;
-			methodCalls[ 1 ].methodName = "command.set";
-			methodCalls[ 1 ].params = [ settingsPath.concat( "inputChannels" ), _inputChannels ]; 
+			if( _inputChannels >= 0 ) 
+			{
+				methodCalls[ 1 ] = new Object;
+				methodCalls[ 1 ].methodName = "command.set";
+				methodCalls[ 1 ].params = [ settingsPath.concat( "inputChannels" ), _inputChannels ]; 
+			}
 
-			methodCalls[ 2 ] = new Object;
-			methodCalls[ 2 ].methodName = "command.set";
-			methodCalls[ 2 ].params = [ settingsPath.concat( "outputChannels" ), _outputChannels ]; 
+			if( _outputChannels >= 0 ) 
+			{
+				methodCalls[ 2 ] = new Object;
+				methodCalls[ 2 ].methodName = "command.set";
+				methodCalls[ 2 ].params = [ settingsPath.concat( "outputChannels" ), _outputChannels ];
+			}
 	
 			connection.addArrayParam( methodCalls );
 			connection.callQueued( "system.multicall" );						
@@ -114,11 +123,10 @@ package components.controller.serverCommands
 			var responseArray:Array = response as Array;
 			Assert.assertNotNull( responseArray );
 
-			if( responseArray.length != 3 ) return false;
-
-			if( responseArray[ 0 ][ 0 ].response != "command.set" ) return false;
-			if( responseArray[ 1 ][ 0 ].response != "command.set" ) return false;
-			if( responseArray[ 2 ][ 0 ].response != "command.set" ) return false;
+			for each( var response:Object in responseArray )
+			{
+				if( response[ 0 ].response != "command.set" ) return false;
+			}
 			
 			return true;
 		}

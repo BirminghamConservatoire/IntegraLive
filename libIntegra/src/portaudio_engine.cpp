@@ -212,6 +212,11 @@ namespace integra_internal
 			return CError::FAILED;
 		}
 
+		if( m_selected_input_device == paNoDevice )
+		{
+			return CError::FAILED;
+		}
+
 		close_streams();
 
 		m_number_of_input_channels = input_channels;
@@ -225,6 +230,11 @@ namespace integra_internal
 	CError CPortAudioEngine::set_number_of_output_channels( int output_channels )
 	{
 		if( !m_initialized_ok ) 
+		{
+			return CError::FAILED;
+		}
+
+		if( m_selected_output_device == paNoDevice )
 		{
 			return CError::FAILED;
 		}
@@ -525,7 +535,14 @@ namespace integra_internal
 			PaError supported = Pa_IsFormatSupported( NULL, &output_parameters, m_sample_rate );
 			if( supported != paFormatIsSupported )
 			{
-				m_sample_rate = get_default_sample_rate( m_selected_output_device );
+				if( m_selected_input_device == paNoDevice )
+				{
+					m_sample_rate = get_default_sample_rate( m_selected_output_device );
+				}
+				else
+				{
+					INTEGRA_TRACE_ERROR << "Requested output device cannot use sample rate of input device - won't open";
+				}
 			}
 
 			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, output_callback, this );

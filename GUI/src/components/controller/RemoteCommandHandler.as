@@ -299,15 +299,15 @@ package components.controller
 						break;
 					
 					case "sampleRate":
-						command = new SetAudioSettings( int( value ), audioSettings.inputChannels, audioSettings.outputChannels ); 
+						command = new SetAudioSettings( int( value ), -1, -1 ); 
 						break;
 						
 					case "inputChannels":
-						command = new SetAudioSettings( audioSettings.sampleRate, int( value ), audioSettings.outputChannels ); 
+						command = new SetAudioSettings( -1, int( value ), -1 ); 
 						break;
 						
 					case "outputChannels":
-						command = new SetAudioSettings( audioSettings.sampleRate, audioSettings.inputChannels, int( value ) ); 
+						command = new SetAudioSettings( -1, -1, int( value ) ); 
 						break;
 
 					default:

@@ -76,6 +76,8 @@ namespace integra_internal
 
 			void initialize_stream_parameters( PaStreamParameters &parameters, int device_index, bool is_output );
 
+			int get_default_sample_rate( int device_index ) const;
+
 			void input_handler( const void *input_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
 			void output_handler( void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
 			void duplex_handler( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
@@ -94,6 +96,7 @@ namespace integra_internal
 			PaHostApiTypeId m_selected_api;
 			PaDeviceIndex m_selected_input_device;
 			PaDeviceIndex m_selected_output_device;
+			int m_sample_rate;
 
 			int m_number_of_input_channels;
 			int m_number_of_output_channels;

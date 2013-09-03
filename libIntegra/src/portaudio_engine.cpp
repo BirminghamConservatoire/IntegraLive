@@ -45,8 +45,10 @@ namespace integra_internal
 		m_selected_input_device = paNoDevice;
 		m_selected_output_device = paNoDevice;
 
-		m_number_of_input_channels = -1;
-		m_number_of_output_channels = -1;
+		m_number_of_input_channels = 0;
+		m_number_of_output_channels = 0;
+
+		m_sample_rate = 0;
 
 		m_input_stream = NULL;
 		m_output_stream = NULL;
@@ -113,8 +115,8 @@ namespace integra_internal
 		m_selected_input_device = paNoDevice;
 		m_selected_output_device = paNoDevice;
 
-		m_number_of_input_channels = -1;
-		m_number_of_output_channels = -1;
+		m_number_of_input_channels = 0;
+		m_number_of_output_channels = 0;
 
 		update_available_devices();
 
@@ -145,28 +147,9 @@ namespace integra_internal
 
 		close_streams();
 
-#if 0
-		if( new_input_device == paNoDevice && m_selected_output_device == m_selected_input_device )
-		{
-			/* deselecting duplex device */
-			m_selected_output_device = paNoDevice;
-			m_number_of_output_channels = -1;
-		}
-#endif
-
-
 		m_selected_input_device = new_input_device;
-		m_number_of_input_channels = -1;
+		m_number_of_input_channels = 0;
 
-#if 0
-		if( new_input_device != paNoDevice && m_available_output_devices.count( input_device ) > 0 )
-		{
-			/* selecting duplex device */
-			m_selected_output_device = new_input_device;
-			m_number_of_output_channels = -1;
-		}
-#endif
-	
 		open_streams();
 
 		return CError::SUCCESS;
@@ -196,27 +179,9 @@ namespace integra_internal
 
 		close_streams();
 
-#if 0
-		if( new_output_device == paNoDevice && m_selected_input_device == m_selected_output_device )
-		{
-			/* deselecting duplex device */
-			m_selected_input_device = paNoDevice;
-			m_number_of_input_channels = -1;
-		}
-#endif
-
 		m_selected_output_device = new_output_device;
-		m_number_of_output_channels = -1;
+		m_number_of_output_channels = 0;
 
-#if 0
-		if( new_output_device != paNoDevice && m_available_input_devices.count( output_device ) > 0 )
-		{
-			/* selecting duplex device */
-			m_selected_input_device = new_output_device;
-			m_number_of_input_channels = -1;
-		}
-#endif
-	
 		open_streams();
 
 		return CError::SUCCESS;
@@ -229,6 +194,12 @@ namespace integra_internal
 		{
 			return CError::FAILED;
 		}
+
+		close_streams();
+
+		m_sample_rate = sample_rate;
+
+		open_streams();
 
 		return CError::SUCCESS;
 	}
@@ -377,7 +348,7 @@ namespace integra_internal
 
 	int CPortAudioEngine::get_sample_rate() const
 	{
-		return 44100;		//todo - implement
+		return m_sample_rate;
 	}
 
 
@@ -474,8 +445,6 @@ namespace integra_internal
 			CoInitialize( NULL );
 		#endif
 
-		const double SAMPLE_RATE = 44100;	//todo - implement properly
-
 		if( m_selected_input_device != paNoDevice )
 		{
 			if( m_selected_output_device == m_selected_input_device )
@@ -485,13 +454,13 @@ namespace integra_internal
 				initialize_stream_parameters( input_parameters, m_selected_input_device, false );
 				initialize_stream_parameters( output_parameters, m_selected_output_device, true );
 
-				PaError supported = Pa_IsFormatSupported( &input_parameters, &output_parameters, SAMPLE_RATE );
+				PaError supported = Pa_IsFormatSupported( &input_parameters, &output_parameters, m_sample_rate );
 				if( supported != paFormatIsSupported )
 				{
-					INTEGRA_TRACE_ERROR << "Format not supported: " << Pa_GetErrorText( supported );
+					m_sample_rate = get_default_sample_rate( m_selected_input_device );
 				}
 
-				PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, SAMPLE_RATE, CDspEngine::samples_per_buffer, paNoFlag, duplex_callback, this );
+				PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, duplex_callback, this );
 				if( result == paNoError )
 				{
 					result = Pa_StartStream( m_duplex_stream );
@@ -519,7 +488,13 @@ namespace integra_internal
 				PaStreamParameters input_parameters;
 				initialize_stream_parameters( input_parameters, m_selected_input_device, false );
 
-				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, SAMPLE_RATE, CDspEngine::samples_per_buffer, paNoFlag, input_callback, this );
+				PaError supported = Pa_IsFormatSupported( &input_parameters, NULL, m_sample_rate );
+				if( supported != paFormatIsSupported )
+				{
+					m_sample_rate = get_default_sample_rate( m_selected_input_device );
+				}
+
+				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, input_callback, this );
 				if( result == paNoError )
 				{
 					result = Pa_StartStream( m_input_stream );
@@ -547,7 +522,13 @@ namespace integra_internal
 			PaStreamParameters output_parameters;
 			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
 
-			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, SAMPLE_RATE, CDspEngine::samples_per_buffer, paNoFlag, output_callback, this );
+			PaError supported = Pa_IsFormatSupported( NULL, &output_parameters, m_sample_rate );
+			if( supported != paFormatIsSupported )
+			{
+				m_sample_rate = get_default_sample_rate( m_selected_output_device );
+			}
+
+			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, output_callback, this );
 			if( result == paNoError )
 			{
 				result = Pa_StartStream( m_output_stream );
@@ -609,6 +590,8 @@ namespace integra_internal
 
 	void CPortAudioEngine::initialize_stream_parameters( PaStreamParameters &parameters, int device_index, bool is_output )
 	{
+		assert( m_initialized_ok );
+
 		const PaDeviceInfo *info = Pa_GetDeviceInfo( device_index );
 		assert( info );
 
@@ -631,6 +614,17 @@ namespace integra_internal
 		parameters.suggestedLatency = is_output ? info->defaultLowOutputLatency : info->defaultLowInputLatency;
 
 		parameters.hostApiSpecificStreamInfo = NULL;
+	}
+
+
+	int CPortAudioEngine::get_default_sample_rate( int device_index ) const
+	{
+		assert( m_initialized_ok );
+
+		const PaDeviceInfo *info = Pa_GetDeviceInfo( device_index );
+		assert( info );
+
+		return info->defaultSampleRate;
 	}
 
 

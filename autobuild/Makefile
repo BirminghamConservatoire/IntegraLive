@@ -71,6 +71,13 @@ dmg: $(DEFAULTBUILD)
 	rm $(PRODUCT)_temp.dmg
 	#codesign -f -v -s "3rd Party Mac Developer Installer: Birmingham City University" $(PRODUCT).dmg
 
+dropdmg: $(DEFAULTBUILD)
+	-mkdir $(PRODUCT)
+	-cp .VolumeIcon.icns $(PRODUCT)
+	-cp -r $(APPNAME) $(PRODUCT)
+	dropdmg --config-name="" $(PRODUCT)
+	-rm -rf $(PRODUCT)
+
 run: 
 	open $(APPNAME)
 

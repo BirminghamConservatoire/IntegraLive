@@ -54,6 +54,7 @@ package components.controller
 	import components.model.preferences.AudioSettings;
 	import components.model.preferences.MidiSettings;
 	import components.utils.ModalState;
+	import components.utils.Trace;
 	import components.utils.Utilities;
 	
 	import flexunit.framework.Assert;

@@ -738,12 +738,12 @@ package components.views.ArrangeView
 				{
 					var blockID:int = block.id;
 					
-					controller.processCommand( new RepositionBlock( blockID, block.start, block.end ) );
-					
 					if( _draggedTrackChanges.hasOwnProperty( blockID ) )
 					{
 						controller.processCommand( new SetBlockTrack( blockID, _draggedTrackChanges[ blockID ] ) );
 					}
+
+					controller.processCommand( new RepositionBlock( blockID, block.start, block.end ) );
 				}
 			}
 			

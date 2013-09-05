@@ -846,11 +846,8 @@ bool ntg_should_copy_input_file( const ntg_value *value, ntg_command_source cmd_
 		case NTG_SOURCE_INITIALIZATION:
 		case NTG_SOURCE_LOAD:
 		case NTG_SOURCE_SYSTEM:
-			return false;		/* these sources are not external set commands - do nothing */
-
 		case NTG_SOURCE_HOST:
-			assert( false );
-			return false;		/* we don't expect input file to be set by host! */
+			return false;		/* these sources are not external set commands - do nothing */
 
 		default:
 			assert( false );	/* unhandled command source value */

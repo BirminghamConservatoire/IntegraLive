@@ -8,10 +8,6 @@ lrshift~
 mediasettings/midisettings
 mediasettings/audiosettings
 
-externals/pluginhost~/pluginhost~
-
 bsaylor/partconv~
 
 freeverb~/freeverb~
-
-hcs/sys_gui

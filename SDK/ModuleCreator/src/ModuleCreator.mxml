@@ -204,7 +204,12 @@
 					var quitItem:NativeMenuItem = integraMenuItem.submenu.getItemAt( 6 );
 					quitItem.addEventListener( Event.SELECT, quit ); 
 					
-					//integraMenuItem.submenu.removeItemAt( 0 );	//remove default About menuitem
+					integraMenuItem.submenu.removeItemAt( 0 );	//remove default About menuitem
+					
+					var aboutItem:NativeMenuItem = new NativeMenuItem( "About Integra Module Creator..." );
+					aboutItem.addEventListener( Event.SELECT, onAboutBox );
+					aboutItem.addEventListener( Event.PREPARING, updateAboutBox );
+					integraMenuItem.submenu.addItemAt( aboutItem, 0 );
 				}
 				
 				//Bundles Menu
@@ -231,13 +236,16 @@
 				{
 					addHelpLink( helpMenu.submenu, helpLink );
 				}
-				
-				//separator 
-				helpMenu.submenu.addItem( new NativeMenuItem( "", true ) );
-				var aboutBox:NativeMenuItem = new NativeMenuItem( "About Integra Module Creator..." );
-				aboutBox.addEventListener( Event.SELECT, onAboutBox );
-				aboutBox.addEventListener( Event.PREPARING, updateAboutBox );
-				helpMenu.submenu.addItem( aboutBox );				
+			
+				if( !Globals.isMac )
+				{
+					//separator
+					helpMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+					var aboutBox:NativeMenuItem = new NativeMenuItem( "About Integra Module Creator..." );
+					aboutBox.addEventListener( Event.SELECT, onAboutBox );
+					aboutBox.addEventListener( Event.PREPARING, updateAboutBox );
+					helpMenu.submenu.addItem( aboutBox );
+				}
 			}
 			
 			

@@ -265,8 +265,10 @@ package components.views.LiveView
 
 		private function onPadlockStateMightHaveChanged( command:ServerCommand ):void
 		{
-			//these commands not currently expected to be executed when this view is open 
-			Assert.assertTrue( false );
+			for each( var widget:ControlContainer in _allWidgets )
+			{
+				widget.updateWritableness();
+			}
 		}
 		
 		

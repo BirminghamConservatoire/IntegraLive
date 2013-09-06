@@ -93,32 +93,32 @@ package components.views.ModuleManager
 		{
 			if( Utilities.isEqualOrDescendant( event.target, _3rdPartyModulesList ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTab3rdPartyList" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/ThirdPartyList" );
 			}
 			
 			if( Utilities.isEqualOrDescendant( event.target, _embeddedModulesList ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabEmbeddedList" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/EmbeddedList" );
 			}
 			
 			if( Utilities.isEqualOrDescendant( event.target, _installButton ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabInstallButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/InstallButton" );
 			}
 			
 			if( Utilities.isEqualOrDescendant( event.target, _uninstallButton ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabUninstallButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/UninstallButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _installEmbeddedButton ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabInstallEmbeddedButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/InstallEmbeddedButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _info ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTabInfo" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/Info" );
 			}
 			
 			return null;

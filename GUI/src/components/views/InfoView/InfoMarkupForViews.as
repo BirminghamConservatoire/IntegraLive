@@ -21,12 +21,12 @@
 
 package components.views.InfoView
 {
-	import components.model.Info;
-	import components.utils.Trace;
-	
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
+	
+	import components.model.Info;
+	import components.utils.Trace;
 	
 	import flexunit.framework.Assert;
 
@@ -58,7 +58,12 @@ package components.views.InfoView
 		
 		public function loadContent():void
 		{
-			var contentDirectory:File = File.applicationDirectory.resolvePath( _viewInfoDirectoryName );
+			loadContentDirectoryBranch( File.applicationDirectory.resolvePath( _viewInfoDirectoryName ), "" );
+		}
+		
+		
+		private function loadContentDirectoryBranch( contentDirectory:File, path:String ):void
+		{
 			if( !contentDirectory.exists || !contentDirectory.isDirectory )
 			{
 				Trace.error( "can't find view info content directory", _viewInfoDirectoryName );
@@ -68,13 +73,19 @@ package components.views.InfoView
 			var content:Array = contentDirectory.getDirectoryListing();
 			for each( var contentFile:File in content )
 			{
+				if( contentFile.isDirectory )
+				{
+					loadContentDirectoryBranch( contentFile, path + contentFile.name + "/" );
+					continue;
+				}
+				
 				if( contentFile.extension != _viewInfoFileExtension )
 				{
 					Trace.error( "skipping content file with incorrect extension", contentFile.nativePath );
 					continue;
 				}
 				
-				var contentName:String = contentFile.name;
+				var contentName:String = path + contentFile.name;
 				
 				//strip extension
 				contentName = contentName.substr( 0, contentName.length - _viewInfoFileExtension.length - 1 );

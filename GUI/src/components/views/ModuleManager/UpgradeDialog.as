@@ -148,25 +148,25 @@ package components.views.ModuleManager
 			
 			if( Utilities.isEqualOrDescendant( event.target, _upgradeButton ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogUpgradeButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/UpgradeButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _moduleManagerButton ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogModuleManagerButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/ModuleManagerButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _closeButton ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogCloseButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/CloseButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _alwaysUpgradeCheckbox ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogAlwaysUpgradeButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/AlwaysUpgradeButton" );
 			}
 
-			return viewInfos.getInfoForView( "UpgradeDialog" );
+			return viewInfos.getInfoForView( "UpgradeDialog/Dialog" );
 		}
 
 		

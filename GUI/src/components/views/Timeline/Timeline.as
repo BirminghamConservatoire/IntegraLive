@@ -159,7 +159,7 @@ package components.views.Timeline
 			var viewInfos:InfoMarkupForViews = InfoMarkupForViews.instance;
 			if( mouseY < _markingTop )
 			{
-				return viewInfos.getInfoForView( "TimelineZoomScrollArea" );
+				return viewInfos.getInfoForView( "Timeline/ZoomScrollArea" );
 			}
 			
 			if( mouseY < _markingBottom )
@@ -172,15 +172,15 @@ package components.views.Timeline
 				
 				if( _editable )
 				{
-					return viewInfos.getInfoForView( "TimelineEditableSceneBar" );
+					return viewInfos.getInfoForView( "Timeline/EditableSceneBar" );
 				}
 				else
 				{
-					return viewInfos.getInfoForView( "TimelineNonEditableSceneBar" );
+					return viewInfos.getInfoForView( "Timeline/NonEditableSceneBar" );
 				}
 			}
 			
-			return viewInfos.getInfoForView( "TimelinePlayheadArea" );
+			return viewInfos.getInfoForView( "Timeline/PlayheadArea" );
 		}
 		
 		

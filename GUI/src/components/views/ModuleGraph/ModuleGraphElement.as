@@ -241,7 +241,7 @@ package components.views.ModuleGraph
 		{
 			if( event.target == _liveButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleLiveViewButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleGraph/LiveViewButton" );
 			}
 			else
 			{

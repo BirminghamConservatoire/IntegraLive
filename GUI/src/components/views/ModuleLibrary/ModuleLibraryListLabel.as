@@ -64,16 +64,16 @@ package components.views.ModuleLibrary
 			switch( _moduleSource )
 			{
 				case InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA:	
-					return InfoMarkupForViews.instance.getInfoForView( "ModulesShippedWithIntegra" );
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/ShippedWithIntegra" );
 					
 				case InterfaceDefinition.MODULE_THIRD_PARTY:
-					return InfoMarkupForViews.instance.getInfoForView( "ThirdPartyModules" );
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/ThirdParty" );
 
 				case InterfaceDefinition.MODULE_EMBEDDED:
-					return InfoMarkupForViews.instance.getInfoForView( "EmbeddedModules" );
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/Embedded" );
 					
 				case InterfaceDefinition.MODULE_IN_DEVELOPMENT:
-					return InfoMarkupForViews.instance.getInfoForView( "InDevelopmentModules" );
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/InDevelopment" );
 
 				default:
 					Assert.assertTrue( false );

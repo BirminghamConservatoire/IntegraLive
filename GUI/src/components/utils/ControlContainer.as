@@ -404,12 +404,12 @@ package components.utils
 		{
 			if( event.target == _midiLearnButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ControlMidiLearnButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "Widget/MidiLearnButton" );
 			}
 
 			if( event.target == _includeInLiveViewButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ControlLiveViewButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "Widget/LiveViewButton" );
 			}
 			
 			if( event.target == _padlock )

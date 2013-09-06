@@ -121,32 +121,32 @@ package components.views.ModuleManager
 		{
 			if( Utilities.isEqualOrDescendant( event.target, _switchableModuleList ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabSwitchableList" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/SwitchVersionsTab/SwitchableList" );
 			}
 			
 			if( Utilities.isEqualOrDescendant( event.target, _alternativeVersionsList ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabAlternativeVersionsList" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/SwitchVersionsTab/AlternativeVersionsList" );
 			}
 			
 			if( Utilities.isEqualOrDescendant( event.target, _upgradeAllButton ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsUpgradeAllButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/SwitchVersions/UpgradeAllButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _switchVersionsButton ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabSwitchButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/SwitchVersionsTab/SwitchButton" );
 			}
 			
 			if( Utilities.isEqualOrDescendant( event.target, _info ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabInfo" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/SwitchVersionsTab/Info" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _alwaysUpgradeCheckbox ) )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerSwitchVersionsTabAlwaysUpgrade" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/SwitchVersionsTab/AlwaysUpgrade" );
 			}
 			
 			

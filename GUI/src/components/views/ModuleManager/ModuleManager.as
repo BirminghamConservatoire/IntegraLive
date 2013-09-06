@@ -87,8 +87,8 @@ package components.views.ModuleManager
 				var tabButton:Button = Utilities.getAncestorByType( event.target, Button ) as Button;
 				switch( tabButton.label )
 				{
-					case _manageLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerManageTab" );
-					case _installLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTab" );
+					case _manageLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/ManageTab/Main" );
+					case _installLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/Main" );
 				}
 			}
 			

@@ -93,7 +93,7 @@
 			}
 			
 			
-			private var _accepted = false;
+			private var _accepted:Boolean = false;
 
 
 			private static const _licenseAgreementFileName:String = "assets/agreement.md";

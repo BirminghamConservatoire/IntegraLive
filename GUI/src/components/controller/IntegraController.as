@@ -667,7 +667,7 @@ package components.controller
 		
 		private function createDefaultObjects():void
 		{
-			processCommand( new SetObjectInfo( _model.project.id, InfoMarkupForViews.instance.getInfoForView( "ArrangeView" ).markdown ) );
+			processCommand( new SetObjectInfo( _model.project.id, InfoMarkupForViews.instance.getInfoForView( "ArrangeView/ArrangeView" ).markdown ) );
 			
 			var addTrackCommand:AddTrack = new AddTrack();
 			processCommand( addTrackCommand );

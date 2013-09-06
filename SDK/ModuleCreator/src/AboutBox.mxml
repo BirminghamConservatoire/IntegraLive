@@ -35,7 +35,7 @@
 
 			private function onCreationComplete():void
 			{
-				_versionLabel.text = versionNumber;
+				_versionLabel.text = Globals.versionNumber;
 				
 				_licenseLink.x = _licenseLabel.x + _licenseLabel.width;
 				_licenseLink.text = _licenseText;
@@ -49,27 +49,6 @@
 				PopUpManager.removePopUp( this );
 			}
 			
-			
-			private function get versionNumber():String
-			{
-				var descriptor:XML = NativeApplication.nativeApplication.applicationDescriptor;
-				
-				var ns:Namespace = descriptor.namespaceDeclarations()[0];
-				var versionString:String = descriptor.ns::versionLabel;
-				
-				if( !versionString || versionString.length == 0 )
-				{
-					versionString = descriptor.ns::versionNumber;
-					
-					if( !versionString || versionString.length == 0 )
-					{
-						versionString = "<unknown version>";
-					}
-				}
-				
-				return versionString;
-			}
-
 			
 			private function onRollOverLicenseLink():void
 			{

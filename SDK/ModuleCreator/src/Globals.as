@@ -1,11 +1,12 @@
 package
 {
+	import flash.desktop.NativeApplication;
 	import flash.events.EventDispatcher;
 	import flash.system.Capabilities;
 	
-	import flexunit.framework.Assert;
-	
 	import mx.core.UIComponent;
+	
+	import flexunit.framework.Assert;
 	
 	
 	public class Globals extends EventDispatcher
@@ -49,6 +50,25 @@ package
 		static public function get isWindows():Boolean 	{ return ( Capabilities.os.indexOf( "Windows" ) >= 0 ); 	}
 		static public function get isMac():Boolean		{ return ( Capabilities.os.indexOf( "Mac OS" ) >= 0 );		}
 		
+		static public function get versionNumber():String
+		{
+			var descriptor:XML = NativeApplication.nativeApplication.applicationDescriptor;
+			
+			var ns:Namespace = descriptor.namespaceDeclarations()[0];
+			var versionString:String = descriptor.ns::versionLabel;
+			
+			if( !versionString || versionString.length == 0 )
+			{
+				versionString = descriptor.ns::versionNumber;
+				
+				if( !versionString || versionString.length == 0 )
+				{
+					versionString = "<unknown version>";
+				}
+			}
+			
+			return versionString;			
+		}
 		
 		static public function doTypesMatch( value:String, type:String ):Boolean
 		{

@@ -94,6 +94,7 @@
 				MouseCapture.setSystemManager( systemManager );
 				
 				addEventListener( Event.CLOSING, onClosing );
+				addEventListener( Event.RESIZE, onResize );
 				_interfaceInfo.addEventListener( Globals.modifiedEvent, onInterfaceModified );
 				_endpointInfo.addEventListener( Globals.modifiedEvent, onInterfaceModified );
 				_widgetLayout.addEventListener( Globals.modifiedEvent, onInterfaceModified );
@@ -110,6 +111,8 @@
 				ToolTipManager.scrubDelay = 0;
 				
 				newFile();
+				
+				showLicenseDialogOnStartup();
 			}
 			
 			
@@ -237,6 +240,13 @@
 					addHelpLink( helpMenu.submenu, helpLink );
 				}
 			
+				//separator
+				helpMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+				var licenseDialog:NativeMenuItem = new NativeMenuItem( "License Agreement" );
+				licenseDialog.addEventListener( Event.SELECT, onLicenseDialog );
+				licenseDialog.addEventListener( Event.PREPARING, updateLicenseDialog );
+				helpMenu.submenu.addItem( licenseDialog );
+
 				if( !Globals.isMac )
 				{
 					//separator
@@ -317,7 +327,7 @@
 			
 			private function onHelpLink( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 				
 				var link:String = event.target.data;
 				if( !link )
@@ -351,7 +361,7 @@
 			
 			private function onAboutBox( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 
 				if( _aboutBox )
 				{
@@ -371,6 +381,83 @@
 			private function onAboutBoxClosed( event:Event ):void
 			{
 				_aboutBox = null;
+			}
+
+			
+			private function showLicenseDialogOnStartup():void
+			{
+				var licenceData:Object = persistentLicenceData;
+				
+				if( !licenceData.hasOwnProperty( "accepted" ) || licenceData.accepted != true )
+				{
+					createLicenseDialog( true );
+				}
+			}
+			
+			
+			private function updateLicenseDialog( event:Event ):void
+			{
+				var menuItem:NativeMenuItem = event.target as NativeMenuItem;
+				menuItem.checked = ( _licenseDialog != null ); 
+			}						
+			
+			
+			private function onLicenseDialog( event:Event ):void
+			{
+				if( handleCommandInModalState() ) return;
+				
+				if( _licenseDialog )
+				{
+					PopUpManager.removePopUp( _licenseDialog );
+					_licenseDialog = null;
+				}
+				else
+				{
+					createLicenseDialog( false );
+				}
+			}
+			
+			
+			private function createLicenseDialog( includeAcceptanceButton:Boolean ):void
+			{
+				_licenseDialog = new LicenseDialog;
+				_licenseDialog.addEventListener( Event.REMOVED_FROM_STAGE, onLicenseDialogClosed );
+				PopUpManager.addPopUp( _licenseDialog, this, true );
+				_licenseDialog.includeAcceptanceButton = includeAcceptanceButton;
+				positionLicenseDialog();
+			}
+			
+			
+			
+			private function positionLicenseDialog():void
+			{
+				_licenseDialog.width = width - 40;
+				_licenseDialog.height = height - 40;
+				PopUpManager.centerPopUp( _licenseDialog );
+			}
+
+			
+			private function get persistentLicenceData():Object
+			{
+				var buildNumber:String = Globals.versionNumber;
+				buildNumber = buildNumber.substr( buildNumber.lastIndexOf( "." ) + 1 );
+				var name:String = "LicenseAgreement" + buildNumber;
+					
+				return SharedObject.getLocal( name ).data;
+			}
+			
+			
+			private function onLicenseDialogClosed( event:Event ):void
+			{
+				persistentLicenceData.accepted = _licenseDialog.accepted;
+				if( _licenseDialog.accepted )
+				{
+					_licenseDialog =  null;
+				}
+				else
+				{
+					shutdown();
+				}
 			}
 			
 			
@@ -398,7 +485,7 @@
 			
 			private function fileNew( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 				
 				saveModified( "Create New Interface", newFile );
 			}
@@ -406,7 +493,7 @@
 			
 			private function onSelectTemplate( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 				
 				Assert.assertTrue( event.target.hasOwnProperty( "data" ) );
 				_templateToImport = event.target.data as File;
@@ -418,7 +505,7 @@
 			
 			private function browseForImport( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 				
 				saveModified( "Import Template Interface", doBrowseForImport );
 			}
@@ -426,7 +513,7 @@
 			
 			private function fileLoad( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 
 				saveModified( "Load Interface", doLoad );
 			}
@@ -436,7 +523,7 @@
 			{
 				if( event )
 				{
-					if( handleCommandWhenInAlert() ) return;
+					if( handleCommandInModalState() ) return;
 				}
 				
 				doValidation( doSave );
@@ -458,7 +545,7 @@
 			
 			private function fileSaveAs( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 				
 				doValidation( doSaveAs );
 			}
@@ -505,7 +592,7 @@
 			
 			private function quit( event:Event ):void
 			{
-				if( handleCommandWhenInAlert() ) return;
+				if( handleCommandInModalState() ) return;
 				
 				saveModified( "Quit", shutdown );
 			}
@@ -513,8 +600,19 @@
 			
 			private function onClosing( event:Event ):void
 			{
+				if( _licenseDialog ) return;
+				
 				event.preventDefault();
 				quit( null );
+			}
+			
+			
+			private function onResize( event:Event ):void
+			{
+				if( _licenseDialog )
+				{
+					positionLicenseDialog();
+				}
 			}
 			
 			
@@ -610,9 +708,20 @@
 			}
 			
 			
-			private function handleCommandWhenInAlert():Boolean
+			private function get isInModalState():Boolean
 			{
-				if( AlertManager.areThereAnyAlerts )
+				if( AlertManager.areThereAnyAlerts ) return true;
+				
+				if( _aboutBox ) return true;
+				
+				if( _licenseDialog ) return true;
+				
+				return false;
+			}
+			
+			private function handleCommandInModalState():Boolean
+			{
+				if( isInModalState )
 				{
 					if( nativeWindow.displayState == NativeWindowDisplayState.MINIMIZED )
 					{
@@ -1095,6 +1204,7 @@
 			private var _menu:NativeMenu;
 			private var _bundleMaker:BundleMaker = new BundleMaker;
 			private var _aboutBox:AboutBox = null;
+			private var _licenseDialog:LicenseDialog = null;
 			
 			private const _iidFileName:String = Globals.moduleToplevelDirectoryName + "/interface_definition.iid";
 			

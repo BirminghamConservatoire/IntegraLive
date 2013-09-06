@@ -39,7 +39,7 @@ The lower part of Arrange View shows a Properties Panel. This panel changes cont
 
   ![Block, Track and Project properties selection in Arrange View](../../page-images/shadow-properties_panel_selection.png)
 
-#### Modules
+#### Module View
 
 The Module View is a sub-view of the Arrange View. It can be entered by double-clicking on a block.
 
@@ -77,20 +77,7 @@ A *module* can be used to process, generate or analyse musical sound in Integra 
   
 - MIDI learn can be enabled for a parameter by clicking the MIDI learn icon on the parameter's control ![](../../page-images/MIDI_learn_icon.png). Once incoming MIDI has been received, an automatic route will be created in the *block*'s routing panel.
 
-#### Routing
-In Integra Live, *tracks*, *blocks* and *modules* all have parameters that are used to store values representing their current settings. These values can be routed so that when a source parameter changes, the value of any target parameters also changes. This can be used to route the value of a slider on an external controller to “room size” of a reverb, or to route the value of a “play” button to another “play” button so that playback of two separate modules starts simultaneously.
-
-- To add routing within a *block*, select a *block*, then click the Routing Tab in the Block Properties Panel, then click the “+” icon to add a new route
-
-- The drop-down menus can then be used to set the source *module*, source parameter, target *module* and target parameter
-
-  ![](../../page-images/shadow-routing_panel_add_route.png)
-
-- The same process can also be used for routing between *blocks* or *tracks*, by selecting the parent *track* or *project* respectively
-
-When a route is created between two parameters, the target parameter becomes “locked”. A small lock icon will be displayed on the parameter's control in the module properties panel indicating that it cannot be changed. To temporarily override the lock, hover over the control and hold the `ctrl` key.
-
-#### MIDI Learn
+##### MIDI Learn
 All parameters in Integra Live can be controlled via external MIDI messages, for example from a hardware MIDI device. The simplest way to set up routing between a MIDI controller and a *module* parameter is to use Integra Live’s MIDI learn feature.
 
 - To use MIDI learn, first enable that the correct MIDI input device is selected in the Integra Live Preferences
@@ -104,6 +91,27 @@ All parameters in Integra Live can be controlled via external MIDI messages, for
 - The MIDI learn icon will change to a lock to indicate that the parameter is being controlled by an external device
 
 - To “unlearn” a MIDI → parameter routing click the lock icon on the corresponding parameter and select “Delete Routing from MIDI.cc”
+
+#### Lock Override
+
+When a *module* parameter is being controlled by a source such as an *envelope* or an external MIDI controller, a lock icon ![](../../page-images/lock_icon.png) will be shown on the parameter’s control in the Module Properties Panel. When a parameter is locked it can't be target of another route and the control can't be modified by clicking with the mouse.
+
+- To temporarily override a lock hold down the `ctrl` key before clicking on the control
+
+The parameter will be re-locked after the `ctrl` key is released.
+
+#### Routing
+In Integra Live, *tracks*, *blocks* and *modules* all have parameters that are used to store values representing their current settings. These values can be routed so that when a source parameter changes, the value of any target parameters also changes. This can be used to route the value of a slider on an external controller to “room size” of a reverb, or to route the value of a “play” button to another “play” button so that playback of two separate modules starts simultaneously.
+
+- To add routing within a *block*, select a *block*, then click the Routing Tab in the Block Properties Panel, then click the “+” icon to add a new route
+
+- The drop-down menus can then be used to set the source *module*, source parameter, target *module* and target parameter
+
+  ![](../../page-images/shadow-routing_panel_add_route.png)
+
+- The same process can also be used for routing between *blocks* or *tracks*, by selecting the parent *track* or *project* respectively
+
+When a route is created between two parameters, the target parameter becomes “locked”. A small lock icon will be displayed on the parameter's control in the module properties panel indicating that it cannot be changed. To temporarily override the lock, hover over the control and hold the `ctrl` key.
 
 #### Scripting
 Integra Live has a built-in scripting facility based on the [Lua programming language](http://www.lua.org). Scripts can be used to set and get parameters and perform a range of procedural operations on them.
@@ -301,13 +309,6 @@ When MIDI is received by Integra Live, the MIDI Indicator Icon in the top-right 
 
 If the MIDI Indicator Icon fails to glow when MIDI is sent to Integra Live, check the MIDI device settings in the Integra Live preferences dialog.
 
-#### Lock Override
-
-When a *module* parameter is being controlled by a source such as an *envelope* or an external MIDI controller, a lock icon ![](../../page-images/lock_icon.png) will be shown on the parameter’s control in the Module Properties Panel. When a parameter is locked it can't be target of another route and the control can't be modified by clicking with the mouse.
-
-- To temporarily override a lock hold down the `ctrl` key before clicking on the control
-
-The parameter will be re-locked after the `ctrl` key is released.
 
 #### Lighting
 

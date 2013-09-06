@@ -21,6 +21,7 @@ xcopy "..\..\modules" "..\..\build\Debug\modules" /Y /Q
 if exist ..\..\build\Debug\SDK\templates rd /s /q ..\..\build\Debug\SDK\templates
 mkdir ..\..\build\Debug\SDK\templates
 xcopy "..\..\SDK\templates" "..\..\build\Debug\SDK\templates" /Y /Q /S
+copy "..\..\SDK\license.txt" "..\..\build\Debug\SDK\"
 
 copy "..\..\host\Pd\Integra_Host.pd" "..\..\build\Debug\host\extra"
 

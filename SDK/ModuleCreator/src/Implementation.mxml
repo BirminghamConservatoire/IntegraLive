@@ -571,6 +571,11 @@
 					{
 						continue;
 					}
+					
+					if( file.name == _licenseFilename )
+					{
+						continue;
+					}
 
 					if( file.isDirectory )
 					{
@@ -753,6 +758,16 @@
 					{
 						content.deleteFile();
 					}
+				}
+				
+				var licenseFile:File = File.applicationDirectory.resolvePath( "assets/" + _licenseFilename );
+				if( licenseFile.exists )
+				{
+					licenseFile.copyTo( workingDirectory.resolvePath( licenseFile.name ) );
+				}
+				else
+				{
+					trace( "can't find license file " + licenseFile.nativePath );
 				}
 				
 				_mapWorkingDirectoryContentsToModificationTime = new Object;
@@ -982,6 +997,7 @@
 			private static const _pdInternalObjectsFilename:String = "assets/pd_internal_objects.txt"; 
 			private static const _supportedPdExternalsFilename:String = "assets/supported_pd_externals.txt";
 			private static const _supportedPdAbstractionsFilename:String = "assets/supported_pd_abstractions.txt";
+			private static const _licenseFilename:String = "license.txt"
 			
 			private static const _pdExtension:String = "pd"; 
 
@@ -992,6 +1008,8 @@
 			private static const _workingDirectoryName:String = "Integra Module Creator";
 			
 			private static const _oversizedFileThreshold:int = 1024000;
+			
+			
 			
 		]]>
 	</fx:Script>			

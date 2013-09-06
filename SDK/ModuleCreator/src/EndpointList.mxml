@@ -176,16 +176,42 @@
 			
 			private function validateMyOwnContent():Boolean
 			{
+				_addEndpointButton.errorString = null;
+
 				if( _accordion.numChildren == 0 )
 				{
 					_addEndpointButton.errorString = "You must create at least one Endpoint";
 					return false;
 				}
-				else
+				
+				if( !Config.singleInstance.hasIntegraDeveloperPrivileges )
 				{
-					_addEndpointButton.errorString = null;
-					return true;
+					var foundStreamEndpoint:Boolean = false;
+					for( var i:int = 0; i < _accordion.numChildren; i++ )
+					{
+						var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
+						Assert.assertNotNull( endpoint );
+						
+						if( endpoint.hasStoredXML )
+						{
+							lazyLoadEndpoint( endpoint );
+						}
+
+						if( endpoint._endpointType.selectedItem == Endpoint.streamLabel )
+						{
+							foundStreamEndpoint = true; 
+							break;
+						}
+					}
+					
+					if( !foundStreamEndpoint )
+					{
+						_addEndpointButton.errorString = "At least one Endpoint must be an input or output stream";
+						return false;
+					}
 				}
+					
+				return true;
 			}
 			
 			

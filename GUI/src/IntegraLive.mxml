@@ -331,7 +331,6 @@
 					_autoLoadFile = null;
 				}
 
-				_doingAutoLoad = true;
 				doAutoloadIfNecessary();
 			}
 			
@@ -514,7 +513,6 @@
 						case Utilities.bundleFileExtension:
 							InstallModules.installModules( [ _autoLoadFile ] );
 							_autoLoadFile = null;
-							_doingAutoLoad = false;
 							break;
 						
 						default:
@@ -536,7 +534,6 @@
 
 				_lastFilename = _autoLoadFile.nativePath;
 				_autoLoadFile = null;
-				_doingAutoLoad = false;
 				
 				_controller.loadProject( _lastFilename );
 			}
@@ -581,6 +578,7 @@
 				_isDisplayingProgressPopup = false;
 
 				finishModalState();
+				doAutoloadIfNecessary();
 				
 				if( _crashReportView && _crashReportView.crashType == CrashReport.CRASHTYPE_GUI )
 				{
@@ -722,11 +720,6 @@
 
 				ModalState.isInModalState = false;
 				_menuHandlers.enableMenus( true );
-				
-				if( !_doingAutoLoad )
-				{
-					doAutoloadIfNecessary();
-				}
 			} 
 
 
@@ -1337,7 +1330,6 @@
 	    private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
 	    private var _functionToExecuteAfterSave:Function = null;
 		private var _autoLoadFile:File;
-		private var _doingAutoLoad:Boolean;
 		private var _moduleInDevelopment:File = null
 
 		private var _menuHandlers:MenuHandlers = null;

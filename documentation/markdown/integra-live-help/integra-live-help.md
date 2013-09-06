@@ -75,7 +75,7 @@ A *module* can be used to process, generate or analyse musical sound in Integra 
 
   ![](../../page-images/shadow-parameter_entry.png)
   
-- MIDI learn can be enabled for a parameter by clicking the MIDI learn icon on the parameter's control ![](../../page-images/midi_learn_icon.png). Once incoming MIDI has been received, an automatic route will be created in the *block*'s routing panel.
+- MIDI learn can be enabled for a parameter by clicking the MIDI learn icon on the parameter's control ![](../../page-images/MIDI_learn_icon.png). Once incoming MIDI has been received, an automatic route will be created in the *block*'s routing panel.
 
 #### Routing
 In Integra Live, *tracks*, *blocks* and *modules* all have parameters that are used to store values representing their current settings. These values can be routed so that when a source parameter changes, the value of any target parameters also changes. This can be used to route the value of a slider on an external controller to “room size” of a reverb, or to route the value of a “play” button to another “play” button so that playback of two separate modules starts simultaneously.
@@ -89,6 +89,21 @@ In Integra Live, *tracks*, *blocks* and *modules* all have parameters that are u
 - The same process can also be used for routing between *blocks* or *tracks*, by selecting the parent *track* or *project* respectively
 
 When a route is created between two parameters, the target parameter becomes “locked”. A small lock icon will be displayed on the parameter's control in the module properties panel indicating that it cannot be changed. To temporarily override the lock, hover over the control and hold the `ctrl` key.
+
+#### MIDI Learn
+All parameters in Integra Live can be controlled via external MIDI messages, for example from a hardware MIDI device. The simplest way to set up routing between a MIDI controller and a *module* parameter is to use Integra Live’s MIDI learn feature.
+
+- To use MIDI learn, first enable that the correct MIDI input device is selected in the Integra Live Preferences
+
+- To enable MIDI learn for a parameter, in Module View select a *module*, then click the MIDI learn icon ![](../../page-images/shadow-MIDI_learn_icon.png) for a parameter in the Module Properties Panel
+
+- The MIDI learn icon will then flash until incoming MIDI is received
+
+- Once incoming MIDI has been received, an automatic route will be created in the *block*'s routing panel
+
+- The MIDI learn icon will change to a lock to indicate that the parameter is being controlled by an external device
+
+- To “unlearn” a MIDI → parameter routing click the lock icon on the corresponding parameter and select “Delete Routing from MIDI.cc”
 
 #### Scripting
 Integra Live has a built-in scripting facility based on the [Lua programming language](http://www.lua.org). Scripts can be used to set and get parameters and perform a range of procedural operations on them.
@@ -215,21 +230,84 @@ Info can now be viewed by hovering over the element with the cursor.
 
 ### Module Management
 
-Integra Live comes bundled with a library of official modules. In addition to this, there are facilities for installing and managing user-created 3rd party modules.
+Integra Live supports three types of module:
 
-To install a 3rd party module, double-click the `.module` file or select Install 3rd Party Modules… from the File menu in Integra Live. This will    
+- The Latest Official modules that come bundled with the application
+- Third Party modules created by the Integra community
+- Old versions of modules that are embedded in projects or blocks
+
+To install a Third Party module: 
+
+- double-click a `.module` file *or*
+- select Install Third Party Modules… from the File menu
+
+This will make a copy of the module and add it to the Integra Live module library as shown below.  
+
+![](../../page-images/shadow-module_library_listing.png)
+
+To uninstall a Third Party module:
+
+- Select Module Manager from the application’s View menu
+- Select the Install / Uninstall tab
+- Select the module to be uninstalled from the Installed Third Party Modules listing
+- Click the Uninstall button
+
+#### Module Versions
+
+Integra Live can support multiple versions of the same module. If more than one version of a module is available, a disclosure arrow will be shown to the right of the module name in the module library. Clicking this arrow will reveal the available versions of the module. In the following listing there are three versions of the Stereo Soundfiler module available: the latest official version, a third party version and an out-of-date version embedded in the project. 
+
+![](../../page-images/shadow-module_versions.png)
+
+To upgrade all modules in a project to the latest official version:
+
+- Select Module Manager from the application’s View menu
+- Click the Upgrade All button in the Manage Versions Tab
+
+To switch versions for a specific module:
+
+- Select Module Manager from the application’s View menu
+- Select the module for which multiple versions are available
+- Select the version to switch to from the Alternative Versions list
+- Click the Switch Versions button
+
+This will switch all instances of the module to the selected version.
+
+Versions currently in use within the project are indicated with arrows. The following example shows that the project contains instances of a Stereo Soundfiler module and that these instances use either a Third Party version and an out-of-date embedded version.
+
+![](../../page-images/shadow-modules_in_use.png)
+
+Typically it is best to always upgrade projects to use the latest official versions, but there may be occasions when an alternative version is required because it has characteristics not present in the official version.
 
 ### Other features
 
 #### Mute Control
 
-/** to be written **/
+*Projects*, *tracks* and *blocks* can all be muted, making them inactive and silent.
 
-#### MIDI Monitor
+- To mute a *project* or *track*, click the speaker icon next to the VU meter: ![](../../page-images/mute_icon.png)
 
-/** to be written **/
+When a *track* is muted, it will be greyed out as shown below.
+
+![](../../page-images/shadow-track_muted.png)
+  
+Individual *blocks* can also be temporarily muted by clicking the speaker icon in Module View. This mute setting will be overridden if the block is re-activated by the global playhead.
+
+
+#### MIDI Indicator
+
+When MIDI is received by Integra Live, the MIDI Indicator Icon in the top-right corner of the application window will glow. 
+
+- To view incoming MIDI note and CC values click the MIDI Indicator Icon. This will display the MIDI Info panel: ![](../../page-images/midi_monitor.png)
+
+If the MIDI Indicator Icon fails to glow when MIDI is sent to Integra Live, check the MIDI device settings in the Integra Live preferences dialog.
 
 #### Lock Override
+
+When a *module* parameter is being controlled by a source such as an *envelope* or an external MIDI controller, a lock icon ![](../../page-images/lock_icon.png) will be shown on the parameter’s control in the Module Properties Panel. When a parameter is locked it can't be target of another route and the control can't be modified by clicking with the mouse.
+
+- To temporarily override a lock hold down the `ctrl` key before clicking on the control
+
+The parameter will be re-locked after the `ctrl` key is released.
 
 #### Lighting
 
@@ -248,7 +326,7 @@ To install a 3rd party module, double-click the `.module` file or select Install
 - *Tracks*, *blocks* and *modules* can be renamed by double-clicking their name and typing in the text-entry box
 
 ### Further support
-This guide is not intended to be exhaustive. For additional questions, feature requests or bug reports, please use the [online feedback forum](http://integralive.org/forum).
+This guide is not intended to be exhaustive. For additional questions, feature requests or bug reports, please use the [Integra Live forum](http://integralive.org/forum).
 
 
 <link rel="stylesheet" type="text/css" href="../../page-images/style.css" media="screen" />

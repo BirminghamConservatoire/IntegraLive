@@ -355,6 +355,7 @@ void ntg_container_active_handler( ntg_server *server, const ntg_node *node, boo
 	{
 		const ntg_path *path = ( ( ntg_path ** ) activated_nodes->elems )[ i ];
 		const ntg_node *activated_node = ntg_node_find_by_path( path, server->root );
+		const ntg_node_attribute *active_attribute = ntg_find_attribute( activated_node, NTG_ATTRIBUTE_ACTIVE );
 		assert( activated_node );
 
 		if( ntg_interface_is_core_name_match( activated_node->interface, NTG_CLASS_ENVELOPE ) )
@@ -368,6 +369,14 @@ void ntg_container_active_handler( ntg_server *server, const ntg_node *node, boo
 			assert( player_tick );
 
 			ntg_set_( server, NTG_SOURCE_SYSTEM, player_tick->path, player_tick->value );
+		}
+
+		/* 
+		 reset active in case some connection failed to fire due to not being active yet
+		*/
+		if( active_attribute )
+		{
+			ntg_set_( server, NTG_SOURCE_SYSTEM, active_attribute->path, active_attribute->value );
 		}
 	}
 

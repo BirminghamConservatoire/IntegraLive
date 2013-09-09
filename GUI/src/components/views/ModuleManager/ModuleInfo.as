@@ -60,13 +60,15 @@ package components.views.ModuleManager
 				{
 					default:
 					case ColorScheme.LIGHT:
-						_backgroundColor ='#ffffff';
-						_textColor ='#6D6D6D';
+						_backgroundColor = 0xffffff;
+						_cssBackgroundColor ='#ffffff';
+						_cssTextColor ='#6D6D6D';
 						break;
 					
 					case ColorScheme.DARK:
-						_backgroundColor ='#000000';
-						_textColor = '#939393';
+						_backgroundColor = 0x000000;
+						_cssBackgroundColor ='#000000';
+						_cssTextColor = '#939393';
 						break;
 				}
 				
@@ -84,8 +86,8 @@ package components.views.ModuleManager
 		
 		private function get htmlHeader():String
 		{
-			Assert.assertNotNull( _textColor );
-			Assert.assertNotNull( _backgroundColor );
+			Assert.assertNotNull( _cssTextColor );
+			Assert.assertNotNull( _cssBackgroundColor );
 			
 			var fontSize:Number = getStyle( FontSize.STYLENAME );
 			
@@ -93,8 +95,8 @@ package components.views.ModuleManager
 					"<style type='text/css'>" +
 						
 						"body {" +
-							"background-color:" + _backgroundColor + ";" + 
-							"color:" + _textColor + ";" +
+							"background-color:" + _cssBackgroundColor + ";" + 
+							"color:" + _cssTextColor + ";" +
 							"font-size:" + fontSize + ";" +
 						"} " +
 
@@ -119,12 +121,14 @@ package components.views.ModuleManager
 			}
 			
 			_html = new HTML;
+			_html.paintsDefaultBackground = true;
 			
 			_html.setStyle( "left", ModuleManagerList.cornerRadius );
 			_html.setStyle( "right", ModuleManagerList.cornerRadius );
 			_html.setStyle( "top", ModuleManagerList.cornerRadius );
 			_html.setStyle( "bottom", ModuleManagerList.cornerRadius );
 			_html.setStyle( "borderStyle", "none" );
+			_html.setStyle( "backgroundColor", _backgroundColor );
 			
 			var htmlText:String = _info.html;
 			htmlText = "<html>" + htmlHeader + htmlText.substr( 6 );
@@ -141,7 +145,8 @@ package components.views.ModuleManager
 
 		private var _html:HTML = null;
 		
-		private var _backgroundColor:String;
-		private var _textColor:String;
+		private var _backgroundColor:uint;
+		private var _cssBackgroundColor:String;
+		private var _cssTextColor:String;
 	}
 }

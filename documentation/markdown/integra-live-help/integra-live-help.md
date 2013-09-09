@@ -82,7 +82,7 @@ All parameters in Integra Live can be controlled via external MIDI messages, for
 
 - To use MIDI learn, first enable that the correct MIDI input device is selected in the Integra Live Preferences
 
-- To enable MIDI learn for a parameter, in Module View select a *module*, then click the MIDI learn icon ![](../../page-images/shadow-MIDI_learn_icon.png) for a parameter in the Module Properties Panel
+- To enable MIDI learn for a parameter, in Module View select a *module*, then click the MIDI learn icon ![](../../page-images/MIDI_learn_icon.png) for a parameter in the Module Properties Panel
 
 - The MIDI learn icon will then flash until incoming MIDI is received
 

@@ -301,13 +301,13 @@ When a *track* is muted, it will be greyed out as shown below.
 Individual *blocks* can also be temporarily muted by clicking the speaker icon in Module View. This mute setting will be overridden if the block is re-activated by the global playhead.
 
 
-#### MIDI Indicator
+#### MIDI Input Indicator
 
-When MIDI is received by Integra Live, the MIDI Indicator Icon in the top-right corner of the application window will glow. 
+When MIDI is received by Integra Live, the MIDI Input Indicator in the top-right corner of the application window will glow. 
 
-- To view incoming MIDI note and CC values click the MIDI Indicator Icon. This will display the MIDI Info panel: ![](../../page-images/midi_monitor.png)
+- To view incoming MIDI note and CC values click the MIDI Input Indicator. This will display the MIDI Info panel: ![](../../page-images/midi_monitor.png)
 
-If the MIDI Indicator Icon fails to glow when MIDI is sent to Integra Live, check the MIDI device settings in the Integra Live preferences dialog.
+If the MIDI Input Indicator fails to glow when MIDI is sent to Integra Live, check the MIDI device settings in the Integra Live preferences dialog.
 
 
 #### Lighting

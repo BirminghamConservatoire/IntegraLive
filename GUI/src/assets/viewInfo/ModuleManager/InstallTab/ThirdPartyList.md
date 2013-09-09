@@ -1,2 +1,5 @@
+# Installed 3rd Party Modules
 
-todo - write documentation
+A list of installed Third Party modules
+
+To uninstall, select a module and click "Uninstall"

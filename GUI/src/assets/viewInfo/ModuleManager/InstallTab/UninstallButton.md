@@ -1,2 +1,4 @@
 
-todo - write documentation
+# Uninstall
+
+Click here to uninstall selected Third Party modules

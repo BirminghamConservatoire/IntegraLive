@@ -1,3 +1,4 @@
-#Module Search Clear Button
+<!-- Clear Search -->
+# Clear Search Box
 
-todo - write documentation
+Click here to clear the search box

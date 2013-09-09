@@ -1,3 +1,4 @@
-# Midi Input Button
+<!-- MIDI Input Indicator -->
+# MIDI Input Indicator
 
-todo - write documentation
+Click here to show incoming MIDI values

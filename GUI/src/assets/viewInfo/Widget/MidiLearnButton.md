@@ -1,4 +1,8 @@
-<!--Add to Live View-->
-# Add to Live View
+<!-- MIDI Learn Button -->
+# MIDI Learn Button
 
-Todo - write this info!
+Click here to activate MIDI learn for this control
+
+When incoming MIDI is received, the MIDI icon will change to a padlock
+
+To unlock the control, click the padlock and select "Delete Routing from MIDI.cc"

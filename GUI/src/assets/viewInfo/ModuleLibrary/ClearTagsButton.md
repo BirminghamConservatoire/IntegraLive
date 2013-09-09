@@ -1,3 +1,4 @@
-#Module Tags Clear Button
+<!-- Clear Tags -->
+# Clear Tags
 
-todo - write documentation
+Click here to clear the selected tags

@@ -75,9 +75,16 @@ dropdmg: $(DEFAULTBUILD)
 	-mkdir $(PRODUCT)
 	-cp .VolumeIcon.icns $(PRODUCT)
 	-cp -r $(APPNAME) $(PRODUCT)
-	dropdmg --config-name="" $(PRODUCT)
+	dropdmg --config-name="Integra Live" $(PRODUCT)
 	-rm -rf $(PRODUCT)
 
+creator-dropdmg: creator
+	-mkdir $(CREATORPRODUCT)
+	-cp .VolumeIcon.icns $(CREATORPRODUCT)
+	-cp -r $(CREATORAPPNAME) $(CREATORPRODUCT)
+	dropdmg --config-name="Developer SDK" $(CREATORPRODUCT)
+	-rm -rf $(CREATORPRODUCT)
+	
 run: 
 	open $(APPNAME)
 

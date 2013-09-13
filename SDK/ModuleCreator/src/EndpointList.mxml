@@ -168,6 +168,11 @@
 				{
 					var endpoint:Endpoint = _accordion.getChildAt( i ) as Endpoint;
 					Assert.assertNotNull( endpoint );
+					
+					if( endpoint.hasStoredXML )
+					{
+						continue;
+					}					
 
 					endpoint.onEndpointNameChanged();
 				}

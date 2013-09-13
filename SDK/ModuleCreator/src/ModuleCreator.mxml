@@ -844,6 +844,8 @@
 				var zipFile:FZip = new FZip();
 				
 				zipFile.addFile( _iidFileName, saveInterfaceDeclaration() );
+				
+				zipFile.addFile( _licenseTargetFileName, licenseFileContent );
 
 				_implementation.storeImplementation( zipFile, Globals.moduleImplementationDirectoryName );
 				
@@ -969,6 +971,27 @@
 				byteArray.writeUTFBytes( xml.toString() );
 
 				return byteArray;
+			}
+			
+			
+			private function get licenseFileContent():ByteArray
+			{
+				var licenseFileContent:ByteArray = new ByteArray;
+				
+				var licenseFile:File = File.applicationDirectory.resolvePath( _licenseSourceFileName );
+				if( licenseFile.exists )
+				{
+					var licenseFileStream:FileStream = new FileStream;
+					licenseFileStream.open( licenseFile, FileMode.READ );
+					licenseFileStream.readBytes( licenseFileContent );
+					licenseFileStream.close();
+				}
+				else
+				{
+					Assert( false );
+				}				
+				
+				return licenseFileContent;
 			}
 			
 			
@@ -1207,6 +1230,10 @@
 			private var _licenseDialog:LicenseDialog = null;
 			
 			private const _iidFileName:String = Globals.moduleToplevelDirectoryName + "/interface_definition.iid";
+
+			private const _licenseFileName:String = "license.txt";
+			private const _licenseSourceFileName:String = "assets/" + _licenseFileName;
+			private const _licenseTargetFileName:String = Globals.moduleToplevelDirectoryName + "/" + _licenseFileName;
 			
 		]]>
 	</fx:Script>			

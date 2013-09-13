@@ -52,7 +52,6 @@ package components.utils
 	import components.model.Connection;
 	import components.model.Envelope;
 	import components.model.Info;
-	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
@@ -1903,8 +1902,6 @@ package components.utils
 				updateWritableness();
 			}
 
-			Assert.assertTrue( _addedStageKeyboardListeners );
-			
 			if( _addedStageKeyboardListeners )
 			{
 				stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
@@ -1917,6 +1914,13 @@ package components.utils
 		private function onRemovedFromStage( event:Event ):void
 		{
 			if( _popupMenu ) _popupMenu.hide();
+
+			if( _addedStageKeyboardListeners )
+			{
+				stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
+				stage.removeEventListener( KeyboardEvent.KEY_UP, onKeyUp );
+				_addedStageKeyboardListeners = false;
+			}
 		}
 		
 		

@@ -28,7 +28,6 @@ package components.controls
     import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.utils.Timer;
-    import flash.utils.getTimer;
     
     import flexunit.framework.Assert;
     
@@ -247,14 +246,14 @@ package components.controls
 			
             switch( orientation )
             {
-            case HORIZONTAL:
-                return new Rectangle( 0, height / 3, width, height / 3 );
-				
-            case VERTICAL:				
-                return new Rectangle( width / 3, 0, width / 3, height );
-            default:
-                Assert.assertTrue( false );
-                return null;
+	            case HORIZONTAL:
+	                return new Rectangle( 0, height / 3, width, height / 3 );
+					
+	            case VERTICAL:				
+	                return new Rectangle( width / 3, 0, width / 3, height - _verticalBottomMargin );
+	            default:
+	                Assert.assertTrue( false );
+	                return null;
             }
         }
 		
@@ -279,6 +278,7 @@ package components.controls
         private static const _attributeName:String = "level";
 		
         private static const _peakMarkerWidth:Number = 2;
+		private static const _verticalBottomMargin:Number = 8;
 		
 		private static const _attritionInterval:Number = 100;
 		private static const _attritionStartCount:int = 1;

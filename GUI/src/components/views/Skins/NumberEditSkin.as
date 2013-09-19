@@ -23,7 +23,6 @@
 package components.views.Skins
 {
 	import components.model.userData.ColorScheme;
-	import flexunit.framework.Assert;
 	import mx.skins.ProgrammaticSkin;
 
 	public class NumberEditSkin extends ProgrammaticSkin

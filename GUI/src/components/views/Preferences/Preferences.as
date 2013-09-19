@@ -43,9 +43,9 @@ package components.views.Preferences
 	import components.controller.serverCommands.SetAudioSettings;
 	import components.controller.serverCommands.SetAvailableAudioDevices;
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
-	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableMidiDrivers;
+	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetMidiDriver;
 	import components.controller.serverCommands.SetMidiInputDevice;
 	import components.controller.serverCommands.SetMidiOutputDevice;
@@ -150,9 +150,9 @@ package components.views.Preferences
 						_midiDriverLabel.setStyle( "color", 0x747474 );
 						_midiInLabel.setStyle( "color", 0x747474 );
 						_midiOutLabel.setStyle( "color", 0x747474 );
-						
-						_audioInChannelsEdit.setStyle( "color", 0xcfcfcf );
-						_audioOutChannelsEdit.setStyle( "color", 0xcfcfcf );
+
+						setNumberEditColors( _audioInChannelsEdit, 0xcfcfcf, 0xa1a1a1 );
+						setNumberEditColors( _audioOutChannelsEdit, 0xcfcfcf, 0xa1a1a1 );
 						
 						setButtonTextColor( _resetButton, 0x6D6D6D );
 						
@@ -175,6 +175,9 @@ package components.views.Preferences
 						_midiDriverLabel.setStyle( "color", 0x8c8c8c );
 						_midiInLabel.setStyle( "color", 0x8c8c8c );
 						_midiOutLabel.setStyle( "color", 0x8c8c8c );
+						
+						setNumberEditColors( _audioInChannelsEdit, 0x313131, 0x5e5e5e );
+						setNumberEditColors( _audioOutChannelsEdit, 0x313131, 0x5e5e5e );
 						
 						_audioInChannelsEdit.setStyle( "color", 0x313131 );
 						_audioOutChannelsEdit.setStyle( "color", 0x313131 );
@@ -443,8 +446,9 @@ package components.views.Preferences
 			_audioInCombo.selectedItem = audioSettings.selectedInputDevice;
 			_audioOutCombo.selectedItem = audioSettings.selectedOutputDevice;
 			_sampleRateCombo.selectedItem = audioSettings.sampleRate;
-			_audioInChannelsEdit.text = String( audioSettings.inputChannels );
-			_audioOutChannelsEdit.text = String( audioSettings.outputChannels );
+			
+			updateChannelsBox( _audioInChannelsEdit, audioSettings.inputChannels );
+			updateChannelsBox( _audioOutChannelsEdit, audioSettings.outputChannels );
 
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
@@ -452,6 +456,21 @@ package components.views.Preferences
 			_midiDriverCombo.selectedItem = midiSettings.selectedDriver;
 			_midiInCombo.selectedItem = midiSettings.selectedInputDevice;
 			_midiOutCombo.selectedItem = midiSettings.selectedOutputDevice;
+		}
+		
+		
+		private function updateChannelsBox( input:TextInput, value:int ):void
+		{
+			if( value )
+			{
+				input.enabled = true;
+				input.text = String( value );
+			}
+			else
+			{
+				input.enabled = false;
+				input.text = "-";
+			}
 		}
 
 
@@ -580,6 +599,13 @@ package components.views.Preferences
 			controller.activateUndoStack = true;
 		}
 	
+		
+		private function setNumberEditColors( numberEdit:TextInput, textColor:uint, disabledColor:uint )
+		{
+			numberEdit.setStyle( "color", textColor );
+			numberEdit.setStyle( "disabledColor", disabledColor );
+		}
+		
 		
 		private function setButtonTextColor( button:Button, color:uint ):void
 		{

@@ -38,6 +38,7 @@ namespace integra_internal
 	const string CAudioSettingsLogic::endpoint_available_drivers = "availableDrivers";
 	const string CAudioSettingsLogic::endpoint_available_input_devices = "availableInputDevices";
 	const string CAudioSettingsLogic::endpoint_available_output_devices = "availableOutputDevices";
+	const string CAudioSettingsLogic::endpoint_available_sample_rates = "availableSampleRates";
 	const string CAudioSettingsLogic::endpoint_selected_driver = "selectedDriver";
 	const string CAudioSettingsLogic::endpoint_selected_input_device = "selectedInputDevice";
 	const string CAudioSettingsLogic::endpoint_selected_output_device = "selectedOutputDevice";
@@ -155,6 +156,7 @@ namespace integra_internal
 		update_string_field( server, endpoint_available_drivers, CStringHelper::string_vector_to_string( audio_engine.get_available_drivers() ) );
 		update_string_field( server, endpoint_available_input_devices, CStringHelper::string_vector_to_string( audio_engine.get_available_input_devices() ) );
 		update_string_field( server, endpoint_available_output_devices, CStringHelper::string_vector_to_string( audio_engine.get_available_output_devices() ) );
+		update_string_field( server, endpoint_available_sample_rates, CStringHelper::string_vector_to_string( int_vector_to_string_vector( audio_engine.get_available_sample_rates() ) ) );
 
 		update_string_field( server, endpoint_selected_driver, audio_engine.get_selected_driver() );
 		update_string_field( server, endpoint_selected_input_device, audio_engine.get_selected_input_device() );
@@ -189,6 +191,20 @@ namespace integra_internal
 		{
 			server.process_command( ISetCommand::create( endpoint->get_path(), &CIntegerValue( new_value ) ), CCommandSource::SYSTEM );
 		}
+	}
+
+
+	string_vector CAudioSettingsLogic::int_vector_to_string_vector( const int_vector &input )
+	{
+		string_vector result;
+		for( int_vector::const_iterator i = input.begin(); i != input.end(); i++ )
+		{
+			ostringstream stream;
+			stream << *i;
+			result.push_back( stream.str() );
+		}
+
+		return result;
 	}
 
 

@@ -43,6 +43,7 @@ package components.views.Preferences
 	import components.controller.serverCommands.SetAudioSettings;
 	import components.controller.serverCommands.SetAvailableAudioDevices;
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
+	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableMidiDrivers;
 	import components.controller.serverCommands.SetMidiDriver;
@@ -82,6 +83,7 @@ package components.views.Preferences
 			addUpdateMethod( SetAvailableMidiDrivers, onPreferencesChanged );
 			addUpdateMethod( SetAvailableAudioDevices, onPreferencesChanged );
 			addUpdateMethod( SetAvailableMidiDevices, onPreferencesChanged );
+			addUpdateMethod( SetAvailableSampleRates, onPreferencesChanged );
 			
 			horizontalScrollPolicy = ScrollPolicy.OFF; 
 			verticalScrollPolicy = ScrollPolicy.OFF;   
@@ -359,7 +361,7 @@ package components.views.Preferences
 			}
 			
 			_audioDriverCombo.dataProvider = data;
-			_audioDriverCombo.enabled = ( data.length > 0 );
+			_audioDriverCombo.enabled = ( data.length > 1 );
 			
 			//set combo contents for audio input devices
 			data = new Array;
@@ -369,7 +371,7 @@ package components.views.Preferences
 			}
 			
 			_audioInCombo.dataProvider = data;
-			_audioInCombo.enabled = ( data.length > 0 );
+			_audioInCombo.enabled = ( data.length > 1 );
 			
 			//set combo contents for audio output devices
 			data = new Array;
@@ -379,27 +381,18 @@ package components.views.Preferences
 			}
 			
 			_audioOutCombo.dataProvider = data;
-			_audioOutCombo.enabled = ( data.length > 0 );
+			_audioOutCombo.enabled = ( data.length > 1 );
 
 			
 			//set combo contents for sample rate
-			var audioSettingsDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( AudioSettings._serverInterfaceName );
-			if( audioSettingsDefinition )
+			data = new Array;
+			for each( var sampleRate:int in audioSettings.availableSampleRates )
 			{
-				var sampleRateEndpointDefinition:EndpointDefinition = audioSettingsDefinition.getEndpointDefinition( "sampleRate" );
-				Assert.assertNotNull( sampleRateEndpointDefinition );
-				
-				var allowedSampleRates:Vector.<Object> = sampleRateEndpointDefinition.controlInfo.stateInfo.constraint.allowedValues;
-				Assert.assertNotNull( allowedSampleRates );
-				
-				data = new Array;
-				for each( var sampleRate:int in allowedSampleRates )
-				{
-					data.push( sampleRate );
-				}
-				
-				_sampleRateCombo.dataProvider = data;
+				data.push( sampleRate );
 			}
+			
+			_sampleRateCombo.dataProvider = data;
+			_sampleRateCombo.enabled = ( data.length > 1 );
 			
 			//set combo contents for midi driver
 			data = new Array;
@@ -409,7 +402,7 @@ package components.views.Preferences
 			}
 			
 			_midiDriverCombo.dataProvider = data;
-			_midiDriverCombo.enabled = ( data.length > 0 );
+			_midiDriverCombo.enabled = ( data.length > 1 );
 			
 			//set combo contents for midi input devices
 			data = new Array;
@@ -419,7 +412,7 @@ package components.views.Preferences
 			}
 			
 			_midiInCombo.dataProvider = data;
-			_midiInCombo.enabled = ( data.length > 0 );
+			_midiInCombo.enabled = ( data.length > 1 );
 			
 			//set combo contents for midi input devices
 			data = new Array;
@@ -429,7 +422,7 @@ package components.views.Preferences
 			}
 			
 			_midiOutCombo.dataProvider = data;
-			_midiOutCombo.enabled = ( data.length > 0 );
+			_midiOutCombo.enabled = ( data.length > 1 );
 		}
 
 		

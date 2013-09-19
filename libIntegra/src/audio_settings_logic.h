@@ -47,6 +47,8 @@ namespace integra_internal
 
 			static void update_all_fields_for_all_audio_settings_nodes( CServer &server );
 
+			static string_vector int_vector_to_string_vector( const int_vector &input );
+
 			typedef std::unordered_set<CAudioSettingsLogic *> audio_settings_logic_set;
 
 			static audio_settings_logic_set s_all_audio_settings_logics;
@@ -54,6 +56,7 @@ namespace integra_internal
 			static const string endpoint_available_drivers;
 			static const string endpoint_available_input_devices;
 			static const string endpoint_available_output_devices;
+			static const string endpoint_available_sample_rates;
 			static const string endpoint_selected_driver;
 			static const string endpoint_selected_input_device;
 			static const string endpoint_selected_output_device;

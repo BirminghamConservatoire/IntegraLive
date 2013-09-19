@@ -21,11 +21,11 @@
 
 package components.model.preferences
 {
+	import flash.filesystem.File;
+	
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.utils.Utilities;
-	
-	import flash.filesystem.File;
 	
 	public class AudioSettings extends IntegraDataObject
 	{
@@ -37,12 +37,13 @@ package components.model.preferences
 		public function get availableDrivers():Vector.<String> { return _availableDrivers; }
 		public function get availableInputDevices():Vector.<String> { return _availableInputDevices; }
 		public function get availableOutputDevices():Vector.<String> { return _availableOutputDevices; }
+		public function get availableSampleRates():Vector.<int> { return _availableSampleRates; }
 		
 		public function get selectedDriver():String { return _selectedDriver; }
 		public function get selectedInputDevice():String { return _selectedInputDevice; }
 		public function get selectedOutputDevice():String { return _selectedOutputDevice; }
-
 		public function get sampleRate():int { return _sampleRate; }
+
 		public function get inputChannels():int { return _inputChannels; }
 		public function get outputChannels():int { return _outputChannels; }
 
@@ -51,12 +52,13 @@ package components.model.preferences
 		public function set availableDrivers( drivers:Vector.<String> ):void { _availableDrivers = drivers; }
 		public function set availableInputDevices( inputDevices:Vector.<String> ):void { _availableInputDevices = inputDevices; }
 		public function set availableOutputDevices( outputDevices:Vector.<String> ):void { _availableOutputDevices = outputDevices; }
+		public function set availableSampleRates( sampleRates:Vector.<int> ):void { _availableSampleRates = sampleRates; }
 		
 		public function set selectedDriver( driver:String ):void { _selectedDriver = driver; }
 		public function set selectedInputDevice( inputDevice:String ):void { _selectedInputDevice = inputDevice; }
 		public function set selectedOutputDevice( outputDevice:String ):void { _selectedOutputDevice = outputDevice; }
-
 		public function set sampleRate( sampleRate:int ):void { _sampleRate = sampleRate; }
+		
 		public function set inputChannels( inputChannels:int ):void { _inputChannels = inputChannels; }
 		public function set outputChannels( outputChannels:int ):void { _outputChannels = outputChannels; }
 		
@@ -82,6 +84,12 @@ package components.model.preferences
 
 				case "availableOutputDevices":
 					Utilities.makeStringVectorFromPackedString( String( value ), _availableOutputDevices );
+					break;
+
+				case "availableSampleRates":
+					var stringVector:Vector.<String> = new Vector.<String>;
+					Utilities.makeStringVectorFromPackedString( String( value ), stringVector );
+					Utilities.stringVectorToIntVector( stringVector, _availableSampleRates );
 					break;
 				
 				case "selectedDriver":
@@ -137,6 +145,7 @@ package components.model.preferences
 		private var _availableDrivers:Vector.<String> = new Vector.<String>;
 		private var _availableInputDevices:Vector.<String> = new Vector.<String>;
 		private var _availableOutputDevices:Vector.<String> = new Vector.<String>;
+		private var _availableSampleRates:Vector.<int> = new Vector.<int>;
 
 		private var _selectedDriver:String = "";
 		private var _selectedInputDevice:String = "";

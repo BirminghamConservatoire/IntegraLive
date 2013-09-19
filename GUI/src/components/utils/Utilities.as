@@ -438,6 +438,17 @@ package components.utils
 		}
 		
 		
+		public static function stringVectorToIntVector( input:Vector.<String>, output:Vector.<int> ):void
+		{
+			output.length = 0;
+			
+			for each( var string:String in input )
+			{
+				output.push( int( string ) );
+			}
+		}
+		
+		
 		public static function isDescendant( candidateDescendant:DisplayObject, candidateAncestor:DisplayObjectContainer ):Boolean
 		{
 			for( var iterator:DisplayObjectContainer = candidateDescendant.parent; iterator; iterator = iterator.parent )

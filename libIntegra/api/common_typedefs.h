@@ -51,6 +51,8 @@ namespace integra_api
 	typedef std::unordered_set<string> string_set;
 	typedef std::unordered_map<string, string> string_map;
 
+	/* integers */
+	typedef std::vector<int> int_vector;
 };
 
 

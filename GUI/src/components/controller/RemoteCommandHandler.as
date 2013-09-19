@@ -34,6 +34,7 @@ package components.controller
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableMidiDrivers;
+	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetMidiDriver;
 	import components.controller.serverCommands.SetMidiInputDevice;
@@ -284,6 +285,14 @@ package components.controller
 						var availableOutputDevices:Vector.<String> = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableOutputDevices );
 						command = new SetAvailableAudioDevices( null, availableOutputDevices );
+						break;
+					
+					case "availableSampleRates":
+						var availableSampleRates:Vector.<int> = new Vector.<int>;
+						var stringVector:Vector.<String> = new Vector.<String>;
+						Utilities.makeStringVectorFromPackedString( String( value ), stringVector );
+						Utilities.stringVectorToIntVector( stringVector, availableSampleRates );
+						command = new SetAvailableSampleRates( availableSampleRates );
 						break;
 
 					case "selectedDriver":

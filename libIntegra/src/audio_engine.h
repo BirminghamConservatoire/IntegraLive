@@ -55,6 +55,7 @@ namespace integra_internal
 			virtual string_vector get_available_drivers() const = 0;
 			virtual string_vector get_available_input_devices() const = 0;
 			virtual string_vector get_available_output_devices() const = 0;
+			virtual int_vector get_available_sample_rates() const = 0;
 
 			virtual string get_selected_driver() const = 0;
 			virtual string get_selected_input_device() const = 0;

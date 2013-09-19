@@ -36,6 +36,9 @@ namespace integra_internal
 {
 	const string CPortAudioEngine::none = "none";
 
+	/* list of common sample rates derived from http://en.wikipedia.org/wiki/Sampling_rate#Audio */
+	const int CPortAudioEngine::potential_sample_rates[] = { 11025, 22050, 32000, 44100, 48000, 96000, 192000, 0 };
+
 
 	CPortAudioEngine::CPortAudioEngine()
 	{
@@ -119,6 +122,10 @@ namespace integra_internal
 		m_number_of_output_channels = 0;
 
 		update_available_devices();
+		update_available_sample_rates();
+
+		set_input_device_to_default();
+		set_output_device_to_default();
 
 		return CError::SUCCESS;
 	}
@@ -152,6 +159,8 @@ namespace integra_internal
 
 		open_streams();
 
+		update_available_sample_rates();
+
 		return CError::SUCCESS;
 	}
 
@@ -183,6 +192,8 @@ namespace integra_internal
 		m_number_of_output_channels = 0;
 
 		open_streams();
+
+		update_available_sample_rates();
 
 		return CError::SUCCESS;
 	}
@@ -274,8 +285,27 @@ namespace integra_internal
 
 		set_driver( api_info->name );
 
+		set_sample_rate( 0 );
+
+		return CError::SUCCESS;
+	}
+
+
+	void CPortAudioEngine::set_input_device_to_default()
+	{
+		if( m_selected_api == api_none() ) 
+		{
+			return;
+		}
+
+		const PaHostApiInfo *api_info = Pa_GetHostApiInfo( Pa_HostApiTypeIdToHostApiIndex( m_selected_api ) );
+		if( !api_info )
+		{
+			INTEGRA_TRACE_ERROR << "Failed to get api info";
+			return;
+		}
+
 		string default_input_device( none );
-		string default_output_device( none );
 
 		if( api_info->defaultInputDevice != paNoDevice )
 		{
@@ -290,6 +320,26 @@ namespace integra_internal
 			}
 		}
 
+		set_input_device( default_input_device );
+	}
+
+
+	void CPortAudioEngine::set_output_device_to_default()
+	{
+		if( m_selected_api == api_none() ) 
+		{
+			return;
+		}
+
+		const PaHostApiInfo *api_info = Pa_GetHostApiInfo( Pa_HostApiTypeIdToHostApiIndex( m_selected_api ) );
+		if( !api_info )
+		{
+			INTEGRA_TRACE_ERROR << "Failed to get api info";
+			return;
+		}
+
+		string default_output_device( none );
+
 		if( api_info->defaultOutputDevice != paNoDevice )
 		{
 			const PaDeviceInfo *output_device = Pa_GetDeviceInfo( api_info->defaultOutputDevice );
@@ -303,11 +353,7 @@ namespace integra_internal
 			}
 		}
 
-		set_sample_rate( 0 );
-		set_input_device( default_input_device );
 		set_output_device( default_output_device );
-
-		return CError::SUCCESS;
 	}
 
 
@@ -350,6 +396,12 @@ namespace integra_internal
 		std::sort( devices.begin(), devices.end(), CCompareDeviceNames( device_map ) );
 
 		return devices;
+	}
+
+
+	int_vector CPortAudioEngine::get_available_sample_rates() const
+	{
+		return m_available_sample_rates;
 	}
 
 
@@ -496,6 +548,70 @@ namespace integra_internal
 			{
 				m_available_output_devices[ CStringHelper::trim( device_info->name ) ] = i;
 			}
+		}
+	}
+
+
+	void CPortAudioEngine::update_available_sample_rates()
+	{
+		m_available_sample_rates.clear();
+
+		bool has_input = ( m_selected_input_device != paNoDevice );
+		bool has_output = ( m_selected_output_device != paNoDevice );
+
+		if( !has_input && !has_output )
+		{
+			return;
+		}
+
+		PaStreamParameters input_parameters, output_parameters;
+		if( has_input )
+		{
+			initialize_stream_parameters( input_parameters, m_selected_input_device, false );
+		}
+
+		if( has_output )
+		{
+			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
+		}
+
+		bool is_duplex = ( m_selected_output_device == m_selected_input_device );
+
+		for( int i = 0; true; i++ )
+		{
+			int potential_sample_rate = potential_sample_rates[ i ];
+			if( !potential_sample_rate )
+			{
+				break;
+			}
+
+			if( is_duplex )
+			{
+				if( Pa_IsFormatSupported( &input_parameters, &output_parameters, potential_sample_rate ) != paFormatIsSupported )
+				{
+					continue;
+				}
+			}
+			else
+			{
+				if( has_input )
+				{
+					if( Pa_IsFormatSupported( &input_parameters, NULL, potential_sample_rate ) != paFormatIsSupported )
+					{
+						continue;
+					}
+				}
+
+				if( has_output )
+				{
+					if( Pa_IsFormatSupported( NULL, &output_parameters, potential_sample_rate ) != paFormatIsSupported )
+					{
+						continue;
+					}
+				}
+			}
+			
+			m_available_sample_rates.push_back( potential_sample_rate );
 		}
 	}
 

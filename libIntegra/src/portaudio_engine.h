@@ -52,6 +52,7 @@ namespace integra_internal
 			string_vector get_available_drivers() const;
 			string_vector get_available_input_devices() const;
 			string_vector get_available_output_devices() const;
+			int_vector get_available_sample_rates() const;
 
 			string get_selected_driver() const;
 			string get_selected_input_device() const;
@@ -68,6 +69,7 @@ namespace integra_internal
 
 			void update_available_apis();
 			void update_available_devices();
+			void update_available_sample_rates();
 
 			string_vector get_available_devices( const device_map &device_map ) const;
 
@@ -82,16 +84,19 @@ namespace integra_internal
 			void output_handler( void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
 			void duplex_handler( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags );
 
-
 			PaHostApiTypeId api_none() const;
 
 			PaHostApiIndex get_selected_api_index() const;
+
+			void set_input_device_to_default();
+			void set_output_device_to_default();
 
 			bool m_initialized_ok;
 
 			api_map m_available_apis;
 			device_map m_available_input_devices;
 			device_map m_available_output_devices;
+			int_vector m_available_sample_rates;
 
 			PaHostApiTypeId m_selected_api;
 			PaDeviceIndex m_selected_input_device;
@@ -106,6 +111,7 @@ namespace integra_internal
 			PaStream *m_duplex_stream;
 
 			static const string none;
+			static const int potential_sample_rates[];
 
 			class CCompareApiNames : public std::binary_function<string, string, bool>
 			{

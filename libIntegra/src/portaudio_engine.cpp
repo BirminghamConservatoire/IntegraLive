@@ -256,6 +256,57 @@ namespace integra_internal
 			return CError::FAILED;
 		}
 
+		PaHostApiIndex default_api_index = Pa_GetDefaultHostApi();
+		if( default_api_index < 0 )
+		{
+			INTEGRA_TRACE_ERROR << "Failed to get default host api: " << Pa_GetErrorText( default_api_index );
+			set_driver( none );
+			return CError::FAILED;
+		}
+
+		const PaHostApiInfo *api_info = Pa_GetHostApiInfo( default_api_index );
+		if( !api_info )
+		{
+			INTEGRA_TRACE_ERROR << "Failed to get default api info";
+			set_driver( none );
+			return CError::FAILED;
+		}
+
+		set_driver( api_info->name );
+
+		string default_input_device( none );
+		string default_output_device( none );
+
+		if( api_info->defaultInputDevice != paNoDevice )
+		{
+			const PaDeviceInfo *input_device = Pa_GetDeviceInfo( api_info->defaultInputDevice );
+			if( input_device )
+			{
+				default_input_device = input_device->name;
+			}
+			else
+			{
+				INTEGRA_TRACE_ERROR << "failed to get device info for default input device " << api_info->defaultInputDevice;
+			}
+		}
+
+		if( api_info->defaultOutputDevice != paNoDevice )
+		{
+			const PaDeviceInfo *output_device = Pa_GetDeviceInfo( api_info->defaultOutputDevice );
+			if( output_device )
+			{
+				default_output_device = output_device->name;
+			}
+			else
+			{
+				INTEGRA_TRACE_ERROR << "failed to get device info for default input device " << api_info->defaultInputDevice;
+			}
+		}
+
+		set_sample_rate( 0 );
+		set_input_device( default_input_device );
+		set_output_device( default_output_device );
+
 		return CError::SUCCESS;
 	}
 

@@ -193,6 +193,7 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClCompile Include="..\src\portaudio_engine.cpp" />
     <ClCompile Include="..\src\reentrance_checker.cpp" />
     <ClCompile Include="..\src\rename_command.cpp" />
+    <ClCompile Include="..\src\ring_buffer.cpp" />
     <ClCompile Include="..\src\save_command.cpp" />
     <ClCompile Include="..\src\scaler_logic.cpp" />
     <ClCompile Include="..\src\scene_logic.cpp" />
@@ -262,6 +263,7 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClInclude Include="..\src\portaudio_engine.h" />
     <ClInclude Include="..\src\reentrance_checker.h" />
     <ClInclude Include="..\src\rename_command.h" />
+    <ClInclude Include="..\src\ring_buffer.h" />
     <ClInclude Include="..\src\save_command.h" />
     <ClInclude Include="..\src\scaler_logic.h" />
     <ClInclude Include="..\src\scene_logic.h" />

@@ -26,8 +26,12 @@
 
 #include <unordered_map>
 
+
 namespace integra_internal
 {
+	class CRingBuffer;
+
+
 	class CPortAudioEngine : public IAudioEngine
 	{
 		friend int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
@@ -91,6 +95,9 @@ namespace integra_internal
 			void set_input_device_to_default();
 			void set_output_device_to_default();
 
+			void initialize_ring_buffer();
+			void create_process_buffer();
+
 			bool m_initialized_ok;
 
 			api_map m_available_apis;
@@ -110,8 +117,14 @@ namespace integra_internal
 			PaStream *m_output_stream;
 			PaStream *m_duplex_stream;
 
+			float *m_process_buffer;
+			float *m_dummy_output_buffer;
+
+			CRingBuffer *m_ring_buffer;
+
 			static const string none;
 			static const int potential_sample_rates[];
+			static const int ring_buffer_msecs;
 
 			class CCompareApiNames : public std::binary_function<string, string, bool>
 			{

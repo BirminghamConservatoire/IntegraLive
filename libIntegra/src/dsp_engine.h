@@ -25,6 +25,13 @@
 #include "api/error.h"
 #include "node.h"
 
+#include <pthread.h>
+
+namespace pd
+{
+	class PdBase;
+}
+
 
 namespace integra_internal
 {
@@ -41,14 +48,29 @@ namespace integra_internal
 			CError disconnect_modules( const CNodeEndpoint &source, const CNodeEndpoint &target );
 			CError send_value( const CNodeEndpoint &target );
 
+			void process_buffer( const float *input, float *output, int input_channels, int output_channels, int sample_rate );
+
 			static const int samples_per_buffer;
 
 		private:
 
-			void test_libpd();
+			bool has_configuration_changed( int input_channels, int output_channels, int sample_rate ) const;
 
+			bool is_configuration_valid() const;
+			void initialize_audio_configuration( int input_channels, int output_channels, int sample_rate );
 
 			string get_stream_connection_name( const IEndpointDefinition &endpoint_definition, const IInterfaceDefinition &interface_definition ) const;
+
+			pd::PdBase *m_pd;
+
+			bool m_initialised;
+			int m_input_channels;
+			int m_output_channels;
+			int m_sample_rate;
+
+			pthread_mutex_t m_mutex;
+
+			static const int max_channels;
 	};
 }
 

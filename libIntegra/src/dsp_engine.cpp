@@ -25,11 +25,8 @@
 #include "interface_definition.h"
 #include "api/trace.h"
 
-#ifdef _WINDOWS
-#include "windows.h"	//for test_libpd()
-#endif
-
 #include "PdBase.hpp"
+
 
 using namespace integra_api;
 
@@ -37,16 +34,89 @@ using namespace integra_api;
 namespace integra_internal
 {
 	const int CDspEngine::samples_per_buffer = 64;
+	const int CDspEngine::max_channels = 64;
 
 
 	CDspEngine::CDspEngine()
 	{
-		test_libpd();
+		pthread_mutex_init( &m_mutex, NULL );
+
+		m_input_channels = 2;
+		m_output_channels = 2;
+		m_sample_rate = 44100;
+
+		m_pd = new pd::PdBase;
+		m_pd->init( m_input_channels, m_output_channels, m_sample_rate );
+
+		const string patch_name = "test_patch.pd";
+		const string path_path = "C:/";
+		pd::Patch patch = m_pd->openPatch( patch_name, path_path );
+		bool is_valid = patch.isValid();
+
+		m_initialised = true;
 	}
 
 
 	CDspEngine::~CDspEngine()
 	{
+		pthread_mutex_lock( &m_mutex );
+
+		m_pd->clear();
+		delete m_pd;
+
+		pthread_mutex_unlock( &m_mutex );
+
+		pthread_mutex_destroy( &m_mutex );
+	}
+
+
+	bool CDspEngine::has_configuration_changed( int input_channels, int output_channels, int sample_rate ) const
+	{
+		if( input_channels != m_input_channels ) return true;
+		if( output_channels != m_output_channels ) return true;
+		if( sample_rate != m_sample_rate ) return true;
+
+		return false;
+	}
+
+
+	bool CDspEngine::is_configuration_valid() const
+	{
+		if( m_input_channels < 0 ) return false;
+		if( m_output_channels < 0 ) return false;
+
+		if( m_input_channels == 0 && m_output_channels == 0 ) return false;
+
+		if( m_sample_rate <= 0 ) return false;
+
+		return true;
+	}
+
+
+	void CDspEngine::initialize_audio_configuration( int input_channels, int output_channels, int sample_rate )
+	{
+		m_input_channels = input_channels;
+		m_output_channels = output_channels;
+		m_sample_rate = sample_rate;
+
+		if( is_configuration_valid() )
+		{
+			m_initialised = m_pd->init( m_input_channels, m_output_channels, m_sample_rate );
+			if( m_initialised )
+			{
+				m_pd->computeAudio( true );
+			}
+			else
+			{
+				INTEGRA_TRACE_ERROR << "failed to initialize pd configuration";
+			}
+		}
+		else
+		{
+			INTEGRA_TRACE_ERROR << "invalid configuration!";
+
+			m_initialised = false;
+		}
 	}
 
 
@@ -54,7 +124,11 @@ namespace integra_internal
 	{
 		INTEGRA_TRACE_PROGRESS << "add module id " << id << " as " << patch_path;
 
+		pthread_mutex_lock( &m_mutex );
+
 		//todo - implement
+
+		pthread_mutex_unlock( &m_mutex );
 
 		return CError::SUCCESS;
 	}
@@ -64,7 +138,11 @@ namespace integra_internal
 	{
 		INTEGRA_TRACE_PROGRESS << "remove module id " << id;
 
+		pthread_mutex_lock( &m_mutex );
+
 		//todo - implement
+
+		pthread_mutex_unlock( &m_mutex );
 
 		return CError::SUCCESS;
 	}
@@ -74,7 +152,11 @@ namespace integra_internal
 	{
 		INTEGRA_TRACE_PROGRESS << "connect " << source.get_path().get_string() << " to " << target.get_path().get_string();
 
+		pthread_mutex_lock( &m_mutex );
+
 		//todo - implement
+
+		pthread_mutex_unlock( &m_mutex );
 
 		return CError::SUCCESS;
 	}
@@ -84,7 +166,11 @@ namespace integra_internal
 	{
 		INTEGRA_TRACE_PROGRESS << "disconnect " << source.get_path().get_string() << " from " << target.get_path().get_string();
 
+		pthread_mutex_lock( &m_mutex );
+
 		//todo - implement
+
+		pthread_mutex_unlock( &m_mutex );
 
 		return CError::SUCCESS;
 	}
@@ -94,13 +180,61 @@ namespace integra_internal
 	{
 		INTEGRA_TRACE_PROGRESS << "send value to " << target.get_path().get_string();
 
+		pthread_mutex_lock( &m_mutex );
+
 		//todo - implement
+
+		pthread_mutex_unlock( &m_mutex );
 
 		return CError::SUCCESS;
 	}
 
 
-	void CDspEngine::test_libpd()
+	void CDspEngine::process_buffer( const float *input, float *output, int input_channels, int output_channels, int sample_rate )
+	{
+		pthread_mutex_lock( &m_mutex );
+
+		//THRU
+		/*for( int i = 0; i < samples_per_buffer; i++ )
+		{
+			float input_mix( 0 );
+			if( input_channels > 0 )
+			{
+				for( int j = 0; j < input_channels; j++ )
+				{
+					input_mix += input[ i * input_channels + j ];
+				}
+				input_mix /= input_channels;
+			}
+
+			for( int j = 0; j < output_channels; j++ )
+			{
+				output[ i * output_channels + j ] = input_mix;
+			}
+		}*/
+
+		if( has_configuration_changed( input_channels, output_channels, sample_rate ) )
+		{
+			initialize_audio_configuration( input_channels, output_channels, sample_rate );
+		}
+
+		if( m_initialised )
+		{
+			/* pd needs a writable input pointer, although presumably does not write to it */
+			float *input_writable = ( float * ) input;
+
+			m_pd->processFloat( 1, input_writable, output );
+		}
+		else
+		{
+			memset( output, 0, output_channels * samples_per_buffer * sizeof( float ) );
+		}
+
+		pthread_mutex_unlock( &m_mutex );
+	}
+
+
+	/*void CDspEngine::test_libpd()
 	{
 		//test_libpd only implemented in windows!
 		#ifdef _WINDOWS
@@ -177,7 +311,7 @@ namespace integra_internal
 			pd->clear();
 			delete pd;
 		#endif
-	}
+	}*/
 
 
 	string CDspEngine::get_stream_connection_name( const IEndpointDefinition &endpoint_definition, const IInterfaceDefinition &interface_definition ) const

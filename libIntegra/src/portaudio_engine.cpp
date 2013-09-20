@@ -23,11 +23,16 @@
 
 #include "portaudio_engine.h"
 #include "dsp_engine.h"
+#include "ring_buffer.h"
 #include "api/trace.h"
 #include "api/string_helper.h"
 
 #include <assert.h>
 #include <algorithm>	
+
+#ifdef _WINDOWS
+	#include <windows.h>	/* for CoInitialize, CoUninitialize */
+#endif
 
 
 namespace integra_internal
@@ -36,10 +41,14 @@ namespace integra_internal
 
 	const int CPortAudioEngine::potential_sample_rates[] = { 11025, 22050, 32000, 44100, 48000, 96000, 192000, 0 };
 
+	const int CPortAudioEngine::ring_buffer_msecs = 2000;
+
 
 
 	CPortAudioEngine::CPortAudioEngine()
 	{
+		Sleep( 10000 );
+
 		m_selected_api = api_none();
 		m_selected_input_device = paNoDevice;
 		m_selected_output_device = paNoDevice;
@@ -52,6 +61,11 @@ namespace integra_internal
 		m_input_stream = NULL;
 		m_output_stream = NULL;
 		m_duplex_stream = NULL;
+
+		m_ring_buffer = new CRingBuffer;
+
+		m_dummy_output_buffer = NULL;
+		m_process_buffer = NULL;
 
 		PaError error_code = Pa_Initialize();
 		m_initialized_ok = ( error_code == paNoError );
@@ -77,6 +91,11 @@ namespace integra_internal
 		}
 
 		close_streams();
+		
+		delete m_ring_buffer;
+
+		assert( !m_dummy_output_buffer );
+		assert( !m_process_buffer );
 
 		PaError error_code = Pa_Terminate();
 		if( error_code != paNoError )
@@ -643,6 +662,8 @@ namespace integra_internal
 					}
 					else
 					{
+						Pa_CloseStream( m_duplex_stream );
+
 						INTEGRA_TRACE_ERROR << "Error starting duplex stream: " << Pa_GetErrorText( result );
 						m_selected_input_device = paNoDevice;
 						m_selected_output_device = paNoDevice;
@@ -667,7 +688,7 @@ namespace integra_internal
 					m_sample_rate = get_default_sample_rate( m_selected_input_device );
 				}
 
-				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, input_callback, this );
+				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, m_sample_rate, paFramesPerBufferUnspecified, paNoFlag, input_callback, this );
 				if( result == paNoError )
 				{
 					result = Pa_StartStream( m_input_stream );
@@ -677,6 +698,8 @@ namespace integra_internal
 					}
 					else
 					{
+						Pa_CloseStream( m_input_stream );
+
 						INTEGRA_TRACE_ERROR << "Error starting input stream: " << Pa_GetErrorText( result );
 						m_selected_input_device = paNoDevice;
 					}
@@ -708,6 +731,9 @@ namespace integra_internal
 				}
 			}
 
+			initialize_ring_buffer();
+			create_process_buffer();
+
 			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, output_callback, this );
 			if( result == paNoError )
 			{
@@ -715,14 +741,11 @@ namespace integra_internal
 				if( result == paNoError )
 				{
 					INTEGRA_TRACE_PROGRESS << "Started Audio Output Stream";
-
-					/*if( m_selected_input_device != paNoDevice )
-					{
-						m_ring_buffer = new CRingBuffer;
-					}*/
 				}
 				else
 				{
+					Pa_CloseStream( m_output_stream );
+					
 					INTEGRA_TRACE_ERROR << "Error starting output stream: " << Pa_GetErrorText( result );
 					m_selected_output_device = paNoDevice;
 				}
@@ -765,7 +788,36 @@ namespace integra_internal
 
 			INTEGRA_TRACE_PROGRESS << "Closed duplex stream";
 		}
+
+		if( m_dummy_output_buffer )
+		{
+			delete [] m_dummy_output_buffer;
+			m_dummy_output_buffer = NULL;
+		}
+
+		if( m_process_buffer )
+		{
+			delete [] m_process_buffer;
+			m_process_buffer = NULL;
+		}
 	}
+
+
+	void CPortAudioEngine::initialize_ring_buffer()
+	{
+		m_ring_buffer->set_number_of_channels( m_number_of_input_channels );
+		m_ring_buffer->set_buffer_length( ring_buffer_msecs * m_sample_rate / 1000 );
+		m_ring_buffer->clear();
+	}
+
+
+	void CPortAudioEngine::create_process_buffer()
+	{
+		assert( !m_process_buffer );
+		m_process_buffer = new float[ CDspEngine::samples_per_buffer * m_number_of_input_channels ];
+		memset( m_process_buffer, 0, CDspEngine::samples_per_buffer * m_number_of_input_channels * sizeof( float ) );
+	}
+
 
 
 	void CPortAudioEngine::initialize_stream_parameters( PaStreamParameters &parameters, int device_index, bool is_output )
@@ -819,16 +871,22 @@ namespace integra_internal
 		{
 			INTEGRA_TRACE_ERROR << "input overflow";
 		}
+		
+		const float *input = static_cast< const float * > ( input_buffer );
 
-		/*if( dlg->m_outputDeviceIndex >= 0 )
+		if( m_output_stream )
 		{
-			ASSERT( dlg->m_ringBuffer );
-			dlg->m_ringBuffer->write( ( const SAMPLE * ) inputBuffer, framesPerBuffer * NUMBER_OF_CHANNELS );
+			m_ring_buffer->write( input, frames_per_buffer );
 		}
 		else
 		{
-			dlg->doSomeProcessing( ( const SAMPLE * ) inputBuffer, NULL, framesPerBuffer );
-		}*/
+			if( !m_dummy_output_buffer )
+			{
+				m_dummy_output_buffer = new float[ CDspEngine::samples_per_buffer * m_number_of_output_channels ];
+			}
+
+			get_dsp_engine().process_buffer( input, m_dummy_output_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
+		}
 	}
 
 
@@ -844,49 +902,22 @@ namespace integra_internal
 			INTEGRA_TRACE_ERROR << "output overflow";
 		}
 
-		static float theta[ 32 ];
+		assert( frames_per_buffer == CDspEngine::samples_per_buffer );
 
-		float *output = ( float * ) output_buffer;
-		for( int i = 0; i < frames_per_buffer; i++ )
+		float *output = static_cast< float * > ( output_buffer );
+
+		assert( m_process_buffer );
+
+		if( m_input_stream )
 		{
-			for( int channel = 0; channel < m_number_of_output_channels; channel++ )
-			{
-				float value = sin( theta[ channel ] );
-				output[ i * m_number_of_output_channels + channel ] = value;
-
-				theta[ channel ] += 0.05 * ( channel + 1 );
-				if( theta[ channel ] >= 6.283185307179586476925286766559 )
-				{
-					theta[ channel ] -= 6.283185307179586476925286766559;
-				}
-			}
-		}
-
-		//ensure process buffer exists and is large enough
-		/*int sizeNeeded = framesPerBuffer * NUMBER_OF_CHANNELS;
-		if( dlg->m_processBuffer ) 
-		{
-			if( dlg->m_processBufferSize < sizeNeeded )
-			{
-				delete[] dlg->m_processBuffer;
-				dlg->m_processBuffer = new float[ sizeNeeded ];
-				dlg->m_processBufferSize = sizeNeeded;
-			}
+			m_ring_buffer->read( m_process_buffer, CDspEngine::samples_per_buffer );
 		}
 		else
 		{
-			dlg->m_processBuffer = new float[ sizeNeeded ];
-			dlg->m_processBufferSize = sizeNeeded;
+			memset( m_process_buffer, 0, CDspEngine::samples_per_buffer * m_number_of_input_channels * sizeof( float ) );
 		}
 
-		if( dlg->m_ringBuffer )
-		{
-			dlg->m_ringBuffer->read( dlg->m_processBuffer, framesPerBuffer * NUMBER_OF_CHANNELS );
-		}
-
-		dlg->doSomeProcessing( dlg->m_processBuffer, ( SAMPLE * ) outputBuffer, framesPerBuffer );
-
-		return paContinue;*/
+		get_dsp_engine().process_buffer( m_process_buffer, output, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
 	}
 
 
@@ -912,25 +943,12 @@ namespace integra_internal
 			INTEGRA_TRACE_ERROR << "output overflow";
 		}
 
-		//todo
+		assert( frames_per_buffer == CDspEngine::samples_per_buffer );
 
-		static float theta[ 32 ];
+		const float *input = static_cast< const float * >( input_buffer );
+		float *output = static_cast< float * >( output_buffer );
 
-		float *output = ( float * ) output_buffer;
-		for( int i = 0; i < frames_per_buffer; i++ )
-		{
-			for( int channel = 0; channel < m_number_of_output_channels; channel++ )
-			{
-				float value = sin( theta[ channel ] );
-				output[ i * m_number_of_output_channels + channel ] = value;
-
-				theta[ channel ] += 0.08 * ( channel + 1 );
-				if( theta[ channel ] >= 6.283185307179586476925286766559 )
-				{
-					theta[ channel ] -= 6.283185307179586476925286766559;
-				}
-			}
-		}
+		get_dsp_engine().process_buffer( input, output, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
 	}
 
 

@@ -47,6 +47,7 @@ namespace integra_internal
 
 		m_pd = new pd::PdBase;
 		m_pd->init( m_input_channels, m_output_channels, m_sample_rate );
+		m_pd->computeAudio( true );
 
 		const string patch_name = "test_patch.pd";
 		const string path_path = "C:/";

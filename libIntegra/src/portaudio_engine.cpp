@@ -47,8 +47,6 @@ namespace integra_internal
 
 	CPortAudioEngine::CPortAudioEngine()
 	{
-		Sleep( 10000 );
-
 		m_selected_api = api_none();
 		m_selected_input_device = paNoDevice;
 		m_selected_output_device = paNoDevice;
@@ -299,6 +297,9 @@ namespace integra_internal
 		}
 
 		set_driver( api_info->name );
+
+		set_input_device_to_default();
+		set_output_device_to_default();
 
 		set_sample_rate( 0 );
 

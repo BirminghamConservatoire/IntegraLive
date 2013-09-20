@@ -29,21 +29,17 @@
 #include <assert.h>
 #include <algorithm>	
 
-#include <windows.h>		//todo - remove - for Sleep()
-
 
 namespace integra_internal
 {
 	const string CPortAudioEngine::none = "none";
 
-	/* list of common sample rates derived from http://en.wikipedia.org/wiki/Sampling_rate#Audio */
 	const int CPortAudioEngine::potential_sample_rates[] = { 11025, 22050, 32000, 44100, 48000, 96000, 192000, 0 };
+
 
 
 	CPortAudioEngine::CPortAudioEngine()
 	{
-		Sleep( 10000 );
-
 		m_selected_api = api_none();
 		m_selected_input_device = paNoDevice;
 		m_selected_output_device = paNoDevice;

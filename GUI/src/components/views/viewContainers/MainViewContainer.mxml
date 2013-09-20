@@ -206,6 +206,7 @@
 				if( !style || style == ColorScheme.STYLENAME )
 				{
 					var comboTextColor:uint;
+					var comboDisabledColor:uint;
 					var comboBackgroundColor:uint;
 					var comboSelectedBackgroundColor:uint;
 					
@@ -221,6 +222,7 @@
 							_moduleGraphTransitionCanvas.setStyle( "backgroundColor", 0xC0C0C0 );
 
 							comboTextColor = 0xcfcfcf;
+							comboDisabledColor = 0xa1a1a1;
 							comboBackgroundColor = 0x747474;
 							comboSelectedBackgroundColor = 0x848484;
 
@@ -235,6 +237,7 @@
 							_moduleGraphTransitionCanvas.setStyle( "backgroundColor", 0x404040 );
 
 							comboTextColor = 0x313131;
+							comboDisabledColor = 0x5e5e5e;
 							comboBackgroundColor = 0x8c8c8c;
 							comboSelectedBackgroundColor = 0x7c7c7c;
 
@@ -251,6 +254,7 @@
 						comboBoxStyle.setStyle( "color", comboTextColor );
 						comboBoxStyle.setStyle( "textRollOverColor", comboTextColor );
 						comboBoxStyle.setStyle( "textSelectedColor", comboTextColor );
+						comboBoxStyle.setStyle( "disabledColor", comboDisabledColor );
 						comboBoxStyle.setStyle( "rollOverColor", comboSelectedBackgroundColor );
 						comboBoxStyle.setStyle( "selectionColor", comboSelectedBackgroundColor );
 						comboBoxStyle.setStyle( "alternatingItemColors", [ comboBackgroundColor, comboBackgroundColor ] ); 					

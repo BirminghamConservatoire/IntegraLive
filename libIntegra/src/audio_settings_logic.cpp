@@ -197,6 +197,7 @@ namespace integra_internal
 	string_vector CAudioSettingsLogic::int_vector_to_string_vector( const int_vector &input )
 	{
 		string_vector result;
+
 		for( int_vector::const_iterator i = input.begin(); i != input.end(); i++ )
 		{
 			ostringstream stream;

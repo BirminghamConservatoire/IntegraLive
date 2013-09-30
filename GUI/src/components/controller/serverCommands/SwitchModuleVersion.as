@@ -334,6 +334,11 @@ package components.controller.serverCommands
 			
 			for each( var liveViewControl:LiveViewControl in liveViewControls )
 			{
+				if( liveViewControl.moduleID != objectID )
+				{
+					continue;
+				}
+				
 				var newWidgetDefinition:WidgetDefinition = newInterface.getWidgetDefinition( liveViewControl.controlInstanceName );
 				if( newWidgetDefinition )
 				{

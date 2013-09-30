@@ -49,10 +49,6 @@
 #include "api/module_manager.h"
 
 
-#define HELPSTR_VERSION "Return the current version of libIntegra\n\\return {'response':'system.version', 'version':<string>\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
-
-#define HELPSTR_PRINTSTATE "Dump the entire node and attribute state to stdout for testing purposes\n\\return {'response':'system.printstate'\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
-
 #define HELPSTR_INTERFACELIST "Return a list of ids of interfaces available for instantiation on the server\n\\return {'response':'query.interfacelist', 'interfacelist':<array>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
 
 #define HELPSTR_INTERFACEINFO "Return interface info for a specified interface\n\\return {'response':'query.interfaceinfo', 'interfaceinfo':<struct>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
@@ -88,6 +84,12 @@
 #define HELPSTR_UNINSTALL_MODULE "Uninstall 3rd party module\n\\param <string module guid>\n\\return {'response':'module.uninstallmodule, remainsasembedded:<boolean>'}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
 
 #define HELPSTR_LOAD_MODULE_IN_DEVELOPMENT "Temporarily install module-in-development - only for this lifecycle of libIntegra\n\\param <string module file path>\n\\return {'response':'module.loadmoduleindevelopment', moduleid:<string>, previousmoduleid:<string, optional>, previousremainsasembedded<boolean, optional>}\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}\n"
+
+#define HELPSTR_VERSION "Return the current version of libIntegra\n\\return {'response':'system.version', 'version':<string>\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
+
+#define HELPSTR_DUMPLIBINTEGRASTATE "Dump the entire node and attribute state to stdout for testing purposes\n\\return {'response':'system.dumplibintegrastate'\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
+
+#define HELPSTR_DUMPDSPSTATE "Dump the state of libpd as a pd patch for testing purposes\n\\param <string output file path>\n\\return {'response':'system.dumpdspstate'\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
 
 
 #define RESPONSE_LABEL      "response"
@@ -860,7 +862,7 @@ static xmlrpc_value *ntg_xmlrpc_version_callback( CServerLock &server, const int
 }
 
 
-static xmlrpc_value *ntg_xmlrpc_print_state_callback( CServerLock &server, const int argc, va_list argv )
+static xmlrpc_value *ntg_xmlrpc_dump_libintegra_state_callback( CServerLock &server, const int argc, va_list argv )
 {
     xmlrpc_env *env;
     xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
@@ -869,11 +871,34 @@ static xmlrpc_value *ntg_xmlrpc_print_state_callback( CServerLock &server, const
 
     struct_ = xmlrpc_struct_new(env);
 
-	server->dump_state();
+	server->dump_libintegra_state();
 
-    xmlrpc_temp = xmlrpc_string_new(env, "system.printstate");
+    xmlrpc_temp = xmlrpc_string_new(env, "system.dumplibintegrastate");
     xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
+
+    return struct_;
+}
+
+
+static xmlrpc_value *ntg_xmlrpc_dump_dsp_state_callback( CServerLock &server, const int argc, va_list argv )
+{
+    xmlrpc_env *env;
+    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
+
+    env = va_arg(argv, xmlrpc_env *);
+
+	char *filepath = va_arg(argv, char *);
+
+    struct_ = xmlrpc_struct_new(env);
+
+	server->dump_dsp_state( filepath );
+
+    xmlrpc_temp = xmlrpc_string_new(env, "system.dumpdspstate");
+    xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+
+	free( filepath );
 
     return struct_;
 }
@@ -1391,7 +1416,7 @@ static xmlrpc_value *ntg_xmlrpc_version(xmlrpc_env * const env,
     return ntg_server_do_va(&ntg_xmlrpc_version_callback, *integra_session, 1, (void *)env);
 }
 
-static xmlrpc_value *ntg_xmlrpc_print_state(xmlrpc_env * const env,
+static xmlrpc_value *ntg_xmlrpc_dump_libintegra_state(xmlrpc_env * const env,
         xmlrpc_value *parameter_array,
         void *user_data)
 {
@@ -1399,7 +1424,26 @@ static xmlrpc_value *ntg_xmlrpc_print_state(xmlrpc_env * const env,
 
 	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
 
-    return ntg_server_do_va(&ntg_xmlrpc_print_state_callback, *integra_session, 1, (void *)env);
+    return ntg_server_do_va(&ntg_xmlrpc_dump_libintegra_state_callback, *integra_session, 1, (void *)env);
+}
+
+
+static xmlrpc_value *ntg_xmlrpc_dump_dsp_state(xmlrpc_env * const env,
+        xmlrpc_value *parameter_array,
+        void *user_data)
+{
+    INTEGRA_TRACE_VERBOSE;
+
+	const char *name;
+	size_t len;
+    xmlrpc_decompose_value(env, parameter_array, "(s#)", &name, &len);
+
+    if (env->fault_occurred)
+        return NULL;
+
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+    return ntg_server_do_va(&ntg_xmlrpc_dump_dsp_state_callback, *integra_session, 2, (void *)env, name);
 }
 
 
@@ -1834,7 +1878,8 @@ void *ntg_xmlrpc_server_run( void *context )
     xmlrpc_limit_set( XMLRPC_XML_SIZE_LIMIT_ID, NTG_XMLRPC_SIZE_LIMIT );
 
     xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.version", &ntg_xmlrpc_version, integra_session, "S:", HELPSTR_VERSION );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.printstate", &ntg_xmlrpc_print_state, integra_session, "S:", HELPSTR_PRINTSTATE );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumplibintegrastate", &ntg_xmlrpc_dump_libintegra_state, integra_session, "S:", HELPSTR_DUMPLIBINTEGRASTATE );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumpdspstate", &ntg_xmlrpc_dump_dsp_state, integra_session, "S:s", HELPSTR_DUMPDSPSTATE );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfacelist", &ntg_xmlrpc_interfacelist, integra_session, "S:", HELPSTR_INTERFACELIST );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfaceinfo", &ntg_xmlrpc_interfaceinfo, integra_session, "S:s", HELPSTR_INTERFACEINFO );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.endpoints", &ntg_xmlrpc_endpoints, integra_session, "S:s", HELPSTR_ENDPOINTS );

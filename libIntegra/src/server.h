@@ -112,7 +112,8 @@ namespace integra_internal
 
 			internal_id create_internal_id();
 
-			void dump_state();
+			void dump_libintegra_state();
+			void dump_dsp_state( const string &file );
 
 			string get_libintegra_version() const;
 

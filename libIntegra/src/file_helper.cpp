@@ -54,6 +54,22 @@ namespace integra_internal
 	}
 
 
+	string CFileHelper::extract_directory_from_path( const string &path )
+	{
+		size_t last_slash = path.find_last_of( '/' );
+		size_t last_backslash = path.find_last_of( '\\' );
+
+		size_t directory_length = ( last_slash == string::npos ) ? 0 : last_slash + 1;
+
+		if( last_backslash != string::npos )
+		{
+			directory_length = MAX( directory_length, last_backslash + 1 );
+		}
+
+		return path.substr( 0, directory_length );
+	}
+
+
 	string CFileHelper::extract_first_directory_from_path( const string &path )
 	{
 		size_t first_slash = path.find_first_of( '/' );
@@ -144,6 +160,19 @@ namespace integra_internal
 		{
 			INTEGRA_TRACE_ERROR << "Failed to remove directory " << directory_name;
 		}
+	}
+
+
+	bool CFileHelper::file_exists( const string &file_name )
+	{
+		FILE *file = fopen( file_name.c_str(), "rb" );
+		if( file )
+		{
+			fclose( file );
+			return true;
+		}
+
+		return false;
 	}
 
 

@@ -26,6 +26,8 @@ package components.views
 	import flash.display.NativeMenuItem;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.filesystem.File;
+	import flash.net.FileFilter;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.ui.Keyboard;
@@ -379,9 +381,13 @@ package components.views
 				introspectServerItem.addEventListener( Event.SELECT, introspectServer ); 
 				debugMenu.submenu.addItem( introspectServerItem );
 
-				var dumpServerStateItem:NativeMenuItem = new NativeMenuItem( "dump server state to server log" ); 
-				dumpServerStateItem.addEventListener( Event.SELECT, dumpServerState ); 
-				debugMenu.submenu.addItem( dumpServerStateItem );
+				var dumpLibIntegraStateItem:NativeMenuItem = new NativeMenuItem( "dump libintegra state to server log" ); 
+				dumpLibIntegraStateItem.addEventListener( Event.SELECT, dumpLibIntegraState ); 
+				debugMenu.submenu.addItem( dumpLibIntegraStateItem );
+
+				var dumpDspStateItem:NativeMenuItem = new NativeMenuItem( "dump dsp state to PD patch" ); 
+				dumpDspStateItem.addEventListener( Event.SELECT, dumpDspState ); 
+				debugMenu.submenu.addItem( dumpDspStateItem );
 			}
 		}
 
@@ -544,9 +550,19 @@ package components.views
 		}
 		
 		
-		private function dumpServerState( event:Event ):void
+		private function dumpLibIntegraState( event:Event ):void
 		{
-			_controller.dumpServerState();
+			_controller.dumpLibIntegraState();
+		}
+
+		
+		private function dumpDspState( event:Event ):void
+		{
+			var filter:FileFilter = new FileFilter( "PD Patches", "*.pd" );
+			var file:File = File.desktopDirectory.resolvePath( "dsp dump.pd" );
+			file.browseForSave( "Dump DSP state" );
+			
+			file.addEventListener( Event.SELECT, function( event:Event ):void { _controller.dumpDspState( event.target.nativePath) } );      			
 		}
 		
 		

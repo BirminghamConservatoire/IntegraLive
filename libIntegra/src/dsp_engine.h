@@ -30,16 +30,25 @@
 namespace pd
 {
 	class PdBase;
+	class List;
+	struct Message;
+}
+
+namespace integra_api
+{
+	class ISetCommand;
 }
 
 
 namespace integra_internal
 {
+	class CServer;
+
 	class CDspEngine
 	{
 		public:
 
-			CDspEngine();
+			CDspEngine( CServer &server );
 			~CDspEngine();
 
 			CError add_module( internal_id id, const string &patch_path );
@@ -50,18 +59,36 @@ namespace integra_internal
 
 			void process_buffer( const float *input, float *output, int input_channels, int output_channels, int sample_rate );
 
+			void dump_patch_to_file( const string &path );
+
 			static const int samples_per_buffer;
 
 		private:
+
+			string get_patch_file_path() const;
 
 			bool has_configuration_changed( int input_channels, int output_channels, int sample_rate ) const;
 
 			bool is_configuration_valid() const;
 			void initialize_audio_configuration( int input_channels, int output_channels, int sample_rate );
 
-			string get_stream_connection_name( const IEndpointDefinition &endpoint_definition, const IInterfaceDefinition &interface_definition ) const;
+			void poll_for_messages();
+
+			void create_host_patch();
+			void delete_host_patch();
+
+			CError connect_or_disconnect( const CNodeEndpoint &source, const CNodeEndpoint &target, const string &command );
+
+			int get_patch_id( internal_id id ) const;
+			int get_stream_connection_index( const CNodeEndpoint &node_endpoint ) const;
+
+			void handle_feedback();
+
+			ISetCommand *make_set_command( const pd::List &feedback_arguments ) const;
 
 			pd::PdBase *m_pd;
+
+			CServer &m_server;
 
 			bool m_initialised;
 			int m_input_channels;
@@ -70,7 +97,22 @@ namespace integra_internal
 
 			pthread_mutex_t m_mutex;
 
+			int m_next_patch_id;
+
+			int_map m_map_id_to_patch_id;
+
+			typedef std::list<pd::Message> pd_message_list;
+			pd_message_list m_incoming_feedback;
+
 			static const int max_channels;
+			static const string patch_file_name;
+			static const string host_patch_name;
+			static const string patch_message_target;
+
+			static const string feedback_source;
+
+			static const int module_x_margin;
+			static const int module_y_spacing;
 	};
 }
 

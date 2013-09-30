@@ -311,11 +311,20 @@ package components.controller
 		}
 
 		
-		public function dumpServerState():void
+		public function dumpLibIntegraState():void
 		{
 			var dumpStateCall:IntegraConnection = new IntegraConnection( _serverUrl );
 			dumpStateCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			dumpStateCall.callQueued( "system.printstate" );
+			dumpStateCall.callQueued( "system.dumplibintegrastate" );
+		}
+
+		
+		public function dumpDspState( filepath:String ):void
+		{
+			var dumpStateCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			dumpStateCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			dumpStateCall.addParam( filepath, XMLRPCDataTypes.STRING );
+			dumpStateCall.callQueued( "system.dumpdspstate" );
 		}
 		
 		

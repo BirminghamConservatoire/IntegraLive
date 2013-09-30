@@ -600,7 +600,7 @@ package components.views.Preferences
 		}
 	
 		
-		private function setNumberEditColors( numberEdit:TextInput, textColor:uint, disabledColor:uint )
+		private function setNumberEditColors( numberEdit:TextInput, textColor:uint, disabledColor:uint ):void
 		{
 			numberEdit.setStyle( "color", textColor );
 			numberEdit.setStyle( "disabledColor", disabledColor );

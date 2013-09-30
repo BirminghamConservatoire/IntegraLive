@@ -65,7 +65,8 @@ namespace integra_api
 
 			virtual string get_libintegra_version() const = 0;
 
-			virtual void dump_state() = 0;
+			virtual void dump_libintegra_state() = 0;
+			virtual void dump_dsp_state( const string &file ) = 0;
 	};
 }
 

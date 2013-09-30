@@ -48,6 +48,7 @@ namespace integra_internal
 			CNode();
 			~CNode();
 
+			static const CNode &downcast( const INode &node ) { return dynamic_cast< const CNode & > ( node ); }
 			static const CNode *downcast( const INode *node ) { return dynamic_cast< const CNode * > ( node ); }
 			static CNode *downcast_writable( INode *node ) { return dynamic_cast< CNode * > ( node ); }
 

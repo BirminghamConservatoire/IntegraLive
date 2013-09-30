@@ -35,7 +35,7 @@ namespace integra_internal
 	{
 		public:
 			static string extract_filename_from_path( const string &path );
-
+			static string extract_directory_from_path( const string &path );
 			static string extract_first_directory_from_path( const string &path );
 
 			static string ensure_filename_has_suffix( const string &filename, const string &suffix );
@@ -44,6 +44,7 @@ namespace integra_internal
 			static bool is_directory( const string &directory_name );
 			static void delete_directory( const string &directory_name );
 
+			static bool file_exists( const string &file_name );
 			static CError copy_file( const string &source_path, const string &target_path );
 			static CError delete_file( const string &file_name );
 

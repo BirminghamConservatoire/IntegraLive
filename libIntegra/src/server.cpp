@@ -59,7 +59,7 @@ namespace integra_internal
 
 
 	
-	static void host_callback( internal_id id, const char *attribute_name, const CValue *value, void *context )
+	/*static void host_callback( internal_id id, const char *attribute_name, const CValue *value, void *context )
 	{
 		CServer *server = ( CServer * ) context;
 
@@ -84,7 +84,7 @@ namespace integra_internal
 		}
 
 		server->unlock();
-	}
+	}*/
 
 
 	CServer::CServer( const CServerStartupInfo &startup_info )
@@ -108,7 +108,7 @@ namespace integra_internal
 
 		m_module_manager = new CModuleManager( *this, startup_info.system_module_directory, startup_info.third_party_module_directory );
 
-		m_dsp_engine = new CDspEngine;
+		m_dsp_engine = new CDspEngine( *this );
 
 		m_audio_engine = IAudioEngine::create_audio_engine( *m_dsp_engine );
 
@@ -347,13 +347,19 @@ namespace integra_internal
 	}
 
 
-	void CServer::dump_state()
+	void CServer::dump_libintegra_state()
 	{
 		std::cout << std::endl;
 		std::cout << "Print State:" << std::endl;
 		std::cout << "************" << std::endl;
 		std::cout << std::endl;
 		dump_state( get_nodes(), 0 );
+	}
+
+
+	void CServer::dump_dsp_state( const string &file )
+	{
+		m_dsp_engine->dump_patch_to_file( file );
 	}
 
 

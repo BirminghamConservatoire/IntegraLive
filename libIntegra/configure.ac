@@ -366,7 +366,7 @@ AC_OUTPUT([Makefile
 echo
 echo "**************************************************************"
 echo
-echo "Summary:"
+echo "Building libIntegra version libIntegra_version Summary:"
 echo
 
 if test "$dummy_bridge" = "true"; then

@@ -11,3 +11,5 @@ mediasettings/audiosettings
 bsaylor/partconv~
 
 freeverb~/freeverb~
+
+iemlib/soundfile_info

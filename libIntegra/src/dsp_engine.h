@@ -65,7 +65,10 @@ namespace integra_internal
 
 		private:
 
+			void setup_subscriptions();
+
 			string get_patch_file_path() const;
+
 
 			bool has_configuration_changed( int input_channels, int output_channels, int sample_rate ) const;
 

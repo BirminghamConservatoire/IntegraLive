@@ -70,42 +70,15 @@ namespace integra_internal
 
 		m_pd = new pd::PdBase;
 		m_pd->init( m_input_channels, m_output_channels, m_sample_rate );
+
 		m_pd->computeAudio( true );
+		setup_subscriptions();
 
 		pd::Patch patch = m_pd->openPatch( patch_file_name, m_server.get_scratch_directory() );
 		if( !patch.isValid() )
 		{
 			INTEGRA_TRACE_ERROR << "failed to load patch: " << get_patch_file_path();
 		}
-
-		m_pd->subscribe( feedback_source );
-
-
-		//m_pd->subscribe( ";pd" );
-		//m_pd->subscribe( ";test_patch.pd" );
-
-        //m_pd->startMessage();
-        //m_pd->addSymbol( patch_path + "test_output_before_connect.pd" );
-        //m_pd->finishMessage( "pd-test_patch.pd", "saveto" );
-
-		/* m_pd->startMessage();
-        m_pd->addFloat( 0 );
-        m_pd->addFloat( 0 );
-        m_pd->addFloat( 1 );
-        m_pd->addFloat( 0 );
-        m_pd->finishMessage( patch_message_target, "connect" ); */
-
-		/*
-		//test connect message
-		pd::List list;
-		list << 0 << 0 << 1 << 0;
-		m_pd->sendMessage( ";" + dollarZeroStr + "-instance", "connect", list );
-
-		//test save message
-		list.clear();
-		list << "c:/test/" << "test_output.pd";
-		m_pd->sendMessage( ";" + dollarZeroStr + "-instance", "saveto", list );
-		*/
 
 		m_initialised = true;
 	}
@@ -191,6 +164,8 @@ namespace integra_internal
 			if( m_initialised )
 			{
 				m_pd->computeAudio( true );
+
+				setup_subscriptions();
 			}
 			else
 			{
@@ -203,6 +178,16 @@ namespace integra_internal
 
 			m_initialised = false;
 		}
+	}
+
+
+	void CDspEngine::setup_subscriptions()
+	{
+		m_pd->subscribe( feedback_source );
+		m_pd->subscribe( "print" );
+		m_pd->subscribe( "pd-print" );
+		m_pd->subscribe( "patch_message_target" );
+		m_pd->subscribe( "pd" );
 	}
 
 
@@ -382,7 +367,12 @@ namespace integra_internal
 	{
 		memset( output, 0, samples_per_buffer * output_channels * sizeof( float ) );
 
-		pthread_mutex_lock( &m_mutex );
+		//NOISE GENERATOR
+		
+		/*for( int i = 0; i < output_channels * samples_per_buffer; i++ )
+		{
+			output[ i ] = float( ( rand() % 200 ) - 100 ) * 0.001f;
+		}*/
 
 		//THRU
 		/*for( int i = 0; i < samples_per_buffer; i++ )
@@ -402,6 +392,8 @@ namespace integra_internal
 				output[ i * output_channels + j ] = input_mix;
 			}
 		}*/
+
+		pthread_mutex_lock( &m_mutex );
 
 		if( has_configuration_changed( input_channels, output_channels, sample_rate ) )
 		{
@@ -424,88 +416,8 @@ namespace integra_internal
 
 		pthread_mutex_unlock( &m_mutex );
 
-		handle_feedback();
+		//handle_feedback();
 	}
-
-
-	/*void CDspEngine::test_libpd()
-	{
-		//test_libpd only implemented in windows!
-		#ifdef _WINDOWS
-			const string patch_name = "test_patch.pd";
-			const string path_path = "C:/";
-			const string output_file = "C:/IntegraLive.git/testout.wav";
-
-			const int input_channels( 2 );
-			const int output_channels( 2 );
-			const int ticks_per_buffer( 1 );
-			const int samples_per_tick( 64 );
-			const int ticks_to_process( 10000 );
-			const int sample_rate( 44100 );
-
-			const int input_buffer_samples( samples_per_tick * input_channels * ticks_per_buffer );
-			const int output_buffer_samples( samples_per_tick * output_channels * ticks_per_buffer );
-
-			pd::PdBase *pd = new pd::PdBase;
-
-			bool success = pd->init( input_channels, output_channels, sample_rate );
-
-			pd::Patch patch = pd->openPatch( patch_name, path_path );
-			bool is_valid = patch.isValid();
-
-			pd->computeAudio( true );
-
-			short *input_buffer = new short[ input_buffer_samples ];
-			short *output_buffer = new short[ output_buffer_samples ];
-
-			WAVEFORMATEX wave_format;
-			wave_format.wFormatTag = WAVE_FORMAT_PCM;
-			wave_format.nChannels = output_channels;
-			wave_format.nSamplesPerSec = sample_rate;
-			wave_format.wBitsPerSample = sizeof( short ) * 8;
-			wave_format.nBlockAlign = wave_format.nChannels * wave_format.wBitsPerSample / 8;
-			wave_format.nAvgBytesPerSec = wave_format.nSamplesPerSec * wave_format.nBlockAlign;
-			wave_format.cbSize = 0;
-
-			unsigned long subchunk2size = output_buffer_samples * ticks_to_process * sizeof( short );
-
-			unsigned long chunk_size = 36 + subchunk2size;
-
-			FILE *f;
-			fopen_s( &f, output_file.c_str(), "wb" );
-			fwrite( "RIFF", 1, 4, f );
-			fwrite( &chunk_size, 4, 1, f );
-			fwrite( "WAVE", 1, 4, f );
-			fwrite( "fmt ", 1, 4, f );
-
-			unsigned long subchunk1size = 16;
-			fwrite( &subchunk1size, 4, 1, f );
-			fwrite( &wave_format, sizeof( WAVEFORMATEX ) - sizeof( WORD ), 1, f );
-
-			fwrite( "data", 1, 4, f );
-			fwrite( &subchunk2size, 4, 1, f );
-
-
-			for( int i = 0; i < ticks_to_process; i++ )
-			{
-				memset( input_buffer, 0, input_buffer_samples * sizeof( short ) );
-				memset( output_buffer, 0, output_buffer_samples * sizeof( short ) );
-
-				pd->processShort( ticks_per_buffer, input_buffer, output_buffer );
-
-				fwrite( output_buffer, sizeof( short ), output_buffer_samples, f );
-			}
-
-			fclose( f );
-	
-			delete [] input_buffer;
-			delete [] output_buffer;
-
-			pd->closePatch( patch );
-			pd->clear();
-			delete pd;
-		#endif
-	}*/
 
 
 	void CDspEngine::poll_for_messages()

@@ -296,12 +296,15 @@ namespace integra_internal
 
 			if( !commands.empty() )
 			{
-				m_server.lock();
-				for( std::list<ISetCommand *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
+				if( m_server.lock() )
 				{
-					m_server.process_command( *i, CCommandSource::SYSTEM );
+					for( std::list<ISetCommand *>::const_iterator i = commands.begin(); i != commands.end(); i++ )
+					{
+						m_server.process_command( *i, CCommandSource::SYSTEM );
+					}
+				
+					m_server.unlock();
 				}
-				m_server.unlock();
 			}
 		}
 	}

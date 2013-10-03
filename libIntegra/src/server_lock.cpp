@@ -25,6 +25,8 @@
 #include "api/server_startup_info.h"
 #include "server.h"
 
+#include <assert.h>
+
 using namespace integra_internal;
 
 namespace integra_api
@@ -34,7 +36,11 @@ namespace integra_api
 		m_server = server;
 
 		CServer *inner_server = dynamic_cast<CServer *>( m_server );
-		inner_server->lock();
+		if( !inner_server->lock() )
+		{
+			INTEGRA_TRACE_ERROR << "illegal attempt to obtain server lock during server destruction";
+			assert( false );
+		}
 	}
 
 

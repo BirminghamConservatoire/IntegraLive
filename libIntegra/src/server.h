@@ -64,7 +64,8 @@ namespace integra_internal
 			CServer( const CServerStartupInfo &startup_info );
 			~CServer();
 
-			void lock();
+			/* lock returns false if can't be locked because already in shutdown */
+			bool lock();	
 			void unlock();
 
 			const node_map &get_nodes() const { return m_nodes; }
@@ -117,14 +118,14 @@ namespace integra_internal
 
 			string get_libintegra_version() const;
 
-			bool is_in_shutdown() const { return m_is_in_shutdown; }
-
 		private:
 
 			void dump_state( const node_map &nodes, int indentation ) const;
 
 			pthread_mutex_t m_mutex;
 			pthread_t m_mutex_owner;
+
+			pthread_mutex_t m_shutdown_mutex;
 
 			node_map m_nodes;
 			CStateTable m_state_table; 
@@ -137,8 +138,6 @@ namespace integra_internal
 			IAudioEngine *m_audio_engine;
 
 			INotificationSink *m_notification_sink;
-
-			bool m_is_in_shutdown;
 
 			internal_id m_next_internal_id; 
 	};

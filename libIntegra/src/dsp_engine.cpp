@@ -442,7 +442,10 @@ namespace integra_internal
 
 	void CDspEngine::handle_queue_items( const pd_message_list &messages )
 	{
-		m_server.lock();
+		if( !m_server.lock() )
+		{
+			return;
+		}
 
 		for( pd_message_list::const_iterator i = messages.begin(); i != messages.end(); i++ )
 		{

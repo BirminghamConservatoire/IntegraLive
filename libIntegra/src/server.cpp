@@ -65,6 +65,8 @@ namespace integra_internal
 		pthread_mutex_init( &m_mutex, NULL );
 		memset( &m_mutex_owner, 0, sizeof( pthread_t ) );
 
+		pthread_mutex_init( &m_shutdown_mutex, NULL );
+
 		#ifdef _WINDOWS
 			_set_invalid_parameter_handler( invalid_parameter_handler );
 		#endif
@@ -83,8 +85,6 @@ namespace integra_internal
 
 		m_audio_engine = IAudioEngine::create_audio_engine( *m_dsp_engine );
 
-		m_is_in_shutdown = false;
-
 		m_notification_sink = startup_info.notification_sink;
 
 		m_reentrance_checker = new CReentranceChecker();
@@ -97,9 +97,7 @@ namespace integra_internal
 	{
 		INTEGRA_TRACE_PROGRESS << "setting terminate flag";
 
-		m_is_in_shutdown = true;
-
-		lock();
+		pthread_mutex_lock( &m_shutdown_mutex );
 
 		/* delete all nodes */
 		node_map copy_of_nodes = m_nodes;
@@ -128,18 +126,17 @@ namespace integra_internal
 
 		INTEGRA_TRACE_PROGRESS << "done!";
 
-		unlock();
+		pthread_mutex_unlock( &m_shutdown_mutex );
 
 		pthread_mutex_destroy( &m_mutex );
+		pthread_mutex_destroy( &m_shutdown_mutex );
 
 		INTEGRA_TRACE_PROGRESS << "server destruction complete";
 	}
 
 
-	void CServer::lock()
+	bool CServer::lock()
 	{
-		INTEGRA_TRACE_PROGRESS << "Locking server on thread " << pthread_self;
-
 		pthread_t current_thread = pthread_self();
 		if( memcmp( &current_thread, &m_mutex_owner, sizeof( pthread_t ) ) == 0 )
 		{
@@ -150,18 +147,23 @@ namespace integra_internal
 	    pthread_mutex_lock( &m_mutex );
 		m_mutex_owner = current_thread;
 
-		INTEGRA_TRACE_PROGRESS << "Locked server on thread " << pthread_self;
+		if( pthread_mutex_trylock( &m_shutdown_mutex ) == 0 )
+		{
+			pthread_mutex_unlock( &m_shutdown_mutex );
+			return true;
+		}
+		else
+		{
+			unlock();
+			return false;
+		}
 	}
 
 
 	void CServer::unlock()
 	{
-		INTEGRA_TRACE_PROGRESS << "Unlocking server on thread " << pthread_self;
-
 		memset( &m_mutex_owner, 0, sizeof( pthread_t ) );
 		pthread_mutex_unlock( &m_mutex );
-
-		INTEGRA_TRACE_PROGRESS << "Unlocked server on thread " << pthread_self;
 	}
 
 

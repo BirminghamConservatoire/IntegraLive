@@ -24,6 +24,7 @@
 #include "api/common_typedefs.h"
 #include "api/error.h"
 #include "node.h"
+#include "threaded_queue.h"
 
 #include <pthread.h>
 
@@ -44,7 +45,7 @@ namespace integra_internal
 {
 	class CServer;
 
-	class CDspEngine
+	class CDspEngine : public IThreadedQueueOutputSink<pd::Message>
 	{
 		public:
 
@@ -64,6 +65,8 @@ namespace integra_internal
 			static const int samples_per_buffer;
 
 		private:
+
+			typedef std::list<pd::Message> pd_message_list;
 
 			void setup_subscriptions();
 
@@ -85,7 +88,8 @@ namespace integra_internal
 			int get_patch_id( internal_id id ) const;
 			int get_stream_connection_index( const CNodeEndpoint &node_endpoint ) const;
 
-			void handle_feedback();
+			void handle_queue_items( const pd_message_list &messages );
+			void handle_feedback( const pd::Message &message );
 
 			ISetCommand *make_set_command( const pd::List &feedback_arguments ) const;
 
@@ -104,8 +108,7 @@ namespace integra_internal
 
 			int_map m_map_id_to_patch_id;
 
-			typedef std::list<pd::Message> pd_message_list;
-			pd_message_list m_incoming_feedback;
+			CThreadedQueue<pd::Message> *m_message_queue;
 
 			static const int max_channels;
 			static const string patch_file_name;

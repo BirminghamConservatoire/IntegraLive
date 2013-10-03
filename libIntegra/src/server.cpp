@@ -58,35 +58,6 @@ namespace integra_internal
 	#endif
 
 
-	
-	/*static void host_callback( internal_id id, const char *attribute_name, const CValue *value, void *context )
-	{
-		CServer *server = ( CServer * ) context;
-
-		if( server->is_in_shutdown() ) 
-		{
-			return;
-		}
-
-		server->lock();
-
-		const CNode *target = server->find_node( id );
-		if( target ) 
-		{
-			CPath path( target->get_path() );
-			path.append_element( attribute_name );
-
-			server->process_command( ISetCommand::create( path, value ), CCommandSource::MODULE_IMPLEMENTATION );
-		}
-		else
-		{
-			INTEGRA_TRACE_ERROR << "couldn't find node with id " << id;
-		}
-
-		server->unlock();
-	}*/
-
-
 	CServer::CServer( const CServerStartupInfo &startup_info )
 	{
 		INTEGRA_TRACE_PROGRESS << "libIntegra version " << get_libintegra_version();
@@ -126,8 +97,9 @@ namespace integra_internal
 	{
 		INTEGRA_TRACE_PROGRESS << "setting terminate flag";
 
-		lock();
 		m_is_in_shutdown = true;
+
+		lock();
 
 		/* delete all nodes */
 		node_map copy_of_nodes = m_nodes;
@@ -166,6 +138,8 @@ namespace integra_internal
 
 	void CServer::lock()
 	{
+		INTEGRA_TRACE_PROGRESS << "Locking server on thread " << pthread_self;
+
 		pthread_t current_thread = pthread_self();
 		if( memcmp( &current_thread, &m_mutex_owner, sizeof( pthread_t ) ) == 0 )
 		{
@@ -175,13 +149,19 @@ namespace integra_internal
 
 	    pthread_mutex_lock( &m_mutex );
 		m_mutex_owner = current_thread;
+
+		INTEGRA_TRACE_PROGRESS << "Locked server on thread " << pthread_self;
 	}
 
 
 	void CServer::unlock()
 	{
+		INTEGRA_TRACE_PROGRESS << "Unlocking server on thread " << pthread_self;
+
 		memset( &m_mutex_owner, 0, sizeof( pthread_t ) );
 		pthread_mutex_unlock( &m_mutex );
+
+		INTEGRA_TRACE_PROGRESS << "Unlocked server on thread " << pthread_self;
 	}
 
 

@@ -272,6 +272,8 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClInclude Include="..\src\server.h" />
     <ClInclude Include="..\src\set_command.h" />
     <ClInclude Include="..\src\state_table.h" />
+    <ClInclude Include="..\src\threaded_queue.h" />
+    <ClInclude Include="..\src\threaded_queue_implementation.h" />
     <ClInclude Include="..\src\validator.h" />
   </ItemGroup>
   <ItemGroup>

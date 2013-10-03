@@ -244,12 +244,6 @@ namespace integra_internal
 
 	void CPlayerHandler::thread_function()
 	{
-		/*int64_t current_msecs;
-		int player_rate;
-		int elapsed_ticks;
-		int new_tick_value;
-		int loop_duration;*/
-
 		while( sem_trywait( m_thread_shutdown_semaphore ) < 0 ) 
 		{
 			usleep( CPlayerHandler::player_update_microseconds );

@@ -56,7 +56,7 @@ namespace integra_internal
 	CDspEngine::CDspEngine( CServer &server )
 		:	m_server( server )
 	{
-		Sleep( 10000 );
+		Sleep( 10000 );/////////
 
 		pthread_mutex_init( &m_mutex, NULL );
 
@@ -67,6 +67,8 @@ namespace integra_internal
 		m_next_patch_id = 0;
 
 		create_host_patch();
+
+		m_message_queue = new CThreadedQueue<pd::Message>( *this );
 
 		m_pd = new pd::PdBase;
 		m_pd->init( m_input_channels, m_output_channels, m_sample_rate );
@@ -90,6 +92,8 @@ namespace integra_internal
 
 		m_pd->clear();
 		delete m_pd;
+
+		delete m_message_queue;
 
 		delete_host_patch();
 
@@ -415,20 +419,37 @@ namespace integra_internal
 		poll_for_messages();
 
 		pthread_mutex_unlock( &m_mutex );
-
-		//handle_feedback();
 	}
 
 
 	void CDspEngine::poll_for_messages()
 	{
+		pd_message_list messages;
+
 		while( m_pd->numMessages() > 0 ) 
 		{
 			pd::Message &message = m_pd->nextMessage();
 
+			messages.push_back( message );
+		}
+
+		if( !messages.empty() )
+		{
+			m_message_queue->push( messages );
+		}
+	}
+
+
+	void CDspEngine::handle_queue_items( const pd_message_list &messages )
+	{
+		m_server.lock();
+
+		for( pd_message_list::const_iterator i = messages.begin(); i != messages.end(); i++ )
+		{
+			const pd::Message &message = *i;
 			if( message.dest == feedback_source )
 			{
-				m_incoming_feedback.push_back( message );
+				handle_feedback( message );
 			}
 
 			switch( message.type )
@@ -461,51 +482,36 @@ namespace integra_internal
 					INTEGRA_TRACE_ERROR << "unhandled pd message type: " << message.type;
 					break;
 			}
-
-		}
-	}
-
-
-	void CDspEngine::handle_feedback()
-	{
-		if( m_incoming_feedback.empty() )
-		{
-			return;
-		}
-
-		m_server.lock();
-
-		for( pd_message_list::const_iterator i = m_incoming_feedback.begin(); i != m_incoming_feedback.end(); i++ )
-		{
-			const pd::Message &message = *i;
-
-			if( message.type != pd::LIST )
-			{
-				INTEGRA_TRACE_ERROR << "unexpected message type: " << message.type;
-				continue;
-			}
-
-			const pd::List &list = message.list;
-
-			ISetCommand *command = make_set_command( list );
-		
-			if( command )
-			{
-				CError result = m_server.process_command( command, CCommandSource::MODULE_IMPLEMENTATION );
-				if( result != CError::SUCCESS )
-				{
-					INTEGRA_TRACE_ERROR << "Error processing command: " << result.get_text();
-				}
-			}
-			else
-			{
-				INTEGRA_TRACE_ERROR << "Couldn't process command";
-			}
 		}
 
 		m_server.unlock();
+	}
 
-		m_incoming_feedback.clear();
+
+	void CDspEngine::handle_feedback( const pd::Message &message )
+	{
+		if( message.type != pd::LIST )
+		{
+			INTEGRA_TRACE_ERROR << "unexpected message type: " << message.type;
+			return;
+		}
+
+		const pd::List &list = message.list;
+
+		ISetCommand *command = make_set_command( list );
+		
+		if( command )
+		{
+			CError result = m_server.process_command( command, CCommandSource::MODULE_IMPLEMENTATION );
+			if( result != CError::SUCCESS )
+			{
+				INTEGRA_TRACE_ERROR << "Error processing command: " << result.get_text();
+			}
+		}
+		else
+		{
+			INTEGRA_TRACE_ERROR << "Couldn't process command";
+		}
 	}
 
 

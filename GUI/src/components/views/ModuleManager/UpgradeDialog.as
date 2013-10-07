@@ -139,6 +139,8 @@ package components.views.ModuleManager
 			}
 			
 			_description.text += "?";
+			
+			_description.text += "\n\nA backup will be saved to " + UpgradeModules.getBackupName( model ); 
 		}
 		
 		

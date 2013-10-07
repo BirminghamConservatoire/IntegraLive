@@ -3,6 +3,7 @@ package components.views.ModuleManager
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 	
+	import components.controller.serverCommands.UpgradeModules;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
@@ -39,23 +40,23 @@ package components.views.ModuleManager
 		}
 		
 		
-		public function getUpgradeReport( upgradedObjectIDs:Vector.<int>, upgradedModuleGuids:Vector.<String>, searchObjectID:int ):String
+		public function getUpgradeReport( command:UpgradeModules ):String
 		{
-			if( upgradedObjectIDs.length == 0 )
+			if( command.upgradedObjectIDs.length == 0 )
 			{
 				return "Nothing needs to be upgraded."; 
 			}
 			
 			var markdown:String = "The following modules have been upgraded\n\n";
 			
-			for each( var upgradedObjectID:int in upgradedObjectIDs )
+			for each( var upgradedObjectID:int in command.upgradedObjectIDs )
 			{
-				markdown += "* "+ _model.getPathStringFromID( upgradedObjectID ) + "\n"; 
+				markdown += "* "+ getEscapedObjectPath( upgradedObjectID ) + "\n"; 
 			}
 
 			markdown += "##Upgrade Details\n\n";
 			
-			for each( var upgradedModuleGuid:String in upgradedModuleGuids )
+			for each( var upgradedModuleGuid:String in command.upgradedModuleGuids )
 			{
 				var previousVersion:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( upgradedModuleGuid );
 				markdown += "##![](app:/icons/module_32x32x32.png) " + previousVersion.interfaceInfo.label + "\n\n";
@@ -63,13 +64,18 @@ package components.views.ModuleManager
 				var upgradedVersion:InterfaceDefinition = _model.getInterfaceDefinitionsByOriginGuid( previousVersion.originGuid )[ 0 ];
 				Assert.assertTrue( previousVersion != upgradedVersion );
 				
-				markdown += getModuleUpgradeSummary( previousVersion, upgradedVersion, searchObjectID );
+				markdown += getModuleUpgradeSummary( previousVersion, upgradedVersion, command.searchObjectID );
 				
 				markdown += "###Summary of Changes:\n\n";
 				markdown += getDifferences( previousVersion, upgradedVersion );
 				markdown += "\n\n";
 			}
-			
+
+			if( command.backupName )
+			{
+				markdown += "##Backup\n\n";
+				markdown += "In case the upgrade has caused any problems, the pre-upgrade project was saved to __" + command.backupName + "__\n\n";
+			}
 			
 			return markdown;
 		}
@@ -84,7 +90,7 @@ package components.views.ModuleManager
 						+ "__ module (updated " 
 						+ versionInUse.interfaceInfo.modifiedDateLabel 
 						+ ") in the project __"
-						+ IntegraModel.singleInstance.project.name 
+						+ getEscapedObjectPath( IntegraModel.singleInstance.project.id )
 						+ "__ will be swapped for the __"
 						+ targetVersion.moduleSourceLabel 
 						+ "__ version (updated "
@@ -103,7 +109,7 @@ package components.views.ModuleManager
 				locationDescription = "in the ";
 				locationDescription += Utilities.getClassNameFromObject( searchObject ).toLowerCase();
 				locationDescription += " __";
-				locationDescription += _model.getPathStringFromID( searchObjectID );
+				locationDescription += getEscapedObjectPath( searchObjectID );
 				locationDescription += "__ ";
 			}
 			
@@ -347,7 +353,7 @@ package components.views.ModuleManager
 			
 			if( dataObject.interfaceDefinition == interfaceDefinition )
 			{
-				output += "* " + _model.getPathStringFromID( dataObject.id ) + "\n";
+				output += "* " + getEscapedObjectPath( dataObject.id ) + "\n";
 			}
 			
 			if( dataObject is IntegraContainer )
@@ -517,6 +523,28 @@ package components.views.ModuleManager
 			return( qualifiedClassName.substr( 0, vectorFinder.length ) == vectorFinder );			
 		}
 		
+		
+		private function getEscapedObjectPath( objectID:int ):String
+		{
+			const source:String = "_";
+			const target:String = "&#95;";
+			
+			var name:String = _model.getPathStringFromID( objectID );
+			
+			var underscoreIndex:int = 0;
+			
+			while( true )
+			{
+				underscoreIndex = name.indexOf( source, underscoreIndex );
+				if( underscoreIndex < 0 ) break;
+				
+				name = name.substr( 0, underscoreIndex ) + target + name.substr( underscoreIndex + 1 );
+				underscoreIndex += target.length;
+			}
+			
+			return name;
+		}
+
 		
 		private var _model:IntegraModel;
 	}

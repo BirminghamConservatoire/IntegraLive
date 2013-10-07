@@ -249,16 +249,10 @@ package components.controller
 		
 		public function saveProject( filename:String ):void
 		{
-			var newProjectName:String = getProjectNameFromFilename( filename );
-			if( newProjectName != _model.project.name )
-			{
-				processCommand( new RenameObject( _model.project.id, newProjectName ) );
-			}	
-			
 			var saveProjectCall:IntegraConnection = new IntegraConnection( _serverUrl );
 			saveProjectCall.addEventListener( Event.COMPLETE, saveProjectHandler );
 			saveProjectCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			saveProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );//save from project node
+			saveProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) ); //save from project node
 			saveProjectCall.addParam( filename, XMLRPCDataTypes.STRING );
 			saveProjectCall.callQueued( "command.save" );
 		}
@@ -583,66 +577,6 @@ package components.controller
 			Alert.show( "xmlrpc error!\n", "Integra Live", mx.controls.Alert.OK );
 
 			//todo - implement?			
-		}
-		
-		
-		private function getProjectNameFromFilename( filename:String ):String
-		{
-			var result:String = filename;
-			
-			//trim path
-			var endOfPath:int = Math.max( filename.lastIndexOf( "/" ), filename.lastIndexOf( "\\" ) );
-			
-			result = ( endOfPath >= 0 ) ? filename.substr( endOfPath + 1 ) : filename;
-			
-			//trim extension
-			var dotIndex:int = result.indexOf( "." );
-			if( dotIndex >= 0 )
-			{
-				result = result.substr( 0, dotIndex );
-			}
-			
-			//remove illegal characters
-			for( var i:int = result.length - 1; i >= 0; i-- )
-			{
-				var char:String = result.charAt( i );
-				if( IntegraDataObject.legalObjectNameCharacterSet.indexOf( char ) < 0 )
-				{
-					result = result.replace( char, "" ); 
-				}		
-			}
-			
-			//remove leading numbers
-			while( result.length > 0 )
-			{
-				var removedLeadingNumber:Boolean = false;
-				
-				switch( result.charAt( 0 ) )
-				{
-					case "0": case "1":	case "2": case "3": case "4":  
-					case "5": case "6": case "7": case "8": case "9":
-						result = result.substr( 1 );
-						removedLeadingNumber = true;
-						break;
-						
-					default:
-						removedLeadingNumber = false;	
-						break;			
-				}
-				
-				if( !removedLeadingNumber )
-				{
-					break;
-				}
-			}
-			
-			//create default name if nothing left
-			if( result.length == 0 )
-			{
-				result = Project.defaultProjectName;
-			}
-			
-			return result;
 		}
 		
 		

@@ -480,5 +480,25 @@ package components.utils
 			
 			return null;
 		}
+		
+		
+		static public function escapeUnderscores( input:String ):String
+		{
+			const source:String = "_";
+			const target:String = "&#95;";
+			
+			var underscoreIndex:int = 0;
+			
+			while( true )
+			{
+				underscoreIndex = input.indexOf( source, underscoreIndex );
+				if( underscoreIndex < 0 ) break;
+				
+				input = input.substr( 0, underscoreIndex ) + target + input.substr( underscoreIndex + 1 );
+				underscoreIndex += target.length;
+			}
+			
+			return input;
+		}		
 	}
 }

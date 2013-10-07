@@ -79,7 +79,6 @@ package components.views.ModuleManager
 			_description.setStyle( "paddingRight", 20 );
 			_description.setStyle( "paddingTop", 20 );
 			_description.setStyle( "paddingBottom", 20 );
-			_description.editable = false;
 			addChild( _description );
 			
 			_upgradeButton.setStyle( "skin", TextButtonSkin );
@@ -117,30 +116,36 @@ package components.views.ModuleManager
 			var dataObject:IntegraDataObject = model.getDataObjectByID( _objectID );
 			Assert.assertNotNull( dataObject );
 			
-			if( dataObject is IntegraContainer )
-			{
-				_description.text = "Improved modules are available for ";
-			}
-			else
-			{
-				_description.text = "Improved version is available for ";
-			}
-			
-			_description.text += model.getPathStringFromID( objectID );
-			_description.text += ".\n\nWould you like to upgrade the ";
+			var markdown:String;
 			
 			if( dataObject is IntegraContainer )
 			{
-				_description.text += Utilities.getClassNameFromObject( dataObject ).toLowerCase();
+				markdown = "__Improved modules are available for ";
 			}
 			else
 			{
-				_description.text += dataObject.interfaceDefinition.interfaceInfo.label;
+				markdown = "__Improved version is available for ";
 			}
 			
-			_description.text += "?";
+			markdown += Utilities.escapeUnderscores( model.getPathStringFromID( objectID ) );
+			markdown += "__.\n\n";
 			
-			_description.text += "\n\nA backup will be saved to " + UpgradeModules.getBackupName( model ); 
+			markdown += "__Would you like to upgrade the ";
+			
+			if( dataObject is IntegraContainer )
+			{
+				markdown += Utilities.getClassNameFromObject( dataObject ).toLowerCase();
+			}
+			else
+			{
+				markdown += dataObject.interfaceDefinition.interfaceInfo.label;
+			}
+			
+			markdown += "__?";
+			
+			markdown += "\n\nA backup will be saved to " + UpgradeModules.getBackupName( model );
+			
+			_description.markdown = markdown;
 		}
 		
 		
@@ -339,7 +344,7 @@ package components.views.ModuleManager
 		private var _titleLabel:Label = new Label;
 		private var _titleCloseButton:Button = new Button;
 
-		private var _description:TextArea = new TextArea;
+		private var _description:ModuleInfo = new ModuleInfo;
 		private var _upgradeButton:Button = new Button;
 		private var _moduleManagerButton:Button = new Button;
 		private var _closeButton:Button = new Button;

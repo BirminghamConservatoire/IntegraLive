@@ -526,23 +526,7 @@ package components.views.ModuleManager
 		
 		private function getEscapedObjectPath( objectID:int ):String
 		{
-			const source:String = "_";
-			const target:String = "&#95;";
-			
-			var name:String = _model.getPathStringFromID( objectID );
-			
-			var underscoreIndex:int = 0;
-			
-			while( true )
-			{
-				underscoreIndex = name.indexOf( source, underscoreIndex );
-				if( underscoreIndex < 0 ) break;
-				
-				name = name.substr( 0, underscoreIndex ) + target + name.substr( underscoreIndex + 1 );
-				underscoreIndex += target.length;
-			}
-			
-			return name;
+			return Utilities.escapeUnderscores( _model.getPathStringFromID( objectID ) ); 
 		}
 
 		

@@ -70,6 +70,16 @@ package components.views.ModuleManager
 		}
 		
 		
+		public function hideReport():void
+		{
+			if( _showing )
+			{
+				PopUpManager.removePopUp( this );
+				_showing = false;
+			}
+		}
+		
+		
 		override public function styleChanged( style:String ):void
 		{
 			if( !style || style == ColorScheme.STYLENAME )
@@ -155,8 +165,7 @@ package components.views.ModuleManager
 		
 		private function onCloseReport( event:Event ):void
 		{
-			PopUpManager.removePopUp( this );
-			_showing = false;
+			hideReport();
 		}
 
 		

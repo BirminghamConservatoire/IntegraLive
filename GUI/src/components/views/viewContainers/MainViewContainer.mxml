@@ -593,6 +593,9 @@
 						mx.managers.PopUpManager.centerPopUp( _upgradeDialog );
 						mx.managers.PopUpManager.bringToFront( _upgradeDialog );
 						_isDisplayingUpgradeDialog = true;
+						
+						_reportView.hideReport();
+
 					}
 				}
 				else

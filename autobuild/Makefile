@@ -191,6 +191,9 @@ clean: server-clean gui-clean
 
 maintainer-clean: clean dependencies-clean
 	-rm *.dmg
+	make -C $(LIBINTEGRAPATH) maintainer-clean
+	cd $(LIBINTEGRAPATH) && ./autogen.sh && cd -
+
 
 upload:
 	scp Integra\ Live.dmg postlude@frs.sourceforge.net:/home/frs/project/integralive/

@@ -68,6 +68,13 @@ namespace integra_internal
 		CLogic::handle_new( server, source );
 
 		update_all_fields( server );
+
+		if( source == CCommandSource::PUBLIC_API )
+		{
+			CPath restore_endpoint( get_node().get_path() );
+			restore_endpoint.append_element( endpoint_restore_defaults );
+			server.process_command( ISetCommand::create( restore_endpoint, NULL ), CCommandSource::SYSTEM );
+		}
 	}
 
 
@@ -77,7 +84,15 @@ namespace integra_internal
 
 		const string &endpoint_name = node_endpoint.get_endpoint_definition().get_name();
 		IAudioEngine &audio_engine = server.get_audio_engine();
-	
+
+		if( endpoint_name == endpoint_restore_defaults )
+		{
+			audio_engine.restore_defaults();
+
+			update_all_fields_for_all_audio_settings_nodes( server );
+			return;
+		}
+
 		switch( source )
 		{
 			case CCommandSource::INITIALIZATION:
@@ -134,14 +149,6 @@ namespace integra_internal
 			audio_engine.set_number_of_output_channels( *node_endpoint.get_value() );
 
 			//todo - set number of input channels in dsp engine too!
-
-			update_all_fields_for_all_audio_settings_nodes( server );
-			return;
-		}
-
-		if( endpoint_name == endpoint_restore_defaults )
-		{
-			audio_engine.restore_defaults();
 
 			update_all_fields_for_all_audio_settings_nodes( server );
 			return;

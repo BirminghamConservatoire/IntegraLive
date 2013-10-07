@@ -1129,11 +1129,6 @@ package components.model.modelLoader
 				newAudioSettingsCall.addParam( _model.audioSettings.name, XMLRPCDataTypes.STRING );
 				newAudioSettingsCall.addArrayParam( new Array );
 				newAudioSettingsCall.callQueued( "command.new" );
-
-				var initAudioSettingsCall:IntegraConnection = new IntegraConnection( _serverUrl );
-				initAudioSettingsCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-				initAudioSettingsCall.addArrayParam( [ _model.audioSettings.name, "restoreHostDefaults" ] );
-				initAudioSettingsCall.callQueued( "command.set" );
 			}
 
 			var midiSettingsLocalFile:File = MidiSettings.localFile;
@@ -1153,11 +1148,6 @@ package components.model.modelLoader
 				newMidiSettingsCall.addParam( _model.midiSettings.name, XMLRPCDataTypes.STRING );
 				newMidiSettingsCall.addArrayParam( new Array );
 				newMidiSettingsCall.callQueued( "command.new" );
-
-				var initMidiSettingsCall:IntegraConnection = new IntegraConnection( _serverUrl );
-				initMidiSettingsCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-				initMidiSettingsCall.addArrayParam( [ _model.midiSettings.name, "restoreHostDefaults" ] );
-				initMidiSettingsCall.callQueued( "command.set" );
 			}
 		}
 		

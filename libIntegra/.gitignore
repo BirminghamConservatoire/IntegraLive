@@ -9,6 +9,7 @@ server/integra_server
 Makefile.in
 Makefile
 doc/documentation.doxygen
+test-driver
 
 # http://www.gnu.org/software/autoconf
 

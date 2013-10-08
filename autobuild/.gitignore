@@ -1,7 +1,7 @@
 Make.config
 *.dmg
 host/
-libIntegra-dependencies-OSX.tar.gz
+*.tar.gz
 libIntegra-dependencies-OSX/
 server/
 *.app

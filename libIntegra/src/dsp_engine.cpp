@@ -188,10 +188,10 @@ namespace integra_internal
 	void CDspEngine::setup_subscriptions()
 	{
 		m_pd->subscribe( feedback_source );
-		m_pd->subscribe( "print" );
-		m_pd->subscribe( "pd-print" );
-		m_pd->subscribe( "patch_message_target" );
-		m_pd->subscribe( "pd" );
+		//m_pd->subscribe( "print" );
+		//m_pd->subscribe( "pd-print" );
+		//m_pd->subscribe( patch_message_target );
+		//m_pd->subscribe( "pd" );
 	}
 
 
@@ -453,15 +453,16 @@ namespace integra_internal
 			if( message.dest == feedback_source )
 			{
 				handle_feedback( message );
+				continue;
 			}
 
 			switch( message.type )
 			{
-				case pd::NONE:
+				case pd::PRINT:
+					INTEGRA_TRACE_ERROR << "libPD says: " << message.symbol;
 					break;
 
-				case pd::PRINT:
-					break;
+				case pd::NONE:
 
 					// events
 				case pd::BANG:
@@ -469,7 +470,6 @@ namespace integra_internal
 				case pd::SYMBOL:
 				case pd::LIST:
 				case pd::MESSAGE:
-					break;
 
 					// midi
 				case pd::NOTE_ON:
@@ -479,7 +479,6 @@ namespace integra_internal
 				case pd::AFTERTOUCH:
 				case pd::POLY_AFTERTOUCH:
 				case pd::BYTE:
-					break;
 
 				default:
 					INTEGRA_TRACE_ERROR << "unhandled pd message type: " << message.type;

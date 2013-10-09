@@ -167,8 +167,21 @@ namespace integra_internal
 
 		close_streams();
 
+		if( new_input_device == paNoDevice && m_selected_output_device == m_selected_input_device )
+		{
+			/* deselecting duplex device */
+			m_selected_output_device = paNoDevice;
+		}
+
 		m_selected_input_device = new_input_device;
 		m_number_of_input_channels = 0;
+
+		if( new_input_device != paNoDevice && m_available_output_devices.count( input_device ) > 0 )
+		{
+			/* selecting duplex device */
+			m_selected_output_device = new_input_device;
+			m_number_of_output_channels = 0;
+		}
 
 		open_streams();
 
@@ -201,8 +214,21 @@ namespace integra_internal
 
 		close_streams();
 
+		if( new_output_device == paNoDevice && m_selected_input_device == m_selected_output_device )
+		{
+			/* deselecting duplex device */
+			m_selected_input_device = paNoDevice;
+		}
+
 		m_selected_output_device = new_output_device;
 		m_number_of_output_channels = 0;
+
+		if( new_output_device != paNoDevice && m_available_input_devices.count( output_device ) > 0 )
+		{
+			/* selecting duplex device */
+			m_selected_input_device = new_output_device;
+			m_number_of_input_channels = 0;
+		}
 
 		open_streams();
 

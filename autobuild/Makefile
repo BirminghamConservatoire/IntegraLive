@@ -22,7 +22,7 @@ LIBINTEGRADEPS_URL=$(INTEGRA_BASE_URL)/$(LIBINTEGRADEPS_FILE)
 DEPENDENCIESDIR=$(PWD)/$(LIBINTEGRADEPS_DIR)/lib
 SDKROOT=$(SVNROOT)/SDK
 TEMPLATESDIR=$(SDKROOT)/templates
-READANYSF=readanysf~0.43_MacOSX-Intel
+FSPLAY=fsplay~
 
 SERVERDIR=server
 SERVERBIN=$(SERVERDIR)/bin
@@ -151,12 +151,12 @@ host:
 	cp -r $(PD_MOUNT_POINT)/*.app/Contents/Resources host
 	find ./host -type d -exec chmod 755 {} \;
 	sh remove_externals.sh
-	if [ ! -e $(READANYSF).tar.gz ]; then \
-		curl http://aug.ment.org/software/$(READANYSF).tar.gz > $(READANYSF).tar.gz; \
+	if [ ! -e $(FSPLAY).zip ]; then \
+		curl http://integralive.org/incoming/$(FSPLAY).zip > $(FSPLAY).zip; \
 	fi
-	tar zxf $(READANYSF).tar.gz
-	mv readanysf~0.43_MacOSX-Intel/readanysf~ host/extra/
-	rm -rf readanysf~0.43_MacOSX-Intel
+	unzip $(FSPLAY).zip
+	mv $(FSPLAY)/* host/extra/
+	rm -rf $(FSPLAY)
 	cp $(PD_MOUNT_POINT)/*.app/Contents/lib/libfftw3f.3.dylib host/extra/bsaylor
 	cd host/extra/bsaylor && chmod 644 partconv~.pd_darwin && install_name_tool -change @executable_path/../../lib/libfftw3f.3.dylib @loader_path/libfftw3f.3.dylib partconv~.pd_darwin && cd -
 	cp $(PD_OSC_HOST) host/extra

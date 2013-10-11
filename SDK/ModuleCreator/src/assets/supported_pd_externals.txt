@@ -14,4 +14,4 @@ freeverb~/freeverb~
 
 iemlib/soundfile_info
 
-readanysf~/readanysf~
+fsplay~

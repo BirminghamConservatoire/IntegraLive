@@ -6,7 +6,7 @@ PACKAGE=libintegra
 
 AC_INIT([libIntegra], [libIntegra_version], [dev@integralive.org])
 AC_DEFINE(LIBINTEGRA_VERSION, libIntegra_version, [LibIntegra Version])
-AM_INIT_AUTOMAKE([1.6])
+AM_INIT_AUTOMAKE([subdir-objects])
 AM_CONFIG_HEADER(config.h)
 AC_PROG_CC
 AM_PROG_CC_C_O

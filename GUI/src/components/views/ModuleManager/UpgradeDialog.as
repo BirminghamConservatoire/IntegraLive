@@ -306,7 +306,7 @@ package components.views.ModuleManager
 		private function onClose( event:Event ):void
 		{
 			var viewMode:ViewMode = IntegraModel.singleInstance.project.projectUserData.viewMode.clone();
-			viewMode.upgradeDialogOpen = false;
+			viewMode.closeUpgradeDialog();
 			
 			IntegraController.singleInstance.processCommand( new SetViewMode( viewMode ) );
 		}
@@ -315,7 +315,7 @@ package components.views.ModuleManager
 		private function onUpgrade( event:Event ):void
 		{
 			var viewMode:ViewMode = IntegraModel.singleInstance.project.projectUserData.viewMode.clone();
-			viewMode.upgradeDialogOpen = false;
+			viewMode.closeUpgradeDialog();
 			
 			IntegraController.singleInstance.processCommand( new SetViewMode( viewMode ) );
 
@@ -326,7 +326,7 @@ package components.views.ModuleManager
 		private function onModuleManager( event:Event ):void
 		{
 			var viewMode:ViewMode = IntegraModel.singleInstance.project.projectUserData.viewMode.clone();
-			viewMode.moduleManagerOpen = true;
+			viewMode.openModuleManager( true );
 			
 			IntegraController.singleInstance.processCommand( new SetViewMode( viewMode ) );
 		}

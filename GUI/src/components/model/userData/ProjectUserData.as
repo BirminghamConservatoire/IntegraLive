@@ -21,7 +21,15 @@
 
 package components.model.userData
 {
+	import flash.geom.Rectangle;
+	
+	import mx.collections.XMLListCollection;
+	
 	import components.model.IntegraModel;
+	import components.model.ModuleInstance;
+	import components.utils.Trace;
+	
+	import flexunit.framework.Assert;
 	
 	
 	public class ProjectUserData extends UserData
@@ -49,9 +57,13 @@ package components.model.userData
 			//view mode
 			xml.appendChild( <viewMode>{_viewMode.mode}</viewMode> );
 			xml.appendChild( <blockPropertiesOpen>{_viewMode.blockPropertiesOpen}</blockPropertiesOpen> );
-			xml.appendChild( <preferencesOpen>{_viewMode.preferencesOpen}</preferencesOpen> );
-			xml.appendChild( <moduleManagerOpen>{_viewMode.moduleManagerOpen}</moduleManagerOpen> );
-			xml.appendChild( <upgradeDialogOpen>{_viewMode.upgradeDialogOpen}</upgradeDialogOpen> );
+
+			var popupStack:XML = new XML( "<popups></popups>" );
+			for each( var popup:String in _viewMode.popupStack )
+			{
+				popupStack.appendChild( <popup>{ popup }</popup> );
+			} 
+			xml.appendChild( popupStack );
 
 			//timeline state
 			xml.appendChild( <timelineScroll>{_timelineState.scroll}</timelineScroll> );
@@ -81,21 +93,13 @@ package components.model.userData
 				_viewMode.blockPropertiesOpen = ( xml.blockPropertiesOpen == "true" );
 			}
 
-			if( xml.hasOwnProperty( "preferencesOpen" ) )
+			_viewMode.popupStack.length = 0;
+			var popups:XMLListCollection = new XMLListCollection( xml.popups.popup );
+			for each( var popup:XML in popups )
 			{
-				_viewMode.preferencesOpen = ( xml.preferencesOpen == "true" );
-			}
+				_viewMode.popupStack.push( popup.toString() );
+			}			
 			
-			if( xml.hasOwnProperty( "moduleManagerOpen" ) )
-			{
-				_viewMode.moduleManagerOpen = ( xml.moduleManagerOpen == "true" );
-			}
-			
-			if( xml.hasOwnProperty( "upgradeDialogOpen" ) )
-			{
-				_viewMode.upgradeDialogOpen = ( xml.upgradeDialogOpen == "true" );
-			}
-
 			//timeline state
 			if( xml.hasOwnProperty( "timelineScroll" ) )
 			{

@@ -70,7 +70,7 @@ package components.controller.userDataCommands
 					var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
 					if( !viewMode.upgradeDialogOpen )
 					{
-						viewMode.upgradeDialogOpen = true;
+						viewMode.openUpgradeDialog();
 						controller.processCommand( new SetViewMode( viewMode ) );
 					}
 				}

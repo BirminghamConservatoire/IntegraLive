@@ -143,6 +143,12 @@ namespace integra_internal
 				continue;
 			}
 
+			if( file_name == CFileIO::internal_ixd_file_name )
+			{
+				/* skip ixd file */
+				continue;
+			}
+
 			if( strlen( file_name ) <= node_directory_length || memcmp( file_name, node_directory.c_str(), node_directory_length ) != 0 )
 			{
 				/* skip file not in node directory */

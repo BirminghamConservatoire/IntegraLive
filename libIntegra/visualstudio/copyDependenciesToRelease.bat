@@ -24,6 +24,4 @@ if exist ..\..\build\Release\SDK\templates rd /s /q ..\..\build\Release\SDK\temp
 mkdir ..\..\build\Release\SDK\templates
 xcopy "..\..\SDK\templates" "..\..\build\Release\SDK\templates" /Y /Q /S
 
-copy "..\..\host\Pd\Integra_Host.pd" "..\..\build\Release\host\extra"
-
 CALL documentation_deployment\compileAllDocumentation.bat ..\..\build\Release\

@@ -71,10 +71,10 @@ namespace integra_internal
 		m_message_queue = new CThreadedQueue<pd::Message>( *this );
 
 		m_pd = new pd::PdBase;
+
 		m_pd->init( m_input_channels, m_output_channels, m_sample_rate );
 
-		m_pd->computeAudio( true );
-		setup_subscriptions();
+		setup_libpd();
 
 		pd::Patch patch = m_pd->openPatch( patch_file_name, m_server.get_scratch_directory() );
 		if( !patch.isValid() )
@@ -167,9 +167,7 @@ namespace integra_internal
 			m_initialised = m_pd->init( m_input_channels, m_output_channels, m_sample_rate );
 			if( m_initialised )
 			{
-				m_pd->computeAudio( true );
-
-				setup_subscriptions();
+				setup_libpd();
 			}
 			else
 			{
@@ -185,13 +183,13 @@ namespace integra_internal
 	}
 
 
-	void CDspEngine::setup_subscriptions()
+	void CDspEngine::setup_libpd()
 	{
+		m_pd->computeAudio( true );
 		m_pd->subscribe( feedback_source );
-		//m_pd->subscribe( "print" );
-		//m_pd->subscribe( "pd-print" );
-		//m_pd->subscribe( patch_message_target );
-		//m_pd->subscribe( "pd" );
+
+		m_pd->addToSearchPath( "C:/IntegraLive.git/build/Debug/server/pd_externals" );
+		//m_pd->addToSearchPath( "C:/IntegraLive.git/build/Debug/server/pd_externals/iemnet" );
 	}
 
 

@@ -68,7 +68,7 @@ namespace integra_internal
 
 			typedef std::list<pd::Message> pd_message_list;
 
-			void setup_subscriptions();
+			void setup_libpd();
 
 			string get_patch_file_path() const;
 

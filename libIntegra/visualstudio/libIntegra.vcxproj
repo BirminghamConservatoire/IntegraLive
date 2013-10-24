@@ -64,7 +64,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;portaudio_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;portaudio_x86.lib;C:\pd_vanilla\extra\expr~\expr.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/portaudio/build/msvc/Win32/Debug;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>

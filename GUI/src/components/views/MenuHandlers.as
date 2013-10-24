@@ -722,10 +722,6 @@ package components.views
 				return;
 			}
 			
-			if( !isWebLink( link ) )
-			{
-				link = "file://" + link;
-			}
 			Trace.progress( "opening help link", link );
 
 			navigateToURL( new URLRequest( link ), "_blank" );

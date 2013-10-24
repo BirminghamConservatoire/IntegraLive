@@ -56,8 +56,9 @@ package components.utils
 		public function get oscServerPort():int				{ return _oscServerPort; }
 		public function get oscClientPort():int				{ return _oscClientPort; }
 
-		public function get acknowledgementsPath():String 	{ return _acknowledgementsPath; }
 		public function get helpLinks():Vector.<String>		{ return _helpLinks; }
+		public function get acknowledgementsLink():String 	{ return _acknowledgementsLink; }
+		public function get moduleUpgradeHelpLink():String	{ return _moduleUpgradeHelpLink; } 	
 		
 		public function get traceErrors():Boolean			{ return _traceErrors; }
 		public function get traceProgress():Boolean			{ return _traceProgress; }
@@ -193,11 +194,6 @@ package components.utils
 					}
 				}				
 				
-				if( documentation.hasOwnProperty( "acknowledgementspath" ) )
-				{
-					_acknowledgementsPath = resolveDocumentationPath( documentation.child( "acknowledgementspath" ).toString() );
-				}				
-			
 				if( documentation.hasOwnProperty( "helplinks" ) )
 				{
 					for each( var helpLink:XML in documentation.helplinks.helplink ) 
@@ -211,6 +207,16 @@ package components.utils
 						var name:String = helpLink.@name;
 						_helpLinks.push( name + ";" + resolveDocumentationPath( helpLink.toString() ) );
 					}
+				}
+				
+				if( documentation.hasOwnProperty( "acknowledgementspath" ) )
+				{
+					_acknowledgementsLink = resolveDocumentationPath( documentation.child( "acknowledgementspath" ).toString() );
+				}				
+
+				if( documentation.hasOwnProperty( "moduleupgradehelp" ) )
+				{
+					_moduleUpgradeHelpLink = resolveDocumentationPath( documentation.child( "moduleupgradehelp" ).toString() );
 				}				
 			}
 			
@@ -334,11 +340,26 @@ package components.utils
 				return null;
 			}
 			
-			var path:File = _documentationDirectory.resolvePath( relativePath );
+			var anchorIndex:int = relativePath.indexOf( "#" );
+			var pathWithoutAnchors:String;
+			var anchors:String;
+			if( anchorIndex >= 0 )
+			{
+				pathWithoutAnchors = relativePath.substr( 0, anchorIndex );
+				anchors = relativePath.substr( anchorIndex );
+			}
+			else
+			{
+				pathWithoutAnchors = relativePath;
+				anchors = "";
+			}
+			
+			var path:File = _documentationDirectory.resolvePath( pathWithoutAnchors );
 			if( path.exists )
 			{
 				Trace.progress( "found documentation at", path.nativePath );
-				return path.nativePath;
+				
+				return "file://" + path.nativePath + anchors;
 			}
 			else
 			{
@@ -366,8 +387,9 @@ package components.utils
 		
 		private var _documentationDirectory:File = null;
 		
-		private var _acknowledgementsPath:String = null;
 		private var _helpLinks:Vector.<String> = new Vector.<String>;
+		private var _acknowledgementsLink:String = null;
+		private var _moduleUpgradeHelpLink:String = null;
 		
 		private var _traceErrors:Boolean = false;
 		private var _traceProgress:Boolean = false;

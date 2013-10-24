@@ -42,6 +42,7 @@ package components.views.ModuleManager
 	import components.model.IntegraModel;
 	import components.model.userData.ColorScheme;
 	import components.model.userData.ViewMode;
+	import components.utils.Config;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
@@ -144,6 +145,10 @@ package components.views.ModuleManager
 			markdown += "__?";
 			
 			markdown += "\n\nA backup will be saved to " + UpgradeModules.getBackupName( model );
+			
+			var url:String = Config.singleInstance.moduleUpgradeHelpLink;
+			
+			markdown += "\n\nFor an explanation of project upgrades click [here](" + url + ")";
 			
 			_description.markdown = markdown;
 		}

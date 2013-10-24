@@ -21,6 +21,11 @@
 
 package components.views.ModuleManager
 {
+	import flash.events.Event;
+	import flash.events.TextEvent;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
+	
 	import mx.containers.Canvas;
 	import mx.controls.HTML;
 	import mx.core.ScrollPolicy;
@@ -133,11 +138,34 @@ package components.views.ModuleManager
 			var htmlText:String = _info.html;
 			htmlText = "<html>" + htmlHeader + htmlText.substr( 6 );
 			
+			_html.addEventListener( Event.COMPLETE, onComplete );
+			
 			_html.htmlText = htmlText;
 			
 			addChild( _html );
 
 			_html.htmlLoader.placeLoadStringContentInApplicationSandbox = true;
+		}
+		
+		
+		private function onComplete( event:Event ):void
+		{
+			//always open links in a browser, not within the HTML control 
+			
+			var html:HTML = event.currentTarget as HTML;
+			var document:Object = html.htmlLoader.window.document;
+			var links:Object = document.getElementsByTagName( "a" );
+			
+			for( var i:int = 0; i < links.length; i++ ) 
+			{
+				var link:Object = links[ i ];
+				
+				link.onclick = function( linkEvent:Object ):void
+				{
+					linkEvent.preventDefault();
+					navigateToURL( new URLRequest( linkEvent.srcElement ), "_blank" );
+				}
+			}			
 		}
 
 		

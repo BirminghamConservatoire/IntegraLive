@@ -155,15 +155,7 @@
 			
 			private function onClickAcknowledgementsButton():void
 			{
-				var acknowledgementsFile:File = new File( Config.singleInstance.acknowledgementsPath );
-				if( acknowledgementsFile.exists )
-				{
-					navigateToURL( new URLRequest( "file://" + acknowledgementsFile.nativePath ), "_blank" );
-				}
-				else
-				{
-					Trace.error( "can't find acknowledgements file", acknowledgementsFile.nativePath );
-				}
+				navigateToURL( new URLRequest( Config.singleInstance.acknowledgementsLink ), "_blank" );
 			}
 
 			

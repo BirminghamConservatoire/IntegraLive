@@ -185,7 +185,7 @@ package components.views.ModuleGraph
 		{
 			if( getLinkUnderMouse() )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleGraphLink" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleGraph/Link" );
 			}
 			
 			var connectionPin:ConnectionPin = Utilities.getAncestorByType( event.target, ConnectionPin ) as ConnectionPin;
@@ -193,11 +193,11 @@ package components.views.ModuleGraph
 			{
 				if( connectionPin.isInput )
 				{
-					return InfoMarkupForViews.instance.getInfoForView( "ModuleInputPin" );
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleGraph/InputPin" );
 				}
 				else
 				{
-					return InfoMarkupForViews.instance.getInfoForView( "ModuleOutputPin" );
+					return InfoMarkupForViews.instance.getInfoForView( "ModuleGraph/OutputPin" );
 				}
 			}
 			

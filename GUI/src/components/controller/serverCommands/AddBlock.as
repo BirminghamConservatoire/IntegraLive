@@ -279,7 +279,7 @@ package components.controller.serverCommands
 			createDefaultBlockContents( model, controller );
 
 			//info (use view-specific value, because we want different default for project/track/block)
-			controller.processCommand( new SetObjectInfo( _blockID, InfoMarkupForViews.instance.getInfoForView( "BlockView" ).markdown ) );
+			controller.processCommand( new SetObjectInfo( _blockID, InfoMarkupForViews.instance.getInfoForView( "ArrangeView/BlockView" ).markdown ) );
 			
 			//update project length
 			controller.processCommand( new UpdateProjectLength() );

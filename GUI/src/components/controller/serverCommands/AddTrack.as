@@ -154,7 +154,7 @@ package components.controller.serverCommands
 			controller.processCommand( new SetTrackColor( _trackID, _color ) );	
 			
 			//info (use view-specific value, because we want different default for project/track/block)
-			controller.processCommand( new SetObjectInfo( _trackID, InfoMarkupForViews.instance.getInfoForView( "ArrangeViewTrack" ).markdown ) );
+			controller.processCommand( new SetObjectInfo( _trackID, InfoMarkupForViews.instance.getInfoForView( "ArrangeView/ArrangeViewTrack" ).markdown ) );
 			
 			//track selection
 			controller.processCommand( new SetPrimarySelectedChild( model.project.id, _trackID ) );

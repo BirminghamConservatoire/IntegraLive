@@ -66,6 +66,7 @@ package components.model
 		public function get midiSettings():MidiSettings 		{ return _midiSettings; }
 
 		
+		public function get filename():String { return _filename; }
 		public function get currentInfo():Info { return _currentInfo; }
 		public function get showInfoView():Boolean { return _showInfoView; }
 		public function get projectLength():int { return _projectLength; }
@@ -999,6 +1000,34 @@ package components.model
 			return isConnectionTarget;
 		}
 		
+		
+		public function areThereAnyUpgradableModules( searchRoot:IntegraDataObject ):Boolean
+		{
+			if( searchRoot is IntegraContainer )
+			{
+				var container:IntegraContainer = searchRoot as IntegraContainer;
+				for each( var child:IntegraDataObject in container.children )
+				{
+					if( areThereAnyUpgradableModules( child ) )
+					{
+						return true;
+					}
+				}
+			}
+			else
+			{
+				var interfaceDefinition:InterfaceDefinition = searchRoot.interfaceDefinition;
+				var interfaceDefinitions:Vector.<InterfaceDefinition> = getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
+				Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
+				
+				if( interfaceDefinition != interfaceDefinitions[ 0 ] )
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}		
 
 		//modification methods 
 		public function clearAll():void
@@ -1460,6 +1489,7 @@ package components.model
 		}
 		
 
+		public function set filename( filename:String ):void { _filename = filename; }
 		public function set currentInfo( currentInfo:Info ):void { _currentInfo = currentInfo; }
 		public function set showInfoView( showInfoView:Boolean ):void { _showInfoView = showInfoView; }
 		public function set alwaysUpgrade( alwaysUpgrade:Boolean ):void { _alwaysUpgrade = alwaysUpgrade; }
@@ -1691,6 +1721,7 @@ package components.model
 		private var _isProjectModified:Boolean;
 		
 		private var _projectLength:int = 0;
+		private var _filename:String = null;
 		private var _currentInfo:Info = null;
 		private var _showInfoView:Boolean = true;
 		private var _alwaysUpgrade:Boolean = false;

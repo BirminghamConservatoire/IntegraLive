@@ -99,9 +99,9 @@ package components.utils
 			var container:IntegraContainer = model.getContainer( _containerID );
 			Assert.assertNotNull( container );
 			
-			if( container is Project ) return InfoMarkupForViews.instance.getInfoForView( "ProjectVU" );
-			if( container is Track ) return InfoMarkupForViews.instance.getInfoForView( "TrackVU" );
-			if( container is Block ) return InfoMarkupForViews.instance.getInfoForView( "BlockVU" );
+			if( container is Project ) return InfoMarkupForViews.instance.getInfoForView( "VU/Project" );
+			if( container is Track ) return InfoMarkupForViews.instance.getInfoForView( "VU/Track" );
+			if( container is Block ) return InfoMarkupForViews.instance.getInfoForView( "VU/Block" );
 			
 			Assert.assertTrue( false );
 			return null;

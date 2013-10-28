@@ -114,6 +114,11 @@ package components.views.ModuleGraph
 		{
 			if( _moduleID < 0 ) return;
 
+			if( _nameEdit.editable ) 
+			{
+				commitNameEdit();
+			}
+		
 			_nameEdit.text = _model.getModuleInstance( moduleID ).name;
 		}
 
@@ -236,7 +241,7 @@ package components.views.ModuleGraph
 		{
 			if( event.target == _liveButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleLiveViewButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleGraph/LiveViewButton" );
 			}
 			else
 			{
@@ -375,12 +380,17 @@ package components.views.ModuleGraph
 		
 		private function onNameEditChange( event:FocusEvent ):void
 		{
+			commitNameEdit();
+		}
+		
+		
+		private function commitNameEdit():void
+		{
 			if( _nameEdit.text != _model.getModuleInstance( _moduleID ).name )
 			{
 				_controller.processCommand( new RenameObject( _moduleID, _nameEdit.text ) );
-				updateNameEdit();
 			} 
-
+			
 			setNameEditable( false );
 		}
 		

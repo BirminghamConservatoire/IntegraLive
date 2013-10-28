@@ -95,7 +95,11 @@ package components.views.LiveView
 			
 			if( _activeLiveViewBlock )
 			{
-				title += "." + model.getBlock( _activeLiveViewBlock.blockID ).name;
+				var activeBlockID:int = _activeLiveViewBlock.blockID;
+				if( model.doesObjectExist( activeBlockID ) && model.getDataObjectByID( activeBlockID ) is Block )
+				{
+					title += "." + model.getBlock( activeBlockID ).name;
+				}
 			}
 			
 			return title;

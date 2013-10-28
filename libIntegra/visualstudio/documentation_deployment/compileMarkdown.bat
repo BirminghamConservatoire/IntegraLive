@@ -12,13 +12,14 @@ set directory_name=!local_path:\%filename%=!
 
 mkdir %2\%directory_name%
 
-set intermediatefile=%2\%directory_name%\%filetitle%_intermediate.htm
-
 set targetfile=%2\%directory_name%\%filetitle%.htm
-pandoc -f markdown -t html -o %intermediatefile% %1
 
-recode.py %intermediatefile% > %targetfile%
+set headerfile=%CD%\%filetitle%\header.html
 
-del %intermediatefile%
+if exist %headerfile% (
+	pandoc --include-in-header=%headerfile% --template=template.pandoc --toc --standalone --ascii -f markdown -t html -o %targetfile% %1
+) else (
+	pandoc --standalone --ascii -f markdown -t html -o %targetfile% %1
+)
 
 echo compiled documentation page: %targetfile%

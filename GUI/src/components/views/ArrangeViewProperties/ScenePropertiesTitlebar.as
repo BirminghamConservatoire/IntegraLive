@@ -115,7 +115,7 @@ package components.views.ArrangeViewProperties
 		
 		override public function getInfoToDisplay( event:Event ):Info
 		{
-			return InfoMarkupForViews.instance.getInfoForView( "ScenePropertiesTitlebar" );
+			return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/ScenePropertiesTitlebar" );
 		}		
 		
 		override public function styleChanged( style:String ):void

@@ -94,7 +94,7 @@ package components.views.ArrangeViewProperties
 		
 		override public function getInfoToDisplay( event:Event ):Info
 		{
-			return InfoMarkupForViews.instance.getInfoForView( "ProjectPropertiesTitlebar" );
+			return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/ProjectPropertiesTitlebar" );
 		}
 		
 		

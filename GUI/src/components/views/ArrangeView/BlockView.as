@@ -166,27 +166,27 @@ package components.views.ArrangeView
 			{
 				if( _curvatureModeButton.selected )
 				{
-					return InfoMarkupForViews.instance.getInfoForView( "EnvelopeInCurvatureMode" );
+					return InfoMarkupForViews.instance.getInfoForView( "Envelope/InCurvatureMode" );
 				}
 				else				
 				{
-					return InfoMarkupForViews.instance.getInfoForView( "Envelope" );
+					return InfoMarkupForViews.instance.getInfoForView( "Envelope/Envelope" );
 				}
 			}
 			
 			if( event.target == _openButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "OpenBlockButton" );				
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeView/OpenBlockButton" );				
 			}
 
 			if( event.target == _envelopeLockButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "EnvelopeLockButton" );				
+				return InfoMarkupForViews.instance.getInfoForView( "Envelope/LockButton" );				
 			}
 
 			if( event.target == _curvatureModeButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "CurvatureModeButton" );				
+				return InfoMarkupForViews.instance.getInfoForView( "Envelope/CurvatureModeButton" );				
 			}
 			
 			return model.getBlock( _blockID ).info; 

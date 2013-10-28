@@ -22,6 +22,7 @@ LIBINTEGRADEPS_URL=$(INTEGRA_BASE_URL)/$(LIBINTEGRADEPS_FILE)
 DEPENDENCIESDIR=$(PWD)/$(LIBINTEGRADEPS_DIR)/lib
 SDKROOT=$(SVNROOT)/SDK
 TEMPLATESDIR=$(SDKROOT)/templates
+FSPLAY=fsplay~
 
 SERVERDIR=server
 SERVERBIN=$(SERVERDIR)/bin
@@ -71,6 +72,20 @@ dmg: $(DEFAULTBUILD)
 	rm $(PRODUCT)_temp.dmg
 	#codesign -f -v -s "3rd Party Mac Developer Installer: Birmingham City University" $(PRODUCT).dmg
 
+dropdmg: $(DEFAULTBUILD)
+	-mkdir $(PRODUCT)
+	-cp .VolumeIcon.icns $(PRODUCT)
+	-cp -r $(APPNAME) $(PRODUCT)
+	dropdmg --config-name="Integra Live" $(PRODUCT)
+	-rm -rf $(PRODUCT)
+
+creator-dropdmg: creator
+	-mkdir $(CREATORPRODUCT)
+	-cp .VolumeIcon.icns $(CREATORPRODUCT)
+	-cp -r $(CREATORAPPNAME) $(CREATORPRODUCT)
+	dropdmg --config-name="Developer SDK" $(CREATORPRODUCT)
+	-rm -rf $(CREATORPRODUCT)
+	
 run: 
 	open $(APPNAME)
 
@@ -136,6 +151,12 @@ host:
 	cp -r $(PD_MOUNT_POINT)/*.app/Contents/Resources host
 	find ./host -type d -exec chmod 755 {} \;
 	sh remove_externals.sh
+	if [ ! -e $(FSPLAY).zip ]; then \
+		curl http://integralive.org/incoming/$(FSPLAY).zip > $(FSPLAY).zip; \
+	fi
+	unzip $(FSPLAY).zip
+	mv $(FSPLAY)/* host/extra/
+	rm -rf $(FSPLAY)
 	cp $(PD_MOUNT_POINT)/*.app/Contents/lib/libfftw3f.3.dylib host/extra/bsaylor
 	cd host/extra/bsaylor && chmod 644 partconv~.pd_darwin && install_name_tool -change @executable_path/../../lib/libfftw3f.3.dylib @loader_path/libfftw3f.3.dylib partconv~.pd_darwin && cd -
 	cp $(PD_OSC_HOST) host/extra
@@ -177,6 +198,9 @@ clean: server-clean gui-clean
 
 maintainer-clean: clean dependencies-clean
 	-rm *.dmg
+	make -C $(LIBINTEGRAPATH) maintainer-clean
+	cd $(LIBINTEGRAPATH) && ./autogen.sh && cd -
+
 
 upload:
 	scp Integra\ Live.dmg postlude@frs.sourceforge.net:/home/frs/project/integralive/

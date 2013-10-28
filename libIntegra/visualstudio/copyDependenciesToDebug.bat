@@ -23,6 +23,7 @@ xcopy "..\..\modules" "..\..\build\Debug\modules" /Y /Q
 if exist ..\..\build\Debug\SDK\templates rd /s /q ..\..\build\Debug\SDK\templates
 mkdir ..\..\build\Debug\SDK\templates
 xcopy "..\..\SDK\templates" "..\..\build\Debug\SDK\templates" /Y /Q /S
+copy "..\..\SDK\license.txt" "..\..\build\Debug\SDK\"
 
 if exist ..\..\build\Debug\gui-debug\BlockLibrary rd /s /q ..\..\build\Debug\gui-debug\BlockLibrary
 mkdir ..\..\build\Debug\gui-debug\BlockLibrary

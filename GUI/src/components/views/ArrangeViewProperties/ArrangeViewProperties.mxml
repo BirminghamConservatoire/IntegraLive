@@ -198,10 +198,10 @@
 				
 				var button:Button = Utilities.getAncestorByType( event.target, Button ) as Button;
 				
-				if( button == routingButton ) return infos.getInfoForView( "RoutingViewButton" );
-				if( button == scriptingButton ) return infos.getInfoForView( "ScriptingViewButton" );
+				if( button == routingButton ) return infos.getInfoForView( "ArrangeViewProperties/RoutingViewButton" );
+				if( button == scriptingButton ) return infos.getInfoForView( "ArrangeViewProperties/ScriptingViewButton" );
 				
-				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties" );
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/ArrangeViewProperties" );
 			}
 			
 			

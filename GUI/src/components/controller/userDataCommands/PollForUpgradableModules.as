@@ -57,7 +57,7 @@ package components.controller.userDataCommands
 			var searchObject:IntegraDataObject = model.getDataObjectByID( _searchObjectID );
 			Assert.assertNotNull( searchObject );
 			
-			_foundUpgradableModules = searchForUpgradableModules( searchObject, model );
+			_foundUpgradableModules = model.areThereAnyUpgradableModules( searchObject );
 
 			if( _foundUpgradableModules )
 			{
@@ -70,7 +70,7 @@ package components.controller.userDataCommands
 					var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
 					if( !viewMode.upgradeDialogOpen )
 					{
-						viewMode.upgradeDialogOpen = true;
+						viewMode.openUpgradeDialog();
 						controller.processCommand( new SetViewMode( viewMode ) );
 					}
 				}
@@ -82,34 +82,6 @@ package components.controller.userDataCommands
 		{ 	
 		}		
 
-		
-		private function searchForUpgradableModules( searchObject:IntegraDataObject, model:IntegraModel ):Boolean
-		{
-			if( searchObject is IntegraContainer )
-			{
-				var container:IntegraContainer = searchObject as IntegraContainer;
-				for each( var child:IntegraDataObject in container.children )
-				{
-					if( searchForUpgradableModules( child, model ) )
-					{
-						return true;
-					}
-				}
-			}
-			else
-			{
-				var interfaceDefinition:InterfaceDefinition = searchObject.interfaceDefinition;
-				var interfaceDefinitions:Vector.<InterfaceDefinition> = model.getInterfaceDefinitionsByOriginGuid( interfaceDefinition.originGuid );
-				Assert.assertTrue( interfaceDefinitions && interfaceDefinitions.length > 0 );
-				
-				if( interfaceDefinition != interfaceDefinitions[ 0 ] )
-				{
-					return true;
-				}
-			}
-			
-			return false;
-		}
 		
 		private var _searchObjectID:int;
 		

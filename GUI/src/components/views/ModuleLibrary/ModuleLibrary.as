@@ -101,12 +101,12 @@ package components.views.ModuleLibrary
 			var lastItem:LibraryItem = _library.getLibraryItemAt( _library.numChildren - 1 );
 			if( mouseY >= lastItem.getRect( this ).bottom )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/ModuleLibrary" );
 			}
 
 			if( event.target is Button && ( event.target as Button ).getStyle( "skin" ) == CollapseButtonSkin )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ExpandModuleVersions" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/ExpandVersions" );
 			}
 			
 			var item:LibraryItem = Utilities.getAncestorByType( event.target as DisplayObject, LibraryItem ) as LibraryItem;

@@ -571,7 +571,7 @@
 					{
 						continue;
 					}
-
+					
 					if( file.isDirectory )
 					{
 						var directoryObjects:Array = getUnusedFiles( file, usedPdFileMap );
@@ -992,6 +992,8 @@
 			private static const _workingDirectoryName:String = "Integra Module Creator";
 			
 			private static const _oversizedFileThreshold:int = 1024000;
+			
+			
 			
 		]]>
 	</fx:Script>			

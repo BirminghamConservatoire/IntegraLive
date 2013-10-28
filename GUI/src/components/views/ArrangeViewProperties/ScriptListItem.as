@@ -132,7 +132,7 @@ package components.views.ArrangeViewProperties
 		{
 			if( event.target == _deleteButton )
 			{
-				 return InfoMarkupForViews.instance.getInfoForView( "DeleteScriptButton" );
+				 return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/DeleteScriptButton" );
 			}
 
 			return null;

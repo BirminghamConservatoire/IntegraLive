@@ -410,7 +410,7 @@
 			private function onUpgradeModules( command:UpgradeModules ):void
 			{
 				var infoGenerator:ModuleManagementInfoGenerator = new ModuleManagementInfoGenerator();
-				var upgradeReportMarkdown:String = infoGenerator.getUpgradeReport( command.upgradedObjectIDs, command.upgradedModuleGuids, command.searchObjectID );
+				var upgradeReportMarkdown:String = infoGenerator.getUpgradeReport( command );
 				_reportView.displayReport( "Module Upgrade Report:", upgradeReportMarkdown, this );
 			}
 			
@@ -597,6 +597,9 @@
 						mx.managers.PopUpManager.centerPopUp( _upgradeDialog );
 						mx.managers.PopUpManager.bringToFront( _upgradeDialog );
 						_isDisplayingUpgradeDialog = true;
+						
+						_reportView.hideReport();
+
 					}
 				}
 				else

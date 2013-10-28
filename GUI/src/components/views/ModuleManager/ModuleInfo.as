@@ -21,6 +21,11 @@
 
 package components.views.ModuleManager
 {
+	import flash.events.Event;
+	import flash.events.TextEvent;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
+	
 	import mx.containers.Canvas;
 	import mx.controls.HTML;
 	import mx.core.ScrollPolicy;
@@ -60,13 +65,15 @@ package components.views.ModuleManager
 				{
 					default:
 					case ColorScheme.LIGHT:
-						_backgroundColor ='#ffffff';
-						_textColor ='#6D6D6D';
+						_backgroundColor = 0xffffff;
+						_cssBackgroundColor ='#ffffff';
+						_cssTextColor ='#6D6D6D';
 						break;
 					
 					case ColorScheme.DARK:
-						_backgroundColor ='#000000';
-						_textColor = '#939393';
+						_backgroundColor = 0x000000;
+						_cssBackgroundColor ='#000000';
+						_cssTextColor = '#939393';
 						break;
 				}
 				
@@ -84,8 +91,8 @@ package components.views.ModuleManager
 		
 		private function get htmlHeader():String
 		{
-			Assert.assertNotNull( _textColor );
-			Assert.assertNotNull( _backgroundColor );
+			Assert.assertNotNull( _cssTextColor );
+			Assert.assertNotNull( _cssBackgroundColor );
 			
 			var fontSize:Number = getStyle( FontSize.STYLENAME );
 			
@@ -93,8 +100,8 @@ package components.views.ModuleManager
 					"<style type='text/css'>" +
 						
 						"body {" +
-							"background-color:" + _backgroundColor + ";" + 
-							"color:" + _textColor + ";" +
+							"background-color:" + _cssBackgroundColor + ";" + 
+							"color:" + _cssTextColor + ";" +
 							"font-size:" + fontSize + ";" +
 						"} " +
 
@@ -119,15 +126,19 @@ package components.views.ModuleManager
 			}
 			
 			_html = new HTML;
+			_html.paintsDefaultBackground = true;
 			
 			_html.setStyle( "left", ModuleManagerList.cornerRadius );
 			_html.setStyle( "right", ModuleManagerList.cornerRadius );
 			_html.setStyle( "top", ModuleManagerList.cornerRadius );
 			_html.setStyle( "bottom", ModuleManagerList.cornerRadius );
 			_html.setStyle( "borderStyle", "none" );
+			_html.setStyle( "backgroundColor", _backgroundColor );
 			
 			var htmlText:String = _info.html;
 			htmlText = "<html>" + htmlHeader + htmlText.substr( 6 );
+			
+			_html.addEventListener( Event.COMPLETE, onComplete );
 			
 			_html.htmlText = htmlText;
 			
@@ -135,13 +146,35 @@ package components.views.ModuleManager
 
 			_html.htmlLoader.placeLoadStringContentInApplicationSandbox = true;
 		}
+		
+		
+		private function onComplete( event:Event ):void
+		{
+			//always open links in a browser, not within the HTML control 
+			
+			var html:HTML = event.currentTarget as HTML;
+			var document:Object = html.htmlLoader.window.document;
+			var links:Object = document.getElementsByTagName( "a" );
+			
+			for( var i:int = 0; i < links.length; i++ ) 
+			{
+				var link:Object = links[ i ];
+				
+				link.onclick = function( linkEvent:Object ):void
+				{
+					linkEvent.preventDefault();
+					navigateToURL( new URLRequest( linkEvent.srcElement ), "_blank" );
+				}
+			}			
+		}
 
 		
 		private var _info:Info = new Info;
 
 		private var _html:HTML = null;
 		
-		private var _backgroundColor:String;
-		private var _textColor:String;
+		private var _backgroundColor:uint;
+		private var _cssBackgroundColor:String;
+		private var _cssTextColor:String;
 	}
 }

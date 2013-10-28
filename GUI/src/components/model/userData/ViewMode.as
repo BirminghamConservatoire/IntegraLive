@@ -21,6 +21,8 @@
 
 package components.model.userData
 {
+	import flexunit.framework.Assert;
+
 	public final class ViewMode
 	{
 		public function ViewMode()
@@ -30,35 +32,63 @@ package components.model.userData
 		
 		public function get mode():String { return _mode; }
 		public function get blockPropertiesOpen():Boolean { return _blockPropertiesOpen; }
-		public function get preferencesOpen():Boolean { return ( _openPopup == PREFERENCES ); }
-		public function get moduleManagerOpen():Boolean { return ( _openPopup == MODULE_MANAGER ); }
-		public function get upgradeDialogOpen():Boolean { return ( _openPopup == UPGRADE_DIALOG); }
+		public function get popupStack():Vector.<String> { return _popupStack; }
+		
+		public function get preferencesOpen():Boolean { return ( openPopup == PREFERENCES ); }
+		public function get moduleManagerOpen():Boolean { return ( openPopup == MODULE_MANAGER ); }
+		public function get upgradeDialogOpen():Boolean { return ( openPopup == UPGRADE_DIALOG); }
 
 		public function set mode( mode:String ):void { _mode = mode; }
 		public function set blockPropertiesOpen( blockPropertiesOpen:Boolean ):void { _blockPropertiesOpen = blockPropertiesOpen; }
 
-		public function set preferencesOpen( preferencesOpen:Boolean ):void 
-		{ 
-			setOpenPopup( PREFERENCES, preferencesOpen );
+		public function openPreferences():void 
+		{
+			clearPopupStack();
+			pushPopupStack( PREFERENCES );
 		}
-
-		public function set moduleManagerOpen( moduleManagerOpen:Boolean ):void 
-		{ 
-			setOpenPopup( MODULE_MANAGER, moduleManagerOpen );
+		
+		
+		public function closePreferences():void
+		{
+			removeFromPopupStack( PREFERENCES );
 		}
 
 		
-		public function set upgradeDialogOpen( upgradeDialogOpen:Boolean ):void 
-		{ 
-			setOpenPopup( UPGRADE_DIALOG, upgradeDialogOpen );
+		public function openModuleManager( onTopOfOthers:Boolean = false ):void 
+		{
+			if( !onTopOfOthers )
+			{
+				clearPopupStack();
+			}
+			
+			pushPopupStack( MODULE_MANAGER );
+		}
+
+		
+		public function closeModuleManager():void
+		{
+			removeFromPopupStack( MODULE_MANAGER );
+		}
+		
+		
+		public function openUpgradeDialog():void 
+		{
+			clearPopupStack();
+			pushPopupStack( UPGRADE_DIALOG );
+		}
+
+		
+		public function closeUpgradeDialog():void
+		{
+			removeFromPopupStack( UPGRADE_DIALOG );
 		}
 		
 		
 		public function clear():void
 		{
 			_mode = ARRANGE;
-			_blockPropertiesOpen = false;		
-			_openPopup = null;
+			_blockPropertiesOpen = false;
+			clearPopupStack();
 		}
 		
 		
@@ -67,33 +97,53 @@ package components.model.userData
 			var clone:ViewMode = new ViewMode();
 			clone._mode = _mode;
 			clone._blockPropertiesOpen = _blockPropertiesOpen;
-			clone._openPopup = _openPopup; 
+			clone._popupStack = _popupStack.concat(); 
 			
 			return clone;
 		}
 		
 		
-		private function setOpenPopup( popup:String, open:Boolean ):void
+		private function get openPopup():String
 		{
-			if( open )
+			if( _popupStack.length > 0 )
 			{
-				_openPopup = popup;
+				return _popupStack[ _popupStack.length - 1 ];
 			}
 			else
 			{
-				if( _openPopup == popup )
-				{
-					_openPopup = null;
-				}
+				return null;
 			}
 		}
+		
+		
+		private function clearPopupStack():void
+		{
+			_popupStack.length = 0;
+		}
 
+		
+		private function pushPopupStack( popup:String ):void
+		{
+			_popupStack.push( popup );
+		}
+
+		
+		
+		private function removeFromPopupStack( popup:String ):void
+		{
+			var index:int = _popupStack.lastIndexOf( popup );
+			if( index >= 0 )
+			{
+				_popupStack.splice( index, 1 );
+			}
+		}
+		
 		
 		
 	    private var _mode:String;
 	    private var _blockPropertiesOpen:Boolean;
 		
-		private var _openPopup:String = null;
+		private var _popupStack:Vector.<String> = new Vector.<String>;
 
 		private static const PREFERENCES:String = "preferences";
 		private static const MODULE_MANAGER:String = "moduleManager";

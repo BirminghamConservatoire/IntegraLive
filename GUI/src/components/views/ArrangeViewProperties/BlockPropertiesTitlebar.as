@@ -114,11 +114,11 @@ package components.views.ArrangeViewProperties
 		{
 			if( event.target == _deleteEnvelopeButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "DeleteEnvelopeButton" );	
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/DeleteEnvelopeButton" );	
 			}
 			else
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "EnvelopeSelection" );	
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/EnvelopeSelection" );	
 			}
 		}
 

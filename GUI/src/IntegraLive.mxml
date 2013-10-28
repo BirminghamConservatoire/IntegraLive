@@ -60,6 +60,7 @@
 			import components.controller.moduleManagement.InstallModules;
 			import components.controller.serverCommands.NextScene;
 			import components.controller.serverCommands.PreviousScene;
+			import components.controller.serverCommands.RenameObject;
 			import components.controller.serverCommands.ResetAllBlocks;
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.PollForUpgradableModules;
@@ -67,7 +68,9 @@
 			import components.controller.userDataCommands.SetInstallResult;
 			import components.controller.userDataCommands.SetProjectModified;
 			import components.model.Info;
+			import components.model.IntegraDataObject;
 			import components.model.IntegraModel;
+			import components.model.Project;
 			import components.model.userData.ColorScheme;
 			import components.utils.Config;
 			import components.utils.FontSize;
@@ -104,24 +107,24 @@
 			}
 			
 			
-			public function load(event:Event):void
+			public function load( event:Event ):void
 			{
 				_functionToExecuteAfterSaveModifiedAlert = doLoad; 
 				saveModified( "Load Project" );
 			}
 			
 			
-			public function save(event:Event):void
+			public function save( event:Event ):void
 			{
-				if( _lastFilename )
+				if( _model.filename )
 				{
-					_controller.saveProject( _lastFilename );
+					_controller.saveProject( _model.filename );
 					
 					onProjectSaved();
 				}
 				else
 				{
-					saveAs(event);
+					saveAs( event );
 				}
 			}
 			
@@ -129,9 +132,9 @@
 			public function saveAs(event:Event):void
 			{
 				var filenamePrompt:String;
-				if( _lastFilename )
+				if( _model.filename )
 				{
-					filenamePrompt = _lastFilename;
+					filenamePrompt = _model.filename;
 					if( filenamePrompt.substr( filenamePrompt.length - 4 ) == ".ixd" )
 					{
 						//update extension
@@ -453,7 +456,7 @@
 			private function onLoadFailed( event:LoadFailedEvent ):void
 			{
 				Alert.show( event.errorString, "Error loading file", Alert.OK, this );
-				_lastFilename = null;
+				_model.filename = null;
 			}
 
 			
@@ -520,11 +523,12 @@
 				
 				Trace.progress( "autoload path:", _autoLoadFile.nativePath );
 				
-				_lastFilename = _autoLoadFile.nativePath;
+				displayProgressPopup( "Loading: " + _autoLoadFile.name + "..." );
+
+				_model.filename = _autoLoadFile.nativePath;
 				_autoLoadFile = null;
 				
-				displayProgressPopup( "Loading: " + _autoLoadFile.name + "..." );
-				_controller.loadProject( _lastFilename );
+				_controller.loadProject( _model.filename );
 			}
 			
 			
@@ -567,6 +571,7 @@
 				_isDisplayingProgressPopup = false;
 
 				finishModalState();
+				doAutoloadIfNecessary();
 				
 				if( _crashReportView && _crashReportView.crashType == CrashReport.CRASHTYPE_GUI )
 				{
@@ -587,7 +592,7 @@
 			private function doNewProject():void
 			{
 				displayProgressPopup( "Starting new Project...");
-				_lastFilename = null;
+				_model.filename = null;
 				_controller.newProject();
 			}
 
@@ -595,7 +600,17 @@
 			private function doLoad():void
 			{
 				var filter:FileFilter = new FileFilter( "Integra Projects", "*." + Utilities.integraFileExtension + ";*.ixd" );
-				var file:File = new File();
+				
+				var file:File;
+				if( _model.filename )
+				{
+					file = new File( _model.filename ).parent;
+				}
+				else
+				{
+					file = new File;
+				}
+				
 				file.browseForOpen( "Open Project", [filter] );
 
 				file.addEventListener( Event.SELECT, onSelectFileToLoad );      			
@@ -604,24 +619,32 @@
 			
 			private function onSelectFileToLoad( event:Event ):void
 			{
-				_lastFilename = event.target.nativePath;
+				_model.filename = event.target.nativePath;
 
-				displayProgressPopup( "Loading: " + Utilities.fileNameFromPath( _lastFilename ) + "..." );
-				_controller.loadProject( _lastFilename );
+				displayProgressPopup( "Loading: " + Utilities.fileNameFromPath( _model.filename ) + "..." );
+				_controller.loadProject( _model.filename );
 			}
 
 
 			private function onSelectFileToSave( event:Event ):void
 			{
-				_lastFilename = event.target.nativePath;
+				var filename:String = event.target.nativePath;
 
+				//ensure correct extension
 				var extension:String = "." + Utilities.integraFileExtension;
-				if( _lastFilename.length <= extension.length || _lastFilename.substr( _lastFilename.length - extension.length ).toLowerCase() != extension.toLowerCase() )
+				if( filename.length <= extension.length || filename.substr( filename.length - extension.length ).toLowerCase() != extension.toLowerCase() )
 				{
-					_lastFilename += extension;	
+					filename += extension;	
 				} 
 
-				_controller.saveProject( _lastFilename );
+				var newProjectName:String = getProjectNameFromFilename( filename );
+				if( newProjectName != _model.project.name )
+				{
+					_controller.processCommand( new RenameObject( _model.project.id, newProjectName ) );
+				}	
+				
+				_model.filename = event.target.nativePath;
+				_controller.saveProject( _model.filename );
 
 				onProjectSaved();
 				
@@ -708,8 +731,6 @@
 
 				ModalState.isInModalState = false;
 				_menuHandlers.enableMenus( true );
-				
-				doAutoloadIfNecessary();
 			} 
 
 
@@ -747,6 +768,43 @@
 						}
 					}
 				}
+			}
+			
+			
+			
+			private function getProjectNameFromFilename( filename:String ):String
+			{
+				var file:File = new File( filename );
+				
+				var name:String = file.name;
+				if( file.extension )
+				{
+					name = name.substr( 0, name.length - file.extension.length - 1 );
+				}
+				
+				//remove illegal characters
+				for( var i:int = name.length - 1; i >= 0; i-- )
+				{
+					var char:String = name.charAt( i );
+					if( IntegraDataObject.legalObjectNameCharacterSet.indexOf( char ) < 0 )
+					{
+						name = name.replace( char, "" ); 
+					}		
+				}
+				
+				//remove leading numbers
+				while( name.length > 0 && "0123456789".indexOf( name.charAt( 0 ) ) >= 0 )
+				{
+					name = name.substr( 1 );
+				}
+				
+				//create default name if nothing left
+				if( name.length == 0 )
+				{
+					name = Project.defaultProjectName;
+				}
+				
+				return name;
 			}
 
 			
@@ -884,9 +942,9 @@
 
 				var filesInCrashReport:Vector.<String> = new Vector.<String>;
 				_loggingSystem.getLogFiles( filesInCrashReport );
-				if( _lastFilename )
+				if( _model.filename )
 				{
-					filesInCrashReport.push( _lastFilename );
+					filesInCrashReport.push( _model.filename );
 				}
 				
 				_crashReportView.filesToUpload = filesInCrashReport;
@@ -1234,7 +1292,7 @@
 			private function getApplicationTitle():String
 			{
 				var title:String = "Integra Live";
-				if( _lastFilename ) title += " - " + Utilities.fileTitleFromPath( _lastFilename );
+				if( _model.filename ) title += " - " + Utilities.fileTitleFromPath( _model.filename );
 				
 				if( _model.isProjectModified )
 				{
@@ -1316,7 +1374,6 @@
 	    private var _progressPopup:MessagePopup = new MessagePopup;
 	    private var _isDisplayingProgressPopup:Boolean = false;
 
-	    private var _lastFilename:String = null;
 	    private var _functionToExecuteAfterSaveModifiedAlert:Function = null;
 	    private var _functionToExecuteAfterSave:Function = null;
 		private var _autoLoadFile:File;

@@ -79,12 +79,12 @@
 			
 			var button:RibbonButton = Utilities.getAncestorByType( event.target, RibbonButton ) as RibbonButton;
 			
-			if( button == _playButton ) return infos.getInfoForView( "PlayButton" );
-			if( button == _pauseButton ) return infos.getInfoForView( "PauseButton" );
-			if( button == _arrangeButton ) return infos.getInfoForView( "ArrangeViewButton" );			
-			if( button == _liveButton ) return infos.getInfoForView( "LiveViewButton" );
-			if( button == _midiButton ) return infos.getInfoForView( "MidiInputButton" );
-			if( button == _lightButton ) return infos.getInfoForView( "LightingButton" );
+			if( button == _playButton ) return infos.getInfoForView( "Ribbon/Play" );
+			if( button == _pauseButton ) return infos.getInfoForView( "Ribbon/Pause" );
+			if( button == _arrangeButton ) return infos.getInfoForView( "Ribbon/ArrangeView" );			
+			if( button == _liveButton ) return infos.getInfoForView( "Ribbon/LiveView" );
+			if( button == _midiButton ) return infos.getInfoForView( "Ribbon/MidiInput" );
+			if( button == _lightButton ) return infos.getInfoForView( "Ribbon/Lighting" );
 				
 			return null;
 		}

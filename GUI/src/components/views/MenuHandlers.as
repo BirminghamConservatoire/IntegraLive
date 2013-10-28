@@ -32,6 +32,8 @@ package components.views
 	import flash.net.navigateToURL;
 	import flash.ui.Keyboard;
 	
+	import mx.events.MenuEvent;
+	
 	import components.controller.IntegraController;
 	import components.controller.events.AllDataChangedEvent;
 	import components.controller.moduleManagement.InstallModules;
@@ -506,10 +508,22 @@ package components.views
 		
 		private function showModuleManager( event:Event ):void
 		{
-			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
-			viewMode.moduleManagerOpen = !viewMode.moduleManagerOpen;
+			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
+			Assert.assertNotNull( menuItem );
 			
+			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
+			if( menuItem.checked )
+			{
+				viewMode.closeModuleManager();
+			}
+			else
+			{
+				viewMode.openModuleManager();
+			}
+			
+			_controller.activateUndoStack = false;
 			_controller.processCommand( new SetViewMode( viewMode ) );	
+			_controller.activateUndoStack = true;
 		}
 		
 		
@@ -568,8 +582,19 @@ package components.views
 		
 		private function onShowPreferences( event:Event ):void
 		{ 
+			var menuItem:NativeMenuItem = event.target as NativeMenuItem;
+			Assert.assertNotNull( menuItem );
+			
 			var viewMode:ViewMode = _model.project.projectUserData.viewMode.clone();
-			viewMode.preferencesOpen = !viewMode.preferencesOpen;
+			
+			if( menuItem.checked )
+			{
+				viewMode.closePreferences();
+			}
+			else
+			{
+				viewMode.openPreferences();
+			}
 			
 			_controller.activateUndoStack = false;
 			_controller.processCommand( new SetViewMode( viewMode ) );
@@ -713,10 +738,6 @@ package components.views
 				return;
 			}
 			
-			if( !isWebLink( link ) )
-			{
-				link = "file://" + link;
-			}
 			Trace.progress( "opening help link", link );
 
 			navigateToURL( new URLRequest( link ), "_blank" );

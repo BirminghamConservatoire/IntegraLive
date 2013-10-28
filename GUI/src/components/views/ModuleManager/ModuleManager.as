@@ -87,8 +87,8 @@ package components.views.ModuleManager
 				var tabButton:Button = Utilities.getAncestorByType( event.target, Button ) as Button;
 				switch( tabButton.label )
 				{
-					case _manageLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerManageTab" );
-					case _installLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManagerInstallTab" );
+					case _manageLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/ManageTab/Main" );
+					case _installLabel:		return InfoMarkupForViews.instance.getInfoForView( "ModuleManager/InstallTab/Main" );
 				}
 			}
 			
@@ -183,7 +183,7 @@ package components.views.ModuleManager
 		private function onClickTitleCloseButton( event:MouseEvent ):void
 		{
 			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
-			viewMode.moduleManagerOpen = false;
+			viewMode.closeModuleManager();
 			
 			controller.activateUndoStack = false;
 			controller.processCommand( new SetViewMode( viewMode ) );

@@ -7,11 +7,13 @@
            Manufacturer="Birmingham Conservatoire" 
            UpgradeCode="2720B2AB-E5AA-4BCE-8F61-8F5ECB2193C3">
     
-		<Package InstallerVersion="200" Compressed="yes" />
+		<Package InstallerVersion="300" Compressed="yes" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
 		<Directory Id="TARGETDIR" Name="SourceDir">
+
+      <Merge Id="CRT" Language="0" SourceFile="c:\Program Files\Common Files\Merge Modules\microsoft_vc100_crt_x86.msm" DiskId="1" />
 
       <Directory Id="DesktopFolder" Name="Desktop">
         <Component Id="DesktopShortcut" Guid="88CD27C2-ECC0-478D-B41F-2C6CA1B85CE3">
@@ -115,6 +117,7 @@
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="DesktopShortcut" />
       <ComponentGroupRef Id="Product.Generated" />
+      <MergeRef Id="CRT"/>
       
     </Feature>
 

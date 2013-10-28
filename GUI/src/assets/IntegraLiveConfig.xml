@@ -60,10 +60,6 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<documentspath>documentation</documentspath>
 		</mac>
 		
-		
-		<!-- 		path and filename of acknowledgements file, relative to documentation directory	-->
-		<acknowledgementspath>html/acknowledgements/acknowledgements.htm</acknowledgementspath>
-		
 		<!-- 		help links.  Can be web or local relative to documentation directory			-->
 		<helplinks>
 			<helplink name="Integra Live Help">
@@ -81,7 +77,14 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<helplink name="User Forum...">
 				http://integralive.org/forum
 			</helplink>
-		</helplinks>		
+		</helplinks>	
+		
+		<!-- 		path and filename of acknowledgements file, relative to documentation directory	-->
+		<acknowledgementspath>html/acknowledgements/acknowledgements.htm</acknowledgementspath>
+
+		<!-- 		path, filename and anchor of module upgrade information, relative to documentation directory	-->
+		<moduleupgradehelp>html/module-development-quickstart/module-development-quickstart.htm#upgradedialog</moduleupgradehelp>
+			
 		
 	</documentation>
 

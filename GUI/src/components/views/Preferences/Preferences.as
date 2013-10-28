@@ -618,7 +618,7 @@ package components.views.Preferences
 		private function onClickTitleCloseButton( event:MouseEvent ):void
 		{
 			var viewMode:ViewMode = model.project.projectUserData.viewMode.clone();
-			viewMode.preferencesOpen = false;
+			viewMode.closePreferences();
 			
 			controller.activateUndoStack = false;
 			controller.processCommand( new SetViewMode( viewMode ) );

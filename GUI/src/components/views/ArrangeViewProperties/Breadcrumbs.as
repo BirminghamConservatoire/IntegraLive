@@ -65,7 +65,7 @@ package components.views.ArrangeViewProperties
 		
 		override public function getInfoToDisplay( event:Event ):Info
 		{
-			return InfoMarkupForViews.instance.getInfoForView( "Breadcrumbs" );
+			return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/Breadcrumbs" );
 		}
 		
 		

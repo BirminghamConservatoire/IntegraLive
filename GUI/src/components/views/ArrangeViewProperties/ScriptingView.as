@@ -107,7 +107,7 @@ package components.views.ArrangeViewProperties
 		{			
 			if( event.target == _newScriptButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "CreateScriptButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/CreateScriptButton" );
 			}
 			
 			if( _selectedScriptID >= 0 )
@@ -116,7 +116,7 @@ package components.views.ArrangeViewProperties
 				return script.info;
 			}
 
-			return InfoMarkupForViews.instance.getInfoForView( "ScriptingView" );
+			return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/ScriptingView" );
 		}	
 		
 

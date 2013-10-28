@@ -77,11 +77,11 @@ package components.views.ModuleLibrary
 		{
 			if( mouseObject == _clearButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleTagsClearButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/ClearTagsButton" );
 			}
 			else
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ModuleTags" );
+				return InfoMarkupForViews.instance.getInfoForView( "ModuleLibrary/Tags" );
 			}
 		}		
 		

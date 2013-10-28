@@ -42,6 +42,7 @@ package components.views.ModuleManager
 	import components.model.IntegraModel;
 	import components.model.userData.ColorScheme;
 	import components.model.userData.ViewMode;
+	import components.utils.Config;
 	import components.utils.FontSize;
 	import components.utils.Utilities;
 	import components.views.IntegraView;
@@ -79,7 +80,6 @@ package components.views.ModuleManager
 			_description.setStyle( "paddingRight", 20 );
 			_description.setStyle( "paddingTop", 20 );
 			_description.setStyle( "paddingBottom", 20 );
-			_description.editable = false;
 			addChild( _description );
 			
 			_upgradeButton.setStyle( "skin", TextButtonSkin );
@@ -117,28 +117,40 @@ package components.views.ModuleManager
 			var dataObject:IntegraDataObject = model.getDataObjectByID( _objectID );
 			Assert.assertNotNull( dataObject );
 			
-			if( dataObject is IntegraContainer )
-			{
-				_description.text = "Improved modules are available for ";
-			}
-			else
-			{
-				_description.text = "Improved version is available for ";
-			}
-			
-			_description.text += model.getPathStringFromID( objectID );
-			_description.text += ".\n\nWould you like to upgrade the ";
+			var markdown:String;
 			
 			if( dataObject is IntegraContainer )
 			{
-				_description.text += Utilities.getClassNameFromObject( dataObject ).toLowerCase();
+				markdown = "__Improved modules are available for ";
 			}
 			else
 			{
-				_description.text += dataObject.interfaceDefinition.interfaceInfo.label;
+				markdown = "__Improved version is available for ";
 			}
 			
-			_description.text += "?";
+			markdown += Utilities.escapeUnderscores( model.getPathStringFromID( objectID ) );
+			markdown += "__.\n\n";
+			
+			markdown += "__Would you like to upgrade the ";
+			
+			if( dataObject is IntegraContainer )
+			{
+				markdown += Utilities.getClassNameFromObject( dataObject ).toLowerCase();
+			}
+			else
+			{
+				markdown += dataObject.interfaceDefinition.interfaceInfo.label;
+			}
+			
+			markdown += "__?";
+			
+			markdown += "\n\nA backup will be saved to " + UpgradeModules.getBackupName( model );
+			
+			var url:String = Config.singleInstance.moduleUpgradeHelpLink;
+			
+			markdown += "\n\nFor an explanation of project upgrades click [here](" + url + ")";
+			
+			_description.markdown = markdown;
 		}
 		
 		
@@ -148,25 +160,25 @@ package components.views.ModuleManager
 			
 			if( Utilities.isEqualOrDescendant( event.target, _upgradeButton ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogUpgradeButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/UpgradeButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _moduleManagerButton ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogModuleManagerButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/ModuleManagerButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _closeButton ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogCloseButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/CloseButton" );
 			}
 
 			if( Utilities.isEqualOrDescendant( event.target, _alwaysUpgradeCheckbox ) )
 			{
-				return viewInfos.getInfoForView( "UpgradeDialogAlwaysUpgradeButton" );
+				return viewInfos.getInfoForView( "UpgradeDialog/AlwaysUpgradeButton" );
 			}
 
-			return viewInfos.getInfoForView( "UpgradeDialog" );
+			return viewInfos.getInfoForView( "UpgradeDialog/Dialog" );
 		}
 
 		
@@ -299,7 +311,7 @@ package components.views.ModuleManager
 		private function onClose( event:Event ):void
 		{
 			var viewMode:ViewMode = IntegraModel.singleInstance.project.projectUserData.viewMode.clone();
-			viewMode.upgradeDialogOpen = false;
+			viewMode.closeUpgradeDialog();
 			
 			IntegraController.singleInstance.processCommand( new SetViewMode( viewMode ) );
 		}
@@ -308,7 +320,7 @@ package components.views.ModuleManager
 		private function onUpgrade( event:Event ):void
 		{
 			var viewMode:ViewMode = IntegraModel.singleInstance.project.projectUserData.viewMode.clone();
-			viewMode.upgradeDialogOpen = false;
+			viewMode.closeUpgradeDialog();
 			
 			IntegraController.singleInstance.processCommand( new SetViewMode( viewMode ) );
 
@@ -319,7 +331,7 @@ package components.views.ModuleManager
 		private function onModuleManager( event:Event ):void
 		{
 			var viewMode:ViewMode = IntegraModel.singleInstance.project.projectUserData.viewMode.clone();
-			viewMode.moduleManagerOpen = true;
+			viewMode.openModuleManager( true );
 			
 			IntegraController.singleInstance.processCommand( new SetViewMode( viewMode ) );
 		}
@@ -337,7 +349,7 @@ package components.views.ModuleManager
 		private var _titleLabel:Label = new Label;
 		private var _titleCloseButton:Button = new Button;
 
-		private var _description:TextArea = new TextArea;
+		private var _description:ModuleInfo = new ModuleInfo;
 		private var _upgradeButton:Button = new Button;
 		private var _moduleManagerButton:Button = new Button;
 		private var _closeButton:Button = new Button;

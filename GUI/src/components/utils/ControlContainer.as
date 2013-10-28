@@ -52,7 +52,6 @@ package components.utils
 	import components.model.Connection;
 	import components.model.Envelope;
 	import components.model.Info;
-	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
@@ -404,12 +403,12 @@ package components.utils
 		{
 			if( event.target == _midiLearnButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ControlMidiLearnButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "Widget/MidiLearnButton" );
 			}
 
 			if( event.target == _includeInLiveViewButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ControlLiveViewButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "Widget/LiveViewButton" );
 			}
 			
 			if( event.target == _padlock )
@@ -1903,8 +1902,6 @@ package components.utils
 				updateWritableness();
 			}
 
-			Assert.assertTrue( _addedStageKeyboardListeners );
-			
 			if( _addedStageKeyboardListeners )
 			{
 				stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
@@ -1917,6 +1914,13 @@ package components.utils
 		private function onRemovedFromStage( event:Event ):void
 		{
 			if( _popupMenu ) _popupMenu.hide();
+
+			if( _addedStageKeyboardListeners )
+			{
+				stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
+				stage.removeEventListener( KeyboardEvent.KEY_UP, onKeyUp );
+				_addedStageKeyboardListeners = false;
+			}
 		}
 		
 		

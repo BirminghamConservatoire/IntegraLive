@@ -103,10 +103,10 @@ package components.views.ArrangeViewProperties
 		{
 			if( event.target == _newItemButton ) 
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "CreateRoutingButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/CreateRoutingButton" );
 			}
 
-			return InfoMarkupForViews.instance.getInfoForView( "RoutingView" );
+			return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/RoutingView" );
 		}		
 		
 		

@@ -7,4 +7,5 @@ libIntegra-dependencies-OSX/
 server/
 *.app
 IntegraLiveConfig.xml
+__MACOSX
 

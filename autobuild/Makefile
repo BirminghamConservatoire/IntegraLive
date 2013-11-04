@@ -57,7 +57,7 @@ debug: server-debug host gui modules documentation movedirs
 
 release: server-release host gui modules documentation movedirs
 	cd $(APPNAME) && find ./ -name .svn | xargs rm -rf && cd ..
-	codesign -f -v -s "3rd Party Mac Developer Application: Birmingham City" --entitlements entitlements.plist $(APPNAME)
+	codesign --deep -f -v -s "3rd Party Mac Developer Application: Birmingham City" --entitlements entitlements.plist $(APPNAME)
 
 dmg: $(DEFAULTBUILD)
 	if [ ! -e $(PRODUCT)_temp.dmg ]; then \

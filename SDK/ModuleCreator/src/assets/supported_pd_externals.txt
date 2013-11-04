@@ -12,6 +12,4 @@ bsaylor/partconv~
 
 freeverb~/freeverb~
 
-iemlib/soundfile_info
-
 fsplay~

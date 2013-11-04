@@ -9,7 +9,7 @@
 # Repeat above procedure for input file dependenc
 
 
-require 'ftools'
+require 'FileUtils'
 require 'open3'
 
 # Runs a subprocess.
@@ -58,7 +58,7 @@ end
 
 
 def copy_dependencies(input_file, output_directory)
-  File.makedirs(output_directory)
+  FileUtils.makedirs(output_directory)
   get_input_file_dependencies(input_file).each do |dependency|
     target = File.join(output_directory, File.basename(dependency))
     if not File.exists?(target)

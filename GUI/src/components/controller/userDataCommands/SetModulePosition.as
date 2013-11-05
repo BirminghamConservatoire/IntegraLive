@@ -61,7 +61,7 @@ package components.controller.userDataCommands
 		
 		override public function generateInverse( model:IntegraModel ):void
 		{
-			var previousPosition:Rectangle = model.getModulePosition( _instanceID );
+			var previousPosition:Rectangle = model.getModulePosition( _instanceID, false );
 
 			pushInverseCommand( new SetModulePosition( _instanceID, previousPosition ) );
 		}

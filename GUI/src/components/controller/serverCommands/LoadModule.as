@@ -34,7 +34,6 @@ package components.controller.serverCommands
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	
 	import flash.geom.Rectangle;
-	import flash.utils.ByteArray;
 	
 	import flexunit.framework.Assert;
 

@@ -604,6 +604,20 @@ CLEANUP:
 }
 
 
+void test_writability( const char *filename )
+{
+	FILE *file = fopen( filename, "wb" );
+	if( file )
+	{
+		NTG_TRACE_PROGRESS_WITH_STRING( "can create", filename );
+		fclose( file );
+		return;
+	}
+
+	NTG_TRACE_ERROR_WITH_ERRNO( filename );
+}
+
+
 ntg_error_code ntg_file_save( const char *filename, const ntg_node *node, const ntg_module_manager *module_manager )
 {
 	zipFile zip_file;
@@ -612,6 +626,9 @@ ntg_error_code ntg_file_save( const char *filename, const ntg_node *node, const 
 	unsigned int ixd_buffer_length;
 
 	assert( filename && node );
+
+	test_writability( filename );
+
 
 	zip_file = zipOpen( filename, APPEND_STATUS_CREATE );
 	if( !zip_file )

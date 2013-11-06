@@ -114,10 +114,9 @@ server:
 	make -C $(LIBINTEGRAPATH) install
 	# do what we can automatically
 	cd server/bin; \
-	    ruby ../../localize_dependencies.rb integra_server ../lib;\
-	    ruby ../../localize_dependencies.rb ../lib/integra/integra_osc_bridge.so ../lib;\
-	    ruby ../../localize_dependencies.rb ../lib/libIntegra.0.dylib ../lib
-	# FIX: this is a temporary workaround
+	    sudo ruby ../../localize_dependencies.rb integra_server ../lib;\
+	    sudo ruby ../../localize_dependencies.rb ../lib/integra/integra_osc_bridge.so ../lib;\
+	    sudo ruby ../../localize_dependencies.rb ../lib/libIntegra.0.dylib ../lib
 	cp server/share/libintegra/CollectionSchema.xsd server/bin/
 	cp server/share/libintegra/id2guid.csv server/bin/
 

@@ -37,6 +37,9 @@
     <Filter Include="Externals\libpd">
       <UniqueIdentifier>{0d72a5e1-99c1-40f0-94a0-404da763dd54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Externals\expr">
+      <UniqueIdentifier>{39afe679-979b-4a84-b4f6-72c0637bdb48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\externals\minizip\ioapi.c">
@@ -209,6 +212,15 @@
     </ClCompile>
     <ClCompile Include="..\src\ring_buffer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp.c">
+      <Filter>Externals\expr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp_fun.c">
+      <Filter>Externals\expr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp_if.c">
+      <Filter>Externals\expr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -409,6 +421,12 @@
     </ClInclude>
     <ClInclude Include="..\src\threaded_queue_implementation.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\fts_to_pd.h">
+      <Filter>Externals\expr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp.h">
+      <Filter>Externals\expr</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

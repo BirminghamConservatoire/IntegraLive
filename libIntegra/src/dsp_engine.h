@@ -28,6 +28,11 @@
 
 #include <pthread.h>
 
+extern "C"	//test
+{
+	void expr_setup();		
+}
+
 namespace pd
 {
 	class PdBase;
@@ -82,6 +87,8 @@ namespace integra_internal
 
 			void create_host_patch();
 			void delete_host_patch();
+
+			void register_externals();
 
 			CError connect_or_disconnect( const CNodeEndpoint &source, const CNodeEndpoint &target, const string &command );
 

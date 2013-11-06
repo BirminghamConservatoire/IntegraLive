@@ -82,6 +82,8 @@ namespace integra_internal
 			INTEGRA_TRACE_ERROR << "failed to load patch: " << get_patch_file_path();
 		}
 
+		register_externals();
+
 		m_initialised = true;
 	}
 
@@ -100,6 +102,67 @@ namespace integra_internal
 		pthread_mutex_unlock( &m_mutex );
 
 		pthread_mutex_destroy( &m_mutex );
+	}
+
+
+	void CDspEngine::register_externals()
+	{
+		expr_setup();
+#if 0
+		string externals_directory = "C:\\IntegraLive.git\\build\\Debug\\server\\pd_externals";
+
+		string_map externals;
+		externals[ "expr_setup" ] = "expr.dll";
+		externals[ "expr_tilde_setup" ] = "expr~.dll";
+		externals[ "fexpr_tilde_setup" ] = "fexpr~.dll";
+		externals[ "freeverb_tilde_setup" ] = "freeverb~\\freeverb~.dll";
+
+		SetDllDirectoryA( externals_directory.c_str() );
+
+		//so far, this is windows-only test code to load externals and execute exposed functions 
+
+		std::unordered_map<string, HMODULE> modules;
+
+		for( string_map::const_iterator i = externals.begin(); i != externals.end(); i++ )
+		{
+			//string external_path = externals_directory + "\\" + i->second;
+			string external_path = i->second;
+
+			HMODULE module_handle = NULL;
+			if( modules.count( external_path ) > 0 )
+			{
+				module_handle = modules[ external_path ];
+			}
+			else
+			{
+				module_handle = LoadLibraryA( external_path.c_str() );
+
+				if( !module_handle )
+				{
+					//todo - handle error properly
+
+					DWORD error = GetLastError();
+					assert( false );
+				}
+
+				modules[ external_path ] = module_handle;
+			}
+
+			assert( module_handle );
+
+			FARPROC setup_function = GetProcAddress( module_handle, i->first.c_str() );
+			if( !setup_function )
+			{
+				//todo - handle error properly
+				assert( false );
+			}
+
+			setup_function();
+		}
+
+		SetDllDirectoryA( NULL );
+
+#endif
 	}
 
 
@@ -189,7 +252,6 @@ namespace integra_internal
 		m_pd->subscribe( feedback_source );
 
 		m_pd->addToSearchPath( "C:/IntegraLive.git/build/Debug/server/pd_externals" );
-		//m_pd->addToSearchPath( "C:/IntegraLive.git/build/Debug/server/pd_externals/iemnet" );
 	}
 
 

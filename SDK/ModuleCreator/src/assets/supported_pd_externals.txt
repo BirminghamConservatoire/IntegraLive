@@ -5,11 +5,13 @@ fiddle~
 fexpr~
 lrshift~
 
-mediasettings/midisettings
-mediasettings/audiosettings
-
 bsaylor/partconv~
 
 freeverb~/freeverb~
 
+iemlib/soundfile_info
+
 fsplay~
+
+mediasettings/midisettings
+mediasettings/audiosettings

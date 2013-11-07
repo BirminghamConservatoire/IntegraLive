@@ -100,6 +100,8 @@ namespace integra_internal
 
 			ISetCommand *make_set_command( const pd::List &feedback_arguments ) const;
 
+			void test_map_sanity();
+
 			pd::PdBase *m_pd;
 
 			CServer &m_server;
@@ -111,7 +113,7 @@ namespace integra_internal
 
 			pthread_mutex_t m_mutex;
 
-			int m_next_patch_id;
+			int m_next_module_y_slot;
 
 			int_map m_map_id_to_patch_id;
 

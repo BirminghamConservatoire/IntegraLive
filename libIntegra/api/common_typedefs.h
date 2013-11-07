@@ -54,6 +54,7 @@ namespace integra_api
 	/* others */
 	typedef std::vector<int> int_vector;
 	typedef std::vector<float> float_vector;
+	typedef std::unordered_set<int> int_set;
 	typedef std::unordered_map<int, int> int_map;
 };
 

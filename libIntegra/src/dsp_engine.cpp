@@ -64,7 +64,7 @@ namespace integra_internal
 		m_output_channels = 2;
 		m_sample_rate = 44100;
 
-		m_next_patch_id = 0;
+		m_next_module_y_slot = 1;
 
 		create_host_patch();
 
@@ -250,8 +250,6 @@ namespace integra_internal
 	{
 		m_pd->computeAudio( true );
 		m_pd->subscribe( feedback_source );
-
-		m_pd->addToSearchPath( "C:/IntegraLive.git/build/Debug/server/pd_externals" );
 	}
 
 
@@ -285,14 +283,16 @@ namespace integra_internal
 
         m_pd->startMessage();
 		m_pd->addFloat( module_x_margin );
-        m_pd->addFloat( ( m_next_patch_id + 1 ) * module_y_spacing );
+        m_pd->addFloat( m_next_module_y_slot * module_y_spacing );
         m_pd->addSymbol( patch_path );
 		m_pd->addFloat( id );
         m_pd->finishMessage( patch_message_target, "obj" );
 
-		m_map_id_to_patch_id[ id ] = m_next_patch_id;
+		m_next_module_y_slot ++;
 
-		m_next_patch_id++;
+		m_map_id_to_patch_id[ id ] = m_map_id_to_patch_id.size();
+
+		test_map_sanity();
 
 		pthread_mutex_unlock( &m_mutex );
 
@@ -316,9 +316,46 @@ namespace integra_internal
 
 		m_pd->sendMessage( patch_message_target, "cut" );
 
+		int patch_id = get_patch_id( id );
+		m_map_id_to_patch_id.erase( id );
+
+		for( int_map::iterator i = m_map_id_to_patch_id.begin(); i != m_map_id_to_patch_id.end(); i++ )
+		{
+			if( i->second > patch_id )
+			{
+				i->second --;
+			}
+		}
+
+		test_map_sanity();
+
 		pthread_mutex_unlock( &m_mutex );
 
 		return CError::SUCCESS;
+	}
+
+
+	void CDspEngine::test_map_sanity()
+	{
+		//m_map_id_to_patch_id should contain all values from 0 .. m_map_id_to_patch_id.size()-1, with no duplicates
+
+		int_set values;
+
+		for( int_map::const_iterator i = m_map_id_to_patch_id.begin(); i != m_map_id_to_patch_id.end(); i++ )
+		{
+			int value = i->second;
+			if( value < 0 || value >= m_map_id_to_patch_id.size() )
+			{
+				INTEGRA_TRACE_ERROR << "map sanity check failed - value " << value << "is out of range";
+			}
+
+			if( values.count( value ) != 0 )
+			{
+				INTEGRA_TRACE_ERROR << "map sanity check failed - duplicate value " << value;
+			}
+
+			values.insert( value );
+		}
 	}
 
 

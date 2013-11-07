@@ -37,8 +37,23 @@
     <Filter Include="Externals\libpd">
       <UniqueIdentifier>{0d72a5e1-99c1-40f0-94a0-404da763dd54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Externals\expr">
-      <UniqueIdentifier>{39afe679-979b-4a84-b4f6-72c0637bdb48}</UniqueIdentifier>
+    <Filter Include="Externals\extra">
+      <UniqueIdentifier>{5a9dbc14-c381-4905-91cd-03b18c966f83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals\extra\expr~">
+      <UniqueIdentifier>{7fef7671-3fb5-4bcb-abe8-616e3c503893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals\extra\fiddle~">
+      <UniqueIdentifier>{d872af35-08ee-4241-91b7-ed3090323e3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals\extra\bonk~">
+      <UniqueIdentifier>{011097a5-f044-463a-b8d2-cd15fd1a5345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals\extra\lrshift~">
+      <UniqueIdentifier>{937cd922-26d5-47a5-a625-79fd50d1beaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals\extra\bsaylor">
+      <UniqueIdentifier>{1b6cb7ff-d8e0-4b22-958e-4707d211df00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -213,14 +228,26 @@
     <ClCompile Include="..\src\ring_buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp.c">
-      <Filter>Externals\expr</Filter>
+    <ClCompile Include="..\externals\extra\expr~\vexp.c">
+      <Filter>Externals\extra\expr~</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp_fun.c">
-      <Filter>Externals\expr</Filter>
+    <ClCompile Include="..\externals\extra\expr~\vexp_fun.c">
+      <Filter>Externals\extra\expr~</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp_if.c">
-      <Filter>Externals\expr</Filter>
+    <ClCompile Include="..\externals\extra\expr~\vexp_if.c">
+      <Filter>Externals\extra\expr~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\fiddle~\fiddle~.c">
+      <Filter>Externals\extra\fiddle~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\bonk~\bonk~.c">
+      <Filter>Externals\extra\bonk~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\lrshift~\lrshift~.c">
+      <Filter>Externals\extra\lrshift~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\bsaylor\partconv~.c">
+      <Filter>Externals\extra\bsaylor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -422,11 +449,11 @@
     <ClInclude Include="..\src\threaded_queue_implementation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\fts_to_pd.h">
-      <Filter>Externals\expr</Filter>
+    <ClInclude Include="..\externals\extra\expr~\fts_to_pd.h">
+      <Filter>Externals\extra\expr~</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\pd-0.45-3.src\pd-0.45-3\extra\expr~\vexp.h">
-      <Filter>Externals\expr</Filter>
+    <ClInclude Include="..\externals\extra\expr~\vexp.h">
+      <Filter>Externals\extra\expr~</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

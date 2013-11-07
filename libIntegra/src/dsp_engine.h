@@ -30,8 +30,13 @@
 
 extern "C"	//test
 {
+	void bonk_tilde_setup();
 	void expr_setup();		
+	void fiddle_tilde_setup();
+	void lrshift_tilde_setup();
+	void partconv_tilde_setup();
 }
+
 
 namespace pd
 {

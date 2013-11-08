@@ -55,6 +55,15 @@
     <Filter Include="Externals\extra\bsaylor">
       <UniqueIdentifier>{1b6cb7ff-d8e0-4b22-958e-4707d211df00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Externals\extra\freeverb~">
+      <UniqueIdentifier>{b6e42e4a-0c2f-4078-abab-61a12ff022d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals\extra\iemlib">
+      <UniqueIdentifier>{37beab2a-e4a5-469b-bce2-dd2fbc27926b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals\extra\fsplay~">
+      <UniqueIdentifier>{9d7812f1-158c-44e0-8bcf-61d94df18853}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\externals\minizip\ioapi.c">
@@ -248,6 +257,21 @@
     </ClCompile>
     <ClCompile Include="..\externals\extra\bsaylor\partconv~.c">
       <Filter>Externals\extra\bsaylor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\freeverb~\freeverb~.c">
+      <Filter>Externals\extra\freeverb~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\iemlib\soundfile_info.c">
+      <Filter>Externals\extra\iemlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\fsplay~\fsp_libsndfile.cpp">
+      <Filter>Externals\extra\fsplay~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\fsplay~\fsp_quicktime.cpp">
+      <Filter>Externals\extra\fsplay~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\fsplay~\main.cpp">
+      <Filter>Externals\extra\fsplay~</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,6 +478,15 @@
     </ClInclude>
     <ClInclude Include="..\externals\extra\expr~\vexp.h">
       <Filter>Externals\extra\expr~</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\extra\iemlib\iemlib.h">
+      <Filter>Externals\extra\iemlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\extra\fsplay~\resample.hpp">
+      <Filter>Externals\extra\fsplay~</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\extra\fsplay~\fsplay.h">
+      <Filter>Externals\extra\fsplay~</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -28,13 +28,15 @@
 
 #include <pthread.h>
 
-extern "C"	//test
+extern "C"	//setup functions for externals
 {
 	void bonk_tilde_setup();
 	void expr_setup();		
 	void fiddle_tilde_setup();
 	void lrshift_tilde_setup();
 	void partconv_tilde_setup();
+	void freeverb_tilde_setup();
+	void soundfile_info_setup();
 }
 
 

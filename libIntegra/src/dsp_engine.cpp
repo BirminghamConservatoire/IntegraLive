@@ -112,6 +112,8 @@ namespace integra_internal
 		fiddle_tilde_setup();
 		lrshift_tilde_setup();
 		partconv_tilde_setup();
+		freeverb_tilde_setup();
+		soundfile_info_setup();
 	}
 
 

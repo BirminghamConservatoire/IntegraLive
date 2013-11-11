@@ -48,14 +48,14 @@ namespace integra_api
 
 	string CGuidHelper::guid_to_string( const GUID &guid )
 	{
-		char string[ 37 ];
+		char buffer[ 37 ];
 
-		sprintf( string, "%.8x-%.4x-%.4x-%.2x%.2x-%.2x%.2x%.2x%.2x%.2x%.2x", 
+		sprintf( buffer, "%.8x-%.4x-%.4x-%.2x%.2x-%.2x%.2x%.2x%.2x%.2x%.2x", 
 			guid.Data1, guid.Data2, guid.Data3,
 			guid.Data4[ 0 ], guid.Data4[ 1 ], guid.Data4[ 2 ], guid.Data4[ 3 ], 
 			guid.Data4[ 4 ], guid.Data4[ 5 ], guid.Data4[ 6 ], guid.Data4[ 7 ] );
 
-		return string;
+		return string( buffer );
 	}
 
 

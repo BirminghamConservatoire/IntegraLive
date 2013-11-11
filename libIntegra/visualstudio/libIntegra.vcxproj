@@ -50,9 +50,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/include;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;../../libIntegra_dependencies/fftw-3.3.3;../../libintegra_dependencies/portaudio/include;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;MSW;_DEBUG;INTEGRA_DEBUG=1;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
-;PD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/include;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;../../libIntegra_dependencies/fftw-3.3.3;../../libintegra_dependencies/flext/source;../../libintegra_dependencies/libsndfile/include;../../libintegra_dependencies/boost_1_54_0;../../libintegra_dependencies/portaudio/include;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;MSW;_DEBUG;INTEGRA_DEBUG=1;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -64,8 +63,8 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;C:\pd_vanilla\extra\expr~\expr.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/fftw-3.3.3;../../libIntegra_dependencies/portaudio/build/msvc/Win32/Debug;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/fftw-3.3.3;../../libIntegra_dependencies/portaudio/build/msvc/Win32/Debug;../../libIntegra_dependencies/libsndfile/lib;../../libIntegra_dependencies/flext/pd-msvc;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -102,9 +101,9 @@ call libpd_autobuild/clean_libpd.bat
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/include;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;../../libIntegra_dependencies/fftw-3.3.3;../../libintegra_dependencies/portaudio/include;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../../libIntegra_dependencies/include;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/lua-5.2.0/include;../../libIntegra_dependencies/libxml2-2.7.8.win32/include;../../libIntegra_dependencies/zlib-1.2.5/include;../../libIntegra_dependencies/fftw-3.3.3;../../libintegra_dependencies/flext/source;../../libintegra_dependencies/boost_1_54_0;../../libintegra_dependencies/libsndfile/include;../../libintegra_dependencies/portaudio/include;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;MSW;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS
-;PD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+;PD;FLEXT_THREADS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -112,8 +111,8 @@ call libpd_autobuild/clean_libpd.bat
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/fftw-3.3.3;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/portaudio/build/msvc/Win32/Release;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;flext_tl-pdwin.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/fftw-3.3.3;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/libsndfile/lib;../../libIntegra_dependencies/flext/pd-msvc;../../libIntegra_dependencies/portaudio/build/msvc/Win32/Release;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
     </Link>
@@ -152,9 +151,15 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClCompile Include="..\externals\extra\expr~\vexp_if.c" />
     <ClCompile Include="..\externals\extra\fiddle~\fiddle~.c" />
     <ClCompile Include="..\externals\extra\freeverb~\freeverb~.c" />
-    <ClCompile Include="..\externals\extra\fsplay~\fsp_libsndfile.cpp" />
-    <ClCompile Include="..\externals\extra\fsplay~\fsp_quicktime.cpp" />
-    <ClCompile Include="..\externals\extra\fsplay~\main.cpp" />
+    <ClCompile Include="..\externals\extra\fsplay~\fsp_libsndfile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\fsplay~\fsp_quicktime.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\externals\extra\fsplay~\main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\externals\extra\iemlib\soundfile_info.c" />
     <ClCompile Include="..\externals\extra\lrshift~\lrshift~.c" />
     <ClCompile Include="..\externals\libpd\cpp\PdBase.cpp" />
@@ -243,8 +248,12 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClInclude Include="..\api\value.h" />
     <ClInclude Include="..\externals\extra\expr~\fts_to_pd.h" />
     <ClInclude Include="..\externals\extra\expr~\vexp.h" />
-    <ClInclude Include="..\externals\extra\fsplay~\fsplay.h" />
-    <ClInclude Include="..\externals\extra\fsplay~\resample.hpp" />
+    <ClInclude Include="..\externals\extra\fsplay~\fsplay.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\externals\extra\fsplay~\resample.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\externals\extra\iemlib\iemlib.h" />
     <ClInclude Include="..\externals\minizip\crypt.h" />
     <ClInclude Include="..\externals\minizip\ioapi.h" />

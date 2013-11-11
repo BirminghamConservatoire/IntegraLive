@@ -98,7 +98,7 @@ run-gui:
 
 server-dependencies:
 	if [ ! -d $(LIBINTEGRADEPS_DIR) ]; then \
-	    curl $(LIBINTEGRADEPS_URL) > $(LIBINTEGRADEPS_FILE);\
+	    wget $(LIBINTEGRADEPS_URL);\
 	    tar zxf $(LIBINTEGRADEPS_FILE); \
 	fi
 
@@ -144,14 +144,14 @@ creator: documentation
 host:
 	if [ ! -e $(PD_DMG_NAME) ]; then \
 	    echo downloading $(PD_DMG_NAME); \
-	    curl $(PD_BASE_URL)/$(PD_DMG_NAME) > $(PD_DMG_NAME); \
+	    wget $(PD_BASE_URL)/$(PD_DMG_NAME); \
 	fi
 	yes | hdiutil mount $(PD_DMG_NAME) > /dev/null
 	cp -r $(PD_MOUNT_POINT)/*.app/Contents/Resources host
 	find ./host -type d -exec chmod 755 {} \;
 	sh remove_externals.sh
 	if [ ! -e $(FSPLAY).zip ]; then \
-		curl http://integralive.org/incoming/$(FSPLAY).zip > $(FSPLAY).zip; \
+		wget http://integralive.org/incoming/$(FSPLAY).zip; \
 	fi
 	unzip $(FSPLAY).zip
 	mv $(FSPLAY)/* host/extra/

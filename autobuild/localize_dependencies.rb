@@ -1,6 +1,8 @@
 # Usage
 # localize_dependencies.rb input_file output_directory
 
+raise 'This script must be run as root or will fail silently for failed write' unless Process.uid == 0
+
 # Algorithm
 # ---------
 # Get list of input file dependencies
@@ -64,7 +66,7 @@ def copy_dependencies(input_file, output_directory)
     if not File.exists?(target)
       if File.exists?(dependency)
         if dependency.index("#{File.basename(ARGV[0])}") == nil
-          File.copy(dependency, target)
+          FileUtils.copy(dependency, target)
         else
           puts("Skipping #{dependency}.")
         end

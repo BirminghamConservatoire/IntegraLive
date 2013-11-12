@@ -31,7 +31,6 @@ package components.controller.serverCommands
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.model.Block;
 	import components.model.Connection;
-	import components.model.Envelope;
 	import components.model.IntegraModel;
 	import components.model.ModuleInstance;
 	import components.model.interfaceDefinitions.EndpointDefinition;

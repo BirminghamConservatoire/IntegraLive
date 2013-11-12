@@ -286,6 +286,25 @@ Versions currently in use within the project are indicated with arrows. The foll
 
 Typically it is best to always upgrade projects to use the latest official versions, but there may be occasions when an alternative version is required because it has characteristics not present in the official version.
 
+#### Module Upgrade Dialog
+
+When a *project*, *track* or *block* is opened or imported, and improved versions of the Latest Official *modules* are available then Module Upgrade Dialog will be displayed.
+
+![](../../page-images/shadow-module_upgrade_dialog.png)
+
+- Click Upgrade to upgrade modules in the *project*, *track* or *block* to the Latest Official versions—these Latest Official versions will then be embedded in the project file and replace current instances of those modules
+- Check the Always Upgrade checkbox before clicking Upgrade to always upgrade *modules* in future without prompting—this option can later be unchecked using the [Module Manager](#module-management)
+- Click [Module Manager...](#module-management) to selectively upgrade specific modules 
+- Click Cancel to leave the project as it is—*modules* can always be upgraded later using the [Module Manager](#module-management)
+
+If modules are upgraded, an Upgrade Report will be shown, providing a detailed report of the changes that have been made.
+
+![](../../page-images/shadow-upgrade_report.png)
+
+In the upgrade process, Integra Live will attempt to preserve connections and *parameter* settings for upgraded *modules*. However if *parameters* or audio *inputs* and *outputs* have been removed or renamed in the Latest Official versions then connections to these will not be preserved. Ranges of parameters may also be altered in ways that affect the operation of the *module*. It is therefore good practice to keep a copy of the upgrade report and check through all upgraded *module* instances for issues.
+
+When performing any upgrade, Integra Live will create a backup of the project with the file suffix `(backup).integra`. This can be used to revert to the pre-upgrade version of the *project* or can be safely deleted.
+
 ### Other features
 
 #### Mute Control

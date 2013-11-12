@@ -83,7 +83,7 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<acknowledgementspath>html/acknowledgements/acknowledgements.htm</acknowledgementspath>
 
 		<!-- 		path, filename and anchor of module upgrade information, relative to documentation directory	-->
-		<moduleupgradehelp>html/module-development-quickstart/module-development-quickstart.htm#upgradedialog</moduleupgradehelp>
+		<moduleupgradehelp>html/integra-live-help/integra-live-help.htm#module-upgrade-dialog</moduleupgradehelp>
 			
 		
 	</documentation>

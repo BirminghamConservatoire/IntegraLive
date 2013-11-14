@@ -114,6 +114,7 @@ namespace integra_internal
 		partconv_tilde_setup();
 		freeverb_tilde_setup();
 		soundfile_info_setup();
+		fsplay_tilde_setup();
 	}
 
 

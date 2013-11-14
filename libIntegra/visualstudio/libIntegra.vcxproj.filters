@@ -267,9 +267,6 @@
     <ClCompile Include="..\externals\extra\fsplay~\fsp_libsndfile.cpp">
       <Filter>Externals\extra\fsplay~</Filter>
     </ClCompile>
-    <ClCompile Include="..\externals\extra\fsplay~\fsp_quicktime.cpp">
-      <Filter>Externals\extra\fsplay~</Filter>
-    </ClCompile>
     <ClCompile Include="..\externals\extra\fsplay~\main.cpp">
       <Filter>Externals\extra\fsplay~</Filter>
     </ClCompile>

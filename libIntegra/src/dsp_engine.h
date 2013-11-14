@@ -37,6 +37,7 @@ extern "C"	//setup functions for externals
 	void partconv_tilde_setup();
 	void freeverb_tilde_setup();
 	void soundfile_info_setup();
+	void fsplay_tilde_setup();
 }
 
 

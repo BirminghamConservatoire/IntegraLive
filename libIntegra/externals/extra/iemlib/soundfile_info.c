@@ -249,7 +249,7 @@ static void *soundfile_info_new(void)
 
 void soundfile_info_setup(void)
 {
-  soundfile_info_class = class_new(gensym("soundfile_info"), (t_newmethod)soundfile_info_new,
+  soundfile_info_class = class_new(gensym("iemlib/soundfile_info"), (t_newmethod)soundfile_info_new,
     (t_method)soundfile_info_free, sizeof(t_soundfile_info), 0, 0);
   class_addmethod(soundfile_info_class, (t_method)soundfile_info_read, gensym("read"), A_SYMBOL, 0);
 //  class_sethelpsymbol(soundfile_info_class, gensym("iemhelp/help-soundfile_info"));

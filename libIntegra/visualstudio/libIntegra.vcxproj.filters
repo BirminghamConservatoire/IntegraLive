@@ -237,24 +237,6 @@
     <ClCompile Include="..\src\ring_buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\externals\extra\expr~\vexp.c">
-      <Filter>Externals\extra\expr~</Filter>
-    </ClCompile>
-    <ClCompile Include="..\externals\extra\expr~\vexp_fun.c">
-      <Filter>Externals\extra\expr~</Filter>
-    </ClCompile>
-    <ClCompile Include="..\externals\extra\expr~\vexp_if.c">
-      <Filter>Externals\extra\expr~</Filter>
-    </ClCompile>
-    <ClCompile Include="..\externals\extra\fiddle~\fiddle~.c">
-      <Filter>Externals\extra\fiddle~</Filter>
-    </ClCompile>
-    <ClCompile Include="..\externals\extra\bonk~\bonk~.c">
-      <Filter>Externals\extra\bonk~</Filter>
-    </ClCompile>
-    <ClCompile Include="..\externals\extra\lrshift~\lrshift~.c">
-      <Filter>Externals\extra\lrshift~</Filter>
-    </ClCompile>
     <ClCompile Include="..\externals\extra\bsaylor\partconv~.c">
       <Filter>Externals\extra\bsaylor</Filter>
     </ClCompile>
@@ -269,6 +251,24 @@
     </ClCompile>
     <ClCompile Include="..\externals\extra\fsplay~\main.cpp">
       <Filter>Externals\extra\fsplay~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\bonk~\bonk~.c">
+      <Filter>Externals\extra\bonk~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp.c">
+      <Filter>Externals\extra\expr~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp_fun.c">
+      <Filter>Externals\extra\expr~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp_if.c">
+      <Filter>Externals\extra\expr~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\fiddle~\fiddle~.c">
+      <Filter>Externals\extra\fiddle~</Filter>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\lrshift~\lrshift~.c">
+      <Filter>Externals\extra\lrshift~</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -470,12 +470,6 @@
     <ClInclude Include="..\src\threaded_queue_implementation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\externals\extra\expr~\fts_to_pd.h">
-      <Filter>Externals\extra\expr~</Filter>
-    </ClInclude>
-    <ClInclude Include="..\externals\extra\expr~\vexp.h">
-      <Filter>Externals\extra\expr~</Filter>
-    </ClInclude>
     <ClInclude Include="..\externals\extra\iemlib\iemlib.h">
       <Filter>Externals\extra\iemlib</Filter>
     </ClInclude>
@@ -484,6 +478,12 @@
     </ClInclude>
     <ClInclude Include="..\externals\extra\fsplay~\fsplay.h">
       <Filter>Externals\extra\fsplay~</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\libpd\pure-data\extra\expr~\vexp.h">
+      <Filter>Externals\extra\expr~</Filter>
+    </ClInclude>
+    <ClInclude Include="..\externals\libpd\pure-data\extra\expr~\fts_to_pd.h">
+      <Filter>Externals\extra\expr~</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

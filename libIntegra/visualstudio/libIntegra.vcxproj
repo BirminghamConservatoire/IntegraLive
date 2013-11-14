@@ -144,23 +144,23 @@ call libpd_autobuild/clean_libpd.bat</Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\externals\extra\bonk~\bonk~.c" />
     <ClCompile Include="..\externals\extra\bsaylor\partconv~.c" />
-    <ClCompile Include="..\externals\extra\expr~\vexp.c" />
-    <ClCompile Include="..\externals\extra\expr~\vexp_fun.c" />
-    <ClCompile Include="..\externals\extra\expr~\vexp_if.c" />
-    <ClCompile Include="..\externals\extra\fiddle~\fiddle~.c" />
     <ClCompile Include="..\externals\extra\freeverb~\freeverb~.c" />
     <ClCompile Include="..\externals\extra\fsplay~\fsp_libsndfile.cpp" />
     <ClCompile Include="..\externals\extra\fsplay~\main.cpp" />
     <ClCompile Include="..\externals\extra\iemlib\soundfile_info.c" />
-    <ClCompile Include="..\externals\extra\lrshift~\lrshift~.c" />
     <ClCompile Include="..\externals\libpd\cpp\PdBase.cpp" />
     <ClCompile Include="..\externals\libpd\cpp\PdTypes.cpp" />
     <ClCompile Include="..\externals\libpd\libpd_wrapper\util\z_print_util.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
     </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\bonk~\bonk~.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp_fun.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp_if.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\fiddle~\fiddle~.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\lrshift~\lrshift~.c" />
     <ClCompile Include="..\externals\minizip\ioapi.c" />
     <ClCompile Include="..\externals\minizip\iowin32.c" />
     <ClCompile Include="..\externals\minizip\mztools.c" />
@@ -239,11 +239,11 @@ call libpd_autobuild/clean_libpd.bat</Command>
     <ClInclude Include="..\api\string_helper.h" />
     <ClInclude Include="..\api\trace.h" />
     <ClInclude Include="..\api\value.h" />
-    <ClInclude Include="..\externals\extra\expr~\fts_to_pd.h" />
-    <ClInclude Include="..\externals\extra\expr~\vexp.h" />
     <ClInclude Include="..\externals\extra\fsplay~\fsplay.h" />
     <ClInclude Include="..\externals\extra\fsplay~\resample.hpp" />
     <ClInclude Include="..\externals\extra\iemlib\iemlib.h" />
+    <ClInclude Include="..\externals\libpd\pure-data\extra\expr~\fts_to_pd.h" />
+    <ClInclude Include="..\externals\libpd\pure-data\extra\expr~\vexp.h" />
     <ClInclude Include="..\externals\minizip\crypt.h" />
     <ClInclude Include="..\externals\minizip\ioapi.h" />
     <ClInclude Include="..\externals\minizip\iowin32.h" />

@@ -57,7 +57,7 @@ debug: server-debug host gui modules documentation movedirs
 
 release: server-release host gui modules documentation movedirs
 	cd $(APPNAME) && find ./ -name .svn | xargs rm -rf && cd ..
-	# codesign --deep --force -f -v -s "3rd Party Mac Developer Application: Birmingham City" --entitlements entitlements.plist $(APPNAME)
+	codesign --deep --force -f -v -s "Developer ID Application: James Bullock" --entitlements entitlements.plist $(APPNAME)
 
 dmg: $(DEFAULTBUILD)
 	if [ ! -e $(PRODUCT)_temp.dmg ]; then \
@@ -70,14 +70,14 @@ dmg: $(DEFAULTBUILD)
 	-rm -f $(PRODUCT).dmg
 	hdiutil convert $(PRODUCT)_temp.dmg -format UDZO -imagekey zlib-level=9 -o $(PRODUCT).dmg
 	rm $(PRODUCT)_temp.dmg
-	#codesign -f -v -s "3rd Party Mac Developer Installer: Birmingham City University" $(PRODUCT).dmg
 
 dropdmg: $(DEFAULTBUILD)
 	-mkdir $(PRODUCT)
 	-cp .VolumeIcon.icns $(PRODUCT)
-	-cp -r $(APPNAME) $(PRODUCT)
+	#-cp -r $(APPNAME) $(PRODUCT)
+	-mv $(APPNAME) $(PRODUCT)
 	dropdmg --config-name="Integra Live" $(PRODUCT)
-	-rm -rf $(PRODUCT)
+	# -rm -rf $(PRODUCT)
 
 creator-dropdmg: creator
 	-mkdir $(CREATORPRODUCT)
@@ -140,6 +140,7 @@ creator: documentation
 	cp -r $(TEMPLATESDIR) $(CREATORRESIDR)
 	cp -r $(APPNAME) $(CREATORRESIDR)
 	mv documentation $(CREATORRESIDR)
+	codesign --deep --force -f -v -s "Developer ID Application: James Bullock" --entitlements entitlements.plist $(CREATORAPPNAME)
 	
 host:
 	if [ ! -e $(PD_DMG_NAME) ]; then \
@@ -180,6 +181,7 @@ server-clean:
 dependencies-clean:
 	-rm -rf $(LIBINTEGRADEPS_DIR)
 	-rm $(LIBINTEGRADEPS_FILE)
+	-rm $(FSPLAY).zip
 
 gui-clean:
 	make -C $(GUIDIR) clean
@@ -199,6 +201,7 @@ maintainer-clean: clean dependencies-clean
 	-rm *.dmg
 	make -C $(LIBINTEGRAPATH) maintainer-clean
 	cd $(LIBINTEGRAPATH) && ./autogen.sh && cd -
+	-rm -rf __MACOSX
 
 
 upload:

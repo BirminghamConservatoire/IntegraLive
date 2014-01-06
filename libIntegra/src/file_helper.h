@@ -37,6 +37,7 @@ namespace integra_internal
 			static string extract_filename_from_path( const string &path );
 			static string extract_directory_from_path( const string &path );
 			static string extract_first_directory_from_path( const string &path );
+			static string extract_suffix_from_path( const string &path );
 
 			static string ensure_filename_has_suffix( const string &filename, const string &suffix );
 

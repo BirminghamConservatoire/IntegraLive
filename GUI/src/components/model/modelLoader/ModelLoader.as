@@ -1152,9 +1152,14 @@ package components.model.modelLoader
 		}
 		
 		
-		private function foundExtraneousNode( path:Array, interfaceDefinition:InterfaceDefinition, comment:String ):void
+		private function foundExtraneousNode( path:Array, interfaceDefinition:InterfaceDefinition, comment:String, shouldPreventLoad:Boolean = true ):void
 		{
 			Trace.error( "Found extraneous node.  Path = " + path.join( "." ) + ", classname = " + interfaceDefinition.interfaceInfo.name + ", comment = " + comment );
+
+			if( !shouldPreventLoad )
+			{
+				return;
+			}
 			
 			switch( _mode )
 			{
@@ -1366,7 +1371,7 @@ package components.model.modelLoader
 		
 		private function foundScalerWithoutConnections( scaler:Scaler ):void
 		{
-			foundExtraneousNode( _model.getPathArrayFromID( scaler.id ), scaler.interfaceDefinition, "foundScalerWithoutConnections" );
+			foundExtraneousNode( _model.getPathArrayFromID( scaler.id ), scaler.interfaceDefinition, "foundScalerWithoutConnections", false );
 			
 			if( scaler.upstreamConnection ) _model.removeDataObject( scaler.upstreamConnection.id );
 			if( scaler.downstreamConnection ) _model.removeDataObject( scaler.downstreamConnection.id );

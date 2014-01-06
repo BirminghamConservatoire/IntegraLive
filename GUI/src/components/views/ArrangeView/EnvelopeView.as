@@ -292,7 +292,7 @@ package components.views.ArrangeView
 		{
 			_endpoint = null;
 			var envelopeTarget:Connection = model.getEnvelopeTarget( _envelopeID );
-			if( envelopeTarget )
+			if( envelopeTarget && envelopeTarget.targetObjectID >= 0 )
 			{
 				var module:ModuleInstance = model.getModuleInstance( envelopeTarget.targetObjectID );
 				Assert.assertNotNull( module );

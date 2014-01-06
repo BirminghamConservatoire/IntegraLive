@@ -22,6 +22,7 @@
 #include "platform_specifics.h"
 
 #include "file_io.h"
+#include "file_helper.h"
 #include "node.h"
 #include "validator.h"
 #include "module_manager.h"
@@ -35,6 +36,7 @@
 #include "api/guid_helper.h"
 
 #include <assert.h>
+#include <algorithm>
 
 #ifndef _WINDOWS
 #define _S_IFMT S_IFMT
@@ -44,6 +46,7 @@
 namespace integra_internal
 {
 	const string CFileIO::file_suffix = "integra";
+	const string CFileIO::internal_file_suffix = "ixd";
 
 	/* 
 	 we use linux-style path separators for all builds, because windows can use the two interchangeably, 
@@ -91,15 +94,28 @@ namespace integra_internal
 
 		CModuleManager &module_manager = CModuleManager::downcast( server.get_module_manager() );
 
-		CError error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
-		if( error != CError::SUCCESS ) 
+		string suffix = CFileHelper::extract_suffix_from_path( filename );
+		std::transform( suffix.begin(), suffix.end(), suffix.begin(), ::tolower );	//make lowercase
+
+		if( suffix == file_suffix )
 		{
-			INTEGRA_TRACE_ERROR << "couldn't load modules: " << filename;
-			goto CLEANUP;
+			CError error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
+			if( error != CError::SUCCESS ) 
+			{
+				INTEGRA_TRACE_ERROR << "couldn't load modules: " << filename;
+				goto CLEANUP;
+			}
+		}
+		else
+		{
+			if( suffix != internal_file_suffix )
+			{
+				INTEGRA_TRACE_ERROR << "file " << filename << " has unexpected file suffix, expected " << file_suffix << " or " << internal_file_suffix;
+			}
 		}
 
 		/* pull ixd data out of file */
-		error = load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
+		CError error = load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
 		if( error != CError::SUCCESS ) 
 		{
 			INTEGRA_TRACE_ERROR << "couldn't load ixd: " << filename;

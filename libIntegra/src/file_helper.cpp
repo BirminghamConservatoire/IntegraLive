@@ -54,6 +54,23 @@ namespace integra_internal
 	}
 
 
+	string CFileHelper::extract_suffix_from_path( const string &path )
+	{
+		string filename = extract_filename_from_path( path );
+
+		size_t last_dot = filename.find_last_of( '.' );
+
+		if( last_dot == string::npos )
+		{
+			return "";
+		}
+		else
+		{
+			return filename.substr( last_dot + 1 );
+		}
+	}
+
+
 	string CFileHelper::extract_directory_from_path( const string &path )
 	{
 		size_t last_slash = path.find_last_of( '/' );

@@ -897,8 +897,11 @@ package components.model
 			var sourceEndpoint:EndpointDefinition = getEndpointDefinition( sourceObjectID, sourceAttributeName );
 			var targetEndpoint:EndpointDefinition = getEndpointDefinition( targetObjectID, targetAttributeName );
 			
-			Assert.assertNotNull( sourceEndpoint );
-			Assert.assertNotNull( targetEndpoint );
+			if( !sourceEndpoint || !targetEndpoint )
+			{
+				Trace.error( "can't find endpoint definition" );
+				return false;
+			}
 
 			if( sourceEndpoint.type != EndpointDefinition.STREAM || sourceEndpoint.streamInfo.streamDirection != StreamInfo.DIRECTION_OUTPUT )
 			{

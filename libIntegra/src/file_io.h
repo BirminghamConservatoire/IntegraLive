@@ -83,6 +83,7 @@ namespace integra_internal
 			typedef std::unordered_map<internal_id, value_map *> map_id_to_value_map;
 
 
+			static const string internal_file_suffix;
 			static const string xml_encoding;
 
 			static const string integra_collection;

@@ -24,6 +24,10 @@ package components.utils
 	import flash.events.UncaughtErrorEvent;
 	import flash.events.UncaughtErrorEvents;
 	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
+	import flash.utils.ByteArray;
+	import flash.utils.IDataInput;
 	
 	import flexunit.framework.Assert;
 	
@@ -65,7 +69,138 @@ package components.utils
 		}
 		
 		
-		public function get serverLogfile():String
+		public function getLogFiles( logFiles:Vector.<String> ):void
+		{
+			logFiles.push( serverLogfile );
+			logFiles.push( guiLogfile );
+			logFiles.push( pdLogfile );
+		}
+		
+		
+		public function handleServerOutput( serverOutput:String ):void
+		{
+			//first handle pd output tags which wrap output buffers
+			if( _serverLogCarry )
+			{
+				serverOutput = _serverLogCarry + serverOutput;
+			}
+			
+			var carryLength:int = getCharactersToCarry( serverOutput );
+			if( carryLength > 0 )
+			{
+				var remainder:int = serverOutput.length - carryLength;
+				Assert.assertTrue( remainder >= 0 );
+				_serverLogCarry = serverOutput.substr( remainder );
+				serverOutput = serverOutput.substr( 0, remainder );
+			}
+			else
+			{
+				_serverLogCarry = null;
+			}
+			
+			//now split according to pd log tags
+			splitByPDTags( serverOutput );
+		}
+		
+		
+		private function splitByPDTags( serverOutput:String ):void
+		{
+			if( serverOutput.length == 0 )
+			{
+				return;
+			}
+			
+			if( _serverLogInPD )
+			{
+				var endTagPosition:int = serverOutput.indexOf( _pdEndTag );
+				if( endTagPosition < 0 )
+				{
+					writeToLogfile( pdLogfile, serverOutput );
+				}
+				else
+				{
+					writeToLogfile( pdLogfile, serverOutput.substr( 0, endTagPosition ) + "\r\n" );
+					_serverLogInPD = false;
+					
+					splitByPDTags( serverOutput.substr( endTagPosition + _pdEndTag.length ) );
+				}
+			}
+			else
+			{
+				var startTagPosition:int = serverOutput.indexOf( _pdStartTag );
+				if( startTagPosition < 0 )
+				{
+					writeToLogfile( serverLogfile, serverOutput );
+				}
+				else
+				{
+					writeToLogfile( serverLogfile, serverOutput.substr( 0, startTagPosition ) );
+					_serverLogInPD = true;
+						
+					if( Config.singleInstance.timestampTrace )
+					{
+						writeToLogfile( pdLogfile, _trace.timestamp );
+					}
+					
+					splitByPDTags( serverOutput.substr( startTagPosition + _pdStartTag.length ) );
+				}
+			}
+		}
+		
+		
+		private function getCharactersToCarry( input:String ):int
+		{
+			//return the number of characters on the end of input which might constitute part of a split tag
+			return Math.max( 
+						getCharactersToCarryBySplitTag( input, _pdStartTag ), 
+						getCharactersToCarryBySplitTag( input, _pdEndTag ) 
+					);
+		}
+
+		
+		private function getCharactersToCarryBySplitTag( input:String, tag:String ):int
+		{
+			//return the number of characters on the end of input which might constitute start of supplied tag
+			
+			//note this algorithm only works if no character appears twice in tag
+			
+			if( input.length == 0 ) return 0;
+			
+			var lastCharacter:String = input.charAt( input.length - 1 );
+			
+			var positionInTag:int = tag.indexOf( lastCharacter );
+			if( positionInTag < 0 || positionInTag == tag.length - 1 ) return 0;
+			
+			var candidateTagSubsection:String = tag.substr( 0, positionInTag + 1 );
+			
+			if( input.substr( input.length - candidateTagSubsection.length ) == candidateTagSubsection )
+			{
+				return candidateTagSubsection.length;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		
+		
+		private function writeToLogfile( logfile:String, content:String ):void
+		{
+			if( !logfile )
+			{
+				Trace.error( "No logfile" );
+				return;
+			}
+			
+			var stream:FileStream = new FileStream;
+			stream.open( new File( logfile ), FileMode.APPEND );
+			
+			stream.writeUTFBytes( content );
+			stream.close();
+		}
+		
+		
+		private function get serverLogfile():String
 		{
 			Assert.assertTrue( _initialized );
 			
@@ -74,17 +209,17 @@ package components.utils
 		}
 		
 		
-		public function getLogFiles( logFiles:Vector.<String> ):void
-		{
-			logFiles.push( serverLogfile );
-			logFiles.push( guiLogfile );
-		}
-		
-		
 		private function get guiLogfile():String
 		{
 			var guiLog:File = _loggingDirectory.resolvePath( _guiLogfileName );
 			return guiLog.nativePath;
+		}
+
+		
+		private function get pdLogfile():String
+		{
+			var pdLog:File = _loggingDirectory.resolvePath( _pdLogfileName );
+			return pdLog.nativePath;
 		}
 		
 		
@@ -145,12 +280,21 @@ package components.utils
 		private var _rootDirectory:File = null;
 		private var _loggingDirectory:File = null;
 		
+		private var _serverLogInPD:Boolean = false; 
+		private var _serverLogCarry:String = null; 
+		
 		private var _trace:Trace = new Trace;
 		
 		private static const _loggingDirectoryRootname:String = "runtime logs";
 		private static const _sessionRootName:String = "session ";
 		private static const _serverLogfileName:String = "server_log.txt" 
 		private static const _guiLogfileName:String = "gui_log.txt"
+		private static const _pdLogfileName:String = "pd_log.txt"
+
+		//note - getCharactersToCarryBySplitTag will only work if no character appears twice in either tag
+		private static const _pdStartTag:String = "<libpd>"; 
+		private static const _pdEndTag:String = "</libpd>";	
+			
 			
 		private static const _millisecondsPerDay:Number = 86400000;
 	}

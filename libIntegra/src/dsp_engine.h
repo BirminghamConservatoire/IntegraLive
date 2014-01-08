@@ -136,6 +136,9 @@ namespace integra_internal
 
 			static const int module_x_margin;
 			static const int module_y_spacing;
+
+			static const string trace_start_tag;
+			static const string trace_end_tag;
 	};
 }
 

@@ -31,6 +31,8 @@
 #include "PdBase.hpp"
 
 #include <fstream>
+#include <iostream>
+
 
 #include "windows.h" //todo - remove - for Sleep()
 
@@ -51,6 +53,8 @@ namespace integra_internal
 	const int CDspEngine::module_x_margin = 10;
 	const int CDspEngine::module_y_spacing = 50;
 
+	const string CDspEngine::trace_start_tag = "<libpd>";
+	const string CDspEngine::trace_end_tag = "</libpd>";
 
 
 	CDspEngine::CDspEngine( CServer &server )
@@ -225,8 +229,7 @@ namespace integra_internal
 		pthread_mutex_unlock( &m_mutex );
 	}
 
-
-
+	
 	CError CDspEngine::add_module( internal_id id, const string &patch_path )
 	{
 		INTEGRA_TRACE_VERBOSE << "add module id " << id << " as " << patch_path;
@@ -508,7 +511,7 @@ namespace integra_internal
 			switch( message.type )
 			{
 				case pd::PRINT:
-					INTEGRA_TRACE_ERROR << "libPD says: " << message.symbol;
+					std::cout << trace_start_tag << message.symbol << trace_end_tag;
 					break;
 
 				case pd::NONE:

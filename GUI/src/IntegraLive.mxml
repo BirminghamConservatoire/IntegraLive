@@ -855,42 +855,31 @@
 			
 			private function onServerOutput( event:ProgressEvent ):void
 			{
-				var logfileName:String = _loggingSystem.serverLogfile;
-				
-				if( logfileName && _serverProcess )
+				if( !_serverProcess )
 				{
-					var serverOutput:IDataInput = _serverProcess.standardOutput;
+					Trace.error( "No server process" );
+					return;
+				}
+				
+				var serverOutput:IDataInput = _serverProcess.standardOutput;
 					
-					var stream:FileStream = new FileStream;
-					stream.open( new File( _loggingSystem.serverLogfile ), FileMode.APPEND );
-					
-					var buffer:ByteArray = new ByteArray;
-					serverOutput.readBytes( buffer )
-						
-					stream.writeBytes( buffer );
-					stream.close();
-				}				
+				var outputString:String = serverOutput.readUTFBytes( serverOutput.bytesAvailable );
+				_loggingSystem.handleServerOutput( outputString );
 			}
 
 			
 			private function onServerError( event:ProgressEvent ):void
 			{
-				var logfileName:String = _loggingSystem.serverLogfile;
-				
-				if( logfileName && _serverProcess )
+				if( !_serverProcess )
 				{
-					var serverError:IDataInput = _serverProcess.standardError;
-					
-					var stream:FileStream = new FileStream;
-					stream.open( new File( _loggingSystem.serverLogfile ), FileMode.APPEND );
-					
-					var buffer:ByteArray = new ByteArray;
-					serverError.readBytes( buffer )
-					
-					stream.writeUTFBytes( "Standard Error: " );
-					stream.writeBytes( buffer );
-					stream.close();
-				}				
+					Trace.error( "No server process" );
+					return;
+				}
+				
+				var serverError:IDataInput = _serverProcess.standardError;
+				
+				var errorString:String = serverError.readUTFBytes( serverError.bytesAvailable );
+				_loggingSystem.handleServerOutput( "Standard Error: " + errorString );
 			}
 			
 			

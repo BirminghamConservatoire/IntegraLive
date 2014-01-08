@@ -34,8 +34,6 @@
 #include <iostream>
 
 
-#include "windows.h" //todo - remove - for Sleep()
-
 using namespace integra_api;
 
 
@@ -66,13 +64,13 @@ namespace integra_internal
 	CDspEngine::CDspEngine( CServer &server )
 		:	m_server( server )
 	{
-		Sleep( 10000 );/////////
-
 		pthread_mutex_init( &m_mutex, NULL );
 
 		m_input_channels = 2;
 		m_output_channels = 2;
 		m_sample_rate = 44100;
+
+		m_unanswered_pings = 0;
 
 		m_next_module_y_slot = 1;
 
@@ -233,6 +231,80 @@ namespace integra_internal
         m_pd->finishMessage( "pd-" + patch_file_name, "savetofile" );
 
 		pthread_mutex_unlock( &m_mutex );
+	}
+
+
+	void CDspEngine::ping_all_modules()
+	{
+		pthread_mutex_lock( &m_mutex );
+
+		m_unanswered_pings = 0;
+
+		INTEGRA_TRACE_PROGRESS << "Pinging all dsp modules...";
+
+		int modules_pinged = ping_modules( m_server.get_nodes() );
+
+		if( m_unanswered_pings == 0 )
+		{
+			INTEGRA_TRACE_PROGRESS << "Pinged " << modules_pinged << " modules.  All modules responded ok";
+		}
+		else
+		{
+			INTEGRA_TRACE_ERROR << "Pinged " << modules_pinged << " modules.  " << m_unanswered_pings << "failed to respond";
+		}
+
+		pthread_mutex_unlock( &m_mutex );
+	}
+
+
+	int CDspEngine::ping_modules( const node_map &nodes )
+	{
+		int modules_pinged = 0;
+
+		for( node_map::const_iterator i = nodes.begin(); i != nodes.end(); i++ )
+		{
+			const CNode &node = *CNode::downcast( i->second );
+
+			const CInterfaceDefinition &interfaceDefinition = CInterfaceDefinition::downcast( node.get_interface_definition() );
+			if( interfaceDefinition.has_implementation() )
+			{
+				send_ping( node );
+				modules_pinged++;
+			}
+
+			modules_pinged += ping_modules( node.get_children() );
+		}
+
+		return modules_pinged;
+	}
+
+
+	void CDspEngine::send_ping( const CNode &node )
+	{
+		INTEGRA_TRACE_PROGRESS << "Pinging " << node.get_interface_definition().get_interface_info().get_name() << " " << node.get_path().get_string();
+ 
+		m_pd->startMessage();
+		m_pd->addFloat( node.get_id() );
+		m_pd->addSymbol( ping_message );
+		m_pd->addSymbol( bang );
+		m_pd->finishList( broadcast_symbol );
+
+		int previous_unanswered_pings( m_unanswered_pings );
+
+		m_unanswered_pings++;
+
+		poll_for_messages();
+
+		bool ping_was_answered = ( m_unanswered_pings == previous_unanswered_pings );
+
+		if( ping_was_answered )
+		{
+			INTEGRA_TRACE_PROGRESS << "Ping response received";
+		}
+		else
+		{
+			INTEGRA_TRACE_ERROR << "NO PING RESPONSE!";
+		}
 	}
 
 	
@@ -497,19 +569,57 @@ namespace integra_internal
 
 	void CDspEngine::poll_for_messages()
 	{
-		pd_message_list messages;
+		pd_message_list queue_messages;
 
 		while( m_pd->numMessages() > 0 ) 
 		{
 			pd::Message &message = m_pd->nextMessage();
 
-			messages.push_back( message );
+			if( handle_immediate_message( message ) )
+			{
+				continue;
+			}
+			else
+			{
+				queue_messages.push_back( message );
+			}
 		}
 
-		if( !messages.empty() )
+		if( !queue_messages.empty() )
 		{
-			m_message_queue->push( messages );
+			m_message_queue->push( queue_messages );
 		}
+	}
+
+
+	//returns true if message has been handled immediately
+	bool CDspEngine::handle_immediate_message( const pd::Message &message )
+	{
+		if( is_ping_result( message ) ) 
+		{
+			m_unanswered_pings--;
+			return true;
+		}
+
+		return false;
+	}
+
+
+	bool CDspEngine::is_ping_result( const pd::Message &message ) const
+	{
+		if( message.type != pd::LIST )
+		{
+			return false;
+		}
+
+		const pd::List &list = message.list;
+
+		if( list.len() != 3 ) return false;
+		if( !list.isSymbol( 0 ) || list.getSymbol( 0 ) != "" ) return false;
+		if( !list.isSymbol( 1 ) || list.getSymbol( 1 ) != ping_message ) return false;
+		if( !list.isSymbol( 2 ) || list.getSymbol( 2 ) != "OK" ) return false;
+
+		return true;
 	}
 
 

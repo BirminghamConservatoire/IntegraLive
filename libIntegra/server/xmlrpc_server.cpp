@@ -91,6 +91,7 @@
 
 #define HELPSTR_DUMPDSPSTATE "Dump the state of libpd as a pd patch for testing purposes\n\\param <string output file path>\n\\return {'response':'system.dumpdspstate'\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
 
+#define HELPSTR_PINGALLDSPMODULES "Send a pings message to all dsp modules, log the results\n\\return {'response':'system.dumplibintegrastate'\n\\error {'response':'error', 'errorcode':<int>, 'errortext':<string>}}\n"
 
 #define RESPONSE_LABEL      "response"
 
@@ -904,6 +905,25 @@ static xmlrpc_value *ntg_xmlrpc_dump_dsp_state_callback( CServerLock &server, co
 }
 
 
+static xmlrpc_value *ntg_xmlrpc_ping_all_dsp_modules_callback( CServerLock &server, const int argc, va_list argv )
+{
+    xmlrpc_env *env;
+    xmlrpc_value *struct_ = NULL, *xmlrpc_temp = NULL;
+
+    env = va_arg(argv, xmlrpc_env *);
+
+    struct_ = xmlrpc_struct_new(env);
+
+	server->ping_all_dsp_modules();
+
+    xmlrpc_temp = xmlrpc_string_new(env, "system.pingalldspmodules");
+    xmlrpc_struct_set_value(env, struct_, RESPONSE_LABEL, xmlrpc_temp);
+    xmlrpc_DECREF(xmlrpc_temp);
+
+    return struct_;
+}
+
+
 static xmlrpc_value *ntg_xmlrpc_delete_callback( CServerLock &server, const int argc, va_list argv )
 {
 
@@ -1447,6 +1467,18 @@ static xmlrpc_value *ntg_xmlrpc_dump_dsp_state(xmlrpc_env * const env,
 }
 
 
+static xmlrpc_value *ntg_xmlrpc_ping_all_dsp_modules(xmlrpc_env * const env,
+        xmlrpc_value *parameter_array,
+        void *user_data)
+{
+    INTEGRA_TRACE_VERBOSE;
+
+	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
+
+	return ntg_server_do_va(&ntg_xmlrpc_ping_all_dsp_modules_callback, *integra_session, 1, (void *)env);
+}
+
+
 static xmlrpc_value *ntg_xmlrpc_interfacelist(xmlrpc_env * const env,
         xmlrpc_value *parameter_array,
         void *user_data)
@@ -1880,6 +1912,7 @@ void *ntg_xmlrpc_server_run( void *context )
     xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.version", &ntg_xmlrpc_version, integra_session, "S:", HELPSTR_VERSION );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumplibintegrastate", &ntg_xmlrpc_dump_libintegra_state, integra_session, "S:", HELPSTR_DUMPLIBINTEGRASTATE );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumpdspstate", &ntg_xmlrpc_dump_dsp_state, integra_session, "S:s", HELPSTR_DUMPDSPSTATE );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.pingalldspmodules", &ntg_xmlrpc_ping_all_dsp_modules, integra_session, "S:", HELPSTR_PINGALLDSPMODULES );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfacelist", &ntg_xmlrpc_interfacelist, integra_session, "S:", HELPSTR_INTERFACELIST );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfaceinfo", &ntg_xmlrpc_interfaceinfo, integra_session, "S:s", HELPSTR_INTERFACEINFO );
 	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.endpoints", &ntg_xmlrpc_endpoints, integra_session, "S:s", HELPSTR_ENDPOINTS );

@@ -339,6 +339,12 @@ namespace integra_internal
 	}
 
 
+	void CServer::ping_all_dsp_modules()
+	{
+		m_dsp_engine->ping_all_modules();
+	}
+
+
 	void CServer::dump_dsp_state( const string &file )
 	{
 		m_dsp_engine->dump_patch_to_file( file );

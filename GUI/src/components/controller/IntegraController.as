@@ -322,6 +322,14 @@ package components.controller
 		}
 		
 		
+		public function pingAllDspModules():void
+		{
+			var pingModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			pingModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			pingModulesCall.callQueued( "system.pingalldspmodules" );
+		}
+		
+		
 		public function shutdownServer():void
 		{
 			saveAudioSettings();			

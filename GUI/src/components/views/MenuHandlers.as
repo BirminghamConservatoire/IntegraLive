@@ -390,6 +390,10 @@ package components.views
 				var dumpDspStateItem:NativeMenuItem = new NativeMenuItem( "dump dsp state to PD patch" ); 
 				dumpDspStateItem.addEventListener( Event.SELECT, dumpDspState ); 
 				debugMenu.submenu.addItem( dumpDspStateItem );
+				
+				var pingAllDspModulesItem:NativeMenuItem = new NativeMenuItem( "ping all dsp modules" );
+				pingAllDspModulesItem.addEventListener( Event.SELECT, pingAllDspModules ); 
+				debugMenu.submenu.addItem( pingAllDspModulesItem );
 			}
 		}
 
@@ -577,6 +581,12 @@ package components.views
 			file.browseForSave( "Dump DSP state" );
 			
 			file.addEventListener( Event.SELECT, function( event:Event ):void { _controller.dumpDspState( event.target.nativePath) } );      			
+		}
+		
+		
+		private function pingAllDspModules( event:Event ):void
+		{
+			_controller.pingAllDspModules();
 		}
 		
 		

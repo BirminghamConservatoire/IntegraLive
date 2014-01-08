@@ -67,6 +67,8 @@ namespace integra_api
 
 			virtual void dump_libintegra_state() = 0;
 			virtual void dump_dsp_state( const string &file ) = 0;
+			virtual void ping_all_dsp_modules() = 0;
+
 	};
 }
 

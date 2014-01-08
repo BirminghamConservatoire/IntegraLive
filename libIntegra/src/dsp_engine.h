@@ -74,6 +74,7 @@ namespace integra_internal
 			void process_buffer( const float *input, float *output, int input_channels, int output_channels, int sample_rate );
 
 			void dump_patch_to_file( const string &path );
+			void ping_all_modules();
 
 			static const int samples_per_buffer;
 
@@ -103,10 +104,18 @@ namespace integra_internal
 			int get_patch_id( internal_id id ) const;
 			int get_stream_connection_index( const CNodeEndpoint &node_endpoint ) const;
 
+			bool handle_immediate_message( const pd::Message &message );
+
 			void handle_queue_items( const pd_message_list &messages );
 			void handle_feedback( const pd::Message &message );
 
 			ISetCommand *make_set_command( const pd::List &feedback_arguments ) const;
+
+			int ping_modules( const node_map &nodes );
+			void send_ping( const CNode &node );
+			bool is_ping_result( const pd::Message &message ) const;
+
+			void trace_to_pd_log( const string &message ) const;
 
 			void test_map_sanity();
 
@@ -126,6 +135,8 @@ namespace integra_internal
 			int_map m_map_id_to_patch_id;
 
 			CThreadedQueue<pd::Message> *m_message_queue;
+
+			int m_unanswered_pings;
 
 			static const int max_channels;
 			static const string patch_file_name;

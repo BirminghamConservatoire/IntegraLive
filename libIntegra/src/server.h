@@ -115,6 +115,7 @@ namespace integra_internal
 
 			void dump_libintegra_state();
 			void dump_dsp_state( const string &file );
+			void ping_all_dsp_modules();
 
 			string get_libintegra_version() const;
 

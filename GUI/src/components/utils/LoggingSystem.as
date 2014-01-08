@@ -139,7 +139,7 @@ package components.utils
 						
 					if( Config.singleInstance.timestampTrace )
 					{
-						writeToLogfile( pdLogfile, _trace.timestamp );
+						writeToLogfile( pdLogfile, _trace.timestamp + " " );
 					}
 					
 					splitByPDTags( serverOutput.substr( startTagPosition + _pdStartTag.length ) );

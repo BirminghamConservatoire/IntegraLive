@@ -49,12 +49,18 @@ namespace integra_internal
 	const string CDspEngine::patch_message_target = "pd-" + host_patch_name;
 
 	const string CDspEngine::feedback_source = "integra";
+	const string CDspEngine::broadcast_symbol = "integra-broadcast-receive";
+	const string CDspEngine::bang = "bang";
 
 	const int CDspEngine::module_x_margin = 10;
 	const int CDspEngine::module_y_spacing = 50;
 
 	const string CDspEngine::trace_start_tag = "<libpd>";
 	const string CDspEngine::trace_end_tag = "</libpd>";
+
+	const string CDspEngine::init_message = "init";
+	const string CDspEngine::fini_message = "fini";
+	const string CDspEngine::ping_message = "ping";
 
 
 	CDspEngine::CDspEngine( CServer &server )
@@ -249,6 +255,13 @@ namespace integra_internal
 
 		test_map_sanity();
 
+		//send 'init' message
+		m_pd->startMessage();
+        m_pd->addFloat( id );
+        m_pd->addSymbol( init_message );
+		m_pd->addSymbol( bang );
+        m_pd->finishList( broadcast_symbol );
+
 		pthread_mutex_unlock( &m_mutex );
 
 		return CError::SUCCESS;
@@ -261,6 +274,14 @@ namespace integra_internal
 
 		pthread_mutex_lock( &m_mutex );
 
+		//send 'fini' message
+		m_pd->startMessage();
+        m_pd->addFloat( id );
+        m_pd->addSymbol( fini_message );
+		m_pd->addSymbol( bang );
+        m_pd->finishList( broadcast_symbol );
+
+		//do the magic to select and delete the module
 		ostringstream find;
 		find << "+" << id;
 
@@ -408,10 +429,10 @@ namespace integra_internal
 		}
 		else
 		{
-			m_pd->addSymbol( "bang" );
+			m_pd->addSymbol( bang );
 		}
 
-        m_pd->finishList( "integra-broadcast-receive" );
+        m_pd->finishList( broadcast_symbol );
 
 		pthread_mutex_unlock( &m_mutex );
 

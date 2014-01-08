@@ -133,9 +133,16 @@ namespace integra_internal
 			static const string patch_message_target;
 
 			static const string feedback_source;
+			static const string broadcast_symbol;
+			static const string bang;
+
 
 			static const int module_x_margin;
 			static const int module_y_spacing;
+
+			static const string init_message;
+			static const string fini_message;
+			static const string ping_message;
 
 			static const string trace_start_tag;
 			static const string trace_end_tag;

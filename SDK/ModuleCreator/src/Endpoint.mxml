@@ -420,6 +420,12 @@
 					}
 				}
 				
+				if( Globals.reservedEndpointNames.indexOf( _endpointName.text ) >= 0 )
+				{
+					_endpointName.errorString = "Endpoint Name \"" + _endpointName.text + "\" is reserved.  Choose a different name.";
+					return false;
+				}
+				
 				//success
 				_endpointName.errorString = null;
 				return true;

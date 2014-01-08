@@ -18,6 +18,7 @@ package
 		static public const endpointRenamedEvent:String = "ENDPOINT_RENAMED";
 		
 		static public const dataDirectoryName:String = "dataDirectory";
+		static public const reservedEndpointNames:Array = [ "init", "fini", "ping" ];
 
 		
 		static public const infoSchemaVersionMajor:int = 1;

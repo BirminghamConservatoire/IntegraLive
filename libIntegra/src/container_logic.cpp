@@ -78,7 +78,18 @@ namespace integra_internal
 			const CNode *activated_node = CNode::downcast( server.find_node( path ) );
 			assert( activated_node );
 
+			/* 
+			 some system class logics have bespoke update on activation handlers
+			*/
 			activated_node->get_logic().update_on_activation( server );
+
+			/* 
+			 and activate it a second time, in case some connection failed to fire due to not being active yet the first time 
+			*/
+
+			const INodeEndpoint *active_endpoint = activated_node->get_node_endpoint( endpoint_active );
+			assert( active_endpoint );
+			server.process_command( ISetCommand::create( active_endpoint->get_path(), active_endpoint->get_value() ), CCommandSource::SYSTEM );
 		}
 	}
 

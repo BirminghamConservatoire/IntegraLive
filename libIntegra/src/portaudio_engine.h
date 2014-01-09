@@ -118,7 +118,7 @@ namespace integra_internal
 			PaStream *m_duplex_stream;
 
 			float *m_process_buffer;
-			float *m_dummy_output_buffer;
+			float *m_dummy_input_buffer;
 
 			CRingBuffer *m_ring_buffer;
 

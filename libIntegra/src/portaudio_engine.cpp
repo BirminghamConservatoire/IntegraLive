@@ -62,7 +62,7 @@ namespace integra_internal
 
 		m_ring_buffer = new CRingBuffer;
 
-		m_dummy_output_buffer = NULL;
+		m_dummy_input_buffer = NULL;
 		m_process_buffer = NULL;
 
 		PaError error_code = Pa_Initialize();
@@ -92,7 +92,7 @@ namespace integra_internal
 		
 		delete m_ring_buffer;
 
-		assert( !m_dummy_output_buffer );
+		assert( !m_dummy_input_buffer );
 		assert( !m_process_buffer );
 
 		PaError error_code = Pa_Terminate();
@@ -715,7 +715,7 @@ namespace integra_internal
 					m_sample_rate = get_default_sample_rate( m_selected_input_device );
 				}
 
-				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, m_sample_rate, paFramesPerBufferUnspecified, paNoFlag, input_callback, this );
+				PaError result = Pa_OpenStream( &m_input_stream, &input_parameters, NULL, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, input_callback, this );
 				if( result == paNoError )
 				{
 					result = Pa_StartStream( m_input_stream );
@@ -816,10 +816,10 @@ namespace integra_internal
 			INTEGRA_TRACE_PROGRESS << "Closed duplex stream";
 		}
 
-		if( m_dummy_output_buffer )
+		if( m_dummy_input_buffer )
 		{
-			delete [] m_dummy_output_buffer;
-			m_dummy_output_buffer = NULL;
+			delete [] m_dummy_input_buffer;
+			m_dummy_input_buffer = NULL;
 		}
 
 		if( m_process_buffer )
@@ -832,7 +832,7 @@ namespace integra_internal
 
 	void CPortAudioEngine::initialize_ring_buffer()
 	{
-		m_ring_buffer->set_number_of_channels( m_number_of_input_channels );
+		m_ring_buffer->set_number_of_channels( m_number_of_output_channels );
 		m_ring_buffer->set_buffer_length( ring_buffer_msecs * m_sample_rate / 1000 );
 		m_ring_buffer->clear();
 	}
@@ -841,8 +841,8 @@ namespace integra_internal
 	void CPortAudioEngine::create_process_buffer()
 	{
 		assert( !m_process_buffer );
-		m_process_buffer = new float[ CDspEngine::samples_per_buffer * m_number_of_input_channels ];
-		memset( m_process_buffer, 0, CDspEngine::samples_per_buffer * m_number_of_input_channels * sizeof( float ) );
+		m_process_buffer = new float[ CDspEngine::samples_per_buffer * m_number_of_output_channels ];
+		memset( m_process_buffer, 0, CDspEngine::samples_per_buffer * m_number_of_output_channels * sizeof( float ) );
 	}
 
 
@@ -901,7 +901,10 @@ namespace integra_internal
 		
 		const float *input = static_cast< const float * > ( input_buffer );
 
-		if( m_output_stream )
+		get_dsp_engine().process_buffer( input, m_process_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
+		m_ring_buffer->write( m_process_buffer, frames_per_buffer );
+
+		/*if( m_output_stream )
 		{
 			m_ring_buffer->write( input, frames_per_buffer );
 		}
@@ -913,7 +916,7 @@ namespace integra_internal
 			}
 
 			get_dsp_engine().process_buffer( input, m_dummy_output_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
-		}
+		}*/
 	}
 
 
@@ -937,14 +940,18 @@ namespace integra_internal
 
 		if( m_input_stream )
 		{
-			m_ring_buffer->read( m_process_buffer, CDspEngine::samples_per_buffer );
+			m_ring_buffer->read( output, CDspEngine::samples_per_buffer );
 		}
 		else
 		{
-			memset( m_process_buffer, 0, CDspEngine::samples_per_buffer * m_number_of_input_channels * sizeof( float ) );
-		}
+			if( !m_dummy_input_buffer )
+			{
+				m_dummy_input_buffer = new float[ CDspEngine::samples_per_buffer * m_number_of_input_channels ];
+				memset( m_dummy_input_buffer, 0, CDspEngine::samples_per_buffer * m_number_of_input_channels * sizeof( float ) );
+			}
 
-		get_dsp_engine().process_buffer( m_process_buffer, output, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
+			get_dsp_engine().process_buffer( m_dummy_input_buffer, output, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
+		}
 	}
 
 

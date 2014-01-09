@@ -281,7 +281,7 @@ namespace integra_internal
 
 	void CDspEngine::send_ping( const CNode &node )
 	{
-		INTEGRA_TRACE_PROGRESS << "Pinging " << node.get_interface_definition().get_interface_info().get_name() << " " << node.get_path().get_string();
+		INTEGRA_TRACE_PROGRESS << "Pinging " << node.get_interface_definition().get_interface_info().get_name() << " (" << node.get_path().get_string() << ")";
  
 		m_pd->startMessage();
 		m_pd->addFloat( node.get_id() );

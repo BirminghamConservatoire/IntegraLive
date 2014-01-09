@@ -24,12 +24,14 @@
 
 
 #include "../externals/guiddef.h"
-#include <time.h>
 
 #include "common_typedefs.h"
 #include "guid_helper.h"
 #include "value.h"
 
+#include <list>
+
+#include <time.h>
 
 namespace integra_api
 {

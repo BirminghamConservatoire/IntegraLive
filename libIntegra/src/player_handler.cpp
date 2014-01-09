@@ -18,7 +18,6 @@
  * USA.
  */
 
-#include <unistd.h>
 
 #include "platform_specifics.h"
 #include "player_handler.h"
@@ -30,8 +29,7 @@
 #include "api/trace.h"
 
 #include <assert.h>
-
-
+#include <unistd.h>
 
 #ifdef _WINDOWS
 #include <windows.h>	/*for Sleep function */
@@ -281,13 +279,15 @@ namespace integra_internal
 					}
 					else
 					{
-						commands.push_back( ISetCommand::create( player_state->m_play_path, &CIntegerValue( 0 ) ) );
+                        CIntegerValue c_integer( 0 );
+						commands.push_back( ISetCommand::create( player_state->m_play_path, &c_integer ) );
 					}
 				}
 
 				if( new_tick_value != player_state->m_previous_ticks )
 				{
-					commands.push_back( ISetCommand::create( player_state->m_tick_path, &CIntegerValue( new_tick_value ) ) );
+                    CIntegerValue c_integer( new_tick_value );
+					commands.push_back( ISetCommand::create( player_state->m_tick_path, &c_integer ) );
 					player_state->m_previous_ticks = new_tick_value;
 				}
 			}

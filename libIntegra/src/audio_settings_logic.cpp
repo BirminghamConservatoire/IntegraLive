@@ -183,7 +183,8 @@ namespace integra_internal
 		assert( endpoint );
 		if( new_value != ( const string & ) *endpoint->get_value() )
 		{
-			server.process_command( ISetCommand::create( endpoint->get_path(), &CStringValue( new_value ) ), CCommandSource::SYSTEM );
+            CStringValue c_string( new_value );
+			server.process_command( ISetCommand::create( endpoint->get_path(), &c_string ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -196,7 +197,8 @@ namespace integra_internal
 		assert( endpoint );
 		if( new_value != ( int ) *endpoint->get_value() )
 		{
-			server.process_command( ISetCommand::create( endpoint->get_path(), &CIntegerValue( new_value ) ), CCommandSource::SYSTEM );
+            CIntegerValue c_integer( new_value );
+			server.process_command( ISetCommand::create( endpoint->get_path(), &c_integer ), CCommandSource::SYSTEM );
 		}
 	}
 

@@ -76,7 +76,7 @@ namespace integra_internal
 			static CError save_node_tree( const CNode &node, xmlTextWriterPtr writer );
 			static void find_module_guids_to_embed( const CNode &node, guid_set &module_guids_to_embed );
 
-			static xmlChar *CFileIO::convert_input( const string &in, const string &encoding );
+			static xmlChar *convert_input( const string &in, const string &encoding );
 
 			static void init_zip_file_info( zip_fileinfo *info );
 

@@ -85,7 +85,7 @@ namespace integra_internal
 			const CValue *get_value( const CPath &path ) const;
 
 			/* exposed in IServer, to process commands from the public api */
-			CError CServer::process_command( ICommand *command, CCommandResult *result );
+			CError process_command( ICommand *command, CCommandResult *result );
 
 			/* internal command processor, to process all commands */
 			CError process_command( ICommand *command, CCommandSource source, CCommandResult *result = NULL );

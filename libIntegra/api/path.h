@@ -24,6 +24,7 @@
 
 #include "common_typedefs.h"
 
+#include <list>
 
 namespace integra_api
 {

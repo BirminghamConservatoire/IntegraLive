@@ -101,7 +101,8 @@ namespace integra_internal
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == previous_name )
 		{
-			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( scene_node.get_name() ) ), CCommandSource::SYSTEM );
+            CStringValue c_string( scene_node.get_name() );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &c_string ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -126,7 +127,8 @@ namespace integra_internal
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == scene_node.get_name() ) 
 		{
-			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( "" ) ), CCommandSource::SYSTEM );
+            CStringValue c_string( "" );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &c_string), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -143,7 +145,8 @@ namespace integra_internal
 		const INodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( player_scene_endpoint );
 
-		server.process_command( ISetCommand::create( player_scene_endpoint->get_path(), &CStringValue( get_node().get_name() ) ), CCommandSource::SYSTEM );
+        CStringValue c_string( get_node().get_name() );
+		server.process_command( ISetCommand::create( player_scene_endpoint->get_path(), &c_string ), CCommandSource::SYSTEM );
 	}
 
 

@@ -95,8 +95,6 @@ namespace integra_internal
 		The caller can use this list to perform additional logic
 		*/
 
-		int value_i = 0;
-
 		const INodeEndpoint *active_endpoint = node.get_node_endpoint( endpoint_active );
 
 		if( dynamic_cast< CContainerLogic * > ( &node.get_logic() ) )

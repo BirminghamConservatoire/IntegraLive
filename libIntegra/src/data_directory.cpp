@@ -124,7 +124,7 @@ namespace integra_internal
 		}
 
 		string node_directory = get_node_directory_path_in_zip( unzip_file );
-		int node_directory_length = node_directory.length();
+        string::size_type node_directory_length = node_directory.length();
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{
@@ -282,8 +282,8 @@ namespace integra_internal
 		const string &node_path_string = node.get_path().get_string();
 		const string &root_path_string = root.get_string();
 
-		int node_path_length = node_path_string.length();
-		int root_path_length = root_path_string.length();
+        string::size_type node_path_length = node_path_string.length();
+        string::size_type root_path_length = root_path_string.length();
 
 		if( node_path_length <= root_path_length || node_path_string.substr( 0, root_path_length ) != root_path_string )
 		{
@@ -330,7 +330,7 @@ namespace integra_internal
 	{
 		assert( unzip_file );
 
-		int directory_length = directory.length();
+        string::size_type directory_length = directory.length();
 
 		if( unzGoToFirstFile( unzip_file ) != UNZ_OK )
 		{

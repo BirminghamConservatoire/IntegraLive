@@ -35,12 +35,12 @@ namespace integra_api
 			CValue();
 			virtual ~CValue();
 
-			typedef enum type 
+			typedef enum type_
 			{
 				INTEGER,
 				FLOAT,
 				STRING,
-			};
+			} type;
 
 			virtual type get_type() const = 0;
 

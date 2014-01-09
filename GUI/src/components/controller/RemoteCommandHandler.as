@@ -33,10 +33,8 @@ package components.controller
 	import components.controller.serverCommands.SetAvailableAudioDevices;
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
-	import components.controller.serverCommands.SetAvailableMidiDrivers;
 	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetContainerActive;
-	import components.controller.serverCommands.SetMidiDriver;
 	import components.controller.serverCommands.SetMidiInputDevice;
 	import components.controller.serverCommands.SetMidiOutputDevice;
 	import components.controller.serverCommands.SetModuleAttribute;
@@ -328,12 +326,6 @@ package components.controller
 			{
 				switch( endpointName )
 				{
-					case "availableDrivers":
-						availableDrivers = new Vector.<String>;
-						Utilities.makeStringVectorFromPackedString( String( value ), availableDrivers );
-						command = new SetAvailableMidiDrivers( availableDrivers );
-						break;
-					
 					case "availableInputDevices":
 						availableInputDevices = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableInputDevices );
@@ -344,10 +336,6 @@ package components.controller
 						availableOutputDevices = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableOutputDevices );
 						command = new SetAvailableMidiDevices( null, availableOutputDevices );
-						break;
-					
-					case "selectedDriver":
-						command = new SetMidiDriver( String( value ), false );
 						break;
 					
 					case "selectedInputDevice":

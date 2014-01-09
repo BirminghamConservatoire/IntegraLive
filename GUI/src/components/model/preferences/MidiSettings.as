@@ -35,21 +35,17 @@ package components.model.preferences
 			super();
 		}
 
-		public function get availableDrivers():Vector.<String> { return _availableDrivers; }
 		public function get availableInputDevices():Vector.<String> { return _availableInputDevices; }
 		public function get availableOutputDevices():Vector.<String> { return _availableOutputDevices; }
 		
-		public function get selectedDriver():String { return _selectedDriver; }
 		public function get selectedInputDevice():String { return _selectedInputDevice; }
 		public function get selectedOutputDevice():String { return _selectedOutputDevice; }
 
 		public function get hasChangedSinceReset():Boolean { return _hasChangedSinceReset; }
 		
-		public function set availableDrivers( drivers:Vector.<String> ):void { _availableDrivers = drivers; }
 		public function set availableInputDevices( inputDevices:Vector.<String> ):void { _availableInputDevices = inputDevices; }
 		public function set availableOutputDevices( outputDevices:Vector.<String> ):void { _availableOutputDevices = outputDevices; }
 		
-		public function set selectedDriver( driver:String ):void { _selectedDriver = driver; }
 		public function set selectedInputDevice( inputDevice:String ):void { _selectedInputDevice = inputDevice; }
 		public function set selectedOutputDevice( outputDevice:String ):void { _selectedOutputDevice = outputDevice; }
 
@@ -73,10 +69,6 @@ package components.model.preferences
 		
 			switch( attributeName )
 			{
-				case "availableDrivers":
-					Utilities.makeStringVectorFromPackedString( valueString, _availableDrivers );
-					break;
-
 				case "availableInputDevices":
 					Utilities.makeStringVectorFromPackedString( valueString, _availableInputDevices );
 					break;
@@ -85,10 +77,6 @@ package components.model.preferences
 					Utilities.makeStringVectorFromPackedString( valueString, _availableOutputDevices );
 					break;
 				
-				case "selectedDriver":
-					_selectedDriver = valueString;
-					break;
-
 				case "selectedInputDevice":
 					_selectedInputDevice = valueString;
 					break;
@@ -120,15 +108,12 @@ package components.model.preferences
 		}
 
 		
-		
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }
 		public static const _serverInterfaceName:String = "MidiSettings";
 		
-		private var _availableDrivers:Vector.<String> = new Vector.<String>;
 		private var _availableInputDevices:Vector.<String> = new Vector.<String>;
 		private var _availableOutputDevices:Vector.<String> = new Vector.<String>;
 
-		private var _selectedDriver:String = "";
 		private var _selectedInputDevice:String = "";
 		private var _selectedOutputDevice:String = "";
 

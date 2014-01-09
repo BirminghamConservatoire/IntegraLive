@@ -145,7 +145,7 @@ namespace integra_api
 	}
     
     /* compares two guids. return true if they are equal, false if they are not equal */
-    static bool guids_are_equal( const GUID &guid1, const GUID &guid2 )
+    bool CGuidHelper::guids_are_equal( const GUID &guid1, const GUID &guid2 )
     {
         if (
             ( guid1.Data1 == guid2.Data1 ) &&
@@ -160,7 +160,7 @@ namespace integra_api
     }
     
     /* compares a guid to CGuidHelper::null_guid. return true if the guid is "null" */
-    static bool guid_is_null( const GUID &guid )
+    bool CGuidHelper::guid_is_null( const GUID &guid )
     {
         return guids_are_equal(guid, CGuidHelper::null_guid);
     }

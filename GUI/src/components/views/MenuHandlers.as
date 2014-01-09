@@ -394,6 +394,10 @@ package components.views
 				var pingAllDspModulesItem:NativeMenuItem = new NativeMenuItem( "ping all dsp modules" );
 				pingAllDspModulesItem.addEventListener( Event.SELECT, pingAllDspModules ); 
 				debugMenu.submenu.addItem( pingAllDspModulesItem );
+
+				var viewLogsItem:NativeMenuItem = new NativeMenuItem( "view logs" );
+				viewLogsItem.addEventListener( Event.SELECT, viewLogs ); 
+				debugMenu.submenu.addItem( viewLogsItem );
 			}
 		}
 
@@ -587,6 +591,12 @@ package components.views
 		private function pingAllDspModules( event:Event ):void
 		{
 			_controller.pingAllDspModules();
+		}
+		
+		
+		private function viewLogs( event:Event ):void
+		{
+			_application.viewLogs();
 		}
 		
 		

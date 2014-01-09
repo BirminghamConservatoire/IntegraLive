@@ -46,6 +46,7 @@ package components.utils
 
 		public function get serverPath():String 			{ return _serverPath; }
 		public function get modulesPath():String			{ return _modulesPath; }
+		public function get fileViewerPath():String			{ return _fileViewerPath; }
 		
 		public function get serverUrl():String				{ return _serverUrl; }
 		public function get guiUrl():String					{ return _guiUrl; }
@@ -284,6 +285,11 @@ package components.utils
 			{
 				_modulesPath = osSpecificStartupFields.child( "modulespath" ).toString();
 			}
+			
+			if( osSpecificStartupFields.hasOwnProperty( "fileviewerpath" ) )
+			{
+				_fileViewerPath = osSpecificStartupFields.fileviewerpath;						
+			}
 		}
 		
 		
@@ -348,6 +354,7 @@ package components.utils
 		
 		private var _serverPath:String = null;
 		private var _modulesPath:String = null;
+		private var _fileViewerPath:String = null;
 		
 		private var _serverUrl:String = null;
 		private var _guiUrl:String = null;

@@ -222,6 +222,12 @@
 			}
 			
 			
+			public function viewLogs():void
+			{
+				_loggingSystem.viewLogs();
+			}
+
+			
 			private function onInvoke( event:InvokeEvent ):void
 			{
 				if( !_doneInitialize )

@@ -21,13 +21,13 @@
 
 package components.utils
 {
+	import flash.desktop.NativeProcess;
+	import flash.desktop.NativeProcessStartupInfo;
 	import flash.events.UncaughtErrorEvent;
 	import flash.events.UncaughtErrorEvents;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.utils.ByteArray;
-	import flash.utils.IDataInput;
 	
 	import flexunit.framework.Assert;
 	
@@ -100,6 +100,45 @@ package components.utils
 			
 			//now split according to pd log tags
 			splitByPDTags( serverOutput );
+		}
+		
+		
+		public function viewLogs():void
+		{
+			var path:String = Config.singleInstance.fileViewerPath;
+			
+			var executable:File = null;
+			
+			if( Utilities.isWindows )
+			{
+				//search drives roots
+				var driveRoots:Array = File.getRootDirectories();
+				for each( var driveRoot:File in driveRoots )
+				{
+					executable = driveRoot.resolvePath( path );
+					if( executable.exists ) break;
+				}
+			}
+			else
+			{
+				executable = new File( path );
+			}
+			
+			if( !executable || !executable.exists )
+			{
+				trace( "Can't find file viewer " + executable.nativePath );
+				return;
+			}
+			
+			var arguments:Vector.<String> = new Vector.<String>;
+			arguments.push( _loggingDirectory.nativePath );	
+			
+			var startupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo;
+			startupInfo.executable = executable;
+			startupInfo.arguments = arguments;					
+			
+			var nativeProcess:NativeProcess = new NativeProcess;
+			nativeProcess.start( startupInfo );		
 		}
 		
 		

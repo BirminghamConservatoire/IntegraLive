@@ -89,6 +89,7 @@ namespace integra_internal
 		node_list new_nodes;
 		node_list::const_iterator new_node_iterator;
 		CValidator validator;
+		CError error = CError::SUCCESS;
 
 		LIBXML_TEST_VERSION;
 
@@ -99,7 +100,7 @@ namespace integra_internal
 
 		if( suffix == file_suffix )
 		{
-			CError error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
+			error = module_manager.load_from_integra_file( filename, new_embedded_module_ids );
 			if( error != CError::SUCCESS ) 
 			{
 				INTEGRA_TRACE_ERROR << "couldn't load modules: " << filename;
@@ -115,7 +116,7 @@ namespace integra_internal
 		}
 
 		/* pull ixd data out of file */
-		CError error = load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
+		error = load_ixd_buffer( filename, &ixd_buffer, &ixd_buffer_length, &is_zip_file );
 		if( error != CError::SUCCESS ) 
 		{
 			INTEGRA_TRACE_ERROR << "couldn't load ixd: " << filename;

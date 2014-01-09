@@ -15,8 +15,12 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<!--		path and filename of server executable, relative to gui						-->
          	<serverpath>..\server\IntegraServer.exe</serverpath>						    									 
 		
-			<!--		path to modules directory, relative to server									-->
+			<!--		path to modules directory, relative to server								-->
 			<modulespath>..\modules</modulespath>
+			
+			<!--		path to directory viewer, relative to drive root							-->
+			<fileviewerpath>Windows\explorer.exe</fileviewerpath>
+			
 		</windows>
 		
 		<!--			mac-specific filename settings												-->
@@ -24,8 +28,11 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<!--		path and filename of server executable, relative to gui						-->
                         <serverpath>server/bin/integra_server</serverpath>
 		
-			<!--		path to modules directory, relative to server									-->
+			<!--		path to modules directory, relative to server								-->
                         <modulespath>../../modules</modulespath>
+
+			<!--		path to directory viewer, relative to drive root							-->
+			<fileviewerpath>/usr/bin/open</fileviewerpath>
 		</mac>
 	
 	</startup>

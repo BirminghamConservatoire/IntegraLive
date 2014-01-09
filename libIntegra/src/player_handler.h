@@ -91,6 +91,9 @@ namespace integra_internal
 			static const int player_update_microseconds;
 			static const int player_sanity_check_seconds;
 	};
+    
+    void *player_handler_thread_function( void *context );
+
 }
 
 

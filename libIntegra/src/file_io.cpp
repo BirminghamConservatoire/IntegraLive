@@ -727,7 +727,7 @@ namespace integra_internal
 			}
 		}
 
-		if( module_guid != CGuidHelper::null_guid )
+		if( CGuidHelper::guid_is_null( module_guid ) )
 		{
 			const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( module_guid );
 			if( interface_definition )
@@ -736,7 +736,7 @@ namespace integra_internal
 			}
 		}
 
-		if( origin_guid != CGuidHelper::null_guid ) 
+		if( CGuidHelper::guid_is_null( origin_guid ) )
 		{
 			const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_origin_id( origin_guid );
 			return interface_definition;

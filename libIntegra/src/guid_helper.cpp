@@ -143,6 +143,28 @@ namespace integra_api
 
 		return result;
 	}
+    
+    /* compares two guids. return true if they are equal, false if they are not equal */
+    static bool guids_are_equal( const GUID &guid1, const GUID &guid2 )
+    {
+        if (
+            ( guid1.Data1 == guid2.Data1 ) &&
+            ( guid1.Data2 == guid2.Data2 ) &&
+            ( guid1.Data3 == guid2.Data3 ) &&
+            ( guid1.Data4 == guid2.Data4 )
+            )
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    /* compares a guid to CGuidHelper::null_guid. return true if the guid is "null" */
+    static bool guid_is_null( const GUID &guid )
+    {
+        return guids_are_equal(guid, CGuidHelper::null_guid);
+    }
+
 }
 
 

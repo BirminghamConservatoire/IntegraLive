@@ -44,6 +44,12 @@ namespace integra_api
 			/* converts string to guid.  expects string in hexadecimal form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
 			static CError string_to_guid( const string &string, GUID &output );
 
+            /* compares two guids. return true if they are equal, false if they are not equal */
+            static bool guids_are_equal( const GUID &guid1, const GUID &guid2 );
+        
+            /* compares a guid to CGuidHelper::null_guid. return true if the guid is "null" */
+            static bool guid_is_null( const GUID &guid );
+        
 			static const GUID null_guid;
 
 		private:

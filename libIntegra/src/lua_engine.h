@@ -27,7 +27,7 @@
 
 extern "C"
 {
-#include <lua.h>
+#include "lua.h"
 }
 
 
@@ -40,7 +40,11 @@ namespace integra_api
 namespace integra_internal
 {
 	class CServer;
-
+    
+	static int set_callback( lua_State *state );
+    static int get_callback( lua_State *state );
+    static int print_callback( lua_State *state );
+    
 	class CLuaEngine
 	{
 		public:
@@ -51,9 +55,9 @@ namespace integra_internal
 
 		private:
 
-			static friend int set_callback( lua_State *state );
-			static friend int get_callback( lua_State *state );
-			static friend int print_callback( lua_State *state );
+            friend int set_callback( lua_State *state );
+            friend int get_callback( lua_State *state );
+            friend int print_callback( lua_State *state );
 
 			int handle_set( lua_State *state );
 			int handle_get( lua_State *state );

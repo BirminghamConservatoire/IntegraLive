@@ -33,8 +33,8 @@
 
 extern "C"
 {
-#include <lauxlib.h>
-#include <lualib.h>
+#include "lauxlib.h"
+#include "lualib.h"
 }
 
 #include <time.h>
@@ -48,7 +48,7 @@ namespace integra_internal
 	const unsigned int CLuaEngine::get_color = 0xc08000;
 	const unsigned int CLuaEngine::print_color = 0x6060ff;
 	const string CLuaEngine::self_key = "integra_internal::CLuaEngine";
-
+    
 	CLuaEngine::CLuaEngine()
 	{
 	}
@@ -613,7 +613,6 @@ namespace integra_internal
 		assert( self );
 		return self;
 	}
-
 
 	static int set_callback( lua_State *state )
 	{

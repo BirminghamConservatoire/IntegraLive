@@ -24,6 +24,8 @@ config.h
 config.log
 config.status
 stamp-h1
+lib-stamp
+bin-stamp
 
 config.guess
 config.h.in
@@ -75,4 +77,10 @@ tags
 # sublime project and workspace
 *.sublime-project
 *.sublime-workspace
+
+#portaudio binaries
+externals/portaudio/bin
+
+
+
 

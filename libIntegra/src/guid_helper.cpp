@@ -148,10 +148,10 @@ namespace integra_api
     bool CGuidHelper::guids_are_equal( const GUID &guid1, const GUID &guid2 )
     {
         if (
-            ( guid1.Data1 == guid2.Data1 ) &&
-            ( guid1.Data2 == guid2.Data2 ) &&
-            ( guid1.Data3 == guid2.Data3 ) &&
-            ( guid1.Data4 == guid2.Data4 )
+            guid1.Data1 == guid2.Data1 &&
+            guid1.Data2 == guid2.Data2 &&
+            guid1.Data3 == guid2.Data3 &&
+            memcmp( guid1.Data4, guid2.Data4, 8 * sizeof( char ) ) == 0
             )
         {
             return true;

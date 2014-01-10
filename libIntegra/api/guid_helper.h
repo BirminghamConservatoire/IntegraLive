@@ -67,7 +67,7 @@ namespace integra_api
 
     struct GuidCompare
     {
-        bool operator()( const GUID &guid1, const GUID guid2 ) const { return CGuidHelper::guids_are_equal( guid1, guid2); }
+        bool operator()( const GUID &guid1, const GUID &guid2 ) const { return CGuidHelper::guids_are_equal( guid1, guid2 ); }
     };
 
 	typedef std::unordered_set<GUID, GuidHash, GuidCompare> guid_set;

@@ -44,9 +44,7 @@ package components.views.Preferences
 	import components.controller.serverCommands.SetAvailableAudioDevices;
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
-	import components.controller.serverCommands.SetAvailableMidiDrivers;
 	import components.controller.serverCommands.SetAvailableSampleRates;
-	import components.controller.serverCommands.SetMidiDriver;
 	import components.controller.serverCommands.SetMidiInputDevice;
 	import components.controller.serverCommands.SetMidiOutputDevice;
 	import components.controller.userDataCommands.SetViewMode;
@@ -78,9 +76,7 @@ package components.views.Preferences
 			addUpdateMethod( SetAudioSettings, onPreferencesChanged );
 			addUpdateMethod( SetMidiInputDevice, onPreferencesChanged );
 			addUpdateMethod( SetMidiOutputDevice, onPreferencesChanged );
-			addUpdateMethod( SetMidiDriver, onPreferencesChanged );
 			addUpdateMethod( SetAvailableAudioDrivers, onPreferencesChanged );
-			addUpdateMethod( SetAvailableMidiDrivers, onPreferencesChanged );
 			addUpdateMethod( SetAvailableAudioDevices, onPreferencesChanged );
 			addUpdateMethod( SetAvailableMidiDevices, onPreferencesChanged );
 			addUpdateMethod( SetAvailableSampleRates, onPreferencesChanged );
@@ -103,7 +99,6 @@ package components.views.Preferences
 			initializeLabel( _audioOutLabel, "Audio Output" );
 			initializeLabel( _audioOutChannelsLabel, "Output Channels" );
 			initializeLabel( _sampleRateLabel, "Sample Rate" );
-			initializeLabel( _midiDriverLabel, "MIDI Driver" );
 			initializeLabel( _midiInLabel, "MIDI Input" );
 			initializeLabel( _midiOutLabel, "MIDI Output" );
 
@@ -147,7 +142,6 @@ package components.views.Preferences
 						_audioOutLabel.setStyle( "color", 0x747474 );
 						_audioOutChannelsLabel.setStyle( "color", 0x747474 );
 						_sampleRateLabel.setStyle( "color", 0x747474 );
-						_midiDriverLabel.setStyle( "color", 0x747474 );
 						_midiInLabel.setStyle( "color", 0x747474 );
 						_midiOutLabel.setStyle( "color", 0x747474 );
 
@@ -172,7 +166,6 @@ package components.views.Preferences
 						_audioOutChannelsLabel.setStyle( "color", 0x8c8c8c );
 						_sampleRateLabel.setStyle( "color", 0x8c8c8c );
 
-						_midiDriverLabel.setStyle( "color", 0x8c8c8c );
 						_midiInLabel.setStyle( "color", 0x8c8c8c );
 						_midiOutLabel.setStyle( "color", 0x8c8c8c );
 						
@@ -203,12 +196,12 @@ package components.views.Preferences
 		public function updateSize():void
 		{
 			Assert.assertNotNull( parentDocument );
-
+			
 			//calculate window size
 			var rowHeight:Number = FontSize.getTextRowHeight( this );
 			width = Math.min( rowHeight * 20, parentDocument.width );
 			height = Math.min( rowHeight * 18, parentDocument.height );
-
+			
 			//position title controls
 			_titleCloseButton.width = FontSize.getButtonSize( this ) * 1.1;
 			_titleCloseButton.height = FontSize.getButtonSize( this ) * 1.1;
@@ -218,47 +211,46 @@ package components.views.Preferences
 			_titleLabel.x = titleHeight;
 			_titleLabel.y = titleHeight / 6;
 			_titleLabel.height = rowHeight;
-
+			
 			//position main controls
 			var controlRect:Rectangle = new Rectangle( rowHeight * 2, titleHeight * 1.5, width - rowHeight * 4, height - titleHeight * 2 );
 			rowHeight = Math.min( rowHeight, controlRect.height / 9 );
-						
+			
 			_audioDriverLabel.x = _audioInLabel.x = _audioOutLabel.x = _sampleRateLabel.x = controlRect.left;
 			_audioInChannelsLabel.x = _audioOutChannelsLabel.x = controlRect.left;
-            _midiDriverLabel.x = _midiInLabel.x = _midiOutLabel.x = controlRect.left;
+			_midiInLabel.x = _midiOutLabel.x = controlRect.left;
 			
 			_audioDriverLabel.height = _audioInLabel.height = _audioOutLabel.height = _sampleRateLabel.height = rowHeight;
 			_audioInChannelsLabel.height = _audioOutChannelsLabel.height = rowHeight;
-			_midiDriverLabel.height = _midiInLabel.height = _midiOutLabel.height = rowHeight;
-
+			_midiInLabel.height = _midiOutLabel.height = rowHeight;
+			
 			var controlLeft:Number = controlRect.left + FontSize.getTextRowHeight( this ) * 5;
 			_audioDriverCombo.x = _audioInCombo.x = _audioOutCombo.x = _sampleRateCombo.x = controlLeft;
 			_audioInChannelsEdit.x = _audioOutChannelsEdit.x = controlLeft;
-			_midiDriverCombo.x = _midiInCombo.x = _midiOutCombo.x = controlLeft;
+			_midiInCombo.x = _midiOutCombo.x = controlLeft;
 			
 			var controlWidth:Number = controlRect.right - controlLeft;
 			_audioDriverCombo.width = _audioInCombo.width = _audioOutCombo.width = _sampleRateCombo.width = controlWidth; 
 			_audioInChannelsEdit.width = _audioOutChannelsEdit.width = controlWidth;
-			_midiDriverCombo.width = _midiInCombo.width = _midiOutCombo.width = controlWidth;
-
+			_midiInCombo.width = _midiOutCombo.width = controlWidth;
+			
 			_audioDriverCombo.height = _audioInCombo.height = _audioOutCombo.height = _sampleRateCombo.height = rowHeight; 
 			_audioInChannelsEdit.height = _audioOutChannelsEdit.height = rowHeight;
-			_midiDriverCombo.height = _midiInCombo.height = _midiOutCombo.height = rowHeight;
-
+			_midiInCombo.height = _midiOutCombo.height = rowHeight;
+			
 			_audioDriverLabel.y = _audioDriverCombo.y = controlRect.y;
 			_audioInLabel.y = _audioInCombo.y = controlRect.y + rowHeight * 1.1;
 			_audioOutLabel.y = _audioOutCombo.y = controlRect.y + rowHeight * 2.2;
-
+			
 			_audioInChannelsLabel.y = _audioInChannelsEdit.y = controlRect.y + rowHeight * 4.2;
 			_audioOutChannelsLabel.y = _audioOutChannelsEdit.y = controlRect.y + rowHeight * 5.3;
-
+			
 			_sampleRateLabel.y = _sampleRateCombo.y = controlRect.y + rowHeight * 7.3;
-
-			_midiDriverLabel.y = _midiDriverCombo.y = controlRect.y + rowHeight * 10.4;
+			
 			_midiInLabel.y = _midiInCombo.y = controlRect.y + rowHeight * 11.5;
 			_midiOutLabel.y = _midiOutCombo.y = controlRect.y + rowHeight * 12.6;
 			
-			//mx.managers.PopUpManager.centerPopUp( this );
+			//mx.managers.PopUpManager.centerPopUp( this );		
 		}
 		
 		
@@ -270,7 +262,6 @@ package components.views.Preferences
 			if( _audioInCombo ) removeChild( _audioInCombo );
 			if( _audioOutCombo ) removeChild( _audioOutCombo );
 			if( _sampleRateCombo ) removeChild( _sampleRateCombo );
-			if( _midiDriverCombo ) removeChild( _midiDriverCombo );
 			if( _midiInCombo ) removeChild( _midiInCombo );
 			if( _midiOutCombo ) removeChild( _midiOutCombo );
 
@@ -278,7 +269,6 @@ package components.views.Preferences
 			_audioInCombo = new ComboBox;
 			_audioOutCombo = new ComboBox;
 			_sampleRateCombo = new ComboBox;
-			_midiDriverCombo = new ComboBox;
 			_midiInCombo = new ComboBox;
 			_midiOutCombo = new ComboBox;
 
@@ -286,7 +276,6 @@ package components.views.Preferences
 			initializeCombo( _audioInCombo, onChangeAudioInputDevice );
 			initializeCombo( _audioOutCombo, onChangeAudioOutputDevice );
 			initializeCombo( _sampleRateCombo, onChangeAudioSampleRate );
-			initializeCombo( _midiDriverCombo, onChangeMidiDriver );
 			initializeCombo( _midiInCombo, onChangeMidiInputDevice );
 			initializeCombo( _midiOutCombo, onChangeMidiOutputDevice );
 			
@@ -397,16 +386,6 @@ package components.views.Preferences
 			_sampleRateCombo.dataProvider = data;
 			_sampleRateCombo.enabled = ( data.length > 1 );
 			
-			//set combo contents for midi driver
-			data = new Array;
-			for each( var midiDriver:String in midiSettings.availableDrivers )
-			{
-				data.push( midiDriver );
-			}
-			
-			_midiDriverCombo.dataProvider = data;
-			_midiDriverCombo.enabled = ( data.length > 1 );
-			
 			//set combo contents for midi input devices
 			data = new Array;
 			for each( var midiInputDevice:String in midiSettings.availableInputDevices )
@@ -435,7 +414,6 @@ package components.views.Preferences
 			Assert.assertNotNull( _audioInCombo );
 			Assert.assertNotNull( _audioOutCombo );
 			Assert.assertNotNull( _sampleRateCombo );
-			Assert.assertNotNull( _midiDriverCombo );
 			Assert.assertNotNull( _midiInCombo );
 			Assert.assertNotNull( _midiOutCombo );
 
@@ -453,7 +431,6 @@ package components.views.Preferences
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
 			
-			_midiDriverCombo.selectedItem = midiSettings.selectedDriver;
 			_midiInCombo.selectedItem = midiSettings.selectedInputDevice;
 			_midiOutCombo.selectedItem = midiSettings.selectedOutputDevice;
 		}
@@ -521,18 +498,6 @@ package components.views.Preferences
 			updateAudioSettingsFromDialog();			
 		}
 		
-		
-		private function onChangeMidiDriver( event:ListEvent ):void
-		{
-			var midiDriver:String = String( _midiDriverCombo.selectedItem );
-			
-			controller.activateUndoStack = false;
-			
-			controller.processCommand( new SetMidiDriver( midiDriver ) );
-			
-			controller.activateUndoStack = true;
-		}
-
 		
 		private function onChangeMidiInputDevice( event:ListEvent ):void
 		{
@@ -649,7 +614,6 @@ package components.views.Preferences
 		private var _sampleRateCombo:ComboBox = null;
 		private var _audioInChannelsEdit:TextInput = new TextInput;
 		private var _audioOutChannelsEdit:TextInput = new TextInput;
-		private var _midiDriverCombo:ComboBox = null;
 		private var _midiInCombo:ComboBox = null;
 		private var _midiOutCombo:ComboBox = null;
 		
@@ -660,7 +624,6 @@ package components.views.Preferences
 		private var _audioInChannelsLabel:Label = new Label;
 		private var _audioOutChannelsLabel:Label = new Label;
 		private var _sampleRateLabel:Label = new Label;
-		private var _midiDriverLabel:Label = new Label;
 		private var _midiInLabel:Label = new Label;
 		private var _midiOutLabel:Label = new Label;
 

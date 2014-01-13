@@ -57,6 +57,7 @@ namespace integra_api
 namespace integra_internal
 {
 	class CServer;
+	class IMidiEngine;
 
 	class CDspEngine : public IThreadedQueueOutputSink<pd::Message>
 	{
@@ -108,6 +109,8 @@ namespace integra_internal
 
 			void handle_queue_items( const pd_message_list &messages );
 			void handle_feedback( const pd::Message &message );
+
+			void handle_midi_input();
 
 			ISetCommand *make_set_command( const pd::List &feedback_arguments ) const;
 

@@ -25,6 +25,7 @@
 #include "interface_definition.h"
 #include "file_helper.h"
 #include "server.h"
+#include "midi_engine.h"
 #include "api/command.h"
 #include "api/trace.h"
 
@@ -551,6 +552,8 @@ namespace integra_internal
 
 		if( m_initialised )
 		{
+			handle_midi_input();
+
 			/* pd needs a writable input pointer, although presumably does not write to it */
 			float *input_writable = ( float * ) input;
 
@@ -852,6 +855,34 @@ namespace integra_internal
 		}
 
 		return index;
+	}
+
+
+	void CDspEngine::handle_midi_input()
+	{
+		IMidiEngine &midi_engine = m_server.get_midi_engine();
+
+		unsigned char *midi_bytes = NULL;
+		int number_of_midi_bytes = 0;
+
+		CError midi_result = midi_engine.get_incoming_midi_bytes( midi_bytes, number_of_midi_bytes );
+
+		if( midi_result == CError::SUCCESS )
+		{
+			if( number_of_midi_bytes > 0 )
+			{
+				*m_pd << pd::StartMidi( -2 ) << 0xB0 << 0x01 << 0x02 << pd::Finish();
+
+			}
+
+			//m_pd->sendNoteOn( 0, 60 );
+
+			/*for( int i = 0; i < number_of_midi_bytes; i++ )
+			{
+
+				m_pd->sendMidiByte( 0x0E, midi_bytes[ i ] );
+			}*/
+		}
 	}
 
 }

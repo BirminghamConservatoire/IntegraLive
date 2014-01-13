@@ -71,9 +71,14 @@ namespace integra_internal
 
 		if( source == CCommandSource::PUBLIC_API )
 		{
-			CPath restore_endpoint( get_node().get_path() );
-			restore_endpoint.append_element( endpoint_restore_defaults );
-			server.process_command( ISetCommand::create( restore_endpoint, NULL ), CCommandSource::SYSTEM );
+			if( s_all_audio_settings_logics.size() == 1 )
+			{
+				//bang the 'restore defaults' endpoint if created by the public api (unless other settings objects already exist)
+
+				CPath restore_endpoint( get_node().get_path() );
+				restore_endpoint.append_element( endpoint_restore_defaults );
+				server.process_command( ISetCommand::create( restore_endpoint, NULL ), CCommandSource::SYSTEM );
+			}
 		}
 	}
 

@@ -31,6 +31,7 @@
 #include "scene_logic.h"
 #include "connection_logic.h"
 #include "audio_settings_logic.h"
+#include "midi_settings_logic.h"
 
 #include "dsp_engine.h"
 
@@ -59,6 +60,7 @@ namespace integra_internal
 	const string CLogic::module_scene = "Scene";
 	const string CLogic::module_connection = "Connection";
 	const string CLogic::module_audio_settings = "AudioSettings";
+	const string CLogic::module_midi_settings = "MidiSettings";
 
 	const string CLogic::endpoint_active = "active";
 	const string CLogic::endpoint_data_directory = "dataDirectory";
@@ -125,6 +127,11 @@ namespace integra_internal
 		if( interface_definition.is_named_core_interface( module_audio_settings ) )
 		{
 			return new CAudioSettingsLogic( node );
+		}
+
+		if( interface_definition.is_named_core_interface( module_midi_settings ) )
+		{
+			return new CMidiSettingsLogic( node );
 		}
 
 		/* 

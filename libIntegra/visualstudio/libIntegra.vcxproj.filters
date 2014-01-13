@@ -270,6 +270,15 @@
     <ClCompile Include="..\externals\libpd\pure-data\extra\lrshift~\lrshift~.c">
       <Filter>Externals\extra\lrshift~</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\midi_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\portmidi_engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\midi_settings_logic.cpp">
+      <Filter>Source Files\logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\node.h">
@@ -484,6 +493,15 @@
     </ClInclude>
     <ClInclude Include="..\externals\libpd\pure-data\extra\expr~\fts_to_pd.h">
       <Filter>Externals\extra\expr~</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\midi_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\portmidi_engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\midi_settings_logic.h">
+      <Filter>Header Files\logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

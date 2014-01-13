@@ -12,6 +12,7 @@ copy "..\..\libIntegra_dependencies\zlib-1.2.5\bin\zlib1.dll" "..\..\build\Debug
 copy "..\..\libIntegra_dependencies\lua-5.2.0\lua52.dll" "..\..\build\Debug\server\"
 copy "..\..\libIntegra_dependencies\fftw-3.3.3\libfftw3f-3.dll" "..\..\build\Debug\server\"
 copy "..\..\libIntegra_dependencies\portaudio\build\msvc\Win32\Debug\portaudio_x86.dll" "..\..\build\Debug\server\"
+copy "..\..\libIntegra_dependencies\portmidi\Debug\portmidi.dll" "..\..\build\Debug\server\"
 copy "..\..\libIntegra_dependencies\libsndfile\bin\libsndfile-1.dll" "..\..\build\Debug\server\"
 copy "..\externals\libpd\libs\libpd.dll" "..\..\build\Debug\server\"
 

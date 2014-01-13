@@ -19,19 +19,19 @@
  */
 
 
-#ifndef INTEGRA_AUDIO_SETTINGS_LOGIC_PRIVATE
-#define INTEGRA_AUDIO_SETTINGS_LOGIC_PRIVATE
+#ifndef INTEGRA_MIDI_SETTINGS_LOGIC_PRIVATE
+#define INTEGRA_MIDI_SETTINGS_LOGIC_PRIVATE
 
 #include "logic.h"
 
 
 namespace integra_internal
 {
-	class CAudioSettingsLogic : public CLogic
+	class CMidiSettingsLogic : public CLogic
 	{
 		public:
-			CAudioSettingsLogic( const CNode &node );
-			~CAudioSettingsLogic();
+			CMidiSettingsLogic( const CNode &node );
+			~CMidiSettingsLogic();
 
 			void handle_new( CServer &server, CCommandSource source );
 			void handle_set( CServer &server, const CNodeEndpoint &node_endpoint, const CValue *previous_value, CCommandSource source );
@@ -40,31 +40,22 @@ namespace integra_internal
 
 			void update_all_fields( CServer &server );
 
-			void update_string_field( CServer &server, const string &endpoint_name, const string &new_value );
-			void update_integer_field( CServer &server, const string &endpoint_name, int new_value );
+			void update_field( CServer &server, const string &endpoint_name, const string &new_value );
 
-			static void update_all_fields_for_all_audio_settings_nodes( CServer &server );
+			static void update_all_fields_for_all_midi_settings_nodes( CServer &server );
 
-			static string_vector int_vector_to_string_vector( const int_vector &input );
+			typedef std::unordered_set<CMidiSettingsLogic *> midi_settings_logic_set;
 
-			typedef std::unordered_set<CAudioSettingsLogic *> audio_settings_logic_set;
+			static midi_settings_logic_set s_all_midi_settings_logics;
 
-			static audio_settings_logic_set s_all_audio_settings_logics;
-
-			static const string endpoint_available_drivers;
 			static const string endpoint_available_input_devices;
 			static const string endpoint_available_output_devices;
-			static const string endpoint_available_sample_rates;
-			static const string endpoint_selected_driver;
 			static const string endpoint_selected_input_device;
 			static const string endpoint_selected_output_device;
-			static const string endpoint_sample_rate;
-			static const string endpoint_input_channels;
-			static const string endpoint_output_channels;
 			static const string endpoint_restore_defaults;
 	};
 }
 
 
 
-#endif /*INTEGRA_AUDIO_SETTINGS_LOGIC_PRIVATE*/
+#endif /*INTEGRA_MIDI_SETTINGS_LOGIC_PRIVATE*/

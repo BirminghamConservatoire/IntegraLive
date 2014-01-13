@@ -41,9 +41,6 @@ package components.utils
 		
 		public function callQueued( method:String ):void
 		{
-			addEventListener( Event.COMPLETE, onQueuedCallComplete );
-			addEventListener( ErrorEvent.ERROR, onQueuedCallError );
-
 			_methodName = method;
 			
 			if( _queuedCallBeingProcessed )
@@ -52,8 +49,7 @@ package components.utils
 			}
 			else
 			{
-				call( method );
-				_queuedCallBeingProcessed = this;
+				startCall();
 			}
 		} 
 		
@@ -141,36 +137,78 @@ package components.utils
 		
 		private function onQueuedCallComplete( event:Event ):void
 		{
-			Assert.assertTrue( _queuedCallBeingProcessed == this );
-			sendNextQueuedCall();
+			callFinished();
 		}
 
 
 		private function onQueuedCallError( event:ErrorEvent ):void
 		{
+			callFinished();
+		}
+		
+		
+		private function onQueuedCallTimeout( event:TimerEvent ):void
+		{
+			callFinished();
+		}
+		
+		
+		private function startCall():void
+		{
+			Assert.assertNull( _timer );
+			
+			_timer = new Timer( timeoutMilliseconds, 1 );
+			_timer.addEventListener( TimerEvent.TIMER_COMPLETE, onQueuedCallTimeout );
+			_timer.start();
+			
+			addEventListener( Event.COMPLETE, onQueuedCallComplete );
+			addEventListener( ErrorEvent.ERROR, onQueuedCallError );
+			
+			_queuedCallBeingProcessed = this;
+			
+			Assert.assertNotNull( _methodName );
+			call( _methodName );
+		}
+		
+		
+		private function callFinished():void
+		{
 			Assert.assertTrue( _queuedCallBeingProcessed == this );
+			Assert.assertNotNull( _timer );
+			
+			_timer.removeEventListener( TimerEvent.TIMER_COMPLETE, onQueuedCallTimeout );
+			_timer.stop();
+			_timer = null;
+			
+			removeEventListener( Event.COMPLETE, onQueuedCallComplete );
+			removeEventListener( ErrorEvent.ERROR, onQueuedCallError );
+			
+			_queuedCallBeingProcessed = null;
+			
 			sendNextQueuedCall();
 		}
 		
 		
 		private static function sendNextQueuedCall():void
 		{
-			_queuedCallBeingProcessed = null;
+			Assert.assertNull( _queuedCallBeingProcessed );
 			
 			if( _queuedCalls.length > 0 )
 			{
-				_queuedCallBeingProcessed = _queuedCalls[ 0 ];
+				var newCall:IntegraConnection = _queuedCalls[ 0 ];
 				_queuedCalls.splice( 0, 1 );
 				
-				Assert.assertNotNull( _queuedCallBeingProcessed._methodName );
-				_queuedCallBeingProcessed.call( _queuedCallBeingProcessed._methodName );
+				newCall.startCall();
 			}
 		}
 		
 		
 		private var _methodName:String = null;
+		private var _timer:Timer = null;
 
 		private static var _queuedCallBeingProcessed:IntegraConnection = null;
 		private static var _queuedCalls:Vector.<IntegraConnection> = new Vector.<IntegraConnection>;
+		
+		private static const timeoutMilliseconds:Number = 1000;
 	}
 }

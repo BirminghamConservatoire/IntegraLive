@@ -1886,11 +1886,9 @@ void ntg_xmlrpc_shutdown( xmlrpc_env *const envP, void *const context, const cha
 
 void *ntg_xmlrpc_server_run( void *context )
 {
-	/////////////
-		INTEGRA_TRACE_PROGRESS << "Thread ID = " << GetCurrentThreadId();
-		HRESULT result = CoInitialize( NULL );
-		INTEGRA_TRACE_PROGRESS << "CoInitialize result = " << result;
-		/////////////
+	#ifdef _WINDOWS
+		CoInitialize( NULL );
+	#endif
 
     xmlrpc_registry *registryP;
     xmlrpc_env env;
@@ -1968,6 +1966,10 @@ void *ntg_xmlrpc_server_run( void *context )
 
     INTEGRA_TRACE_PROGRESS << "XMLRPC server terminated";
     pthread_exit( 0 );
+
+	#ifdef _WINDOWS
+		CoUninitialize();
+	#endif
 
     return NULL;
 

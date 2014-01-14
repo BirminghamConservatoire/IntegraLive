@@ -121,7 +121,7 @@ namespace integra_internal
 		char file_name[ CStringHelper::string_buffer_length ];
 		char *temporary_file_name;
 		FILE *temporary_file;
-		int implementation_directory_length;
+        string::size_type implementation_directory_length;
 		unsigned char *copy_buffer;
 		int bytes_read;
 		int total_bytes_read;
@@ -257,8 +257,9 @@ namespace integra_internal
 			return store_module( module_id );
 		}
 
-		if( module_id == CGuidHelper::null_guid )
-		{
+        
+        if (CGuidHelper::guid_is_null(module_id))
+        {
 			return CError::FILE_VALIDATION_ERROR;
 		}
 
@@ -357,7 +358,7 @@ namespace integra_internal
 				continue;
 			}
 
-			if( result.previous_module_id == CGuidHelper::null_guid )
+            if ( CGuidHelper::guid_is_null( result.previous_module_id ) )
 			{
 				result.previous_module_id = interface_definition.get_module_guid();
 
@@ -509,7 +510,7 @@ namespace integra_internal
 
 		output = m_legacy_module_id_table[ old_id ];
 
-		return ( output == CGuidHelper::null_guid ) ? CError::INPUT_ERROR : CError::SUCCESS;
+		return ( CGuidHelper::guid_is_null( output ) ) ? CError::INPUT_ERROR : CError::SUCCESS;
 	}
 
 
@@ -1027,8 +1028,8 @@ namespace integra_internal
 		{
 			const INode *node = i->second;
 
-			if( node->get_interface_definition().get_module_guid() == module_id )
-			{
+            if ( CGuidHelper::guids_are_equal( node->get_interface_definition().get_module_guid(), module_id ) )
+            {
 				return true;
 			}
 

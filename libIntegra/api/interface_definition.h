@@ -51,7 +51,7 @@ namespace integra_api
 	typedef std::list<IEndpointDefinition *> endpoint_definition_list;
 	typedef std::list<IWidgetDefinition *> widget_definition_list;
 
-	typedef std::unordered_map<GUID, IInterfaceDefinition *, GuidHash> map_guid_to_interface_definition;
+	typedef std::unordered_map<GUID, IInterfaceDefinition *, GuidHash, GuidCompare> map_guid_to_interface_definition;
 	typedef std::unordered_map<string, IInterfaceDefinition *> map_string_to_interface_definition;
 
 

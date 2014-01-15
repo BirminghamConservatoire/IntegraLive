@@ -38,9 +38,8 @@ namespace integra_internal
 		m_finished = false;
 
 		pthread_mutex_init( &m_queue_mutex, NULL );
-		pthread_mutex_init( &m_signal_mutex, NULL );
 
-		pthread_cond_init( &m_condition, NULL );
+		sem_init( &m_semaphore, 0, 0 );
 
 		pthread_create( &m_output_thread, NULL, threaded_queue_thread_function<T>, this );
 	}
@@ -54,10 +53,9 @@ namespace integra_internal
 
 		pthread_join( m_output_thread, NULL);
 
-		pthread_cond_destroy( &m_condition );
-
 		pthread_mutex_destroy( &m_queue_mutex );
-		pthread_mutex_destroy( &m_signal_mutex );
+
+		sem_destroy( &m_semaphore );
 
 		assert( m_content );
 		assert( m_content->empty() );
@@ -94,7 +92,7 @@ namespace integra_internal
 
 	template<class T> void CThreadedQueue<T>::send_signal_to_output_thread()
 	{
-		pthread_cond_signal( &m_condition );
+		sem_post( &m_semaphore );
 	}
 
 
@@ -102,16 +100,9 @@ namespace integra_internal
 	{
 		bool finished( false );
 
-		pthread_mutex_lock( &m_signal_mutex );
-
 		while( !finished )
 		{
-			int wait_result = pthread_cond_wait( &m_condition, &m_signal_mutex );
-			if( wait_result != 0 )
-			{
-				INTEGRA_TRACE_ERROR << "wait failed, code = " << wait_result;
-				break;
-			}
+			sem_wait( &m_semaphore );
 
 			pthread_mutex_lock( &m_queue_mutex );
 

@@ -23,16 +23,10 @@
 #define INTEGRA_THREADED_QUEUE_PRIVATE
 
 
-//#include "api/common_typedefs.h"
-
 #include <pthread.h>
+#include <semaphore.h>
 
 #include <list>
-
-//using namespace integra_api;
-
-
-
 
 namespace integra_internal
 {
@@ -70,11 +64,9 @@ namespace integra_internal
 			std::list<T> *m_content;
 
 			pthread_mutex_t m_queue_mutex;
-			pthread_mutex_t m_signal_mutex;
+			sem_t m_semaphore;
 
 			pthread_t m_output_thread;
-
-			pthread_cond_t m_condition;
 
 			bool m_finished;
 	};

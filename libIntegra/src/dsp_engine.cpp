@@ -106,6 +106,11 @@ namespace integra_internal
 
 		delete m_message_queue;
 
+		for( set_command_list::iterator i = m_set_commands.begin(); i != m_set_commands.end(); i++ )
+		{
+			delete *i;
+		}
+
 		delete_host_patch();
 
 		pthread_mutex_unlock( &m_mutex );
@@ -473,12 +478,12 @@ namespace integra_internal
 		pthread_mutex_lock( &m_mutex );
 
 		const CNode &node = CNode::downcast( target.get_node() );
+		const CValue *value = target.get_value();
 
 		m_pd->startMessage();
-        m_pd->addFloat( node.get_id() );
-        m_pd->addSymbol( target.get_endpoint_definition().get_name() );
+		m_pd->addFloat( node.get_id() );
+		m_pd->addSymbol( target.get_endpoint_definition().get_name() );
 
-		const CValue *value = target.get_value();
 		if( value )
 		{
 			switch( value->get_type() )
@@ -505,7 +510,7 @@ namespace integra_internal
 			m_pd->addSymbol( bang );
 		}
 
-        m_pd->finishList( broadcast_symbol );
+		m_pd->finishList( broadcast_symbol );
 
 		pthread_mutex_unlock( &m_mutex );
 
@@ -633,42 +638,61 @@ namespace integra_internal
 			return;
 		}
 
+		m_set_commands.clear();
+
 		for( pd_message_list::const_iterator i = messages.begin(); i != messages.end(); i++ )
 		{
 			const pd::Message &message = *i;
 			if( message.dest == feedback_source )
 			{
-				handle_feedback( message );
+				assert( message.type == pd::LIST );
+
+				ISetCommand *command = build_set_command( message.list );
+				if( command )
+				{
+					merge_set_command( command );
+				}
 				continue;
 			}
-
-			switch( message.type )
+			else
 			{
-				case pd::PRINT:
-					std::cout << trace_start_tag << message.symbol << trace_end_tag;
-					break;
+				switch( message.type )
+				{
+					case pd::PRINT:
+						std::cout << trace_start_tag << message.symbol << trace_end_tag;
+						break;
 
-				case pd::NONE:
+					case pd::NONE:
 
-					// events
-				case pd::BANG:
-				case pd::FLOAT:
-				case pd::SYMBOL:
-				case pd::LIST:
-				case pd::MESSAGE:
+						// events
+					case pd::LIST:
+					case pd::BANG:
+					case pd::FLOAT:
+					case pd::SYMBOL:
+					case pd::MESSAGE:
 
-					// midi
-				case pd::NOTE_ON:
-				case pd::CONTROL_CHANGE:
-				case pd::PROGRAM_CHANGE:
-				case pd::PITCH_BEND:
-				case pd::AFTERTOUCH:
-				case pd::POLY_AFTERTOUCH:
-				case pd::BYTE:
+						// midi
+					case pd::NOTE_ON:
+					case pd::CONTROL_CHANGE:
+					case pd::PROGRAM_CHANGE:
+					case pd::PITCH_BEND:
+					case pd::AFTERTOUCH:
+					case pd::POLY_AFTERTOUCH:
+					case pd::BYTE:
 
-				default:
-					INTEGRA_TRACE_ERROR << "unhandled pd message type: " << message.type;
-					break;
+					default:
+						INTEGRA_TRACE_ERROR << "unhandled pd message type: " << message.type;
+						break;
+				}
+			}
+		}
+
+		for( set_command_list::iterator i = m_set_commands.begin(); i != m_set_commands.end(); i++ )
+		{
+			CError result = m_server.process_command( *i, CCommandSource::MODULE_IMPLEMENTATION );
+			if( result != CError::SUCCESS )
+			{
+				INTEGRA_TRACE_ERROR << "Error processing command: " << result.get_text();
 			}
 		}
 
@@ -676,34 +700,7 @@ namespace integra_internal
 	}
 
 
-	void CDspEngine::handle_feedback( const pd::Message &message )
-	{
-		if( message.type != pd::LIST )
-		{
-			INTEGRA_TRACE_ERROR << "unexpected message type: " << message.type;
-			return;
-		}
-
-		const pd::List &list = message.list;
-
-		ISetCommand *command = make_set_command( list );
-		
-		if( command )
-		{
-			CError result = m_server.process_command( command, CCommandSource::MODULE_IMPLEMENTATION );
-			if( result != CError::SUCCESS )
-			{
-				INTEGRA_TRACE_ERROR << "Error processing command: " << result.get_text();
-			}
-		}
-		else
-		{
-			INTEGRA_TRACE_ERROR << "Couldn't process command";
-		}
-	}
-
-
-	ISetCommand *CDspEngine::make_set_command( const pd::List &feedback_arguments ) const
+	ISetCommand *CDspEngine::build_set_command( const pd::List &feedback_arguments ) const
 	{
 		if( feedback_arguments.len() != 4 || !feedback_arguments.isFloat( 0 ) || !feedback_arguments.isSymbol( 1 ) || !feedback_arguments.isSymbol( 2 ) || feedback_arguments.getSymbol( 2 ) != "scalar" )
 		{
@@ -785,6 +782,23 @@ namespace integra_internal
 				INTEGRA_TRACE_ERROR << "unhandled control type: " << control_info.get_type();
 				return NULL;
 		}
+	}
+
+
+	void CDspEngine::merge_set_command( ISetCommand *command )
+	{
+		for( set_command_list::iterator i = m_set_commands.begin(); i != m_set_commands.end(); i++ )
+		{
+			ISetCommand *previous_command = *i;
+			if( previous_command ->get_endpoint_path() == command->get_endpoint_path() )
+			{
+				delete previous_command;
+				m_set_commands.erase( i );
+				break;
+			}
+
+		}
+		m_set_commands.push_back( command );
 	}
 
 

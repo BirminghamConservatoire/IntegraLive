@@ -38,6 +38,7 @@ namespace integra_api
 			~CPath();
 
 			const CPath &operator=( const CPath &to_copy );
+			bool operator==( const CPath &to_compare ) const;
 
 			int get_number_of_elements() const;			
 			const string &operator[]( int index ) const;

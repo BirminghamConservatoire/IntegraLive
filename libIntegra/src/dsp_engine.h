@@ -28,6 +28,7 @@
 
 #include <pthread.h>
 
+
 extern "C"	//setup functions for externals
 {
 	void bonk_tilde_setup();
@@ -105,14 +106,14 @@ namespace integra_internal
 			int get_patch_id( internal_id id ) const;
 			int get_stream_connection_index( const CNodeEndpoint &node_endpoint ) const;
 
+			void handle_midi_input();
+
 			bool handle_immediate_message( const pd::Message &message );
 
 			void handle_queue_items( const pd_message_list &messages );
-			void handle_feedback( const pd::Message &message );
 
-			void handle_midi_input();
-
-			ISetCommand *make_set_command( const pd::List &feedback_arguments ) const;
+			ISetCommand *build_set_command( const pd::List &feedback_arguments ) const;
+			void merge_set_command( ISetCommand *command );
 
 			int ping_modules( const node_map &nodes );
 			void send_ping( const CNode &node );
@@ -138,6 +139,9 @@ namespace integra_internal
 			int_map m_map_id_to_patch_id;
 
 			CThreadedQueue<pd::Message> *m_message_queue;
+
+			typedef std::list<ISetCommand *> set_command_list;
+			set_command_list m_set_commands;
 
 			int m_unanswered_pings;
 

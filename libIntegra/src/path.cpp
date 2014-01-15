@@ -72,6 +72,12 @@ namespace integra_api
 	}
 
 
+	bool CPath::operator==( const CPath &to_compare ) const
+	{
+		return m_elements == to_compare.m_elements;
+	}
+	
+
 	int CPath::get_number_of_elements()	const
 	{
 		return m_elements.size();

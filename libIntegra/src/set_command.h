@@ -47,6 +47,8 @@ namespace integra_internal
 
 			bool should_send_to_host( const CNodeEndpoint &endpoint, const CInterfaceDefinition &interface_definition, CCommandSource source ) const;
 
+			const CPath &get_endpoint_path() const { return m_endpoint_path; }
+
 			CPath m_endpoint_path;
 			CValue *m_value;
 	};

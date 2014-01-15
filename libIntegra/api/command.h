@@ -81,6 +81,9 @@ namespace integra_api
 
 			static ISetCommand *create( const CPath &endpoint_path, const CValue &value );
 			static ISetCommand *create( const CPath &endpoint_path );
+
+			virtual const CPath &get_endpoint_path() const = 0;
+
 	};
 
 

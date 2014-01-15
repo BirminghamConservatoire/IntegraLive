@@ -49,7 +49,7 @@ namespace integra_internal
 			string get_selected_input_device() const;
 			string get_selected_output_device() const;
 
-			CError get_incoming_midi_bytes( unsigned char *&bytes, int &number_of_bytes );
+			CError get_incoming_midi_messages( unsigned int *&messages, int &number_of_messages );
 
 		private:
 
@@ -70,7 +70,7 @@ namespace integra_internal
 			void close_input_device();
 			void close_output_device();
 
-			CError get_incoming_midi_bytes_inner( unsigned char *&bytes, int &number_of_bytes );
+			CError get_incoming_midi_messages_inner( unsigned int *&messages, int &number_of_messages );
 
 			bool m_initialized_ok;
 
@@ -87,13 +87,12 @@ namespace integra_internal
 			pthread_mutex_t m_output_mutex;
 
 			PmEvent *m_input_event_buffer;
-			unsigned char *m_input_byte_buffer;
+			unsigned int *m_input_message_buffer;
 
 
 
 			static const string none;
-			static const int event_buffer_size;
-			static const int byte_buffer_size;
+			static const int input_buffer_size;
 	};
 }
 

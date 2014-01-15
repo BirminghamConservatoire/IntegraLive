@@ -53,7 +53,12 @@ namespace integra_internal
 			virtual string get_selected_input_device() const = 0;
 			virtual string get_selected_output_device() const = 0;
 
-			virtual CError get_incoming_midi_bytes( unsigned char *&bytes, int &number_of_bytes ) = 0;
+			/*
+			 Implementations should only return the following message types:
+			 Note On, Note Off, Channel Aftertouch, Poly Aftertouch, Program Change, Control Change, Pitchbend.
+			*/
+
+			virtual CError get_incoming_midi_messages( unsigned int *&messages, int &number_of_messages ) = 0;
 
 	};
 }

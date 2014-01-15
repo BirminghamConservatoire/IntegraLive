@@ -862,28 +862,146 @@ namespace integra_internal
 	{
 		IMidiEngine &midi_engine = m_server.get_midi_engine();
 
-		unsigned char *midi_bytes = NULL;
-		int number_of_midi_bytes = 0;
+		unsigned int *midi_messages = NULL;
+		int number_of_midi_messages = 0;
 
-		CError midi_result = midi_engine.get_incoming_midi_bytes( midi_bytes, number_of_midi_bytes );
-
-		if( midi_result == CError::SUCCESS )
+		CError midi_result = midi_engine.get_incoming_midi_messages( midi_messages, number_of_midi_messages );
+		if( midi_result != CError::SUCCESS )
 		{
-			if( number_of_midi_bytes > 0 )
-			{
-				*m_pd << pd::StartMidi( -2 ) << 0xB0 << 0x01 << 0x02 << pd::Finish();
+			INTEGRA_TRACE_ERROR << "Error getting incoming midi messages: " << midi_result;
+			return;
+		}
 
+		/* 
+		 first pass - iterate forwards through midi messages, sending note on/off and program change immediately
+		*/
+
+		for( int i = 0; i < number_of_midi_messages; i++ )
+		{
+			unsigned int message = midi_messages[ i ];
+
+			unsigned int status_nibble = ( message & 0xF0 ) >> 4;
+			unsigned int channel_nibble = message & 0xF;
+			unsigned int value1 = ( message & 0xFF00 ) >> 8;
+			unsigned int value2 = ( message & 0xFF0000 ) >> 16;
+
+			assert( status_nibble >= 0 && status_nibble << 0xF );
+
+			if( status_nibble < 0x8 )
+			{
+				INTEGRA_TRACE_ERROR << "Unexpected status nibble - should begin with 1: " << std::hex << message;
+				continue;
 			}
 
-			//m_pd->sendNoteOn( 0, 60 );
-
-			/*for( int i = 0; i < number_of_midi_bytes; i++ )
+			if( value1 >= 0x80 )
 			{
+				INTEGRA_TRACE_ERROR << "Unexpected value 1 - should begin with 0: " << std::hex << message;
+				continue;
+			}
 
-				m_pd->sendMidiByte( 0x0E, midi_bytes[ i ] );
-			}*/
+			if( value2 >= 0x80 )
+			{
+				INTEGRA_TRACE_ERROR << "Unexpected value 2 - should begin with 0: " << std::hex << message;
+				continue;
+			}
+
+			switch( status_nibble )
+			{
+				case 0x8:	/* note off */
+					m_pd->sendNoteOn( channel_nibble, value1, 0 );
+					break;							
+
+				case 0x9:	/* note on */
+					m_pd->sendNoteOn( channel_nibble, value1, value2 );
+					break;
+
+				case 0xC:	/* program change */
+					m_pd->sendProgramChange( channel_nibble, value1 );
+					break;
+			}
+		}
+
+		/* 
+		 second pass - iterate backwards through midi messages
+		 send key pressure, control change, pitchbend only once for each channel/key
+		*/
+
+		static bool sent_poly_pressure[ 128 * 16 ];
+		static bool sent_control_change[ 128 * 16 ];
+		static bool sent_channel_pressure[ 16 ];
+		static bool sent_pitchbend[ 16 ];
+
+		memset( sent_poly_pressure, 0, 128 * 16 * sizeof( bool ) );
+		memset( sent_control_change, 0, 128 * 16 * sizeof( bool ) );
+		memset( sent_channel_pressure, 0, 16 * sizeof( bool ) );
+		memset( sent_pitchbend, 0, 16 * sizeof( bool ) );
+
+		for( int i = number_of_midi_messages - 1; i >= 0; i-- )
+		{
+			unsigned int message = midi_messages[ i ];
+
+			unsigned int status_nibble = ( message & 0xF0 ) >> 4;
+			unsigned int channel_nibble = message & 0xF;
+			unsigned int value1 = ( message & 0xFF00 ) >> 8;
+			unsigned int value2 = ( message & 0xFF0000 ) >> 16;
+
+			assert( status_nibble >= 0 && status_nibble << 0xF );
+
+			if( status_nibble < 0x8 )
+			{
+				INTEGRA_TRACE_ERROR << "Unexpected status nibble - should begin with 1: " << std::hex << message;
+				continue;
+			}
+
+			if( value1 >= 0x80 )
+			{
+				INTEGRA_TRACE_ERROR << "Unexpected value 1 - should begin with 0: " << std::hex << message;
+				continue;
+			}
+
+			if( value2 >= 0x80 )
+			{
+				INTEGRA_TRACE_ERROR << "Unexpected value 2 - should begin with 0: " << std::hex << message;
+				continue;
+			}
+
+			int array_index = channel_nibble * 128 + value1;
+
+			switch( status_nibble )
+			{
+				case 0xA:	/* polyphonic key pressure */
+					if( !sent_poly_pressure[ array_index ] )
+					{
+						m_pd->sendPolyAftertouch( channel_nibble, value1, value2 );
+						sent_poly_pressure[ array_index ] = true;
+					}
+					break;
+
+				case 0xB:	/* control change */
+					if( !sent_control_change[ array_index ] )
+					{
+						m_pd->sendControlChange( channel_nibble, value1, value2 );
+						sent_control_change[ array_index ] = true;
+					}
+					break;
+
+				case 0xD:	/* channel pressure */
+					if( !sent_channel_pressure[ channel_nibble ] )
+					{
+						m_pd->sendAftertouch( channel_nibble, value1 );
+						sent_channel_pressure[ channel_nibble ] = true;
+					}
+					break;
+
+				case 0xE:	/* pitchbend */
+					if( !sent_pitchbend[ channel_nibble ] )
+					{
+						m_pd->sendPitchBend( channel_nibble, value1 | ( value2 << 7 ) );
+						sent_pitchbend[ channel_nibble ] = true;
+					}
+					break;
+			}
 		}
 	}
-
 }
 

@@ -32,8 +32,7 @@
 namespace integra_internal
 {
 	const string CPortMidiEngine::none = "none";
-	const int CPortMidiEngine::event_buffer_size = 1024;
-	const int CPortMidiEngine::byte_buffer_size = event_buffer_size * 3;
+	const int CPortMidiEngine::input_buffer_size = 1024;
 
 	CPortMidiEngine::CPortMidiEngine()
 	{
@@ -43,8 +42,8 @@ namespace integra_internal
 		m_input_stream = NULL;
 		m_output_stream = NULL;
 
-		m_input_event_buffer = new PmEvent[ event_buffer_size ];
-		m_input_byte_buffer = new unsigned char[ byte_buffer_size ];
+		m_input_event_buffer = new PmEvent[ input_buffer_size ];
+		m_input_message_buffer = new unsigned int[ input_buffer_size ];
 
 		pthread_mutex_init( &m_input_mutex, NULL );
 		pthread_mutex_init( &m_output_mutex, NULL );
@@ -77,7 +76,7 @@ namespace integra_internal
 		close_output_device();
 
 		delete [] m_input_event_buffer;
-		delete [] m_input_byte_buffer;
+		delete [] m_input_message_buffer;
 
 		PmError error = Pm_Terminate();
 
@@ -339,12 +338,15 @@ namespace integra_internal
 
 		assert( m_current_input_device_id == pmNoDevice && !m_input_stream );
 
-		PmError result = Pm_OpenInput( &m_input_stream, device_id, NULL, event_buffer_size, NULL, NULL );
+		PmError result = Pm_OpenInput( &m_input_stream, device_id, NULL, input_buffer_size, NULL, NULL );
 
 		if( result == pmNoError )
 		{
 			m_current_input_device_id = device_id;
 			INTEGRA_TRACE_PROGRESS << "opened midi input device: " << get_selected_input_device();
+
+			/* filter everythomg except channel messages */
+			Pm_SetFilter( m_input_stream, PM_FILT_REALTIME | PM_FILT_SYSTEMCOMMON );
 		}
 		else
 		{
@@ -379,11 +381,11 @@ namespace integra_internal
 	}
 
 
-	CError CPortMidiEngine::get_incoming_midi_bytes( unsigned char *&bytes, int &number_of_bytes )
+	CError CPortMidiEngine::get_incoming_midi_messages( unsigned int *&messages, int &number_of_messages )
 	{
 		pthread_mutex_lock( &m_input_mutex );
 
-		CError result = get_incoming_midi_bytes_inner( bytes, number_of_bytes );
+		CError result = get_incoming_midi_messages_inner( messages, number_of_messages );
 
 		pthread_mutex_unlock( &m_input_mutex );
 
@@ -391,10 +393,10 @@ namespace integra_internal
 	}
 
 
-	CError CPortMidiEngine::get_incoming_midi_bytes_inner( unsigned char *&bytes, int &number_of_bytes )
+	CError CPortMidiEngine::get_incoming_midi_messages_inner( unsigned int *&messages, int &number_of_messages )
 	{
-		bytes = m_input_byte_buffer;
-		number_of_bytes = 0;
+		messages = m_input_message_buffer;
+		number_of_messages = 0;
 
 		if( !m_input_stream )
 		{
@@ -415,28 +417,20 @@ namespace integra_internal
 			}
 		}
 
-		int number_of_events = Pm_Read( m_input_stream, m_input_event_buffer, event_buffer_size );
+		int number_of_events = Pm_Read( m_input_stream, m_input_event_buffer, input_buffer_size );
 		if( number_of_events < 0 )
 		{
 			INTEGRA_TRACE_ERROR << "Error reading midi input: " << Pm_GetErrorText( ( PmError ) number_of_events );
 			return CError::FAILED;
 		}
 
-		/* for now, assume each event is made of 3 bytes */
+		number_of_messages = number_of_events;
+
 		for( int i = 0; i < number_of_events; i++ )
 		{
 			PmMessage &message = m_input_event_buffer[ i ].message;
 
-			INTEGRA_TRACE_PROGRESS << "Got midi message: " << message;	///////
-
-			bytes[ number_of_bytes ] = ( message & 0xff );
-			number_of_bytes++;
-
-			bytes[ number_of_bytes ] = ( ( message & 0xff00 ) >> 8 );
-			number_of_bytes++;
-
-			bytes[ number_of_bytes ] = ( ( message & 0xff0000 ) >> 16 );
-			number_of_bytes++;
+			messages[ i ] = message;
 		}
 
 		return CError::SUCCESS;

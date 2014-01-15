@@ -638,8 +638,6 @@ namespace integra_internal
 			return;
 		}
 
-		m_set_commands.clear();
-
 		for( pd_message_list::const_iterator i = messages.begin(); i != messages.end(); i++ )
 		{
 			const pd::Message &message = *i;
@@ -695,6 +693,8 @@ namespace integra_internal
 				INTEGRA_TRACE_ERROR << "Error processing command: " << result.get_text();
 			}
 		}
+
+		m_set_commands.clear();
 
 		m_server.unlock();
 	}

@@ -556,7 +556,7 @@ namespace integra_internal
 				{
 					CPath endpoint_path( node->get_path() );
 					endpoint_path.append_element( value_lookup->first );
-					server.process_command( ISetCommand::create( endpoint_path, value_lookup->second ), CCommandSource::LOAD );
+					server.process_command( ISetCommand::create( endpoint_path, *value_lookup->second ), CCommandSource::LOAD );
 					delete value_lookup->second;
 				}
 			}

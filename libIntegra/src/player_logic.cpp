@@ -134,7 +134,7 @@ namespace integra_internal
 		const INodeEndpoint *tick = get_node().get_node_endpoint( endpoint_tick );
 		assert( tick );
 
-		server.process_command( ISetCommand::create( tick->get_path(), tick->get_value() ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( tick->get_path(), *tick->get_value() ), CCommandSource::SYSTEM );
 	}
 
 
@@ -272,7 +272,7 @@ namespace integra_internal
 
 		if( next_scene_name )
 		{
-			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -336,7 +336,7 @@ namespace integra_internal
 
 		if( next_scene_name )
 		{
-			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
 		}	
 	}
 
@@ -364,16 +364,16 @@ namespace integra_internal
 		We can prevent this from being a problem by setting tick after start & end, and setting play last
 		*/
 
-		server.process_command( ISetCommand::create( player_loop_endpoint->get_path(), &CIntegerValue( loop ) ), CCommandSource::SYSTEM );
-		server.process_command( ISetCommand::create( player_start_endpoint->get_path(), &CIntegerValue( start ) ), CCommandSource::SYSTEM );
-		server.process_command( ISetCommand::create( player_end_endpoint->get_path(), &CIntegerValue( end ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_loop_endpoint->get_path(), CIntegerValue( loop ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_start_endpoint->get_path(), CIntegerValue( start ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_end_endpoint->get_path(), CIntegerValue( end ) ), CCommandSource::SYSTEM );
 
 		/* don't set tick unless >= 0.  Allows calling functions to skip setting tick */
 		if( tick >= 0 )
 		{
-			server.process_command( ISetCommand::create( player_tick_endpoint->get_path(), &CIntegerValue( tick ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( player_tick_endpoint->get_path(), CIntegerValue( tick ) ), CCommandSource::SYSTEM );
 		}
 
-		server.process_command( ISetCommand::create( player_play_endpoint->get_path(), &CIntegerValue( play ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_play_endpoint->get_path(), CIntegerValue( play ) ), CCommandSource::SYSTEM );
 	}
 }

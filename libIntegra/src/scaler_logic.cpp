@@ -117,6 +117,6 @@ namespace integra_internal
 		scaled_value = ( scaled_value - in_range_min ) * out_range_total / in_range_total + out_range_min;
 
 		/*store result*/
-		server.process_command( ISetCommand::create( out_value_endpoint->get_path(), &CFloatValue( scaled_value ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( out_value_endpoint->get_path(), CFloatValue( scaled_value ) ), CCommandSource::SYSTEM );
 	}
 }

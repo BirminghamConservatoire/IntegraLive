@@ -37,7 +37,8 @@ namespace integra_internal
 	class CSetCommand : public ISetCommand
 	{
 		public:
-			CSetCommand( const CPath &endpoint_path, const CValue *value );
+			CSetCommand( const CPath &endpoint_path, const CValue &value );
+			CSetCommand( const CPath &endpoint_path );
 			~CSetCommand();
 
 		private:

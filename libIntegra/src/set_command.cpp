@@ -35,26 +35,31 @@
 
 namespace integra_api
 {
-	ISetCommand *ISetCommand::create( const CPath &endpoint_path, const CValue *value )
+	ISetCommand *ISetCommand::create( const CPath &endpoint_path, const CValue &value )
 	{
 		return new integra_internal::CSetCommand( endpoint_path, value );
+	}
+
+	ISetCommand *ISetCommand::create( const CPath &endpoint_path )
+	{
+		return new integra_internal::CSetCommand( endpoint_path );
 	}
 }
 
 
 namespace integra_internal
 {
-	CSetCommand::CSetCommand( const CPath &endpoint_path, const CValue *value )
+	CSetCommand::CSetCommand( const CPath &endpoint_path, const CValue &value )
 	{
 		m_endpoint_path = endpoint_path;
-		if( value )
-		{
-			m_value = value->clone();
-		}
-		else
-		{
-			m_value = NULL;
-		}
+		m_value = value.clone();
+	}
+
+
+	CSetCommand::CSetCommand( const CPath &endpoint_path )
+	{
+		m_endpoint_path = endpoint_path;
+		m_value = NULL;
 	}
 
 

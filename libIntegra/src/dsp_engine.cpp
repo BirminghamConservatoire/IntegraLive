@@ -735,13 +735,11 @@ namespace integra_internal
 		}
 
 		const IControlInfo &control_info = *endpoint_definition.get_control_info();
-		CValue *value = NULL;
 
 		switch( control_info.get_type() )
 		{
 			case IControlInfo::BANG:
-				value = NULL;
-				break;
+				return ISetCommand::create( node_endpoint->get_path() );
 
 			case IControlInfo::STATEFUL:
 				switch( control_info.get_state_info()->get_type() )
@@ -749,35 +747,32 @@ namespace integra_internal
 					case CValue::INTEGER:
 						if( feedback_arguments.isFloat( 3 ) )
 						{
-							value = new CIntegerValue( feedback_arguments.getFloat( 3 ) );
+							CIntegerValue value( feedback_arguments.getFloat( 3 ) );
+							return ISetCommand::create( node_endpoint->get_path(), value );
 						}
-						else
-						{
-							INTEGRA_TRACE_ERROR << "Unexpected message value type";
-						}
-						break;
+
+						INTEGRA_TRACE_ERROR << "Unexpected message value type";
+						return NULL;
 
 					case CValue::FLOAT:
 						if( feedback_arguments.isFloat( 3 ) )
 						{
-							value = new CFloatValue( feedback_arguments.getFloat( 3 ) );
+							CFloatValue value( feedback_arguments.getFloat( 3 ) );
+							return ISetCommand::create( node_endpoint->get_path(), value );
 						}
-						else
-						{
-							INTEGRA_TRACE_ERROR << "Unexpected message value type";
-						}
-						break;
+
+						INTEGRA_TRACE_ERROR << "Unexpected message value type";
+						return NULL;
 
 					case CValue::STRING:
 						if( feedback_arguments.isSymbol( 3 ) )
 						{
-							value = new CStringValue( feedback_arguments.getSymbol( 3 ) );
+							CStringValue value( feedback_arguments.getSymbol( 3 ) );
+							return ISetCommand::create( node_endpoint->get_path(), value );
 						}
-						else
-						{
-							INTEGRA_TRACE_ERROR << "Unexpected message value type";
-						}
-						break;
+
+						INTEGRA_TRACE_ERROR << "Unexpected message value type";
+						return NULL;
 
 					default:
 						INTEGRA_TRACE_ERROR << "unhandled value type: " << control_info.get_state_info()->get_type();
@@ -790,8 +785,6 @@ namespace integra_internal
 				INTEGRA_TRACE_ERROR << "unhandled control type: " << control_info.get_type();
 				return NULL;
 		}
-
-		return ISetCommand::create( node_endpoint->get_path(), value );
 	}
 
 

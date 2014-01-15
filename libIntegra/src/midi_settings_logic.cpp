@@ -70,7 +70,7 @@ namespace integra_internal
 				//bang the 'restore defaults' endpoint if created by the public api (unless other settings objects already exist)
 				CPath restore_endpoint( get_node().get_path() );
 				restore_endpoint.append_element( endpoint_restore_defaults );
-				server.process_command( ISetCommand::create( restore_endpoint, NULL ), CCommandSource::SYSTEM );
+				server.process_command( ISetCommand::create( restore_endpoint ), CCommandSource::SYSTEM );
 			}
 		}
 	}
@@ -136,8 +136,7 @@ namespace integra_internal
 		assert( endpoint );
 		if( new_value != ( const string & ) *endpoint->get_value() )
 		{
-            CStringValue c_string( new_value );
-			server.process_command( ISetCommand::create( endpoint->get_path(), &c_string ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( endpoint->get_path(), CStringValue( new_value ) ), CCommandSource::SYSTEM );
 		}
 	}
 

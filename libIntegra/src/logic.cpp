@@ -342,7 +342,7 @@ namespace integra_internal
 		if( !are_all_ancestors_active() )
 		{
 			CIntegerValue value( 0 );
-			server.process_command( ISetCommand::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( active_endpoint->get_path(), value ), CCommandSource::SYSTEM );
 		}	
 	}
 
@@ -373,7 +373,7 @@ namespace integra_internal
 				/* create and set data directory when the endpoint is initialized */
 				{
 				string data_directory = CDataDirectory::create_for_node( m_node, server );
-				server.process_command( ISetCommand::create( node_endpoint.get_path(), &CStringValue( data_directory ) ), CCommandSource::SYSTEM );
+				server.process_command( ISetCommand::create( node_endpoint.get_path(), CStringValue( data_directory ) ), CCommandSource::SYSTEM );
 				}
 				break;
 
@@ -413,7 +413,7 @@ namespace integra_internal
 		string filename = CDataDirectory::copy_file_to_data_directory( input_file );
 		if( !filename.empty() )
 		{
-			server.process_command( ISetCommand::create( input_file.get_path(), &CStringValue( filename ) ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( input_file.get_path(), CStringValue( filename ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -506,12 +506,19 @@ namespace integra_internal
 						converted_value = NULL;
 					}
 
-					server.process_command( ISetCommand::create( destination_endpoint->get_path(), converted_value ), CCommandSource::CONNECTION );
-				
+					ISetCommand *command;
+
 					if( converted_value )
 					{
+						command = ISetCommand::create( destination_endpoint->get_path(), *converted_value );
 						delete converted_value;
 					}
+					else
+					{
+						command = ISetCommand::create( destination_endpoint->get_path() );
+					}
+
+					server.process_command( command, CCommandSource::CONNECTION );
 				}
 			}
 		}
@@ -625,7 +632,7 @@ namespace integra_internal
 
 		string new_connection_path = new_name + path_after_renamed_node;
 
-		server.process_command( ISetCommand::create( connection_path.get_path(), &CStringValue( new_connection_path ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( connection_path.get_path(), CStringValue( new_connection_path ) ), CCommandSource::SYSTEM );
 	}
 
 
@@ -743,7 +750,7 @@ namespace integra_internal
 		ostringstream new_connection_path;
 		new_connection_path << new_relative_path.get_string() << absolute_path.substr( previous_path_length );
 
-		server.process_command( ISetCommand::create( connection_path.get_path(), &CStringValue( new_connection_path.str() ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( connection_path.get_path(), CStringValue( new_connection_path.str() ) ), CCommandSource::SYSTEM );
 	}
 
 

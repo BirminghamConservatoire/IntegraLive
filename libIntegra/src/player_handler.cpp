@@ -279,15 +279,13 @@ namespace integra_internal
 					}
 					else
 					{
-                        CIntegerValue c_integer( 0 );
-						commands.push_back( ISetCommand::create( player_state->m_play_path, &c_integer ) );
+						commands.push_back( ISetCommand::create( player_state->m_play_path, CIntegerValue( 0 ) ) );
 					}
 				}
 
 				if( new_tick_value != player_state->m_previous_ticks )
 				{
-                    CIntegerValue c_integer( new_tick_value );
-					commands.push_back( ISetCommand::create( player_state->m_tick_path, &c_integer ) );
+					commands.push_back( ISetCommand::create( player_state->m_tick_path, CIntegerValue( new_tick_value ) ) );
 					player_state->m_previous_ticks = new_tick_value;
 				}
 			}

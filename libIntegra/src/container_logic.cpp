@@ -89,7 +89,7 @@ namespace integra_internal
 
 			const INodeEndpoint *active_endpoint = activated_node->get_node_endpoint( endpoint_active );
 			assert( active_endpoint );
-			server.process_command( ISetCommand::create( active_endpoint->get_path(), active_endpoint->get_value() ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( active_endpoint->get_path(), *active_endpoint->get_value() ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -123,7 +123,7 @@ namespace integra_internal
 
 				if( !active_endpoint->get_value()->is_equal( value ) )
 				{
-					server.process_command( ISetCommand::create( active_endpoint->get_path(), &value ), CCommandSource::SYSTEM );
+					server.process_command( ISetCommand::create( active_endpoint->get_path(), value ), CCommandSource::SYSTEM );
 
 					if( activate )
 					{

@@ -212,7 +212,7 @@ namespace integra_internal
 
 		if( !current_value_endpoint->get_value()->is_equal( output_value ) )
 		{
-			server.process_command( ISetCommand::create( current_value_endpoint->get_path(), &output_value ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( current_value_endpoint->get_path(), output_value ), CCommandSource::SYSTEM );
 		}
 	}
 

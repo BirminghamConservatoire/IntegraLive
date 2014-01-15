@@ -184,7 +184,7 @@ namespace integra_internal
 
 			output_handler( set_color, "Setting %s to %s...", path.get_string().c_str(), converted_value->get_as_string().c_str() );
 
-			error = m_server->process_command( ISetCommand::create( path, converted_value ), CCommandSource::SCRIPT );
+			error = m_server->process_command( ISetCommand::create( path, *converted_value ), CCommandSource::SCRIPT );
 
 			delete new_value;
 			delete converted_value;
@@ -194,7 +194,7 @@ namespace integra_internal
 			assert( endpoint->get_endpoint_definition().get_control_info()->get_type() == CControlInfo::BANG );
 
 			output_handler( set_color, "Sending bang to %s...", path.get_string().c_str() );
-			error = m_server->process_command( ISetCommand::create( path, NULL ), CCommandSource::SCRIPT );
+			error = m_server->process_command( ISetCommand::create( path ), CCommandSource::SCRIPT );
 		}
 
 		if( error != CError::SUCCESS )

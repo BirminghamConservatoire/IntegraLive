@@ -77,7 +77,7 @@ namespace integra_internal
 
 				CPath restore_endpoint( get_node().get_path() );
 				restore_endpoint.append_element( endpoint_restore_defaults );
-				server.process_command( ISetCommand::create( restore_endpoint, NULL ), CCommandSource::SYSTEM );
+				server.process_command( ISetCommand::create( restore_endpoint ), CCommandSource::SYSTEM );
 			}
 		}
 	}
@@ -188,8 +188,7 @@ namespace integra_internal
 		assert( endpoint );
 		if( new_value != ( const string & ) *endpoint->get_value() )
 		{
-            CStringValue c_string( new_value );
-			server.process_command( ISetCommand::create( endpoint->get_path(), &c_string ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( endpoint->get_path(), CStringValue( new_value ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -202,8 +201,7 @@ namespace integra_internal
 		assert( endpoint );
 		if( new_value != ( int ) *endpoint->get_value() )
 		{
-            CIntegerValue c_integer( new_value );
-			server.process_command( ISetCommand::create( endpoint->get_path(), &c_integer ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( endpoint->get_path(), CIntegerValue( new_value ) ), CCommandSource::SYSTEM );
 		}
 	}
 

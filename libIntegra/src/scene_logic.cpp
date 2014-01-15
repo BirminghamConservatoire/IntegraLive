@@ -101,8 +101,7 @@ namespace integra_internal
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == previous_name )
 		{
-            CStringValue c_string( scene_node.get_name() );
-			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &c_string ), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), CStringValue( scene_node.get_name() ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -127,8 +126,7 @@ namespace integra_internal
 		const string &scene_value = *scene_endpoint->get_value();
 		if( scene_value == scene_node.get_name() ) 
 		{
-            CStringValue c_string( "" );
-			server.process_command( ISetCommand::create( scene_endpoint->get_path(), &c_string), CCommandSource::SYSTEM );
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), CStringValue( "" ) ), CCommandSource::SYSTEM );
 		}
 	}
 
@@ -145,8 +143,7 @@ namespace integra_internal
 		const INodeEndpoint *player_scene_endpoint = player_node->get_node_endpoint( CPlayerLogic::endpoint_scene );
 		assert( player_scene_endpoint );
 
-        CStringValue c_string( get_node().get_name() );
-		server.process_command( ISetCommand::create( player_scene_endpoint->get_path(), &c_string ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_scene_endpoint->get_path(), CStringValue( get_node().get_name() ) ), CCommandSource::SYSTEM );
 	}
 
 
@@ -236,9 +233,9 @@ namespace integra_internal
 		CIntegerValue player_start_value( start );
 		CIntegerValue player_end_value( end );
 
-		server.process_command( ISetCommand::create( player_tick->get_path(), &player_start_value ), CCommandSource::SYSTEM );
-		server.process_command( ISetCommand::create( player_start->get_path(), &player_start_value ), CCommandSource::SYSTEM );
-		server.process_command( ISetCommand::create( player_end->get_path(), &player_end_value ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_tick->get_path(), player_start_value ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_start->get_path(), player_start_value ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( player_end->get_path(), player_end_value ), CCommandSource::SYSTEM );
 	}
 
 

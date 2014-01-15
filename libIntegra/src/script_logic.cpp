@@ -79,7 +79,7 @@ namespace integra_internal
 		const CPath &parent_path = script_node.get_parent_path();
 	
 		string script_output = server.get_lua_engine().run_script( server, parent_path, script );
-		server.process_command( ISetCommand::create( script_node.get_node_endpoint( endpoint_info )->get_path(), &CStringValue( script_output ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( script_node.get_node_endpoint( endpoint_info )->get_path(), CStringValue( script_output ) ), CCommandSource::SYSTEM );
 
 		INTEGRA_TRACE_VERBOSE << "script finished";
 	}

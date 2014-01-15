@@ -117,7 +117,7 @@ namespace integra_internal
 			const INodeEndpoint *node_endpoint = node->get_node_endpoint( endpoint_definition->get_name() );
 			assert( node_endpoint );
 
-			server.process_command( ISetCommand::create( node_endpoint->get_path(), &endpoint_definition->get_control_info()->get_state_info()->get_default_value() ), CCommandSource::INITIALIZATION );
+			server.process_command( ISetCommand::create( node_endpoint->get_path(), endpoint_definition->get_control_info()->get_state_info()->get_default_value() ), CCommandSource::INITIALIZATION );
 		}
 
 		/* handle any system class logic */

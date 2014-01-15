@@ -1365,7 +1365,8 @@ static xmlrpc_value *ntg_xmlrpc_set_callback( CServerLock &server, const int arg
 
 	INTEGRA_TRACE_VERBOSE << "setting value: " << path->get_string();
 
-	CError error = server->process_command( ISetCommand::create( *path, value ) );
+	ISetCommand *command = value ? ISetCommand::create( *path, *value ) : ISetCommand::create( *path );
+	CError error = server->process_command( command );
 	if( error != CError::SUCCESS )
 	{
 		return ntg_xmlrpc_error (env, error );

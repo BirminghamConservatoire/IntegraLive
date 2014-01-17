@@ -48,6 +48,7 @@ package components.views.ModuleProperties
 	import components.model.Info;
 	import components.model.ModuleInstance;
 	import components.model.Scaler;
+	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
@@ -379,13 +380,13 @@ package components.views.ModuleProperties
 				if( control.isInMidiLearnMode )
 				{
 					control.endMidiLearnMode();
-					doMidiLearn( command.midiEndpoint, control.midiLearnEndpoint )
+					doMidiLearn( command, control.midiLearnEndpoint )
 				}
 			}
 		}
 		
 		
-		private function doMidiLearn( midiEndpointName:String, targetEndpointName:String ):void
+		private function doMidiLearn( midiInput:ReceiveMidiInput, targetEndpointName:String ):void
 		{
 			var block:Block = model.primarySelectedBlock;
 			var blockID:int = _module.parentID;
@@ -400,8 +401,40 @@ package components.views.ModuleProperties
 			var upstreamConnectionID:int = scaler.upstreamConnection.id;
 			var downstreamConnectionID:int = scaler.downstreamConnection.id;
 			
+			var midiEndpointName:String = midiInput.midiEndpoint;
+			
 			controller.processCommand( new SetConnectionRouting( upstreamConnectionID, block.midi.id, midiEndpointName, scalerID, "inValue" ) );
 			controller.processCommand( new SetConnectionRouting( downstreamConnectionID, scalerID, "outValue", _module.id, targetEndpointName ) );
+			
+			/* 
+			 try to hide the assignment lag by setting an initial value as if it were mapped
+		 	*/
+			
+			var proportion:Number = 0;
+			if( midiInput.type == ReceiveMidiInput.CC )
+			{
+				proportion = midiInput.value / 127;
+			}
+			
+			var endpointDefinition:EndpointDefinition = model.getEndpointDefinition( _module.id, targetEndpointName );
+			Assert.assertNotNull( endpointDefinition );
+			
+			var stateInfo:StateInfo = endpointDefinition.controlInfo.stateInfo;
+			if( stateInfo )
+			{
+				switch( stateInfo.type )
+				{
+					case StateInfo.FLOAT:
+					case StateInfo.INTEGER:
+						var value:Number = proportion * ( stateInfo.constraint.maximum - stateInfo.constraint.minimum ) + stateInfo.constraint.minimum;
+						controller.processCommand( new SetModuleAttribute( _module.id, targetEndpointName, value, stateInfo.type ) );
+						break;
+				}
+			}
+			else
+			{
+				controller.processCommand( new SetModuleAttribute( _module.id, targetEndpointName ) );
+			}
 		}
 		
 		

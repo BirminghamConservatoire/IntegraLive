@@ -38,8 +38,8 @@ package components.model
 			
 			_ccState[ index ] = value;
 		}
+
 		
-	
 		override public function setAttributeFromServer( attributeName:String, value:Object, model:IntegraModel ):Boolean
 		{
 			if( super.setAttributeFromServer( attributeName, value, model ) )

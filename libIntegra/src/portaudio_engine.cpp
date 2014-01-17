@@ -903,20 +903,6 @@ namespace integra_internal
 
 		get_dsp_engine().process_buffer( input, m_process_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
 		m_ring_buffer->write( m_process_buffer, frames_per_buffer );
-
-		/*if( m_output_stream )
-		{
-			m_ring_buffer->write( input, frames_per_buffer );
-		}
-		else
-		{
-			if( !m_dummy_output_buffer )
-			{
-				m_dummy_output_buffer = new float[ CDspEngine::samples_per_buffer * m_number_of_output_channels ];
-			}
-
-			get_dsp_engine().process_buffer( input, m_dummy_output_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
-		}*/
 	}
 
 

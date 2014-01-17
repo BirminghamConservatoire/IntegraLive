@@ -143,9 +143,15 @@ namespace integra_internal
 			typedef std::list<ISetCommand *> set_command_list;
 			set_command_list m_set_commands;
 
+			static const int midi_channels = 16;
+			int_map m_poly_pressures[ midi_channels ];
+			int_map m_control_changes[ midi_channels ];
+			int m_channel_pressures[ midi_channels ];
+			int m_pitchbends[ midi_channels ];
+
 			int m_unanswered_pings;
 
-			static const int max_channels;
+			static const int max_audio_channels;
 			static const string patch_file_name;
 			static const string host_patch_name;
 			static const string patch_message_target;

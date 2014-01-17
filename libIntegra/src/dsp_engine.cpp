@@ -41,7 +41,7 @@ using namespace integra_api;
 namespace integra_internal
 {
 	const int CDspEngine::samples_per_buffer = 64;
-	const int CDspEngine::max_channels = 64;
+	const int CDspEngine::max_audio_channels = 64;
 
 	const string CDspEngine::patch_file_name = "host_patch_file.pd";
 	const string CDspEngine::host_patch_name = "integra-canvas";
@@ -92,6 +92,10 @@ namespace integra_internal
 		}
 
 		register_externals();
+
+		memset( m_channel_pressures, 0, midi_channels * sizeof( int ) );
+		memset( m_pitchbends, 0, midi_channels * sizeof( int ) );
+
 
 		m_initialised = true;
 	}
@@ -879,8 +883,31 @@ namespace integra_internal
 			return;
 		}
 
+		if( number_of_midi_messages == 0 )
+		{
+			/*
+			 early exit
+			*/
+
+			return;
+		}
+
 		/* 
-		 first pass - iterate forwards through midi messages, sending note on/off and program change immediately
+		 clear caches
+		*/
+
+		memset( m_channel_pressures, 0xFF, midi_channels * sizeof( int ) );
+		memset( m_pitchbends, 0xFF, midi_channels * sizeof( int ) );
+		for( int i = 0; i < midi_channels; i++ )
+		{
+			m_poly_pressures[ i ].clear();
+			m_control_changes[ i ].clear();
+		}
+
+		/* 
+		 iterate through midi messages
+		 send note on/off and program change immediately
+		 store key pressure, control change, pitchbend in caches so that duplicates are not sent per frame
 		*/
 
 		for( int i = 0; i < number_of_midi_messages; i++ )
@@ -922,91 +949,60 @@ namespace integra_internal
 					m_pd->sendNoteOn( channel_nibble, value1, value2 );
 					break;
 
+				case 0xA:	/* polyphonic key pressure */
+					m_poly_pressures[ channel_nibble ][ value1 ] = value2; 
+					break;
+
+				case 0xB:	/* control change */
+					m_control_changes[ channel_nibble ][ value1 ] = value2;
+					break;
+
 				case 0xC:	/* program change */
 					m_pd->sendProgramChange( channel_nibble, value1 );
+					break;
+
+				case 0xD:	/* channel pressure */
+					m_channel_pressures[ channel_nibble ] = value1;
+					break;
+
+				case 0xE:	/* pitchbend */
+					m_pitchbends[ channel_nibble ] = value1 | ( value2 << 7 );
+					break;
+
+				case 0xF:
+					INTEGRA_TRACE_ERROR << "Unexpected system common / realtime message: " << std::hex << message;
 					break;
 			}
 		}
 
 		/* 
-		 second pass - iterate backwards through midi messages
-		 send key pressure, control change, pitchbend only once for each channel/key
+		 iterate through cached key pressure, control change and pitchbend
 		*/
 
-		static bool sent_poly_pressure[ 128 * 16 ];
-		static bool sent_control_change[ 128 * 16 ];
-		static bool sent_channel_pressure[ 16 ];
-		static bool sent_pitchbend[ 16 ];
-
-		memset( sent_poly_pressure, 0, 128 * 16 * sizeof( bool ) );
-		memset( sent_control_change, 0, 128 * 16 * sizeof( bool ) );
-		memset( sent_channel_pressure, 0, 16 * sizeof( bool ) );
-		memset( sent_pitchbend, 0, 16 * sizeof( bool ) );
-
-		for( int i = number_of_midi_messages - 1; i >= 0; i-- )
+		for( int channel = 0; channel < midi_channels; channel++ )
 		{
-			unsigned int message = midi_messages[ i ];
-
-			unsigned int status_nibble = ( message & 0xF0 ) >> 4;
-			unsigned int channel_nibble = message & 0xF;
-			unsigned int value1 = ( message & 0xFF00 ) >> 8;
-			unsigned int value2 = ( message & 0xFF0000 ) >> 16;
-
-			assert( status_nibble >= 0 && status_nibble << 0xF );
-
-			if( status_nibble < 0x8 )
+			const int_map &poly_pressures = m_poly_pressures[ channel ];
+			for( int_map::const_iterator i = poly_pressures.begin(); i != poly_pressures.end(); i++ )
 			{
-				INTEGRA_TRACE_ERROR << "Unexpected status nibble - should begin with 1: " << std::hex << message;
-				continue;
+				m_pd->sendPolyAftertouch( channel, i->first, i->second );
 			}
 
-			if( value1 >= 0x80 )
+			const int_map &control_changes = m_control_changes[ channel ];
+			for( int_map::const_iterator i = control_changes.begin(); i != control_changes.end(); i++ )
 			{
-				INTEGRA_TRACE_ERROR << "Unexpected value 1 - should begin with 0: " << std::hex << message;
-				continue;
+				m_pd->sendControlChange( channel, i->first, i->second );
 			}
 
-			if( value2 >= 0x80 )
+			int channel_pressure = m_channel_pressures[ channel ];
+			if( channel_pressure >= 0 )
 			{
-				INTEGRA_TRACE_ERROR << "Unexpected value 2 - should begin with 0: " << std::hex << message;
-				continue;
+				m_pd->sendAftertouch( channel, channel_pressure );
 			}
 
-			int array_index = channel_nibble * 128 + value1;
-
-			switch( status_nibble )
+			int pitchbend = m_pitchbends[ channel ];
+			if( pitchbend >= 0 )
 			{
-				case 0xA:	/* polyphonic key pressure */
-					if( !sent_poly_pressure[ array_index ] )
-					{
-						m_pd->sendPolyAftertouch( channel_nibble, value1, value2 );
-						sent_poly_pressure[ array_index ] = true;
-					}
-					break;
-
-				case 0xB:	/* control change */
-					if( !sent_control_change[ array_index ] )
-					{
-						m_pd->sendControlChange( channel_nibble, value1, value2 );
-						sent_control_change[ array_index ] = true;
-					}
-					break;
-
-				case 0xD:	/* channel pressure */
-					if( !sent_channel_pressure[ channel_nibble ] )
-					{
-						m_pd->sendAftertouch( channel_nibble, value1 );
-						sent_channel_pressure[ channel_nibble ] = true;
-					}
-					break;
-
-				case 0xE:	/* pitchbend */
-					if( !sent_pitchbend[ channel_nibble ] )
-					{
-						m_pd->sendPitchBend( channel_nibble, value1 | ( value2 << 7 ) );
-						sent_pitchbend[ channel_nibble ] = true;
-					}
-					break;
+				m_pd->sendPitchBend( channel, pitchbend );
 			}
 		}
 	}

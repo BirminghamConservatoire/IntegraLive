@@ -435,6 +435,24 @@ namespace integra_internal
 
 		return CError::SUCCESS;
 	}
+
+
+	CError CPortMidiEngine::send_midi_message( unsigned int message )
+	{
+		if( !m_output_stream )
+		{
+			return CError::SUCCESS;
+		}
+
+		PmError error = Pm_WriteShort( m_output_stream, 0, message );
+		if( error != pmNoError )
+		{
+			INTEGRA_TRACE_ERROR << "Error sending midi output: " << Pm_GetErrorText( error );
+			return CError::FAILED;
+		}
+
+		return CError::SUCCESS;
+	}
 }
 
  

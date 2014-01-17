@@ -51,6 +51,8 @@ namespace integra_internal
 
 			CError get_incoming_midi_messages( unsigned int *&messages, int &number_of_messages );
 
+			CError send_midi_message( unsigned int message );
+
 		private:
 
 			typedef std::map<PmDeviceID, string> device_map;

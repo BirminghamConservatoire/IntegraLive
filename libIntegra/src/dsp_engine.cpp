@@ -77,7 +77,7 @@ namespace integra_internal
 
 		create_host_patch();
 
-		m_message_queue = new CThreadedQueue<pd::Message>( *this );
+		m_feedback_queue = new CThreadedQueue<pd::Message>( *this );
 
 		m_pd = new pd::PdBase;
 
@@ -108,7 +108,7 @@ namespace integra_internal
 		m_pd->clear();
 		delete m_pd;
 
-		delete m_message_queue;
+		delete m_feedback_queue;
 
 		for( set_command_list::iterator i = m_set_commands.begin(); i != m_set_commands.end(); i++ )
 		{
@@ -587,26 +587,46 @@ namespace integra_internal
 		{
 			pd::Message &message = m_pd->nextMessage();
 
-			if( handle_immediate_message( message ) )
+			if( should_queue_message( message ) )
 			{
-				continue;
+				queue_messages.push_back( message );
 			}
 			else
 			{
-				queue_messages.push_back( message );
+				handle_immediate_message( message );
 			}
 		}
 
 		if( !queue_messages.empty() )
 		{
-			m_message_queue->push( queue_messages );
+			m_feedback_queue->push( queue_messages );
 		}
 	}
 
 
-	//returns true if message has been handled immediately
+	bool CDspEngine::should_queue_message( const pd::Message &message ) const
+	{
+		if( message.dest == feedback_source ) 
+		{
+			return true;
+		}
+
+		if( message.type == pd::PRINT )
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+
 	bool CDspEngine::handle_immediate_message( const pd::Message &message )
 	{
+		if( handle_midi_output( message ) )
+		{
+			return true;
+		}
+
 		if( is_ping_result( message ) ) 
 		{
 			m_unanswered_pings--;
@@ -635,6 +655,65 @@ namespace integra_internal
 	}
 
 
+	bool CDspEngine::handle_midi_output( const pd::Message &message )
+	{
+		unsigned int status = 0;
+		unsigned int value1 = 0;
+		unsigned int value2 = 0;
+
+		switch( message.type )
+		{
+			case pd::NOTE_ON:
+				status = ( message.velocity == 0 ) ? 0x8 : 0x9;
+				value1 = message.pitch;
+				value2 = message.velocity;
+				break;
+
+			case pd::CONTROL_CHANGE:
+				status = 0xB;
+				value1 = message.controller;
+				value2 = message.value;
+				break;
+
+			case pd::PROGRAM_CHANGE:
+				status = 0xC;
+				value1 = message.value;
+				break;
+
+			case pd::AFTERTOUCH:
+				status = 0xD;
+				value1 = message.value;
+				break;
+
+			case pd::PITCH_BEND:
+				status = 0xE;
+				{
+					int zero_based_packed_value = message.value;
+					value1 = zero_based_packed_value & 0x7F;
+					value2 = ( zero_based_packed_value >> 7 ) & 0x7F;
+				}
+				break;
+
+			case pd::POLY_AFTERTOUCH:
+				status = 0xA;
+				value1 = message.pitch;
+				value2 = message.value;
+				break;
+
+			default:
+				return false;
+		}
+
+		unsigned int midi_message = message.channel | ( status << 4 ) | ( value1 << 8 ) | ( value2 << 16 );
+
+		IMidiEngine &midi_engine = m_server.get_midi_engine();
+
+		midi_engine.send_midi_message( midi_message );
+
+		return true;
+	}
+
+
 	void CDspEngine::handle_queue_items( const pd_message_list &messages )
 	{
 		if( !m_server.lock() )
@@ -654,37 +733,12 @@ namespace integra_internal
 				{
 					merge_set_command( command );
 				}
-				continue;
 			}
 			else
 			{
-				switch( message.type )
+				if( message.type == pd::PRINT )
 				{
-					case pd::PRINT:
-						std::cout << trace_start_tag << message.symbol << trace_end_tag;
-						break;
-
-					case pd::NONE:
-
-						// events
-					case pd::LIST:
-					case pd::BANG:
-					case pd::FLOAT:
-					case pd::SYMBOL:
-					case pd::MESSAGE:
-
-						// midi
-					case pd::NOTE_ON:
-					case pd::CONTROL_CHANGE:
-					case pd::PROGRAM_CHANGE:
-					case pd::PITCH_BEND:
-					case pd::AFTERTOUCH:
-					case pd::POLY_AFTERTOUCH:
-					case pd::BYTE:
-
-					default:
-						INTEGRA_TRACE_ERROR << "unhandled pd message type: " << message.type;
-						break;
+					std::cout << trace_start_tag << message.symbol << trace_end_tag;
 				}
 			}
 		}

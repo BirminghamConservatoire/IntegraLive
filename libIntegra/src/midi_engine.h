@@ -60,6 +60,9 @@ namespace integra_internal
 
 			virtual CError get_incoming_midi_messages( unsigned int *&messages, int &number_of_messages ) = 0;
 
+			virtual CError send_midi_message( unsigned int message ) = 0;
+
+
 	};
 }
 

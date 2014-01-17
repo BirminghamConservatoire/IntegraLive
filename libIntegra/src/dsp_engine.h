@@ -108,7 +108,11 @@ namespace integra_internal
 
 			void handle_midi_input();
 
+			bool should_queue_message( const pd::Message &message ) const;
+
 			bool handle_immediate_message( const pd::Message &message );
+
+			bool handle_midi_output( const pd::Message &message );
 
 			void handle_queue_items( const pd_message_list &messages );
 
@@ -138,7 +142,7 @@ namespace integra_internal
 
 			int_map m_map_id_to_patch_id;
 
-			CThreadedQueue<pd::Message> *m_message_queue;
+			CThreadedQueue<pd::Message> *m_feedback_queue;
 
 			typedef std::list<ISetCommand *> set_command_list;
 			set_command_list m_set_commands;

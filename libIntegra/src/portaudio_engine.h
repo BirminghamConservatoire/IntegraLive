@@ -101,6 +101,8 @@ namespace integra_internal
 			void initialize_ring_buffer();
 			void create_process_buffer();
 
+			bool is_duplex_mode() const;
+
 			bool m_initialized_ok;
 
 			api_map m_available_apis;

@@ -617,7 +617,7 @@ namespace integra_internal
 			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
 		}
 
-		bool is_duplex = ( m_selected_output_device == m_selected_input_device );
+		bool is_duplex = is_duplex_mode();
 
 		for( int i = 0; true; i++ )
 		{
@@ -658,52 +658,58 @@ namespace integra_internal
 	}
 
 
+	bool CPortAudioEngine::is_duplex_mode() const
+	{
+		return ( m_selected_output_device == m_selected_input_device && m_selected_output_device != paNoDevice );
+	}
+
+
 	void CPortAudioEngine::open_streams()
 	{
 		#ifdef _WINDOWS
 			CoInitialize( NULL );
 		#endif
 
-		if( m_selected_input_device != paNoDevice )
+		if( is_duplex_mode() )
 		{
-			if( m_selected_output_device == m_selected_input_device )
+			//open duplex stream
+			PaStreamParameters input_parameters, output_parameters;
+			initialize_stream_parameters( input_parameters, m_selected_input_device, false );
+			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
+
+			PaError supported = Pa_IsFormatSupported( &input_parameters, &output_parameters, m_sample_rate );
+			if( supported != paFormatIsSupported )
 			{
-				//open duplex stream
-				PaStreamParameters input_parameters, output_parameters;
-				initialize_stream_parameters( input_parameters, m_selected_input_device, false );
-				initialize_stream_parameters( output_parameters, m_selected_output_device, true );
+				m_sample_rate = get_default_sample_rate( m_selected_input_device );
+			}
 
-				PaError supported = Pa_IsFormatSupported( &input_parameters, &output_parameters, m_sample_rate );
-				if( supported != paFormatIsSupported )
-				{
-					m_sample_rate = get_default_sample_rate( m_selected_input_device );
-				}
-
-				PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, duplex_callback, this );
+			PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, duplex_callback, this );
+			if( result == paNoError )
+			{
+				result = Pa_StartStream( m_duplex_stream );
 				if( result == paNoError )
 				{
-					result = Pa_StartStream( m_duplex_stream );
-					if( result == paNoError )
-					{
-						INTEGRA_TRACE_PROGRESS << "Started Duplex Audio Stream";
-					}
-					else
-					{
-						Pa_CloseStream( m_duplex_stream );
-
-						INTEGRA_TRACE_ERROR << "Error starting duplex stream: " << Pa_GetErrorText( result );
-						m_selected_input_device = paNoDevice;
-						m_selected_output_device = paNoDevice;
-					}
+					INTEGRA_TRACE_PROGRESS << "Started Duplex Audio Stream";
 				}
 				else
 				{
-					INTEGRA_TRACE_ERROR << "Error opening duplex stream: " << Pa_GetErrorText( result );
+					Pa_CloseStream( m_duplex_stream );
+
+					INTEGRA_TRACE_ERROR << "Error starting duplex stream: " << Pa_GetErrorText( result );
 					m_selected_input_device = paNoDevice;
 					m_selected_output_device = paNoDevice;
 				}
 			}
 			else
+			{
+				INTEGRA_TRACE_ERROR << "Error opening duplex stream: " << Pa_GetErrorText( result );
+				m_selected_input_device = paNoDevice;
+				m_selected_output_device = paNoDevice;
+			}
+		}
+		else
+		{
+			if( m_selected_input_device != paNoDevice )
 			{
 				//open input stream
 				PaStreamParameters input_parameters;
@@ -737,52 +743,53 @@ namespace integra_internal
 					m_selected_input_device = paNoDevice;
 				}
 			}
-		}
 
-		if( m_selected_output_device != paNoDevice && m_selected_output_device != m_selected_input_device )
-		{
-			//open output stream
-			PaStreamParameters output_parameters;
-			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
-
-			PaError supported = Pa_IsFormatSupported( NULL, &output_parameters, m_sample_rate );
-			if( supported != paFormatIsSupported )
+			if( m_selected_output_device != paNoDevice )
 			{
-				if( m_selected_input_device == paNoDevice )
-				{
-					m_sample_rate = get_default_sample_rate( m_selected_output_device );
-				}
-				else
-				{
-					INTEGRA_TRACE_ERROR << "Requested output device cannot use sample rate of input device - won't open";
-				}
-			}
+				//open output stream
+				PaStreamParameters output_parameters;
+				initialize_stream_parameters( output_parameters, m_selected_output_device, true );
 
-			initialize_ring_buffer();
-			create_process_buffer();
+				PaError supported = Pa_IsFormatSupported( NULL, &output_parameters, m_sample_rate );
+				if( supported != paFormatIsSupported )
+				{
+					if( m_selected_input_device == paNoDevice )
+					{
+						m_sample_rate = get_default_sample_rate( m_selected_output_device );
+					}
+					else
+					{
+						INTEGRA_TRACE_ERROR << "Requested output device cannot use sample rate of input device - won't open";
+					}
+				}
 
-			PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, output_callback, this );
-			if( result == paNoError )
-			{
-				result = Pa_StartStream( m_output_stream );
+				create_process_buffer();
+
+				initialize_ring_buffer();
+
+				PaError result = Pa_OpenStream( &m_output_stream, NULL, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, output_callback, this );
 				if( result == paNoError )
 				{
-					INTEGRA_TRACE_PROGRESS << "Started Audio Output Stream";
+					result = Pa_StartStream( m_output_stream );
+					if( result == paNoError )
+					{
+						INTEGRA_TRACE_PROGRESS << "Started Audio Output Stream";
+					}
+					else
+					{
+						Pa_CloseStream( m_output_stream );
+					
+						INTEGRA_TRACE_ERROR << "Error starting output stream: " << Pa_GetErrorText( result );
+						m_selected_output_device = paNoDevice;
+					}
 				}
 				else
 				{
-					Pa_CloseStream( m_output_stream );
-					
-					INTEGRA_TRACE_ERROR << "Error starting output stream: " << Pa_GetErrorText( result );
+					INTEGRA_TRACE_ERROR << "Error opening output stream: " << Pa_GetErrorText( result );
 					m_selected_output_device = paNoDevice;
 				}
-			}
-			else
-			{
-				INTEGRA_TRACE_ERROR << "Error opening output stream: " << Pa_GetErrorText( result );
-				m_selected_output_device = paNoDevice;
-			}
-		}	
+			}	
+		}
 
 		#ifdef _WINDOWS
 			CoUninitialize();
@@ -901,8 +908,15 @@ namespace integra_internal
 		
 		const float *input = static_cast< const float * > ( input_buffer );
 
-		get_dsp_engine().process_buffer( input, m_process_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
-		m_ring_buffer->write( m_process_buffer, frames_per_buffer );
+		if( m_process_buffer )
+		{
+			get_dsp_engine().process_buffer( input, m_process_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
+			m_ring_buffer->write( m_process_buffer, frames_per_buffer );
+		}
+		else
+		{
+			get_dsp_engine().process_buffer( input, NULL, m_number_of_input_channels, 0, m_sample_rate );
+		}
 	}
 
 

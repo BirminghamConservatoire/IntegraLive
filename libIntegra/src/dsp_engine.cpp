@@ -1056,7 +1056,7 @@ namespace integra_internal
 			int pitchbend = m_pitchbends[ channel ];
 			if( pitchbend >= 0 )
 			{
-				m_pd->sendPitchBend( channel, pitchbend );
+				m_pd->sendPitchBend( channel, pitchbend - 0x2000 );
 			}
 		}
 	}

@@ -1876,16 +1876,22 @@ static xmlrpc_value *ntg_xmlrpc_get(xmlrpc_env * const env,
 }
 
 
-void ntg_xmlrpc_shutdown( xmlrpc_env *const envP, void *const context, const char *comment, void *const callInfo )
+static void ntg_xmlrpc_shutdown( xmlrpc_env *const envP, void *const context, const char *comment, void *const callInfo )
 {
-	CXmlRpcServerContext *xmlrpc_server_context = ( CXmlRpcServerContext * ) context;
-
-	assert( xmlrpc_server_context->m_sem_shutdown );
-	sem_post( xmlrpc_server_context->m_sem_shutdown );
+	CXmlRpcServer *server = ( CXmlRpcServer * ) context;
+	server->shutdown();
 }
 
 
-void *ntg_xmlrpc_server_run( void *context )
+CXmlRpcServer::CXmlRpcServer( CIntegraSession &integra_session, unsigned short port )
+	:	m_integra_session( integra_session ),
+		m_port( port ),
+		m_shutdown( false )
+{
+}
+
+
+void CXmlRpcServer::run()
 {
 	#ifdef _WINDOWS
 		CoInitialize( NULL );
@@ -1894,13 +1900,7 @@ void *ntg_xmlrpc_server_run( void *context )
     xmlrpc_registry *registryP;
     xmlrpc_env env;
 
-	CXmlRpcServerContext *server_context = ( CXmlRpcServerContext * ) context;
-	unsigned short port = server_context->m_port;
-	sem_t *sem_initialized = server_context->m_sem_initialized;
-
-	CIntegraSession *integra_session = server_context->m_integra_session;
-
-    INTEGRA_TRACE_PROGRESS << "Starting server on port " << port;
+    INTEGRA_TRACE_PROGRESS << "Starting server on port " << m_port;
 
     xmlrpc_env_init(&env);
 
@@ -1908,54 +1908,44 @@ void *ntg_xmlrpc_server_run( void *context )
 
     xmlrpc_limit_set( XMLRPC_XML_SIZE_LIMIT_ID, NTG_XMLRPC_SIZE_LIMIT );
 
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.version", &ntg_xmlrpc_version, integra_session, "S:", HELPSTR_VERSION );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumplibintegrastate", &ntg_xmlrpc_dump_libintegra_state, integra_session, "S:", HELPSTR_DUMPLIBINTEGRASTATE );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumpdspstate", &ntg_xmlrpc_dump_dsp_state, integra_session, "S:s", HELPSTR_DUMPDSPSTATE );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.pingalldspmodules", &ntg_xmlrpc_ping_all_dsp_modules, integra_session, "S:", HELPSTR_PINGALLDSPMODULES );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfacelist", &ntg_xmlrpc_interfacelist, integra_session, "S:", HELPSTR_INTERFACELIST );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfaceinfo", &ntg_xmlrpc_interfaceinfo, integra_session, "S:s", HELPSTR_INTERFACEINFO );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.endpoints", &ntg_xmlrpc_endpoints, integra_session, "S:s", HELPSTR_ENDPOINTS );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.widgets", &ntg_xmlrpc_widgets, integra_session, "S:s", HELPSTR_WIDGETS );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.nodelist", &ntg_xmlrpc_nodelist, integra_session, "S:A", HELPSTR_NODELIST );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.get", &ntg_xmlrpc_get, integra_session, "S:A", HELPSTR_GET );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.set", &ntg_xmlrpc_set, integra_session, "S:As,S:Ai,S:Ad,S:A6", HELPSTR_SET );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.new", &ntg_xmlrpc_new, integra_session, "S:ssA", HELPSTR_NEW );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.delete", &ntg_xmlrpc_delete, integra_session, "S:A", HELPSTR_DELETE );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.rename", &ntg_xmlrpc_rename, integra_session, "S:As", HELPSTR_RENAME );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.save", &ntg_xmlrpc_save, integra_session, "S:As", HELPSTR_SAVE );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.load", &ntg_xmlrpc_load, integra_session, "S:sA", HELPSTR_LOAD );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.move", &ntg_xmlrpc_move, integra_session, "S:AA", HELPSTR_MOVE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.version", &ntg_xmlrpc_version, &m_integra_session, "S:", HELPSTR_VERSION );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumplibintegrastate", &ntg_xmlrpc_dump_libintegra_state, &m_integra_session, "S:", HELPSTR_DUMPLIBINTEGRASTATE );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.dumpdspstate", &ntg_xmlrpc_dump_dsp_state, &m_integra_session, "S:s", HELPSTR_DUMPDSPSTATE );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "system.pingalldspmodules", &ntg_xmlrpc_ping_all_dsp_modules, &m_integra_session, "S:", HELPSTR_PINGALLDSPMODULES );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfacelist", &ntg_xmlrpc_interfacelist, &m_integra_session, "S:", HELPSTR_INTERFACELIST );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.interfaceinfo", &ntg_xmlrpc_interfaceinfo, &m_integra_session, "S:s", HELPSTR_INTERFACEINFO );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.endpoints", &ntg_xmlrpc_endpoints, &m_integra_session, "S:s", HELPSTR_ENDPOINTS );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.widgets", &ntg_xmlrpc_widgets, &m_integra_session, "S:s", HELPSTR_WIDGETS );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.nodelist", &ntg_xmlrpc_nodelist, &m_integra_session, "S:A", HELPSTR_NODELIST );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "query.get", &ntg_xmlrpc_get, &m_integra_session, "S:A", HELPSTR_GET );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.set", &ntg_xmlrpc_set, &m_integra_session, "S:As,S:Ai,S:Ad,S:A6", HELPSTR_SET );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.new", &ntg_xmlrpc_new, &m_integra_session, "S:ssA", HELPSTR_NEW );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.delete", &ntg_xmlrpc_delete, &m_integra_session, "S:A", HELPSTR_DELETE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.rename", &ntg_xmlrpc_rename, &m_integra_session, "S:As", HELPSTR_RENAME );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.save", &ntg_xmlrpc_save, &m_integra_session, "S:As", HELPSTR_SAVE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.load", &ntg_xmlrpc_load, &m_integra_session, "S:sA", HELPSTR_LOAD );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "command.move", &ntg_xmlrpc_move, &m_integra_session, "S:AA", HELPSTR_MOVE );
 
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.unloadunusedembedded", &ntg_xmlrpc_unload_unused_embedded, integra_session, "S:", HELPSTR_UNLOAD_UNUSED_EMBEDDED );
-	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installintegramodulefile", &ntg_xmlrpc_install_module_file, integra_session, "S:s", HELPSTR_INSTALL_INTEGRA_MODULE_FILE );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installembeddedmodule", &ntg_xmlrpc_install_embedded_module, integra_session, "S:s", HELPSTR_INSTALL_EMBEDDED_MODULE );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.uninstallmodule", &ntg_xmlrpc_uninstall_module, integra_session, "S:s", HELPSTR_UNINSTALL_MODULE );
-    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.loadmoduleindevelopment", &ntg_xmlrpc_load_module_in_development, integra_session, "S:s", HELPSTR_LOAD_MODULE_IN_DEVELOPMENT );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.unloadunusedembedded", &ntg_xmlrpc_unload_unused_embedded, &m_integra_session, "S:", HELPSTR_UNLOAD_UNUSED_EMBEDDED );
+	xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installintegramodulefile", &ntg_xmlrpc_install_module_file, &m_integra_session, "S:s", HELPSTR_INSTALL_INTEGRA_MODULE_FILE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.installembeddedmodule", &ntg_xmlrpc_install_embedded_module, &m_integra_session, "S:s", HELPSTR_INSTALL_EMBEDDED_MODULE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.uninstallmodule", &ntg_xmlrpc_uninstall_module, &m_integra_session, "S:s", HELPSTR_UNINSTALL_MODULE );
+    xmlrpc_registry_add_method_w_doc( &env, registryP, NULL, "module.loadmoduleindevelopment", &ntg_xmlrpc_load_module_in_development,& m_integra_session, "S:s", HELPSTR_LOAD_MODULE_IN_DEVELOPMENT );
 
-    xmlrpc_registry_set_shutdown( registryP, ntg_xmlrpc_shutdown, server_context );
+    xmlrpc_registry_set_shutdown( registryP, ntg_xmlrpc_shutdown, this );
 
     xmlrpc_registry_set_default_method( &env, registryP, &ntg_xmlrpc_default, NULL );
 
-    ServerCreate( &abyssServer, "XmlRpcServer", port, NULL, NULL );
+    ServerCreate( &abyssServer, "XmlRpcServer", m_port, NULL, NULL );
 
     xmlrpc_server_abyss_set_handlers2( &abyssServer, "/", registryP );
 
     ServerInit( &abyssServer );
 
-	sem_post( sem_initialized );
-
-    /* This version processes commands concurrently */
-#if 1
-    ServerRun( &abyssServer );
-#else
-    while (true){
-        ServerRunOnce(&abyssServer);
-        /* This waits for the next connection, accepts it, reads the
-           HTTP POST request, executes the indicated RPC, and closes
-           the connection.
-           */
+    while( !m_shutdown )
+	{
+        ServerRunOnce( &abyssServer );
     }
-#endif
 
     ServerFree( &abyssServer );
     xmlrpc_registry_free( registryP );
@@ -1965,20 +1955,14 @@ void *ntg_xmlrpc_server_run( void *context )
 
     xmlrpc_env_clean( &env );
 
-    INTEGRA_TRACE_PROGRESS << "XMLRPC server terminated";
-    pthread_exit( 0 );
-
 	#ifdef _WINDOWS
 		CoUninitialize();
 	#endif
-
-    return NULL;
-
 }
 
-void ntg_xmlrpc_server_terminate( sem_t *sem_initialized )
+
+void CXmlRpcServer::shutdown()
 {
-    /* make sure we don't try to terminate before abyssServer init */
-    sem_wait( sem_initialized );
-    ServerTerminate(&abyssServer);
+	m_shutdown = true;
 }
+

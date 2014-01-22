@@ -528,10 +528,12 @@ namespace integra_internal
 
 		//NOISE GENERATOR
 		
-		/*for( int i = 0; i < output_channels * samples_per_buffer; i++ )
+		/*
+		for( int i = 0; i < output_channels * samples_per_buffer; i++ )
 		{
 			output[ i ] = float( ( rand() % 200 ) - 100 ) * 0.001f;
-		}*/
+		}
+		*/
 
 		//THRU
 		/*for( int i = 0; i < samples_per_buffer; i++ )

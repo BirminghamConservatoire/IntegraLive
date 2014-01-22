@@ -21,8 +21,6 @@
 #ifndef NTG_XMLRPC_SERVER_PRIVATE_H
 #define NTG_XMLRPC_SERVER_PRIVATE_H
 
-#include <semaphore.h>
-
 
 namespace integra_api
 {
@@ -31,22 +29,25 @@ namespace integra_api
 
 using namespace integra_api;
 
-class CXmlRpcServerContext
+class CXmlRpcServer
 {
 	public:
 
-		CXmlRpcServerContext() { m_integra_session = NULL; m_port = 0; m_sem_initialized = NULL; m_sem_shutdown = NULL; }
+		CXmlRpcServer( CIntegraSession &integra_session, unsigned short port );
 
-		CIntegraSession *m_integra_session;
+		void run();
+
+		void shutdown();
+
+	private:
+
+		CIntegraSession &m_integra_session;
 		unsigned short m_port;
 
-		sem_t *m_sem_initialized;
-		sem_t *m_sem_shutdown;
+		bool m_shutdown;
 };
 
 
-void *ntg_xmlrpc_server_run( void *context );
-void ntg_xmlrpc_server_terminate( sem_t *sem_initialized );
 
 
 #endif

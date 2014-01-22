@@ -98,29 +98,6 @@ void post_help( const char *command_name )
 }
 
 
-sem_t *create_semaphore( const string &name ) 
-{
-	#ifdef __APPLE__
-		sem_t *semaphore = sem_open( name.c_str(), O_CREAT, 0777, 0 );
-	#else
-		sem_t *semaphore = new sem_t;
-		sem_init( semaphore, 0, 0 );
-	#endif
-
-	return semaphore;
-}
-
-
-void destroy_semaphore( sem_t *semaphore ) 
-{
-	#ifdef __APPLE__
-		sem_close( semaphore );
-	#else
-		sem_destroy( semaphore );
-	#endif
-}
-
-
 int main( int argc, char *argv[] )
 {
 	CServerStartupInfo startup_info;
@@ -278,36 +255,14 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		sem_t *sem_xmlrpc_initialized = create_semaphore( "sem_xmlrpc_initialized" );
-		sem_t *sem_system_shutdown = create_semaphore( "sem_system_shutdown" );
-
-		pthread_t xmlrpc_thread;
-
 		/* create the xmlrpc interface */
 		INTEGRA_TRACE_PROGRESS << "creating xmlrpc interface...";
-		CXmlRpcServerContext xmlrpc_context;
-		xmlrpc_context.m_integra_session = &integra_session;
-		xmlrpc_context.m_port = xmlrpc_server_port;
-		xmlrpc_context.m_sem_initialized = sem_xmlrpc_initialized;
-		xmlrpc_context.m_sem_shutdown = sem_system_shutdown;
-		pthread_create( &xmlrpc_thread, NULL, ntg_xmlrpc_server_run, &xmlrpc_context );
+		CXmlRpcServer server( integra_session, xmlrpc_server_port );
 
-		INTEGRA_TRACE_PROGRESS << "blocking until shutdown signal...";
-		sem_wait( sem_system_shutdown );
-		
-		INTEGRA_TRACE_PROGRESS << "received shutdown signal...";
+		server.run();
 
-		ntg_xmlrpc_server_terminate( sem_xmlrpc_initialized );
+		INTEGRA_TRACE_PROGRESS << "XMLRPC server finished";
 
-		/* FIX: for now we only support the old 'stable' xmlrpc-c, which can't
-		   wake up a sleeping server */
-		pthread_join( xmlrpc_thread, NULL );
-
-		INTEGRA_TRACE_PROGRESS << "XMLRPC interface closed";
-
-		destroy_semaphore( sem_xmlrpc_initialized );
-		destroy_semaphore( sem_system_shutdown );
-		
 		INTEGRA_TRACE_PROGRESS << "ending integra session...";
 
 		integra_session.end_session();

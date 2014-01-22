@@ -26,6 +26,8 @@
 
 #include <unordered_map>
 
+#include "pthread.h"
+#include <semaphore.h>
 
 namespace integra_internal
 {
@@ -34,12 +36,14 @@ namespace integra_internal
     static int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
     static int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
     static int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
+    static void *no_device_thread( void *context );
 
 	class CPortAudioEngine : public IAudioEngine
 	{
 		friend int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
 		friend int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
 		friend int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data );
+		friend void *no_device_thread( void *context );
 
 		public:
 
@@ -103,6 +107,11 @@ namespace integra_internal
 
 			bool is_duplex_mode() const;
 
+			void start_no_device_thread();
+			void stop_no_device_thread();
+		
+			void run_no_device_thread();
+
 			bool m_initialized_ok;
 
 			api_map m_available_apis;
@@ -126,6 +135,9 @@ namespace integra_internal
 			float *m_dummy_input_buffer;
 
 			CRingBuffer *m_ring_buffer;
+
+			pthread_t *m_no_device_thread;
+			sem_t m_stop_no_device_thread;
 
 			static const string none;
 			static const int potential_sample_rates[];

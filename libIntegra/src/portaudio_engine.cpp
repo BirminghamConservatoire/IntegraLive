@@ -29,9 +29,10 @@
 
 #include <assert.h>
 #include <algorithm>	
+#include <unistd.h>
 
 #ifdef _WINDOWS
-	#include <windows.h>	/* for CoInitialize, CoUninitialize */
+	#include <windows.h>	/* for CoInitialize, CoUninitialize, Sleep */
 #endif
 
 
@@ -42,7 +43,6 @@ namespace integra_internal
 	const int CPortAudioEngine::potential_sample_rates[] = { 11025, 22050, 32000, 44100, 48000, 96000, 192000, 0 };
 
 	const int CPortAudioEngine::ring_buffer_msecs = 2000;
-
 
 
 	CPortAudioEngine::CPortAudioEngine()
@@ -64,6 +64,9 @@ namespace integra_internal
 
 		m_dummy_input_buffer = NULL;
 		m_process_buffer = NULL;
+
+		m_no_device_thread = NULL;
+		sem_init( &m_stop_no_device_thread, 0, 0 );
 
 		PaError error_code = Pa_Initialize();
 		m_initialized_ok = ( error_code == paNoError );
@@ -94,6 +97,9 @@ namespace integra_internal
 
 		assert( !m_dummy_input_buffer );
 		assert( !m_process_buffer );
+
+		assert( !m_no_device_thread );
+		sem_destroy( &m_stop_no_device_thread );
 
 		PaError error_code = Pa_Terminate();
 		if( error_code != paNoError )
@@ -139,6 +145,11 @@ namespace integra_internal
 
 		set_input_device_to_default();
 		set_output_device_to_default();
+
+		if( m_selected_api == api_none() )
+		{
+			start_no_device_thread();
+		}
 
 		return CError::SUCCESS;
 	}
@@ -791,6 +802,11 @@ namespace integra_internal
 			}	
 		}
 
+		if( !m_duplex_stream && !m_input_stream && !m_output_stream )
+		{
+			start_no_device_thread();
+		}
+
 		#ifdef _WINDOWS
 			CoUninitialize();
 		#endif
@@ -821,6 +837,11 @@ namespace integra_internal
 			m_duplex_stream = NULL;
 
 			INTEGRA_TRACE_PROGRESS << "Closed duplex stream";
+		}
+
+		if( m_no_device_thread )
+		{
+			stop_no_device_thread();
 		}
 
 		if( m_dummy_input_buffer )
@@ -986,6 +1007,59 @@ namespace integra_internal
 	}
 
 
+	void CPortAudioEngine::start_no_device_thread()
+	{
+		assert( !m_no_device_thread );
+
+		m_no_device_thread = new pthread_t;
+		pthread_create( m_no_device_thread, NULL, no_device_thread, this );
+	}
+
+
+	void CPortAudioEngine::stop_no_device_thread()
+	{
+		assert( m_no_device_thread );
+
+		sem_post( &m_stop_no_device_thread );
+		pthread_join( *m_no_device_thread, NULL);
+		delete m_no_device_thread;
+		m_no_device_thread = NULL;
+	}
+
+		
+	void CPortAudioEngine::run_no_device_thread()
+	{
+		/*
+		 this thread runs whenever there is neither an input device nor an output device.  
+		 it simply pumps silence through the dsp engine to ensure that midi is still polled and pd
+		 logic eg VUs from generators etc still work
+		*/
+
+		const int number_of_channels = 2;
+		const int sample_rate = 44100;
+		const int buffers_per_cycle = 10;
+		const int update_microseconds = 1000000 * CDspEngine::samples_per_buffer * buffers_per_cycle / sample_rate;
+
+		float *in_buffer = new float[ CDspEngine::samples_per_buffer * number_of_channels ];
+		float *out_buffer = new float[ CDspEngine::samples_per_buffer * number_of_channels ];
+		memset( out_buffer, 0, CDspEngine::samples_per_buffer * number_of_channels * sizeof( float ) );
+
+		while( sem_trywait( &m_stop_no_device_thread ) < 0 ) 
+		{
+			usleep( update_microseconds );
+
+			for( int i = 0; i < buffers_per_cycle; i++ )
+			{
+				memset( in_buffer, 0, CDspEngine::samples_per_buffer * number_of_channels * sizeof( float ) );
+				get_dsp_engine().process_buffer( in_buffer, out_buffer, number_of_channels, number_of_channels, sample_rate );
+			}
+		}
+
+		delete[] in_buffer;
+		delete[] out_buffer;
+	}
+
+
 	PaHostApiTypeId CPortAudioEngine::api_none() const
 	{
 		return ( PaHostApiTypeId ) -1;
@@ -1078,6 +1152,18 @@ namespace integra_internal
 		port_audio_engine->duplex_handler( input_buffer, output_buffer, frames_per_buffer, time_info, status_flags );
 		return paContinue;
 	}
+
+
+	static void *no_device_thread( void *context )
+	{
+		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) context;
+		assert( port_audio_engine );
+		
+		port_audio_engine->run_no_device_thread();
+
+		return NULL;
+	}
+
 }
 
  

@@ -690,7 +690,7 @@ namespace integra_internal
 			case pd::PITCH_BEND:
 				status = 0xE;
 				{
-					int zero_based_packed_value = message.value;
+					int zero_based_packed_value = message.value + 0x2000;
 					value1 = zero_based_packed_value & 0x7F;
 					value2 = ( zero_based_packed_value >> 7 ) & 0x7F;
 				}

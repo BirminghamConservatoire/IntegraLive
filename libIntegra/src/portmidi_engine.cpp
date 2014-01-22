@@ -139,6 +139,9 @@ namespace integra_internal
 			return CError::FAILED;
 		}
 
+		close_input_device();
+		close_output_device();
+
 		set_input_device_to_default();
 		set_output_device_to_default();
 

@@ -95,10 +95,7 @@ package components.model.preferences
 		
 		public static function get defaultObjectName():String
 		{
-			var name:String = Utilities.getClassNameFromClass( MidiSettings ) + "_" + Utilities.integraLiveVersion;
-			name = name.replace( /\./g, "_" );
-			name = name.replace( /\s/g, "_" );
-			return name;
+			return Utilities.getClassNameFromClass( MidiSettings );
 		}
 		
 		

@@ -733,6 +733,12 @@ namespace integra_internal
 			const CInterfaceDefinition *interface_definition = module_manager.get_interface_by_module_id( module_guid );
 			if( interface_definition )
 			{
+				const CInterfaceDefinition *inhouse_replacement = module_manager.get_inhouse_replacement_version( *interface_definition );
+				if( inhouse_replacement )
+				{
+					return inhouse_replacement;
+				}
+
 				return interface_definition;
 			}
 		}

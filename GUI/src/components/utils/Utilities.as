@@ -31,8 +31,6 @@ package components.utils
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 	
-	import flexunit.framework.Assert;
-	
 	
 	public class Utilities
 	{

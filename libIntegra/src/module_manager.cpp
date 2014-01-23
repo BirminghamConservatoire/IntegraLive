@@ -514,6 +514,28 @@ namespace integra_internal
 	}
 
 
+	const CInterfaceDefinition *CModuleManager::get_inhouse_replacement_version( const CInterfaceDefinition &interface_definition ) const
+	{
+		const CInterfaceDefinition *best_version = get_interface_by_origin_id( interface_definition.get_origin_guid() );
+		if( !best_version )
+		{
+			INTEGRA_TRACE_ERROR << "Can't find best version for moduleid: " << CGuidHelper::guid_to_string( interface_definition.get_module_guid() );
+			return NULL;
+		}
+
+		if( !CGuidHelper::guids_are_equal( interface_definition.get_module_guid(), best_version->get_module_guid() ) )
+		{
+			const CInterfaceInfo &info = CInterfaceInfo::downcast( best_version->get_interface_info() );
+			if( info.get_implemented_in_libintegra() )
+			{
+				return best_version;
+			}
+		}
+
+		return NULL;
+	}
+
+
 	void CModuleManager::load_modules_from_directory( const string &module_directory, CInterfaceDefinition::module_source source )
 	{
 		DIR *directory_stream;
@@ -1054,7 +1076,6 @@ namespace integra_internal
 			remove_in_use_module_ids_from_set( node->get_children(), set );
 		}
 	}
-
 }
 
 

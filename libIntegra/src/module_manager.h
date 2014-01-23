@@ -64,6 +64,13 @@ namespace integra_internal
 
 			CError interpret_legacy_module_id( internal_id old_id, GUID &output ) const;
 
+			/* 
+			 Test whether the best available version of this module is 'implemented in libintegra' and if it is, 
+			 use this one instead.  This handles the case where a not-implemented-in-libintegra module has been
+			 taken in house since the file was saved
+			*/
+			const CInterfaceDefinition *get_inhouse_replacement_version( const CInterfaceDefinition &interface_definition ) const;
+
 			const static string module_suffix;
 
 		private:

@@ -28,6 +28,8 @@
 #include "interface_definition.h"
 #include "api/command.h"
 
+#include <float.h>
+
 
 namespace integra_internal
 {

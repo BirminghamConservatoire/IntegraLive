@@ -153,7 +153,7 @@ namespace integra_internal
 			{
 				const INode *sibling = i->second;
 
-				if( sibling != ancestor && sibling->get_interface_definition().get_module_guid() == get_connection_interface_guid( server ) ) 
+				if( sibling != ancestor && CGuidHelper::guids_are_equal(sibling->get_interface_definition().get_module_guid(), get_connection_interface_guid( server ) ) )
 				{
 					/* found a connection which might target the new node */
 
@@ -440,7 +440,7 @@ namespace integra_internal
 		for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 		{
 			const CNode *sibling = CNode::downcast( i->second );
-			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
+			if( !CGuidHelper::guids_are_equal(sibling->get_interface_definition().get_module_guid(), get_connection_interface_guid( server ) ) )
 			{
 				/* not a connection */
 				continue;
@@ -564,7 +564,7 @@ namespace integra_internal
 
 	const GUID &CLogic::get_connection_interface_guid( CServer &server )
 	{
-		if( m_connection_interface_guid == CGuidHelper::null_guid )
+		if( CGuidHelper::guids_are_equal(m_connection_interface_guid, CGuidHelper::null_guid) )
 		{
 			CModuleManager &module_manager = CModuleManager::downcast( server.get_module_manager() );
 
@@ -645,7 +645,7 @@ namespace integra_internal
 		{
 			const INode *sibling = i->second;
 
-			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
+			if( !CGuidHelper::guids_are_equal(sibling->get_interface_definition().get_module_guid(), get_connection_interface_guid( server ) ) )
 			{
 				/* current is not a connection */
 				continue;
@@ -679,7 +679,7 @@ namespace integra_internal
 		for( node_map::const_iterator i = siblings.begin(); i != siblings.end(); i++ )
 		{
 			const INode *sibling = i->second;
-			if( sibling->get_interface_definition().get_module_guid() != get_connection_interface_guid( server ) ) 
+			if( !CGuidHelper::guids_are_equal(sibling->get_interface_definition().get_module_guid(), get_connection_interface_guid( server ) ) )
 			{
 				/* current is not a connection */
 				continue;

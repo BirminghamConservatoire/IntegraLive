@@ -221,13 +221,15 @@ namespace integra_internal
 		fseek( source_file, 0, SEEK_SET );
 
 		FILE *target_file = fopen( target_path.c_str(), "wb" );
+        unsigned char *copy_buffer = NULL;
+        
 		if( !target_file )
 		{
 			INTEGRA_TRACE_ERROR << "couldn't open for writing: " << target_path;
 			goto CLEANUP;
 		}
 
-		unsigned char *copy_buffer = new unsigned char[ CFileIO::data_copy_buffer_size ];
+		copy_buffer = new unsigned char[ CFileIO::data_copy_buffer_size ];
 
 		while( bytes_to_copy > 0 )
 		{

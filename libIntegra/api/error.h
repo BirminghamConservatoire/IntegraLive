@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file error.h
+ *  \brief defines class CError
+ */
 
 
 #ifndef INTEGRA_ERROR_DEFINED

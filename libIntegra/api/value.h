@@ -18,6 +18,10 @@
  * USA.
  */
 
+/** \file value.h
+ *  \brief base class and type-specific subclasses to represent values
+ */
+
 
 #ifndef INTEGRA_VALUE_PRIVATE_H
 #define INTEGRA_VALUE_PRIVATE_H
@@ -29,6 +33,12 @@
 
 namespace integra_api
 {
+	/** \class CValue value.h "api/value.h"
+	 *  \brief base class for the concrete value classes CIntegerValue, CFloatValue and CStringValue
+	 *
+	 * Value classes are used to represent values of stateful node endpoints.
+	 * The common base class CValue allows their generic (type-agnostic) manipulation and storage wherever possible
+	 */	
 	class INTEGRA_API CValue
 	{
 		public:
@@ -72,6 +82,9 @@ namespace integra_api
 	};
 
 
+	/** \class CIntegerValue value.h "api/value.h"
+	 *  \brief represents an integer value
+	 */	
 	class INTEGRA_API CIntegerValue : public CValue
 	{
 		public:
@@ -100,6 +113,9 @@ namespace integra_api
 	};
 
 
+	/** \class CFloatValue value.h "api/value.h"
+	 *  \brief represents a float value
+	 */		
 	class INTEGRA_API CFloatValue : public CValue
 	{
 		public:
@@ -128,6 +144,9 @@ namespace integra_api
 	};
 
 
+	/** \class CStringValue value.h "api/value.h"
+	 *  \brief represents a string value
+	 */		
 	class INTEGRA_API CStringValue : public CValue
 	{
 		public:

@@ -18,6 +18,10 @@
  * USA.
  */
 
+/** \file string_helper.h
+ *  \brief defines class CStringHelper
+ */
+
 
 #ifndef INTEGRA_STRING_HELPER_H
 #define INTEGRA_STRING_HELPER_H
@@ -30,6 +34,11 @@
 
 namespace integra_api
 {
+	/** \class CStringHelper string_helper.h "api/string_helper.h"
+	 *  \brief common string routines
+	 *
+	 * \note CStringHelper need never be instantiated - all its methods are static and stateless.
+	 */	
 	class INTEGRA_API CStringHelper
 	{
 		public:

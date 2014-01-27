@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file notification_sink.h
+ *  \brief defines class INotificationSink
+ */
 
 
 
@@ -39,8 +42,8 @@ namespace integra_api
 	 * In order to receive feedback from libIntegra, the caller can subclass INotificationSink, 
 	 * and pass the subclass into IntegraSession via CServerStartupInfo.
 	 *
-	 * \note libIntegra may use this notification sink from many different threads, although it will
-	 * only use it when the server is locked (so it will can call it from multiple threads simultaneously).
+	 * \note libIntegra may call into this notification sink from many different threads, although it will
+	 * only use it when the server is locked (so it never call into it from multiple threads simultaneously).
 	 * If the user is developing a single-threaded gui application, they may wish to use the 
 	 * helper class CPollingNotificationSink, instead of using INotificationSink directly.
 	 */

@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file guid_helper.h
+ *  \brief defines class CGuidHelper, and guid containers
+ */
 
 #ifndef INTEGRA_GUID_HELPER_H
 #define INTEGRA_GUID_HELPER_H
@@ -38,7 +41,7 @@ namespace integra_api
 	 * libIntegra uses guids to identify modules, so that modules and module revisions can be uniquely 
 	 * identified even though they may be developed offline, asynchromously by 3rd party developers.
 	 *
-	 * \note CGuidHelper need never be instantiated - all it's methods are static and stateless.
+	 * \note CGuidHelper need never be instantiated - all its methods are static and stateless.
 	 */
 	class INTEGRA_API CGuidHelper
 	{

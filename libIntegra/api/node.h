@@ -18,6 +18,10 @@
  * USA.
  */
 
+/** \file node.h
+ *  \brief defines class INode
+ */
+
 
 #ifndef INTEGRA_NODE_API_H
 #define INTEGRA_NODE_API_H

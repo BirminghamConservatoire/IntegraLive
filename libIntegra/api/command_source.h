@@ -18,7 +18,9 @@
  * USA.
  */
 
-
+/** \file command_source.h
+ *  \brief defines class CCommandSource
+ */
 
 #ifndef INTEGRA_COMMAND_SOURCE
 #define INTEGRA_COMMAND_SOURCE

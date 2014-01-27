@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file integra_session.h
+ *  \brief defines class CIntegraSession
+ */
 
 #ifndef INTEGRA_SESSION_H
 #define INTEGRA_SESSION_H

@@ -18,6 +18,10 @@
  * USA.
  */
 
+/** \file node_endpoint.h
+ *  \brief defines class INodeEndpoint
+ */
+
 
 #ifndef INTEGRA_NODE_ENDPOINT_API_H
 #define INTEGRA_NODE_ENDPOINT_API_H

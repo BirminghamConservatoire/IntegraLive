@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file server_startup_info.h
+ *  \brief defines class CServerStartupInfo
+ */
 
 #ifndef INTEGRA_SERVER_STARTUP_INFO_H
 #define INTEGRA_SERVER_STARTUP_INFO_H
@@ -29,6 +32,11 @@ namespace integra_api
 	class INotificationSink;
 
 
+	/** \class CServerStartupInfo server_startup_info.h "api/server_startup_info.h"
+	 *  \brief holds configuration data for libIntegra
+	 *
+	 *  CServerStartupInfo is passed into CIntegraSession::start_session
+	 */	
 	class INTEGRA_API CServerStartupInfo
 	{
 		

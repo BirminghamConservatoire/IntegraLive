@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file trace.h
+ *  \brief defines tracing macros and class CTrace for configuration of tracing
+ */
 
 
 #ifndef INTEGRA_TRACING_PRIVATE
@@ -50,6 +53,20 @@
 
 namespace integra_api
 {
+	/** \class CTrace trace.h "api/trace.h"
+	 *  \brief handles console output
+	 *
+	 * libIntegra handles errors and reports progress by writing to the console.  This is done
+	 * by the macros INTEGRA_TRACE_ERROR, INTEGRA_TRACE_PROGRESS and INTEGRA_TRACE_VERBOSE,
+	 * which in turn call methods in CTrace
+	 * 
+	 * CTrace is exposed in libIntegra's api in order to allow users of the api to customise 
+	 * what is traced, and to allow users of the api to utilize the tracing system themselves,
+	 * if they wish to.
+	 *
+	 * \note CTrace need never be instantiated - all its methods are static and stateless.
+	 */	
+
 	class INTEGRA_API CTrace
 	{
 		public:

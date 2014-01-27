@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file path.h
+ *  \brief defines class CPath
+ */
 
 
 #ifndef INTEGRA_PATH_H

@@ -18,6 +18,9 @@
  * USA.
  */
 
+/** \file server_lock.h
+ *  \brief defines class CServerLock
+ */
 
 #ifndef INTEGRA_SERVER_LOCK_H
 #define INTEGRA_SERVER_LOCK_H
@@ -29,6 +32,30 @@ namespace integra_api
 {
 	class IServer;
 
+	/** \class CServerLock server_lock.h "api/server_lock.h"
+	 *  \brief locking mechanism for IServer
+	 *
+	 *  Users of libIntegra api should only call methods on IServer when exactly one CServerLock instance exists.
+	 *	This is because all the methods of IServer assumes that the server is locked.
+	 *	The way to do this is as follows:
+	 *
+	 *	1) Obtain a CServerLock from CIntegraSession each time you need to interact with libIntegra
+	 *
+	 *	2) Use CServerLock::operator-> and CServerLock::operator* to call IServer methods
+	 *
+	 *	3) Ensure that the CServerLock is destroyed as soon as you are finished with it, typically by declaring 
+	 *	it as a local variable which falls out of scope
+	 *
+	 *	Example 1 (code block):
+	 *	{
+	 *		CServerLock server = m_integra_session.get_server();
+	 *		server.do_something();
+	 *	}
+	 *
+	 *	Example 2 (inline):
+	 *
+	 *	m_integra_session.get_server().do_something();
+	 */	
 	class INTEGRA_API CServerLock
 	{
 		public:

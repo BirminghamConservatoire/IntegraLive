@@ -18,7 +18,9 @@
  * USA.
  */
 
-
+/** \file module_manager.h
+ *  \brief defines class IModuleManager
+ */
 
 #ifndef INTEGRA_MODULE_MANAGER_API_H
 #define INTEGRA_MODULE_MANAGER_API_H

@@ -41,24 +41,34 @@ namespace integra_api
 	{
 		public:
 
+			/** Error enumeration values */
 			enum code 
 			{
-				INPUT_ERROR = -1,
-				SUCCESS = 0,
-				FAILED = 1,
-				TYPE_ERROR = 2,
-				PATH_ERROR = 3,
-				CONSTRAINT_ERROR = 4,
-				REENTRANCE_ERROR = 5,
-				FILE_VALIDATION_ERROR = 6,
-				FILE_MORE_RECENT_ERROR = 7,
-				MODULE_ALREADY_INSTALLED = 8
+				INPUT_ERROR = -1,				/** Error caused by unexpected or illegal input values */
+				SUCCESS = 0,					/** No Error */
+				FAILED = 1,						/** Generic function failure - anything not covered by other error codes */
+				TYPE_ERROR = 2,					/** Mismatching type, eg trying to set an integer endpoint by passing a CStringValue */
+				PATH_ERROR = 3,					/** Failed to lookup a node or node endpoint, for example by passing a path to an object which doesn't exist */
+				CONSTRAINT_ERROR = 4,			/** Failed to adhere to a stateful endpoint's constraint (see IConstraint) */
+				REENTRANCE_ERROR = 5,			/** Aborting a chain of set commands because reentrance has been detected, for example because of a circular chain of connections, or a circular interaction of connections and scripts */
+				FILE_VALIDATION_ERROR = 6,		/** The .ixd representation of a node tree within a .integra file fails to conform to the schema defined in CollectionSchema.xsd */
+				FILE_MORE_RECENT_ERROR = 7,		/** A file can't be loaded because it was saved in a more recent version of libIntegra */
+				MODULE_ALREADY_INSTALLED = 8	/** A module can't be installed because it is already installed */
 			};
 
 			CError();
+
+			/** \brief create a CError from an enumeration constant
+			 */
 			CError( code error_code );
 
+			/** \brief casting operator, allows direct comparison of CError and enumeration constants
+			 */
 			operator code() const;
+
+			/** \conversion to string
+			 * \return a string representation of the error
+			 */
 			string get_text() const;
 
 		private:

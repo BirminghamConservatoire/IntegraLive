@@ -32,6 +32,9 @@
 
 namespace integra_internal
 {
+	typedef std::unordered_map<GUID, IInterfaceDefinition *, GuidHash, GuidCompare> map_guid_to_interface_definition;
+	typedef std::unordered_map<string, IInterfaceDefinition *> map_string_to_interface_definition;
+
 	class CServer;
 
 	class CModuleManager : public IModuleManager

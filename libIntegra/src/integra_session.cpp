@@ -26,6 +26,8 @@
 #include "api/server_startup_info.h"
 #include "server.h"
 
+#include <assert.h>
+
 using namespace integra_internal;
 
 
@@ -89,6 +91,8 @@ namespace integra_api
 
 	CServerLock CIntegraSession::get_server()
 	{
+		assert( m_server );
+
 		return CServerLock( m_server );
 	}
 }

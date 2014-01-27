@@ -39,34 +39,32 @@
 
 #include "../externals/guiddef.h"
 
-
 #ifdef _WINDOWS
 	#ifdef LIBINTEGRA_EXPORTS	
-		#define INTEGRA_API __declspec(dllexport)
+		#define INTEGRA_API __declspec(dllexport)			/** Windows-specific DLL export qualifier */
 	#else
-		#define INTEGRA_API __declspec(dllimport)
+		#define INTEGRA_API __declspec(dllimport)			/** Windows-specific DLL import qualifier */
 	#endif
 #else
-	#define INTEGRA_API 
+	#define INTEGRA_API										/** Blank stub for non-Windows build environments */
 #endif
 
 
 namespace integra_api
 {
-	/* Strings */
-	typedef std::ostringstream ostringstream;
-	typedef std::string string;
-	typedef std::vector<string> string_vector;
-	typedef std::unordered_set<string> string_set;
-	typedef std::unordered_map<string, string> string_map;
+	/* strings */
+	typedef std::string string;								/** This is the standard ANSI string object used throughout libIntegra */
+	typedef std::ostringstream ostringstream;				/** Output string stream, for convenient formatting of strings */
+	typedef std::vector<string> string_vector;				/** Variable-length array of strings */
+	typedef std::unordered_set<string> string_set;			/** Unordered set of strings */
+	typedef std::unordered_map<string, string> string_map;	/** Unordered string-to-string map */
 
 	/* others */
-	typedef std::vector<int> int_vector;
-	typedef std::vector<float> float_vector;
-	typedef std::unordered_set<int> int_set;
-	typedef std::unordered_map<int, int> int_map;
+	typedef std::vector<int> int_vector;					/** Variable-length array of ints */
+	typedef std::vector<float> float_vector;				/** Variable-length array of floats */
+	typedef std::unordered_set<int> int_set;				/** Unordered set of ints */
+	typedef std::unordered_map<int, int> int_map;			/** Unordered int-to-int map */
 };
-
 
 
 #endif /* INTEGRA_COMMON_TYPEDEFS */

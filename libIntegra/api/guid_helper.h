@@ -47,21 +47,41 @@ namespace integra_api
 	{
 		public:
 
-			/* guid hash function */
+			/** \brief guid hash function 
+			 * \param guid a guid to hash
+			 * \return a 32-bit hash of the guid
+			 */
 			static size_t guid_to_hash( const GUID &guid );
 
-			/* converts guid to string in lowercase hexadecimal form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
+			/** \brief convert guid to string
+			 * \param guid guid to convert
+			 * \return lowercase hexadecimal string representation of the guid, in the form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+			 */
 			static string guid_to_string( const GUID &guid );
 
-			/* converts string to guid.  expects string in hexadecimal form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
+			/** \brief convert string to guid
+			 * \param string.  Must be hexadecimal in form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+			 * \param[out] output.  On success, converted guid is stored here.
+			 * \return CError::INPUT_ERROR if input was incorrectly formatted.  Otherwise CError::SUCCESS
+			 */
 			static CError string_to_guid( const string &string, GUID &output );
 
-            /* compares two guids. return true if they are equal, false if they are not equal */
+			/** \brief compare guids
+			 * \param guid1 first guid to compare
+			 * \param guid2 second guid to compare
+			 * \return true if guids are equal, false if they are not equal
+			 */
             static bool guids_are_equal( const GUID &guid1, const GUID &guid2 );
         
-            /* compares a guid to CGuidHelper::null_guid. return true if the guid is "null" */
+			/** \brief test guid for nullness
+			 * \param guid guid to test for nullness
+			 * \return true if guids is null, false if it is not null
+			 */
             static bool guid_is_null( const GUID &guid );
         
+			/** \brief null guid.  
+			 * Assign guids to this value to mark them as null.
+			 */
 			static const GUID null_guid;
 
 		private:
@@ -71,18 +91,22 @@ namespace integra_api
 	};
 
 
-	/* Guids */ 
+	/** Defines a hash operator so that guids can be keys of standard library maps and sets.  Internal use only */
 	struct GuidHash 
 	{
 		size_t operator()( const GUID &guid ) const { return CGuidHelper::guid_to_hash( guid ); }
 	};
 
+	/** Defines a comparison operator so that guids can be keys of standard library maps and sets.  Internal use only */
     struct GuidCompare
     {
         bool operator()( const GUID &guid1, const GUID &guid2 ) const { return CGuidHelper::guids_are_equal( guid1, guid2 ); }
     };
 
+	/** Unordered set of guids */
 	typedef std::unordered_set<GUID, GuidHash, GuidCompare> guid_set;
+
+	/** Variable-length array guids */
 	typedef std::vector<GUID> guid_array;
 }
 

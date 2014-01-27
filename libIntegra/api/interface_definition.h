@@ -56,11 +56,11 @@ namespace integra_api
 	class IWidgetPosition;
 	class IImplementationInfo;
 
-	typedef std::list<IEndpointDefinition *> endpoint_definition_list;
-	typedef std::list<IWidgetDefinition *> widget_definition_list;
+	/**Linked list of endpoint definitions.  Used to represent each module's endpoint list */
+	typedef std::list<IEndpointDefinition *> endpoint_definition_list;	
 
-	typedef std::unordered_map<GUID, IInterfaceDefinition *, GuidHash, GuidCompare> map_guid_to_interface_definition;
-	typedef std::unordered_map<string, IInterfaceDefinition *> map_string_to_interface_definition;
+	/**Linked list of widget definitions.  Used to represent each module's widget definition list */
+	typedef std::list<IWidgetDefinition *> widget_definition_list;		
 
 
 	/** \class IInterfaceDefinition interface_definition.h "api/interface_definition.h"
@@ -73,20 +73,89 @@ namespace integra_api
 		public:
 			virtual ~IInterfaceDefinition() {}
 
+			/** Enumeration of module sources */
 			enum module_source
 			{
+				/** 
+				 * \brief modules shipped with integra 
+				 * These are the modules which were located in CServerStartupInfo::system_module_directory when 
+				 * the session was started 
+				 */
 				MODULE_SHIPPED_WITH_INTEGRA = 1,	
-				MODULE_3RD_PARTY,
-				MODULE_EMBEDDED,
+
+				/** 
+				 * \brief 3rd party modules
+				 * These are the modules which are located in CServerStartupInfo::third_party_module_directory, 
+				 * including ones installed by IModuleManager during the current session.
+				 */
+				MODULE_3RD_PARTY,					
+
+				/** 
+				 * \brief embedded modules
+				 *
+				 * These are the modules which were embedded in .integra files which have been loaded during the current session
+				 * Embedded modules are only loaded if they aren't already in memory as 'shipped with integra' or '3rd party'
+				 * Normally they remain in memory even if all instances are deleted, but embedded modules with no instances 
+				 * can be unloaded via IModuleManager::unload_unused_embedded_modules
+				 */
+				MODULE_EMBEDDED,					
+
+				/** 
+				 * \brief in-development modules
+				 *
+				 * This functionality allows the special loading of modules which haven't been installed, to 
+				 * facilitate a smooth workflow for module developers.  See IModuleManager::load_module_in_development
+				 */
+
 				MODULE_IN_DEVELOPMENT 
 			};
 
+			/** \brief get module's guid
+			 * 
+			 * Uniquely identifies each module, and each version of each module.  That is to say that different versions
+			 * of the same module have different module guid.
+			 * \returns the module's guid
+			 */
 			virtual const GUID &get_module_guid() const = 0;
+
+			/** \brief get module 'origin' guid
+			 * 
+			 * Identifies the module's lineage.  Different versions of the same module have the same origin id.
+			 * This allows upgrading from older to newer versions (or sidestepping in the case of divergent development histories)
+			 * \returns the module's 'origin' guid
+			 */
 			virtual const GUID &get_origin_guid() const = 0;
+
+			/** \brief get module's source
+			 * 
+			 * Module source is the reason a module is currently loaded - where it came from.  See #module_source for 
+			 * possible values
+			 * \returns the module's source
+			 */
 			virtual module_source get_module_source() const = 0;
+
+			/** \brief get info about the module's interface
+			 * 
+			 * \returns an IInterfaceInfo 
+			 */
 			virtual const IInterfaceInfo &get_interface_info() const = 0;
+
+			/** \brief get the module's list of endpoints
+			 * 
+			 * \returns the endpoints, in an ordered list
+			 */
 			virtual const endpoint_definition_list &get_endpoint_definitions() const = 0;
+
+			/** \brief get the module's list of widgets
+			 * 
+			 * \returns the widget definitions, in an ordered list
+			 */
 			virtual const widget_definition_list &get_widget_definitions() const = 0;
+
+			/** \brief get info about the module's implementation
+			 * 
+			 * \returns an IImplementationInfo 
+			 */
 			virtual const IImplementationInfo *get_implementation_info() const = 0;
 	};
 
@@ -101,12 +170,35 @@ namespace integra_api
 		public:
 			virtual ~IInterfaceInfo() {}
 
+			/** \brief get interface's name
+			 * Interface names are upper camel case, with no spaces
+			 */
 			virtual const string &get_name() const = 0;
+
+			/** \brief get more human-readable version of interface's name, with spaces between words
+			 */
 			virtual const string &get_label() const = 0;
+
+			/** \brief get interface description
+			 * Interface descriptions can use markdown format (http://en.wikipedia.org/wiki/Markdown)
+			 */
 			virtual const string &get_description() const = 0;
+
+			/** \brief get interface's set of tags
+			 * Tags are used to describe the interface, so that guis can provide useful filtering
+			 */
 			virtual const string_set &get_tags() const = 0;
+
+			/** \brief get name of module's author
+			 */
 			virtual const string &get_author() const = 0;
+
+			/** \brief timestamp of when the module's origin id was generated
+			 */
 			virtual const struct tm &get_created_date() const = 0;
+
+			/** \brief timestamp of when the module's module id was last regenerated (last modification)
+			 */
 			virtual const struct tm &get_modified_date() const = 0;
 	};
 
@@ -121,19 +213,59 @@ namespace integra_api
 		public:
 			virtual ~IEndpointDefinition() {}
 
+			/** Enumeration of endpoint types */
 			enum endpoint_type
 			{
+				/**
+				 * Controls are either stateful 'attributes' or stateless 'bangs' ie push-button type controls.
+				 * They pass information to and from module implementations, at a rate no faster than once every
+				 * DSP buffer (64 samples).  Control endpoints can be used to send information to DSP modules, 
+				 * to received information from DSP modules, and are also used by non-dsp modules as the inputs
+				 * and outputs of all implemented-in-libIntegra business logic.
+				 */
+
 			    CONTROL = 1,
+
+				/**
+				 * Streams are connections between DSP modules.  At present the only type of stream is audio stream.
+				 * It is envisaged that potentially in future, other types of streams such as video or midi could be introduced
+				 */
+
 				STREAM
 			};
 
+			/** \brief get endpoint's name
+			 * Endpoint names are upper camel case, with no spaces.  They are used to uniquely identify endpoints
+			 *  within interfaces, so each endpoint name must be unique within it's interface.
+			 */
 			virtual const string &get_name() const = 0;
+
+			/** \brief get more human-readable version of endpoint's name, with spaces between words 
+			 */
 			virtual const string &get_label() const = 0;
+
+			/** \brief get endpoint description
+			 * Endpoint descriptions can use markdown format (http://en.wikipedia.org/wiki/Markdown)
+			 */
 			virtual const string &get_description() const = 0;
+
+			/** \brief get endpoint type
+			 * See ::endpoint_type
+			 */
 			virtual endpoint_type get_type() const = 0;
+
+			/** \brief get control info
+			 * \return when endpoint type is #CONTROL, returns an IControlInfo, otherwise NULL
+			 */
 			virtual const IControlInfo *get_control_info() const = 0;
+
+			/** \brief get stream info
+			 * \return when endpoint type is #STREAM, returns an IStreamInfo, otherwise NULL
+			 */
 			virtual const IStreamInfo *get_stream_info() const = 0;
 
+			/** \return true when endpoint type is an audio stream, otherwise false
+			 */
 			virtual bool is_audio_stream() const = 0;
 	};
 

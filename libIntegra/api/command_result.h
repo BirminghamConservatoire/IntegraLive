@@ -68,7 +68,13 @@ namespace integra_api
 			CNewCommandResult() { m_created_node = NULL; }
 			~CNewCommandResult() {};
 
+			/** \brief retrieve a pointer to the newly created node
+			 * \return a pointer to the node, or NULL if the command failed (or was a different type of command)
+			 */
 			const INode *get_created_node() const { return m_created_node; }
+
+			/** \brief internal use only
+			 */
 			void set_created_node( const INode *created_node ) { m_created_node = created_node; }
 
 		private:
@@ -87,7 +93,23 @@ namespace integra_api
 			CLoadCommandResult() {};
 			~CLoadCommandResult() {};
 
+			/** \brief retrieve the ids of new embedded modules
+			 *
+			 * If the loaded file contains embedded modules that are not already present in the current IntegraSession,
+			 * these modules are loaded with a module_source of MODULE_EMBEDDED (see IInterfaceDefinition).  
+			 * The guids of these new modules can be obtained here.
+			 * Reasons embedded modules might be loaded:
+			 * Loading a project which contains older versions of shipped-with-libIntegra modules
+			 * Loading a project which contains modules that were shipped with older versions of libIntegra, but no longer shipped
+			 * Loading a project which contains 3rd party modules not present on this system
+			 * Loading a project which contains older/newer/different versions of 3rd party modules that are present on this system
+			 * 
+			 * \return a reference to the set of new embedded module guids, or an empty set if the command failed (or was a different type of command)
+			 */
 			const guid_set &get_new_embedded_module_ids() const { return m_new_embedded_module_ids; }
+
+			/** \brief internal use only
+			 */
 			void set_new_embedded_module_ids( const guid_set &ids ) { m_new_embedded_module_ids = ids; }
 
 		private:

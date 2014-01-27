@@ -51,9 +51,34 @@ namespace integra_api
 			CIntegraSession();
 			~CIntegraSession();
 
+			/** \brief start an integra session
+			*
+			* Creates all data structures and internal state, audio, midi and dsp engine etc for an integra session.  
+			*
+			* \param startup_info a structure containing some configuration info for the integra session
+			* \return success if session started ok, an error code if the session is already started or configuration info is missing
+			*/
 			CError start_session( const CServerStartupInfo &startup_info );
+
+			/** \brief end an integra session
+			*
+			* Stops processing audio, frees all system resources
+			*
+			* \return error is session not started
+			*/
 			CError end_session();
 
+			/** \brief obtain a server lock in order to interact with the server
+			*
+			* Blocks the calling thread until no instances of CServerLock exist, then locks the server and returns 
+			* an instance of CServer lock.  The server will remain locked until the CServerLock instance falls out of scope.
+			* This method is thread-safe - it can be called from many different threads simultaneously.
+			* However it mustn't be called by the same thread which has already locked the server, or else deadlock will occur.  
+			* In particular, during callbacks via INotificationSink, the server is already locked, so implementations of INotificationSink::on_set_command must not attempt to lock the server again.
+			* Additionally, it is the callers responsibility to ensure that this method is only used when a session is running, ie after a successful call to CIntegraSession::start_session and before a call to CIntegraSession::end_session
+			*
+			* \return a CServerLock instance with which to interact with the server
+			*/
 			CServerLock get_server();
 
 		private:	

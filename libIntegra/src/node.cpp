@@ -1,4 +1,4 @@
-/** libIntegra multimedia module interface
+/* libIntegra modular audio framework
  *
  * Copyright (C) 2007 Birmingham City University
  *
@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
 
 #include "platform_specifics.h"
 

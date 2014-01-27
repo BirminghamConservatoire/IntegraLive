@@ -1,5 +1,5 @@
- /* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
  */
 
 
+
 #ifndef INTEGRA_COMMAND_SOURCE
 #define INTEGRA_COMMAND_SOURCE
 
@@ -26,6 +27,13 @@
 
 namespace integra_api
 {
+	/** \class CCommandSource command_source.h "api/command_source.h"
+	 *  \brief Represents an enumeration of command sources
+	 * 
+	 * Command Sources represent the different places from which a command can originate.
+	 * They are passed to integraLive api users via INotificationSink and IPollingNotificationSink.
+	 * The enumeration is implemented as a class to allow inline stringification where needed
+	 */
 	class INTEGRA_API CCommandSource
 	{
 		public:

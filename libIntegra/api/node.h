@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,7 @@
  * USA.
  */
 
+
 #ifndef INTEGRA_NODE_API_H
 #define INTEGRA_NODE_API_H
 
@@ -33,6 +34,12 @@ namespace integra_api
 	typedef std::unordered_map<string, INode *> node_map;
 
 
+	/** \class INode node.h "api/node.h"
+	 *  \brief represents a node
+	 *
+	 * Nodes are instances of Integra Modules.  Each node has a set of endpoints and 
+	 * can also have child nodes (allowing nodes to form a hierarchy).
+	 */
 	class INTEGRA_API INode
 	{
 		protected:

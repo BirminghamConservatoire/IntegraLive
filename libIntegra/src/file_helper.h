@@ -1,6 +1,6 @@
-/* libIntegra multimedia module interface
- *  
- * Copyright (C) 2012 Birmingham City University
+/* libIntegra modular audio framework
+ *
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
 
 #ifndef INTEGRA_FILE_HELPERS_H
 #define INTEGRA_FILE_HELPERS_H

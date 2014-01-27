@@ -1,5 +1,5 @@
- /* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
+/** \file common_typedefs.h
+ *  \brief #defines and typedefs used throughout the application
+
+	This file defines widely used standard library collection classes, for enhanced code readability 
+	
+	It also defines macros for windows DLL import/export qualifiers
+ */
+
 
 
 #ifndef INTEGRA_COMMON_TYPEDEFS

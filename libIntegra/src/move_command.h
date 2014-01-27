@@ -1,5 +1,5 @@
- /* libIntegra multimedia module interface
- *  
+ /* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
 
 
 #ifndef INTEGRA_MOVE_COMMAND_PRIVATE

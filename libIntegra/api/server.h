@@ -1,6 +1,6 @@
-/* libIntegra multimedia module info interface
+/* libIntegra modular audio framework
  *
- * Copyright (C) 2007 Jamie Bullock, Henrik Frisk
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
 
 #ifndef INTEGRA_SERVER_API_H
 #define INTEGRA_SERVER_API_H
@@ -38,6 +39,26 @@ namespace integra_api
 	class IInterfaceDefinition;
 
 
+	/** \class IServer server.h "api/server.h"
+	 *  \brief provides methods to query libIntegra and process commands
+	 *
+	 *	Users libIntegra api should only call methods on IServer when exactly one CServerLock instance exists.
+	 *	This is because IServer assumes that the server is locked.
+	 *	The way to do this is as follows:
+	 *
+	 *	1) Obtain a CServerLock from CIntegraSession each time you need to interact with libIntegra
+	 *
+	 *	2) Use CServerLock::operator-> and CServerLock::operator* to call IServer methods
+	 *
+	 *	3) Ensure that the CServerLock is destroyed as soon as you are finished with it, typically by declaring 
+	 *	it as a local variable which falls out of scope
+	 *
+	 *	Example:
+	 *	{
+	 *		CServerLock server = m_integra_session.get_server();
+	 *		server.do_something();
+	 *	}
+	 */
 	class INTEGRA_API IServer
 	{
 		protected:

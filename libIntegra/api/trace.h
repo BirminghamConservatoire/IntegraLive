@@ -1,5 +1,5 @@
- /* libIntegra multimedia module interface
- *  
+ /* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
 
 
 #ifndef INTEGRA_TRACING_PRIVATE
@@ -53,12 +54,12 @@ namespace integra_api
 	{
 		public:
 
+			static void set_categories_to_trace( bool errors, bool progress, bool verbose );
+			static void set_details_to_trace( bool timestamp, bool location, bool thread );
+
 			static std::ostream &error( const char *location );
 			static std::ostream &progress( const char *location );
 			static std::ostream &verbose( const char *location );
-
-			static void set_categories_to_trace( bool errors, bool progress, bool verbose );
-			static void set_details_to_trace( bool timestamp, bool location, bool thread );
 
 		private:
 

@@ -1,5 +1,5 @@
- /* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,7 @@
  * USA.
  */
 
+
 #ifndef INTEGRA_NODE_ENDPOINT_API_H
 #define INTEGRA_NODE_ENDPOINT_API_H
 
@@ -33,6 +34,13 @@ namespace integra_api
 	class CPath;
 
 
+	/** \class INodeEndpoint node_endpoint.h "api/node_endpoint.h"
+	 *  \brief represents a node endpoint
+	 *
+	 * Endpoints are the controls and stream i/o of Integra Modules.
+	 *
+	 * INodeEndpoint provides methods to query the endpoints of nodes (Module Instances)
+	 */
 	class INTEGRA_API INodeEndpoint
 	{
 		protected:

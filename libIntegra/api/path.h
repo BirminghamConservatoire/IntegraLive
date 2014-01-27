@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
  */
 
 
+
 #ifndef INTEGRA_PATH_H
 #define INTEGRA_PATH_H
 
@@ -28,6 +29,19 @@
 
 namespace integra_api
 {
+	/** \class CPath path.h "api/path.h"
+	 *  \brief Represents the address of a node endpoint, absolutely or relatively
+	 * 
+	 * libIntegra uses paths to identify node enpoints.  
+	 * For example, a node called 'AudioIn' within a node called 'Project' might have an endpoint called 'inLevel'.
+	 * In this case, the endpoint could be addressed (from the top level) as 'Project.AudioIn.inLevel'.
+	 * Or, the same endpoint could be addressed (from the 'Project' node) as 'AudioIn.inLevel'.
+	 * Or, the same endpoint could be addressed (from the 'AudioIn' node) as 'inLevel'.
+	 *
+	 * \note: paths can only traverse down the node hierarchy.  They cannot use '..' or similar to access parent nodes.
+	 * this ensures that all the functionality in each branch of the node tree is self-contained.
+	 */
+
 	class INTEGRA_API CPath
 	{
 		public:

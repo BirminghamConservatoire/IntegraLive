@@ -1,5 +1,5 @@
- /* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,7 @@
  */
 
 
+
 #ifndef INTEGRA_ERROR_DEFINED
 #define INTEGRA_ERROR_DEFINED
 
@@ -26,6 +27,13 @@
 
 namespace integra_api
 {
+	/** \class CError error.h "api/error.h"
+	 *  \brief Represents an enumeration of error codes
+	 * 
+	 * These error codes are used internally and within libIntegra's api.
+	 * The enumeration is implemented as a class to allow inline stringification where needed
+	 */
+
 	class INTEGRA_API CError
 	{
 		public:

@@ -1,6 +1,6 @@
-/* libIntegra multimedia module info interface
+/* libIntegra modular audio framework
  *
- * Copyright (C) 2007 Jamie Bullock, Henrik Frisk
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,19 @@
  * USA.
  */
 
+
+/** \file command_result.h
+ *  \brief return values from commans
+ *   
+ *  Some libIntegra commands can return information to their caller.  
+ *  This is done through a set of 'command result' classes.
+ *  
+ *  To obtain command result information, users of libIntegra api should
+ *  create a local variable of the desired command result class, and pass 
+ *  it's address into IServer::process_command.
+ */
+
+
 #ifndef COMMAND_RESULT_API_H
 #define COMMAND_RESULT_API_H
 
@@ -29,6 +42,11 @@ namespace integra_api
 	class INode;
 
 
+	/** \class CCommandResult command_result.h "api/command_result.h"
+	 *  \brief Base class for all command result classes
+	 *
+	 * Users of libIntegra's api do not need to use CCommandResult directly.  
+	 */
 	class INTEGRA_API CCommandResult
 	{
 		protected:
@@ -38,6 +56,12 @@ namespace integra_api
 	};
 
 
+	/** \class CNewCommandResult command_result.h "api/command_result.h"
+	 *  \brief Represents return information for INewCommand
+	 * 
+	 * Allows users of INewCommand to obtain pointers to newly created nodes.
+	 * This could be used when constructing a hierarchy of nodes
+	 */
 	class INTEGRA_API CNewCommandResult : public CCommandResult
 	{
 		public:
@@ -52,6 +76,11 @@ namespace integra_api
 	};
 
 	
+	/** \class CLoadCommandResult command_result.h "api/command_result.h"
+	 *  \brief Represents return information for ILoadCommand
+	 * 
+	 * Allows users of ILoadCommand to obtain guids of any newly loaded embedded modules
+	 */
 	class INTEGRA_API CLoadCommandResult : public CCommandResult
 	{
 		public:
@@ -66,8 +95,6 @@ namespace integra_api
 
 	};
 }
-
-
 
 
 #endif 

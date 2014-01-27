@@ -1,6 +1,6 @@
-/* libIntegra multimedia module info interface
+/* libIntegra modular audio framework
  *
- * Copyright (C) 2007 Jamie Bullock, Henrik Frisk
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
+/** \file command.h
+ *  \brief defines command interfaces
+ *   
+ *  libIntegra provides a set of command classes, which are exposed to users of the api 
+ *  through the interfaces defined in this file.  All actions which modify the state of 
+ *  an Integra Session are represented by these commands.
+ *  
+ *  Clients of libIntegra api should execute commands by creating instances of the
+ *  command classes (using their static create methods), and passing the created commands into
+ *  IServer::process_command
+ */
+
+
 
 #ifndef COMMAND_API_H
 #define COMMAND_API_H
@@ -38,6 +52,12 @@ namespace integra_api
 	class CCommandResult;
 	class CCommandSource;
 	
+	/** \class ICommand command.h "api/command.h"
+	 *  \brief Base class for all libIntegra commands
+	 *
+	 * Users of libIntegra's api do not need to use ICommand directly.  
+	 */
+
 	class INTEGRA_API ICommand
 	{
 		protected:
@@ -50,6 +70,9 @@ namespace integra_api
 	};
 
 
+	/** \class INewCommand command.h "api/command.h"
+	 *  \brief Command to add new nodes to the node hierarchy
+	 */
 	class INTEGRA_API INewCommand : public ICommand
 	{
 		protected:
@@ -61,6 +84,9 @@ namespace integra_api
 	};
 
 
+	/** \class IDeleteCommand command.h "api/command.h"
+	 *  \brief Command to delete nodes from the node hierarchy
+	 */
 	class INTEGRA_API IDeleteCommand : public ICommand
 	{
 		protected:
@@ -72,6 +98,9 @@ namespace integra_api
 	};
 
 
+	/** \class ISetCommand command.h "api/command.h"
+	 *  \brief Command to set 'control' type node endpoints
+	 */
 	class INTEGRA_API ISetCommand : public ICommand
 	{
 		protected:
@@ -87,6 +116,9 @@ namespace integra_api
 	};
 
 
+	/** \class IRenameCommand command.h "api/command.h"
+	 *  \brief Command to rename nodes
+	 */
 	class INTEGRA_API IRenameCommand : public ICommand
 	{
 		protected:
@@ -98,6 +130,9 @@ namespace integra_api
 	};
 
 
+	/** \class IMoveCommand command.h "api/command.h"
+	 *  \brief Command to move nodes to different branches of the node hierarchy
+	 */
 	class INTEGRA_API IMoveCommand : public ICommand
 	{
 		protected:
@@ -109,6 +144,9 @@ namespace integra_api
 	};
 
 
+	/** \class ILoadCommand command.h "api/command.h"
+	 *  \brief Command to load node hierarchies, associated data files and embedded modules from .integra files
+	 */
 	class INTEGRA_API ILoadCommand : public ICommand
 	{
 		protected:
@@ -120,6 +158,9 @@ namespace integra_api
 	};
 
 
+	/** \class ILoadCommand command.h "api/command.h"
+	 *  \brief Command to save node hierarchies, associated data files and embedded modules to .integra files
+	 */
 	class INTEGRA_API ISaveCommand : public ICommand
 	{
 		protected:

@@ -1,5 +1,5 @@
- /* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,8 @@
  */
 
 
+
+
 #ifndef INTEGRA_NOTIFICATION_SINK_API
 #define INTEGRA_NOTIFICATION_SINK_API
 
@@ -31,6 +33,17 @@ namespace integra_api
 	class IServer;
 	class CPath;
 
+	/** \class INotificationSink node_endpoint.h "api/notification_sink.h"
+	 *  \brief provides mechanism to recieve feedback about changes to libIntegra's state
+	 *
+	 * In order to receive feedback from libIntegra, the caller can subclass INotificationSink, 
+	 * and pass the subclass into IntegraSession via CServerStartupInfo.
+	 *
+	 * \note libIntegra may use this notification sink from many different threads, although it will
+	 * only use it when the server is locked (so it will can call it from multiple threads simultaneously).
+	 * If the user is developing a single-threaded gui application, they may wish to use the 
+	 * helper class CPollingNotificationSink, instead of using INotificationSink directly.
+	 */
 	class INTEGRA_API INotificationSink
 	{
 		protected:

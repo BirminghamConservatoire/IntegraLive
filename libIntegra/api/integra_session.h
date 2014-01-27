@@ -1,6 +1,6 @@
-/* libIntegra multimedia module info interface
+/* libIntegra modular audio framework
  *
- * Copyright (C) 2007 Jamie Bullock, Henrik Frisk
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  * USA.
  */
 
+
 #ifndef INTEGRA_SESSION_H
 #define INTEGRA_SESSION_H
 
@@ -31,6 +32,16 @@ namespace integra_api
 	class CServerStartupInfo;
 	class IServer;
 
+	/** \class CIntegraSession integra_session.h "api/integra_session.h"
+	 *  \brief Top-level entry point for libIntegraApi.  
+	 * 
+	 *  Users of the libIntegra api must create an CIntegraSession instance in order to use
+	 *	libIntegra.
+	 *
+	 *	\note There's nothing in libIntegra to prevent you from simultaneously creating more than one
+	 *	CIntegraSession instance.  However, some of the audio SDKs supported by portaudio (such as ASIO)
+	 *	cannot be used by more than one client at a time.  
+	 */
 	class INTEGRA_API CIntegraSession
 	{
 		public:

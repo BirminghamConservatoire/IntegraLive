@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
  * USA.
  */
+
+/** \file interface_definition.h
+ *  \brief Defines classes relating to integra module interfaces
+ *
+ * For more information about integra module interfaces see 
+ * http://www.integralive.org/tutorials/module-development-guide
+ */
+
 
 
 #ifndef INTEGRA_INTERFACE_DEFINITION_API_H
@@ -55,6 +63,9 @@ namespace integra_api
 	typedef std::unordered_map<string, IInterfaceDefinition *> map_string_to_interface_definition;
 
 
+	/** \class IInterfaceDefinition interface_definition.h "api/interface_definition.h"
+	 *  \brief Top level container for an Integra Module interface 
+	 */
 	class INTEGRA_API IInterfaceDefinition
 	{
 		protected:
@@ -80,6 +91,9 @@ namespace integra_api
 	};
 
 
+	/** \class IInterfaceInfo interface_definition.h "api/interface_definition.h"
+	 *  \brief Information about an Integra Module interface 
+	 */
 	class INTEGRA_API IInterfaceInfo
 	{
 		protected:
@@ -97,6 +111,9 @@ namespace integra_api
 	};
 
 
+	/** \class IEndpointDefinition interface_definition.h "api/interface_definition.h"
+	 *  \brief Container for info about an Endpoint in an Integra Module interface 
+	 */
 	class INTEGRA_API IEndpointDefinition
 	{
 		protected:
@@ -121,6 +138,9 @@ namespace integra_api
 	};
 
 
+	/** \class IControlInfo interface_definition.h "api/interface_definition.h"
+	 *  \brief Control-specific info about an Endpoint in an Integra Module interface 
+	 */
 	class INTEGRA_API IControlInfo
 	{
 		protected:
@@ -141,6 +161,9 @@ namespace integra_api
 	};
 
 
+	/** \class IStateInfo interface_definition.h "api/interface_definition.h"
+	 *  \brief Stateful-control-specific info about an Endpoint in an Integra Module interface 
+	 */
 	class INTEGRA_API IStateInfo
 	{
 		protected:
@@ -158,6 +181,9 @@ namespace integra_api
 	};
 
 
+	/** \class IConstraint interface_definition.h "api/interface_definition.h"
+	 *  \brief Definition of a stateful control's constraint
+	 */
 	class INTEGRA_API IConstraint
 	{
 		protected:
@@ -170,6 +196,9 @@ namespace integra_api
 	};
 
 
+	/** \class IValueRange interface_definition.h "api/interface_definition.h"
+	 *  \brief Definition of a value-range type constraint
+	 */
 	class INTEGRA_API IValueRange
 	{
 		protected:
@@ -182,6 +211,9 @@ namespace integra_api
 	};
 
 
+	/** \class IValueScale interface_definition.h "api/interface_definition.h"
+	 *  \brief Info about how numeric stateful controls should be scaled
+	 */
 	class INTEGRA_API IValueScale
 	{
 		protected:
@@ -201,6 +233,9 @@ namespace integra_api
 	};
 
 
+	/** \class IStreamInfo interface_definition.h "api/interface_definition.h"
+	 *  \brief Stream-specific info about an Endpoint in an Integra Module interface 
+	 */
 	class INTEGRA_API IStreamInfo
 	{
 		protected:
@@ -224,6 +259,9 @@ namespace integra_api
 	};
 
 
+	/** \class IWidgetDefinition interface_definition.h "api/interface_definition.h"
+	 *  \brief Definition of a widget in an Integra Module interface 
+	 */
 	class INTEGRA_API IWidgetDefinition
 	{
 		protected:
@@ -238,6 +276,9 @@ namespace integra_api
 	};
 
 
+	/** \class IWidgetPosition interface_definition.h "api/interface_definition.h"
+	 *  \brief Definition of a widget position
+	 */
 	class INTEGRA_API IWidgetPosition
 	{
 		protected:
@@ -252,6 +293,9 @@ namespace integra_api
 	};
 
 
+	/** \class IImplementationInfo interface_definition.h "api/interface_definition.h"
+	 *  \brief Information about an Integra Module's implementation
+	 */
 	class INTEGRA_API IImplementationInfo
 	{
 		protected:

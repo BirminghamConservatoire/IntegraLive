@@ -1,6 +1,6 @@
-/* libIntegra multimedia module info interface
+/* libIntegra modular audio framework
  *
- * Copyright (C) 2007 Jamie Bullock, Henrik Frisk
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
  * USA.
  */
 
+
+
 #ifndef INTEGRA_MODULE_MANAGER_API_H
 #define INTEGRA_MODULE_MANAGER_API_H
 
@@ -32,6 +34,11 @@ namespace integra_api
 	class CModuleUninstallResult;
 	class CLoadModuleInDevelopmentResult;
 
+	/** \class IModuleManager module_manager.h "api/module_manager.h"
+	 *  \brief provides funtionality to interact with 3rd party, embedded and in-development modules
+	 *
+	 *  see http://www.integralive.org/tutorials/module-development-guide/#what-is-a-module
+	 */
 	class INTEGRA_API IModuleManager
 	{
 		protected:

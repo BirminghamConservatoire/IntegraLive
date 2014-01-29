@@ -260,7 +260,7 @@ namespace integra_internal
 		}
 		else
 		{
-			INTEGRA_TRACE_ERROR << "Pinged " << modules_pinged << " modules.  " << m_unanswered_pings << "failed to respond";
+			INTEGRA_TRACE_ERROR << "Pinged " << modules_pinged << " modules.  " << m_unanswered_pings << " failed to respond.";
 		}
 
 		pthread_mutex_unlock( &m_mutex );
@@ -608,6 +608,11 @@ namespace integra_internal
 
 	bool CDspEngine::should_queue_message( const pd::Message &message ) const
 	{
+		if( is_ping_result( message ) ) 
+		{
+			return false;
+		}
+
 		if( message.dest == feedback_source ) 
 		{
 			return true;

@@ -19,7 +19,7 @@
  */
 
 /** \file path.h
- *  \brief defines class CPath
+ *  \brief Defines class CPath
  */
 
 

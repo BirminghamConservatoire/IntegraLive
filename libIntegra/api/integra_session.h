@@ -19,7 +19,7 @@
  */
 
 /** \file integra_session.h
- *  \brief defines class CIntegraSession
+ *  \brief Defines class CIntegraSession
  */
 
 #ifndef INTEGRA_SESSION_H
@@ -51,7 +51,7 @@ namespace integra_api
 			CIntegraSession();
 			~CIntegraSession();
 
-			/** \brief start an integra session
+			/** \brief Start an integra session
 			*
 			* Creates all data structures and internal state, audio, midi and dsp engine etc for an integra session.  
 			*
@@ -60,7 +60,7 @@ namespace integra_api
 			*/
 			CError start_session( const CServerStartupInfo &startup_info );
 
-			/** \brief end an integra session
+			/** \brief End an integra session
 			*
 			* Stops processing audio, frees all system resources
 			*
@@ -68,7 +68,7 @@ namespace integra_api
 			*/
 			CError end_session();
 
-			/** \brief obtain a server lock in order to interact with the server
+			/** \brief Obtain a server lock in order to interact with the server
 			*
 			* Blocks the calling thread until no instances of CServerLock exist, then locks the server and returns 
 			* an instance of CServer lock.  The server will remain locked until the CServerLock instance falls out of scope.

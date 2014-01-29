@@ -19,7 +19,7 @@
  */
 
 /** \file polling_notification_sink.h
- *  \brief defines class CPollingNotificationSink
+ *  \brief Defines class CPollingNotificationSink
  */
 
 
@@ -37,7 +37,7 @@ namespace integra_api
 	typedef std::unordered_map<string, CCommandSource> changed_endpoint_map;
 
 	/** \class CPollingNotificationSink polling_notification_sink.h "api/polling_notification_sink.h"
-	 *  \brief helper class to receive notifications within a single thread
+	 *  \brief Helper class to receive notifications within a single thread
 	 *
 	 * CPollingNotificationSink is a helper class for users who wish to receive notifications 
 	 *  about changed endpoints within a single thread, for example in an event-driven gui application.

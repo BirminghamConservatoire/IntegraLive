@@ -19,7 +19,7 @@
  */
 
 /** \file guid_helper.h
- *  \brief defines class CGuidHelper, and guid containers
+ *  \brief Defines class CGuidHelper, and guid containers
  */
 
 #ifndef INTEGRA_GUID_HELPER_H
@@ -47,39 +47,39 @@ namespace integra_api
 	{
 		public:
 
-			/** \brief guid hash function 
+			/** \brief Guid hash function 
 			 * \param guid a guid to hash
 			 * \return a 32-bit hash of the guid
 			 */
 			static size_t guid_to_hash( const GUID &guid );
 
-			/** \brief convert guid to string
+			/** \brief Convert guid to string
 			 * \param guid guid to convert
 			 * \return lowercase hexadecimal string representation of the guid, in the form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 			 */
 			static string guid_to_string( const GUID &guid );
 
-			/** \brief convert string to guid
+			/** \brief Convert string to guid
 			 * \param string.  Must be hexadecimal in form "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 			 * \param[out] output.  On success, converted guid is stored here.
 			 * \return CError::INPUT_ERROR if input was incorrectly formatted.  Otherwise CError::SUCCESS
 			 */
 			static CError string_to_guid( const string &string, GUID &output );
 
-			/** \brief compare guids
+			/** \brief Compare guids
 			 * \param guid1 first guid to compare
 			 * \param guid2 second guid to compare
 			 * \return true if guids are equal, false if they are not equal
 			 */
             static bool guids_are_equal( const GUID &guid1, const GUID &guid2 );
         
-			/** \brief test guid for nullness
+			/** \brief Test guid for nullness
 			 * \param guid guid to test for nullness
 			 * \return true if guids is null, false if it is not null
 			 */
             static bool guid_is_null( const GUID &guid );
         
-			/** \brief null guid.  
+			/** \brief Null guid.  
 			 * Assign guids to this value to mark them as null.
 			 */
 			static const GUID null_guid;

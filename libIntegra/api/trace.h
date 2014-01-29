@@ -19,7 +19,7 @@
  */
 
 /** \file trace.h
- *  \brief defines tracing macros and class CTrace for configuration of tracing
+ *  \brief Defines tracing macros and class CTrace for configuration of tracing
  */
 
 
@@ -54,7 +54,7 @@
 namespace integra_api
 {
 	/** \class CTrace trace.h "api/trace.h"
-	 *  \brief handles console output
+	 *  \brief Handles console output
 	 *
 	 * libIntegra handles errors and reports progress by writing to the console.  This is done
 	 * by the macros INTEGRA_TRACE_ERROR, INTEGRA_TRACE_PROGRESS and INTEGRA_TRACE_VERBOSE,

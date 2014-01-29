@@ -19,7 +19,7 @@
  */
 
 /** \file server_startup_info.h
- *  \brief defines class CServerStartupInfo
+ *  \brief Defines class CServerStartupInfo
  */
 
 #ifndef INTEGRA_SERVER_STARTUP_INFO_H
@@ -33,7 +33,7 @@ namespace integra_api
 
 
 	/** \class CServerStartupInfo server_startup_info.h "api/server_startup_info.h"
-	 *  \brief holds configuration data for libIntegra
+	 *  \brief Holds configuration data for libIntegra
 	 *
 	 *  CServerStartupInfo is passed into CIntegraSession::start_session
 	 */	

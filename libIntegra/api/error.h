@@ -19,7 +19,7 @@
  */
 
 /** \file error.h
- *  \brief defines class CError
+ *  \brief Defines class CError
  */
 
 
@@ -58,11 +58,11 @@ namespace integra_api
 
 			CError();
 
-			/** \brief create a CError from an enumeration constant
+			/** \brief Create a CError from an enumeration constant
 			 */
 			CError( code error_code );
 
-			/** \brief casting operator, allows direct comparison of CError and enumeration constants
+			/** \brief Casting operator, allows direct comparison of CError and enumeration constants
 			 */
 			operator code() const;
 

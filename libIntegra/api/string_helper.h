@@ -19,7 +19,7 @@
  */
 
 /** \file string_helper.h
- *  \brief defines class CStringHelper
+ *  \brief Defines class CStringHelper
  */
 
 
@@ -35,7 +35,7 @@
 namespace integra_api
 {
 	/** \class CStringHelper string_helper.h "api/string_helper.h"
-	 *  \brief common string routines
+	 *  \brief Common string routines
 	 *
 	 * \note CStringHelper need never be instantiated - all its methods are static and stateless.
 	 */	

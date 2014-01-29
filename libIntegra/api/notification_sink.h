@@ -19,7 +19,7 @@
  */
 
 /** \file notification_sink.h
- *  \brief defines class INotificationSink
+ *  \brief Defines class INotificationSink
  */
 
 
@@ -37,7 +37,7 @@ namespace integra_api
 	class CPath;
 
 	/** \class INotificationSink node_endpoint.h "api/notification_sink.h"
-	 *  \brief provides mechanism to recieve feedback about changes to libIntegra's state
+	 *  \brief Provides mechanism to recieve feedback about changes to libIntegra's state
 	 *
 	 * In order to receive feedback from libIntegra, the caller can subclass INotificationSink, 
 	 * and pass the subclass into IntegraSession via CServerStartupInfo.

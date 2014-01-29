@@ -20,7 +20,7 @@
 
 
 /** \file command_result.h
- *  \brief return values from commans
+ *  \brief Return values from commands
  *   
  *  Some libIntegra commands can return information to their caller.  
  *  This is done through a set of 'command result' classes.
@@ -68,12 +68,12 @@ namespace integra_api
 			CNewCommandResult() { m_created_node = NULL; }
 			~CNewCommandResult() {};
 
-			/** \brief retrieve a pointer to the newly created node
+			/** \brief Retrieve a pointer to the newly created node
 			 * \return a pointer to the node, or NULL if the command failed (or was a different type of command)
 			 */
 			const INode *get_created_node() const { return m_created_node; }
 
-			/** \brief internal use only
+			/** \brief InTeRnAl uSe oNlY
 			 */
 			void set_created_node( const INode *created_node ) { m_created_node = created_node; }
 

@@ -19,7 +19,7 @@
  */
 
 /** \file command.h
- *  \brief defines command interfaces
+ *  \brief Defines command interfaces
  *   
  *  libIntegra provides a set of command classes, which are exposed to users of the api 
  *  through the interfaces defined in this file.  All actions which modify the state of 

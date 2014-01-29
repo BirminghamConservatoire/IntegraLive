@@ -19,7 +19,7 @@
  */
 
 /** \file node_endpoint.h
- *  \brief defines class INodeEndpoint
+ *  \brief Defines class INodeEndpoint
  */
 
 
@@ -39,7 +39,7 @@ namespace integra_api
 
 
 	/** \class INodeEndpoint node_endpoint.h "api/node_endpoint.h"
-	 *  \brief represents a node endpoint
+	 *  \brief Represents a node endpoint
 	 *
 	 * Endpoints are the controls and stream i/o of Integra Modules.
 	 *

@@ -19,7 +19,7 @@
  */
 
 /** \file module_manager.h
- *  \brief defines class IModuleManager
+ *  \brief Defines class IModuleManager
  */
 
 #ifndef INTEGRA_MODULE_MANAGER_API_H
@@ -37,7 +37,7 @@ namespace integra_api
 	class CLoadModuleInDevelopmentResult;
 
 	/** \class IModuleManager module_manager.h "api/module_manager.h"
-	 *  \brief provides funtionality to interact with 3rd party, embedded and in-development modules
+	 *  \brief Provides funtionality to interact with 3rd party, embedded and in-development modules
 	 *
 	 *  see http://www.integralive.org/tutorials/module-development-guide/#what-is-a-module
 	 */

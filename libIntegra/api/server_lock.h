@@ -19,7 +19,7 @@
  */
 
 /** \file server_lock.h
- *  \brief defines class CServerLock
+ *  \brief Defines class CServerLock
  */
 
 #ifndef INTEGRA_SERVER_LOCK_H
@@ -33,7 +33,7 @@ namespace integra_api
 	class IServer;
 
 	/** \class CServerLock server_lock.h "api/server_lock.h"
-	 *  \brief locking mechanism for IServer
+	 *  \brief Locking mechanism for IServer
 	 *
 	 *  Users of libIntegra api should only call methods on IServer when exactly one CServerLock instance exists.
 	 *	This is because all the methods of IServer assumes that the server is locked.

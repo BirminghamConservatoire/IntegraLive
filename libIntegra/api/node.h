@@ -19,7 +19,7 @@
  */
 
 /** \file node.h
- *  \brief defines class INode
+ *  \brief Defines class INode
  */
 
 
@@ -39,7 +39,7 @@ namespace integra_api
 
 
 	/** \class INode node.h "api/node.h"
-	 *  \brief represents a node
+	 *  \brief Represents a node
 	 *
 	 * Nodes are instances of Integra Modules.  Each node has a set of endpoints and 
 	 * can also have child nodes (allowing nodes to form a hierarchy).

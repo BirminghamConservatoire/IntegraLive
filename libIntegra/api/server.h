@@ -19,7 +19,7 @@
  */
 
 /** \file server.h
- *  \brief defines class IServer
+ *  \brief Defines class IServer
  */
 
 #ifndef INTEGRA_SERVER_API_H
@@ -43,7 +43,7 @@ namespace integra_api
 
 
 	/** \class IServer server.h "api/server.h"
-	 *  \brief provides methods to query libIntegra and process commands
+	 *  \brief Provides methods to query libIntegra and process commands
 	 *
 	 * \note All the methods of IServer assumes that the server is locked, ie that exactly one instance of CServerLock exists
 	 * See documentation for CServerLock for a discussion of how to do this

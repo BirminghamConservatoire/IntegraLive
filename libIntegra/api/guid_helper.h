@@ -91,13 +91,13 @@ namespace integra_api
 	};
 
 
-	/** Defines a hash operator so that guids can be keys of standard library maps and sets.  Internal use only */
+	/** \brief Defines a hash operator so that guids can be keys of standard library maps and sets.  Internal use only */
 	struct GuidHash 
 	{
 		size_t operator()( const GUID &guid ) const { return CGuidHelper::guid_to_hash( guid ); }
 	};
 
-	/** Defines a comparison operator so that guids can be keys of standard library maps and sets.  Internal use only */
+	/** \brief Defines a comparison operator so that guids can be keys of standard library maps and sets.  Internal use only */
     struct GuidCompare
     {
         bool operator()( const GUID &guid1, const GUID &guid2 ) const { return CGuidHelper::guids_are_equal( guid1, guid2 ); }

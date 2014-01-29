@@ -223,6 +223,7 @@ call libpd_autobuild/clean_libpd.bat</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\api\command.h" />
+    <ClInclude Include="..\api\documentation_mainpage.h" />
     <ClInclude Include="..\api\notification_sink.h" />
     <ClInclude Include="..\api\command_result.h" />
     <ClInclude Include="..\api\command_source.h" />

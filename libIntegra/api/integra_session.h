@@ -28,6 +28,7 @@
 #include "common_typedefs.h"
 #include "error.h"
 #include "server_lock.h"
+#include "documentation_mainpage.h"
 
 
 namespace integra_api

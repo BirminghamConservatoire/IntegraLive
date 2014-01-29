@@ -503,6 +503,9 @@
     <ClInclude Include="..\src\midi_settings_logic.h">
       <Filter>Header Files\logic</Filter>
     </ClInclude>
+    <ClInclude Include="..\api\documentation_mainpage.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="libIntegra.rc">

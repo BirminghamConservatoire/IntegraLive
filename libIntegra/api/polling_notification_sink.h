@@ -57,6 +57,12 @@ namespace integra_api
 			/** Map string-representation of endpoint path to CCommandSource */
 			typedef std::unordered_map<string, CCommandSource> changed_endpoint_map;
 
+			/** \brief Polling function
+			 *
+			 * /param[out] changed_endpoints This map will be populated with the paths of all control endpoints
+			 * which have been set since the polling function was last called.  Each map entry also stores the 
+			 * CCommandSource relating to why the endpoint was set.
+			 */
 			void get_changed_endpoints( changed_endpoint_map &changed_endpoints );
 
 		private:

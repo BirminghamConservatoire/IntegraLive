@@ -58,14 +58,32 @@ namespace integra_api
 
 			virtual ~IServer() {}
 
+			/** \brief Get the ids of all the modules that are currently loaded */
 			virtual const guid_set &get_all_module_ids() const = 0;
+
+			/** \brief Lookup a module interface by its id 
+			 * \return an IInterfaceDefinition, or NULL if not found 
+			 */
 			virtual const IInterfaceDefinition *find_interface( const GUID &module_id ) const = 0;
 
+			/** \brief Get the set of top-level nodes
+			 * \return a map of node name -> INode * containing all top-level nodes
+			 * \note Actually, this function gets all the nodes in the system, since the top-level nodes
+			 * can be interrogated for their children, and so on.  But only the top-level ones are directly 
+			 * available by iterating the returned map */
 			virtual const node_map &get_nodes() const = 0;
-			virtual const INode *find_node( const string &path_string, const INode *relative_to = NULL ) const = 0;
+
+			/** \brief Lookup a node by it's path
+			 *
+			 * \param path absolute or relative path
+			 * \param relative_to if provided, path is interpreted as being relative to this node.
+			 * If NULL, path is interpreted to be absolute
+			 * \return the looked-up node, or NULL if not found
+			 */
+			virtual const INode *find_node( const CPath &path, const INode *relative_to = NULL ) const = 0;
 			virtual const node_map &get_siblings( const INode &node ) const = 0;
 
-			virtual const INodeEndpoint *find_node_endpoint( const string &path_string, const INode *relative_to = NULL ) const = 0;
+			virtual const INodeEndpoint *find_node_endpoint( const CPath &path, const INode *relative_to = NULL ) const = 0;
 
 			virtual const CValue *get_value( const CPath &path ) const = 0;
 

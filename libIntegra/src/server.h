@@ -73,16 +73,16 @@ namespace integra_internal
 			const node_map &get_nodes() const { return m_nodes; }
 			node_map &get_nodes_writable() { return m_nodes; }
 
-			const INode *find_node( const string &path_string, const INode *relative_to = NULL ) const;
+			const INode *find_node( const CPath &path, const INode *relative_to = NULL ) const;
 			const CNode *find_node( internal_id id ) const;
 
-			CNode *find_node_writable( const string &path_string, const CNode *relative_to = NULL );
+			CNode *find_node_writable( const CPath &path, const CNode *relative_to = NULL );
 
 			const node_map &get_siblings( const INode &node ) const;
 			node_map &get_sibling_set_writable( CNode &node );
 
-			const INodeEndpoint *find_node_endpoint( const string &path_string, const INode *relative_to = NULL ) const;
-			CNodeEndpoint *find_node_endpoint_writable( const string &path_string, const CNode *relative_to = NULL );
+			const INodeEndpoint *find_node_endpoint( const CPath &path, const INode *relative_to = NULL ) const;
+			CNodeEndpoint *find_node_endpoint_writable( const CPath &path, const CNode *relative_to = NULL );
 
 			const CValue *get_value( const CPath &path ) const;
 

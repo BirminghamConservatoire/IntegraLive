@@ -173,15 +173,18 @@ namespace integra_internal
 	}
 
 
-	const INode *CServer::find_node( const string &path_string, const INode *relative_to ) const
+	const INode *CServer::find_node( const CPath &path, const INode *relative_to ) const
 	{
 		if( relative_to )
 		{
-			return m_state_table.lookup_node( relative_to->get_path().get_string() + "." + path_string );
+			ostringstream composite_path;
+			composite_path << relative_to->get_path().get_string() << "." << path.get_string();
+
+			return m_state_table.lookup_node( composite_path.str() );
 		}
 		else
 		{
-			return m_state_table.lookup_node( path_string );
+			return m_state_table.lookup_node( path.get_string() );
 		}
 	}
 
@@ -192,15 +195,18 @@ namespace integra_internal
 	}
 
 
-	CNode *CServer::find_node_writable( const string &path_string, const CNode *relative_to )
+	CNode *CServer::find_node_writable( const CPath &path, const CNode *relative_to )
 	{
 		if( relative_to )
 		{
-			return m_state_table.lookup_node_writable( relative_to->get_path().get_string() + "." + path_string );
+			ostringstream composite_path;
+			composite_path << relative_to->get_path().get_string() << "." << path.get_string();
+			
+			return m_state_table.lookup_node_writable( composite_path.str() );
 		}
 		else
 		{
-			return m_state_table.lookup_node_writable( path_string );
+			return m_state_table.lookup_node_writable( path );
 		}
 	}
 
@@ -233,28 +239,34 @@ namespace integra_internal
 	}
 
 
-	const INodeEndpoint *CServer::find_node_endpoint( const string &path_string, const INode *relative_to ) const
+	const INodeEndpoint *CServer::find_node_endpoint( const CPath &path, const INode *relative_to ) const
 	{
 		if( relative_to )
 		{
-			return m_state_table.lookup_node_endpoint( relative_to->get_path().get_string() + "." + path_string );
+			ostringstream composite_path;
+			composite_path << relative_to->get_path().get_string() << "." << path.get_string();
+
+			return m_state_table.lookup_node_endpoint( composite_path.str() );
 		}
 		else
 		{
-			return m_state_table.lookup_node_endpoint( path_string );
+			return m_state_table.lookup_node_endpoint( path );
 		}
 	}
 
 
-	CNodeEndpoint *CServer::find_node_endpoint_writable( const string &path_string, const CNode *relative_to )
+	CNodeEndpoint *CServer::find_node_endpoint_writable( const CPath &path, const CNode *relative_to )
 	{
 		if( relative_to )
 		{
-			return m_state_table.lookup_node_endpoint_writable( relative_to->get_path().get_string() + "." + path_string );
+			ostringstream composite_path;
+			composite_path << relative_to->get_path().get_string() << "." << path.get_string();
+
+			return m_state_table.lookup_node_endpoint_writable( composite_path.str() );
 		}
 		else
 		{
-			return m_state_table.lookup_node_endpoint_writable( path_string );
+			return m_state_table.lookup_node_endpoint_writable( path );
 		}
 	}
 

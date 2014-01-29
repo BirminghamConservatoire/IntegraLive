@@ -162,8 +162,8 @@ namespace integra_internal
 					const INodeEndpoint *target_path = sibling->get_node_endpoint( endpoint_target_path );
 					assert( source_path && target_path );
 
-					const INodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), ancestor->get_parent() );
-					const INodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), ancestor->get_parent() );
+					const INodeEndpoint *source_endpoint = server.find_node_endpoint( CPath( *source_path->get_value() ), ancestor->get_parent() );
+					const INodeEndpoint *target_endpoint = server.find_node_endpoint( CPath( *target_path->get_value() ), ancestor->get_parent() );
 	
 					if( source_endpoint && target_endpoint )
 					{
@@ -469,7 +469,7 @@ namespace integra_internal
 				const INodeEndpoint *target_endpoint = sibling->get_node_endpoint( endpoint_target_path );
 				assert( target_endpoint );
 
-				const INodeEndpoint *destination_endpoint = server.find_node_endpoint( *target_endpoint->get_value(), parent );
+				const INodeEndpoint *destination_endpoint = server.find_node_endpoint( CPath( *target_endpoint->get_value() ), parent );
 
 				if( destination_endpoint )
 				{

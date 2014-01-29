@@ -75,8 +75,8 @@ namespace integra_internal
 		const INodeEndpoint *target_path = node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
-		const INodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
-		const INodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
+		const INodeEndpoint *source_endpoint = server.find_node_endpoint( CPath( *source_path->get_value() ), connection_owner );
+		const INodeEndpoint *target_endpoint = server.find_node_endpoint( CPath( *target_path->get_value() ), connection_owner );
 
 		if( source_endpoint && source_endpoint->get_endpoint_definition().is_audio_stream() && source_endpoint->get_endpoint_definition().get_stream_info()->get_direction() == CStreamInfo::OUTPUT )
 		{
@@ -106,9 +106,9 @@ namespace integra_internal
 		const INodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
-		const INodeEndpoint *old_source_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
-		const INodeEndpoint *new_source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
-		const INodeEndpoint *target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
+		const INodeEndpoint *old_source_endpoint = server.find_node_endpoint( CPath( *previous_value ), connection_owner );
+		const INodeEndpoint *new_source_endpoint = server.find_node_endpoint( CPath( *source_path->get_value() ), connection_owner );
+		const INodeEndpoint *target_endpoint = server.find_node_endpoint( CPath( *target_path->get_value() ), connection_owner );
 
 		if( new_source_endpoint && new_source_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_source_endpoint->get_endpoint_definition().get_control_info()->get_can_be_source() )
 		{
@@ -165,9 +165,9 @@ namespace integra_internal
 		const INodeEndpoint *target_path = connection_node.get_node_endpoint( endpoint_target_path );
 		assert( source_path && target_path );
 
-		const INodeEndpoint *source_endpoint = server.find_node_endpoint( *source_path->get_value(), connection_owner );
-		const INodeEndpoint *old_target_endpoint = server.find_node_endpoint( *previous_value, connection_owner );
-		const INodeEndpoint *new_target_endpoint = server.find_node_endpoint( *target_path->get_value(), connection_owner );
+		const INodeEndpoint *source_endpoint = server.find_node_endpoint( CPath( *source_path->get_value() ), connection_owner );
+		const INodeEndpoint *old_target_endpoint = server.find_node_endpoint( CPath( *previous_value ), connection_owner );
+		const INodeEndpoint *new_target_endpoint = server.find_node_endpoint( CPath( *target_path->get_value() ), connection_owner );
 
 		if( new_target_endpoint && new_target_endpoint->get_endpoint_definition().get_type() == CEndpointDefinition::CONTROL && !new_target_endpoint->get_endpoint_definition().get_control_info()->get_can_be_target() )
 		{

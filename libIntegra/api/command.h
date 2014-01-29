@@ -66,6 +66,7 @@ namespace integra_api
 
 			virtual ~ICommand() {}
 
+			/** \brief Internal use only */
 			virtual CError execute( integra_internal::CServer &server, CCommandSource source, CCommandResult *result ) = 0;
 	};
 

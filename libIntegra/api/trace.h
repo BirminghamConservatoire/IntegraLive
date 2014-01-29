@@ -20,6 +20,14 @@
 
 /** \file trace.h
  *  \brief Defines tracing macros and class CTrace for configuration of tracing
+ *
+ * libIntegra tracing writes to stdout.
+ *
+ * The main entrypoint for libIntegra tracing functionality are the macros
+ * INTEGRA_TRACE_ERROR, INTEGRA_TRACE_PROGRESS and INTEGRA_TRACE_VERBOSE.
+ * 
+ * These macros are exposed in libIntegra's api in order to allow users of the api 
+ * to utilize the tracing system themselves, if they wish to.
  */
 
 
@@ -31,22 +39,50 @@
 #include <fstream>
 
 
-/*! \def TOSTRING(x)
- * Macro to convert an integer to a string at compile time
- */
+/** Used internally by subsequent macros */
 #define STRINGIFY(x) #x
+/** Used internally by subsequent macros */
 #define TOSTRING(x) STRINGIFY(x)
 #ifdef _WINDOWS
+/** Used internally by subsequent macros */
 #define INTEGRA_FUNCTION __FUNCTION__
 #else 
+/** Used internally by subsequent macros */
 #define INTEGRA_FUNCTION TOSTRING(__FUNCTION__)
 #endif /*_WINDOWS*/
 
+/** Used internally by subsequent macros */
 #define INTEGRA_LOCATION __FILE__ ": " TOSTRING(__LINE__) "(" INTEGRA_FUNCTION ")"
 
 
+
+
+/** \brief Main error tracing macro.  
+ * Usage example: INTEGRA_TRACE_ERROR << "Something unexpected happened!  Details: " << some_details << of_mixed_type;
+ *
+ * Only traces anything when tracing of errors is enabled
+ * Automatically traces time, location and thread ID (subject to configuration). 
+ */
 #define INTEGRA_TRACE_ERROR			integra_api::CTrace::error( INTEGRA_LOCATION )
+
+/** \brief Main progress tracing macro.  
+ * Usage example: INTEGRA_TRACE_PROGRESS << "A normal (not unexpected) thing happened.  Details: " << some_details << of_mixed_type;
+ *
+ * Only traces anything when tracing of progress is enabled
+ * Automatically traces time, location and thread ID (subject to configuration). 
+ */
 #define INTEGRA_TRACE_PROGRESS		integra_api::CTrace::progress( INTEGRA_LOCATION )
+
+/** \brief Main verbose progress tracing macro.  
+ *
+ * The distinction between progress and verbose tracing allows very commonly-occuring actions to be only included
+ * when verbose tracing is enabled, preventing excessive tracing during normal operation.
+ *
+ * Usage example: INTEGRA_TRACE_VERBOSE << "A normal (not unexpected) and frequently occurring thing happened.  Details: " << some_details << of_mixed_type;
+ *
+ * Only traces anything when verbose tracing is enabled
+ * Automatically traces time, location and thread ID (subject to configuration). 
+ */
 #define INTEGRA_TRACE_VERBOSE		integra_api::CTrace::verbose( INTEGRA_LOCATION )
 
 
@@ -61,8 +97,7 @@ namespace integra_api
 	 * which in turn call methods in CTrace
 	 * 
 	 * CTrace is exposed in libIntegra's api in order to allow users of the api to customise 
-	 * what is traced, and to allow users of the api to utilize the tracing system themselves,
-	 * if they wish to.
+	 * what is traced.
 	 *
 	 * \note CTrace need never be instantiated - all its methods are static and stateless.
 	 */	
@@ -71,11 +106,29 @@ namespace integra_api
 	{
 		public:
 
+			/** \brief Customise the types of message which should be traced 
+			 *
+			 * By default, errors and progress are traced, verbose messages are not
+			 */
 			static void set_categories_to_trace( bool errors, bool progress, bool verbose );
+
+			/** \brief Customise the additional information which should be written with each message
+			 *
+			 * By default, messages are stamped with time and location, but not thread ID.
+			 *
+			 * \param timestamp Write the date/time into each message
+			 * \param location Write the source file, line number and function name into each message
+			 * \param thread Write id of the currently executing thread into each message
+			 */
 			static void set_details_to_trace( bool timestamp, bool location, bool thread );
 
+			/** Internal use only */
 			static std::ostream &error( const char *location );
+
+			/** Internal use only */
 			static std::ostream &progress( const char *location );
+
+			/** Internal use only */
 			static std::ostream &verbose( const char *location );
 
 		private:

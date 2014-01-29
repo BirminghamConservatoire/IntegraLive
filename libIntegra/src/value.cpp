@@ -219,15 +219,16 @@ namespace integra_api
 	}
 
 
-	float CIntegerValue::get_difference( const CValue &other ) const
+	float CIntegerValue::get_distance( const CValue &other ) const
 	{
 		const CIntegerValue *other_int = dynamic_cast<const CIntegerValue *>( &other );
 		if( !other_int ) 
 		{
 			INTEGRA_TRACE_ERROR << "type mismatch";
+			return -1;
 		}
 
-		return m_value - other_int->m_value;
+		return abs( m_value - other_int->m_value );
 	}
 
 
@@ -325,15 +326,16 @@ namespace integra_api
 	}
 
 
-	float CFloatValue::get_difference( const CValue &other ) const
+	float CFloatValue::get_distance( const CValue &other ) const
 	{
 		const CFloatValue *other_float = dynamic_cast<const CFloatValue *>( &other );
 		if( !other_float ) 
 		{
 			INTEGRA_TRACE_ERROR << "type mismatch";
+			return -1;
 		}
 
-		return m_value - other_float->m_value;
+		return abs( m_value - other_float->m_value );
 	}
 
 
@@ -437,12 +439,13 @@ namespace integra_api
 	}
 
 
-	float CStringValue::get_difference( const CValue &other ) const
+	float CStringValue::get_distance( const CValue &other ) const
 	{
 		const CStringValue *other_string = dynamic_cast<const CStringValue *>( &other );
 		if( !other_string ) 
 		{
 			INTEGRA_TRACE_ERROR << "type mismatch";
+			return -1;
 		}
 
 		return levenshtein_distance( m_value.c_str(), other_string->m_value.c_str() );

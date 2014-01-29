@@ -542,7 +542,8 @@ namespace integra_internal
 				continue;
 			}
 
-			distance_to_current = abs( value.get_difference( *allowed_state ) );
+			distance_to_current = value.get_distance( *allowed_state );
+
 			if( first || distance_to_current < distance_to_nearest_allowed_state )
 			{
 				distance_to_nearest_allowed_state = distance_to_current;

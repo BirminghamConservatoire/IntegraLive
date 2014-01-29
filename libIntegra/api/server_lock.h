@@ -59,10 +59,14 @@ namespace integra_api
 	class INTEGRA_API CServerLock
 	{
 		public:
+			/** \brief Internal use only.  Use CIntegraSession to obtain a CServerLock */
 			CServerLock( IServer *server );
 			~CServerLock();
 
+			/** \brief Indirection operator.  Allows CServerLock to be used as if it were an IServer */
 			IServer &operator*();
+
+			/** \brief Defererence operator.  Allows CServerLock pointer to be used as if it were an IServer pointer */
 			IServer *operator->();
 
 		private:	

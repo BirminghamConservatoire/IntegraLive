@@ -46,12 +46,12 @@ namespace integra_api
 			CValue();
 			virtual ~CValue();
 
-			typedef enum type_
+			enum type
 			{
 				INTEGER,
 				FLOAT,
 				STRING,
-			} type;
+			};
 
 			virtual type get_type() const = 0;
 
@@ -177,8 +177,11 @@ namespace integra_api
 			string m_value;
 	};
 
-
+	
+	/** Map string to value */
 	typedef std::unordered_map<string, CValue *> value_map;
+
+	/** Set of values */
 	typedef std::unordered_set<CValue *> value_set;
 }
 

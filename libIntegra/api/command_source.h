@@ -44,13 +44,27 @@ namespace integra_api
 			enum source 
 			{
 				NONE = -1,
-				INITIALIZATION,				/**Used for initialization of stateful node endpoints */
-				LOAD,						/**Used during execution of a ILoadCommand for creation of nodes and setting values for stateful node endpoints */
-				SYSTEM,						/**Used for all business logic not explicitly covered by any other command source */
-				CONNECTION,					/**Used by business logic for connections */
-				SCRIPT,						/**Used by business logic for scripts */
-				MODULE_IMPLEMENTATION,		/**Used when control endpoints are accessed by dsp module implementations (eg vu meters, analysis modules etc) */
-				PUBLIC_API					/**Used when libIntegra's state is altered through libIntegra's api */
+
+				/**Used for initialization of stateful node endpoints */
+				INITIALIZATION,				
+
+				/**Used during execution of a ILoadCommand for creation of nodes and setting values for stateful node endpoints */
+				LOAD,						
+
+				/**Used for all business logic not explicitly covered by any other command source */
+				SYSTEM,						
+
+				/**Used by business logic for connections */
+				CONNECTION,					
+
+				/**Used by business logic for scripts */
+				SCRIPT,						
+
+				/**Used when control endpoints are accessed by dsp module implementations (eg vu meters, analysis modules etc) */
+				MODULE_IMPLEMENTATION,		
+
+				/**Used when libIntegra's state is altered through libIntegra's api */
+				PUBLIC_API					
 			}; 
 
 			CCommandSource();

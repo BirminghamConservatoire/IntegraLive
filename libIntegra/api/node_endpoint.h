@@ -55,14 +55,27 @@ namespace integra_api
 			
 			virtual ~INodeEndpoint() {}
 
+			/** \brief Get backreference to the node endpoint's owning node */
 			virtual const INode &get_node() const = 0;
+
+			/** \brief Get reference to the node endpoint's definition */
 			virtual const IEndpointDefinition &get_endpoint_definition() const = 0;
 
+			/** \brief Get pointer to the node endpoint's current value 
+			 * \return If the node endpoint is a stateful control, returns current state.  Otherwise (stream or bang control) returns NULL.
+			 */
+
 			virtual const CValue *get_value() const = 0;
+
+			/** \brief Get node endpoint's path
+			 * 
+			 * The node endpoint's path consists of the owning node's path, with the node endpoint's name (from the endpoint definition ) appended to it.
+			 */
 			virtual const CPath &get_path() const = 0;
 	};
 
 
+	/** Map endpoint name to node endpoint pointer */
 	typedef std::unordered_map<string, INodeEndpoint *> node_endpoint_map;
 }
 

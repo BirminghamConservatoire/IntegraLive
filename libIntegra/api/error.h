@@ -44,16 +44,35 @@ namespace integra_api
 			/** Error enumeration values */
 			enum code 
 			{
-				INPUT_ERROR = -1,				/** Error caused by unexpected or illegal input values */
-				SUCCESS = 0,					/** No Error */
-				FAILED = 1,						/** Generic function failure - anything not covered by other error codes */
-				TYPE_ERROR = 2,					/** Mismatching type, eg trying to set an integer endpoint by passing a CStringValue */
-				PATH_ERROR = 3,					/** Failed to lookup a node or node endpoint, for example by passing a path to an object which doesn't exist */
-				CONSTRAINT_ERROR = 4,			/** Failed to adhere to a stateful endpoint's constraint (see IConstraint) */
-				REENTRANCE_ERROR = 5,			/** Aborting a chain of set commands because reentrance has been detected, for example because of a circular chain of connections, or a circular interaction of connections and scripts */
-				FILE_VALIDATION_ERROR = 6,		/** The .ixd representation of a node tree within a .integra file fails to conform to the schema defined in CollectionSchema.xsd */
-				FILE_MORE_RECENT_ERROR = 7,		/** A file can't be loaded because it was saved in a more recent version of libIntegra */
-				MODULE_ALREADY_INSTALLED = 8	/** A module can't be installed because it is already installed */
+				/** Error caused by unexpected or illegal input values */
+				INPUT_ERROR = -1,				
+
+				/** No Error */
+				SUCCESS = 0,					
+
+				/** Generic function failure - anything not covered by other error codes */
+				FAILED = 1,						
+
+				/** Mismatching type, eg trying to set an integer endpoint by passing a CStringValue */
+				TYPE_ERROR = 2,					
+
+				/** Failed to lookup a node or node endpoint, for example by passing a path to an object which doesn't exist */
+				PATH_ERROR = 3,					
+
+				/** Failed to adhere to a stateful endpoint's constraint (see IConstraint) */
+				CONSTRAINT_ERROR = 4,			
+
+				/** Aborting a chain of set commands because reentrance has been detected, for example because of a circular chain of connections, or a circular interaction of connections and scripts */
+				REENTRANCE_ERROR = 5,			
+
+				/** The .ixd representation of a node tree within a .integra file fails to conform to the schema defined in CollectionSchema.xsd */
+				FILE_VALIDATION_ERROR = 6,		
+
+				/** A file can't be loaded because it was saved in a more recent version of libIntegra */
+				FILE_MORE_RECENT_ERROR = 7,		
+
+				/** A module can't be installed because it is already installed */
+				MODULE_ALREADY_INSTALLED = 8	
 			};
 
 			CError();

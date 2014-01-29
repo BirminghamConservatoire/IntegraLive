@@ -53,17 +53,17 @@
 namespace integra_api
 {
 	/* strings */
-	typedef std::string string;								/** This is the standard ANSI string object used throughout libIntegra */
-	typedef std::ostringstream ostringstream;				/** Output string stream, for convenient formatting of strings */
-	typedef std::vector<string> string_vector;				/** Variable-length array of strings */
-	typedef std::unordered_set<string> string_set;			/** Unordered set of strings */
-	typedef std::unordered_map<string, string> string_map;	/** Unordered string-to-string map */
+	typedef std::string string;								/**< This is the standard ANSI string object used throughout libIntegra */
+	typedef std::ostringstream ostringstream;				/**< Output string stream, for convenient formatting of strings */
+	typedef std::vector<string> string_vector;				/**< Variable-length array of strings */
+	typedef std::unordered_set<string> string_set;			/**< Unordered set of strings */
+	typedef std::unordered_map<string, string> string_map;	/**< Unordered string-to-string map */
 
 	/* others */
-	typedef std::vector<int> int_vector;					/** Variable-length array of ints */
-	typedef std::vector<float> float_vector;				/** Variable-length array of floats */
-	typedef std::unordered_set<int> int_set;				/** Unordered set of ints */
-	typedef std::unordered_map<int, int> int_map;			/** Unordered int-to-int map */
+	typedef std::vector<int> int_vector;					/**< Variable-length array of ints */
+	typedef std::vector<float> float_vector;				/**< Variable-length array of floats */
+	typedef std::unordered_set<int> int_set;				/**< Unordered set of ints */
+	typedef std::unordered_map<int, int> int_map;			/**< Unordered int-to-int map */
 };
 
 

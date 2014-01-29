@@ -49,21 +49,46 @@ namespace integra_api
 	{
 		public:
 
+			/** \brief Construct an empty path */
 			CPath();
+
+			/** \brief Construct a path from a dot-separated string eg "OuterContainer.InnerContainer.ModuleName" */
 			CPath( const string &path_string );
+
+			/** \brief Copy contructor */
 			CPath( const CPath &to_copy );
 			~CPath();
 
+			/** \brief Assignment operator */
 			const CPath &operator=( const CPath &to_copy );
+			
+			/** \brief Equality operator*/
 			bool operator==( const CPath &to_compare ) const;
 
+			/** \return Number of elements in the path*/
 			int get_number_of_elements() const;			
+
+			/** \brief array access operator.  
+			 * This operator allows you to access path elements in array syntax eg path[ 0 ]
+			 * \note will return an empty string for out-of-range index
+			 */
 			const string &operator[]( int index ) const;
 
+			/** \return A dot-separated representation of the path as a single string eg "OuterContainer.InnerContainer.ModuleName" */
 			const string &get_string() const;
+
+			/** \brief Casting operator, synonym for get_string() */
 			operator const string &() const;
 
+			/** \brief Pop last element from path
+			 * Reduces number of elements in path by 1
+			 * \return the last element, or an empty string if the path was already empty
+			 */
 			string pop_element();
+
+			/** \brief append element to path
+			 * \param element The element to append
+			 */
 			void append_element( const string &element );
 
 		private:
@@ -79,6 +104,7 @@ namespace integra_api
 	};
 
 
+	/** List of paths */
 	typedef std::list<CPath> path_list;
 }
 

@@ -259,7 +259,7 @@ namespace integra_internal
 		}
 
         
-        if (CGuidHelper::guid_is_null(module_id))
+        if( CGuidHelper::guid_is_null( module_id ) )
         {
 			return CError::FILE_VALIDATION_ERROR;
 		}

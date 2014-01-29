@@ -34,8 +34,6 @@
 
 namespace integra_api
 {
-	typedef std::unordered_map<string, CCommandSource> changed_endpoint_map;
-
 	/** \class CPollingNotificationSink polling_notification_sink.h "api/polling_notification_sink.h"
 	 *  \brief Helper class to receive notifications within a single thread
 	 *
@@ -55,6 +53,9 @@ namespace integra_api
 
 			CPollingNotificationSink();
 			~CPollingNotificationSink();
+
+			/** Map string-representation of endpoint path to CCommandSource */
+			typedef std::unordered_map<string, CCommandSource> changed_endpoint_map;
 
 			void get_changed_endpoints( changed_endpoint_map &changed_endpoints );
 

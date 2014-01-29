@@ -57,6 +57,13 @@ namespace integra_api
 
 			virtual ~INotificationSink() {}
 
+			/** \brief Callback invoked when Control Endpoints are set
+			 *
+			 * Override this method to receive notifications
+			 * /note 'set' is the only command for which notifications are provided.  This is because none of the
+			 * other commands originate from within libIntegra - they always come from the user of the api.  There's
+			 * no need to inform the user of the api about something which they initiated in the first place.
+			 */
 			virtual void on_set_command( const IServer &server, const CPath &endpoint_path, const CCommandSource &source ) = 0;
 	};
 }

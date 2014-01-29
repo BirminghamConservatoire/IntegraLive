@@ -350,6 +350,39 @@ namespace integra_internal
 
 	CError CModuleManager::load_module_in_development( const string &module_file, CLoadModuleInDevelopmentResult &result )
 	{
+		memset( &result, 0, sizeof( CLoadModuleInDevelopmentResult ) );
+
+		CError error = unload_module_in_development( result );
+		if( error != CError::SUCCESS )
+		{
+			return error;
+		}
+
+		GUID module_id = CGuidHelper::null_guid;
+		bool module_was_loaded = load_module( module_file, IInterfaceDefinition::MODULE_IN_DEVELOPMENT, module_id );
+		if( module_was_loaded )
+		{
+			result.module_id = module_id;
+			return CError::SUCCESS;
+		}
+
+		if( CGuidHelper::guid_is_null( module_id ) )
+		{
+			INTEGRA_TRACE_ERROR << "can't load module";
+			return CError::FILE_VALIDATION_ERROR;
+		}
+		else
+		{
+			INTEGRA_TRACE_ERROR << "module already exists";
+			return CError::MODULE_ALREADY_INSTALLED;
+		}
+	}
+
+
+	CError CModuleManager::unload_module_in_development( CLoadModuleInDevelopmentResult &result )
+	{
+		result.previous_module_id = CGuidHelper::null_guid;
+
 		for( map_guid_to_interface_definition::const_iterator i = m_module_id_map.begin(); i != m_module_id_map.end(); i++ )
 		{
 			CInterfaceDefinition &interface_definition = CInterfaceDefinition::downcast_writable( *i->second );
@@ -371,6 +404,7 @@ namespace integra_internal
 				else
 				{
 					unload_module( &interface_definition );
+					i = m_module_id_map.begin();	//unloading a module makes the iterator invalid!
 				}
 			}
 			else

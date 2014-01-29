@@ -110,6 +110,8 @@ namespace integra_internal
 			bool is_module_in_use( const node_map &search_nodes, const GUID &module_id ) const;
 			void remove_in_use_module_ids_from_set( const node_map &search_nodes, guid_set &set ) const;
 
+			CError unload_module_in_development( CLoadModuleInDevelopmentResult &result );
+
 			const CServer &m_server;
 
 			guid_set m_module_ids;

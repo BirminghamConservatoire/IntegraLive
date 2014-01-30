@@ -183,9 +183,9 @@ namespace integra_api
 			 */
 			virtual const string &get_label() const = 0;
 
-			/** \brief Get interface description
+			/** \brief Retrieve the interface's inbuilt documentation 
 			 *
-			 * Interface descriptions can use markdown format (http://en.wikipedia.org/wiki/Markdown)
+			 * Interface documentation can use markdown format (http://en.wikipedia.org/wiki/Markdown)
 			 */
 			virtual const string &get_description() const = 0;
 
@@ -251,9 +251,9 @@ namespace integra_api
 			 */
 			virtual const string &get_label() const = 0;
 
-			/** \brief Get endpoint description
+			/** \brief Retrieve the endpoint's inbuilt documentation 
 			 *
-			 * Endpoint descriptions can use markdown format (http://en.wikipedia.org/wiki/Markdown)
+			 * Endpoint documentation can use markdown format (http://en.wikipedia.org/wiki/Markdown)
 			 */
 			virtual const string &get_description() const = 0;
 

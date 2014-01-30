@@ -48,6 +48,7 @@ package components.views
 	import components.model.userData.ViewMode;
 	import components.utils.Config;
 	import components.utils.FontSize;
+	import components.utils.ModuleDocumentationWriter;
 	import components.utils.Trace;
 	import components.utils.Utilities;
 	
@@ -398,6 +399,10 @@ package components.views
 				var viewLogsItem:NativeMenuItem = new NativeMenuItem( "view logs" );
 				viewLogsItem.addEventListener( Event.SELECT, viewLogs ); 
 				debugMenu.submenu.addItem( viewLogsItem );
+				
+				var writeModuleDocumentationItem:NativeMenuItem = new NativeMenuItem( "write module documentation" );
+				writeModuleDocumentationItem.addEventListener( Event.SELECT, writeModuleDocumentation );
+				debugMenu.submenu.addItem( writeModuleDocumentationItem );
 			}
 		}
 
@@ -598,6 +603,17 @@ package components.views
 		{
 			_application.viewLogs();
 		}
+
+		
+		private function writeModuleDocumentation( event:Event ):void
+		{
+			if( !_moduleDocumentationWriter )
+			{
+				_moduleDocumentationWriter = new ModuleDocumentationWriter( _model );
+			}
+			
+			_moduleDocumentationWriter.writeModuleDocumentation();
+		}
 		
 		
 		private function onShowPreferences( event:Event ):void
@@ -775,5 +791,7 @@ package components.views
 		private var _controller:IntegraController;
 		
 		private var _menu:NativeMenu;
+		
+		private var _moduleDocumentationWriter:ModuleDocumentationWriter = null;
 	}
 }

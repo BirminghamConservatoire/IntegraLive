@@ -72,6 +72,8 @@ namespace integra_internal
 			virtual void update_on_activation( CServer &server ) {}
 			virtual void update_on_path_change( CServer &server );
 
+			virtual bool can_be_child_of( const CNode *candidate_parent ) const;
+
 		protected:
 
 			const CNode &get_node() const { return m_node; }

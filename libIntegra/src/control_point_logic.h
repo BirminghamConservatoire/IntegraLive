@@ -41,6 +41,8 @@ namespace integra_internal
 			void handle_move( CServer &server, const CPath &previous_path, CCommandSource source );
 			void handle_delete( CServer &server, CCommandSource source );
 
+			bool can_be_child_of( const CNode *candidate_parent ) const;
+
 		private:
 
 			void update_envelope( CServer &server, const CNode *envelope_node, bool is_deleting = false );

@@ -87,6 +87,14 @@ namespace integra_internal
 
 		CNode *node = new CNode;
 		node->initialize( *interface_definition, m_node_name, server.create_internal_id(), parent );
+
+		if( !node->get_logic().can_be_child_of( parent ) )
+		{
+			INTEGRA_TRACE_ERROR << interface_definition->get_interface_info().get_name() << " cannot be created as child of " << parent ? parent->get_interface_definition().get_interface_info().get_name() : "top level";
+			delete node;
+			return CError::TYPE_ERROR;
+		}
+
 		sibling_map[ m_node_name ] = node;
 		server.get_state_table().add( *node );
 

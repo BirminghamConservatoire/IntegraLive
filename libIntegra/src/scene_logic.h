@@ -43,6 +43,8 @@ namespace integra_internal
 			void handle_rename( CServer &server, const string &previous_name, CCommandSource source );
 			void handle_delete( CServer &server, CCommandSource source );
 
+			bool can_be_child_of( const CNode *candidate_parent ) const;
+
 		private:
 
 			void activate_scene( CServer &server );

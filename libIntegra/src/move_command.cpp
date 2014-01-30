@@ -26,6 +26,7 @@
 #include "server.h"
 #include "api/trace.h"
 #include "logic.h"
+#include "api/interface_definition.h"
 
 
 #include <assert.h>
@@ -58,13 +59,21 @@ namespace integra_internal
 			return CError::PATH_ERROR;
 		}
 
+		CNode *new_parent = server.find_node_writable( m_new_parent_path );
+
+		if( !node->get_logic().can_be_child_of( new_parent ) )
+		{
+			INTEGRA_TRACE_ERROR << node->get_interface_definition().get_interface_info().get_name() << " cannot be moved into " << new_parent ? new_parent->get_interface_definition().get_interface_info().get_name() : "top level";
+			delete node;
+			return CError::TYPE_ERROR;
+		}
+
 		/* remove old state table entries for node and children */
 		server.get_state_table().remove( *node );
 
 		node_map &old_sibling_set = server.get_sibling_set_writable( *node );
 		old_sibling_set.erase( node->get_name() );
 
-		CNode *new_parent = server.find_node_writable( m_new_parent_path );
 		node_map &new_sibling_set = new_parent ? new_parent->get_children_writable() : server.get_nodes_writable();
 		new_sibling_set[ node->get_name() ] = node;
 

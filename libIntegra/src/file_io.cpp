@@ -456,7 +456,14 @@ namespace integra_internal
 						
 						/* add the new node */
 						CNewCommandResult result;
-						server.process_command( INewCommand::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), CCommandSource::LOAD, &result );
+						CError error = server.process_command( INewCommand::create( interface_definition->get_module_guid(), (char * ) name, parent_path ), CCommandSource::LOAD, &result );
+						if( error != CError::SUCCESS )
+						{
+							INTEGRA_TRACE_ERROR << "Error creating node: " << error.get_text();
+							xmlFree(name);
+							return CError::FAILED;
+						}
+						
 						node = CNode::downcast( result.get_created_node() );
 
 						xmlFree(name);

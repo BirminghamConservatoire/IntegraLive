@@ -258,4 +258,27 @@ namespace integra_internal
 		return ( scene == scene_node.get_name() );
 	}
 
+
+	bool CSceneLogic::can_be_child_of( const CNode *candidate_parent ) const
+	{
+		/*
+		 scenes can only be children of players
+		 */
+
+		if( !candidate_parent )		
+		{
+			//can't be top-level
+			return false;
+		}
+
+		if( dynamic_cast<CPlayerLogic *>( &candidate_parent->get_logic() ) )	
+		{
+			//can be inside player
+			return true;
+		}
+
+		//can't be inside anything else
+		return false;
+	}
+
 }

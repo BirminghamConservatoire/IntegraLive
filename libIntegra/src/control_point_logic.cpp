@@ -111,4 +111,28 @@ namespace integra_internal
 
 		envelope_logic->update_value( server, is_deleting ? &get_node() : NULL );
 	}
+
+
+	bool CControlPointLogic::can_be_child_of( const CNode *candidate_parent ) const
+	{
+		/*
+		 control points can only be children of envelopes
+		 */
+
+		if( !candidate_parent )		
+		{
+			//can't be top-level
+			return false;
+		}
+
+		if( dynamic_cast<CEnvelopeLogic *>( &candidate_parent->get_logic() ) )	
+		{
+			//can be inside envelope
+			return true;
+		}
+
+		//can't be inside anything else
+		return false;
+	}
+
 }

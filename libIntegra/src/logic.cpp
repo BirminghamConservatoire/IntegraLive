@@ -328,6 +328,30 @@ namespace integra_internal
 	}
 
 
+	bool CLogic::can_be_child_of( const CNode *candidate_parent ) const
+	{
+		/*
+		 most modules can exist at top-level or as children of containers
+		 module logics with other rules may override this method
+		 */
+
+		if( !candidate_parent )		
+		{
+			//can be top-level
+			return true;
+		}
+
+		if( dynamic_cast<CContainerLogic *>( &candidate_parent->get_logic() ) )	
+		{
+			//can be inside container
+			return true;
+		}
+
+		//can't be inside anything else
+		return false;	
+	}
+
+
 	void CLogic::non_container_active_initializer( CServer &server )
 	{
 		/*

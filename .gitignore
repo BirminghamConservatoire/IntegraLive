@@ -1,3 +1,9 @@
 build
 install
 libIntegra_dependencies_renamed
+
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+
+_UpgradeReport_Files

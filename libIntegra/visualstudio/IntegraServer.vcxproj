@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../;../../libIntegra_dependencies/liblo-master;../../libIntegra_dependencies/pthreads-win32/include;../../libIntegra_dependencies/xmlrpc-c/include;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../server/;../../server/externals/liblo;../../server/externals/win32/pthreads-win32/include;../../server/externals/xmlrpc-c/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -95,7 +95,7 @@ rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\M
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../libIntegra_dependencies/liblo-master;../;../../libIntegra_dependencies/xmlrpc-c/include;../../libIntegra_dependencies/pthreads-win32/include;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../server/;../../server/externals/liblo;../../server/externals/xmlrpc-c/include;../../server/externals/win32/pthreads-win32/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -139,20 +139,20 @@ call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk\Mod
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\server\close_orphaned_processes.h" />
-    <ClInclude Include="..\server\osc_client.h" />
-    <ClInclude Include="..\server\xmlrpc_common.h" />
-    <ClInclude Include="..\server\xmlrpc_server.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="IntegraServer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\server\close_orphaned_processes.cpp" />
-    <ClCompile Include="..\server\integra_server.cpp" />
-    <ClCompile Include="..\server\osc_client.cpp" />
-    <ClCompile Include="..\server\xmlrpc_common.cpp" />
-    <ClCompile Include="..\server\xmlrpc_server.cpp" />
+    <ClCompile Include="..\..\server\src\close_orphaned_processes.cpp" />
+    <ClCompile Include="..\..\server\src\integra_server.cpp" />
+    <ClCompile Include="..\..\server\src\osc_client.cpp" />
+    <ClCompile Include="..\..\server\src\xmlrpc_common.cpp" />
+    <ClCompile Include="..\..\server\src\xmlrpc_server.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\server\src\close_orphaned_processes.h" />
+    <ClInclude Include="..\..\server\src\osc_client.h" />
+    <ClInclude Include="..\..\server\src\xmlrpc_common.h" />
+    <ClInclude Include="..\..\server\src\xmlrpc_server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1202,7 +1202,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		E9A5BCA20A3381C400AD9F03 /* Development */ = {
+		E9A5BCA20A3381C400AD9F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1218,9 +1218,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-pd_sd";
 			};
-			name = Development;
+			name = Debug;
 		};
-		E9A5BCA30A3381C400AD9F03 /* Deployment */ = {
+		E9A5BCA30A3381C400AD9F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1239,9 +1239,9 @@
 				PRODUCT_NAME = "$(inherited)-pd_s";
 				SECTORDER_FLAGS = "";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		E9A5BCA60A3381C400AD9F03 /* Development */ = {
+		E9A5BCA60A3381C400AD9F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1257,9 +1257,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-pd_td";
 			};
-			name = Development;
+			name = Debug;
 		};
-		E9A5BCA70A3381C400AD9F03 /* Deployment */ = {
+		E9A5BCA70A3381C400AD9F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1275,9 +1275,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-pd_t";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		E9A5BCAA0A3381C400AD9F03 /* Development */ = {
+		E9A5BCAA0A3381C400AD9F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1301,9 +1301,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-pd_d";
 			};
-			name = Development;
+			name = Debug;
 		};
-		E9A5BCAB0A3381C400AD9F03 /* Deployment */ = {
+		E9A5BCAB0A3381C400AD9F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1332,9 +1332,9 @@
 					"-Wno-unknown-pragmas",
 				);
 			};
-			name = Deployment;
+			name = Release;
 		};
-		E9A5BCAE0A3381C400AD9F03 /* Development */ = {
+		E9A5BCAE0A3381C400AD9F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1353,9 +1353,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-max_sd";
 			};
-			name = Development;
+			name = Debug;
 		};
-		E9A5BCAF0A3381C400AD9F03 /* Deployment */ = {
+		E9A5BCAF0A3381C400AD9F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1373,9 +1373,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-max_s";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		E9A5BCB20A3381C400AD9F03 /* Development */ = {
+		E9A5BCB20A3381C400AD9F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1394,9 +1394,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-max_td";
 			};
-			name = Development;
+			name = Debug;
 		};
-		E9A5BCB30A3381C400AD9F03 /* Deployment */ = {
+		E9A5BCB30A3381C400AD9F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1415,9 +1415,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-max_t";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		E9A5BCB60A3381C400AD9F03 /* Development */ = {
+		E9A5BCB60A3381C400AD9F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -1444,9 +1444,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-max_d";
 			};
-			name = Development;
+			name = Debug;
 		};
-		E9A5BCB70A3381C400AD9F03 /* Deployment */ = {
+		E9A5BCB70A3381C400AD9F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -1473,9 +1473,9 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = "$(inherited)-max";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		E9A5BCBA0A3381C400AD9F03 /* Development */ = {
+		E9A5BCBA0A3381C400AD9F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ALTIVEC_EXTENSIONS = YES;
@@ -1490,15 +1490,16 @@
 				);
 				GCC_VERSION = 4.0;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../libpd/pure-data/src";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
 			};
-			name = Development;
+			name = Debug;
 		};
-		E9A5BCBB0A3381C400AD9F03 /* Deployment */ = {
+		E9A5BCBB0A3381C400AD9F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
@@ -1511,13 +1512,14 @@
 				);
 				GCC_VERSION = 4.0;
 				PRODUCT_NAME = "$(PROJECT_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../libpd/pure-data/src";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
 			};
-			name = Deployment;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1525,65 +1527,65 @@
 		E9A5BCA10A3381C400AD9F03 /* Build configuration list for PBXNativeTarget "PD static single" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9A5BCA20A3381C400AD9F03 /* Development */,
-				E9A5BCA30A3381C400AD9F03 /* Deployment */,
+				E9A5BCA20A3381C400AD9F03 /* Debug */,
+				E9A5BCA30A3381C400AD9F03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		E9A5BCA50A3381C400AD9F03 /* Build configuration list for PBXNativeTarget "PD static multi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9A5BCA60A3381C400AD9F03 /* Development */,
-				E9A5BCA70A3381C400AD9F03 /* Deployment */,
+				E9A5BCA60A3381C400AD9F03 /* Debug */,
+				E9A5BCA70A3381C400AD9F03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		E9A5BCA90A3381C400AD9F03 /* Build configuration list for PBXNativeTarget "PD shared" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9A5BCAA0A3381C400AD9F03 /* Development */,
-				E9A5BCAB0A3381C400AD9F03 /* Deployment */,
+				E9A5BCAA0A3381C400AD9F03 /* Debug */,
+				E9A5BCAB0A3381C400AD9F03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		E9A5BCAD0A3381C400AD9F03 /* Build configuration list for PBXNativeTarget "Max static single" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9A5BCAE0A3381C400AD9F03 /* Development */,
-				E9A5BCAF0A3381C400AD9F03 /* Deployment */,
+				E9A5BCAE0A3381C400AD9F03 /* Debug */,
+				E9A5BCAF0A3381C400AD9F03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		E9A5BCB10A3381C400AD9F03 /* Build configuration list for PBXNativeTarget "Max static multi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9A5BCB20A3381C400AD9F03 /* Development */,
-				E9A5BCB30A3381C400AD9F03 /* Deployment */,
+				E9A5BCB20A3381C400AD9F03 /* Debug */,
+				E9A5BCB30A3381C400AD9F03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		E9A5BCB50A3381C400AD9F03 /* Build configuration list for PBXNativeTarget "Max shared" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9A5BCB60A3381C400AD9F03 /* Development */,
-				E9A5BCB70A3381C400AD9F03 /* Deployment */,
+				E9A5BCB60A3381C400AD9F03 /* Debug */,
+				E9A5BCB70A3381C400AD9F03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		E9A5BCB90A3381C400AD9F03 /* Build configuration list for PBXProject "flext" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E9A5BCBA0A3381C400AD9F03 /* Development */,
-				E9A5BCBB0A3381C400AD9F03 /* Deployment */,
+				E9A5BCBA0A3381C400AD9F03 /* Debug */,
+				E9A5BCBB0A3381C400AD9F03 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

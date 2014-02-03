@@ -1,3 +1,6 @@
 [submodule "libIntegra/externals/libpd"]
 	path = libIntegra/externals/libpd
 	url = https://jamiebullock@github.com/libpd/libpd.git
+[submodule "libIntegra/externals/libsndfile"]
+	path = libIntegra/externals/libsndfile
+	url = https://jamiebullock@github.com/erikd/libsndfile.git

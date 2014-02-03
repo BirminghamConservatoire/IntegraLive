@@ -1,0 +1,212 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		7D25B1E51896F71A00994A57 /* aclocal.m4 */ = {isa = PBXFileReference; lastKnownFileType = text; path = aclocal.m4; sourceTree = "<group>"; };
+		7D25B1E61896F71A00994A57 /* api */ = {isa = PBXFileReference; lastKnownFileType = folder; path = api; sourceTree = "<group>"; };
+		7D25B1E71896F71A00994A57 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		7D25B1E81896F71A00994A57 /* bootstrap.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = bootstrap.sh; sourceTree = "<group>"; };
+		7D25B1E91896F71A00994A57 /* ChangeLog */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
+		7D25B1EA1896F71A00994A57 /* compile */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = compile; sourceTree = "<group>"; };
+		7D25B1EB1896F71A00994A57 /* config.guess */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config.guess; sourceTree = "<group>"; };
+		7D25B1EC1896F71A00994A57 /* config.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.h.in; sourceTree = "<group>"; };
+		7D25B1ED1896F71A00994A57 /* config.sub */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config.sub; sourceTree = "<group>"; };
+		7D25B1EE1896F71A00994A57 /* configure */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
+		7D25B1EF1896F71A00994A57 /* configure.ac */ = {isa = PBXFileReference; lastKnownFileType = text; path = configure.ac; sourceTree = "<group>"; };
+		7D25B1F01896F71A00994A57 /* CONVENTIONS */ = {isa = PBXFileReference; lastKnownFileType = text; path = CONVENTIONS; sourceTree = "<group>"; };
+		7D25B1F11896F71A00994A57 /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		7D25B1F21896F71A00994A57 /* COPYRIGHT */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYRIGHT; sourceTree = "<group>"; };
+		7D25B1F31896F71A00994A57 /* depcomp */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = depcomp; sourceTree = "<group>"; };
+		7D25B1F41896F71A00994A57 /* dft */ = {isa = PBXFileReference; lastKnownFileType = folder; path = dft; sourceTree = "<group>"; };
+		7D25B1F51896F71A00994A57 /* doc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = doc; sourceTree = "<group>"; };
+		7D25B1F61896F71A00994A57 /* fftw.pc.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = fftw.pc.in; sourceTree = "<group>"; };
+		7D25B1F71896F71A00994A57 /* genfft */ = {isa = PBXFileReference; lastKnownFileType = folder; path = genfft; sourceTree = "<group>"; };
+		7D25B1F81896F71A00994A57 /* INSTALL */ = {isa = PBXFileReference; lastKnownFileType = text; path = INSTALL; sourceTree = "<group>"; };
+		7D25B1F91896F71A00994A57 /* install-sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "install-sh"; sourceTree = "<group>"; };
+		7D25B1FA1896F71A00994A57 /* kernel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = kernel; sourceTree = "<group>"; };
+		7D25B1FB1896F71A00994A57 /* libbench2 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libbench2; sourceTree = "<group>"; };
+		7D25B1FC1896F71A00994A57 /* ltmain.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ltmain.sh; sourceTree = "<group>"; };
+		7D25B1FD1896F71A00994A57 /* m4 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = m4; sourceTree = "<group>"; };
+		7D25B1FE1896F71A00994A57 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		7D25B1FF1896F71A00994A57 /* Makefile.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
+		7D25B2001896F71A00994A57 /* missing */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = missing; sourceTree = "<group>"; };
+		7D25B2011896F71A00994A57 /* mpi */ = {isa = PBXFileReference; lastKnownFileType = folder; path = mpi; sourceTree = "<group>"; };
+		7D25B2021896F71A00994A57 /* NEWS */ = {isa = PBXFileReference; lastKnownFileType = text; path = NEWS; sourceTree = "<group>"; };
+		7D25B2031896F71A00994A57 /* rdft */ = {isa = PBXFileReference; lastKnownFileType = folder; path = rdft; sourceTree = "<group>"; };
+		7D25B2041896F71A00994A57 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		7D25B2051896F71A00994A57 /* reodft */ = {isa = PBXFileReference; lastKnownFileType = folder; path = reodft; sourceTree = "<group>"; };
+		7D25B2061896F71A00994A57 /* simd-support */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "simd-support"; sourceTree = "<group>"; };
+		7D25B2071896F71A00994A57 /* support */ = {isa = PBXFileReference; lastKnownFileType = folder; path = support; sourceTree = "<group>"; };
+		7D25B2081896F71A00994A57 /* tests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tests; sourceTree = "<group>"; };
+		7D25B2091896F71A00994A57 /* threads */ = {isa = PBXFileReference; lastKnownFileType = folder; path = threads; sourceTree = "<group>"; };
+		7D25B20A1896F71A00994A57 /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
+		7D25B20B1896F71A00994A57 /* tools */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tools; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		7D25B1DF1896F71A00994A57 = {
+			isa = PBXGroup;
+			children = (
+				7D25B1E51896F71A00994A57 /* aclocal.m4 */,
+				7D25B1E61896F71A00994A57 /* api */,
+				7D25B1E71896F71A00994A57 /* AUTHORS */,
+				7D25B1E81896F71A00994A57 /* bootstrap.sh */,
+				7D25B1E91896F71A00994A57 /* ChangeLog */,
+				7D25B1EA1896F71A00994A57 /* compile */,
+				7D25B1EB1896F71A00994A57 /* config.guess */,
+				7D25B1EC1896F71A00994A57 /* config.h.in */,
+				7D25B1ED1896F71A00994A57 /* config.sub */,
+				7D25B1EE1896F71A00994A57 /* configure */,
+				7D25B1EF1896F71A00994A57 /* configure.ac */,
+				7D25B1F01896F71A00994A57 /* CONVENTIONS */,
+				7D25B1F11896F71A00994A57 /* COPYING */,
+				7D25B1F21896F71A00994A57 /* COPYRIGHT */,
+				7D25B1F31896F71A00994A57 /* depcomp */,
+				7D25B1F41896F71A00994A57 /* dft */,
+				7D25B1F51896F71A00994A57 /* doc */,
+				7D25B1F61896F71A00994A57 /* fftw.pc.in */,
+				7D25B1F71896F71A00994A57 /* genfft */,
+				7D25B1F81896F71A00994A57 /* INSTALL */,
+				7D25B1F91896F71A00994A57 /* install-sh */,
+				7D25B1FA1896F71A00994A57 /* kernel */,
+				7D25B1FB1896F71A00994A57 /* libbench2 */,
+				7D25B1FC1896F71A00994A57 /* ltmain.sh */,
+				7D25B1FD1896F71A00994A57 /* m4 */,
+				7D25B1FE1896F71A00994A57 /* Makefile.am */,
+				7D25B1FF1896F71A00994A57 /* Makefile.in */,
+				7D25B2001896F71A00994A57 /* missing */,
+				7D25B2011896F71A00994A57 /* mpi */,
+				7D25B2021896F71A00994A57 /* NEWS */,
+				7D25B2031896F71A00994A57 /* rdft */,
+				7D25B2041896F71A00994A57 /* README */,
+				7D25B2051896F71A00994A57 /* reodft */,
+				7D25B2061896F71A00994A57 /* simd-support */,
+				7D25B2071896F71A00994A57 /* support */,
+				7D25B2081896F71A00994A57 /* tests */,
+				7D25B2091896F71A00994A57 /* threads */,
+				7D25B20A1896F71A00994A57 /* TODO */,
+				7D25B20B1896F71A00994A57 /* tools */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		7D25B1E41896F71A00994A57 /* fftw */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 7D25B20C1896F71A00994A57 /* Build configuration list for PBXLegacyTarget "fftw" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/jamie/Documents/IntegraLive/libIntegra/externals/fftw;
+			dependencies = (
+			);
+			name = fftw;
+			passBuildSettingsInEnvironment = 1;
+			productName = fftw;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		7D25B1E01896F71A00994A57 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 7D25B1E31896F71A00994A57 /* Build configuration list for PBXProject "fftw" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7D25B1DF1896F71A00994A57;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7D25B1E41896F71A00994A57 /* fftw */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		7D25B1E11896F71A00994A57 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		7D25B1E21896F71A00994A57 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		7D25B20D1896F71A00994A57 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = fftw;
+			};
+			name = Debug;
+		};
+		7D25B20E1896F71A00994A57 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = fftw;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7D25B1E31896F71A00994A57 /* Build configuration list for PBXProject "fftw" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D25B1E11896F71A00994A57 /* Debug */,
+				7D25B1E21896F71A00994A57 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7D25B20C1896F71A00994A57 /* Build configuration list for PBXLegacyTarget "fftw" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D25B20D1896F71A00994A57 /* Debug */,
+				7D25B20E1896F71A00994A57 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7D25B1E01896F71A00994A57 /* Project object */;
+}

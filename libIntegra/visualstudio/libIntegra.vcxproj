@@ -63,8 +63,8 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;libsndfile-1.lib;flext-pd_td.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/fftw-3.3.3;../../libIntegra_dependencies/portaudio/build/msvc/Win32/Debug;../../libIntegra_dependencies/portmidi/Debug;../../libIntegra_dependencies/libsndfile/lib;../../libIntegra_dependencies/flext/pd-msvc;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;libsndfile-1.lib;flext-pd_td.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/zlib-1.2.5/lib;../externals/win32/fftw-3.3.3;../externals/portaudio/build/msvc/Win32/Debug;../externals/portmidi/Debug;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -111,8 +111,8 @@ call libpd_autobuild/clean_libpd.bat
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;flext-pd_t.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/libxml2-2.7.8.win32/lib;../../libIntegra_dependencies/lua-5.2.0;../../libIntegra_dependencies/fftw-3.3.3;../../libIntegra_dependencies/zlib-1.2.5/lib;../../libIntegra_dependencies/libsndfile/lib;../../libIntegra_dependencies/flext/pd-msvc;../../libIntegra_dependencies/portaudio/build/msvc/Win32/Release;../../libIntegra_dependencies/portmidi/Release;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;flext-pd_t.lib;libsndfile-1.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/fftw-3.3.3;../externals/win32/zlib-1.2.5/lib;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/portaudio/build/msvc/Win32/Release;../externals/portmidi/Release;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
     </Link>

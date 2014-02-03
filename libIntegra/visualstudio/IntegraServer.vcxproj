@@ -68,7 +68,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libIntegra.lib;liblo_d.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;pthreadVC2.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../build/Debug/server;../../libIntegra_dependencies/xmlrpc-c/bin/Debug-Win32;../../libIntegra_dependencies/pthreads-win32/lib;../../libIntegra_dependencies/liblo-master/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../build/Debug/server;../../server/externals/xmlrpc-c/bin/Debug-Win32;../../server/externals/win32/pthreads-win32/lib;../../server/externals/liblo/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -105,7 +105,7 @@ rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\M
     </ClCompile>
     <Link>
       <AdditionalDependencies>libIntegra.lib;liblo.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra_dependencies/xmlrpc-c/bin/Release-Win32;../../libIntegra_dependencies/liblo-master/lib/releaselib;../../libIntegra_dependencies/pthreads-win32/lib;../../build/Release/server/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../server/externals/xmlrpc-c/bin/Release-Win32;../../server/externals/liblo/lib/releaselib;../../server/externals/win32/pthreads-win32/lib;../../build/Release/server/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

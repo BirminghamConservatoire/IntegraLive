@@ -1,4 +1,5 @@
-libpd
+/libpd
+/libsndfile
 
 # FFTW build files
 fftw/tools/fftwf-wisdom

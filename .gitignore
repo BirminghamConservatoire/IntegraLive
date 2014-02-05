@@ -1,6 +1,5 @@
 build
 install
-libIntegra_dependencies_renamed
 
 *.vcxproj.filters
 *.vcxproj.user

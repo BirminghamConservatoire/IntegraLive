@@ -1,7 +1,5 @@
 REM copy dependencies to output folder.  This batch file expects parameter 1 to be the output folder, and paramter 2 to be the configuration type (Debug\Release)
 
-echo "%1"
-
 copy "..\externals\win32\pthreads-win32\lib\pthreadVC2.dll" "%1"
 copy "..\externals\win32\zlib-1.2.5\bin\zlib1.dll" "%1"
 copy "..\externals\win32\lua-5.2.0\lua52.dll" "%1"

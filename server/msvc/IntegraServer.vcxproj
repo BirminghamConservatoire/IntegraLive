@@ -37,10 +37,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\..\..\build\$(Configuration)\server\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\bin\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(TargetName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\..\..\build\$(Configuration)\server\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)\..\bin\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(TargetName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
@@ -78,10 +78,11 @@
     <PostBuildEvent>
       <Message>
       </Message>
-      <Command>call versioning/StampVer.bat ../../build/Debug/Server/IntegraServer.exe
-call copyDependenciesToDebug.bat
-rem call gui_autobuild\buildgui.bat ..\..\build\Debug\gui
-rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\ModuleCreator
+      <Command>call versioning/StampVer.bat ../bin/Debug/IntegraServer.exe
+call copy_dependencies.bat ../bin/Debug Debug
+rem call gui_autobuild\buildgui.bat ..\..\build\Release\gui
+rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk\ModuleCreator
+
 </Command>
     </PostBuildEvent>
     <CustomBuildStep>
@@ -115,10 +116,10 @@ rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Debug\sdk\M
     <PostBuildEvent>
       <Message>
       </Message>
-      <Command>call versioning/StampVer.bat ../../build/Release/Server/IntegraServer.exe
-call copyDependenciesToRelease.bat
-call gui_autobuild\buildgui.bat ..\..\build\Release\gui
-call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk\ModuleCreator
+      <Command>call versioning/StampVer.bat ../bin/Release/IntegraServer.exe
+call copy_dependencies.bat ../bin/Release Release
+rem call gui_autobuild\buildgui.bat ..\..\build\Release\gui
+rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk\ModuleCreator
 
 
 </Command>

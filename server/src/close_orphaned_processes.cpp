@@ -20,7 +20,7 @@
 
 
 
-/* helper to close any processes that may have been orphaned by a prevous crash */
+/* helper to close any processes that may have been orphaned by a previous crash */
 
 #include "close_orphaned_processes.h"
 

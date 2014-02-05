@@ -2,3 +2,8 @@
 /*.suo
 /*.opensdf
 /ipch/
+/*.vcxproj.filters
+/*.vcxproj.user
+
+/Debug/
+/Release/

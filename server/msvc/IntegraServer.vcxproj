@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../server/;../../server/externals/liblo;../../server/externals/win32/pthreads-win32/include;../../server/externals/xmlrpc-c/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../externals/liblo;../externals/win32/pthreads-win32/include;../externals/xmlrpc-c/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -68,7 +68,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libIntegra.lib;liblo_d.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;pthreadVC2.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../build/Debug/server;../../server/externals/xmlrpc-c/bin/Debug-Win32;../../server/externals/win32/pthreads-win32/lib;../../server/externals/liblo/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../libIntegra/bin/Debug;../externals/xmlrpc-c/bin/Debug-Win32;../externals/win32/pthreads-win32/lib;../externals/liblo/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -96,7 +96,7 @@ rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../server/;../../server/externals/liblo;../../server/externals/xmlrpc-c/include;../../server/externals/win32/pthreads-win32/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../externals/liblo;../externals/xmlrpc-c/include;../externals/win32/pthreads-win32/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -106,7 +106,7 @@ rem call module_creator_autobuild\buildmodulecreator.bat ..\..\build\Release\sdk
     </ClCompile>
     <Link>
       <AdditionalDependencies>libIntegra.lib;liblo.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../server/externals/xmlrpc-c/bin/Release-Win32;../../server/externals/liblo/lib/releaselib;../../server/externals/win32/pthreads-win32/lib;../../build/Release/server/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../externals/xmlrpc-c/bin/Release-Win32;../externals/liblo/lib/releaselib;../externals/win32/pthreads-win32/lib;../../libIntegra/bin/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

@@ -45,7 +45,7 @@ echo built swf.
 rem package it
 
 echo packaging...
-call %ADT% -package -storetype pkcs12 -keystore module_creator_certificate.p12 -storepass password -target bundle ../%1 ModuleCreator-app.xml ModuleCreator.swf icons assets
+call %ADT% -package -storetype pkcs12 -keystore module_creator_certificate.p12 -storepass password -target bundle %olddirectory%\%1 ModuleCreator-app.xml ModuleCreator.swf icons assets
 echo packaged.
 
 del ModuleCreator.swf

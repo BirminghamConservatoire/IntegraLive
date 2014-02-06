@@ -45,15 +45,10 @@ echo built swf.
 rem package it
 
 echo packaging...
-call %ADT% -package -storetype pkcs12 -keystore gui_certificate.p12 -storepass password -target bundle %1 IntegraLive-app.xml IntegraLive.swf icons assets
+call %ADT% -package -storetype pkcs12 -keystore gui_certificate.p12 -storepass password -target bundle %olddirectory%\%1 IntegraLive-app.xml IntegraLive.swf icons assets
 echo packaged.
 
 del IntegraLive.swf
 
 cd %olddirectory%
-
-rem deploy block library
-
-mkdir %1\BlockLibrary
-xcopy "..\..\blocks" "%1\BlockLibrary" /E /Y /Q
 

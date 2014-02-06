@@ -52,7 +52,15 @@
     </Link>
     <PostBuildEvent>
       <Command>CALL copy_server.bat Debug
-CALL documentation_deployment\compileAllDocumentation.bat ..\Debug\</Command>
+CALL copy_sdk.bat ..\Debug\
+CALL documentation_deployment\compileAllDocumentation.bat ..\Debug\
+CALL gui_autobuild\buildgui.bat ..\Debug\gui
+CALL call module_creator_autobuild\buildmodulecreator.bat ..\Debug\sdk\ModuleCreator
+CALL copy_modules.bat ..\Debug\
+CALL copy_block_library.bat ..\Debug\gui\BlockLibrary
+CALL copy_block_library.bat ..\Debug\gui-debug\BlockLibrary
+
+</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>rd /s /q ..\Debug\documentation</Command>
@@ -76,7 +84,15 @@ CALL documentation_deployment\compileAllDocumentation.bat ..\Debug\</Command>
     </Link>
     <PostBuildEvent>
       <Command>CALL copy_server.bat Release
-CALL documentation_deployment\compileAllDocumentation.bat ..\Release\</Command>
+CALL copy_sdk.bat ..\Release\
+CALL documentation_deployment\compileAllDocumentation.bat ..\Release\
+CALL gui_autobuild\buildgui.bat ..\Release\gui
+CALL call module_creator_autobuild\buildmodulecreator.bat ..\Release\sdk\ModuleCreator
+CALL copy_modules.bat ..\Release\
+CALL copy_block_library.bat ..\Release\gui\BlockLibrary
+
+
+</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>rd /s /q ..\Release\documentation</Command>
@@ -87,6 +103,7 @@ CALL documentation_deployment\compileAllDocumentation.bat ..\Release\</Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="README.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -25,7 +25,7 @@
 		<link>
 			<name>bin-debug</name>
 			<type>2</type>
-			<location>C:/IntegraLive.git/build/Debug/sdk/ModuleCreator-debug</location>
+			<location>C:/IntegraLive.git/integraLive/Debug/SDK/ModuleCreator-debug</location>
 		</link>
 	</linkedResources>
 </projectDescription>

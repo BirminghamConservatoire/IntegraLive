@@ -45,6 +45,7 @@ namespace integra_internal
 	const string CPlayerLogic::endpoint_scene = "scene";
 	const string CPlayerLogic::endpoint_next = "next";
 	const string CPlayerLogic::endpoint_prev = "prev";
+	const string CPlayerLogic::endpoint_home = "home";
 
 
 
@@ -99,6 +100,12 @@ namespace integra_internal
 		if( endpoint_name == endpoint_prev )
 		{
 			prev_handler( server );
+			return;
+		}
+
+		if( endpoint_name == endpoint_home )
+		{
+			home_handler( server );
 			return;
 		}
 	}
@@ -339,6 +346,34 @@ namespace integra_internal
 		{
 			server.process_command( ISetCommand::create( scene_endpoint->get_path(), CStringValue( *next_scene_name ) ), CCommandSource::SYSTEM );
 		}	
+	}
+
+
+	void CPlayerLogic::home_handler( CServer &server )
+	{
+		const CNode &player_node = get_node();
+
+		const INodeEndpoint *scene_endpoint = player_node.get_node_endpoint( endpoint_scene );
+		const INodeEndpoint *tick_endpoint = player_node.get_node_endpoint( endpoint_tick );
+		const INodeEndpoint *play_endpoint = player_node.get_node_endpoint( endpoint_play );
+		assert( scene_endpoint && tick_endpoint && play_endpoint );
+
+		CStringValue empty_string( "" );
+		if( !scene_endpoint->get_value()->is_equal( empty_string ) )
+		{
+			server.process_command( ISetCommand::create( scene_endpoint->get_path(), empty_string ), CCommandSource::SYSTEM );
+		}
+
+		CIntegerValue zero( 0 );
+		if( !play_endpoint->get_value()->is_equal( zero ) )
+		{
+			server.process_command( ISetCommand::create( play_endpoint->get_path(), zero ), CCommandSource::SYSTEM );
+		}
+
+		if( !tick_endpoint->get_value()->is_equal( zero ) )
+		{
+			server.process_command( ISetCommand::create( tick_endpoint->get_path(), zero ), CCommandSource::SYSTEM );
+		}
 	}
 
 

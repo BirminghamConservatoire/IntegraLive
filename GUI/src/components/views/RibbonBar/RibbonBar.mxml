@@ -33,6 +33,7 @@
 			import mx.core.ScrollPolicy;
 			
 			import components.controller.serverCommands.ReceiveMidiInput;
+			import components.controller.serverCommands.SetPlayerHome;
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetViewMode;
@@ -79,6 +80,7 @@
 			
 			var button:RibbonButton = Utilities.getAncestorByType( event.target, RibbonButton ) as RibbonButton;
 			
+			if( button == _homeButton ) return infos.getInfoForView( "Ribbon/Home" );
 			if( button == _playButton ) return infos.getInfoForView( "Ribbon/Play" );
 			if( button == _pauseButton ) return infos.getInfoForView( "Ribbon/Pause" );
 			if( button == _arrangeButton ) return infos.getInfoForView( "Ribbon/ArrangeView" );			
@@ -174,7 +176,13 @@
  		{
  			controller.processCommand( new SetPlaying( false ) );
  		}
- 		
+
+			
+		private function home():void
+		{
+			controller.processCommand( new SetPlayerHome() );
+		}
+			
 			
 		private function toggleMidiInfo():void
 		{
@@ -258,6 +266,9 @@
 
 	<mx:HBox paddingLeft="5" horizontalGap="20" verticalCenter="0">
 		<mx:HBox horizontalGap="5">
+			<RibbonBar:RibbonButton id="_homeButton" 
+									ribbonButtonIcon="{RibbonButton.RIBBONICON_HOME}" 
+									click="{home()}" />
 			<RibbonBar:RibbonButton id="_playButton" 
 									ribbonButtonIcon="{RibbonButton.RIBBONICON_PLAY}" 
 									click="{play()}" />

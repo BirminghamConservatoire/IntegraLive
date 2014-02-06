@@ -183,6 +183,10 @@ package components.views.RibbonBar
 			
 			switch( _icon )
 			{
+				case RIBBONICON_HOME:
+					drawHomeIcon( width, height );
+					break;
+
 				case RIBBONICON_PLAY:
 					drawPlayIcon( width, height );
 					break;
@@ -208,6 +212,22 @@ package components.views.RibbonBar
 			}	
         }
 		
+		
+		private function drawHomeIcon( width:Number, height:Number ):void
+		{
+			graphics.lineStyle( 1, _iconColor );
+			graphics.moveTo( width/3, height/3 );
+			graphics.lineTo( width/3, height*2/3 );
+			
+			graphics.lineStyle( 0, 0, 0 );
+			graphics.beginFill( _iconColor );
+			graphics.moveTo( width*2/3, height/3 );			
+			graphics.lineTo( width/3, height/2 );
+			graphics.lineTo( width*2/3, height*2/3 );
+			graphics.lineTo( width*2/3, height/3 );
+			graphics.endFill();			
+		}
+
 		
 		private function drawPlayIcon( width:Number, height:Number ):void
 		{
@@ -462,6 +482,7 @@ package components.views.RibbonBar
 		
 		private static const _pulseMilliseconds:Number = 1000;
 
+		public static const RIBBONICON_HOME:String = "home";
 		public static const RIBBONICON_PLAY:String = "play";
 		public static const RIBBONICON_PAUSE:String = "pause";
 		public static const RIBBONICON_LIGHT:String = "light";

@@ -50,6 +50,8 @@ namespace integra_internal
 			void scene_handler( CServer &server );
 			void next_handler( CServer &server );
 			void prev_handler( CServer &server );
+			void home_handler( CServer &server );
+
 
 			void update_player( CServer &server, int tick, int play, int loop, int start, int end );
 
@@ -62,6 +64,7 @@ namespace integra_internal
 			static const string endpoint_scene;
 			static const string endpoint_next;
 			static const string endpoint_prev;
+			static const string endpoint_home;
 	};
 }
 

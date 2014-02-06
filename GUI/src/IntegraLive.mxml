@@ -62,6 +62,7 @@
 			import components.controller.serverCommands.PreviousScene;
 			import components.controller.serverCommands.RenameObject;
 			import components.controller.serverCommands.ResetAllBlocks;
+			import components.controller.serverCommands.SetPlayerHome;
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.PollForUpgradableModules;
 			import components.controller.userDataCommands.SetDisplayedInfo;
@@ -1110,6 +1111,10 @@
 
 					case Keyboard.RIGHT:
 						_controller.processCommand( new NextScene() );
+						break;
+
+					case Keyboard.ENTER:
+						_controller.processCommand( new SetPlayerHome() );
 						break;
 
 					default:

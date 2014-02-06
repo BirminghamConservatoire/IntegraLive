@@ -12,22 +12,22 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>..\..\..\install\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\Installer\Debug\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;SourceDirectory=..\..\..\build\Debug</DefineConstants>
+    <DefineConstants>Debug;SourceDirectory=..\..\Debug</DefineConstants>
     <CompilerAdditionalOptions>
     </CompilerAdditionalOptions>
     <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\..\install\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\Installer\Release\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <WixVariables>
     </WixVariables>
     <CompilerAdditionalOptions>
     </CompilerAdditionalOptions>
     <SuppressPdbOutput>True</SuppressPdbOutput>
-    <DefineConstants>SourceDirectory=..\..\..\build\Release</DefineConstants>
+    <DefineConstants>SourceDirectory=..\..\Release</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="FilesFragment.wxs" />
@@ -47,7 +47,7 @@
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <PropertyGroup>
-    <PreBuildEvent>"$(WIX)bin\heat.exe" dir "$(ProjectDir)\..\..\..\build\$(Configuration)" -cg InstallationFiles -gg -scom -sreg -sfrag -srd -suid -dr INSTALLLOCATION -var var.SourceDirectory -out "$(ProjectDir)\FilesFragment.wxs" -t "$(ProjectDir)\excludeMainExe.xsl"</PreBuildEvent>
+    <PreBuildEvent>"$(WIX)bin\heat.exe" dir "$(ProjectDir)\..\..\$(Configuration)" -cg InstallationFiles -gg -scom -sreg -sfrag -srd -suid -dr INSTALLLOCATION -var var.SourceDirectory -out "$(ProjectDir)\FilesFragment.wxs" -t "$(ProjectDir)\excludeMainExe.xsl"</PreBuildEvent>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.

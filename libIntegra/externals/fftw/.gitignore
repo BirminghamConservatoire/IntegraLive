@@ -1,0 +1,44 @@
+# Intermediate object files
+*.o
+*.lo
+*.la
+*.a
+.deps
+.libs
+
+# Autotools generated files
+Makefile
+Makefile.in
+config.h
+config.h.in
+config.guess
+config.log
+config.status
+config.sub
+configure.lineno
+portaudio-2.0.pc
+libtool
+stamp-h1
+compile
+aclocal.m4
+ltmain.sh
+INSTALL
+autom4te.cache
+fftw.pc
+fftw3.pc
+fftw3f.pc
+
+# FFTW
+tools/fftw-wisdom
+tools/fftwf-wisdom
+tools/fftw-wisdom-to-conf
+tools/fftw-wisdom.1
+tools/fftw_wisdom.1
+api/fftw3.f03
+mpi/fftw3-mpi.f03
+mpi/fftw3l-mpi.f03
+tests/bench
+
+# Xcode non-shared
+xcuserdata
+

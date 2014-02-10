@@ -1,2 +1,6 @@
 src/lua
 src/luac
+src/*.o
+src/*.a
+xcuserdata
+Makefile

@@ -24,6 +24,8 @@
 #include "dsp_engine.h"
 #include "interface_definition.h"
 #include "file_helper.h"
+#include "midi_input_filterer.h"
+#include "midi_input_dispatcher.h"
 #include "server.h"
 #include "midi_engine.h"
 #include "api/command.h"
@@ -77,6 +79,8 @@ namespace integra_internal
 
 		create_host_patch();
 
+		m_midi_input_filterer = new CMidiInputFilterer();
+
 		m_feedback_queue = new CThreadedQueue<pd::Message>( *this );
 
 		m_pd = new pd::PdBase;
@@ -93,10 +97,6 @@ namespace integra_internal
 
 		register_externals();
 
-		memset( m_channel_pressures, 0, midi_channels * sizeof( int ) );
-		memset( m_pitchbends, 0, midi_channels * sizeof( int ) );
-
-
 		m_initialised = true;
 	}
 
@@ -109,6 +109,8 @@ namespace integra_internal
 		delete m_pd;
 
 		delete m_feedback_queue;
+
+		delete m_midi_input_filterer;
 
 		for( set_command_list::iterator i = m_set_commands.begin(); i != m_set_commands.end(); i++ )
 		{
@@ -937,12 +939,17 @@ namespace integra_internal
 	{
 		IMidiEngine &midi_engine = m_server.get_midi_engine();
 
-		CError midi_result = midi_engine.get_incoming_midi_messages( m_midi_input );
+		CError midi_result = midi_engine.poll_input( m_midi_input );
 		if( midi_result != CError::SUCCESS )
 		{
 			INTEGRA_TRACE_ERROR << "Error getting incoming midi messages: " << midi_result;
 			return;
 		}
+
+		m_midi_input_filterer->filter_input( m_midi_input );
+
+		midi_message_list message_list;
+		CMidiMessage midi_message;
 
 		for( int device_index = 0; device_index < m_midi_input.size(); device_index++ )
 		{
@@ -953,6 +960,8 @@ namespace integra_internal
 				continue;
 			}
 
+			midi_message.device = input_buffer.device_name;
+
 			/* 
 			 multiple devices are handled in pd by using channel numbers that are greater than 15.
 			 channels 0..15 represent first device, channels 16..31 represent second device and so on
@@ -960,26 +969,21 @@ namespace integra_internal
 			int device_component = device_index * 16;
 
 			/* 
-			 clear caches
-			*/
-
-			memset( m_channel_pressures, 0xFF, midi_channels * sizeof( int ) );
-			memset( m_pitchbends, 0xFF, midi_channels * sizeof( int ) );
-			for( int i = 0; i < midi_channels; i++ )
-			{
-				m_poly_pressures[ i ].clear();
-				m_control_changes[ i ].clear();
-			}
-
-			/* 
-			 iterate through midi messages
-			 send note on/off and program change immediately
-			 store key pressure, control change, pitchbend in caches so that duplicates are not sent per frame
+			 iterate through midi messages, sending them into pd and adding to the list for midi_input_dispatcher
 			*/
 
 			for( int message_iterator = 0; message_iterator < input_buffer.number_of_messages; message_iterator++ )
 			{
 				unsigned int message = input_buffer.messages[ message_iterator ];
+
+				if( message == 0 )
+				{
+					//message was filtered by CMidiInputFilterer
+					continue;
+				}
+
+				midi_message.message = message;
+				message_list.push_back( midi_message );
 
 				unsigned int status_nibble = ( message & 0xF0 ) >> 4;
 				unsigned int channel_nibble = message & 0xF;
@@ -988,25 +992,9 @@ namespace integra_internal
 
 				int device_and_channel = device_component | channel_nibble;
 
-				assert( status_nibble >= 0 && status_nibble << 0xF );
-
-				if( status_nibble < 0x8 )
-				{
-					INTEGRA_TRACE_ERROR << "Unexpected status nibble - should begin with 1: " << std::hex << message;
-					continue;
-				}
-
-				if( value1 >= 0x80 )
-				{
-					INTEGRA_TRACE_ERROR << "Unexpected value 1 - should begin with 0: " << std::hex << message;
-					continue;
-				}
-
-				if( value2 >= 0x80 )
-				{
-					INTEGRA_TRACE_ERROR << "Unexpected value 2 - should begin with 0: " << std::hex << message;
-					continue;
-				}
+				assert( status_nibble >= 0x8 && status_nibble << 0xF );
+				assert( value1 < 0x80 );
+				assert( value2 < 0x80 );
 
 				switch( status_nibble )
 				{
@@ -1019,11 +1007,11 @@ namespace integra_internal
 						break;
 
 					case 0xA:	/* polyphonic key pressure */
-						m_poly_pressures[ channel_nibble ][ value1 ] = value2; 
+						m_pd->sendPolyAftertouch( device_and_channel, value1, value2 );
 						break;
 
 					case 0xB:	/* control change */
-						m_control_changes[ channel_nibble ][ value1 ] = value2;
+						m_pd->sendControlChange( device_and_channel, value1, value2 );
 						break;
 
 					case 0xC:	/* program change */
@@ -1031,11 +1019,11 @@ namespace integra_internal
 						break;
 
 					case 0xD:	/* channel pressure */
-						m_channel_pressures[ channel_nibble ] = value1;
+						m_pd->sendAftertouch( device_and_channel, value1 );
 						break;
 
 					case 0xE:	/* pitchbend */
-						m_pitchbends[ channel_nibble ] = value1 | ( value2 << 7 );
+						m_pd->sendPitchBend( device_and_channel, ( value1 | ( value2 << 7 ) ) - 0x2000 );
 						break;
 
 					case 0xF:
@@ -1043,39 +1031,11 @@ namespace integra_internal
 						break;
 				}
 			}
+		}
 
-			/* 
-			 iterate through cached key pressure, control change and pitchbend
-			*/
-
-			for( int channel = 0; channel < midi_channels; channel++ )
-			{
-				int device_and_channel = device_component | channel;
-
-				const int_map &poly_pressures = m_poly_pressures[ channel ];
-				for( int_map::const_iterator i = poly_pressures.begin(); i != poly_pressures.end(); i++ )
-				{
-					m_pd->sendPolyAftertouch( device_and_channel, i->first, i->second );
-				}
-
-				const int_map &control_changes = m_control_changes[ channel ];
-				for( int_map::const_iterator i = control_changes.begin(); i != control_changes.end(); i++ )
-				{
-					m_pd->sendControlChange( device_and_channel, i->first, i->second );
-				}
-
-				int channel_pressure = m_channel_pressures[ channel ];
-				if( channel_pressure >= 0 )
-				{
-					m_pd->sendAftertouch( device_and_channel, channel_pressure );
-				}
-
-				int pitchbend = m_pitchbends[ channel ];
-				if( pitchbend >= 0 )
-				{
-					m_pd->sendPitchBend( device_and_channel, pitchbend - 0x2000 );
-				}
-			}
+		if( !message_list.empty() )
+		{
+			m_server.get_midi_input_dispatcher().dispatch_midi( message_list );
 		}
 	}
 }

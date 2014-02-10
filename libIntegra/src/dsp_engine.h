@@ -61,6 +61,7 @@ namespace integra_internal
 {
 	class CServer;
 	class IMidiEngine;
+	class CMidiInputFilterer;
 
 	class CDspEngine : public IThreadedQueueOutputSink<pd::Message>
 	{
@@ -149,13 +150,9 @@ namespace integra_internal
 			typedef std::list<ISetCommand *> set_command_list;
 			set_command_list m_set_commands;
 
-			midi_input_buffer_array m_midi_input;
+			CMidiInputFilterer *m_midi_input_filterer;
 
-			static const int midi_channels = 16;
-			int_map m_poly_pressures[ midi_channels ];
-			int_map m_control_changes[ midi_channels ];
-			int m_channel_pressures[ midi_channels ];
-			int m_pitchbends[ midi_channels ];
+			midi_input_buffer_array m_midi_input;
 
 			int m_unanswered_pings;
 

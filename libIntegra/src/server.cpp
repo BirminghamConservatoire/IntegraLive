@@ -32,6 +32,7 @@
 #include "dsp_engine.h"
 #include "audio_engine.h"
 #include "midi_engine.h"
+#include "midi_input_dispatcher.h"
 
 #include "api/server_startup_info.h"
 #include "api/command.h"
@@ -83,11 +84,13 @@ namespace integra_internal
 
 		m_module_manager = new CModuleManager( *this, startup_info.system_module_directory, startup_info.third_party_module_directory );
 
+		m_midi_input_dispatcher = new CMidiInputDispatcher( *this );
+
+		m_midi_engine = IMidiEngine::create_midi_engine();
+
 		m_dsp_engine = new CDspEngine( *this );
 
 		m_audio_engine = IAudioEngine::create_audio_engine( *m_dsp_engine );
-
-		m_midi_engine = IMidiEngine::create_midi_engine();
 
 		m_notification_sink = startup_info.notification_sink;
 
@@ -112,9 +115,11 @@ namespace integra_internal
 	
 		delete m_audio_engine;
 
+		delete m_dsp_engine;
+
 		delete m_midi_engine;
 
-		delete m_dsp_engine;
+		delete m_midi_input_dispatcher;
 
 		delete m_module_manager;
 

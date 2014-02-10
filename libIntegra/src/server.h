@@ -57,7 +57,8 @@ namespace integra_internal
 	class CDspEngine;
 	class IAudioEngine;
 	class IMidiEngine;
-	
+	class CMidiInputDispatcher;
+
 
 	class CServer : public IServer
 	{
@@ -103,6 +104,8 @@ namespace integra_internal
 			IAudioEngine &get_audio_engine() const { return *m_audio_engine; }
 			IMidiEngine &get_midi_engine() const { return *m_midi_engine; }
 
+			CMidiInputDispatcher &get_midi_input_dispatcher() const { return *m_midi_input_dispatcher; }
+
 			const guid_set &get_all_module_ids() const;
 			const IInterfaceDefinition *find_interface( const GUID &module_id ) const;
 
@@ -141,6 +144,7 @@ namespace integra_internal
 			CDspEngine *m_dsp_engine;
 			IAudioEngine *m_audio_engine;
 			IMidiEngine *m_midi_engine;
+			CMidiInputDispatcher *m_midi_input_dispatcher;
 
 			INotificationSink *m_notification_sink;
 

@@ -66,11 +66,11 @@ namespace integra_internal
 			/* the following methods can be called simultaneously to the methods above */
 
 			/*
-			 get_incoming_midi_messages should only return the following message types:
+			 poll_input should only return the following message types:
 			 Note On, Note Off, Channel Aftertouch, Poly Aftertouch, Program Change, Control Change, Pitchbend.
 			*/
 
-			virtual CError get_incoming_midi_messages( midi_input_buffer_array &output ) = 0;
+			virtual CError poll_input( midi_input_buffer_array &input_buffers ) = 0;
 
 			virtual CError send_midi_message( const string &device_name, unsigned int message ) = 0;
 			virtual CError send_midi_message( int device_index, unsigned int message ) = 0;
@@ -88,8 +88,15 @@ namespace integra_internal
 			static const int input_buffer_size = 1024;
 
 			string device_name;
-			std::array<int, input_buffer_size> messages;
-			int number_of_messages;
+
+			/* messages set to '0' have been filtered by CMidiInputFilterer */
+			std::array<unsigned int, input_buffer_size> messages;
+
+			/* 
+			 to avoid allocation/deallocation, the message array is of fixed size.  
+			 number_of_messages specifies how many are actually used
+			*/
+			unsigned int number_of_messages;
 
 	};
 }

@@ -418,18 +418,18 @@ namespace integra_internal
 	}
 
 
-	CError CPortMidiEngine::get_incoming_midi_messages( midi_input_buffer_array &output )
+	CError CPortMidiEngine::poll_input( midi_input_buffer_array &input_buffers )
 	{
 		CError result = CError::SUCCESS;
 
 		pthread_mutex_lock( &m_input_mutex );
 
-		output.resize( m_active_input_devices.size() );
+		input_buffers.resize( m_active_input_devices.size() );
 
 		for( int i = 0; i < m_active_input_devices.size(); i++ )
 		{
 			const CMidiDevice &midi_device = m_active_input_devices[ i ];
-			CMidiInputBuffer &buffer = output[ i ];
+			CMidiInputBuffer &buffer = input_buffers[ i ];
 			buffer.device_name = midi_device.name;
 			buffer.number_of_messages = 0;
 

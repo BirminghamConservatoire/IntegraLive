@@ -50,7 +50,7 @@ namespace integra_internal
 			string_vector get_active_input_devices() const;
 			string_vector get_active_output_devices() const;
 
-			CError get_incoming_midi_messages( midi_input_buffer_array &output );
+			CError poll_input( midi_input_buffer_array &input_buffers );
 
 			CError send_midi_message( const string &device_name, unsigned int message );
 			CError send_midi_message( int device_index, unsigned int message );

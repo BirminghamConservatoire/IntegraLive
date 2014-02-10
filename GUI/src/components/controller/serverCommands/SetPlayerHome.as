@@ -38,7 +38,7 @@ package components.controller.serverCommands
 			pushInverseCommand( new SetPlaying( model.project.player.playing ) );
 		}
 		
-		
+
 		public override function execute( model:IntegraModel ):void
 		{
 		}			

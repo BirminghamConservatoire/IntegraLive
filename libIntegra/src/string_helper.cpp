@@ -106,6 +106,48 @@ namespace integra_api
 	}
 
 
+	bool CStringHelper::string_to_string_vector( const string &input, string_vector &output )
+	{
+		output.clear();
+			
+		int position = 0;
+		int input_length = input.length();
+			
+		while( position < input_length )
+		{
+			int index_of_colon = input.find_first_of( ':', position );
+			if( index_of_colon < 0 )
+			{
+				INTEGRA_TRACE_ERROR << "Can't find colon from position: " << position << " in packed string " << input;
+				return false;
+			}
+				
+			string string_length_substr = input.substr( position, index_of_colon - position );
+			char *end_pointer = NULL;
+			int string_length = strtoul( string_length_substr.c_str(), &end_pointer, 10 );
+			if( end_pointer == string_length_substr.c_str() )
+			{
+				INTEGRA_TRACE_ERROR << "Can't parse string length at position: " << position << " in packed string " << input;
+				return false;
+			}
+				
+			if( index_of_colon + 1 + string_length > input_length )
+			{
+				INTEGRA_TRACE_ERROR << "Insufficient characters from position: " << position << " in packed string " << input;
+				return false;
+			}
+				
+			string content = input.substr( index_of_colon + 1, string_length );
+			output.push_back( content );
+				
+			position = index_of_colon + 1 + string_length;				
+		}
+
+		return true;
+	}
+
+
+
 	string CStringHelper::trim( const string &input )
 	{
 		static const string whitespace_chars = " \t\n\v\f\r";

@@ -39,63 +39,66 @@ namespace integra_internal
 			CPortMidiEngine();
 			~CPortMidiEngine();
 
-			CError set_input_device( const string &input_device );
-			CError set_output_device( const string &output_device );
+			CError set_input_devices( const string_vector &input_devices );
+			CError set_output_devices( const string_vector &output_devices );
 
 			CError restore_defaults();
 
 			string_vector get_available_input_devices() const;
 			string_vector get_available_output_devices() const;
 
-			string get_selected_input_device() const;
-			string get_selected_output_device() const;
+			string_vector get_active_input_devices() const;
+			string_vector get_active_output_devices() const;
 
-			CError get_incoming_midi_messages( unsigned int *&messages, int &number_of_messages );
+			CError get_incoming_midi_messages( midi_input_buffer_array &output );
 
-			CError send_midi_message( unsigned int message );
+			CError send_midi_message( const string &device_name, unsigned int message );
+			CError send_midi_message( int device_index, unsigned int message );
 
 		private:
 
+			class CMidiDevice
+			{
+				public:
+					CMidiDevice() { id = pmNoDevice; stream = NULL; }
+
+					PmDeviceID id;
+					string name;
+					PortMidiStream *stream;
+			};
+
 			typedef std::map<PmDeviceID, string> device_map;
+			typedef std::vector<CMidiDevice> device_vector;
 
 			void find_available_devices();
 
-			CError set_input_device_to_default();
-			CError set_output_device_to_default();
+			CError set_input_devices_to_default();
+			CError set_output_devices_to_default();
 
 			string_vector device_map_to_string_vector( const device_map &devices ) const;
 
 			PmDeviceID get_device_id( const device_map &device_map, const string &device_name ) const;
+			bool is_device_open( const device_vector &devices, PmDeviceID device_id ) const;
+			bool is_device_open( const device_vector &devices, const string &device_name ) const;
 
-			void open_input_device( PmDeviceID device_id );
-			void open_output_device( PmDeviceID device_id );
+			CError open_input_device( PmDeviceID device_id );
+			CError open_output_device( PmDeviceID device_id );
 
-			void close_input_device();
-			void close_output_device();
-
-			CError get_incoming_midi_messages_inner( unsigned int *&messages, int &number_of_messages );
+			void close_input_devices();
+			void close_output_devices();
 
 			bool m_initialized_ok;
 
 			device_map m_available_input_devices;
 			device_map m_available_output_devices;
 
-			PmDeviceID m_current_input_device_id;
-			PmDeviceID m_current_output_device_id;
-
-			PortMidiStream *m_input_stream;
-			PortMidiStream *m_output_stream;
+			device_vector m_active_input_devices;
+			device_vector m_active_output_devices;
 
 			pthread_mutex_t m_input_mutex;
 			pthread_mutex_t m_output_mutex;
 
 			PmEvent *m_input_event_buffer;
-			unsigned int *m_input_message_buffer;
-
-
-
-			static const string none;
-			static const int input_buffer_size;
 	};
 }
 

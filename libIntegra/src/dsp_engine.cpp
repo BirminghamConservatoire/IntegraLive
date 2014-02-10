@@ -711,11 +711,14 @@ namespace integra_internal
 				return false;
 		}
 
+		int channel = message.channel % 16;
+		int device_index = message.channel / 16;
+
 		unsigned int midi_message = message.channel | ( status << 4 ) | ( value1 << 8 ) | ( value2 << 16 );
 
 		IMidiEngine &midi_engine = m_server.get_midi_engine();
 
-		midi_engine.send_midi_message( midi_message );
+		midi_engine.send_midi_message( device_index, midi_message );
 
 		return true;
 	}
@@ -934,136 +937,144 @@ namespace integra_internal
 	{
 		IMidiEngine &midi_engine = m_server.get_midi_engine();
 
-		unsigned int *midi_messages = NULL;
-		int number_of_midi_messages = 0;
-
-		CError midi_result = midi_engine.get_incoming_midi_messages( midi_messages, number_of_midi_messages );
+		CError midi_result = midi_engine.get_incoming_midi_messages( m_midi_input );
 		if( midi_result != CError::SUCCESS )
 		{
 			INTEGRA_TRACE_ERROR << "Error getting incoming midi messages: " << midi_result;
 			return;
 		}
 
-		if( number_of_midi_messages == 0 )
+		for( int device_index = 0; device_index < m_midi_input.size(); device_index++ )
 		{
-			/*
-			 early exit
+			const CMidiInputBuffer &input_buffer = m_midi_input[ device_index ];
+
+			if( input_buffer.number_of_messages == 0 )
+			{
+				continue;
+			}
+
+			/* 
+			 multiple devices are handled in pd by using channel numbers that are greater than 15.
+			 channels 0..15 represent first device, channels 16..31 represent second device and so on
+			*/
+			int device_component = device_index * 16;
+
+			/* 
+			 clear caches
 			*/
 
-			return;
-		}
-
-		/* 
-		 clear caches
-		*/
-
-		memset( m_channel_pressures, 0xFF, midi_channels * sizeof( int ) );
-		memset( m_pitchbends, 0xFF, midi_channels * sizeof( int ) );
-		for( int i = 0; i < midi_channels; i++ )
-		{
-			m_poly_pressures[ i ].clear();
-			m_control_changes[ i ].clear();
-		}
-
-		/* 
-		 iterate through midi messages
-		 send note on/off and program change immediately
-		 store key pressure, control change, pitchbend in caches so that duplicates are not sent per frame
-		*/
-
-		for( int i = 0; i < number_of_midi_messages; i++ )
-		{
-			unsigned int message = midi_messages[ i ];
-
-			unsigned int status_nibble = ( message & 0xF0 ) >> 4;
-			unsigned int channel_nibble = message & 0xF;
-			unsigned int value1 = ( message & 0xFF00 ) >> 8;
-			unsigned int value2 = ( message & 0xFF0000 ) >> 16;
-
-			assert( status_nibble >= 0 && status_nibble << 0xF );
-
-			if( status_nibble < 0x8 )
+			memset( m_channel_pressures, 0xFF, midi_channels * sizeof( int ) );
+			memset( m_pitchbends, 0xFF, midi_channels * sizeof( int ) );
+			for( int i = 0; i < midi_channels; i++ )
 			{
-				INTEGRA_TRACE_ERROR << "Unexpected status nibble - should begin with 1: " << std::hex << message;
-				continue;
+				m_poly_pressures[ i ].clear();
+				m_control_changes[ i ].clear();
 			}
 
-			if( value1 >= 0x80 )
+			/* 
+			 iterate through midi messages
+			 send note on/off and program change immediately
+			 store key pressure, control change, pitchbend in caches so that duplicates are not sent per frame
+			*/
+
+			for( int message_iterator = 0; message_iterator < input_buffer.number_of_messages; message_iterator++ )
 			{
-				INTEGRA_TRACE_ERROR << "Unexpected value 1 - should begin with 0: " << std::hex << message;
-				continue;
+				unsigned int message = input_buffer.messages[ message_iterator ];
+
+				unsigned int status_nibble = ( message & 0xF0 ) >> 4;
+				unsigned int channel_nibble = message & 0xF;
+				unsigned int value1 = ( message & 0xFF00 ) >> 8;
+				unsigned int value2 = ( message & 0xFF0000 ) >> 16;
+
+				int device_and_channel = device_component | channel_nibble;
+
+				assert( status_nibble >= 0 && status_nibble << 0xF );
+
+				if( status_nibble < 0x8 )
+				{
+					INTEGRA_TRACE_ERROR << "Unexpected status nibble - should begin with 1: " << std::hex << message;
+					continue;
+				}
+
+				if( value1 >= 0x80 )
+				{
+					INTEGRA_TRACE_ERROR << "Unexpected value 1 - should begin with 0: " << std::hex << message;
+					continue;
+				}
+
+				if( value2 >= 0x80 )
+				{
+					INTEGRA_TRACE_ERROR << "Unexpected value 2 - should begin with 0: " << std::hex << message;
+					continue;
+				}
+
+				switch( status_nibble )
+				{
+					case 0x8:	/* note off */
+						m_pd->sendNoteOn( device_and_channel, value1, 0 );
+						break;							
+
+					case 0x9:	/* note on */
+						m_pd->sendNoteOn( device_and_channel, value1, value2 );
+						break;
+
+					case 0xA:	/* polyphonic key pressure */
+						m_poly_pressures[ channel_nibble ][ value1 ] = value2; 
+						break;
+
+					case 0xB:	/* control change */
+						m_control_changes[ channel_nibble ][ value1 ] = value2;
+						break;
+
+					case 0xC:	/* program change */
+						m_pd->sendProgramChange( device_and_channel, value1 );
+						break;
+
+					case 0xD:	/* channel pressure */
+						m_channel_pressures[ channel_nibble ] = value1;
+						break;
+
+					case 0xE:	/* pitchbend */
+						m_pitchbends[ channel_nibble ] = value1 | ( value2 << 7 );
+						break;
+
+					case 0xF:
+						INTEGRA_TRACE_ERROR << "Unexpected system common / realtime message: " << std::hex << message;
+						break;
+				}
 			}
 
-			if( value2 >= 0x80 )
+			/* 
+			 iterate through cached key pressure, control change and pitchbend
+			*/
+
+			for( int channel = 0; channel < midi_channels; channel++ )
 			{
-				INTEGRA_TRACE_ERROR << "Unexpected value 2 - should begin with 0: " << std::hex << message;
-				continue;
-			}
+				int device_and_channel = device_component | channel;
 
-			switch( status_nibble )
-			{
-				case 0x8:	/* note off */
-					m_pd->sendNoteOn( channel_nibble, value1, 0 );
-					break;							
+				const int_map &poly_pressures = m_poly_pressures[ channel ];
+				for( int_map::const_iterator i = poly_pressures.begin(); i != poly_pressures.end(); i++ )
+				{
+					m_pd->sendPolyAftertouch( device_and_channel, i->first, i->second );
+				}
 
-				case 0x9:	/* note on */
-					m_pd->sendNoteOn( channel_nibble, value1, value2 );
-					break;
+				const int_map &control_changes = m_control_changes[ channel ];
+				for( int_map::const_iterator i = control_changes.begin(); i != control_changes.end(); i++ )
+				{
+					m_pd->sendControlChange( device_and_channel, i->first, i->second );
+				}
 
-				case 0xA:	/* polyphonic key pressure */
-					m_poly_pressures[ channel_nibble ][ value1 ] = value2; 
-					break;
+				int channel_pressure = m_channel_pressures[ channel ];
+				if( channel_pressure >= 0 )
+				{
+					m_pd->sendAftertouch( device_and_channel, channel_pressure );
+				}
 
-				case 0xB:	/* control change */
-					m_control_changes[ channel_nibble ][ value1 ] = value2;
-					break;
-
-				case 0xC:	/* program change */
-					m_pd->sendProgramChange( channel_nibble, value1 );
-					break;
-
-				case 0xD:	/* channel pressure */
-					m_channel_pressures[ channel_nibble ] = value1;
-					break;
-
-				case 0xE:	/* pitchbend */
-					m_pitchbends[ channel_nibble ] = value1 | ( value2 << 7 );
-					break;
-
-				case 0xF:
-					INTEGRA_TRACE_ERROR << "Unexpected system common / realtime message: " << std::hex << message;
-					break;
-			}
-		}
-
-		/* 
-		 iterate through cached key pressure, control change and pitchbend
-		*/
-
-		for( int channel = 0; channel < midi_channels; channel++ )
-		{
-			const int_map &poly_pressures = m_poly_pressures[ channel ];
-			for( int_map::const_iterator i = poly_pressures.begin(); i != poly_pressures.end(); i++ )
-			{
-				m_pd->sendPolyAftertouch( channel, i->first, i->second );
-			}
-
-			const int_map &control_changes = m_control_changes[ channel ];
-			for( int_map::const_iterator i = control_changes.begin(); i != control_changes.end(); i++ )
-			{
-				m_pd->sendControlChange( channel, i->first, i->second );
-			}
-
-			int channel_pressure = m_channel_pressures[ channel ];
-			if( channel_pressure >= 0 )
-			{
-				m_pd->sendAftertouch( channel, channel_pressure );
-			}
-
-			int pitchbend = m_pitchbends[ channel ];
-			if( pitchbend >= 0 )
-			{
-				m_pd->sendPitchBend( channel, pitchbend - 0x2000 );
+				int pitchbend = m_pitchbends[ channel ];
+				if( pitchbend >= 0 )
+				{
+					m_pd->sendPitchBend( device_and_channel, pitchbend - 0x2000 );
+				}
 			}
 		}
 	}

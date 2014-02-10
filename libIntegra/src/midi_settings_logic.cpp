@@ -30,6 +30,7 @@
 
 #include "api/string_helper.h"
 #include "api/command.h"
+#include "api/trace.h"
 
 #include "assert.h"
 
@@ -38,8 +39,8 @@ namespace integra_internal
 {
 	const string CMidiSettingsLogic::endpoint_available_input_devices = "availableInputDevices";
 	const string CMidiSettingsLogic::endpoint_available_output_devices = "availableOutputDevices";
-	const string CMidiSettingsLogic::endpoint_selected_input_device = "selectedInputDevice";
-	const string CMidiSettingsLogic::endpoint_selected_output_device = "selectedOutputDevice";
+	const string CMidiSettingsLogic::endpoint_active_input_devices = "activeInputDevices";
+	const string CMidiSettingsLogic::endpoint_active_output_devices = "activeOutputDevices";
 	const string CMidiSettingsLogic::endpoint_restore_defaults = "restoreDefaults";
 
 	CMidiSettingsLogic::midi_settings_logic_set CMidiSettingsLogic::s_all_midi_settings_logics;
@@ -99,17 +100,33 @@ namespace integra_internal
 				return;
 		}
 
-		if( endpoint_name == endpoint_selected_input_device )
+		if( endpoint_name == endpoint_active_input_devices )
 		{
-			midi_engine.set_input_device( *node_endpoint.get_value() );
+			const string &packed_devices = *node_endpoint.get_value();
+			string_vector input_devices;
+			if( !CStringHelper::string_to_string_vector( packed_devices, input_devices ) )
+			{
+				INTEGRA_TRACE_ERROR << "Misformatted packed string: " << packed_devices;
+				return;
+			}
+
+			midi_engine.set_input_devices( input_devices );
 
 			update_all_fields_for_all_midi_settings_nodes( server );
 			return;
 		}
 
-		if( endpoint_name == endpoint_selected_output_device )
+		if( endpoint_name == endpoint_active_output_devices )
 		{
-			midi_engine.set_output_device( *node_endpoint.get_value() );
+			const string &packed_devices = *node_endpoint.get_value();
+			string_vector output_devices;
+			if( !CStringHelper::string_to_string_vector( packed_devices, output_devices ) )
+			{
+				INTEGRA_TRACE_ERROR << "Misformatted packed string: " << packed_devices;
+				return;
+			}
+
+			midi_engine.set_output_devices( output_devices );
 
 			update_all_fields_for_all_midi_settings_nodes( server );
 			return;
@@ -124,8 +141,8 @@ namespace integra_internal
 		update_field( server, endpoint_available_input_devices, CStringHelper::string_vector_to_string( midi_engine.get_available_input_devices() ) );
 		update_field( server, endpoint_available_output_devices, CStringHelper::string_vector_to_string( midi_engine.get_available_output_devices() ) );
 
-		update_field( server, endpoint_selected_input_device, midi_engine.get_selected_input_device() );
-		update_field( server, endpoint_selected_output_device, midi_engine.get_selected_output_device() );
+		update_field( server, endpoint_active_input_devices, CStringHelper::string_vector_to_string( midi_engine.get_active_input_devices() ) );
+		update_field( server, endpoint_active_output_devices, CStringHelper::string_vector_to_string( midi_engine.get_active_output_devices() ) );
 	}
 
 

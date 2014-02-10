@@ -25,12 +25,19 @@
 #include "api/common_typedefs.h"
 #include "api/error.h"
 
+#include <array>
+
 
 using namespace integra_api;
 
 namespace integra_internal
 {
 	class CDspEngine;
+	class CMidiInputBuffer;
+
+	typedef std::vector<CMidiInputBuffer> midi_input_buffer_array;
+
+
 
 	class IMidiEngine
 	{
@@ -43,26 +50,46 @@ namespace integra_internal
 			static IMidiEngine *create_midi_engine();
 			virtual ~IMidiEngine() {}
 
-			virtual CError set_input_device( const string &input_device ) = 0;
-			virtual CError set_output_device( const string &output_device ) = 0;
+			/* the following methods must not be called simultaneously */
+
+			virtual CError set_input_devices( const string_vector &input_devices ) = 0;
+			virtual CError set_output_devices( const string_vector &output_devices ) = 0;
 
 			virtual CError restore_defaults() = 0;
 
 			virtual string_vector get_available_input_devices() const = 0;
 			virtual string_vector get_available_output_devices() const = 0;
 
-			virtual string get_selected_input_device() const = 0;
-			virtual string get_selected_output_device() const = 0;
+			virtual string_vector get_active_input_devices() const = 0;
+			virtual string_vector get_active_output_devices() const = 0;
+
+			/* the following methods can be called simultaneously to the methods above */
 
 			/*
-			 Implementations should only return the following message types:
+			 get_incoming_midi_messages should only return the following message types:
 			 Note On, Note Off, Channel Aftertouch, Poly Aftertouch, Program Change, Control Change, Pitchbend.
 			*/
 
-			virtual CError get_incoming_midi_messages( unsigned int *&messages, int &number_of_messages ) = 0;
+			virtual CError get_incoming_midi_messages( midi_input_buffer_array &output ) = 0;
 
-			virtual CError send_midi_message( unsigned int message ) = 0;
+			virtual CError send_midi_message( const string &device_name, unsigned int message ) = 0;
+			virtual CError send_midi_message( int device_index, unsigned int message ) = 0;
+	};
 
+
+
+	//helper to pass midi input out to customer of midi engine
+	class CMidiInputBuffer
+	{
+		public:
+
+			CMidiInputBuffer() { number_of_messages = 0; }
+
+			static const int input_buffer_size = 1024;
+
+			string device_name;
+			std::array<int, input_buffer_size> messages;
+			int number_of_messages;
 
 	};
 }

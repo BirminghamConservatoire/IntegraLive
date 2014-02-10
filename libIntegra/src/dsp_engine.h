@@ -25,6 +25,7 @@
 #include "api/common_typedefs.h"
 #include "api/error.h"
 #include "node.h"
+#include "midi_engine.h"
 #include "threaded_queue.h"
 
 #include <pthread.h>
@@ -147,6 +148,8 @@ namespace integra_internal
 
 			typedef std::list<ISetCommand *> set_command_list;
 			set_command_list m_set_commands;
+
+			midi_input_buffer_array m_midi_input;
 
 			static const int midi_channels = 16;
 			int_map m_poly_pressures[ midi_channels ];

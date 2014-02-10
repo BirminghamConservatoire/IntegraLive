@@ -64,7 +64,7 @@ namespace integra_api
 
 			/** \brief Create string-representation of an array of strings
 			 *
-			 * These packed strings are used by the AudioSettings and MidiSettings interfaces, to encode lists of available drivers/devices.
+			 * These packed strings are used by the AudioSettings and MidiSettings interfaces, to encode lists of drivers/devices.
 			 * Each string in the array is prepended by its length and a colon, allowing unambiguous unpacking.
 			 * Example: { "First Item", "Second Item" } becomes "10:First Item11:Second Item"
 			 *
@@ -72,6 +72,18 @@ namespace integra_api
 			 * \return the single packed string
 			*/
 			static string string_vector_to_string( const string_vector &strings );
+
+			/** \brief Unpack single-string representation of an array of strings
+			 *
+			 * These packed strings are used by the AudioSettings and MidiSettings interfaces, to encode lists of drivers/devices.
+			 * Each string in the array is prepended by its length and a colon, allowing unambiguous unpacking.
+			 * Example: { "First Item", "Second Item" } becomes "10:First Item11:Second Item"
+			 *
+			 * \param input A single string representing an array of strings
+			 * \param[out] output Container in which to store results
+			 * \return true if successful, false if input doesn't conform to packing format 
+			*/
+			static bool string_to_string_vector( const string &input, string_vector &output );
 
 			/** \brief Trim whitespace from start and end of a string 
 			 * \param input the string to trim

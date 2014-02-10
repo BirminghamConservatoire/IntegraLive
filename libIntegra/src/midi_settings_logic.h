@@ -51,8 +51,8 @@ namespace integra_internal
 
 			static const string endpoint_available_input_devices;
 			static const string endpoint_available_output_devices;
-			static const string endpoint_selected_input_device;
-			static const string endpoint_selected_output_device;
+			static const string endpoint_active_input_devices;
+			static const string endpoint_active_output_devices;
 			static const string endpoint_restore_defaults;
 	};
 }

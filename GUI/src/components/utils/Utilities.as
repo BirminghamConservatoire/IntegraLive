@@ -421,6 +421,28 @@ package components.utils
 			}
 		}
 		
+		
+		public static function makePackedStringFromStringVector( input:Vector.<String> ):String
+		{
+			/* 
+			 Create string-representation of an array of strings
+			 
+			 These packed strings are used by the AudioSettings and MidiSettings interfaces, to encode lists of drivers/devices.
+			 Each string in the array is prepended by its length and a colon, allowing unambiguous unpacking.
+			 Example: { "First Item", "Second Item" } becomes "10:First Item11:Second Item"
+			 */
+
+			var output:String = "";
+			for each( var string:String in input )
+			{
+				output += string.length;
+				output += ":";
+				output += string;;
+			}
+			
+			return output;
+		}
+		
 
 		public static function doesStringVectorContainString( stringVector:Vector.<String>, string:String ):Boolean
 		{
@@ -433,6 +455,19 @@ package components.utils
 			}
 			
 			return false;
+		}
+		
+		
+		public static function areStringVectorsEqual( vector1:Vector.<String>, vector2:Vector.<String> ):Boolean
+		{
+			if( vector1.length != vector2.length ) return false;
+			
+			for( var i:int = 0; i < vector1.length; i++ )
+			{
+				if( vector1[ i ] != vector2[ i ] ) return false;
+			}
+			
+			return true;			
 		}
 		
 		

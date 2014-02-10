@@ -35,8 +35,8 @@ package components.controller
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetContainerActive;
-	import components.controller.serverCommands.SetMidiInputDevice;
-	import components.controller.serverCommands.SetMidiOutputDevice;
+	import components.controller.serverCommands.SetMidiInputDevices;
+	import components.controller.serverCommands.SetMidiOutputDevices;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.SetPlayPosition;
@@ -338,12 +338,16 @@ package components.controller
 						command = new SetAvailableMidiDevices( null, availableOutputDevices );
 						break;
 					
-					case "selectedInputDevice":
-						command = new SetMidiInputDevice( String( value ) );
+					case "activeInputDevices":
+						var activeInputDevices:Vector.<String> = new Vector.<String>;
+						Utilities.makeStringVectorFromPackedString( String( value ), activeInputDevices );
+						command = new SetMidiInputDevices( activeInputDevices );
 						break;
 					
-					case "selectedOutputDevice":
-						command = new SetMidiOutputDevice( String( value ) );
+					case "activeOutputDevices":
+						var activeOutputDevices:Vector.<String> = new Vector.<String>;
+						Utilities.makeStringVectorFromPackedString( String( value ), activeOutputDevices );
+						command = new SetMidiOutputDevices( activeOutputDevices );
 						break;
 					
 					default:

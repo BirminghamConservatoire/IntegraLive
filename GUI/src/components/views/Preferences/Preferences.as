@@ -28,10 +28,14 @@ package components.views.Preferences
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 	
+	import mx.collections.ArrayCollection;
+	import mx.containers.Canvas;
 	import mx.controls.Button;
 	import mx.controls.ComboBox;
 	import mx.controls.Label;
+	import mx.controls.List;
 	import mx.controls.TextInput;
+	import mx.core.ClassFactory;
 	import mx.core.ScrollPolicy;
 	import mx.events.ListEvent;
 	
@@ -45,8 +49,8 @@ package components.views.Preferences
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableSampleRates;
-	import components.controller.serverCommands.SetMidiInputDevice;
-	import components.controller.serverCommands.SetMidiOutputDevice;
+	import components.controller.serverCommands.SetMidiInputDevices;
+	import components.controller.serverCommands.SetMidiOutputDevices;
 	import components.controller.userDataCommands.SetViewMode;
 	import components.model.Info;
 	import components.model.interfaceDefinitions.EndpointDefinition;
@@ -74,8 +78,8 @@ package components.views.Preferences
 			addUpdateMethod( SetAudioOutputDevice, onPreferencesChanged );
 			addUpdateMethod( SetAudioDriver, onPreferencesChanged );
 			addUpdateMethod( SetAudioSettings, onPreferencesChanged );
-			addUpdateMethod( SetMidiInputDevice, onPreferencesChanged );
-			addUpdateMethod( SetMidiOutputDevice, onPreferencesChanged );
+			addUpdateMethod( SetMidiInputDevices, onPreferencesChanged );
+			addUpdateMethod( SetMidiOutputDevices, onPreferencesChanged );
 			addUpdateMethod( SetAvailableAudioDrivers, onPreferencesChanged );
 			addUpdateMethod( SetAvailableAudioDevices, onPreferencesChanged );
 			addUpdateMethod( SetAvailableMidiDevices, onPreferencesChanged );
@@ -104,6 +108,9 @@ package components.views.Preferences
 
 			initializeIntegerEdit( _audioInChannelsEdit, onFocusOutAudioIntegerEdit );
 			initializeIntegerEdit( _audioOutChannelsEdit, onFocusOutAudioIntegerEdit );
+			
+			initializeList( _midiInList, _midiInContainer, onChangeMidiInputDevices );
+			initializeList( _midiOutList, _midiOutContainer, onChangeMidiOutputDevices );
 			
 			_resetButton.label = "Reset to Defaults";
 			_resetButton.setStyle( "right", 20 );
@@ -148,8 +155,11 @@ package components.views.Preferences
 						setNumberEditColors( _audioInChannelsEdit, 0xcfcfcf, 0xa1a1a1 );
 						setNumberEditColors( _audioOutChannelsEdit, 0xcfcfcf, 0xa1a1a1 );
 						
+						setListColors( _midiInList, _midiInContainer, 0xcfcfcf, 0x747474, 0x848484 );
+						setListColors( _midiOutList, _midiOutContainer, 0xcfcfcf, 0x747474, 0x848484 );
+
 						setButtonTextColor( _resetButton, 0x6D6D6D );
-						
+
 						break;
 
 					case ColorScheme.DARK:
@@ -171,9 +181,9 @@ package components.views.Preferences
 						
 						setNumberEditColors( _audioInChannelsEdit, 0x313131, 0x5e5e5e );
 						setNumberEditColors( _audioOutChannelsEdit, 0x313131, 0x5e5e5e );
-						
-						_audioInChannelsEdit.setStyle( "color", 0x313131 );
-						_audioOutChannelsEdit.setStyle( "color", 0x313131 );
+
+						setListColors( _midiInList, _midiInContainer, 0x313131, 0x8c8c8c, 0x7c7c7c );
+						setListColors( _midiOutList, _midiOutContainer, 0x313131, 0x8c8c8c, 0x7c7c7c );
 
 						setButtonTextColor( _resetButton, 0x939393 );
 
@@ -181,6 +191,9 @@ package components.views.Preferences
 				}
 				
 				invalidateDisplayList();
+				
+				drawListContainer( _midiInContainer );
+				drawListContainer( _midiOutContainer );
 			}
 			
 			if( !style || style == FontSize.STYLENAME )
@@ -200,7 +213,7 @@ package components.views.Preferences
 			//calculate window size
 			var rowHeight:Number = FontSize.getTextRowHeight( this );
 			width = Math.min( rowHeight * 20, parentDocument.width );
-			height = Math.min( rowHeight * 18, parentDocument.height );
+			height = Math.min( rowHeight * 21.5, parentDocument.height );
 			
 			//position title controls
 			_titleCloseButton.width = FontSize.getButtonSize( this ) * 1.1;
@@ -227,16 +240,16 @@ package components.views.Preferences
 			var controlLeft:Number = controlRect.left + FontSize.getTextRowHeight( this ) * 5;
 			_audioDriverCombo.x = _audioInCombo.x = _audioOutCombo.x = _sampleRateCombo.x = controlLeft;
 			_audioInChannelsEdit.x = _audioOutChannelsEdit.x = controlLeft;
-			_midiInCombo.x = _midiOutCombo.x = controlLeft;
+			_midiInContainer.x = _midiOutContainer.x = controlLeft;
 			
 			var controlWidth:Number = controlRect.right - controlLeft;
 			_audioDriverCombo.width = _audioInCombo.width = _audioOutCombo.width = _sampleRateCombo.width = controlWidth; 
 			_audioInChannelsEdit.width = _audioOutChannelsEdit.width = controlWidth;
-			_midiInCombo.width = _midiOutCombo.width = controlWidth;
+			_midiInContainer.width = _midiOutContainer.width = controlWidth;
 			
 			_audioDriverCombo.height = _audioInCombo.height = _audioOutCombo.height = _sampleRateCombo.height = rowHeight; 
 			_audioInChannelsEdit.height = _audioOutChannelsEdit.height = rowHeight;
-			_midiInCombo.height = _midiOutCombo.height = rowHeight;
+			_midiInContainer.height = _midiOutContainer.height = rowHeight * 4;
 			
 			_audioDriverLabel.y = _audioDriverCombo.y = controlRect.y;
 			_audioInLabel.y = _audioInCombo.y = controlRect.y + rowHeight * 1.1;
@@ -247,8 +260,27 @@ package components.views.Preferences
 			
 			_sampleRateLabel.y = _sampleRateCombo.y = controlRect.y + rowHeight * 7.3;
 			
-			_midiInLabel.y = _midiInCombo.y = controlRect.y + rowHeight * 11.5;
-			_midiOutLabel.y = _midiOutCombo.y = controlRect.y + rowHeight * 12.6;
+			_midiInLabel.y = _midiInContainer.y = controlRect.y + rowHeight * 9.3;
+			_midiOutLabel.y = _midiOutContainer.y = controlRect.y + rowHeight * 13.4;
+			
+			var listCornerRadius:Number = rowHeight / 2;
+			_midiInContainer.setStyle( "cornerRadius", listCornerRadius );
+			_midiOutContainer.setStyle( "cornerRadius", listCornerRadius );
+
+			var listInset:Number = ( 1 - Math.SQRT1_2 ) * listCornerRadius;
+			
+			_midiInList.setStyle( "left", listInset );
+			_midiInList.setStyle( "right", listInset );
+			_midiInList.setStyle( "top", listInset );
+			_midiInList.setStyle( "bottom", listInset );
+
+			_midiOutList.setStyle( "left", listInset );
+			_midiOutList.setStyle( "right", listInset );
+			_midiOutList.setStyle( "top", listInset );
+			_midiOutList.setStyle( "bottom", listInset );
+			
+			drawListContainer( _midiInContainer );
+			drawListContainer( _midiOutContainer );
 			
 			//mx.managers.PopUpManager.centerPopUp( this );		
 		}
@@ -262,22 +294,16 @@ package components.views.Preferences
 			if( _audioInCombo ) removeChild( _audioInCombo );
 			if( _audioOutCombo ) removeChild( _audioOutCombo );
 			if( _sampleRateCombo ) removeChild( _sampleRateCombo );
-			if( _midiInCombo ) removeChild( _midiInCombo );
-			if( _midiOutCombo ) removeChild( _midiOutCombo );
 
 			_audioDriverCombo = new ComboBox;
 			_audioInCombo = new ComboBox;
 			_audioOutCombo = new ComboBox;
 			_sampleRateCombo = new ComboBox;
-			_midiInCombo = new ComboBox;
-			_midiOutCombo = new ComboBox;
 
 			initializeCombo( _audioDriverCombo, onChangeAudioDriver );
 			initializeCombo( _audioInCombo, onChangeAudioInputDevice );
 			initializeCombo( _audioOutCombo, onChangeAudioOutputDevice );
 			initializeCombo( _sampleRateCombo, onChangeAudioSampleRate );
-			initializeCombo( _midiInCombo, onChangeMidiInputDevice );
-			initializeCombo( _midiOutCombo, onChangeMidiOutputDevice );
 			
 			setComboContents();
 			
@@ -319,8 +345,21 @@ package components.views.Preferences
 			combo.addEventListener( ListEvent.CHANGE, eventHandler );
 			addElement( combo );
 		}
-
-
+		
+		
+		private function initializeList( list:List, container:Canvas, eventHandler:Function ):void
+		{
+			list.addEventListener( ListEvent.CHANGE, eventHandler );
+			
+			list.setStyle( "borderStyle", "none" );
+			list.setStyle( "textAlign", "center" );
+			list.itemRenderer = new ClassFactory( MidiDeviceItemRenderer );
+			
+			container.addChild( list );
+			addChild( container );
+		}
+		
+		
 		private function initializeIntegerEdit( textInput:TextInput, eventHandler:Function ):void
 		{
 			textInput.restrict = "0123456789";
@@ -386,25 +425,53 @@ package components.views.Preferences
 			_sampleRateCombo.dataProvider = data;
 			_sampleRateCombo.enabled = ( data.length > 1 );
 			
-			//set combo contents for midi input devices
-			data = new Array;
-			for each( var midiInputDevice:String in midiSettings.availableInputDevices )
+			//set list contents for midi devices
+			updateListContent( _midiInList, midiSettings.availableInputDevices );
+			
+			updateListContent( _midiOutList, midiSettings.availableOutputDevices );
+		}
+		
+		
+		private function updateListContent( list:List, content:Vector.<String> ):void
+		{
+			var data:Array = new Array;
+			for each( var item:String in content )
 			{
-				data.push( midiInputDevice );
+				data.push( item );
 			}
 			
-			_midiInCombo.dataProvider = data;
-			_midiInCombo.enabled = ( data.length > 1 );
-			
-			//set combo contents for midi input devices
-			data = new Array;
-			for each( var midiOutputDevice:String in midiSettings.availableOutputDevices )
+			var changed:Boolean = false;
+			var existingData:ArrayCollection = list.dataProvider as ArrayCollection;
+			if( existingData )
 			{
-				data.push( midiOutputDevice );
+				if( existingData.length == data.length )
+				{
+					for( var i:int = 0; i < data.length; i++ )
+					{
+						if( existingData.getItemAt( i ) != data[ i ] )
+						{
+							changed = true;
+							break;
+						}
+					}
+				}
+				else
+				{
+					//different lengths
+					changed = true;	
+				}
 			}
-			
-			_midiOutCombo.dataProvider = data;
-			_midiOutCombo.enabled = ( data.length > 1 );
+			else
+			{
+				//no existing data
+				changed = true;	
+			}
+
+			if( changed )
+			{
+				list.dataProvider = data;
+				list.enabled = ( data.length > 1 );
+			}
 		}
 
 		
@@ -414,8 +481,8 @@ package components.views.Preferences
 			Assert.assertNotNull( _audioInCombo );
 			Assert.assertNotNull( _audioOutCombo );
 			Assert.assertNotNull( _sampleRateCombo );
-			Assert.assertNotNull( _midiInCombo );
-			Assert.assertNotNull( _midiOutCombo );
+			Assert.assertNotNull( _midiInList );
+			Assert.assertNotNull( _midiOutList );
 
 			var audioSettings:AudioSettings = model.audioSettings;
 			Assert.assertNotNull( audioSettings );
@@ -431,8 +498,8 @@ package components.views.Preferences
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
 			
-			_midiInCombo.selectedItem = midiSettings.selectedInputDevice;
-			_midiOutCombo.selectedItem = midiSettings.selectedOutputDevice;
+			setSelectedListItems( _midiInList, midiSettings.activeInputDevices );
+			setSelectedListItems( _midiOutList, midiSettings.activeOutputDevices );
 		}
 		
 		
@@ -499,33 +566,57 @@ package components.views.Preferences
 		}
 		
 		
-		private function onChangeMidiInputDevice( event:ListEvent ):void
+		private function onChangeMidiInputDevices( event:ListEvent ):void
 		{
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
 			
-			var midiInputDevice:String = String( _midiInCombo.selectedItem );
+			var selectedDevices:Vector.<String> = new Vector.<String>;
+			getSelectedListItems( _midiInList, selectedDevices ); 
 			
 			controller.activateUndoStack = false;
 			
-			controller.processCommand( new SetMidiInputDevice( midiInputDevice ) );
+			controller.processCommand( new SetMidiInputDevices( selectedDevices ) );
 				
 			controller.activateUndoStack = true;
 		}
 
 		
-		private function onChangeMidiOutputDevice( event:ListEvent ):void
+		private function onChangeMidiOutputDevices( event:ListEvent ):void
 		{
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
 			
-			var midiOutputDevice:String = String( _midiOutCombo.selectedItem );
+			var selectedDevices:Vector.<String> = new Vector.<String>;
+			getSelectedListItems( _midiOutList, selectedDevices ); 
 			
 			controller.activateUndoStack = false;
 			
-			controller.processCommand( new SetMidiOutputDevice( midiOutputDevice ) );
+			controller.processCommand( new SetMidiOutputDevices( selectedDevices ) );
 				
 			controller.activateUndoStack = true;
+		}
+		
+		
+		private function getSelectedListItems( list:List, items:Vector.<String> ):void
+		{
+			items.length = 0;
+			for each( var item:String in list.selectedItems )
+			{
+				items.push( item );
+			}
+		}
+		
+		
+		private function setSelectedListItems( list:List, items:Vector.<String> ):void
+		{
+			var itemArray:Array = new Array;
+			for each( var item:String in items )
+			{
+				itemArray.push( item );
+			}
+
+			list.selectedItems = itemArray;
 		}
 		
 		
@@ -578,6 +669,32 @@ package components.views.Preferences
 			button.setStyle( "textRollOverColor", color );
 			button.setStyle( "textSelectedColor", color );
 		}
+
+		
+		private function setListColors( list:List, container:Canvas, textColor:uint, backgroundColor:uint, selectionColor:uint ):void
+		{
+			list.setStyle( "color", textColor );
+			list.setStyle( "textRollOverColor", textColor );
+			list.setStyle( "textSelectedColor", textColor );
+
+			list.setStyle( "backgroundColor", backgroundColor );
+
+			list.setStyle( "selectionColor", selectionColor );
+
+			list.setStyle( "rollOverColor", selectionColor );
+
+			container.setStyle( "myBackgroundColor", backgroundColor );
+		}
+		
+		
+		private function drawListContainer( container:Canvas ):void
+		{
+			var cornerRadius:Number = container.getStyle( "cornerRadius" );
+			
+			container.graphics.clear();
+			container.graphics.beginFill( container.getStyle( "myBackgroundColor" ) );
+			container.graphics.drawRoundRect( 0, 0, container.width, container.height, cornerRadius * 2, cornerRadius * 2 );
+		}
 		
 		
 		private function onClickTitleCloseButton( event:MouseEvent ):void
@@ -614,10 +731,11 @@ package components.views.Preferences
 		private var _sampleRateCombo:ComboBox = null;
 		private var _audioInChannelsEdit:TextInput = new TextInput;
 		private var _audioOutChannelsEdit:TextInput = new TextInput;
-		private var _midiInCombo:ComboBox = null;
-		private var _midiOutCombo:ComboBox = null;
-		
-		
+		private var _midiInContainer:Canvas = new Canvas;
+		private var _midiOutContainer:Canvas = new Canvas;
+		private var _midiInList:ToggleList = new ToggleList;
+		private var _midiOutList:ToggleList = new ToggleList;
+				
 		private var _audioDriverLabel:Label = new Label;
 		private var _audioInLabel:Label = new Label;
 		private var _audioOutLabel:Label = new Label;

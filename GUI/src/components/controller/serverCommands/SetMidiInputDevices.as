@@ -29,31 +29,37 @@ package components.controller.serverCommands
 	import flexunit.framework.Assert;
 	
 
-	public class SetMidiOutputDevice extends ServerCommand
+	public class SetMidiInputDevices extends ServerCommand
 	{
-		public function SetMidiOutputDevice( outputDevice:String )
+		public function SetMidiInputDevices( inputDevices:Vector.<String> )
 		{
 			super();
 
-			_selectedOutputDevice = outputDevice;
+			_activeInputDevices = inputDevices;
 		}
 		
 		
-		public function get selectedOutputDevice():String { return _selectedOutputDevice; }
+		public function get activeInputDevices():Vector.<String> { return _activeInputDevices; }
 		
 	
 		public override function initialize( model:IntegraModel ):Boolean
 		{
 			var midiSettings:MidiSettings = model.midiSettings;
 			
-			if( _selectedOutputDevice.length > 0 && !Utilities.doesStringVectorContainString( midiSettings.availableOutputDevices, _selectedOutputDevice ) )
+			for each( var inputDevice:String in _activeInputDevices )
+			{
+				if( !Utilities.doesStringVectorContainString( midiSettings.availableInputDevices, inputDevice ) )
+				{
+					return false;
+				}
+			}
+			
+			if( Utilities.areStringVectorsEqual( _activeInputDevices, midiSettings.activeInputDevices ) )
 			{
 				return false;
-			}			
-
-			if( _selectedOutputDevice != midiSettings.selectedOutputDevice ) return true;
+			}
 			
-			return false;
+			return true;
 		}
 	
 		
@@ -61,7 +67,7 @@ package components.controller.serverCommands
 		{
 			var midiSettings:MidiSettings = model.midiSettings;
 			
-			pushInverseCommand( new SetMidiOutputDevice( midiSettings.selectedOutputDevice ) );
+			pushInverseCommand( new SetMidiInputDevices( midiSettings.activeInputDevices ) );
 		}
 		
 		
@@ -70,7 +76,7 @@ package components.controller.serverCommands
 			var midiSettings:MidiSettings = model.midiSettings;
 			Assert.assertNotNull( midiSettings );
 			
-			midiSettings.selectedOutputDevice = _selectedOutputDevice;
+			midiSettings.activeInputDevices = _activeInputDevices;
 			
 			midiSettings.hasChangedSinceReset = true;
 		}
@@ -84,7 +90,7 @@ package components.controller.serverCommands
 			
 			methodCalls[ 0 ] = new Object;
 			methodCalls[ 0 ].methodName = "command.set";
-			methodCalls[ 0 ].params = [ midiSettingsPath.concat( "selectedOutputDevice" ), _selectedOutputDevice ]; 
+			methodCalls[ 0 ].params = [ midiSettingsPath.concat( "activeInputDevices" ), Utilities.makePackedStringFromStringVector( _activeInputDevices ) ]; 
 			
 			connection.addArrayParam( methodCalls );
 			connection.callQueued( "system.multicall" );						
@@ -93,7 +99,7 @@ package components.controller.serverCommands
 		
 		public override function getAttributesChangedByThisCommand( model:IntegraModel, changedAttributes:Vector.<String> ):void
 		{
-			changedAttributes.push( model.getPathStringFromID( model.midiSettings.id ) + ".selectedOutputDevice" );
+			changedAttributes.push( model.getPathStringFromID( model.midiSettings.id ) + ".activeInputDevices" );
 		}
 		
 		
@@ -110,6 +116,6 @@ package components.controller.serverCommands
 		}
 
 		
-		private var _selectedOutputDevice:String;
+		private var _activeInputDevices:Vector.<String>;
 	}
 }

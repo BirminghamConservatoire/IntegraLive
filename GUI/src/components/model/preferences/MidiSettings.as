@@ -38,16 +38,16 @@ package components.model.preferences
 		public function get availableInputDevices():Vector.<String> { return _availableInputDevices; }
 		public function get availableOutputDevices():Vector.<String> { return _availableOutputDevices; }
 		
-		public function get selectedInputDevice():String { return _selectedInputDevice; }
-		public function get selectedOutputDevice():String { return _selectedOutputDevice; }
+		public function get activeInputDevices():Vector.<String> { return _activeInputDevices; }
+		public function get activeOutputDevices():Vector.<String> { return _activeOutputDevices; }
 
 		public function get hasChangedSinceReset():Boolean { return _hasChangedSinceReset; }
 		
 		public function set availableInputDevices( inputDevices:Vector.<String> ):void { _availableInputDevices = inputDevices; }
 		public function set availableOutputDevices( outputDevices:Vector.<String> ):void { _availableOutputDevices = outputDevices; }
 		
-		public function set selectedInputDevice( inputDevice:String ):void { _selectedInputDevice = inputDevice; }
-		public function set selectedOutputDevice( outputDevice:String ):void { _selectedOutputDevice = outputDevice; }
+		public function set activeInputDevices( inputDevices:Vector.<String> ):void { _activeInputDevices = inputDevices; }
+		public function set activeOutputDevices( outputDevices:Vector.<String> ):void { _activeOutputDevices = outputDevices; }
 
 		public function set hasChangedSinceReset( hasChangedSinceReset:Boolean ):void { _hasChangedSinceReset = hasChangedSinceReset; }
 		
@@ -77,12 +77,12 @@ package components.model.preferences
 					Utilities.makeStringVectorFromPackedString( valueString, _availableOutputDevices );
 					break;
 				
-				case "selectedInputDevice":
-					_selectedInputDevice = valueString;
+				case "activeInputDevices":
+					Utilities.makeStringVectorFromPackedString( valueString, _activeInputDevices );
 					break;
 				
-				case "selectedOutputDevice":
-					_selectedOutputDevice = valueString;
+				case "activeOutputDevices":
+					Utilities.makeStringVectorFromPackedString( valueString, _activeOutputDevices );
 					break;
 				
 				default:
@@ -111,8 +111,8 @@ package components.model.preferences
 		private var _availableInputDevices:Vector.<String> = new Vector.<String>;
 		private var _availableOutputDevices:Vector.<String> = new Vector.<String>;
 
-		private var _selectedInputDevice:String = "";
-		private var _selectedOutputDevice:String = "";
+		private var _activeInputDevices:Vector.<String> = new Vector.<String>;
+		private var _activeOutputDevices:Vector.<String> = new Vector.<String>;
 
 		private var _hasChangedSinceReset:Boolean = false;
 		

@@ -46,26 +46,26 @@
 		7D2131F81892B80A00C270A7 /* GNUmakefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131F41892B80A00C270A7 /* GNUmakefile.am */; };
 		7D2131F91892B80A00C270A7 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131F51892B80A00C270A7 /* makefile */; };
 		7D8451DF187DB8CB008639D2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D8451DD187DB8CB008639D2 /* InfoPlist.strings */; };
-		7D845213187DBACF008639D2 /* command_result.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8451FF187DBACF008639D2 /* command_result.h */; };
-		7D845214187DBACF008639D2 /* command_source.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845200187DBACF008639D2 /* command_source.h */; };
-		7D845215187DBACF008639D2 /* command.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845201187DBACF008639D2 /* command.h */; };
-		7D845216187DBACF008639D2 /* common_typedefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845202187DBACF008639D2 /* common_typedefs.h */; };
-		7D845217187DBACF008639D2 /* error.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845203187DBACF008639D2 /* error.h */; };
-		7D845218187DBACF008639D2 /* guid_helper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845204187DBACF008639D2 /* guid_helper.h */; };
-		7D845219187DBACF008639D2 /* integra_session.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845205187DBACF008639D2 /* integra_session.h */; };
-		7D84521A187DBACF008639D2 /* interface_definition.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845206187DBACF008639D2 /* interface_definition.h */; };
-		7D84521B187DBACF008639D2 /* module_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845207187DBACF008639D2 /* module_manager.h */; };
-		7D84521C187DBACF008639D2 /* node_endpoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845208187DBACF008639D2 /* node_endpoint.h */; };
-		7D84521D187DBACF008639D2 /* node.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845209187DBACF008639D2 /* node.h */; };
-		7D84521E187DBACF008639D2 /* notification_sink.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520A187DBACF008639D2 /* notification_sink.h */; };
-		7D84521F187DBACF008639D2 /* path.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520B187DBACF008639D2 /* path.h */; };
-		7D845220187DBACF008639D2 /* polling_notification_sink.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520C187DBACF008639D2 /* polling_notification_sink.h */; };
-		7D845221187DBACF008639D2 /* server_lock.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520D187DBACF008639D2 /* server_lock.h */; };
-		7D845222187DBACF008639D2 /* server_startup_info.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520E187DBACF008639D2 /* server_startup_info.h */; };
-		7D845223187DBACF008639D2 /* server.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520F187DBACF008639D2 /* server.h */; };
-		7D845224187DBACF008639D2 /* string_helper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845210187DBACF008639D2 /* string_helper.h */; };
-		7D845225187DBACF008639D2 /* trace.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845211187DBACF008639D2 /* trace.h */; };
-		7D845226187DBACF008639D2 /* value.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845212187DBACF008639D2 /* value.h */; };
+		7D845213187DBACF008639D2 /* command_result.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8451FF187DBACF008639D2 /* command_result.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845214187DBACF008639D2 /* command_source.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845200187DBACF008639D2 /* command_source.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845215187DBACF008639D2 /* command.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845201187DBACF008639D2 /* command.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845216187DBACF008639D2 /* common_typedefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845202187DBACF008639D2 /* common_typedefs.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845217187DBACF008639D2 /* error.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845203187DBACF008639D2 /* error.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845218187DBACF008639D2 /* guid_helper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845204187DBACF008639D2 /* guid_helper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845219187DBACF008639D2 /* integra_session.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845205187DBACF008639D2 /* integra_session.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D84521A187DBACF008639D2 /* interface_definition.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845206187DBACF008639D2 /* interface_definition.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D84521B187DBACF008639D2 /* module_manager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845207187DBACF008639D2 /* module_manager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D84521C187DBACF008639D2 /* node_endpoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845208187DBACF008639D2 /* node_endpoint.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D84521D187DBACF008639D2 /* node.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845209187DBACF008639D2 /* node.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D84521E187DBACF008639D2 /* notification_sink.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520A187DBACF008639D2 /* notification_sink.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D84521F187DBACF008639D2 /* path.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520B187DBACF008639D2 /* path.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845220187DBACF008639D2 /* polling_notification_sink.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520C187DBACF008639D2 /* polling_notification_sink.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845221187DBACF008639D2 /* server_lock.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520D187DBACF008639D2 /* server_lock.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845222187DBACF008639D2 /* server_startup_info.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520E187DBACF008639D2 /* server_startup_info.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845223187DBACF008639D2 /* server.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D84520F187DBACF008639D2 /* server.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845224187DBACF008639D2 /* string_helper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845210187DBACF008639D2 /* string_helper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845225187DBACF008639D2 /* trace.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845211187DBACF008639D2 /* trace.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D845226187DBACF008639D2 /* value.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845212187DBACF008639D2 /* value.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7D845282187DBBA5008639D2 /* audio_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D845228187DBBA4008639D2 /* audio_engine.cpp */; };
 		7D845283187DBBA5008639D2 /* audio_engine.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845229187DBBA4008639D2 /* audio_engine.h */; };
 		7D845284187DBBA5008639D2 /* audio_settings_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D84522A187DBBA4008639D2 /* audio_settings_logic.cpp */; };
@@ -837,7 +837,26 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D845213187DBACF008639D2 /* command_result.h in Headers */,
+				7D845220187DBACF008639D2 /* polling_notification_sink.h in Headers */,
+				7D845214187DBACF008639D2 /* command_source.h in Headers */,
+				7D845216187DBACF008639D2 /* common_typedefs.h in Headers */,
+				7D845217187DBACF008639D2 /* error.h in Headers */,
+				7D84521D187DBACF008639D2 /* node.h in Headers */,
 				7D84521F187DBACF008639D2 /* path.h in Headers */,
+				7D845219187DBACF008639D2 /* integra_session.h in Headers */,
+				7D84521E187DBACF008639D2 /* notification_sink.h in Headers */,
+				7D84521A187DBACF008639D2 /* interface_definition.h in Headers */,
+				7D84521B187DBACF008639D2 /* module_manager.h in Headers */,
+				7D84521C187DBACF008639D2 /* node_endpoint.h in Headers */,
+				7D845218187DBACF008639D2 /* guid_helper.h in Headers */,
+				7D845221187DBACF008639D2 /* server_lock.h in Headers */,
+				7D845222187DBACF008639D2 /* server_startup_info.h in Headers */,
+				7D845223187DBACF008639D2 /* server.h in Headers */,
+				7D845224187DBACF008639D2 /* string_helper.h in Headers */,
+				7D845225187DBACF008639D2 /* trace.h in Headers */,
+				7D845226187DBACF008639D2 /* value.h in Headers */,
+				7D845215187DBACF008639D2 /* command.h in Headers */,
 				7D8452CB187DBBA5008639D2 /* scratch_directory.h in Headers */,
 				7D8452A4187DBBA5008639D2 /* logic.h in Headers */,
 				7D845288187DBBA5008639D2 /* connection_logic.h in Headers */,
@@ -845,23 +864,18 @@
 				7D8452A2187DBBA5008639D2 /* load_command.h in Headers */,
 				7D845290187DBBA5008639D2 /* delete_command.h in Headers */,
 				7DB8170F18967D84005D7C1D /* midi_settings_logic.h in Headers */,
-				7D845224187DBACF008639D2 /* string_helper.h in Headers */,
 				7D845297187DBBA5008639D2 /* file_helper.h in Headers */,
 				7D8452C7187DBBA5008639D2 /* scaler_logic.h in Headers */,
 				7D84529E187DBBA5008639D2 /* interface_definition.h in Headers */,
 				7D8452BF187DBBA5008639D2 /* reentrance_checker.h in Headers */,
 				7D8452BD187DBBA5008639D2 /* portaudio_engine.h in Headers */,
-				7D845215187DBACF008639D2 /* command.h in Headers */,
 				7D8452A6187DBBA5008639D2 /* lua_engine.h in Headers */,
 				7D84528C187DBBA5008639D2 /* control_point_logic.h in Headers */,
 				7D8452AF187DBBA5008639D2 /* new_command.h in Headers */,
-				7D845213187DBACF008639D2 /* command_result.h in Headers */,
 				7D8452B3187DBBA5008639D2 /* node_endpoint.h in Headers */,
-				7D845219187DBACF008639D2 /* integra_session.h in Headers */,
 				7D8452C5187DBBA5008639D2 /* save_command.h in Headers */,
 				7D8452A9187DBBA5008639D2 /* module_manager.h in Headers */,
 				7D2131B71892B7A300C270A7 /* iemlib.h in Headers */,
-				7D845214187DBACF008639D2 /* command_source.h in Headers */,
 				7D8452D6187DBBA5008639D2 /* threaded_queue.h in Headers */,
 				7D8452AB187DBBA5008639D2 /* move_command.h in Headers */,
 				7D8452D4187DBBA5008639D2 /* state_table.h in Headers */,
@@ -869,7 +883,6 @@
 				7D8454E5187DC023008639D2 /* ioapi.h in Headers */,
 				7D845292187DBBA5008639D2 /* dsp_engine.h in Headers */,
 				7D8452B8187DBBA5008639D2 /* player_handler.h in Headers */,
-				7D84521E187DBACF008639D2 /* notification_sink.h in Headers */,
 				7D8452D7187DBBA5008639D2 /* threaded_queue_implementation.h in Headers */,
 				7D8452DA187DBBA5008639D2 /* validator.h in Headers */,
 				7D8452C9187DBBA5008639D2 /* scene_logic.h in Headers */,
@@ -878,34 +891,21 @@
 				7D8452A0187DBBA5008639D2 /* interface_definition_loader.h in Headers */,
 				7D845283187DBBA5008639D2 /* audio_engine.h in Headers */,
 				7D84540A187DC023008639D2 /* guiddef.h in Headers */,
-				7D84521B187DBACF008639D2 /* module_manager.h in Headers */,
 				7D8452AD187DBBA5008639D2 /* MurmurHash2.h in Headers */,
 				7D84528E187DBBA5008639D2 /* data_directory.h in Headers */,
 				7DB8171118967D84005D7C1D /* portmidi_engine.h in Headers */,
 				7DB8170D18967D84005D7C1D /* midi_engine.h in Headers */,
 				7D2131E81892B7FD00C270A7 /* fts_to_pd.h in Headers */,
-				7D845218187DBACF008639D2 /* guid_helper.h in Headers */,
-				7D845223187DBACF008639D2 /* server.h in Headers */,
 				7D845285187DBBA5008639D2 /* audio_settings_logic.h in Headers */,
-				7D845226187DBACF008639D2 /* value.h in Headers */,
-				7D84521D187DBACF008639D2 /* node.h in Headers */,
-				7D845221187DBACF008639D2 /* server_lock.h in Headers */,
-				7D84521A187DBACF008639D2 /* interface_definition.h in Headers */,
 				7D2131EE1892B7FD00C270A7 /* vexp.h in Headers */,
 				7D8454E3187DC023008639D2 /* crypt.h in Headers */,
-				7D845225187DBACF008639D2 /* trace.h in Headers */,
-				7D845220187DBACF008639D2 /* polling_notification_sink.h in Headers */,
 				7D845299187DBBA5008639D2 /* file_io.h in Headers */,
 				7D8454E9187DC023008639D2 /* mztools.h in Headers */,
 				7D8452B6187DBBA5008639D2 /* platform_specifics.h in Headers */,
-				7D845216187DBACF008639D2 /* common_typedefs.h in Headers */,
 				7D8452B1187DBBA5008639D2 /* node.h in Headers */,
-				7D845217187DBACF008639D2 /* error.h in Headers */,
 				7D8454ED187DC023008639D2 /* zip.h in Headers */,
 				7D8452C1187DBBA5008639D2 /* rename_command.h in Headers */,
 				7D2131CF1892B7C500C270A7 /* fsplay.h in Headers */,
-				7D84521C187DBACF008639D2 /* node_endpoint.h in Headers */,
-				7D845222187DBACF008639D2 /* server_startup_info.h in Headers */,
 				7D8452BA187DBBA5008639D2 /* player_logic.h in Headers */,
 				7D2131D21892B7C500C270A7 /* resample.hpp in Headers */,
 				7D8452D2187DBBA5008639D2 /* set_command.h in Headers */,

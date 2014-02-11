@@ -249,7 +249,7 @@ void get_pids_by_name(const char *name, int *pids)
     struct kinfo_proc *pproc, *proc_list;
     sysctl(mib, 4, NULL, &buffer_size, NULL, 0);
 
-    proc_list = malloc(buffer_size);  
+    proc_list = (kinfo_proc *)malloc(buffer_size);
     sysctl(mib, 4, proc_list, &buffer_size, NULL, 0);
 
     num_procs = buffer_size / sizeof(struct kinfo_proc);
@@ -277,13 +277,13 @@ void close_orphaned_processes( const std::list<std::string> &filenames )
 
     qsort(orphans, MAX_ORPHANS, sizeof(int), integer_comparison);
 
-    for( i = 0; i < MAX_ORPHANS; ++i )
+    for( unsigned int i = 0; i < MAX_ORPHANS; ++i )
     {
         if( orphans[i] == 0 || orphans[i] == my_pid)
         {
             continue;
         }
-        NTG_TRACE_VERBOSE_WITH_INT("killing process %d", orphans[i]);
+        INTEGRA_TRACE_VERBOSE << "killing process " << orphans[i];
         kill(orphans[i], SIGKILL);
     }
 

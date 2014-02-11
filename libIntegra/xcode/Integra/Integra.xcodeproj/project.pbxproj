@@ -166,6 +166,13 @@
 		7D8454EB187DC023008639D2 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845403187DC023008639D2 /* unzip.h */; };
 		7D8454EC187DC023008639D2 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D845404187DC023008639D2 /* zip.c */; };
 		7D8454ED187DC023008639D2 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845405187DC023008639D2 /* zip.h */; };
+		7D9FCFA418AA574100968601 /* midi_input_dispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D9FCF9E18AA574100968601 /* midi_input_dispatcher.cpp */; };
+		7D9FCFA518AA574100968601 /* midi_input_dispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCF9F18AA574100968601 /* midi_input_dispatcher.h */; };
+		7D9FCFA618AA574100968601 /* midi_input_filterer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D9FCFA018AA574100968601 /* midi_input_filterer.cpp */; };
+		7D9FCFA718AA574100968601 /* midi_input_filterer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCFA118AA574100968601 /* midi_input_filterer.h */; };
+		7D9FCFA818AA574100968601 /* midi_input_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D9FCFA218AA574100968601 /* midi_input_logic.cpp */; };
+		7D9FCFA918AA574100968601 /* midi_input_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCFA318AA574100968601 /* midi_input_logic.h */; };
+		7D9FCFAB18AA575D00968601 /* documentation_mainpage.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCFAA18AA575D00968601 /* documentation_mainpage.h */; };
 		7DB8170C18967D84005D7C1D /* midi_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DB8170618967D84005D7C1D /* midi_engine.cpp */; };
 		7DB8170D18967D84005D7C1D /* midi_engine.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DB8170718967D84005D7C1D /* midi_engine.h */; };
 		7DB8170E18967D84005D7C1D /* midi_settings_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DB8170818967D84005D7C1D /* midi_settings_logic.cpp */; };
@@ -419,6 +426,13 @@
 		7D845403187DC023008639D2 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		7D845404187DC023008639D2 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		7D845405187DC023008639D2 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		7D9FCF9E18AA574100968601 /* midi_input_dispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_input_dispatcher.cpp; sourceTree = "<group>"; };
+		7D9FCF9F18AA574100968601 /* midi_input_dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_input_dispatcher.h; sourceTree = "<group>"; };
+		7D9FCFA018AA574100968601 /* midi_input_filterer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_input_filterer.cpp; sourceTree = "<group>"; };
+		7D9FCFA118AA574100968601 /* midi_input_filterer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_input_filterer.h; sourceTree = "<group>"; };
+		7D9FCFA218AA574100968601 /* midi_input_logic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_input_logic.cpp; sourceTree = "<group>"; };
+		7D9FCFA318AA574100968601 /* midi_input_logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_input_logic.h; sourceTree = "<group>"; };
+		7D9FCFAA18AA575D00968601 /* documentation_mainpage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = documentation_mainpage.h; path = ../../../api/documentation_mainpage.h; sourceTree = "<group>"; };
 		7DB8170618967D84005D7C1D /* midi_engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_engine.cpp; sourceTree = "<group>"; };
 		7DB8170718967D84005D7C1D /* midi_engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_engine.h; sourceTree = "<group>"; };
 		7DB8170818967D84005D7C1D /* midi_settings_logic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_settings_logic.cpp; sourceTree = "<group>"; };
@@ -618,6 +632,7 @@
 			isa = PBXGroup;
 			children = (
 				7D8451FF187DBACF008639D2 /* command_result.h */,
+				7D9FCFAA18AA575D00968601 /* documentation_mainpage.h */,
 				7D845200187DBACF008639D2 /* command_source.h */,
 				7D845201187DBACF008639D2 /* command.h */,
 				7D845202187DBACF008639D2 /* common_typedefs.h */,
@@ -656,6 +671,12 @@
 		7D845227187DBBA4008639D2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				7D9FCF9E18AA574100968601 /* midi_input_dispatcher.cpp */,
+				7D9FCF9F18AA574100968601 /* midi_input_dispatcher.h */,
+				7D9FCFA018AA574100968601 /* midi_input_filterer.cpp */,
+				7D9FCFA118AA574100968601 /* midi_input_filterer.h */,
+				7D9FCFA218AA574100968601 /* midi_input_logic.cpp */,
+				7D9FCFA318AA574100968601 /* midi_input_logic.h */,
 				7D845228187DBBA4008639D2 /* audio_engine.cpp */,
 				7D845229187DBBA4008639D2 /* audio_engine.h */,
 				7D84522A187DBBA4008639D2 /* audio_settings_logic.cpp */,
@@ -841,9 +862,11 @@
 				7D845220187DBACF008639D2 /* polling_notification_sink.h in Headers */,
 				7D845214187DBACF008639D2 /* command_source.h in Headers */,
 				7D845216187DBACF008639D2 /* common_typedefs.h in Headers */,
+				7D9FCFA518AA574100968601 /* midi_input_dispatcher.h in Headers */,
 				7D845217187DBACF008639D2 /* error.h in Headers */,
 				7D84521D187DBACF008639D2 /* node.h in Headers */,
 				7D84521F187DBACF008639D2 /* path.h in Headers */,
+				7D9FCFA918AA574100968601 /* midi_input_logic.h in Headers */,
 				7D845219187DBACF008639D2 /* integra_session.h in Headers */,
 				7D84521E187DBACF008639D2 /* notification_sink.h in Headers */,
 				7D84521A187DBACF008639D2 /* interface_definition.h in Headers */,
@@ -902,6 +925,7 @@
 				7D845299187DBBA5008639D2 /* file_io.h in Headers */,
 				7D8454E9187DC023008639D2 /* mztools.h in Headers */,
 				7D8452B6187DBBA5008639D2 /* platform_specifics.h in Headers */,
+				7D9FCFAB18AA575D00968601 /* documentation_mainpage.h in Headers */,
 				7D8452B1187DBBA5008639D2 /* node.h in Headers */,
 				7D8454ED187DC023008639D2 /* zip.h in Headers */,
 				7D8452C1187DBBA5008639D2 /* rename_command.h in Headers */,
@@ -909,6 +933,7 @@
 				7D8452BA187DBBA5008639D2 /* player_logic.h in Headers */,
 				7D2131D21892B7C500C270A7 /* resample.hpp in Headers */,
 				7D8452D2187DBBA5008639D2 /* set_command.h in Headers */,
+				7D9FCFA718AA574100968601 /* midi_input_filterer.h in Headers */,
 				7D8452CF187DBBA5008639D2 /* server.h in Headers */,
 				7D8452C3187DBBA5008639D2 /* ring_buffer.h in Headers */,
 			);
@@ -1124,6 +1149,7 @@
 				7D84529D187DBBA5008639D2 /* interface_definition.cpp in Sources */,
 				7D2131CD1892B7C500C270A7 /* fsp_libsndfile.cpp in Sources */,
 				7D2131EB1892B7FD00C270A7 /* makefile in Sources */,
+				7D9FCFA418AA574100968601 /* midi_input_dispatcher.cpp in Sources */,
 				7D84528F187DBBA5008639D2 /* delete_command.cpp in Sources */,
 				7DB8170C18967D84005D7C1D /* midi_engine.cpp in Sources */,
 				7D8452D3187DBBA5008639D2 /* state_table.cpp in Sources */,
@@ -1133,6 +1159,7 @@
 				7D84528B187DBBA5008639D2 /* control_point_logic.cpp in Sources */,
 				7D8452B5187DBBA5008639D2 /* platform_specifics.cpp in Sources */,
 				7D845287187DBBA5008639D2 /* connection_logic.cpp in Sources */,
+				7D9FCFA618AA574100968601 /* midi_input_filterer.cpp in Sources */,
 				7D8452A1187DBBA5008639D2 /* load_command.cpp in Sources */,
 				7DCA34FE189FEE460031BDDC /* makefile in Sources */,
 				7DB8171018967D84005D7C1D /* portmidi_engine.cpp in Sources */,
@@ -1156,6 +1183,7 @@
 				7D8454E8187DC023008639D2 /* mztools.c in Sources */,
 				7D845295187DBBA5008639D2 /* error.cpp in Sources */,
 				7D84529A187DBBA5008639D2 /* guid_helper.cpp in Sources */,
+				7D9FCFA818AA574100968601 /* midi_input_logic.cpp in Sources */,
 				7DB8170E18967D84005D7C1D /* midi_settings_logic.cpp in Sources */,
 				7D8452AC187DBBA5008639D2 /* MurmurHash2.cpp in Sources */,
 				7D2131B61892B7A300C270A7 /* partconv~.c in Sources */,

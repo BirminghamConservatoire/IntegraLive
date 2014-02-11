@@ -30,9 +30,6 @@
 #ifndef INTEGRA_INTERFACE_DEFINITION_API_H
 #define INTEGRA_INTERFACE_DEFINITION_API_H
 
-
-#include "../externals/guiddef.h"
-
 #include "common_typedefs.h"
 #include "guid_helper.h"
 #include "value.h"

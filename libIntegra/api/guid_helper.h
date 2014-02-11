@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 
-#include "../externals/guiddef.h"
 #include "common_typedefs.h"
 #include "error.h"
 

@@ -24,7 +24,6 @@
 #define INTEGRA_INTERFACE_DEFINITION_PRIVATE_H
 
 
-#include "../externals/guiddef.h"
 #include <time.h>
 
 #include "api/interface_definition.h"

@@ -37,7 +37,19 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "../externals/guiddef.h"
+#ifdef _WINDOWS
+    #include <guid.h>
+#else
+namespace integra_api
+{
+    typedef struct GUID_ {
+        uint32_t Data1;
+        uint16_t Data2;
+        uint16_t Data3;
+        uint8_t  Data4[ 8 ];
+    } GUID;
+}
+#endif
 
 #ifdef _WINDOWS
 	#ifdef LIBINTEGRA_EXPORTS	

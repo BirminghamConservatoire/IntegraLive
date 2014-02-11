@@ -1,0 +1,206 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		7D93C82118A9713C0083CB07 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		7D93C82218A9713C0083CB07 /* aclocal.m4 */ = {isa = PBXFileReference; lastKnownFileType = text; path = aclocal.m4; sourceTree = "<group>"; };
+		7D93C82318A9713C0083CB07 /* common.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = common.mk; sourceTree = "<group>"; };
+		7D93C82418A9713C0083CB07 /* config.guess */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config.guess; sourceTree = "<group>"; };
+		7D93C82518A9713C0083CB07 /* config.mk.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.mk.in; sourceTree = "<group>"; };
+		7D93C82618A9713C0083CB07 /* config.sub */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config.sub; sourceTree = "<group>"; };
+		7D93C82718A9713C0083CB07 /* configure */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
+		7D93C82818A9713C0083CB07 /* configure.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = configure.in; sourceTree = "<group>"; };
+		7D93C82918A9713C0083CB07 /* dll-common.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "dll-common.mk"; sourceTree = "<group>"; };
+		7D93C82A18A9713C0083CB07 /* doc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = doc; sourceTree = "<group>"; };
+		7D93C82B18A9713C0083CB07 /* dylib-common.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "dylib-common.mk"; sourceTree = "<group>"; };
+		7D93C82C18A9713C0083CB07 /* examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = examples; sourceTree = "<group>"; };
+		7D93C82D18A9713C0083CB07 /* GNUmakefile */ = {isa = PBXFileReference; lastKnownFileType = text; path = GNUmakefile; sourceTree = "<group>"; };
+		7D93C82E18A9713C0083CB07 /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
+		7D93C82F18A9713C0083CB07 /* install-sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "install-sh"; sourceTree = "<group>"; };
+		7D93C83018A9713C0083CB07 /* irix-common.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "irix-common.mk"; sourceTree = "<group>"; };
+		7D93C83118A9713C0083CB07 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lib; sourceTree = "<group>"; };
+		7D93C83218A9713C0083CB07 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		7D93C83318A9713C0083CB07 /* missing */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = missing; sourceTree = "<group>"; };
+		7D93C83418A9713C0083CB07 /* mkinstalldirs */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = mkinstalldirs; sourceTree = "<group>"; };
+		7D93C83518A9713C0083CB07 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		7D93C83618A9713C0083CB07 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
+		7D93C83718A9713C0083CB07 /* srcdir.mk.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = srcdir.mk.in; sourceTree = "<group>"; };
+		7D93C83818A9713C0083CB07 /* stamp-h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = "stamp-h.in"; sourceTree = "<group>"; };
+		7D93C83918A9713C0083CB07 /* tools */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tools; sourceTree = "<group>"; };
+		7D93C83A18A9713C0083CB07 /* transport_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = transport_config.h; sourceTree = "<group>"; };
+		7D93C83B18A9713C0083CB07 /* transport_config.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = transport_config.mk; sourceTree = "<group>"; };
+		7D93C83C18A9713C0083CB07 /* unix-common.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "unix-common.mk"; sourceTree = "<group>"; };
+		7D93C83D18A9713C0083CB07 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
+		7D93C83E18A9713C0083CB07 /* version.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = version.mk; sourceTree = "<group>"; };
+		7D93C83F18A9713C0083CB07 /* Windows */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Windows; sourceTree = "<group>"; };
+		7D93C84018A9713C0083CB07 /* xmlrpc-c-config.main */ = {isa = PBXFileReference; lastKnownFileType = text; path = "xmlrpc-c-config.main"; sourceTree = "<group>"; };
+		7D93C84118A9713C0083CB07 /* xmlrpc-c-config.test.main */ = {isa = PBXFileReference; lastKnownFileType = text; path = "xmlrpc-c-config.test.main"; sourceTree = "<group>"; };
+		7D93C84218A9713C0083CB07 /* xmlrpc_amconfig.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = xmlrpc_amconfig.h.in; sourceTree = "<group>"; };
+		7D93C84318A9713C0083CB07 /* xmlrpc_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmlrpc_config.h; sourceTree = "<group>"; };
+		7D93C84418A9713C0083CB07 /* xmlrpc_config.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = xmlrpc_config.h.in; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		7D93C81B18A9713C0083CB07 = {
+			isa = PBXGroup;
+			children = (
+				7D93C82118A9713C0083CB07 /* .gitignore */,
+				7D93C82218A9713C0083CB07 /* aclocal.m4 */,
+				7D93C82318A9713C0083CB07 /* common.mk */,
+				7D93C82418A9713C0083CB07 /* config.guess */,
+				7D93C82518A9713C0083CB07 /* config.mk.in */,
+				7D93C82618A9713C0083CB07 /* config.sub */,
+				7D93C82718A9713C0083CB07 /* configure */,
+				7D93C82818A9713C0083CB07 /* configure.in */,
+				7D93C82918A9713C0083CB07 /* dll-common.mk */,
+				7D93C82A18A9713C0083CB07 /* doc */,
+				7D93C82B18A9713C0083CB07 /* dylib-common.mk */,
+				7D93C82C18A9713C0083CB07 /* examples */,
+				7D93C82D18A9713C0083CB07 /* GNUmakefile */,
+				7D93C82E18A9713C0083CB07 /* include */,
+				7D93C82F18A9713C0083CB07 /* install-sh */,
+				7D93C83018A9713C0083CB07 /* irix-common.mk */,
+				7D93C83118A9713C0083CB07 /* lib */,
+				7D93C83218A9713C0083CB07 /* Makefile */,
+				7D93C83318A9713C0083CB07 /* missing */,
+				7D93C83418A9713C0083CB07 /* mkinstalldirs */,
+				7D93C83518A9713C0083CB07 /* README */,
+				7D93C83618A9713C0083CB07 /* src */,
+				7D93C83718A9713C0083CB07 /* srcdir.mk.in */,
+				7D93C83818A9713C0083CB07 /* stamp-h.in */,
+				7D93C83918A9713C0083CB07 /* tools */,
+				7D93C83A18A9713C0083CB07 /* transport_config.h */,
+				7D93C83B18A9713C0083CB07 /* transport_config.mk */,
+				7D93C83C18A9713C0083CB07 /* unix-common.mk */,
+				7D93C83D18A9713C0083CB07 /* version.h */,
+				7D93C83E18A9713C0083CB07 /* version.mk */,
+				7D93C83F18A9713C0083CB07 /* Windows */,
+				7D93C84018A9713C0083CB07 /* xmlrpc-c-config.main */,
+				7D93C84118A9713C0083CB07 /* xmlrpc-c-config.test.main */,
+				7D93C84218A9713C0083CB07 /* xmlrpc_amconfig.h.in */,
+				7D93C84318A9713C0083CB07 /* xmlrpc_config.h */,
+				7D93C84418A9713C0083CB07 /* xmlrpc_config.h.in */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		7D93C82018A9713C0083CB07 /* xmlrpc-c */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 7D93C84518A9713C0083CB07 /* Build configuration list for PBXLegacyTarget "xmlrpc-c" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "/Users/jamie/Documents/IntegraLive/server/externals/xmlrpc-c";
+			dependencies = (
+			);
+			name = "xmlrpc-c";
+			passBuildSettingsInEnvironment = 1;
+			productName = "xmlrpc-c";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		7D93C81C18A9713C0083CB07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 7D93C81F18A9713C0083CB07 /* Build configuration list for PBXProject "xmlrpc-c" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7D93C81B18A9713C0083CB07;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7D93C82018A9713C0083CB07 /* xmlrpc-c */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		7D93C81D18A9713C0083CB07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		7D93C81E18A9713C0083CB07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		7D93C84618A9713C0083CB07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "xmlrpc-c";
+			};
+			name = Debug;
+		};
+		7D93C84718A9713C0083CB07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "xmlrpc-c";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7D93C81F18A9713C0083CB07 /* Build configuration list for PBXProject "xmlrpc-c" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D93C81D18A9713C0083CB07 /* Debug */,
+				7D93C81E18A9713C0083CB07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7D93C84518A9713C0083CB07 /* Build configuration list for PBXLegacyTarget "xmlrpc-c" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D93C84618A9713C0083CB07 /* Debug */,
+				7D93C84718A9713C0083CB07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7D93C81C18A9713C0083CB07 /* Project object */;
+}

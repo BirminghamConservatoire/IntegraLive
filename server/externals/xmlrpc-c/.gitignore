@@ -2,3 +2,56 @@
 bin/
 
 temp/
+
+# Intermediate object files
+*.o
+*.osh
+*.lo
+*.la
+*.a
+.deps
+.libs
+*.dylib
+
+
+# Autotools generated files
+Makefile
+Makefile.in
+config.h
+config.h.in
+config.guess
+config.log
+config.status
+config.sub
+configure.lineno
+portaudio-2.0.pc
+libtool
+stamp-h1
+stamp-h
+compile
+aclocal.m4
+ltmain.sh
+INSTALL
+autom4te.cache
+xmlrpc_amconfig.h
+
+
+# Build system generated files
+*.mk
+blddir
+srcdir
+
+# Xcode non-shared
+xcuserdata
+
+# xmlrpc-c specific
+xmlrpc-c-config
+xmlrpc-c-config.test
+shell_config
+lib/expat/gennmtab/gennmtab
+xmlrpc_config.h
+lib/curl_transport/version.h
+lib/abyss/src/version.h
+
+
+

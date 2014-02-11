@@ -4,3 +4,6 @@
 [submodule "libIntegra/externals/libsndfile"]
 	path = libIntegra/externals/libsndfile
 	url = https://jamiebullock@github.com/erikd/libsndfile.git
+[submodule "server/externals/liblo"]
+	path = server/externals/liblo
+	url = https://jamiebullock@github.com/radarsat1/liblo.git

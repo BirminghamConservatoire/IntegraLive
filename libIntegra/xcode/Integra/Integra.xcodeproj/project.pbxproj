@@ -156,7 +156,6 @@
 		7D8452DA187DBBA5008639D2 /* validator.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845280187DBBA5008639D2 /* validator.h */; };
 		7D8452DB187DBBA5008639D2 /* value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D845281187DBBA5008639D2 /* value.cpp */; };
 		7D8452DD187DBCCD008639D2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8452DC187DBCCD008639D2 /* libxml2.dylib */; };
-		7D84540A187DC023008639D2 /* guiddef.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8452E7187DC023008639D2 /* guiddef.h */; };
 		7D8454E3187DC023008639D2 /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8453FB187DC023008639D2 /* crypt.h */; };
 		7D8454E4187DC023008639D2 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D8453FC187DC023008639D2 /* ioapi.c */; };
 		7D8454E5187DC023008639D2 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8453FD187DC023008639D2 /* ioapi.h */; };
@@ -172,7 +171,7 @@
 		7D9FCFA718AA574100968601 /* midi_input_filterer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCFA118AA574100968601 /* midi_input_filterer.h */; };
 		7D9FCFA818AA574100968601 /* midi_input_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D9FCFA218AA574100968601 /* midi_input_logic.cpp */; };
 		7D9FCFA918AA574100968601 /* midi_input_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCFA318AA574100968601 /* midi_input_logic.h */; };
-		7D9FCFAB18AA575D00968601 /* documentation_mainpage.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCFAA18AA575D00968601 /* documentation_mainpage.h */; };
+		7D9FCFAB18AA575D00968601 /* documentation_mainpage.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCFAA18AA575D00968601 /* documentation_mainpage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7DB8170C18967D84005D7C1D /* midi_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DB8170618967D84005D7C1D /* midi_engine.cpp */; };
 		7DB8170D18967D84005D7C1D /* midi_engine.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DB8170718967D84005D7C1D /* midi_engine.h */; };
 		7DB8170E18967D84005D7C1D /* midi_settings_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DB8170818967D84005D7C1D /* midi_settings_logic.cpp */; };
@@ -416,7 +415,6 @@
 		7D845280187DBBA5008639D2 /* validator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = validator.h; sourceTree = "<group>"; };
 		7D845281187DBBA5008639D2 /* value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = value.cpp; sourceTree = "<group>"; };
 		7D8452DC187DBCCD008639D2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
-		7D8452E7187DC023008639D2 /* guiddef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = guiddef.h; sourceTree = "<group>"; };
 		7D8453FB187DC023008639D2 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		7D8453FC187DC023008639D2 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		7D8453FD187DC023008639D2 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -800,7 +798,6 @@
 				7D571D481885629E001332AB /* libpd.xcodeproj */,
 				7D6D69CE18800913004B313E /* lua.xcodeproj */,
 				7DDB939F187FFFD500480791 /* portaudio.xcodeproj */,
-				7D8452E7187DC023008639D2 /* guiddef.h */,
 				7D8453FA187DC023008639D2 /* minizip */,
 			);
 			name = externals;
@@ -874,6 +871,7 @@
 				7D84521C187DBACF008639D2 /* node_endpoint.h in Headers */,
 				7D845218187DBACF008639D2 /* guid_helper.h in Headers */,
 				7D845221187DBACF008639D2 /* server_lock.h in Headers */,
+				7D9FCFAB18AA575D00968601 /* documentation_mainpage.h in Headers */,
 				7D845222187DBACF008639D2 /* server_startup_info.h in Headers */,
 				7D845223187DBACF008639D2 /* server.h in Headers */,
 				7D845224187DBACF008639D2 /* string_helper.h in Headers */,
@@ -913,7 +911,6 @@
 				7D845294187DBBA5008639D2 /* envelope_logic.h in Headers */,
 				7D8452A0187DBBA5008639D2 /* interface_definition_loader.h in Headers */,
 				7D845283187DBBA5008639D2 /* audio_engine.h in Headers */,
-				7D84540A187DC023008639D2 /* guiddef.h in Headers */,
 				7D8452AD187DBBA5008639D2 /* MurmurHash2.h in Headers */,
 				7D84528E187DBBA5008639D2 /* data_directory.h in Headers */,
 				7DB8171118967D84005D7C1D /* portmidi_engine.h in Headers */,
@@ -925,7 +922,6 @@
 				7D845299187DBBA5008639D2 /* file_io.h in Headers */,
 				7D8454E9187DC023008639D2 /* mztools.h in Headers */,
 				7D8452B6187DBBA5008639D2 /* platform_specifics.h in Headers */,
-				7D9FCFAB18AA575D00968601 /* documentation_mainpage.h in Headers */,
 				7D8452B1187DBBA5008639D2 /* node.h in Headers */,
 				7D8454ED187DC023008639D2 /* zip.h in Headers */,
 				7D8452C1187DBBA5008639D2 /* rename_command.h in Headers */,

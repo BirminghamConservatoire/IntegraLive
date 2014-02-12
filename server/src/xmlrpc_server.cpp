@@ -1203,7 +1203,7 @@ static xmlrpc_value *ntg_xmlrpc_load_module_in_development_callback( CServerLock
     xmlrpc_struct_set_value(env, struct_, "moduleid", xmlrpc_temp);
     xmlrpc_DECREF(xmlrpc_temp);
 
-	if( result.previous_module_id != CGuidHelper::null_guid )
+    if ( CGuidHelper::guid_is_null( result.previous_module_id ))
 	{
 		string previous_module_id_string = CGuidHelper::guid_to_string( result.previous_module_id );
 		xmlrpc_temp = xmlrpc_string_new(env, previous_module_id_string.c_str() );
@@ -1320,7 +1320,18 @@ static xmlrpc_value *ntg_xmlrpc_new_callback(CServerLock &server, const int argc
         /* free out-of-place memory */
         free(module_id_string);
         free(node_name);
-		return ntg_xmlrpc_error(env, error != CError::SUCCESS ? error : CError::INPUT_ERROR );
+        CError return_error;
+        
+        if (error != CError::SUCCESS)
+        {
+            return_error = error;
+        }
+        else
+        {
+            return_error = CError::INPUT_ERROR;
+        }
+        
+		return ntg_xmlrpc_error(env, return_error );
     }
 
     struct_ = xmlrpc_struct_new(env);

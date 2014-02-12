@@ -40,6 +40,12 @@
 	<mx:HBox left="2" right="4" top="4" bottom="16" horizontalGap="0">
 		<mx:VBox id="tabButtons">
 			<mx:Button 
+				id="midiButton"
+				styleName="sideTabButtonStyle"
+				label="MIDI" 
+				width="100%" 
+				click="onClickMidi();"/>
+			<mx:Button 
 				id="routingButton"
 				styleName="sideTabButtonStyle"
 				label="Routing" 
@@ -53,6 +59,8 @@
 				click="onClickScripting();"/>
 		</mx:VBox>
 		<arrangeViewProperties:ArrangeViewPropertiesViewStack id="viewStack" width="100%" height="100%">
+				<arrangeViewProperties:MidiView id="midiView">
+				</arrangeViewProperties:MidiView>
 				<arrangeViewProperties:RoutingView id="routingView">
 				</arrangeViewProperties:RoutingView>
 				<arrangeViewProperties:ScriptingView id="scriptingView">
@@ -62,29 +70,24 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import components.controller.IntegraController;
 			import components.controller.serverCommands.RenameObject;
 			import components.controller.serverCommands.SelectScene;
 			import components.controller.userDataCommands.SetColorScheme;
 			import components.controller.userDataCommands.SetPrimarySelectedChild;
-			import components.model.Block;
 			import components.model.Info;
-			import components.model.IntegraContainer;
-			import components.model.IntegraDataObject;
-			import components.model.IntegraModel;
-			import components.model.Scene;
 			import components.model.userData.ColorScheme;
 			import components.utils.Utilities;
+			import components.views.IntegraView;
 			import components.views.InfoView.InfoMarkupForViews;
 			
 			import flexunit.framework.Assert;
 			
-			import mx.core.Container;
 		
 			override public function free():void
 			{
 				super.free();
 				
+				midiView.free();
 				routingView.free();
 				scriptingView.free();
 				_blockTitlebarView.free();
@@ -198,6 +201,7 @@
 				
 				var button:Button = Utilities.getAncestorByType( event.target, Button ) as Button;
 				
+				if( button == midiButton ) return infos.getInfoForView( "ArrangeViewProperties/MidiViewButton" );
 				if( button == routingButton ) return infos.getInfoForView( "ArrangeViewProperties/RoutingViewButton" );
 				if( button == scriptingButton ) return infos.getInfoForView( "ArrangeViewProperties/ScriptingViewButton" );
 				
@@ -207,7 +211,11 @@
 			
 			public function get selectedTab():String 
 			{ 
-				return viewStack.selectedChild == scriptingView ? SCRIPTING_TABNAME : ROUTING_TABNAME; 
+				if( viewStack.selectedChild == scriptingView ) return SCRIPTING_TABNAME;
+				
+				if( viewStack.selectedChild == routingView ) return ROUTING_TABNAME;
+
+				return MIDI_TABNAME;
 			}
 			
 			
@@ -216,6 +224,10 @@
 				switch( selectedTab )
 				{
 					default:
+					case MIDI_TABNAME:
+						viewStack.selectedChild = midiView;
+						break;
+
 					case ROUTING_TABNAME:
 						viewStack.selectedChild = routingView;
 						break;
@@ -319,6 +331,13 @@
 			}
 
 
+			private function onClickMidi():void
+			{
+				viewStack.selectedChild = midiView;
+				updateButtons();
+			}			
+
+			
 			private function onClickRouting():void
 			{
 				viewStack.selectedChild = routingView;
@@ -399,6 +418,7 @@
 			
 			private var _breadcrumbs:Breadcrumbs = new Breadcrumbs;
 			
+			private static const MIDI_TABNAME:String = "midi";
 			private static const ROUTING_TABNAME:String = "routing";
 			private static const SCRIPTING_TABNAME:String = "scripting";
 		]]>

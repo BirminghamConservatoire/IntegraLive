@@ -588,6 +588,19 @@ package components.model
 			Assert.assertTrue( false );		//not found, or wrong type
 			return null;
 		}
+
+		
+		public function getMidiControlInput( midiControlInputID:int ):MidiControlInput
+		{
+			var object:IntegraDataObject = getDataObjectByID( midiControlInputID );
+			if( object && object is MidiControlInput )
+			{
+				return object as MidiControlInput;
+			} 
+			
+			Assert.assertTrue( false );		//not found, or wrong type
+			return null;
+		}
 		
 		
 		public function getModulePosition( moduleInstanceID:int, inventIfUnknown:Boolean = true ):Rectangle
@@ -768,6 +781,19 @@ package components.model
 		public function getContainerFromScaler( scalerID:int ):IntegraContainer
 		{
 			var parent:IntegraContainer = getParent( scalerID ) as IntegraContainer;
+			if( parent  )
+			{
+				return parent;
+			} 
+			
+			Assert.assertTrue( false );		//not found, or wrong type
+			return null;
+		}		
+
+		
+		public function getContainerFromMidiControlInput( midiControlInputID:int ):IntegraContainer
+		{
+			var parent:IntegraContainer = getParent( midiControlInputID ) as IntegraContainer;
 			if( parent  )
 			{
 				return parent;

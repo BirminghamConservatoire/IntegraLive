@@ -22,6 +22,7 @@ package components.model
 		public function get connections():Object { return _connections; }
 		public function get scalers():Object { return _scalers; }
 		public function get midi():Midi { return _midi; }
+		public function get midiControlInputs():Object { return _midiControlInputs; }
 		public function get info():Info { return _info; }
 
 		public function get userData():UserData { return internalUserData; }
@@ -45,6 +46,7 @@ package components.model
 			_connections = new Object;
 			_scripts = new Object;
 			_scalers = new Object;
+			_midiControlInputs = new Object;
 			_midi = null;
 			
 			for each( var child:IntegraDataObject in children )
@@ -62,6 +64,11 @@ package components.model
 				if( child is Scaler )
 				{
 					_scalers[ child.id ] = child;
+				}
+
+				if( child is MidiControlInput )
+				{
+					_midiControlInputs[ child.id ] = child;
 				}
 
 				if( child is Midi )
@@ -177,6 +184,7 @@ package components.model
 		private var _connections:Object = new Object;
 		private var _scripts:Object = new Object;
 		private var _scalers:Object = new Object;
+		private var _midiControlInputs:Object = new Object;
 		private var _midi:Midi = null;
 		private var _info:Info = new Info; 
 	}

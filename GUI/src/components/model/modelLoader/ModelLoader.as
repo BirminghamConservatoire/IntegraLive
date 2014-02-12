@@ -44,6 +44,7 @@ package components.model.modelLoader
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.Midi;
+	import components.model.MidiControlInput;
 	import components.model.ModuleInstance;
 	import components.model.Player;
 	import components.model.Scaler;
@@ -262,6 +263,11 @@ package components.model.modelLoader
 						loadObjectState( scaler, methodCalls );  
 					}
 
+					for each( var midiControlInput:MidiControlInput in block.midiControlInputs )
+					{
+						loadObjectState( midiControlInput, methodCalls );  
+					}
+
 					for each( var envelope:Envelope in block.envelopes )
 					{
 						loadObjectState( envelope, methodCalls );
@@ -302,6 +308,11 @@ package components.model.modelLoader
 				{
 					loadObjectState( scaler, methodCalls );  
 				}
+				
+				for each( midiControlInput in track.midiControlInputs )
+				{
+					loadObjectState( midiControlInput, methodCalls );  
+				}
 			}
 			
 			for each( script in _model.project.scripts )
@@ -318,6 +329,12 @@ package components.model.modelLoader
 			{
 				loadObjectState( scaler, methodCalls );  
 			}
+			
+			for each( midiControlInput in _model.project.midiControlInputs )
+			{
+				loadObjectState( midiControlInput, methodCalls );  
+			}
+			
 
 			for each( var scene:Scene in _model.project.player.scenes )
 			{
@@ -814,7 +831,7 @@ package components.model.modelLoader
 						break;
 						
 					case 2:
-						//this gui only expects to find containers, scripts, connections, scalers, one player and one midi at level 2, 
+						//this gui only expects to find containers, scripts, connections, scalers, midi control inputs, one player and one midi at level 2, 
 						//which it interprets as tracks, project-level scripts and connections, and the project player respectively
 						//they are all expected to have the project as their parent.
 						if( path[ 0 ] != _model.project.name )
@@ -853,6 +870,13 @@ package components.model.modelLoader
 								_model.addDataObject( parentID, scaler );
 								break;
 
+							case MidiControlInput._serverInterfaceName:
+								var midiControlInput:MidiControlInput = new MidiControlInput();
+								giveNewID( midiControlInput );
+								midiControlInput.name = name;
+								_model.addDataObject( parentID, midiControlInput );
+								break;
+							
 							case Player._serverInterfaceName:
 								if( foundProjectPlayer )
 								{
@@ -886,7 +910,7 @@ package components.model.modelLoader
 						break;
 						
 					case 3:
-						//this gui only expects to find containers, envelopes, connections, scalers, scripts, midi and scenes at level 3, 
+						//this gui only expects to find containers, envelopes, connections, scalers, midi control inputs, scripts, midi and scenes at level 3, 
 						//it interprets these as blocks, block envelopes, track-level connections scripts and midi, and scenes (under the player)
 						//they are expected to have an existing track as their parent.
 						parent = _model.getDataObjectByID( parentID );
@@ -933,6 +957,13 @@ package components.model.modelLoader
 								_model.addDataObject( parentID, scaler );
 								break;
 
+							case MidiControlInput._serverInterfaceName:
+								midiControlInput = new MidiControlInput();
+								giveNewID( midiControlInput );
+								midiControlInput.name = name;
+								_model.addDataObject( parentID, midiControlInput );
+								break;
+							
 							case Midi._serverInterfaceName:
 								var midi:Midi = new Midi();
 								giveNewID( midi );
@@ -955,7 +986,7 @@ package components.model.modelLoader
 						break;
 						
 					case 4:
-						//this gui only expects to find audio modules, connections, scalers, scripts, midi, envelopes and control points for block envelopes at level 4
+						//this gui only expects to find audio modules, connections, scalers, midi control inputs, scripts, midi, envelopes and control points for block envelopes at level 4
 						parent = _model.getDataObjectByID( parentID );
 						if( !parent is Block && !(interfaceName == "ControlPoint" && parent is Envelope ) )
 						{
@@ -977,6 +1008,13 @@ package components.model.modelLoader
 								giveNewID( scaler );
 								scaler.name = name;
 								_model.addDataObject( parentID, scaler );
+								break;
+							
+							case MidiControlInput._serverInterfaceName:
+								midiControlInput = new MidiControlInput();
+								giveNewID( midiControlInput );
+								midiControlInput.name = name;
+								_model.addDataObject( parentID, midiControlInput );
 								break;
 
 							case Envelope._serverInterfaceName:
@@ -1329,6 +1367,14 @@ package components.model.modelLoader
 							if( connection.targetAttributeName == "inValue" )
 							{
 								scaler.upstreamConnection = connection;
+								
+								// midi input control crossreferences
+								if( sourceObject && sourceObject is MidiControlInput )
+								{
+									var midiControlInput:MidiControlInput = sourceObject as MidiControlInput;
+									scaler.midiControlInput = midiControlInput;
+									midiControlInput.scaler = scaler;
+								}
 							}
 						}
 					}

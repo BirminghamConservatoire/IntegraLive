@@ -39,6 +39,7 @@ package components.model
 
 		public function get upstreamConnection():Connection { return _upstreamConnection; }
 		public function get downstreamConnection():Connection { return _downstreamConnection; }
+		public function get midiControlInput():MidiControlInput { return _midiControlInput; }
 
 		public function set inRangeMin( inRangeMin:Number ):void { _inRangeMin = inRangeMin; }
 		public function set inRangeMax( inRangeMax:Number ):void { _inRangeMax = inRangeMax; }
@@ -49,6 +50,7 @@ package components.model
 
 		public function set upstreamConnection( upstreamConnection:Connection ):void { _upstreamConnection = upstreamConnection; }
 		public function set downstreamConnection( downstreamConnection:Connection ):void { _downstreamConnection = downstreamConnection; }
+		public function set midiControlInput( midiControlInput:MidiControlInput ):void { _midiControlInput = midiControlInput; }
 		
 		
 		override public function setAttributeFromServer( attributeName:String, value:Object, model:IntegraModel ):Boolean
@@ -101,7 +103,9 @@ package components.model
 		private var _outRangeMax:Number = 0;
 		private var _outValue:Number = 0;
 		
-		private var _upstreamConnection:Connection;
-		private var _downstreamConnection:Connection;
+		private var _upstreamConnection:Connection = null;
+		private var _downstreamConnection:Connection = null;
+		
+		private var _midiControlInput:MidiControlInput = null;
 	}
 }

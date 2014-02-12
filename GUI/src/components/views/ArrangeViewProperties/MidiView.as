@@ -30,12 +30,11 @@ package components.views.ArrangeViewProperties
 	import mx.controls.Button;
 	
 	import components.controller.serverCommands.AddMidiControlInput;
-	import components.controller.serverCommands.AddScaledConnection;
-	import components.controller.serverCommands.RemoveScaledConnection;
+	import components.controller.serverCommands.RemoveMidiControlInput;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.model.Info;
 	import components.model.IntegraContainer;
-	import components.model.Scaler;
+	import components.model.MidiControlInput;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
 	import components.views.IntegraView;
@@ -44,10 +43,9 @@ package components.views.ArrangeViewProperties
 	
 	import flexunit.framework.Assert;
 
-	
-	public class RoutingView extends IntegraView
+	public class MidiView extends IntegraView
 	{
-		public function RoutingView()
+		public function MidiView()
 		{
 			super();
 			
@@ -64,9 +62,8 @@ package components.views.ArrangeViewProperties
 			_newItemButton.addEventListener( MouseEvent.CLICK, onClickNewItemButton );
 			
 			addUpdateMethod( SetPrimarySelectedChild, onPrimarySelectionChanged );
-			addUpdateMethod( AddScaledConnection, onScaledConnectionAdded );
-			addUpdateMethod( RemoveScaledConnection, onScaledConnectionRemoved );
 			addUpdateMethod( AddMidiControlInput, onMidiControlInputAdded );
+			addUpdateMethod( RemoveMidiControlInput, onMidiControlInputRemoved );
 		}
 
 
@@ -103,10 +100,10 @@ package components.views.ArrangeViewProperties
 		{
 			if( event.target == _newItemButton ) 
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/CreateRoutingButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/CreateMidiButton" );
 			}
 
-			return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/RoutingView" );
+			return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/MidiView" );
 		}		
 		
 		
@@ -135,11 +132,11 @@ package components.views.ArrangeViewProperties
 		private function updateAll():void
 		{
 			_vbox.removeAllChildren();
-			for each( var routingItem:RoutingItem in _routingItems )
+			for each( var midiItem:MidiItem in _midiItems )
 			{
-				routingItem.free();
+				midiItem.free();
 			}
-			_routingItems = new Object;
+			_midiItems = new Object;
 			
 			var container:IntegraContainer = model.selectedContainer;
 			if( container )
@@ -148,15 +145,9 @@ package components.views.ArrangeViewProperties
 				
 				_vbox.addElement( _newItemButton );
 				
-				for each( var scaler:Scaler in container.scalers )
+				for each( var midiControlInput:MidiControlInput in container.midiControlInputs )
 				{
-					if( scaler.midiControlInput )
-					{
-						//these scalers are handled in separate tab
-						continue;
-					}
-					
-					addRoutingViewItem( scaler );
+					addMidiViewItem( midiControlInput );
 				}
 			}
 			else
@@ -166,62 +157,45 @@ package components.views.ArrangeViewProperties
 		}
 
 
-		private function onScaledConnectionAdded( command:AddScaledConnection ):void
+		private function onMidiControlInputAdded( command:AddMidiControlInput ):void
 		{
 			if( command.containerID != _containerID ) 
 			{
 				return;
 			}
 
-			var scaler:Scaler = model.getScaler( command.scalerID );
-			Assert.assertNotNull( scaler );
+			var midiControlInput:MidiControlInput = model.getMidiControlInput( command.midiControlInputID );
+			Assert.assertNotNull( midiControlInput );
 			
-			if( scaler.midiControlInput )
-			{
-				//these scalers are handled in separate tab
-				return;				
-			}
-			
-			addRoutingViewItem( scaler );
+			addMidiViewItem( midiControlInput );
 		}
 
 
 
-		private function onScaledConnectionRemoved( command:RemoveScaledConnection ):void
+		private function onMidiControlInputRemoved( command:RemoveMidiControlInput ):void
 		{
-			var scalerID:int = command.scalerID;
-			if( !_routingItems.hasOwnProperty( scalerID ) )
+			var midiControlInputID:int = command.midiControlInputID;
+			if( !_midiItems.hasOwnProperty( midiControlInputID ) )
 			{
 				return;
 			}
 			
-			removeRoutingViewItem( scalerID );
+			removeMidiViewItem( midiControlInputID );
 		}
 		
 		
-		private function onMidiControlInputAdded( command:AddMidiControlInput ):void
+		private function addMidiViewItem( midiControlInput:MidiControlInput ):void
 		{
-			/*
-			tidy up - midi control input scalers don't have cross-reference when they're first 
-			added so get added to routingview erroneously
-			*/
+			Assert.assertNotNull( midiControlInput );
+			var item:MidiItem = new MidiItem( midiControlInput.id );
 			
-			updateAll();
-		}
-		
-		
-		private function addRoutingViewItem( scaler:Scaler ):void
-		{
-			Assert.assertNotNull( scaler );
-			var item:RoutingItem = new RoutingItem( scaler.id );
-			
-			_routingItems[ scaler.id ] = item;
+			_midiItems[ midiControlInput.id ] = item;
 			
 			for( var insertionIndex:int = 0; insertionIndex < _vbox.numChildren - 1; insertionIndex++ )
 			{
-				var childID:int = ( _vbox.getChildAt( insertionIndex ) as RoutingItem ).scalerID;
+				var childID:int = ( _vbox.getChildAt( insertionIndex ) as MidiItem ).midiControlInputID;
 				
-				if( childID > scaler.id )
+				if( childID > midiControlInput.id )
 				{
 					break;
 				}
@@ -231,20 +205,14 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function removeRoutingViewItem( scalerID:int ):void
+		private function removeMidiViewItem( midiControlInputID:int ):void
 		{
-			if( !_routingItems.hasOwnProperty( scalerID ) )
-			{
-				return;
-			}
+			var midiItem:MidiItem = _midiItems[ midiControlInputID ];
+			Assert.assertNotNull( midiItem );
 			
-			var routingItem:RoutingItem = _routingItems[ scalerID ];
-			Assert.assertNotNull( routingItem );
-			
-			_vbox.removeChild( routingItem );
-			routingItem.free();
-			delete _routingItems[ scalerID ];
-			
+			_vbox.removeChild( midiItem );
+			midiItem.free();
+			delete _midiItems[ midiControlInputID ];
 		}
 		
 		
@@ -253,7 +221,7 @@ package components.views.ArrangeViewProperties
 			var container:IntegraContainer = model.selectedContainer;
 			Assert.assertNotNull( container );
 			
-			controller.processCommand( new AddScaledConnection( container.id ) ); 
+			controller.processCommand( new AddMidiControlInput( container.id ) ); 
 		}
 		
 		
@@ -261,7 +229,7 @@ package components.views.ArrangeViewProperties
 		private var _vbox:VBox = new VBox;
 		private var _newItemButton:Button = new Button;
 				
-		private var _routingItems:Object = new Object;		//maps scaler ids to routing items
+		private var _midiItems:Object = new Object;		//maps midiControlInput ids to routing items
 
       	private const _padding:Number = 10;
 	}

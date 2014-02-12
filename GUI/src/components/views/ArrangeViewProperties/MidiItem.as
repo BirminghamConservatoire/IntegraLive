@@ -41,11 +41,13 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.ImportBlock;
 	import components.controller.serverCommands.RemoveBlock;
 	import components.controller.serverCommands.RemoveBlockImport;
-	import components.controller.serverCommands.RemoveScaledConnection;
+	import components.controller.serverCommands.RemoveMidiControlInput;
 	import components.controller.serverCommands.RemoveScript;
 	import components.controller.serverCommands.RemoveTrack;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
+	import components.controller.serverCommands.SetMidiControlInputValues;
+	import components.controller.serverCommands.SetMidiInputDevices;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
 	import components.controller.serverCommands.SwitchModuleVersion;
@@ -55,6 +57,7 @@ package components.views.ArrangeViewProperties
 	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
+	import components.model.Midi;
 	import components.model.MidiControlInput;
 	import components.model.Scaler;
 	import components.model.interfaceDefinitions.EndpointDefinition;
@@ -67,24 +70,27 @@ package components.views.ArrangeViewProperties
 	import components.views.Skins.CloseButtonSkin;
 	
 	import flexunit.framework.Assert;
-	
 
-	public class RoutingItem extends IntegraView
+	public class MidiItem extends IntegraView
 	{
-		public function RoutingItem( scalerID:int )
+		public function MidiItem( midiControlInputID:int )
 		{
 			super();
 			
-			_scalerID = scalerID;
+			_midiControlInputID = midiControlInputID;
 			
 			horizontalScrollPolicy = ScrollPolicy.OFF;
 			
 			_hbox.setStyle( "horizontalAlign", "middle" );
 			_hbox.setStyle( "verticalAlign", "middle" );
 			
-			initialiseCombo( _sourceObjectCombo, onChangeSourceComboSelection );
-			initialiseCombo( _sourceEndpointCombo, onChangeSourceComboSelection );
+			initialiseCombo( _sourceDeviceCombo, onChangeMidiDevice );
+			initialiseCombo( _sourceChannelCombo, onChangeMidiChannel );
+			initialiseCombo( _sourceMessageTypeCombo, onChangeMessageType );
+			initialiseCombo( _sourceMessageValueCombo, onChangeMessageValue );
 
+			populateStaticMidiCombos();
+			
 			_hbox.addChild( _inScaleMinimum );
 			_hbox.addChild( _inScaleMaximum );
 			
@@ -107,6 +113,9 @@ package components.views.ArrangeViewProperties
 			_hbox.addChild( _deleteButton );
 			
 			addChild( _hbox );
+
+			addUpdateMethod( SetMidiInputDevices, onMidiInputDevicesChanged );
+			addUpdateMethod( SetMidiControlInputValues, onMidiControlInputValuesChanged );
 			
 			addUpdateMethod( SetConnectionRouting, onConnectionRoutingChanged );
 			addUpdateMethod( SetScalerInputRange, onScalerInputRangeChanged );
@@ -129,7 +138,7 @@ package components.views.ArrangeViewProperties
 		}
 		
 	
-		public function get scalerID():int { return _scalerID; }
+		public function get midiControlInputID():int { return _midiControlInputID; }
 
 
 		override public function styleChanged( style:String ):void
@@ -159,8 +168,11 @@ package components.views.ArrangeViewProperties
 			{
 				height = FontSize.getTextRowHeight( this );
 				
-				_sourceObjectCombo.height = height;
-				_sourceEndpointCombo.height = height;
+				_sourceDeviceCombo.height = height;
+				_sourceChannelCombo.height = height;
+				_sourceMessageTypeCombo.height = height;
+				_sourceMessageValueCombo.height = height;
+				
 				_targetObjectCombo.height = height;
 				_targetEndpointCombo.height = height;
 
@@ -190,7 +202,7 @@ package components.views.ArrangeViewProperties
 		{
 			if( event.target == _deleteButton )
 			{
-				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/DeleteRoutingButton" );
+				return InfoMarkupForViews.instance.getInfoForView( "ArrangeViewProperties/DeleteMidiButton" );
 			}
 
 			return null;
@@ -202,6 +214,38 @@ package components.views.ArrangeViewProperties
 		}
 
 
+		private function get midiControlInput():MidiControlInput
+		{
+			var midiControlInput:MidiControlInput = model.getMidiControlInput( _midiControlInputID );
+			Assert.assertNotNull( midiControlInput );
+			
+			return midiControlInput;
+		}
+		
+		
+		private function get scaler():Scaler
+		{
+			return midiControlInput.scaler;
+		}
+		
+		
+		private function onMidiInputDevicesChanged( command:SetMidiInputDevices ):void
+		{
+			updateMidiDeviceCombo();
+		}
+		
+		
+		private function onMidiControlInputValuesChanged( command:SetMidiControlInputValues ):void
+		{
+			if( command.midiControlInputID != _midiControlInputID ) return;
+			
+			updateMidiDeviceCombo();
+			updateStaticMidiCombos();
+			updateMessageValueCombo();
+			updateScalerInputControls();
+		}
+
+		
 		private function onConnectionRoutingChanged( command:SetConnectionRouting ):void
 		{
 			updateAll();
@@ -210,7 +254,7 @@ package components.views.ArrangeViewProperties
 		
 		private function onScalerInputRangeChanged( command:SetScalerInputRange ):void
 		{
-			if( command.scalerID == _scalerID )
+			if( command.scalerID == scaler.id )
 			{
 				updateScalerInputControls();
 			}
@@ -219,7 +263,7 @@ package components.views.ArrangeViewProperties
 		
 		private function onScalerOutputRangeChanged( command:SetScalerOutputRange ):void
 		{
-			if( command.scalerID == _scalerID )
+			if( command.scalerID == scaler.id )
 			{
 				updateScalerOutputControls();
 			}
@@ -228,14 +272,6 @@ package components.views.ArrangeViewProperties
 		
 		private function onObjectVersionChanged( command:SwitchObjectVersion ):void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
-			Assert.assertNotNull( scaler );
-
-			if( command.objectID == scaler.upstreamConnection.sourceObjectID )
-			{
-				updateScalerInputControls();
-			}
-
 			if( command.objectID == scaler.downstreamConnection.targetObjectID )
 			{
 				updateScalerOutputControls();
@@ -245,14 +281,18 @@ package components.views.ArrangeViewProperties
 		
 		private function onAvailableObjectsChanged( command:ServerCommand ):void
 		{
-			updateObjectCombos(); 
+			updateTargetObjectCombo(); 
 		}
 		
 		
 		private function updateAll():void
 		{
-			updateObjectCombos();
-			updateEndpointCombos();
+			updateMidiDeviceCombo();
+			updateStaticMidiCombos();
+			updateMessageValueCombo();
+			
+			updateTargetObjectCombo();
+			updateTargetEndpointCombo();
 
 			updateScalerInputControls();
 			updateScalerOutputControls();
@@ -276,26 +316,127 @@ package components.views.ArrangeViewProperties
 		}	
 		
 		
-		private function updateObjectCombos():void
+		private function updateMidiDeviceCombo():void
+		{
+			var indexToSelect:int = -1;
+			var devices:Array = new Array;
+			
+			for each( var device:String in model.midiSettings.activeInputDevices )
+			{
+				if( device == midiControlInput.device )
+				{
+					indexToSelect = devices.length;
+				}
+
+				devices.push( device );
+			}
+			
+			_sourceDeviceCombo.dataProvider = devices;
+			_sourceDeviceCombo.selectedIndex = indexToSelect;
+			
+			var hasDevices:Boolean = ( devices.length > 0 );
+			var deviceSelected:Boolean = ( indexToSelect >= 0 );
+
+			enableComponent( _sourceDeviceCombo, hasDevices );
+			
+			enableComponent( _sourceChannelCombo, deviceSelected );
+			enableComponent( _sourceMessageTypeCombo, deviceSelected );
+			enableComponent( _sourceMessageValueCombo, deviceSelected );
+			enableComponent( _inScaleMinimum, deviceSelected );
+			enableComponent( _inScaleMaximum, deviceSelected );
+		}
+		
+		
+		private function populateStaticMidiCombos():void
+		{
+			var channels:Array = new Array;
+
+			for( var i:int = 1; i <= 16; i++ )
+			{
+				channels.push( "chn" + String( i ) );
+			}
+
+			_sourceChannelCombo.dataProvider = channels;
+
+			_sourceMessageTypeCombo.dataProvider = [ CC_LABEL, NOTE_ON_LABEL ];  
+		}
+		
+		
+		private function updateStaticMidiCombos():void
+		{
+			_sourceChannelCombo.selectedIndex = midiControlInput.channel - 1;
+			
+			switch( midiControlInput.messageType )
+			{
+				case MidiControlInput.CC: 		_sourceMessageTypeCombo.selectedItem = CC_LABEL;		break;
+				case MidiControlInput.NOTEON: 	_sourceMessageTypeCombo.selectedItem = NOTE_ON_LABEL;	break;
+				
+				default:	
+					Assert.assertTrue( false );
+					break;
+			}
+		}
+		
+		
+		private function updateMessageValueCombo():void
+		{
+			var data:Array = new Array;
+			
+			switch( midiControlInput.messageType )
+			{
+				case MidiControlInput.CC:
+					for( var i:int = 0; i < 128; i++ )
+					{
+						data.push( "cc" + String( i ) ); 
+					}
+					break;
+
+				case MidiControlInput.NOTEON:
+					const noteName:Array = 
+						[ 
+							"C", 
+							"C#",  
+							"D",  
+							"D#",  
+							"E",  
+							"F",  
+							"F#",  
+							"G",  
+							"G#",  
+							"A",  
+							"A#",  
+							"B"
+						];
+
+					for( i = 0; i < 128; i++ )
+					{
+						data.push( noteName[ i % 12 ] + String( Math.floor( i / 12 ) - 1 ) ); 
+					}
+					break;
+				
+				default:
+					Assert.assertTrue( false );
+					break;
+			}
+			
+			_sourceMessageValueCombo.dataProvider = data;
+			_sourceMessageValueCombo.selectedIndex = midiControlInput.noteOrController;
+		}
+		
+		
+		private function updateTargetObjectCombo():void
 		{
 			var container:IntegraContainer = model.selectedContainer;
-			var scaler:Scaler = model.getScaler( _scalerID );
-			Assert.assertNotNull( container );
 			Assert.assertNotNull( scaler );
 			
-			var sourceObjectComboContents:Array = new Array;
 			var targetObjectComboContents:Array = new Array;
 
-			var sourceIndexToSelect:int = buildObjectComboContents( sourceObjectComboContents, container, scaler.upstreamConnection.sourceObjectID, false );
 			var targetIndexToSelect:int = buildObjectComboContents( targetObjectComboContents, container, scaler.downstreamConnection.targetObjectID, true );
 
-			_sourceObjectCombo.dataProvider = sourceObjectComboContents;
 			_targetObjectCombo.dataProvider = targetObjectComboContents;
 
-			_sourceObjectCombo.selectedIndex = sourceIndexToSelect;
 			_targetObjectCombo.selectedIndex = targetIndexToSelect;
 
-			enableComponent( _sourceObjectCombo, sourceObjectComboContents.length > 0 ); 
 			enableComponent( _targetObjectCombo, targetObjectComboContents.length > 0 ); 
 		}
 		
@@ -328,15 +469,12 @@ package components.views.ArrangeViewProperties
 		}
 
 
-		private function updateEndpointCombos():void
+		private function updateTargetEndpointCombo():void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
 
-			var upstreamConnection:Connection = scaler.upstreamConnection;
 			var downstreamConnection:Connection = scaler.downstreamConnection;
 
-			populateEndpointCombo( _sourceEndpointCombo, upstreamConnection.sourceObjectID, upstreamConnection.sourceAttributeName, false, scaler );
 			populateEndpointCombo( _targetEndpointCombo, downstreamConnection.targetObjectID, downstreamConnection.targetAttributeName, true, scaler );
 		}
 		
@@ -428,49 +566,30 @@ package components.views.ArrangeViewProperties
 		
 		private function updateScalerInputControls():void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
 			
-			var endpoint:EndpointDefinition = model.getEndpointDefinition( scaler.upstreamConnection.sourceObjectID, scaler.upstreamConnection.sourceAttributeName );
-			if( endpoint )
-			{
-				if( endpoint.isStateful )
-				{
-					var stateInfo:StateInfo = endpoint.controlInfo.stateInfo;
-					var isInteger:Boolean = ( stateInfo.type == StateInfo.INTEGER );
-					_inScaleMinimum.integer = isInteger;
-					_inScaleMaximum.integer = isInteger;
-	
-					_inScaleMinimum.setRange( stateInfo.constraint.minimum, stateInfo.constraint.maximum );
-					_inScaleMinimum.value = scaler.inRangeMin;
-	
-					_inScaleMaximum.setRange( stateInfo.constraint.minimum, stateInfo.constraint.maximum );
-					_inScaleMaximum.value = scaler.inRangeMax;
-					
-					enableComponent( _inScaleMinimum, true ); 
-					enableComponent( _inScaleMaximum, true ); 
-				}
-				else
-				{
-					//bang - no scaling
-					_inScaleMinimum.setRange( 0, 0 );
-					_inScaleMaximum.setRange( 0, 0 );
-					_inScaleMinimum.value = _inScaleMaximum.value = 0;
-					enableComponent( _inScaleMinimum, false ); 
-					enableComponent( _inScaleMaximum, false ); 
-				}
-			}
-			else
-			{
-				enableComponent( _inScaleMinimum, false ); 
-				enableComponent( _inScaleMaximum, false ); 
-			}
+			Assert.assertNotNull( midiControlInput );
+			
+			var endpoint:EndpointDefinition = midiControlInput.interfaceDefinition.getEndpointDefinition( "value" );
+			Assert.assertNotNull( endpoint && endpoint.isStateful );
+			
+			var stateInfo:StateInfo = endpoint.controlInfo.stateInfo;
+			
+			_inScaleMinimum.integer = true;
+			_inScaleMaximum.integer = true;
+			
+			var minimum:int = ( midiControlInput.messageType == MidiControlInput.NOTEON ) ? 1 : 0;
+			var maximum:int = 127;
+			_inScaleMinimum.setRange( minimum, maximum );
+			_inScaleMaximum.setRange( minimum, maximum );
+			
+			_inScaleMinimum.value = scaler.inRangeMin;
+			_inScaleMaximum.value = scaler.inRangeMax;
 		}
 
 		
 		private function updateScalerOutputControls():void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
 			
 			var endpoint:EndpointDefinition = model.getEndpointDefinition( scaler.downstreamConnection.targetObjectID, scaler.downstreamConnection.targetAttributeName );
@@ -510,61 +629,51 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function onChangeSourceComboSelection( event:ListEvent ):void
+		private function onChangeMidiDevice( event:ListEvent ):void
 		{
-			var container:IntegraContainer = model.selectedContainer;
-			var scaler:Scaler = model.getScaler( _scalerID );
-
-			Assert.assertNotNull( scaler );
-			Assert.assertNotNull( Object );
-			
-			var containerPathString:String = model.getPathStringFromID( container.id );
-			
-			var objectID:int = -1;
-			var endpointName:String = null;
-			
-			if( event.target == _sourceObjectCombo ) 
+			midiSettingsChanged();	
+		}
+		
+		
+		private function onChangeMidiChannel( event:ListEvent ):void
+		{
+			midiSettingsChanged();	
+		}
+		
+		
+		private function onChangeMessageType( event:ListEvent ):void
+		{
+			midiSettingsChanged();
+			updateMessageValueCombo();
+		}
+		
+		
+		private function onChangeMessageValue( event:ListEvent ):void
+		{
+			midiSettingsChanged();
+		}
+		
+		
+		private function midiSettingsChanged():void
+		{
+			var device:String = String( _sourceDeviceCombo.selectedItem );
+			var channel:int = _sourceChannelCombo.selectedIndex + 1;
+			var messageType:String = "";
+			switch( String( _sourceMessageTypeCombo.selectedItem ) )
 			{
-				_sourceEndpointCombo.selectedIndexRegardlessOfLock = -1;
+				case CC_LABEL:		messageType = MidiControlInput.CC;			break;
+				case NOTE_ON_LABEL:	messageType = MidiControlInput.NOTEON;		break;
 			}
-			
-			if( _sourceObjectCombo.selectedItem )
-			{
-				objectID = model.getIDFromPathString( containerPathString + "." + String( _sourceObjectCombo.selectedItem ) );
-				Assert.assertTrue( objectID >= 0 );
 				
-				if( _sourceEndpointCombo.selectedItem )
-				{
-					var object:IntegraDataObject = model.getDataObjectByID( objectID );
-					Assert.assertNotNull( object );
-					
-					var endpoint:EndpointDefinition = object.interfaceDefinition.getEndpointDefinition( String( _sourceEndpointCombo.selectedItem.label ) );
-					if( endpoint )
-					{		
-						endpointName = endpoint.name;
-					} 
-				}    
-			}
-
-			var upstreamConnection:Connection = scaler.upstreamConnection;
-			var downstreamConnection:Connection = scaler.downstreamConnection;
+			var messageValue:int = _sourceMessageValueCombo.selectedIndex;
 			
-			if( model.canSetScaledConnection( objectID, endpointName, downstreamConnection.targetObjectID, downstreamConnection.targetAttributeName, _scalerID ) )
-			{
-				controller.processCommand( new SetConnectionRouting( upstreamConnection.id, objectID, endpointName, upstreamConnection.targetObjectID, upstreamConnection.targetAttributeName ) );
-			}
-			else
-			{
-				//this connection can't be made (trying to set up an illegal connection?
-				updateAll();
-			}
+			controller.processCommand( new SetMidiControlInputValues( midiControlInput.id, device, channel, messageType, messageValue ) );
 		}
 
 		
 		private function onChangeTargetComboSelection( event:ListEvent ):void
 		{
 			var container:IntegraContainer = model.selectedContainer;
-			var scaler:Scaler = model.getScaler( _scalerID );
 			
 			Assert.assertNotNull( scaler );
 			Assert.assertNotNull( Object );
@@ -600,7 +709,7 @@ package components.views.ArrangeViewProperties
 			var upstreamConnection:Connection = scaler.upstreamConnection;
 			var downstreamConnection:Connection = scaler.downstreamConnection;
 
-			if( model.canSetScaledConnection( upstreamConnection.sourceObjectID, upstreamConnection.sourceAttributeName, objectID, endpointName, _scalerID ) )
+			if( model.canSetScaledConnection( upstreamConnection.sourceObjectID, upstreamConnection.sourceAttributeName, objectID, endpointName, scaler.id ) )
 			{
 				controller.processCommand( new SetConnectionRouting( downstreamConnection.id, downstreamConnection.sourceObjectID, downstreamConnection.sourceAttributeName, objectID, endpointName ) );
 			}
@@ -614,43 +723,35 @@ package components.views.ArrangeViewProperties
 		
 		private function onChangeInScaleMinimum( event:Event ):void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
-			
-			controller.processCommand( new SetScalerInputRange( _scalerID, _inScaleMinimum.value, scaler.inRangeMax ) );
+			controller.processCommand( new SetScalerInputRange( scaler.id, _inScaleMinimum.value, scaler.inRangeMax ) );
 		}
 		
 		
 		private function onChangeInScaleMaximum( event:Event ):void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
-			
-			controller.processCommand( new SetScalerInputRange( _scalerID, scaler.inRangeMin, _inScaleMaximum.value ) );
+			controller.processCommand( new SetScalerInputRange( scaler.id, scaler.inRangeMin, _inScaleMaximum.value ) );
 		}
 		
 		
 		private function onChangeOutScaleMinimum( event:Event ):void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
-			
-			controller.processCommand( new SetScalerOutputRange( _scalerID, _outScaleMinimum.value, scaler.outRangeMax ) );
+			controller.processCommand( new SetScalerOutputRange( scaler.id, _outScaleMinimum.value, scaler.outRangeMax ) );
 		}
 		
 		
 		private function onChangeOutScaleMaximum( event:Event ):void
 		{
-			var scaler:Scaler = model.getScaler( _scalerID );
 			Assert.assertNotNull( scaler );
-			
-			controller.processCommand( new SetScalerOutputRange( _scalerID, scaler.outRangeMin, _outScaleMaximum.value ) );
+			controller.processCommand( new SetScalerOutputRange( scaler.id, scaler.outRangeMin, _outScaleMaximum.value ) );
 		}
 		
 		
 		private function onDelete( event:MouseEvent ):void
 		{
-			controller.processCommand( new RemoveScaledConnection( _scalerID ) );
+			controller.processCommand( new RemoveMidiControlInput( _midiControlInputID ) );
 		}
 
 
@@ -665,13 +766,18 @@ package components.views.ArrangeViewProperties
 			_outScaleMaximum.width = scaleControlWidth;
 			
 			var horizontalGap:Number = _hbox.getStyle( "horizontalGap" );
-			var nonComboControlWidth:Number = _closeButtonWidth + _arrow.width + scaleControlWidth * 4 + horizontalGap * 4; 
-			var comboWidth:int = ( Math.min( width, maximumControlsWidth ) - nonComboControlWidth ) / 4 - horizontalGap;
+			var nonComboControlWidth:Number = _closeButtonWidth + _arrow.width + scaleControlWidth * 4 + horizontalGap * 6; 
+			var totalComboWidth:Number = ( Math.min( width, maximumControlsWidth ) - nonComboControlWidth );
+			
+			var wideComboWidth:Number = totalComboWidth / 5 - horizontalGap;
+			var narrowComboWidth:Number = totalComboWidth * 2/15 - horizontalGap;
 
-			_sourceObjectCombo.width = comboWidth;
-			_sourceEndpointCombo.width = comboWidth;
-			_targetObjectCombo.width = comboWidth;
-			_targetEndpointCombo.width = comboWidth;			
+			_sourceDeviceCombo.width = wideComboWidth;
+			_sourceChannelCombo.width = narrowComboWidth;
+			_sourceMessageTypeCombo.width = narrowComboWidth;
+			_sourceMessageValueCombo.width = narrowComboWidth;
+			_targetObjectCombo.width = wideComboWidth;
+			_targetEndpointCombo.width = wideComboWidth;			
 		}
 		
 		
@@ -704,7 +810,7 @@ package components.views.ArrangeViewProperties
 		
 		private function shouldMakeClassAvailableForConnections( object:IntegraDataObject, isTarget:Boolean ):Boolean
 		{
-			if( object is Envelope || object is Scaler || object is MidiControlInput ) 
+			if( object is Envelope || object is Scaler || object is Midi || object is MidiControlInput ) 
 			{
 				return false;
 			}
@@ -722,12 +828,14 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private var _scalerID:int = -1;
+		private var _midiControlInputID:int = -1;
 		
 		private var _hbox:HBox = new HBox;
 
-		private var _sourceObjectCombo:ComboBox = new ComboBox;
-		private var _sourceEndpointCombo:LockableComboBox = new LockableComboBox;
+		private var _sourceDeviceCombo:ComboBox = new ComboBox;
+		private var _sourceChannelCombo:ComboBox = new ComboBox;
+		private var _sourceMessageTypeCombo:ComboBox = new ComboBox;
+		private var _sourceMessageValueCombo:ComboBox = new ComboBox;
 
 		private var _inScaleMinimum:RoutingItemScalingControl = new RoutingItemScalingControl;
 		private var _inScaleMaximum:RoutingItemScalingControl = new RoutingItemScalingControl;
@@ -743,5 +851,8 @@ package components.views.ArrangeViewProperties
 		private var _deleteButton:Button = new Button;
 		
 		private static const _closeButtonWidth:int = 40;
+		
+		private static const CC_LABEL:String = "cc";
+		private static const NOTE_ON_LABEL:String = "note on";
 	}
 }

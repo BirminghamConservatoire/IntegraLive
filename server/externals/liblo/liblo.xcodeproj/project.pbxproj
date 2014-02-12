@@ -1,0 +1,172 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		7DB4EA6B18AAC6F600ED5145 /* .git */ = {isa = PBXFileReference; lastKnownFileType = text; path = .git; sourceTree = "<group>"; };
+		7DB4EA6C18AAC6F600ED5145 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		7DB4EA6D18AAC6F600ED5145 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		7DB4EA6E18AAC6F600ED5145 /* autogen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = autogen.sh; sourceTree = "<group>"; };
+		7DB4EA6F18AAC6F600ED5145 /* build */ = {isa = PBXFileReference; lastKnownFileType = folder; path = build; sourceTree = "<group>"; };
+		7DB4EA7018AAC6F600ED5145 /* ChangeLog */ = {isa = PBXFileReference; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
+		7DB4EA7118AAC6F600ED5145 /* configure.ac */ = {isa = PBXFileReference; lastKnownFileType = text; path = configure.ac; sourceTree = "<group>"; };
+		7DB4EA7218AAC6F600ED5145 /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		7DB4EA7318AAC6F600ED5145 /* doc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = doc; sourceTree = "<group>"; };
+		7DB4EA7418AAC6F600ED5145 /* examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = examples; sourceTree = "<group>"; };
+		7DB4EA7518AAC6F600ED5145 /* INSTALL */ = {isa = PBXFileReference; lastKnownFileType = text; path = INSTALL; sourceTree = "<group>"; };
+		7DB4EA7618AAC6F600ED5145 /* liblo.pc.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = liblo.pc.in; sourceTree = "<group>"; };
+		7DB4EA7718AAC6F600ED5145 /* lo */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lo; sourceTree = "<group>"; };
+		7DB4EA7818AAC6F600ED5145 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		7DB4EA7918AAC6F600ED5145 /* NEWS */ = {isa = PBXFileReference; lastKnownFileType = text; path = NEWS; sourceTree = "<group>"; };
+		7DB4EA7A18AAC6F600ED5145 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		7DB4EA7B18AAC6F600ED5145 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
+		7DB4EA7C18AAC6F600ED5145 /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		7DB4EA6518AAC6F600ED5145 = {
+			isa = PBXGroup;
+			children = (
+				7DB4EA6B18AAC6F600ED5145 /* .git */,
+				7DB4EA6C18AAC6F600ED5145 /* .gitignore */,
+				7DB4EA6D18AAC6F600ED5145 /* AUTHORS */,
+				7DB4EA6E18AAC6F600ED5145 /* autogen.sh */,
+				7DB4EA6F18AAC6F600ED5145 /* build */,
+				7DB4EA7018AAC6F600ED5145 /* ChangeLog */,
+				7DB4EA7118AAC6F600ED5145 /* configure.ac */,
+				7DB4EA7218AAC6F600ED5145 /* COPYING */,
+				7DB4EA7318AAC6F600ED5145 /* doc */,
+				7DB4EA7418AAC6F600ED5145 /* examples */,
+				7DB4EA7518AAC6F600ED5145 /* INSTALL */,
+				7DB4EA7618AAC6F600ED5145 /* liblo.pc.in */,
+				7DB4EA7718AAC6F600ED5145 /* lo */,
+				7DB4EA7818AAC6F600ED5145 /* Makefile.am */,
+				7DB4EA7918AAC6F600ED5145 /* NEWS */,
+				7DB4EA7A18AAC6F600ED5145 /* README.md */,
+				7DB4EA7B18AAC6F600ED5145 /* src */,
+				7DB4EA7C18AAC6F600ED5145 /* TODO */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		7DB4EA6A18AAC6F600ED5145 /* liblo */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 7DB4EA7D18AAC6F600ED5145 /* Build configuration list for PBXLegacyTarget "liblo" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/jamie/Documents/IntegraLive/server/externals/liblo;
+			dependencies = (
+			);
+			name = liblo;
+			passBuildSettingsInEnvironment = 1;
+			productName = liblo;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		7DB4EA6618AAC6F600ED5145 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 7DB4EA6918AAC6F600ED5145 /* Build configuration list for PBXProject "liblo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB4EA6518AAC6F600ED5145;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7DB4EA6A18AAC6F600ED5145 /* liblo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		7DB4EA6718AAC6F600ED5145 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		7DB4EA6818AAC6F600ED5145 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		7DB4EA7E18AAC6F600ED5145 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = liblo;
+			};
+			name = Debug;
+		};
+		7DB4EA7F18AAC6F600ED5145 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = liblo;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7DB4EA6918AAC6F600ED5145 /* Build configuration list for PBXProject "liblo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7DB4EA6718AAC6F600ED5145 /* Debug */,
+				7DB4EA6818AAC6F600ED5145 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7DB4EA7D18AAC6F600ED5145 /* Build configuration list for PBXLegacyTarget "liblo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7DB4EA7E18AAC6F600ED5145 /* Debug */,
+				7DB4EA7F18AAC6F600ED5145 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7DB4EA6618AAC6F600ED5145 /* Project object */;
+}

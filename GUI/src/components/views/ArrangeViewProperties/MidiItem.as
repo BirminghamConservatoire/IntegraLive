@@ -64,6 +64,7 @@ package components.views.ArrangeViewProperties
 	import components.model.interfaceDefinitions.StateInfo;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
 	import components.utils.lockableComboBox.LockableComboBox;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
@@ -392,25 +393,9 @@ package components.views.ArrangeViewProperties
 					break;
 
 				case MidiControlInput.NOTEON:
-					const noteName:Array = 
-						[ 
-							"C", 
-							"C#",  
-							"D",  
-							"D#",  
-							"E",  
-							"F",  
-							"F#",  
-							"G",  
-							"G#",  
-							"A",  
-							"A#",  
-							"B"
-						];
-
 					for( i = 0; i < 128; i++ )
 					{
-						data.push( noteName[ i % 12 ] + String( Math.floor( i / 12 ) - 1 ) ); 
+						data.push( Utilities.midiPitchToName( i ) ); 
 					}
 					break;
 				

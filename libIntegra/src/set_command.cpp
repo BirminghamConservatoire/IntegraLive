@@ -89,7 +89,7 @@ namespace integra_internal
 		{
 			case CEndpointDefinition::STREAM:
 				INTEGRA_TRACE_ERROR << "can't call set for a stream attribute: " << m_endpoint_path.get_string();
-				return CError::TYPE_ERROR ;
+				return CError::TYPE_ERROR;
 
 			case CEndpointDefinition::CONTROL:
 				switch( endpoint_definition.get_control_info()->get_type() )

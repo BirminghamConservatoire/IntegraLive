@@ -31,6 +31,8 @@ package components.utils
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 	
+	import flexunit.framework.Assert;
+	
 	
 	public class Utilities
 	{
@@ -481,6 +483,29 @@ package components.utils
 			}
 		}
 		
+		
+		public static function midiPitchToName( pitch:int ):String
+		{
+			Assert.assertTrue( pitch >= 0 && pitch < 128 );
+			
+			const noteNames:Array = 
+				[ 
+					"c", 
+					"c#",  
+					"d",  
+					"d#",  
+					"e",  
+					"f",  
+					"f#",  
+					"g",  
+					"g#",  
+					"a",  
+					"a#",  
+					"b"
+				];
+			
+			return noteNames[ pitch % 12 ] + String( Math.floor( pitch / 12 ) - 1 ); 
+		}
 		
 		public static function isDescendant( candidateDescendant:DisplayObject, candidateAncestor:DisplayObjectContainer ):Boolean
 		{

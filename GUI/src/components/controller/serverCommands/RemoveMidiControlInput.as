@@ -96,7 +96,7 @@ package components.controller.serverCommands
 			//remove the midi control input
 			model.removeDataObject( _midiControlInputID );
 		}
-		
+ 		
 		
 		public override function executeServerCommand( model:IntegraModel ):void
 		{

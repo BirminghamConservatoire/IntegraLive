@@ -33,6 +33,7 @@ package components.views.RibbonBar
 	import components.controller.serverCommands.ReceiveMidiInput;
 	import components.model.Info;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
 	
@@ -94,7 +95,7 @@ package components.views.RibbonBar
 					break;
 				
 				case ReceiveMidiInput.NOTE_ON:
-					_noteValue.text = String( command.index );
+					_noteValue.text = Utilities.midiPitchToName( command.index );
 					_noteHideTimer.reset();
 					_noteHideTimer.start();
 					break;
@@ -135,7 +136,7 @@ package components.views.RibbonBar
 			graphics.cubicCurveTo( height * 0.5, height * 0.5, height * 0.5, height - 1, height, height - 1 );
         }
 
-
+		
         private function onResize( event:Event ):void
         {
 			repositionControls();

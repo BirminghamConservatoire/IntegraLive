@@ -54,8 +54,8 @@
       <Command>CALL copy_server.bat Debug
 CALL copy_sdk.bat ..\Debug\
 CALL documentation_deployment\compileAllDocumentation.bat ..\Debug\
-rem CALL gui_autobuild\buildgui.bat ..\Debug\gui
-rem CALL call module_creator_autobuild\buildmodulecreator.bat ..\Debug\sdk\ModuleCreator
+CALL gui_autobuild\buildgui.bat ..\Debug\gui
+CALL call module_creator_autobuild\buildmodulecreator.bat ..\Debug\sdk\ModuleCreator
 CALL copy_modules.bat ..\Debug\
 CALL copy_block_library.bat ..\Debug\gui\BlockLibrary
 CALL copy_block_library.bat ..\Debug\gui-debug\BlockLibrary

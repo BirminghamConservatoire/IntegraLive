@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>853DAE2E-1EE1-4B6A-9955-290EC376339B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>integra_server</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>6963C844-8CAB-4C55-A619-BE2D527B9C2D</key>
+		<string>https://github.com/erikd/libsndfile.git</string>
+		<key>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</key>
+		<string>https://github.com/BirminghamConservatoire/IntegraLive</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>server/xcode/integra_server/integra_server.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>6963C844-8CAB-4C55-A619-BE2D527B9C2D</key>
+		<string>../../../../../libIntegra/externals/libsndfile</string>
+		<key>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/BirminghamConservatoire/IntegraLive</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</string>
+			<key>IDESourceControlWCCName</key>
+			<string>IntegraLive</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>6963C844-8CAB-4C55-A619-BE2D527B9C2D</string>
+			<key>IDESourceControlWCCName</key>
+			<string>libsndfile</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -7,8 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7D93C44518A9704B0083CB07 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C44418A9704B0083CB07 /* main.cpp */; };
+		7D8801A418AABD86006E9F30 /* Integra.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8801A318AABD86006E9F30 /* Integra.framework */; };
 		7D93C44718A9704B0083CB07 /* integra_server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7D93C44618A9704B0083CB07 /* integra_server.1 */; };
+		7D93C45618A970720083CB07 /* close_orphaned_processes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C44D18A970720083CB07 /* close_orphaned_processes.cpp */; };
+		7D93C45718A970720083CB07 /* integra_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C44F18A970720083CB07 /* integra_server.cpp */; };
+		7D93C45818A970720083CB07 /* osc_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45018A970720083CB07 /* osc_client.cpp */; };
+		7D93C45918A970720083CB07 /* xmlrpc_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45218A970720083CB07 /* xmlrpc_common.cpp */; };
+		7D93C45A18A970720083CB07 /* xmlrpc_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45418A970720083CB07 /* xmlrpc_server.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,9 +30,20 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7D8801A318AABD86006E9F30 /* Integra.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Integra.framework; sourceTree = "<group>"; };
 		7D93C44118A9704B0083CB07 /* integra_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = integra_server; sourceTree = BUILT_PRODUCTS_DIR; };
-		7D93C44418A9704B0083CB07 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		7D93C44618A9704B0083CB07 /* integra_server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = integra_server.1; sourceTree = "<group>"; };
+		7D93C44D18A970720083CB07 /* close_orphaned_processes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = close_orphaned_processes.cpp; path = ../../../src/close_orphaned_processes.cpp; sourceTree = "<group>"; };
+		7D93C44E18A970720083CB07 /* close_orphaned_processes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = close_orphaned_processes.h; path = ../../../src/close_orphaned_processes.h; sourceTree = "<group>"; };
+		7D93C44F18A970720083CB07 /* integra_server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = integra_server.cpp; path = ../../../src/integra_server.cpp; sourceTree = "<group>"; };
+		7D93C45018A970720083CB07 /* osc_client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = osc_client.cpp; path = ../../../src/osc_client.cpp; sourceTree = "<group>"; };
+		7D93C45118A970720083CB07 /* osc_client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = osc_client.h; path = ../../../src/osc_client.h; sourceTree = "<group>"; };
+		7D93C45218A970720083CB07 /* xmlrpc_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmlrpc_common.cpp; path = ../../../src/xmlrpc_common.cpp; sourceTree = "<group>"; };
+		7D93C45318A970720083CB07 /* xmlrpc_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlrpc_common.h; path = ../../../src/xmlrpc_common.h; sourceTree = "<group>"; };
+		7D93C45418A970720083CB07 /* xmlrpc_server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmlrpc_server.cpp; path = ../../../src/xmlrpc_server.cpp; sourceTree = "<group>"; };
+		7D93C45518A970720083CB07 /* xmlrpc_server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlrpc_server.h; path = ../../../src/xmlrpc_server.h; sourceTree = "<group>"; };
+		7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "xmlrpc-c.xcodeproj"; path = "../../externals/xmlrpc-c/xmlrpc-c.xcodeproj"; sourceTree = "<group>"; };
+		7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblo.xcodeproj; path = ../../externals/liblo/liblo.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,15 +51,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D8801A418AABD86006E9F30 /* Integra.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7D88017718AA57EC006E9F30 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7D8801A318AABD86006E9F30 /* Integra.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		7D93C43818A9704B0083CB07 = {
 			isa = PBXGroup;
 			children = (
+				7D88017718AA57EC006E9F30 /* Frameworks */,
+				7D93C81A18A971120083CB07 /* Libraries */,
 				7D93C44318A9704B0083CB07 /* integra_server */,
 				7D93C44218A9704B0083CB07 /* Products */,
 			);
@@ -60,10 +87,41 @@
 		7D93C44318A9704B0083CB07 /* integra_server */ = {
 			isa = PBXGroup;
 			children = (
-				7D93C44418A9704B0083CB07 /* main.cpp */,
+				7D93C44D18A970720083CB07 /* close_orphaned_processes.cpp */,
+				7D93C44E18A970720083CB07 /* close_orphaned_processes.h */,
+				7D93C44F18A970720083CB07 /* integra_server.cpp */,
+				7D93C45018A970720083CB07 /* osc_client.cpp */,
+				7D93C45118A970720083CB07 /* osc_client.h */,
+				7D93C45218A970720083CB07 /* xmlrpc_common.cpp */,
+				7D93C45318A970720083CB07 /* xmlrpc_common.h */,
+				7D93C45418A970720083CB07 /* xmlrpc_server.cpp */,
+				7D93C45518A970720083CB07 /* xmlrpc_server.h */,
 				7D93C44618A9704B0083CB07 /* integra_server.1 */,
 			);
 			path = integra_server;
+			sourceTree = "<group>";
+		};
+		7D93C81A18A971120083CB07 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */,
+				7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		7D93C84918A9713C0083CB07 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7DB4EA8118AAC6F600ED5145 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -105,6 +163,16 @@
 			mainGroup = 7D93C43818A9704B0083CB07;
 			productRefGroup = 7D93C44218A9704B0083CB07 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7DB4EA8118AAC6F600ED5145 /* Products */;
+					ProjectRef = 7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */;
+				},
+				{
+					ProductGroup = 7D93C84918A9713C0083CB07 /* Products */;
+					ProjectRef = 7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				7D93C44018A9704B0083CB07 /* integra_server */,
@@ -117,7 +185,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D93C44518A9704B0083CB07 /* main.cpp in Sources */,
+				7D93C45A18A970720083CB07 /* xmlrpc_server.cpp in Sources */,
+				7D93C45918A970720083CB07 /* xmlrpc_common.cpp in Sources */,
+				7D93C45618A970720083CB07 /* close_orphaned_processes.cpp in Sources */,
+				7D93C45818A970720083CB07 /* osc_client.cpp in Sources */,
+				7D93C45718A970720083CB07 /* integra_server.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,7 +229,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -188,21 +259,70 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				SDKROOT = macosx;
 			};
 			name = Release;
 		};
 		7D93C44B18A9704B0083CB07 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/jamie/Documents/IntegraLive/server/xcode/integra_server,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"../../externals/xmlrpc-c/include",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					../../externals/liblo/src/.libs,
+					"../../externals/xmlrpc-c/src",
+					"../../externals/xmlrpc-c/lib/abyss/src",
+				);
+				OTHER_LDFLAGS = (
+					"-llo",
+					"-lxmlrpc_server_abyss",
+					"-lxmlrpc_server",
+					"-lxmlrpc",
+					"-lxmlrpc_abyss",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "./Integra.framework/Headers ../../externals/liblo";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
 		7D93C44C18A9704B0083CB07 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/jamie/Documents/IntegraLive/server/xcode/integra_server,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"../../externals/xmlrpc-c/include",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					../../externals/liblo/src/.libs,
+					"../../externals/xmlrpc-c/src",
+					"../../externals/xmlrpc-c/lib/abyss/src",
+				);
+				OTHER_LDFLAGS = (
+					"-llo",
+					"-lxmlrpc_server_abyss",
+					"-lxmlrpc_server",
+					"-lxmlrpc",
+					"-lxmlrpc_abyss",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "./Integra.framework/Headers ../../externals/liblo";
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
@@ -225,6 +345,7 @@
 				7D93C44C18A9704B0083CB07 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

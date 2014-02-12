@@ -38,7 +38,7 @@
 #include <unordered_map>
 
 #ifdef _WINDOWS
-    #include <guid.h>
+    #include <guiddef.h>
 #else
 namespace integra_api
 {

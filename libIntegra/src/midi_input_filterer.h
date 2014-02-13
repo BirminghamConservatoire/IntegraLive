@@ -40,17 +40,33 @@ namespace integra_internal
 			~CMidiInputFilterer();
 
 			/*
-			 walks the input arrays, marking as 'filtered' any poly_pressure, cc, channel pressure and pitchbend messages 
-			 are replaced by subsequent messages in the same input array
+			 this high-level function walks the input arrays, marking as 'filtered' any poly_pressure, cc, channel pressure and 
+			 pitchbend messages that are replaced by subsequent messages in the same input array.  It marks messages as filtered
+			 by assigning their value to 0
 			*/
 			void filter_input( midi_input_buffer_array &input_buffers );
 
+			/* 
+			 these low-level functions allow granular access to the filtering
+			*/
+
+			//call to reset state before a series of calls to should_include()
+			void reset();	
+
+			/*
+			 tests whether the message has been replaced by a more recent message in the same sequence
+			 note: caller must iterate backwards over the message sequence whilst making calls to should_include!
+			*/
+
+			bool should_include( unsigned int message );
+
 		private:
 
-			/* 
-			 These could just be local variables, but it's more efficient not to allocate them 
-			 each time filter_input is called 
-			*/
+			void create_buffers();
+			void destroy_buffers();
+
+			bool m_created_buffers;
+
 			bool *m_got_poly_pressure;
 			bool *m_got_control_change;
 			bool *m_got_channel_pressure;

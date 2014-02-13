@@ -27,6 +27,7 @@
 #include "server.h"
 #include "node.h"
 #include "midi_engine.h"
+#include "midi_input_dispatcher.h"
 
 #include "api/string_helper.h"
 #include "api/command.h"
@@ -113,6 +114,9 @@ namespace integra_internal
 			midi_engine.set_input_devices( input_devices );
 
 			update_all_fields_for_all_midi_settings_nodes( server );
+
+			server.get_midi_input_dispatcher().set_active_midi_input_devices( input_devices );
+
 			return;
 		}
 

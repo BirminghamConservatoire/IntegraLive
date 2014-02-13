@@ -33,12 +33,25 @@ namespace integra_internal
 	{
 		m_message_queue = new CThreadedQueue<CMidiMessage>( *this );
 
+		m_new_active_midi_input_devices = NULL;
 	}
 
 
 	CMidiInputDispatcher::~CMidiInputDispatcher()
 	{
 		delete m_message_queue;
+
+		if( m_new_active_midi_input_devices ) 
+		{
+			delete m_new_active_midi_input_devices;
+		}
+
+		for( midi_input_filter_map::iterator i = m_midi_input_filters.begin(); i != m_midi_input_filters.end(); i++ )
+		{
+			delete i->second;
+		}
+
+		m_midi_input_filters.clear();
 	}
 
 
@@ -67,6 +80,7 @@ namespace integra_internal
 		return CError::SUCCESS;
 	}
 
+
 	void CMidiInputDispatcher::dispatch_midi( const midi_message_list &items )
 	{
 		m_message_queue->push( items );
@@ -75,15 +89,83 @@ namespace integra_internal
 
 	void CMidiInputDispatcher::handle_queue_items( const midi_message_list &items )
 	{
-		m_server.lock();
+		midi_message_list filtered_items;
+		make_filtered_items( items, filtered_items );
+
+		if( !m_server.lock() )
+		{
+			return;
+		}
 
 		for( midi_input_receiver_set::iterator i = m_midi_receivers.begin(); i != m_midi_receivers.end(); i++ )
 		{
 			IMidiInputReceiver *receiver = *i;
-			receiver->receive_midi_input( m_server, items );
+			receiver->receive_midi_input( m_server, filtered_items );
+		}
+
+		// if the set of active input devices has changed, wait till we've got a server lock, then prune our filter map
+		if( m_new_active_midi_input_devices )
+		{
+			for( midi_input_filter_map::iterator i = m_midi_input_filters.begin(); i != m_midi_input_filters.end(); )
+			{
+				bool device_still_active = ( std::find( m_new_active_midi_input_devices->begin(), m_new_active_midi_input_devices->end(), i->first ) != m_new_active_midi_input_devices->end() );
+
+				if( device_still_active )
+				{
+					i++;
+				}
+				else
+				{
+					delete i->second;
+					i = m_midi_input_filters.erase( i );
+				}
+			}
+
+			delete m_new_active_midi_input_devices;
+			m_new_active_midi_input_devices = NULL;
 		}
 
 		m_server.unlock();
+	}
+
+
+	void CMidiInputDispatcher::make_filtered_items( const midi_message_list &items, midi_message_list &filtered_items )
+	{
+		for( midi_input_filter_map::iterator i = m_midi_input_filters.begin(); i != m_midi_input_filters.end(); i++ )
+		{
+			i->second->reset();
+		}
+
+		for( midi_message_list::const_reverse_iterator i = items.rbegin(); i != items.rend(); i++ )
+		{
+			CMidiInputFilterer *filterer( NULL );
+			if( m_midi_input_filters.count( i->device ) == 0 )
+			{
+				filterer = new CMidiInputFilterer();
+				filterer->reset();
+				m_midi_input_filters[ i->device ] = filterer;
+			}
+			else
+			{
+				filterer = m_midi_input_filters.at( i->device );
+			}
+
+			if( filterer->should_include( i->message ) )
+			{
+				filtered_items.push_front( *i );
+			}
+		}
+	}
+
+
+	void CMidiInputDispatcher::set_active_midi_input_devices( const string_vector &active_midi_input_devices )
+	{
+		if( !m_new_active_midi_input_devices )
+		{
+			m_new_active_midi_input_devices = new string_vector;
+		}
+
+		*m_new_active_midi_input_devices = active_midi_input_devices;
 	}
 }
 

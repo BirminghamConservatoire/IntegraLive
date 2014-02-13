@@ -25,6 +25,7 @@
 #include "api/common_typedefs.h"
 #include "api/error.h"
 #include "threaded_queue.h"
+#include "midi_input_filterer.h"
 
 using namespace integra_api;
 
@@ -70,6 +71,8 @@ namespace integra_internal
 			CError register_input_receiver( IMidiInputReceiver *receiver );
 			CError unregister_input_receiver( IMidiInputReceiver *receiver );
 
+			/* called by midi settings, with locked server */
+			void set_active_midi_input_devices( const string_vector &active_midi_input_devices );
 
 			/* called by CDspEngine */
 			void dispatch_midi( const midi_message_list &items );
@@ -79,11 +82,19 @@ namespace integra_internal
 
 			void handle_queue_items( const midi_message_list &items );
 
+			void make_filtered_items( const midi_message_list &items, midi_message_list &filtered_items );
+
 			CServer &m_server;
 			CThreadedQueue<CMidiMessage> *m_message_queue;
 
+			typedef std::unordered_map<string, CMidiInputFilterer *> midi_input_filter_map;
+			midi_input_filter_map m_midi_input_filters;
+
 			typedef std::unordered_set<IMidiInputReceiver *> midi_input_receiver_set;
 			midi_input_receiver_set m_midi_receivers;
+
+			string_vector *m_new_active_midi_input_devices;
+
 	};
 }
 

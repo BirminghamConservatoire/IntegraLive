@@ -31,7 +31,7 @@
 #include "player_logic.h"
 #include "scene_logic.h"
 #include "connection_logic.h"
-#include "midi_input_logic.h"
+#include "midi_control_input_logic.h"
 #include "audio_settings_logic.h"
 #include "midi_settings_logic.h"
 
@@ -61,7 +61,7 @@ namespace integra_internal
 	const string CLogic::module_player = "Player";
 	const string CLogic::module_scene = "Scene";
 	const string CLogic::module_connection = "Connection";
-	const string CLogic::module_midi_input = "MidiInput";
+	const string CLogic::module_midi_control_input = "MidiControlInput";
 	const string CLogic::module_audio_settings = "AudioSettings";
 	const string CLogic::module_midi_settings = "MidiSettings";
 
@@ -127,9 +127,9 @@ namespace integra_internal
 			return new CConnectionLogic( node );
 		}
 
-		if( interface_definition.is_named_core_interface( module_midi_input ) )
+		if( interface_definition.is_named_core_interface( module_midi_control_input ) )
 		{
-			return new CMidiInputLogic( node );
+			return new CMidiControlInputLogic( node );
 		}
 
 		if( interface_definition.is_named_core_interface( module_audio_settings ) )

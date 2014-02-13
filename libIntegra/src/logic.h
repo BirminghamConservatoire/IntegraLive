@@ -117,7 +117,7 @@ namespace integra_internal
 			static const string module_player;
 			static const string module_scene;
 			static const string module_connection;
-			static const string module_midi_input;
+			static const string module_midi_control_input;
 			static const string module_audio_settings;
 			static const string module_midi_settings;
 

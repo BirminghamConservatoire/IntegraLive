@@ -29,11 +29,11 @@
 
 namespace integra_internal
 {
-	class CMidiInputLogic : public CLogic, IMidiInputReceiver
+	class CMidiControlInputLogic : public CLogic, IMidiInputReceiver
 	{
 		public:
-			CMidiInputLogic( const CNode &node );
-			~CMidiInputLogic();
+			CMidiControlInputLogic( const CNode &node );
+			~CMidiControlInputLogic();
 
 			void handle_new( CServer &server, CCommandSource source );
 			void handle_delete( CServer &server, CCommandSource source );

@@ -80,7 +80,7 @@ package components.model
 		private var _scaler:Scaler = null;
 		
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }
-		public static const _serverInterfaceName:String = "MidiInput";
+		public static const _serverInterfaceName:String = "MidiControlInput";
 		
 		public static const defaultMidiControlInputName:String = "MidiControlInput";
 		

@@ -21,36 +21,36 @@
 
 #include "platform_specifics.h"
 
-#include "midi_input_logic.h"
+#include "midi_control_input_logic.h"
 #include "api/command.h"
 #include "server.h"
 
 
 namespace integra_internal
 {
-	const string CMidiInputLogic::endpoint_device = "device";
-	const string CMidiInputLogic::endpoint_channel = "channel";
-	const string CMidiInputLogic::endpoint_message_type = "messageType";
-	const string CMidiInputLogic::endpoint_note_or_controller = "noteOrController";
-	const string CMidiInputLogic::endpoint_value = "value";
-	const string CMidiInputLogic::endpoint_auto_learn = "autoLearn";
+	const string CMidiControlInputLogic::endpoint_device = "device";
+	const string CMidiControlInputLogic::endpoint_channel = "channel";
+	const string CMidiControlInputLogic::endpoint_message_type = "messageType";
+	const string CMidiControlInputLogic::endpoint_note_or_controller = "noteOrController";
+	const string CMidiControlInputLogic::endpoint_value = "value";
+	const string CMidiControlInputLogic::endpoint_auto_learn = "autoLearn";
 
-	const string CMidiInputLogic::note_on = "noteon";
-	const string CMidiInputLogic::control_change = "cc";
+	const string CMidiControlInputLogic::note_on = "noteon";
+	const string CMidiControlInputLogic::control_change = "cc";
 
 
-	CMidiInputLogic::CMidiInputLogic( const CNode &node )
+	CMidiControlInputLogic::CMidiControlInputLogic( const CNode &node )
 		:	CLogic( node )
 	{
 	}
 
 
-	CMidiInputLogic::~CMidiInputLogic()
+	CMidiControlInputLogic::~CMidiControlInputLogic()
 	{
 	}
 
 
-	void CMidiInputLogic::handle_new( CServer &server, CCommandSource source )
+	void CMidiControlInputLogic::handle_new( CServer &server, CCommandSource source )
 	{
 		CLogic::handle_new( server, source );
 
@@ -58,7 +58,7 @@ namespace integra_internal
 	}
 
 
-	void CMidiInputLogic::handle_delete( CServer &server, CCommandSource source )
+	void CMidiControlInputLogic::handle_delete( CServer &server, CCommandSource source )
 	{
 		CLogic::handle_delete( server, source );
 
@@ -66,7 +66,7 @@ namespace integra_internal
 	}
 
 
-	void CMidiInputLogic::receive_midi_input( CServer &server, const midi_message_list &midi_messages )
+	void CMidiControlInputLogic::receive_midi_input( CServer &server, const midi_message_list &midi_messages )
 	{
 		const CNode &node = get_node();
 

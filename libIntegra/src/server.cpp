@@ -102,9 +102,13 @@ namespace integra_internal
 
 	CServer::~CServer()
 	{
+		lock();
+
 		INTEGRA_TRACE_PROGRESS << "setting terminate flag";
 
 		pthread_mutex_lock( &m_shutdown_mutex );
+
+		unlock();
 
 		/* delete all nodes */
 		node_map copy_of_nodes = m_nodes;

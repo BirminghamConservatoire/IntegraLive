@@ -26,13 +26,18 @@ package components.controller.serverCommands
 	import components.model.IntegraModel;
 	import components.model.MidiControlInput;
 	import components.model.Scaler;
-	import components.views.RibbonBar.MidiInputIndicator;
 	
 	import flexunit.framework.Assert;
 
+	/*
+	SetMidiControlInputValues allows the caller to provide special 'ignore' values (null for strings, -1 for ints).
+	These tell the command not to change these values.  When fired from the gui, these values are set by initialize.
+	When used as a remote command response, they are simply ignored.
+	*/
+	
 	public class SetMidiControlInputValues extends ServerCommand
 	{
-		public function SetMidiControlInputValues( midiControlInputID:int, device:String, channel:int, messageType:String, messageValue:int )
+		public function SetMidiControlInputValues( midiControlInputID:int, device:String = null, channel:int = -1, messageType:String = null, messageValue:int = -1 )
 		{
 			super();
 
@@ -56,6 +61,13 @@ package components.controller.serverCommands
 				return false;
 			}
 			
+			var midiControlInput:MidiControlInput = model.getMidiControlInput( _midiControlInputID );
+
+			if( !_device ) 			_device = midiControlInput.device;
+			if( _channel < 0 ) 		_channel = midiControlInput.channel;
+			if( !_messageType ) 	_messageType = midiControlInput.messageType;
+			if( _messageValue < 0 ) _messageValue = midiControlInput.noteOrController;
+			
 			return true;
 		}
 	
@@ -74,10 +86,10 @@ package components.controller.serverCommands
 			var midiControlInput:MidiControlInput = model.getMidiControlInput( _midiControlInputID );
 			Assert.assertNotNull( midiControlInput );
 			
-			midiControlInput.device = _device;
-			midiControlInput.channel = _channel;
-			midiControlInput.messageType = _messageType;
-			midiControlInput.noteOrController = _messageValue;
+			if( _device ) 				midiControlInput.device = _device;
+			if( _channel >= 0 ) 		midiControlInput.channel = _channel;
+			if( _messageType ) 			midiControlInput.messageType = _messageType;
+			if( _messageValue >= 0 )	midiControlInput.noteOrController = _messageValue;
 		}
 		
 		
@@ -135,6 +147,16 @@ package components.controller.serverCommands
 			
 			return true;
 		}
+		
+		
+		public override function getAttributesChangedByThisCommand( model:IntegraModel, changedAttributes:Vector.<String> ):void
+		{
+			changedAttributes.push( model.getPathStringFromID( _midiControlInputID ) + ".device" );
+			changedAttributes.push( model.getPathStringFromID( _midiControlInputID ) + ".channel" );
+			changedAttributes.push( model.getPathStringFromID( _midiControlInputID ) + ".messageType" );
+			changedAttributes.push( model.getPathStringFromID( _midiControlInputID ) + ".noteOrController" );
+		}
+		
 		
 		
 		private var _midiControlInputID:int;

@@ -35,6 +35,8 @@ package components.controller
 	import components.controller.serverCommands.SetAvailableMidiDevices;
 	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetContainerActive;
+	import components.controller.serverCommands.SetMidiControlAutoLearn;
+	import components.controller.serverCommands.SetMidiControlInputValues;
 	import components.controller.serverCommands.SetMidiInputDevices;
 	import components.controller.serverCommands.SetMidiOutputDevices;
 	import components.controller.serverCommands.SetModuleAttribute;
@@ -45,6 +47,7 @@ package components.controller
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.Midi;
+	import components.model.MidiControlInput;
 	import components.model.ModuleInstance;
 	import components.model.Player;
 	import components.model.Script;
@@ -352,6 +355,31 @@ package components.controller
 					
 					default:
 						break;					
+				}
+			}
+			else if( object is MidiControlInput )
+			{
+				switch( endpointName )
+				{
+					case "autoLearn":
+						command = new SetMidiControlAutoLearn( object.id, ( value != 0 ) );
+						break;
+					
+					case "device":
+						command = new SetMidiControlInputValues( object.id, String( value ) );
+						break;
+
+					case "channel":
+						command = new SetMidiControlInputValues( object.id, null, int( value ) );
+						break;
+
+					case "messageType":
+						command = new SetMidiControlInputValues( object.id, null, -1, String( value ) );
+						break;
+
+					case "noteOrController":
+						command = new SetMidiControlInputValues( object.id, null, -1, null, int( value ) );
+						break;
 				}
 			}
 			else if( object is Midi )

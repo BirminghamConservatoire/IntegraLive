@@ -64,6 +64,11 @@ void COscClient::on_set_command( const IServer &server, const CPath &endpoint_pa
 		return;
 	}
 
+	if( source == CCommandSource::INITIALIZATION )
+	{
+		return;
+	}
+
 	const char *methodName = "/command.set";
 
     string source_string = source.get_text();

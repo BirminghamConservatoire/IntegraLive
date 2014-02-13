@@ -26,13 +26,8 @@ package components.controller.serverCommands
 	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
 	
 	import components.controller.ServerCommand;
-	import components.model.Block;
-	import components.model.Connection;
 	import components.model.ControlPoint;
-	import components.model.Envelope;
 	import components.model.IntegraModel;
-	import components.model.ModuleInstance;
-	import components.model.interfaceDefinitions.EndpointDefinition;
 	
 	import flexunit.framework.Assert;
 

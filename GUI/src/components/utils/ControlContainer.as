@@ -45,7 +45,9 @@ package components.utils
 	import components.controlSDK.core.ControlManager;
 	import components.controlSDK.core.ControlNotificationSink;
 	import components.controller.IntegraController;
+	import components.controller.events.MidiLearnEvent;
 	import components.controller.serverCommands.RemoveEnvelope;
+	import components.controller.serverCommands.RemoveMidiControlInput;
 	import components.controller.serverCommands.RemoveScaledConnection;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.userDataCommands.ToggleLiveViewControl;
@@ -54,6 +56,7 @@ package components.utils
 	import components.model.Info;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
+	import components.model.MidiControlInput;
 	import components.model.ModuleInstance;
 	import components.model.Scaler;
 	import components.model.interfaceDefinitions.Constraint;
@@ -146,13 +149,11 @@ package components.utils
 
 		public function get module():ModuleInstance 				{ return _module; }
 		public function get widget():WidgetDefinition				{ return _widget; }
+		public function get midiLearnEndpoint():String				{ return _midiLearnEndpoint; }
 		
 		public static function get marginSizeWithoutLabel():Point 	{ return new Point( sidePadding * 2, topPadding + bottomPadding ); }
 		public static function get marginSizeWithLabel():Point 		{ return marginSizeWithoutLabel.add( new Point( 0, controlLabelHeight ) ); }
 
-		public function get isInMidiLearnMode():Boolean				{ return _isInMidiLearnMode; }
-		public function get midiLearnEndpoint():String				{ return _midiLearnEndpoint; }
-		
 		
 		public function get unlockedEndpoints():Vector.<EndpointDefinition>
 		{
@@ -169,12 +170,13 @@ package components.utils
 			
 			return unlockedEndpoints;
 		}
+
 		
-		
-		public function endMidiLearnMode():void
+		public function endMidiLearn():void
 		{
-			_isInMidiLearnMode = false;
+			_isInMidiLearn = false;
 			_midiLearnButton.selected = false;
+			_midiLearnEndpoint = null;
 		}
 		
 		
@@ -486,8 +488,17 @@ package components.utils
 						{
 							var scaler:Scaler = ( connectionSource as Scaler );
 							Assert.assertNotNull( scaler );
-							var upstreamConnection:Connection = scaler.upstreamConnection;
-							var connectionFrom:String = getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName;
+							
+							var connectionFrom:String;
+							if( scaler.midiControlInput )
+							{
+								connectionFrom = getMidiInDescription( scaler.midiControlInput );
+							}
+							else
+							{
+								var upstreamConnection:Connection = scaler.upstreamConnection;
+								connectionFrom = getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName;
+							}
 							
 							menuItem.label = "Delete Routing from " + connectionFrom;
 							if( hasMultipleAttributes )
@@ -523,8 +534,17 @@ package components.utils
 			}
 			else
 			{
-				Assert.assertTrue( connectionSource is Scaler );
-				_controller.processCommand( new RemoveScaledConnection( connectionSource.id ) );
+				var scaler:Scaler = connectionSource as Scaler;
+				Assert.assertNotNull( scaler );
+				
+				if( scaler.midiControlInput )
+				{
+					_controller.processCommand( new RemoveMidiControlInput( scaler.midiControlInput.id ) );
+				}
+				else
+				{
+					_controller.processCommand( new RemoveScaledConnection( scaler.id ) );
+				}
 			}
 		}
 		
@@ -558,7 +578,8 @@ package components.utils
 				_midiLearnButton.removeEventListener( MouseEvent.DOUBLE_CLICK, onMidiLearnButton );
 				removeElement( _midiLearnButton );
 				_midiLearnButton = null;		
-				_isInMidiLearnMode = false;
+				_isInMidiLearn = false;
+				_midiLearnEndpoint = null;
 			}
 		}
 		
@@ -882,9 +903,10 @@ package components.utils
 		
 		private function onMidiLearnButton( event:MouseEvent ):void
 		{
-			if( _isInMidiLearnMode )
+			if( _isInMidiLearn )
 			{
-				endMidiLearnMode();
+				dispatchEvent( new MidiLearnEvent( MidiLearnEvent.REMOVE_MIDI_LEARN, _midiLearnEndpoint ) );
+				endMidiLearn();
 				return;
 			}
 
@@ -897,9 +919,10 @@ package components.utils
 					return;
 					
 				case 1:
-					_isInMidiLearnMode = true;
+					_isInMidiLearn = true;
 					_midiLearnButton.selected = true;
 					_midiLearnEndpoint = unlockedEndpoints[ 0 ].name;
+					dispatchEvent( new MidiLearnEvent( MidiLearnEvent.ADD_MIDI_LEARN, _midiLearnEndpoint ) ); 
 					return;
 					
 				default:
@@ -927,9 +950,10 @@ package components.utils
 		
 		private function onClickMidiLearnMenuItem( event:MenuEvent ):void
 		{
-			_isInMidiLearnMode = true;
+			_isInMidiLearn = true;
 			_midiLearnButton.selected = true;
 			_midiLearnEndpoint = event.item.endpointName;
+			dispatchEvent( new MidiLearnEvent( MidiLearnEvent.ADD_MIDI_LEARN, _midiLearnEndpoint ) );
 		}
 
 		
@@ -1306,7 +1330,7 @@ package components.utils
 				var moduleAttributeName:String = attributeToEndpointMap[ widgetAttributeName ];
 				
 				var upstreamObjects:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>;
-				if( _model.isConnectionTarget( _module.id, moduleAttributeName, upstreamObjects ) )
+				if( _model.isConnectionTarget( _module.id, moduleAttributeName, upstreamObjects ) && !areAllAutoLearning( upstreamObjects ) )
 				{
 					_mapWidgetAttributeToWritableFlag[ widgetAttributeName ] = _padlockOverride;
 					_shouldShowPadlock = true;
@@ -1323,6 +1347,22 @@ package components.utils
 			if( !_shouldShowPadlock ) _isPadlockPartial = false;
 			
 			_control.setControlWritableFlags( _mapWidgetAttributeToWritableFlag ); 
+		}
+		
+		
+		private function areAllAutoLearning( objects:Vector.<IntegraDataObject> ):Boolean
+		{
+			for each( var object:IntegraDataObject in objects )
+			{
+				if( !( object is Scaler ) ) return false;
+				
+				var scaler:Scaler = object as Scaler;
+				var midiControlInput:MidiControlInput = scaler.midiControlInput;
+				
+				if( !midiControlInput || !midiControlInput.autoLearn ) return false;
+			}
+			
+			return true;
 		}
 		
 		
@@ -1443,14 +1483,23 @@ package components.utils
 					if( upstreamObject is Scaler )
 					{
 						var scaler:Scaler = upstreamObject as Scaler;
-						var upstreamConnection:Connection = scaler.upstreamConnection;
 						
-						if( upstreamConnection.sourceObjectID < 0 || upstreamConnection.sourceAttributeName == null )
+						if( scaler.midiControlInput )
 						{
-							continue;
+							explanation += getMidiInDescription( scaler.midiControlInput );
 						}
-						
-						explanation += ( getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName );
+						else
+						{
+							
+							var upstreamConnection:Connection = scaler.upstreamConnection;
+							
+							if( upstreamConnection.sourceObjectID < 0 || upstreamConnection.sourceAttributeName == null )
+							{
+								continue;
+							}
+							
+							explanation += ( getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName );
+						}
 					}
 					else
 					{
@@ -1461,6 +1510,29 @@ package components.utils
 			}
 			
 			return explanation;
+		}
+		
+		
+		private function getMidiInDescription( midiControlInput:MidiControlInput ):String
+		{
+			var description:String = midiControlInput.device;
+			description += " (chn" + String( midiControlInput.channel ) + " ";
+			switch( midiControlInput.messageType )
+			{
+				case MidiControlInput.CC:
+					description += "cc" + String( midiControlInput.noteOrController );
+					break;
+				
+				case MidiControlInput.NOTEON:
+					description += "note " + Utilities.midiPitchToName( midiControlInput.noteOrController );
+					break;
+
+				default:
+					Assert.assertTrue( false );
+					break;
+			}
+			description += ")";
+			return description; 
 		}
 		
 		
@@ -1715,80 +1787,6 @@ package components.utils
 		}
 		
 		
-		/*private function isModuleAttributeWritable( moduleAttributeName:String, info:Object ):Boolean
-		{
-			//if the module attribute is not writable, this method sets:
-			//info.explanation to a string containing an explanation for why the module attribute is not writable 
-			//info.connectionSource type to the source of the connection 
-			
-			var moduleID:int = _module.id;
-			
-			var isWritable:Boolean = true;
-			var connectionSources:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>;
-			
-			//walk parent chain looking for connections that target this attribute
-			for( var container:IntegraContainer = _model.getBlockFromModuleInstance( moduleID ); container; container = _model.getParent( container.id ) as IntegraContainer )
-			{
-				for each( var connection:Connection in container.connections )
-				{
-					if( connection.targetObjectID != moduleID || connection.targetAttributeName != moduleAttributeName )
-					{
-						continue;
-					}
-					
-					if( connection.sourceObjectID < 0 || connection.sourceAttributeName == null ) 
-					{
-						continue;
-					}
-					
-					if( info.hasOwnProperty( "explanation" ) )
-					{
-						info.explanation += " and ";	
-					}
-					else
-					{
-						info.explanation = moduleAttributeName + " is controlled by ";
-						
-					}
-				
-					var connectionSource:IntegraDataObject = _model.getDataObjectByID( connection.sourceObjectID );
-					
-					if( connectionSource is Envelope )
-					{
-						info.explanation += "an envelope"; 
-					}
-					else
-					{
-						if( connectionSource is Scaler )
-						{
-							var scaler:Scaler = connectionSource as Scaler;
-							var upstreamConnection:Connection = scaler.upstreamConnection;
-
-							if( upstreamConnection.sourceObjectID < 0 || upstreamConnection.sourceAttributeName == null )
-							{
-								continue;
-							}
-						
-							info.explanation += ( getRelativeDescription( upstreamConnection.sourceObjectID ) + upstreamConnection.sourceAttributeName );
-						}
-						else
-						{
-							info.explanation += ( getRelativeDescription( connectionSource.id ) + connection.sourceAttributeName );
-						}
-					}
-
-					connectionSources.push( connectionSource );
-					isWritable = false;
-				}
-			}
-
-			Assert.assertTrue( isWritable == ( connectionSources.length == 0 ) );
-			info.connectionSources = connectionSources;
-
-			return isWritable;
-		}*/
-		
-		
 		private function getRelativeDescription( objectID:int ):String
 		{
 			var objectPath:Array = _model.getPathArrayFromID( objectID );
@@ -1914,12 +1912,18 @@ package components.utils
 		private function onRemovedFromStage( event:Event ):void
 		{
 			if( _popupMenu ) _popupMenu.hide();
-
+			
 			if( _addedStageKeyboardListeners )
 			{
 				stage.removeEventListener( KeyboardEvent.KEY_DOWN, onKeyDown );
 				stage.removeEventListener( KeyboardEvent.KEY_UP, onKeyUp );
 				_addedStageKeyboardListeners = false;
+			}
+			
+			if( _isInMidiLearn )
+			{
+				dispatchEvent( new MidiLearnEvent( MidiLearnEvent.REMOVE_MIDI_LEARN, _midiLearnEndpoint ) );
+				endMidiLearn();
 			}
 		}
 		
@@ -1974,71 +1978,6 @@ package components.utils
 		}		
 		
 		
-		/*private function renderPadlock():void
-		{
-			Assert.assertNotNull( _padlock );
-			
-			_padlock.graphics.clear();
-			
-			const size:Number = 12;
-			
-			//draw the background
-			_padlock.graphics.beginFill( 0, 0 );
-			_padlock.graphics.drawRect( 0, 0, size, size );
-			_padlock.graphics.endFill();
-			
-			//draw the padlock
-			
-			const lockWidth:Number = 0.55;
-			const lockTopHeight:Number = 0.1;
-			const baseStartHeight:Number = 0.5;
-			const openRotation:Number = 45;
-			const lockColor:uint = 0x808080;
-			
-			_padlock.graphics.beginFill( lockColor );
-			_padlock.graphics.drawRect( 0, size * baseStartHeight, size, size * ( 1 - baseStartHeight ) );
-			_padlock.graphics.endFill();
-			
-			var curvePoints:Vector.<Point> = new Vector.<Point>;
-			
-			curvePoints.push( new Point( size * ( 1 - lockWidth ) / 2, size * baseStartHeight ) );
-			curvePoints.push( new Point( size * ( 1 - lockWidth ) / 2, size * lockTopHeight ) );
-			curvePoints.push( new Point( size /2, size * lockTopHeight ) );
-			curvePoints.push( new Point( size * ( 1 + lockWidth ) / 2, size * baseStartHeight ) );
-			curvePoints.push( new Point( size * ( 1 + lockWidth ) / 2, size * lockTopHeight ) );
-			curvePoints.push( new Point( size / 2, size * lockTopHeight ) );
-			
-			if( _padlockOverride )
-			{
-				var matrix:Matrix = new Matrix;
-				matrix.identity();
-				matrix.translate( -size * ( 1 + lockWidth ) / 2, -size * baseStartHeight );
-				matrix.rotate( openRotation * Math.PI / 180 );
-				matrix.translate( size * ( 1 + lockWidth ) / 2, size * baseStartHeight );
-				
-				for( var i:int = 0; i < curvePoints.length; i++ )
-				{
-					curvePoints[ i ] = matrix.transformPoint( curvePoints[ i ] );
-				}
-			}
-			
-			_padlock.graphics.lineStyle( 3, lockColor );
-			
-			drawCurve( _padlock.graphics, curvePoints.slice( 0, 3 ) );
-			drawCurve( _padlock.graphics, curvePoints.slice( 3, 6 ) );			
-		}*/
-		
-		
-		/*
-		private function drawCurve( graphics:Graphics, curve:Vector.<Point> ):void
-		{
-			Assert.assertTrue( curve.length == 3 );
-			
-			graphics.moveTo( curve[ 0 ].x, curve[ 0 ].y );
-			graphics.curveTo( curve[ 1 ].x, curve[ 1 ].y, curve[ 2 ].x, curve[ 2 ].y );
-		}		*/
-		
-		
 		private var _module:ModuleInstance;
 		private var _widget:WidgetDefinition;
 		private var _model:IntegraModel;
@@ -2080,7 +2019,7 @@ package components.utils
 		
 		private var _hasMidiLearn:Boolean = false;
 		private var _midiLearnButton:Button = null;
-		private var _isInMidiLearnMode:Boolean = false;
+		private var _isInMidiLearn:Boolean = false;
 		private var _midiLearnEndpoint:String = null;
 		
 		private var _popupMenu:Menu;

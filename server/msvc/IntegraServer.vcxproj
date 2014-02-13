@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../externals/liblo;../externals/win32/pthreads-win32/include;../externals/xmlrpc-c/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../externals/win32/liblo;../externals/win32/pthreads-win32/include;../externals/xmlrpc-c/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -68,7 +68,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libIntegra.lib;liblo_d.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;pthreadVC2.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../libIntegra/bin/Debug;../externals/xmlrpc-c/bin/Debug-Win32;../externals/win32/pthreads-win32/lib;../externals/liblo/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../libIntegra/bin/Debug;../externals/xmlrpc-c/bin/Debug-Win32;../externals/win32/pthreads-win32/lib;../externals/win32/liblo/lib/debuglib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -94,7 +94,7 @@ call copy_dependencies.bat ../bin/Debug Debug
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../externals/liblo;../externals/xmlrpc-c/include;../externals/win32/pthreads-win32/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../externals/win32/liblo;../externals/xmlrpc-c/include;../externals/win32/pthreads-win32/include;../../libIntegra/api;visual_studio_includes/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -104,7 +104,7 @@ call copy_dependencies.bat ../bin/Debug Debug
     </ClCompile>
     <Link>
       <AdditionalDependencies>libIntegra.lib;liblo.lib;Ws2_32.lib;Iphlpapi.lib;libxmlrpc.lib;libxmlrpc_abyss.lib;libxmlrpc_server.lib;libxmlrpc_server_abyss.lib;libxmlrpc_util.lib;libxmlrpc_xmlparse.lib;libxmlrpc_xmltok.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../externals/xmlrpc-c/bin/Release-Win32;../externals/liblo/lib/releaselib;../externals/win32/pthreads-win32/lib;../../libIntegra/bin/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../externals/xmlrpc-c/bin/Release-Win32;../externals/win32/liblo/lib/releaselib;../externals/win32/pthreads-win32/lib;../../libIntegra/bin/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

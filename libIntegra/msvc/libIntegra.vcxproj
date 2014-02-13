@@ -186,6 +186,7 @@ call copy_dependencies.bat ..\bin\Release\ Release
     <ClCompile Include="..\src\midi_input_dispatcher.cpp" />
     <ClCompile Include="..\src\midi_input_filterer.cpp" />
     <ClCompile Include="..\src\midi_control_input_logic.cpp" />
+    <ClCompile Include="..\src\midi_raw_input_logic.cpp" />
     <ClCompile Include="..\src\midi_settings_logic.cpp" />
     <ClCompile Include="..\src\move_command.cpp" />
     <ClCompile Include="..\src\new_command.cpp" />
@@ -272,6 +273,7 @@ call copy_dependencies.bat ..\bin\Release\ Release
     <ClInclude Include="..\src\midi_input_dispatcher.h" />
     <ClInclude Include="..\src\midi_input_filterer.h" />
     <ClInclude Include="..\src\midi_control_input_logic.h" />
+    <ClInclude Include="..\src\midi_raw_input_logic.h" />
     <ClInclude Include="..\src\midi_settings_logic.h" />
     <ClInclude Include="..\src\move_command.h" />
     <ClInclude Include="..\src\MurmurHash2.h" />

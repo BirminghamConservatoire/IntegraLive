@@ -92,6 +92,11 @@ namespace integra_internal
 		midi_message_list filtered_items;
 		make_filtered_items( items, filtered_items );
 
+		if( filtered_items.empty() )
+		{
+			return;
+		}
+
 		if( !m_server.lock() )
 		{
 			return;
@@ -103,7 +108,7 @@ namespace integra_internal
 			receiver->receive_midi_input( m_server, filtered_items );
 		}
 
-		// if the set of active input devices has changed, wait till we've got a server lock, then prune our filter map
+		// if the set of active input devices has changed, we prune our filter map when we've got a server lock
 		if( m_new_active_midi_input_devices )
 		{
 			for( midi_input_filter_map::iterator i = m_midi_input_filters.begin(); i != m_midi_input_filters.end(); )

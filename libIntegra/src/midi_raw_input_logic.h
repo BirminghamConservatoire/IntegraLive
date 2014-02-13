@@ -20,8 +20,8 @@
 
 
 
-#ifndef INTEGRA_MIDI_CONTROL_INPUT_LOGIC_PRIVATE
-#define INTEGRA_MIDI_CONTROL_INPUT_LOGIC_PRIVATE
+#ifndef INTEGRA_MIDI_RAW_INPUT_LOGIC_PRIVATE
+#define INTEGRA_MIDI_RAW_INPUT_LOGIC_PRIVATE
 
 #include "logic.h"
 #include "midi_input_dispatcher.h"
@@ -29,11 +29,11 @@
 
 namespace integra_internal
 {
-	class CMidiControlInputLogic : public CLogic, IMidiInputReceiver
+	class CMidiRawInputLogic : public CLogic, IMidiInputReceiver
 	{
 		public:
-			CMidiControlInputLogic( const CNode &node );
-			~CMidiControlInputLogic();
+			CMidiRawInputLogic( const CNode &node );
+			~CMidiRawInputLogic();
 
 			void handle_new( CServer &server, CCommandSource source );
 			void handle_delete( CServer &server, CCommandSource source );
@@ -42,18 +42,10 @@ namespace integra_internal
 
 	private:
 
-			const static string endpoint_device;
-			const static string endpoint_channel;
-			const static string endpoint_message_type;
-			const static string endpoint_note_or_controller;
-			const static string endpoint_value;
-			const static string endpoint_auto_learn;
-
-			const static string note_on;
-			const static string control_change;
+			const static string endpoint_midi_message;
 	};
 }
 
 
 
-#endif /*INTEGRA_MIDI_CONTROL_INPUT_LOGIC_PRIVATE*/
+#endif /*INTEGRA_MIDI_RAW_INPUT_LOGIC_PRIVATE*/

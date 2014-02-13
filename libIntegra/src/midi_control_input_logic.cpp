@@ -158,10 +158,6 @@ namespace integra_internal
 
 			/* if we get here, it _is_ the type of message we're interested in */
 			server.process_command( ISetCommand::create( value_endpoint->get_path(), CIntegerValue( value2 ) ), CCommandSource::SYSTEM );
-
 		}
-
 	}
-
-
 }

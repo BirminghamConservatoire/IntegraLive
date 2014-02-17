@@ -80,6 +80,8 @@ package components.model.modelLoader
 		public function set serverUrl( serverUrl:String ):void
 		{
 			_serverUrl = serverUrl;
+			
+			LegacyMidiHandler.instance.serverUrl = _serverUrl;
 		}
 		
 
@@ -97,6 +99,7 @@ package components.model.modelLoader
 			_error = null;
 			_topLevelLoadedObjectPaths = new Vector.<Array>;
 			_loadHierarchyLevel = 1;
+			LegacyMidiHandler.instance.clear();
 			
 			_timeoutTimer.start();
 			
@@ -120,6 +123,7 @@ package components.model.modelLoader
 			_error = null;
 			_topLevelLoadedObjectPaths = new Vector.<Array>;
 			_loadHierarchyLevel = branchPath.length + 1;
+			LegacyMidiHandler.instance.clear();
 
 			var interfacesToLoad:Vector.<String> = new Vector.<String>;
 			for each( var guid:String in newEmbeddedModuleGuids )
@@ -417,6 +421,7 @@ package components.model.modelLoader
 				case ModelLoadPhase.STATES:
 					resolveBlockEnvelopes();
 					resolveScalerConnections( _model.project );
+					LegacyMidiHandler.instance.translateToNewModules();
 						
 					loadComplete();
 					break;
@@ -740,18 +745,18 @@ package components.model.modelLoader
 				
 				var interfaceName:String = interfaceDefinition.interfaceInfo.name;
 
-				if( interfaceName == "MIDI" )
+				var path:Array = node.path;
+				var hierarchyLevel:uint = path.length;
+
+				Assert.assertTrue( hierarchyLevel >= 1 );
+
+				if( LegacyMidiHandler.instance.isLegacyMidiModule( interfaceDefinition ) )
 				{
-					Trace.progress( "Encoutered legacy \"MIDI\" module.  skipping, whilst leaving in place." );
-					//backwards compatibility.  Skip these without failing the load
+					Trace.progress( "Encoutered legacy \"MIDI\" module: ", path );
+					LegacyMidiHandler.instance.storeLegacyMidiModulePath( path );
 					continue;
 				}
 				
-				var path:Array = node.path;
-				var hierarchyLevel:uint = path.length;
-				
-				Assert.assertTrue( hierarchyLevel >= 1 );
-
 				if( ( _mode != LOADING_ALL ) && _model.getIDFromPathArray( path ) >= 0 )
 				{
 					continue;	//we already have this node!
@@ -1551,7 +1556,6 @@ package components.model.modelLoader
 		
 		private var _shouldAddDefaultNewProjectObjects:Boolean = false;
 		private var _error:String = null;
-
 		
 		private var _timeoutTimer:Timer = new Timer( _timeoutMilliseconds, 1 );
 		

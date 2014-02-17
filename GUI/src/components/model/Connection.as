@@ -21,6 +21,7 @@
 
 package components.model
 {
+	import components.model.modelLoader.LegacyMidiHandler;
 	import components.utils.Trace;
 	
 	import flexunit.framework.Assert;
@@ -66,15 +67,23 @@ package components.model
 				Assert.assertNotNull( container );
 	
 				var containerPath:Array = model.getPathArrayFromID( container.id );
+				var fullPath:Array = containerPath.concat( relativeObjectPath );
+				connectedAttributeName = pathArray[ pathArray.length - 1 ];
 				
-				objectID = model.getIDFromPathArray( containerPath.concat( relativeObjectPath ) );
+				objectID = model.getIDFromPathArray( fullPath );
 				if( objectID < 0 )
 				{
-					Trace.error( "Connection attribute", attributeName, valueString, "can't be resolved" );
-					return true;
+					if( attributeName == "sourcePath" && LegacyMidiHandler.instance.handleMissingConnectionSource( id, fullPath, connectedAttributeName ) )
+					{
+						return true;
+					}
+					else
+					{
+						Trace.error( "Connection attribute", attributeName, valueString, "can't be resolved" );
+						return true;
+					}
 				}
 	
-				connectedAttributeName = pathArray[ pathArray.length - 1 ];
 				if( connectedAttributeName.length == 0 )
 				{
 					connectedAttributeName = null;

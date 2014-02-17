@@ -1782,6 +1782,7 @@ package components.model
 		private var _showInfoView:Boolean = true;
 		private var _alwaysUpgrade:Boolean = false;
 		
+		
 		private var _audioSettings:AudioSettings;
 		private var _midiSettings:MidiSettings;
 

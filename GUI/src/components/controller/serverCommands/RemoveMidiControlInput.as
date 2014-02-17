@@ -56,7 +56,7 @@ package components.controller.serverCommands
 		
 		public override function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
-			controller.processCommand( new SetMidiControlInputValues( _midiControlInputID, "", 1, MidiControlInput.CC, 0 ) );
+			controller.processCommand( new ConfigureMidiControlInput( _midiControlInputID, "", 1, MidiControlInput.CC, 0 ) );
 			
 			var midiControlInput:MidiControlInput = model.getMidiControlInput( _midiControlInputID );
 			Assert.assertNotNull( midiControlInput );

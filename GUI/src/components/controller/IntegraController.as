@@ -178,6 +178,8 @@ package components.controller
 					guiCommand.postChain( _model, this );
 					activateUndoStack = true;
 
+					guiCommand.remoteCommandPostChain( _model, this );
+					
 					return;
 					
 				case RemoteCommandResponse.RELOAD_ALL:

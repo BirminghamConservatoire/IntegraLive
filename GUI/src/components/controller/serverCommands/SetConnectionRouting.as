@@ -181,10 +181,14 @@ package components.controller.serverCommands
 				if( endpointDefinition && endpointDefinition.isStateful )
 				{
 					controller.processCommand( new SetScalerOutputRange( sourceScaler.id, endpointDefinition.controlInfo.stateInfo.constraint.minimum, endpointDefinition.controlInfo.stateInfo.constraint.maximum ) );
+					
+					controller.processCommand( new SetScalerInputMode( sourceScaler.id, Scaler.INPUT_MODE_SNAP ) );
 				}
 				else
 				{
 					controller.processCommand( new SetScalerOutputRange( sourceScaler.id, 0, 0 ) );
+
+					controller.processCommand( new SetScalerInputMode( sourceScaler.id, Scaler.INPUT_MODE_IGNORE ) );
 				}
 			}
 			else

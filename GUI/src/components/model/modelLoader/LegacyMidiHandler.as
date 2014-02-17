@@ -29,7 +29,7 @@ package components.model.modelLoader
 	import components.controller.serverCommands.RemoveConnection;
 	import components.controller.serverCommands.RemoveScaledConnection;
 	import components.controller.serverCommands.SetConnectionRouting;
-	import components.controller.serverCommands.SetMidiControlInputValues;
+	import components.controller.serverCommands.ConfigureMidiControlInput;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
 	import components.model.Connection;
@@ -204,7 +204,7 @@ package components.model.modelLoader
 				Assert.assertNotNull( midiControlInput );
 				
 				//configure midi control input to relevent fields
-				controller.processCommand( new SetMidiControlInputValues( midiControlInputID, MidiControlInput.ANY_DEVICE, 0, messageType, noteOrController ) );
+				controller.processCommand( new ConfigureMidiControlInput( midiControlInputID, MidiControlInput.ANY_DEVICE, 0, messageType, noteOrController ) );
 
 				//connect everything 
 				var oldMidiTarget:IntegraDataObject = model.getDataObjectByID( oldConnection.targetObjectID );
@@ -230,7 +230,7 @@ package components.model.modelLoader
 				else
 				{
 					//make new scaler control prev connection target
-					var newDownstreamConnection:Connection = midiControlInput.scaler.downstreamConnection;
+					newDownstreamConnection = midiControlInput.scaler.downstreamConnection;
 					Assert.assertNotNull( newDownstreamConnection );
 					controller.processCommand( new SetConnectionRouting( newDownstreamConnection.id, newDownstreamConnection.sourceObjectID, newDownstreamConnection.sourceAttributeName, oldConnection.targetObjectID, oldConnection.targetAttributeName ) );
 

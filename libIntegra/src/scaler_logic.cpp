@@ -30,6 +30,7 @@
 #include "api/command.h"
 
 #include <float.h>
+#include <assert.h>
 
 
 namespace integra_internal
@@ -38,9 +39,12 @@ namespace integra_internal
 	const string CScalerLogic::endpoint_out_value = "outValue";
 	const string CScalerLogic::endpoint_in_range_min = "inRangeMin";
 	const string CScalerLogic::endpoint_in_range_max = "inRangeMax";
+	const string CScalerLogic::endpoint_in_mode = "inMode";
 	const string CScalerLogic::endpoint_out_range_min = "outRangeMin";
 	const string CScalerLogic::endpoint_out_range_max = "outRangeMax";
 
+	const string CScalerLogic::mode_snap = "snap";
+	const string CScalerLogic::mode_ignore = "ignore";
 
 	CScalerLogic::CScalerLogic( const CNode &node )
 		:	CLogic( node )
@@ -81,6 +85,7 @@ namespace integra_internal
 
 		const INodeEndpoint *in_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_min );
 		const INodeEndpoint *in_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_in_range_max );
+		const INodeEndpoint *in_mode_endpoint = scaler_node.get_node_endpoint( endpoint_in_mode );
 		const INodeEndpoint *out_range_min_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_min );
 		const INodeEndpoint *out_range_max_endpoint = scaler_node.get_node_endpoint( endpoint_out_range_max );
 		const INodeEndpoint *out_value_endpoint = scaler_node.get_node_endpoint( endpoint_out_value );
@@ -89,6 +94,7 @@ namespace integra_internal
 		assert( value.get_type() == CValue::FLOAT );
 		assert( in_range_min_endpoint->get_value() && in_range_min_endpoint->get_value()->get_type() == CValue::FLOAT );
 		assert( in_range_max_endpoint->get_value() && in_range_max_endpoint->get_value()->get_type() == CValue::FLOAT );
+		assert( in_mode_endpoint->get_value() && in_mode_endpoint->get_value()->get_type() == CValue::STRING );
 		assert( out_range_min_endpoint->get_value() && out_range_min_endpoint->get_value()->get_type() == CValue::FLOAT );
 		assert( out_range_max_endpoint->get_value() && out_range_max_endpoint->get_value()->get_type() == CValue::FLOAT );
 
@@ -100,7 +106,7 @@ namespace integra_internal
 		float in_range_total = in_range_max - in_range_min;
 		float out_range_total = out_range_max - out_range_min;
 
-		if( fabs(in_range_total) < FLT_EPSILON)
+		if( fabs( in_range_total ) < FLT_EPSILON)
 		{
 			/*
 			Special case for input range ~= 0, to prevent division by zero errors or unusual behaviour arising from 
@@ -112,14 +118,25 @@ namespace integra_internal
 		}
 
 		/*restrict to input range*/
-		float scaled_value = value;
-		scaled_value = MAX( scaled_value, MIN( in_range_min, in_range_max ) );
-		scaled_value = MIN( scaled_value, MAX( in_range_min, in_range_max ) );
+		float output_value = value;
+		if( ( const string & ) *in_mode_endpoint->get_value() == mode_snap )
+		{
+			output_value = MAX( output_value, MIN( in_range_min, in_range_max ) );
+			output_value = MIN( output_value, MAX( in_range_min, in_range_max ) );
+		}
+		else
+		{
+			assert( ( const string & ) *in_mode_endpoint->get_value() == mode_ignore );
+			if( output_value < in_range_min || output_value > in_range_max )
+			{
+				return;
+			}
+		}
 
 		/*perform linear interpolation*/
-		scaled_value = ( scaled_value - in_range_min ) * out_range_total / in_range_total + out_range_min;
+		output_value = ( output_value - in_range_min ) * out_range_total / in_range_total + out_range_min;
 
 		/*store result*/
-		server.process_command( ISetCommand::create( out_value_endpoint->get_path(), CFloatValue( scaled_value ) ), CCommandSource::SYSTEM );
+		server.process_command( ISetCommand::create( out_value_endpoint->get_path(), CFloatValue( output_value ) ), CCommandSource::SYSTEM );
 	}
 }

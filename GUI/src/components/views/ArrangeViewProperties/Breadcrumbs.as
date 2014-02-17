@@ -140,7 +140,7 @@ package components.views.ArrangeViewProperties
 			}
 			else
 			{
-				if( model.selectedScene != null )
+				if( model.selectedScene && model.project.projectUserData.showSceneInTitlebar )
 				{
 					addLink( model.project.name, onDeselectEverything );
 				}

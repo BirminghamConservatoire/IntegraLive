@@ -24,6 +24,7 @@ package components.controller
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
+	import components.controller.serverCommands.ConfigureMidiControlInput;
 	import components.controller.serverCommands.ReceiveRawMidiInput;
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.serverCommands.SetAudioDriver;
@@ -36,13 +37,15 @@ package components.controller
 	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetContainerActive;
 	import components.controller.serverCommands.SetMidiControlAutoLearn;
-	import components.controller.serverCommands.SetMidiControlInputValues;
+	import components.controller.serverCommands.SetMidiControlInputValue;
 	import components.controller.serverCommands.SetMidiInputDevices;
 	import components.controller.serverCommands.SetMidiOutputDevices;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.SetPlayPosition;
 	import components.controller.serverCommands.SetPlaying;
+	import components.controller.serverCommands.SetScalerInputRange;
+	import components.controller.serverCommands.SetScalerOutputRange;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
@@ -50,6 +53,7 @@ package components.controller
 	import components.model.MidiRawInput;
 	import components.model.ModuleInstance;
 	import components.model.Player;
+	import components.model.Scaler;
 	import components.model.Script;
 	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.EndpointDefinition;
@@ -374,24 +378,28 @@ package components.controller
 			{
 				switch( endpointName )
 				{
+					case "value":
+						command = new SetMidiControlInputValue( object.id, int( value ) );
+						break;
+					
 					case "autoLearn":
 						command = new SetMidiControlAutoLearn( object.id, ( value != 0 ) );
 						break;
 					
 					case "device":
-						command = new SetMidiControlInputValues( object.id, String( value ) );
+						command = new ConfigureMidiControlInput( object.id, String( value ) );
 						break;
 
 					case "channel":
-						command = new SetMidiControlInputValues( object.id, null, int( value ) );
+						command = new ConfigureMidiControlInput( object.id, null, int( value ) );
 						break;
 
 					case "messageType":
-						command = new SetMidiControlInputValues( object.id, null, -1, String( value ) );
+						command = new ConfigureMidiControlInput( object.id, null, -1, String( value ) );
 						break;
 
 					case "noteOrController":
-						command = new SetMidiControlInputValues( object.id, null, -1, null, int( value ) );
+						command = new ConfigureMidiControlInput( object.id, null, -1, null, int( value ) );
 						break;
 				}
 			}
@@ -438,7 +446,6 @@ package components.controller
 				}
 			}
 		}
-	
 
 		
 		private var _attributesLastTouchedRemotely:Object = new Object;

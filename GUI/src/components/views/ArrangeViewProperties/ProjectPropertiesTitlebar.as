@@ -35,7 +35,7 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.RemoveMidiControlInput;
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetMidiControlAutoLearn;
-	import components.controller.serverCommands.SetMidiControlInputValues;
+	import components.controller.serverCommands.ConfigureMidiControlInput;
 	import components.model.Connection;
 	import components.model.Info;
 	import components.model.MidiControlInput;
@@ -59,7 +59,7 @@ package components.views.ArrangeViewProperties
 			super();
 		
 			addUpdateMethod( SetConnectionRouting, onConnectionRoutingChanged );
-			addUpdateMethod( SetMidiControlInputValues, onMidiControlValuesChanged );
+			addUpdateMethod( ConfigureMidiControlInput, onMidiControlValuesChanged );
 			addUpdateMethod( SetMidiControlAutoLearn, onMidiControlValuesChanged );
 			
 			_prevMidiLabel.text = "Prev Scene";

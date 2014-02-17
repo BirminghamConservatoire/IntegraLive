@@ -114,7 +114,7 @@
 					return model.selectedTrack.name;
 				} 
 				
-				if( model.selectedScene != null )
+				if( model.selectedScene && model.project.projectUserData.showSceneInTitlebar )
 				{
 					return model.selectedScene.name;
 				}
@@ -138,7 +138,7 @@
 					}
 					else
 					{
-						if( model.selectedScene )
+						if( model.selectedScene && model.project.projectUserData.showSceneInTitlebar )
 						{
 							idToRename = model.selectedScene.id;
 						}
@@ -393,13 +393,13 @@
 					} 
 					else
 					{
-						if( model.selectedScene == null )
+						if( model.selectedScene && model.project.projectUserData.showSceneInTitlebar )
 						{
-							visible = true;
+							visible = false;
 						}
 						else
 						{
-							visible = false;
+							visible = true;
 						}
 					}
 				}

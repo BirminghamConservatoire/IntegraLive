@@ -40,7 +40,7 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetMidiControlAutoLearn;
-	import components.controller.serverCommands.SetMidiControlInputValues;
+	import components.controller.serverCommands.ConfigureMidiControlInput;
 	import components.controller.serverCommands.SetSceneMode;
 	import components.controller.userDataCommands.SetSceneKeybinding;
 	import components.model.Connection;
@@ -70,7 +70,7 @@ package components.views.ArrangeViewProperties
 			addUpdateMethod( SetSceneMode, onSceneModeChanged );
 			addUpdateMethod( SetConnectionRouting, onConnectionRoutingChanged );
 			addUpdateMethod( SetSceneKeybinding, onSceneKeybindingChanged );
-			addUpdateMethod( SetMidiControlInputValues, onMidiControlValuesChanged );
+			addUpdateMethod( ConfigureMidiControlInput, onMidiControlValuesChanged );
 			addUpdateMethod( SetMidiControlAutoLearn, onMidiControlValuesChanged );
 			addUpdateMethod( RenameObject, onObjectRenamed );
 			

@@ -135,8 +135,12 @@ namespace integra_internal
 				server.process_command( ISetCommand::create( message_type_endpoint->get_path(), CStringValue( *message_type ) ), CCommandSource::SYSTEM );
 				server.process_command( ISetCommand::create( note_or_controller_endpoint->get_path(), CIntegerValue( value1 ) ), CCommandSource::SYSTEM );
 
+				//send value
+				server.process_command( ISetCommand::create( value_endpoint->get_path(), CIntegerValue( value2 ) ), CCommandSource::SYSTEM );
+
 				//end autolearn mode
 				server.process_command( ISetCommand::create( auto_learn_endpoint->get_path(), CIntegerValue( 0 ) ), CCommandSource::SYSTEM );
+				return;
 			}
 
 			/* now skip message if it's not the type we're interested in */

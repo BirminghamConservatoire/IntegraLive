@@ -44,8 +44,13 @@ namespace integra_internal
 			const static string endpoint_out_value;
 			const static string endpoint_in_range_min;
 			const static string endpoint_in_range_max;
+			const static string endpoint_in_mode;
 			const static string endpoint_out_range_min;
 			const static string endpoint_out_range_max;
+
+			const static string mode_snap;
+			const static string mode_ignore;
+
 	};
 }
 

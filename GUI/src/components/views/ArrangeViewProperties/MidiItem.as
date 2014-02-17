@@ -47,7 +47,7 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.RemoveTrack;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
-	import components.controller.serverCommands.SetMidiControlInputValues;
+	import components.controller.serverCommands.ConfigureMidiControlInput;
 	import components.controller.serverCommands.SetMidiInputDevices;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
@@ -118,7 +118,7 @@ package components.views.ArrangeViewProperties
 			addChild( _hbox );
 
 			addUpdateMethod( SetMidiInputDevices, onMidiInputDevicesChanged );
-			addUpdateMethod( SetMidiControlInputValues, onMidiControlInputValuesChanged );
+			addUpdateMethod( ConfigureMidiControlInput, onMidiControlInputValuesChanged );
 			
 			addUpdateMethod( SetConnectionRouting, onConnectionRoutingChanged );
 			addUpdateMethod( SetScalerInputRange, onScalerInputRangeChanged );
@@ -238,7 +238,7 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function onMidiControlInputValuesChanged( command:SetMidiControlInputValues ):void
+		private function onMidiControlInputValuesChanged( command:ConfigureMidiControlInput ):void
 		{
 			if( command.midiControlInputID != _midiControlInputID ) return;
 			
@@ -666,7 +666,7 @@ package components.views.ArrangeViewProperties
 				
 			var messageValue:int = _sourceMessageValueCombo.selectedIndex;
 			
-			controller.processCommand( new SetMidiControlInputValues( midiControlInput.id, device, channel, messageType, messageValue ) );
+			controller.processCommand( new ConfigureMidiControlInput( midiControlInput.id, device, channel, messageType, messageValue ) );
 		}
 
 		

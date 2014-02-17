@@ -23,9 +23,11 @@ package components.controller.serverCommands
 {
 	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
 	
+	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
 	import components.model.IntegraModel;
 	import components.model.MidiControlInput;
+	import components.model.Scaler;
 	
 	import flexunit.framework.Assert;
 
@@ -81,6 +83,29 @@ package components.controller.serverCommands
 			connection.callQueued( "command.set" );						
 		}
 		
+		
+		override public function remoteCommandPostChain( model:IntegraModel, controller:IntegraController ):void
+		{
+			/*
+			on end of autolearn, if scaler is set to ignore out-of range, restrict it's input range
+			to the exact autolearnt value.  This automatically sorts out cc controls which send a 0 on release
+			*/
+			
+			if( _autoLearn == false )
+			{
+				var midiControlInput:MidiControlInput = model.getMidiControlInput( _midiControlInputID );
+				Assert.assertNotNull( midiControlInput );
+				
+				var scaler:Scaler = midiControlInput.scaler;
+				Assert.assertNotNull( scaler );
+				
+				if( scaler.inMode == Scaler.INPUT_MODE_IGNORE )
+				{
+					controller.processCommand( new SetScalerInputRange( scaler.id, midiControlInput.value, midiControlInput.value ) );
+				}
+			}
+		}
+
 		
 		override protected function testServerResponse( response:Object ):Boolean
 		{

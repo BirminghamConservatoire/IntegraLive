@@ -30,9 +30,10 @@ package components.model
 			super();
 		}
 
+		public function get inValue():Number { return _inValue; }
 		public function get inRangeMin():Number { return _inRangeMin; }
 		public function get inRangeMax():Number { return _inRangeMax; }
-		public function get inValue():Number { return _inValue; }
+		public function get inMode():String { return _inMode; }
 		public function get outRangeMin():Number { return _outRangeMin; }
 		public function get outRangeMax():Number { return _outRangeMax; }
 		public function get outValue():Number { return _outValue; }
@@ -41,9 +42,10 @@ package components.model
 		public function get downstreamConnection():Connection { return _downstreamConnection; }
 		public function get midiControlInput():MidiControlInput { return _midiControlInput; }
 
+		public function set inValue( inValue:Number ):void { _inValue = inValue; }
 		public function set inRangeMin( inRangeMin:Number ):void { _inRangeMin = inRangeMin; }
 		public function set inRangeMax( inRangeMax:Number ):void { _inRangeMax = inRangeMax; }
-		public function set inValue( inValue:Number ):void { _inValue = inValue; }
+		public function set inMode( inMode:String ):void { _inMode = inMode; }
 		public function set outRangeMin( outRangeMin:Number ):void { _outRangeMin = outRangeMin; }
 		public function set outRangeMax( outRangeMax:Number ):void { _outRangeMax = outRangeMax; }
 		public function set outValue( outValue:Number ):void { _outValue = outValue; }
@@ -62,6 +64,10 @@ package components.model
 			
 			switch( attributeName )
 			{         
+				case "inValue":
+					_inValue = Number( value );
+					return true;
+
 				case "inRangeMin":
 					_inRangeMin = Number( value );
 					return true;
@@ -70,8 +76,8 @@ package components.model
 					_inRangeMax = Number( value );
 					return true;
 					
-				case "inValue":
-					_inValue = Number( value );
+				case "inMode":
+					_inMode = String( value );
 					return true;
 
 				case "outRangeMin":
@@ -96,9 +102,10 @@ package components.model
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }
 		public static const _serverInterfaceName:String = "Scaler";
 
+		private var _inValue:Number = 0;
 		private var _inRangeMin:Number = 0;
 		private var _inRangeMax:Number = 0;
-		private var _inValue:Number = 0;
+		private var _inMode:String = INPUT_MODE_SNAP;
 		private var _outRangeMin:Number = 0;
 		private var _outRangeMax:Number = 0;
 		private var _outValue:Number = 0;
@@ -107,5 +114,8 @@ package components.model
 		private var _downstreamConnection:Connection = null;
 		
 		private var _midiControlInput:MidiControlInput = null;
+		
+		public static const INPUT_MODE_SNAP:String = "snap";
+		public static const INPUT_MODE_IGNORE:String = "ignore";
 	}
 }

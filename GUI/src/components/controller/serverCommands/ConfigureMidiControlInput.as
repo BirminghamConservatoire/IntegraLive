@@ -30,14 +30,14 @@ package components.controller.serverCommands
 	import flexunit.framework.Assert;
 
 	/*
-	SetMidiControlInputValues allows the caller to provide special 'ignore' values (null for strings, -1 for ints).
+	ConfigureMidiControlInput allows the caller to provide special 'ignore' values (null for strings, -1 for ints).
 	These tell the command not to change these values.  When fired from the gui, these values are set by initialize.
 	When used as a remote command response, they are simply ignored.
 	*/
 	
-	public class SetMidiControlInputValues extends ServerCommand
+	public class ConfigureMidiControlInput extends ServerCommand
 	{
-		public function SetMidiControlInputValues( midiControlInputID:int, device:String = null, channel:int = -1, messageType:String = null, messageValue:int = -1 )
+		public function ConfigureMidiControlInput( midiControlInputID:int, device:String = null, channel:int = -1, messageType:String = null, messageValue:int = -1 )
 		{
 			super();
 
@@ -77,7 +77,7 @@ package components.controller.serverCommands
 			var midiControlInput:MidiControlInput = model.getMidiControlInput( _midiControlInputID );
 			Assert.assertNotNull( midiControlInput );
 			
-			pushInverseCommand( new SetMidiControlInputValues( _midiControlInputID, midiControlInput.device, midiControlInput.channel, midiControlInput.messageType, midiControlInput.noteOrController ) );
+			pushInverseCommand( new ConfigureMidiControlInput( _midiControlInputID, midiControlInput.device, midiControlInput.channel, midiControlInput.messageType, midiControlInput.noteOrController ) );
 		}
 		
 		

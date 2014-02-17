@@ -38,6 +38,10 @@ namespace integra_internal
 	const string CMidiControlInputLogic::note_on = "noteon";
 	const string CMidiControlInputLogic::control_change = "cc";
 
+	//these special values instruct the module to listen to any device/channel
+	const string CMidiControlInputLogic::any_device = "Any Device";
+	const int CMidiControlInputLogic::any_channel = 0;
+
 
 	CMidiControlInputLogic::CMidiControlInputLogic( const CNode &node )
 		:	CLogic( node )
@@ -136,12 +140,14 @@ namespace integra_internal
 			}
 
 			/* now skip message if it's not the type we're interested in */
-			if( ( const string & ) *device_endpoint->get_value() != device_name )
+			const string &listen_device = *device_endpoint->get_value();
+			if( device_name != listen_device && listen_device != any_device )
 			{
 				continue;
 			}
 
-			if( ( int ) *channel_endpoint->get_value() != channel )
+			int listen_channel = *channel_endpoint->get_value();
+			if( channel != listen_channel && listen_channel != any_channel )
 			{
 				continue;
 			}

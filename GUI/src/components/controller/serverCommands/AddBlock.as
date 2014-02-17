@@ -308,21 +308,17 @@ package components.controller.serverCommands
 		{
 			const inputInterfaceName:String = "AudioIn";
 			const outputInterfaceName:String = "StereoAudioOut";
-			const midiInterfaceName:String = "MIDI";
 	
 			var inputInterfaceDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( inputInterfaceName );   
 			var outputInterfaceDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( outputInterfaceName );
-			var midiInterfaceDefinition:InterfaceDefinition = model.getCoreInterfaceDefinitionByName( midiInterfaceName );
 			Assert.assertNotNull( inputInterfaceDefinition );
 			Assert.assertNotNull( outputInterfaceDefinition );
-			Assert.assertNotNull( midiInterfaceDefinition );
 			Assert.assertTrue( inputInterfaceDefinition.countAudioEndpointsByDirection( StreamInfo.DIRECTION_OUTPUT ) > 0 );
 			Assert.assertTrue( outputInterfaceDefinition.countAudioEndpointsByDirection( StreamInfo.DIRECTION_INPUT ) > 0 );
 
 			var moduleWidth:Number = ModuleInstance.getModuleWidth();
 			var inputModuleHeight:Number = ModuleInstance.getModuleHeight( inputInterfaceDefinition );
 			var outputModuleHeight:Number = ModuleInstance.getModuleHeight( outputInterfaceDefinition );
-			var midiModuleHeight:Number = ModuleInstance.getModuleHeight( midiInterfaceDefinition );
 			var horizontalMargin:Number = moduleWidth / 8;
 			var verticalMargin:Number = moduleWidth * 3 / 4;
 			var inputPosition:Rectangle = new Rectangle( horizontalMargin, verticalMargin, moduleWidth, inputModuleHeight );  

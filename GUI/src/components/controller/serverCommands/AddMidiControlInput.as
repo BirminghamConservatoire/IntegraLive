@@ -136,13 +136,7 @@ package components.controller.serverCommands
 			
 			controller.processCommand( new SetConnectionRouting( scaler.upstreamConnection.id, _midiControlInputID, "value", _scalerID, "inValue" ) );
 			
-			var midiDevices:Vector.<String> = model.midiSettings.activeInputDevices;
-			if( midiDevices.length > 0 )
-			{
-				var midiControlInput:MidiControlInput = model.getMidiControlInput( _midiControlInputID );
-				Assert.assertNotNull( midiControlInput );
-				controller.processCommand( new SetMidiControlInputValues( _midiControlInputID, midiDevices[ 0 ], midiControlInput.channel, midiControlInput.messageType, midiControlInput.noteOrController ) );
-			}
+			controller.processCommand( new SetMidiControlInputValues( _midiControlInputID, MidiControlInput.ANY_DEVICE, 0, MidiControlInput.CC, 0 ) );
 		}		
 
 

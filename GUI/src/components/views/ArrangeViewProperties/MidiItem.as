@@ -324,6 +324,12 @@ package components.views.ArrangeViewProperties
 			var indexToSelect:int = -1;
 			var devices:Array = new Array;
 			
+			devices.push( MidiControlInput.ANY_DEVICE );
+			if( midiControlInput.device == MidiControlInput.ANY_DEVICE )
+			{
+				indexToSelect = 0;
+			}
+
 			for each( var device:String in model.midiSettings.activeInputDevices )
 			{
 				if( device == midiControlInput.device )
@@ -337,7 +343,7 @@ package components.views.ArrangeViewProperties
 			_sourceDeviceCombo.dataProvider = devices;
 			_sourceDeviceCombo.selectedIndex = indexToSelect;
 			
-			var hasDevices:Boolean = ( devices.length > 0 );
+			var hasDevices:Boolean = ( devices.length > 1 );
 			var deviceSelected:Boolean = ( indexToSelect >= 0 );
 
 			enableComponent( _sourceDeviceCombo, hasDevices );
@@ -354,6 +360,7 @@ package components.views.ArrangeViewProperties
 		{
 			var channels:Array = new Array;
 
+			channels.push( "any chn" );
 			for( var i:int = 1; i <= 16; i++ )
 			{
 				channels.push( "chn" + String( i ) );
@@ -367,7 +374,7 @@ package components.views.ArrangeViewProperties
 		
 		private function updateStaticMidiCombos():void
 		{
-			_sourceChannelCombo.selectedIndex = midiControlInput.channel - 1;
+			_sourceChannelCombo.selectedIndex = midiControlInput.channel;
 			
 			switch( midiControlInput.messageType )
 			{
@@ -649,7 +656,7 @@ package components.views.ArrangeViewProperties
 		private function midiSettingsChanged():void
 		{
 			var device:String = String( _sourceDeviceCombo.selectedItem );
-			var channel:int = _sourceChannelCombo.selectedIndex + 1;
+			var channel:int = _sourceChannelCombo.selectedIndex;
 			var messageType:String = "";
 			switch( String( _sourceMessageTypeCombo.selectedItem ) )
 			{

@@ -51,6 +51,9 @@ namespace integra_internal
 
 			const static string note_on;
 			const static string control_change;
+
+			const static string any_device;
+			const static int any_channel;
 	};
 }
 

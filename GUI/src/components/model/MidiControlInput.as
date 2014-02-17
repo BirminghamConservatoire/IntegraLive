@@ -137,5 +137,8 @@ package components.model
 		
 		public static const NOTEON:String = "noteon";
 		public static const CC:String = "cc";
+		
+		public static const ANY_DEVICE:String = "Any Device";
+
 	}
 }

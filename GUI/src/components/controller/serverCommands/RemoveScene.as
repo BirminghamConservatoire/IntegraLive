@@ -61,8 +61,15 @@ package components.controller.serverCommands
 		public override function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
 			//remove midi control inputs
-			for( var midiControlInput:MidiControlInput = model.getUpstreamMidiControlInput( _sceneID, "activate" ); midiControlInput; )
+
+			while( true )
 			{
+				var midiControlInput:MidiControlInput = model.getUpstreamMidiControlInput( _sceneID, "activate" );
+				if( !midiControlInput ) 
+				{
+					break;
+				}
+				
 				controller.processCommand( new RemoveMidiControlInput( midiControlInput.id ) );
 			}
 			

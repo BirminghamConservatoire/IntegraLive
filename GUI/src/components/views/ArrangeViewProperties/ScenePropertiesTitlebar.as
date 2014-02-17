@@ -21,29 +21,10 @@
 
 package components.views.ArrangeViewProperties
 {
-	import components.controller.serverCommands.RenameObject;
-	import components.controller.serverCommands.SelectScene;
-	import components.controller.serverCommands.SetConnectionRouting;
-	import components.controller.serverCommands.SetSceneMidiNavigation;
-	import components.controller.serverCommands.SetSceneMode;
-	import components.controller.userDataCommands.SetSceneKeybinding;
-	import components.model.Info;
-	import components.model.Midi;
-	import components.model.Scene;
-	import components.model.interfaceDefinitions.EndpointDefinition;
-	import components.model.interfaceDefinitions.InterfaceDefinition;
-	import components.model.userData.ColorScheme;
-	import components.model.userData.SceneUserData;
-	import components.utils.FontSize;
-	import components.utils.Utilities;
-	import components.views.InfoView.InfoMarkupForViews;
-	import components.views.IntegraView;
-	import components.views.Skins.CloseButtonSkin;
+	import com.mattism.http.xmlrpc.Connection;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	
-	import flexunit.framework.Assert;
 	
 	import mx.containers.HBox;
 	import mx.controls.Button;
@@ -51,6 +32,32 @@ package components.views.ArrangeViewProperties
 	import mx.controls.Label;
 	import mx.events.ListEvent;
 	import mx.events.ResizeEvent;
+	
+	import components.controller.ServerCommand;
+	import components.controller.serverCommands.AddMidiControlInput;
+	import components.controller.serverCommands.RemoveMidiControlInput;
+	import components.controller.serverCommands.RenameObject;
+	import components.controller.serverCommands.SelectScene;
+	import components.controller.serverCommands.SetConnectionRouting;
+	import components.controller.serverCommands.SetMidiControlAutoLearn;
+	import components.controller.serverCommands.SetMidiControlInputValues;
+	import components.controller.serverCommands.SetSceneMode;
+	import components.controller.userDataCommands.SetSceneKeybinding;
+	import components.model.Connection;
+	import components.model.Info;
+	import components.model.MidiControlInput;
+	import components.model.Scene;
+	import components.model.interfaceDefinitions.EndpointDefinition;
+	import components.model.interfaceDefinitions.InterfaceDefinition;
+	import components.model.userData.ColorScheme;
+	import components.model.userData.SceneUserData;
+	import components.utils.FontSize;
+	import components.views.IntegraView;
+	import components.views.InfoView.InfoMarkupForViews;
+	import components.views.Skins.CloseButtonSkin;
+	import components.views.Skins.MidiButtonSkin;
+	
+	import flexunit.framework.Assert;
 	
 
 	public class ScenePropertiesTitlebar extends IntegraView
@@ -63,6 +70,8 @@ package components.views.ArrangeViewProperties
 			addUpdateMethod( SetSceneMode, onSceneModeChanged );
 			addUpdateMethod( SetConnectionRouting, onConnectionRoutingChanged );
 			addUpdateMethod( SetSceneKeybinding, onSceneKeybindingChanged );
+			addUpdateMethod( SetMidiControlInputValues, onMidiControlValuesChanged );
+			addUpdateMethod( SetMidiControlAutoLearn, onMidiControlValuesChanged );
 			addUpdateMethod( RenameObject, onObjectRenamed );
 			
 			_keybindingLabel.text = "Key";
@@ -77,15 +86,18 @@ package components.views.ArrangeViewProperties
 			_keybindingCombo.dataProvider = keybindingData;
 			_keybindingCombo.rowCount = 10;
 
-			_midiNoteLabel.text = "MIDI Note";
-			_midiNoteLabel.setStyle( "verticalCenter", 0 );
-			
-			_midiNoteCombo.rowCount = 12;
+			_midiLabel.text = "Midi";
+			_midiLabel.setStyle( "verticalCenter", 0 );
 
-			_ccNumberLabel.text = "MIDI CC Number";
-			_ccNumberLabel.setStyle( "verticalCenter", 0 );
+			_midiLearnButton.toggle = true;
+			_midiLearnButton.setStyle( "skin", MidiButtonSkin );
+			_midiLearnButton.setStyle( "color", 0x808080 );
 			
-			_ccNumberCombo.rowCount = 12;
+			_midiSettingLabel.text = "";
+			_midiSettingLabel.setStyle( "verticalCenter", 0 );
+			
+			_removeMidiButton.setStyle( "skin", CloseButtonSkin );
+			_removeMidiButton.setStyle( "fillAlpha", 1 );
 			
 			_modeLabel.text = "State";
 			_modeLabel.setStyle( "verticalCenter", 0 );
@@ -97,17 +109,19 @@ package components.views.ArrangeViewProperties
 			_hbox.addElement( _modeCombo );
 			_hbox.addElement( _keybindingLabel );
 			_hbox.addElement( _keybindingCombo );
-			_hbox.addElement( _midiNoteLabel );
-			_hbox.addElement( _midiNoteCombo );
-			_hbox.addElement( _ccNumberLabel );
-			_hbox.addElement( _ccNumberCombo );
+			_hbox.addElement( _midiLabel );
+			_hbox.addElement( _midiLearnButton );
+			_hbox.addElement( _midiSettingLabel );
+			_hbox.addElement( _removeMidiButton );
+			
 			
 			addElement( _hbox );
 			
 			_keybindingCombo.addEventListener( ListEvent.CHANGE, onChangeKeybinding );
 			_modeCombo.addEventListener( ListEvent.CHANGE, onChangeMode );
-			_midiNoteCombo.addEventListener( ListEvent.CHANGE, onChangeMidiNote );
-			_ccNumberCombo.addEventListener( ListEvent.CHANGE, onChangeCCNumber );
+			_midiLearnButton.addEventListener( MouseEvent.CLICK, onMidiLearnButton );
+			_midiLearnButton.addEventListener( MouseEvent.DOUBLE_CLICK, onMidiLearnButton );
+			_removeMidiButton.addEventListener( MouseEvent.CLICK, onRemoveMidi );
 			
 			addEventListener( Event.RESIZE, onResize ); 
 		}
@@ -129,20 +143,31 @@ package components.views.ArrangeViewProperties
 					case ColorScheme.LIGHT:
 						_keybindingLabel.setStyle( "color", 0x747474 );
 						_modeLabel.setStyle( "color", 0x747474 );
-						_midiNoteLabel.setStyle( "color", 0x747474 );
-						_ccNumberLabel.setStyle( "color", 0x747474 );
+						_midiLabel.setStyle( "color", 0x747474 );
+						_midiSettingLabel.setStyle( "color", 0x747474 );
+						_removeMidiButton.setStyle( "color", 0xcfcfcf );
+						_removeMidiButton.setStyle( "fillColor", 0x747474 );
 						break;
 						
 					case ColorScheme.DARK:
 						_modeLabel.setStyle( "color", 0x8c8c8c );
 						_keybindingLabel.setStyle( "color", 0x8c8c8c );
-						_midiNoteLabel.setStyle( "color", 0x8c8c8c );
-						_ccNumberLabel.setStyle( "color", 0x8c8c8c );
+						_midiLabel.setStyle( "color", 0x8c8c8c );
+						_midiSettingLabel.setStyle( "color", 0x8c8c8c );
+						_removeMidiButton.setStyle( "color", 0x313131 );
+						_removeMidiButton.setStyle( "fillColor", 0x8c8c8c );
 						break;
 						
 					default:
 						break;
 				}
+			}
+			
+			if( !style || style == FontSize.STYLENAME )
+			{
+				var buttonSize:Number = FontSize.getButtonSize( this );
+				_midiLearnButton.height = _midiLearnButton.width = buttonSize;
+				_removeMidiButton.height = _removeMidiButton.width = buttonSize;
 			}
 		}
 
@@ -150,8 +175,6 @@ package components.views.ArrangeViewProperties
 		override protected function onAllDataChanged():void
 		{
 			populateModesCombo();
-			populateMidiNoteCombo();
-			populateCCNumberCombo();
 			update();
 		}
 
@@ -180,6 +203,12 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
+		private function onMidiControlValuesChanged( command:ServerCommand ):void
+		{
+			update();
+		}
+		
+		
 		private function onObjectRenamed( command:RenameObject ):void
 		{
 			if( model.selectedScene && command.objectID == model.selectedScene.id )
@@ -196,8 +225,8 @@ package components.views.ArrangeViewProperties
 			{
 				_modeCombo.selectedIndex = -1;
 				_keybindingCombo.selectedIndex = -1;
-				_midiNoteCombo.selectedIndex = -1;
-				_ccNumberCombo.selectedIndex = -1;
+				_midiLearnButton.selected = false;
+				_removeMidiButton.visible = false;
 				return;
 			}
 			
@@ -212,8 +241,19 @@ package components.views.ArrangeViewProperties
 				selectComboItem( _keybindingCombo, scene.keybinding );
 			}
 			
-			_midiNoteCombo.selectedIndex = _mapMidiNoteToComboIndex[ model.project.getConnectedMidiNote( scene.id, "activate" ) ]; 
-			_ccNumberCombo.selectedIndex = _mapCCNumberToComboIndex[ model.project.getConnectedCCNumber( scene.id, "activate" ) ]; 
+			var midiControlInput:MidiControlInput = model.getUpstreamMidiControlInput( scene.id, "activate" ); 
+			if( midiControlInput )
+			{
+				_midiLearnButton.selected = midiControlInput.autoLearn;
+				_midiSettingLabel.text = midiControlInput.getAsString();
+				_removeMidiButton.visible = true;
+			}
+			else
+	 		{
+				_midiLearnButton.selected = false;
+				_midiSettingLabel.text = "";
+				_removeMidiButton.visible = false;
+			}
 		}
 
 
@@ -257,33 +297,13 @@ package components.views.ArrangeViewProperties
 		}
 
 		
-		private function onChangeMidiNote( event:ListEvent ):void
-		{
-			var scene:Scene = model.selectedScene;
-			Assert.assertNotNull( scene );
-			
-			var ccNumber:int = model.project.getConnectedCCNumber( scene.id, "activate" );
-			controller.processCommand( new SetSceneMidiNavigation( scene.id, _mapComboIndexToMidiNote[ _midiNoteCombo.selectedIndex ], ccNumber ) );
-		}
-
-		
-		private function onChangeCCNumber( event:ListEvent ):void
-		{
-			var scene:Scene = model.selectedScene;
-			Assert.assertNotNull( scene );
-			
-			var midiNote:int = model.project.getConnectedMidiNote( scene.id, "activate" );
-			controller.processCommand( new SetSceneMidiNavigation( scene.id, midiNote, _mapComboIndexToCCNumber[ _ccNumberCombo.selectedIndex ] ) );
-		}
-		
-
 		private function onResize( event:ResizeEvent ):void
 		{
 			_hbox.height = height;
 			_modeCombo.height = height;
 			_keybindingCombo.height = height;
-			_midiNoteCombo.height = height;
-			_ccNumberCombo.height = height;
+			_midiLabel.height = height;
+			_midiSettingLabel.height = height;
 		}
 		
 		
@@ -307,54 +327,60 @@ package components.views.ArrangeViewProperties
 		}
 
 		
-		private function populateMidiNoteCombo():void
+		private function onMidiLearnButton( event:Event ):void
 		{
-			var midiNoteData:Array = new Array;
-
-			for( var i:int = -1; i < Midi.numberOfMidiNotes; i++ )
-			{
-				_mapComboIndexToMidiNote[ midiNoteData.length ] = i; 
-				_mapMidiNoteToComboIndex[ i ] = midiNoteData.length; 
-
-				midiNoteData.push( Utilities.getMidiNoteName( i ) );
-			}
+			var scene:Scene = model.selectedScene;
+			Assert.assertNotNull( scene );
 			
-			_midiNoteCombo.dataProvider = midiNoteData;
+			var midiControlInput:MidiControlInput = model.getUpstreamMidiControlInput( scene.id, "activate" );
+			if( midiControlInput )
+			{
+				if( midiControlInput.autoLearn )
+				{
+					controller.processCommand( new RemoveMidiControlInput( midiControlInput.id ) );
+				}
+				else
+				{
+					controller.processCommand( new SetMidiControlAutoLearn( midiControlInput.id, true ) );
+				}
+			}
+			else
+			{
+				var addMidiControlInputCommand:AddMidiControlInput = new AddMidiControlInput( model.project.id );
+				controller.processCommand( addMidiControlInputCommand );
+				
+				midiControlInput = model.getMidiControlInput( addMidiControlInputCommand.midiControlInputID );
+				var downstreamConnection:components.model.Connection = midiControlInput.scaler.downstreamConnection;
+				
+				controller.processCommand( new SetConnectionRouting( downstreamConnection.id, downstreamConnection.sourceObjectID, downstreamConnection.sourceAttributeName, scene.id, "activate" ) );
+				
+				controller.processCommand( new SetMidiControlAutoLearn( addMidiControlInputCommand.midiControlInputID, true ) );
+			}
 		}
 
 		
-		private function populateCCNumberCombo():void
+		private function onRemoveMidi( event:Event ):void
 		{
-			var ccNumberData:Array = new Array;
+			var scene:Scene = model.selectedScene;
+			Assert.assertNotNull( scene );
 			
-			for( var i:int = -1; i < Midi.numberOfCCNumbers; i++ )
-			{
-				_mapComboIndexToCCNumber[ ccNumberData.length ] = i; 
-				_mapCCNumberToComboIndex[ i ] = ccNumberData.length; 
-				
-				ccNumberData.push( Utilities.getCCNumberName( i ) );
-			}
+			var midiControlInput:MidiControlInput = model.getUpstreamMidiControlInput( scene.id, "activate" );
+			Assert.assertNotNull( midiControlInput );
 			
-			_ccNumberCombo.dataProvider = ccNumberData;
+			controller.processCommand( new RemoveMidiControlInput( midiControlInput.id ) );
 		}
-
+		
 		
 		private var _hbox:HBox = new HBox;
 		
 		private var _keybindingLabel:Label = new Label;
 		private var _keybindingCombo:ComboBox = new ComboBox;
-		private var _midiNoteLabel:Label = new Label;
-		private var _midiNoteCombo:ComboBox = new ComboBox;
-		private var _ccNumberLabel:Label = new Label;
-		private var _ccNumberCombo:ComboBox = new ComboBox;
+		private var _midiLabel:Label = new Label;
+		private var _midiLearnButton:Button = new Button;
+		private var _midiSettingLabel:Label = new Label;
+		private var _removeMidiButton:Button = new Button;
 		private var _modeLabel:Label = new Label;
 		private var _modeCombo:ComboBox = new ComboBox;
-		
-		private var _mapComboIndexToMidiNote:Array = new Array; 	//midi note of each combo index 
-		private var _mapMidiNoteToComboIndex:Array = new Array; 	//combo index of each midi note  
-
-		private var _mapComboIndexToCCNumber:Array = new Array; 	//cc number of each combo index 
-		private var _mapCCNumberToComboIndex:Array = new Array; 	//combo index of each cc number
 		
 		private static const _noKeybinding:String = "<none>"; 
 	}

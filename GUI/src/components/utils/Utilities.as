@@ -358,24 +358,6 @@ package components.utils
 		
 		
 
-		public static function getMidiNoteName( midiNote:int ):String
-		{
-			const midiNoteNames:Array = [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" ];
-			
-			if( midiNote < 0 ) return "<none>";
-			
-			return midiNoteNames[ midiNote % 12 ] + String( Math.floor( midiNote / 12 ) -1 );
-		}
-		
-		
-		public static function getCCNumberName( ccNumber:int ):String
-		{
-			if( ccNumber < 0 ) return "<none>";
-			
-			return String( ccNumber );
-		}
-		
-		
 		public static function makeStringVectorFromPackedString( packedString:String, output:Vector.<String> ):void
 		{
 			/*

@@ -57,7 +57,6 @@ package components.controller.serverCommands
 			removeChildConnections( _trackID, model, controller );
 			
 			removeChildScripts( _trackID, model, controller );
-			removeMidi( _trackID, model, controller );
 			removeBlocksFromTrack( model, controller );
 			deselectTrack( model, controller );
 

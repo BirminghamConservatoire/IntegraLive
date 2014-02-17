@@ -24,13 +24,11 @@ package components.controller
 	import components.controller.serverCommands.AddConnection;
 	import components.controller.serverCommands.RemoveScaledConnection;
 	import components.controller.serverCommands.RemoveConnection;
-	import components.controller.serverCommands.RemoveMidi;
 	import components.controller.serverCommands.RemoveScript;
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.model.Connection;
 	import components.model.IntegraContainer;
 	import components.model.IntegraModel;
-	import components.model.Midi;
 	import components.model.Project;
 	import components.model.Scaler;
 	import components.model.Script;
@@ -209,21 +207,12 @@ package components.controller
 		}
 		
 		
-		protected function removeMidi( objectID:int, model:IntegraModel, controller:IntegraController ):void
-		{
-			var container:IntegraContainer = model.getContainer( objectID ); 
-			Assert.assertNotNull( container );
-			
-			if( container.midi )
-			{
-				controller.processCommand( new RemoveMidi( container.midi.id ) );
-			}
-		}
-
 		
 		protected function updateProjectMidiConnection( model:IntegraModel, controller:IntegraController, midiAttributePrefix:String, targetID:int, targetAttributeName:String, newValue:int ):void
 		{
-			var connection:components.model.Connection;
+			//todo - implement
+			
+			/*var connection:components.model.Connection;
 			var project:Project = model.project;
 			
 			for each( connection in project.connections )
@@ -264,8 +253,9 @@ package components.controller
 				controller.processCommand( addConnectionCommand );
 				
 				controller.processCommand( new SetConnectionRouting( addConnectionCommand.connectionID, project.midi.id, midiAttributePrefix + String( newValue ), targetID, targetAttributeName ) );
-			}
+			}*/
 		}
+		
 		
 		
 		//private methods		

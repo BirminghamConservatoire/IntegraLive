@@ -32,7 +32,7 @@
 		<![CDATA[
 			import mx.core.ScrollPolicy;
 			
-			import components.controller.serverCommands.ReceiveMidiInput;
+			import components.controller.serverCommands.ReceiveRawMidiInput;
 			import components.controller.serverCommands.SetPlayerHome;
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.SetColorScheme;
@@ -106,7 +106,7 @@
 			
 			addUpdateMethod( SetViewMode, onViewModeChanged );
 			addUpdateMethod( SetPlaying, onPlaystateChanged );
-			addUpdateMethod( ReceiveMidiInput, onReceiveMidiInput );
+			addUpdateMethod( ReceiveRawMidiInput, onReceiveMidiInput );
 			
 			_midiInputTimer.addEventListener( TimerEvent.TIMER, onMidiInputTimer );
 		}
@@ -124,11 +124,12 @@
 		}
 			
 			
-		private function onReceiveMidiInput( command:ReceiveMidiInput ):void
+		private function onReceiveMidiInput( command:ReceiveRawMidiInput ):void
 		{
-			if( command.midiID != model.project.midi.id ) return;
-			
-			_midiButton.pulse();
+			if( command.midiMonitorID == model.project.midiMonitor.id ) 
+			{
+				_midiButton.pulse();
+			}
 		}
 
 

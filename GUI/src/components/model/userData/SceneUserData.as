@@ -68,6 +68,5 @@ package components.model.userData
 		public static const NO_KEYBINDING:String = "";
 		
 		private var _keybinding:String = NO_KEYBINDING;
-		
 	}
 }

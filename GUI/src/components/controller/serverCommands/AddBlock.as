@@ -330,9 +330,7 @@ package components.controller.serverCommands
 			
 			var addInput:LoadModule = new LoadModule( inputInterfaceDefinition.moduleGuid, _blockID, inputPosition );
 			var addOutput:LoadModule = new LoadModule( outputInterfaceDefinition.moduleGuid, _blockID, outputPosition );
-			var addMIDI:AddMidi = new AddMidi( _blockID );
 			
-			controller.processCommand( addMIDI );
 			controller.processCommand( addOutput );
 			controller.processCommand( addInput ); 
 		}

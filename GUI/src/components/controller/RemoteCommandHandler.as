@@ -24,7 +24,7 @@ package components.controller
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
-	import components.controller.serverCommands.ReceiveMidiInput;
+	import components.controller.serverCommands.ReceiveRawMidiInput;
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.serverCommands.SetAudioDriver;
 	import components.controller.serverCommands.SetAudioInputDevice;
@@ -46,8 +46,8 @@ package components.controller
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
-	import components.model.Midi;
 	import components.model.MidiControlInput;
+	import components.model.MidiRawInput;
 	import components.model.ModuleInstance;
 	import components.model.Player;
 	import components.model.Script;
@@ -229,7 +229,7 @@ package components.controller
 					case "scene":
 						var playerPath:Array = model.getPathArrayFromID( model.project.player.id );
 						var scenePath:Array = playerPath.concat( value );
-						command = new SelectScene( model.getIDFromPathArray( scenePath ) );
+						command = new SelectScene( model.getIDFromPathArray( scenePath ), false );
 						break;
 						
 					default:
@@ -250,6 +250,19 @@ package components.controller
 					
 					default:
 						Assert.assertTrue( false );
+						break;
+				}
+			}
+			else if( object is MidiRawInput )
+			{
+				command = new ReceiveRawMidiInput( object.id, uint( value ) );
+			}
+			else if( object is IntegraContainer )
+			{
+				switch( endpointName )
+				{
+					case "active":
+						command = new SetContainerActive( object.id, ( value != 0 ) );
 						break;
 				}
 			}
@@ -379,20 +392,6 @@ package components.controller
 
 					case "noteOrController":
 						command = new SetMidiControlInputValues( object.id, null, -1, null, int( value ) );
-						break;
-				}
-			}
-			else if( object is Midi )
-			{
-				command = new ReceiveMidiInput( object.id, endpointName, int( value ) );
-				if( !( command as ReceiveMidiInput ).valid ) command = null;
-			}
-			else if( object is IntegraContainer )
-			{
-				switch( endpointName )
-				{
-					case "active":
-						command = new SetContainerActive( object.id, ( value != 0 ) );
 						break;
 				}
 			}

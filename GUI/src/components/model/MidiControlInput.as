@@ -21,6 +21,10 @@
 
 package components.model
 {
+	import components.utils.Utilities;
+	
+	import flexunit.framework.Assert;
+
 	public class MidiControlInput extends IntegraDataObject
 	{
 		public function MidiControlInput()
@@ -68,6 +72,53 @@ package components.model
 			
 			
 			return false;
+		}
+		
+		
+		public function getAsString():String
+		{
+			const maxDeviceNameLength:int = 20;
+			
+			if( _autoLearn ) 
+			{
+				return "Autolearning...";
+			}
+			
+			var results:String = _device;
+			if( results.length > maxDeviceNameLength )
+			{
+				results = results.substr( 0, maxDeviceNameLength ) + "...";
+			}
+			
+			results += " ";
+			
+			if( _channel == 0 )
+			{
+				results += "all channels";
+			}
+			else
+			{
+				results += "chn" + String( _channel );
+			}
+			
+			results += " ";
+			
+			switch( _messageType )
+			{
+				case NOTEON:
+					results += "note " + Utilities.midiPitchToName( _noteOrController );
+					break;
+					
+				case CC:
+					results += "cc" + String( _noteOrController );
+					break;
+				
+				default:
+					Assert.assertTrue( false );
+					break;
+			}
+			
+			return results;
 		}
 		
 		private var _device:String;

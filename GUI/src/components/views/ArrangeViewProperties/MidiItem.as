@@ -30,6 +30,7 @@ package components.views.ArrangeViewProperties
 	import mx.containers.HBox;
 	import mx.controls.Button;
 	import mx.controls.ComboBox;
+	import mx.core.Container;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	import mx.events.ListEvent;
@@ -57,8 +58,9 @@ package components.views.ArrangeViewProperties
 	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
-	import components.model.Midi;
 	import components.model.MidiControlInput;
+	import components.model.MidiRawInput;
+	import components.model.Player;
 	import components.model.Scaler;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
@@ -416,7 +418,7 @@ package components.views.ArrangeViewProperties
 			
 			var targetObjectComboContents:Array = new Array;
 
-			var targetIndexToSelect:int = buildObjectComboContents( targetObjectComboContents, container, scaler.downstreamConnection.targetObjectID, true );
+			var targetIndexToSelect:int = buildObjectComboContents( targetObjectComboContents, container, scaler.downstreamConnection.targetObjectID );
 
 			_targetObjectCombo.dataProvider = targetObjectComboContents;
 
@@ -426,15 +428,20 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function buildObjectComboContents( objectComboContents:Array, container:IntegraContainer, currentConnectedID:int, isTarget:Boolean, ancestorName:String = "" ):int
+		private function buildObjectComboContents( objectComboContents:Array, container:IntegraDataObject, currentConnectedID:int, ancestorName:String = "" ):int
 		{
 			var indexToSelect:int = -1;
 			
-			for each( var child:IntegraDataObject in container.children )
+			var children:Object = null;
+			if( container is IntegraContainer ) children = ( container as IntegraContainer ).children;
+			if( container is Player ) children = ( container as Player ).scenes;
+			if( !children ) return -1;
+			
+			for each( var child:IntegraDataObject in children )
 			{
 				var childName:String = ancestorName + child.name;
 				
-				if( shouldMakeClassAvailableForConnections( child, isTarget ) )
+				if( shouldMakeClassAvailableForConnections( child ) )
 				{
 					if( currentConnectedID == child.id )
 					{
@@ -444,9 +451,9 @@ package components.views.ArrangeViewProperties
 					objectComboContents.push( childName );
 				}
 				
-				if( child is IntegraContainer )
+				if( child is IntegraContainer || child is Player )
 				{
-					indexToSelect = Math.max( indexToSelect, buildObjectComboContents( objectComboContents, child as IntegraContainer, currentConnectedID, isTarget, childName + "." ) );
+					indexToSelect = Math.max( indexToSelect, buildObjectComboContents( objectComboContents, child, currentConnectedID, childName + "." ) );
 				}				
 			}
 			
@@ -793,9 +800,9 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function shouldMakeClassAvailableForConnections( object:IntegraDataObject, isTarget:Boolean ):Boolean
+		private function shouldMakeClassAvailableForConnections( object:IntegraDataObject ):Boolean
 		{
-			if( object is Envelope || object is Scaler || object is Midi || object is MidiControlInput ) 
+			if( object is Envelope || object is Scaler || object is MidiControlInput || object is MidiRawInput ) 
 			{
 				return false;
 			}
@@ -803,7 +810,7 @@ package components.views.ArrangeViewProperties
 			//only make class available if it has at least one routable endpoint
 			for each( var endpoint:EndpointDefinition in object.interfaceDefinition.endpoints )
 			{
-				if( isTarget ? endpoint.canBeConnectionTarget : endpoint.canBeConnectionSource )
+				if( endpoint.canBeConnectionTarget )
 				{
 					return true;
 				}

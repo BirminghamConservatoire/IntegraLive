@@ -21,7 +21,6 @@ package components.model
 		public function get scripts():Object { return _scripts; }
 		public function get connections():Object { return _connections; }
 		public function get scalers():Object { return _scalers; }
-		public function get midi():Midi { return _midi; }
 		public function get midiControlInputs():Object { return _midiControlInputs; }
 		public function get info():Info { return _info; }
 
@@ -47,7 +46,6 @@ package components.model
 			_scripts = new Object;
 			_scalers = new Object;
 			_midiControlInputs = new Object;
-			_midi = null;
 			
 			for each( var child:IntegraDataObject in children )
 			{
@@ -69,18 +67,6 @@ package components.model
 				if( child is MidiControlInput )
 				{
 					_midiControlInputs[ child.id ] = child;
-				}
-
-				if( child is Midi )
-				{
-					if( _midi )
-					{
-						Trace.error( "container has more than one midi object" );
-					}
-					else
-					{
-						_midi = child as Midi;
-					}
 				}
 			} 
 		}
@@ -185,7 +171,6 @@ package components.model
 		private var _scripts:Object = new Object;
 		private var _scalers:Object = new Object;
 		private var _midiControlInputs:Object = new Object;
-		private var _midi:Midi = null;
 		private var _info:Info = new Info; 
 	}
 }

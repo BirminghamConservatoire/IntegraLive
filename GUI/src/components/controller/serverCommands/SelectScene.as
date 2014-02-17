@@ -23,22 +23,24 @@ package components.controller.serverCommands
 {
 	import com.mattism.http.xmlrpc.util.XMLRPCDataTypes;
 	
-	import components.controller.Command;
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
+	import components.controller.userDataCommands.SetShowSceneInTitlebar;
 	import components.model.IntegraModel;
 	import components.model.Player;
+	import components.model.Scene;
 	
 	import flexunit.framework.Assert;
 
 	public class SelectScene extends ServerCommand
 	{
-		public function SelectScene( sceneID:int )
+		public function SelectScene( sceneID:int, showInTitlebar:Boolean = true )
 		{
 			super();
 			
 		 	_sceneID = sceneID;
+			_showInTitlebar = showInTitlebar;
 		}
 
 		
@@ -56,6 +58,21 @@ package components.controller.serverCommands
 			pushInverseCommand( new SelectScene( model.project.player.selectedSceneID ) );
 		}
 
+		
+		public override function preChain( model:IntegraModel, controller:IntegraController ):void
+		{
+			if( _showInTitlebar )
+			{
+				controller.processCommand( new SetShowSceneInTitlebar( true ) );
+			}
+			else
+			{
+				if( !model.selectedScene )
+				{
+					controller.processCommand( new SetShowSceneInTitlebar( false ) );
+				}
+			}
+		}
 
 		public override function execute( model:IntegraModel ):void
 		{
@@ -104,5 +121,6 @@ package components.controller.serverCommands
 		
 		
 		private var _sceneID:int;
+		private var _showInTitlebar:Boolean;
 	}
 }

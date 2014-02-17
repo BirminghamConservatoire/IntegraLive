@@ -166,7 +166,7 @@
 					return null;
 				}
 
-				if( model.selectedScene != null )
+				if( model.selectedScene && model.project.projectUserData.showSceneInTitlebar )
 				{
 					return _sceneTitlebarView;
 				}

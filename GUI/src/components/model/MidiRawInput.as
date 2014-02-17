@@ -23,23 +23,17 @@ package components.model
 {
 	import flexunit.framework.Assert;
 
-	public class Midi extends IntegraDataObject
+	public class MidiRawInput extends IntegraDataObject
 	{
-		public function Midi()
+		public function MidiRawInput()
 		{
 			super();
 		}
 
 		
-		public function setCCState( index:int, value:int ):void
-		{
-			Assert.assertTrue( index >= 0 && index < numberOfCCNumbers );
-			Assert.assertTrue( value >= 0 && value < 128 );
-			
-			_ccState[ index ] = value;
-		}
+		public function get message():uint { return _message; }
+		public function set message( message:uint ):void { _message = message; }
 
-		
 		override public function setAttributeFromServer( attributeName:String, value:Object, model:IntegraModel ):Boolean
 		{
 			if( super.setAttributeFromServer( attributeName, value, model ) )
@@ -47,32 +41,21 @@ package components.model
 				return true;
 			}
 			
-			if( attributeName.substr( 0, ccAttributePrefix.length ) == ccAttributePrefix )
+			switch( attributeName )
 			{
-				var ccNumber:int = int( attributeName.substr( ccAttributePrefix.length ) );
-				if( ccNumber >= 0 && ccNumber < numberOfCCNumbers )
-				{
-					_ccState[ ccNumber ] = int( value );
+				case "midiMessage":
+					_message = uint( value );
 					return true;
-				}
 			}
-			
 			
 			return false;
 		}
 		
+		private var _message:uint;
 		
-		private var _ccState:Vector.<int> = new Vector.<int>( numberOfCCNumbers, true );
+		public static const defaultName:String = "MidiMonitor";
 		
 		override public function get serverInterfaceName():String { return _serverInterfaceName; }
-		public static const _serverInterfaceName:String = "MIDI";
-		
-		public static const defaultMidiName:String = "MIDI1";
-		
-		public static const noteAttributePrefix:String = "note";
-		public static const ccAttributePrefix:String = "cc";
-		
-		public static const numberOfCCNumbers:int = 128;		
-		public static const numberOfMidiNotes:int = 128;		
+		public static const _serverInterfaceName:String = "MidiRawInput";
 	}
 }

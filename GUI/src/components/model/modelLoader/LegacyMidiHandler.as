@@ -208,40 +208,35 @@ package components.model.modelLoader
 
 				//connect everything 
 				var oldMidiTarget:IntegraDataObject = model.getDataObjectByID( oldConnection.targetObjectID );
-				var prevConnectionTargetID:int = -1;
-				var prevConnectionTargetEndpointName:String = null;
 				if( oldMidiTarget is Scaler )
 				{
-					//copy values into new scaler
 					var oldScaler:Scaler = oldMidiTarget as Scaler;
 					var newScaler:Scaler = midiControlInput.scaler;
+
+					//make new scaler control prev connection target
+					var newDownstreamConnection:Connection = newScaler.downstreamConnection;
+					Assert.assertNotNull( newDownstreamConnection );
+					var oldDownstreamConnection:Connection = oldScaler.downstreamConnection;
+					Assert.assertNotNull( oldDownstreamConnection );
+					controller.processCommand( new SetConnectionRouting( newDownstreamConnection.id, newDownstreamConnection.sourceObjectID, newDownstreamConnection.sourceAttributeName, oldDownstreamConnection.targetObjectID, oldDownstreamConnection.targetAttributeName ) );
 					
+					//copy values into new scaler
 					controller.processCommand( new SetScalerInputRange( newScaler.id, oldScaler.inRangeMin, oldScaler.inRangeMax ) );
 					controller.processCommand( new SetScalerOutputRange( newScaler.id, oldScaler.outRangeMin, oldScaler.outRangeMax ) );
-					
-					//store target
-					Assert.assertNotNull( oldScaler.downstreamConnection );
-					prevConnectionTargetID = oldScaler.downstreamConnection.targetObjectID;
-					prevConnectionTargetEndpointName = oldScaler.downstreamConnection.targetAttributeName;
-					
+
 					//delete old scaler
 					controller.processCommand( new RemoveScaledConnection( oldScaler.id ) );
 				}
 				else
 				{
-					//store target
-					prevConnectionTargetID = oldConnection.targetObjectID;
-					prevConnectionTargetEndpointName = oldConnection.targetAttributeName;
+					//make new scaler control prev connection target
+					var newDownstreamConnection:Connection = midiControlInput.scaler.downstreamConnection;
+					Assert.assertNotNull( newDownstreamConnection );
+					controller.processCommand( new SetConnectionRouting( newDownstreamConnection.id, newDownstreamConnection.sourceObjectID, newDownstreamConnection.sourceAttributeName, oldConnection.targetObjectID, oldConnection.targetAttributeName ) );
 
 					//delete connection
 					controller.processCommand( new RemoveConnection( oldConnectionID ) );
 				}
-				
-				//make new scaler control prev connection target
-				var newDownstreamConnection:Connection = midiControlInput.scaler.downstreamConnection;
-				Assert.assertNotNull( newDownstreamConnection );
-				controller.processCommand( new SetConnectionRouting( newDownstreamConnection.id, newDownstreamConnection.sourceObjectID, newDownstreamConnection.sourceAttributeName, prevConnectionTargetID, prevConnectionTargetEndpointName ) );
-				
 			}			
 		}
 

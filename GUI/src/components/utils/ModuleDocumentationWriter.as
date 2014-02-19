@@ -51,16 +51,6 @@ package components.utils
 		
 		public function writeModuleDocumentation():void
 		{
-			const defaultFileName:String = "Integra Module Documentation.htm";
-			
-			var file:File = File.desktopDirectory.resolvePath( defaultFileName );
-			file.browseForSave( "Write Module Documentation" );
-			file.addEventListener( Event.SELECT, onChooseOutputFile );
-		}
-		
-		
-		private function onChooseOutputFile( event:Event ):void
-		{
 			var markdown:String = "#Integra Module Documentation\n\n";
 			
 			var interfacesToDocument:Vector.<InterfaceDefinition> = new Vector.<InterfaceDefinition>;
@@ -69,11 +59,6 @@ package components.utils
 			{
 				var interfaceDefinition:InterfaceDefinition = _model.getInterfaceDefinitionByModuleGuid( moduleGuid );
 				Assert.assertNotNull( interfaceDefinition );
-				
-				if( interfaceDefinition.moduleSource != InterfaceDefinition.MODULE_SHIPPED_WITH_INTEGRA )
-				{
-					continue;
-				}
 				
 				interfacesToDocument.push( interfaceDefinition );
 			}
@@ -84,24 +69,23 @@ package components.utils
 			);
 
 			markdown += "##Contents:\n";
-			markdown += "<table>\n";
+			markdown += "<div id='TOC'><ul>";
 			for each( interfaceDefinition in interfacesToDocument )
 			{
-				markdown += "<tr>\n<td>";
-				markdown += "<a href='#" + getAnchorID( interfaceDefinition ) + "'>" + interfaceDefinition.interfaceInfo.label + "</a>";
-				markdown += "</td>\n</tr>\n";
+				markdown += "<li><a href='#" + getAnchorID( interfaceDefinition ) + "'>" + interfaceDefinition.interfaceInfo.label + "</a></li>";
 			}
-			markdown += "</table>\n";
+			markdown += "</ul></div>";
 			markdown += "---\n\n";
 			
 			for each( interfaceDefinition in interfacesToDocument )
 			{
 				var interfaceInfo:InterfaceInfo = interfaceDefinition.interfaceInfo;
-				markdown += "##<a id='" + getAnchorID( interfaceDefinition ) + "'>" + interfaceInfo.label + "</a>\n\n";
+				markdown += "<h2 id='" + getAnchorID( interfaceDefinition ) + "'><a href='#TOC'>" + interfaceInfo.label + "</a></h2>\n\n";
 				
 				markdown += interfaceInfo.description + "\n\n";
 				
 				markdown += "<table>\n";
+				markdown += "<tr><th>Endpoint</th><th>Type</th><th>Constraint</th><th>Description</th></tr>\n";
 				for each( var endpoint:EndpointDefinition in interfaceDefinition.endpoints )
 				{
 					markdown += "<tr>\n";
@@ -117,6 +101,8 @@ package components.utils
 				}
 				markdown += "</table>\n\n"
 	
+				markdown += "_Source: " + interfaceDefinition.moduleSourceLabel + "_\n\n";
+					
 				if( interfaceInfo.author && interfaceInfo.author.length > 0 )
 				{
 					markdown += "_Author: " + interfaceInfo.author + "_\n\n";
@@ -127,12 +113,21 @@ package components.utils
 				markdown += "---\n\n";
 			}
 
+			var cssFile:File = File.applicationDirectory.resolvePath( cssPath );
+			if( cssFile.exists )
+			{
+				markdown += "<link rel='stylesheet' type='text/css' href='" + cssFile.nativePath + "'/>";
+			}
+			else
+			{
+				Trace.error( "Can't find css file", cssFile.nativePath );
+			}
+
 			var info:Info = new Info;
 			info.markdown = markdown;
 			var html:String = info.html;
 
-			var outputFile:File = event.target as File;
-			Assert.assertNotNull( outputFile );
+			var outputFile:File = File.applicationStorageDirectory.resolvePath( moduleDocumentationFilename );
 			
 			var outputStream:FileStream = new FileStream();
 			outputStream.open( outputFile, FileMode.WRITE );
@@ -236,5 +231,8 @@ package components.utils
 
 		
 		private var _model:IntegraModel = null;
+		
+		private const cssPath:String = "assets/module_documentation_styles.css";
+		private const moduleDocumentationFilename:String = "Module Documentation.htm";
 	}
 }

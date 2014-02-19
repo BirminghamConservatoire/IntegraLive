@@ -357,6 +357,14 @@ package components.views
 				first = false;
 			}
 				
+			//separator 
+			helpMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+
+			var showModuleDocumentationItem:NativeMenuItem = new NativeMenuItem( "Module Documentation" );
+			showModuleDocumentationItem.addEventListener( Event.SELECT, showModuleDocumentation );
+			helpMenu.submenu.addItem( showModuleDocumentationItem );
+			
+			
 			if( Utilities.isWindows )
 			{
 				//separator 
@@ -399,10 +407,6 @@ package components.views
 				var viewLogsItem:NativeMenuItem = new NativeMenuItem( "view logs" );
 				viewLogsItem.addEventListener( Event.SELECT, viewLogs ); 
 				debugMenu.submenu.addItem( viewLogsItem );
-				
-				var writeModuleDocumentationItem:NativeMenuItem = new NativeMenuItem( "write module documentation" );
-				writeModuleDocumentationItem.addEventListener( Event.SELECT, writeModuleDocumentation );
-				debugMenu.submenu.addItem( writeModuleDocumentationItem );
 			}
 		}
 
@@ -605,7 +609,7 @@ package components.views
 		}
 
 		
-		private function writeModuleDocumentation( event:Event ):void
+		private function showModuleDocumentation( event:Event ):void
 		{
 			if( !_moduleDocumentationWriter )
 			{

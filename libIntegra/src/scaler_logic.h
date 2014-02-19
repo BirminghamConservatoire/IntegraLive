@@ -40,17 +40,33 @@ namespace integra_internal
 
 			void value_handler( CServer &server, const CValue &value );
 
+			float linearInputToUnit( float input, float input_minimum, float input_range ) const;
+			float exponentialInputToUnit( float input, float input_minimum, float input_range ) const;
+			float decibelInputToUnit( float input, float input_minimum, float input_range ) const;
+
+			float unitToLinearOutput( float unit, float output_minimum, float output_range ) const;
+			float unitToExponentialOutput( float unit, float output_minimum, float output_range ) const;
+			float unitToDecibelOutput( float unit, float output_minimum, float output_range ) const;
+
+			float decibel_to_amplitude( float decibel ) const;
+			float amplitude_to_decibel( float amplitude ) const;
+
 			const static string endpoint_in_value;
 			const static string endpoint_out_value;
 			const static string endpoint_in_range_min;
 			const static string endpoint_in_range_max;
 			const static string endpoint_in_mode;
+			const static string endpoint_in_scale;
 			const static string endpoint_out_range_min;
 			const static string endpoint_out_range_max;
+			const static string endpoint_out_scale;
 
 			const static string mode_snap;
 			const static string mode_ignore;
 
+			const static string scale_linear;
+			const static string scale_exponential;
+			const static string scale_decibel;
 	};
 }
 

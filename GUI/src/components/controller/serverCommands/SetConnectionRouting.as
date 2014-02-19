@@ -27,6 +27,7 @@ package components.controller.serverCommands
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
 	import components.model.Scaler;
+	import components.model.interfaceDefinitions.ControlScale;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	
 	import flexunit.framework.Assert;
@@ -181,12 +182,15 @@ package components.controller.serverCommands
 				if( endpointDefinition && endpointDefinition.isStateful )
 				{
 					controller.processCommand( new SetScalerOutputRange( sourceScaler.id, endpointDefinition.controlInfo.stateInfo.constraint.minimum, endpointDefinition.controlInfo.stateInfo.constraint.maximum ) );
+					controller.processCommand( new SetScalerOutputScale( sourceScaler.id, endpointDefinition.controlInfo.stateInfo.scale.type ) );
 					
 					controller.processCommand( new SetScalerInputMode( sourceScaler.id, Scaler.INPUT_MODE_SNAP ) );
+					
 				}
 				else
 				{
 					controller.processCommand( new SetScalerOutputRange( sourceScaler.id, 0, 0 ) );
+					controller.processCommand( new SetScalerOutputScale( sourceScaler.id, ControlScale.LINEAR ) );
 
 					controller.processCommand( new SetScalerInputMode( sourceScaler.id, Scaler.INPUT_MODE_IGNORE ) );
 				}
@@ -196,6 +200,7 @@ package components.controller.serverCommands
 				if( _previousSourceScaler )
 				{
 					controller.processCommand( new SetScalerOutputRange( _previousSourceScaler.id, 0, 0 ) );
+					controller.processCommand( new SetScalerOutputScale( _previousSourceScaler.id, ControlScale.LINEAR ) );
 				}
 			}
 			
@@ -206,10 +211,12 @@ package components.controller.serverCommands
 				if( endpointDefinition && endpointDefinition.isStateful )
 				{
 					controller.processCommand( new SetScalerInputRange( targetScaler.id, endpointDefinition.controlInfo.stateInfo.constraint.minimum, endpointDefinition.controlInfo.stateInfo.constraint.maximum ) );
+					controller.processCommand( new SetScalerInputScale( targetScaler.id, endpointDefinition.controlInfo.stateInfo.scale.type ) );
 				}
 				else
 				{
 					controller.processCommand( new SetScalerInputRange( targetScaler.id, 0, 0 ) );
+					controller.processCommand( new SetScalerInputScale( targetScaler.id, ControlScale.LINEAR ) );
 				}
 			}
 			else
@@ -217,6 +224,7 @@ package components.controller.serverCommands
 				if( _previousTargetScaler )
 				{
 					controller.processCommand( new SetScalerInputRange( _previousTargetScaler.id, 0, 0 ) );
+					controller.processCommand( new SetScalerInputScale( _previousTargetScaler.id, ControlScale.LINEAR ) );
 				}
 			}
 		}

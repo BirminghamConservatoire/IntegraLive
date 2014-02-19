@@ -419,7 +419,7 @@ namespace integra_api
 	/** \class IValueScale interface_definition.h "api/interface_definition.h"
 	 *  \brief Info about how numeric stateful controls should be scaled
 	 *
-	 * Many types of controls have a linear relationship between value and perceptual linearity.
+	 * Many types of controls have a nonlinear relationship between value and perceptual linearity.
 	 * For instance, for a filter sweep to sound like it is moving at a constant rate, the 
 	 * filter's cutoff frequency must accelerate (or decelerate) exponentially.  In other words
 	 * the desired relationship between a controller and it's value is in this case exponential.

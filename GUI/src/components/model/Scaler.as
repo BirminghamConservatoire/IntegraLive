@@ -21,6 +21,8 @@
 
 package components.model
 {
+	import components.model.interfaceDefinitions.ControlScale;
+	
 	import flexunit.framework.Assert;
 	
 	public class Scaler extends IntegraDataObject
@@ -34,8 +36,10 @@ package components.model
 		public function get inRangeMin():Number { return _inRangeMin; }
 		public function get inRangeMax():Number { return _inRangeMax; }
 		public function get inMode():String { return _inMode; }
+		public function get inScale():String { return _inScale; }
 		public function get outRangeMin():Number { return _outRangeMin; }
 		public function get outRangeMax():Number { return _outRangeMax; }
+		public function get outScale():String { return _outScale; }
 		public function get outValue():Number { return _outValue; }
 
 		public function get upstreamConnection():Connection { return _upstreamConnection; }
@@ -46,8 +50,10 @@ package components.model
 		public function set inRangeMin( inRangeMin:Number ):void { _inRangeMin = inRangeMin; }
 		public function set inRangeMax( inRangeMax:Number ):void { _inRangeMax = inRangeMax; }
 		public function set inMode( inMode:String ):void { _inMode = inMode; }
+		public function set inScale( inScale:String ):void { _inScale = inScale; }
 		public function set outRangeMin( outRangeMin:Number ):void { _outRangeMin = outRangeMin; }
 		public function set outRangeMax( outRangeMax:Number ):void { _outRangeMax = outRangeMax; }
+		public function set outScale( outScale:String ):void { _outScale = outScale; }
 		public function set outValue( outValue:Number ):void { _outValue = outValue; }
 
 		public function set upstreamConnection( upstreamConnection:Connection ):void { _upstreamConnection = upstreamConnection; }
@@ -79,6 +85,10 @@ package components.model
 				case "inMode":
 					_inMode = String( value );
 					return true;
+					
+				case "inScale":
+					_inScale = String( value );
+					return true;
 
 				case "outRangeMin":
 					_outRangeMin = Number( value );
@@ -88,6 +98,10 @@ package components.model
 					_outRangeMax = Number( value );
 					return true;
 					
+				case "outScale":
+					_outScale = String( value );
+					return true;
+
 				case "outValue":
 					_outValue = Number( value );
 					return true;
@@ -106,8 +120,10 @@ package components.model
 		private var _inRangeMin:Number = 0;
 		private var _inRangeMax:Number = 0;
 		private var _inMode:String = INPUT_MODE_SNAP;
+		private var _inScale:String = ControlScale.LINEAR;
 		private var _outRangeMin:Number = 0;
 		private var _outRangeMax:Number = 0;
+		private var _outScale:String = ControlScale.LINEAR;
 		private var _outValue:Number = 0;
 		
 		private var _upstreamConnection:Connection = null;

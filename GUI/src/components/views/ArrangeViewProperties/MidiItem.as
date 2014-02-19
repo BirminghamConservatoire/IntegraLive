@@ -30,7 +30,6 @@ package components.views.ArrangeViewProperties
 	import mx.containers.HBox;
 	import mx.controls.Button;
 	import mx.controls.ComboBox;
-	import mx.core.Container;
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	import mx.events.ListEvent;
@@ -39,6 +38,7 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.AddBlock;
 	import components.controller.serverCommands.AddScript;
 	import components.controller.serverCommands.AddTrack;
+	import components.controller.serverCommands.ConfigureMidiControlInput;
 	import components.controller.serverCommands.ImportBlock;
 	import components.controller.serverCommands.RemoveBlock;
 	import components.controller.serverCommands.RemoveBlockImport;
@@ -47,7 +47,7 @@ package components.views.ArrangeViewProperties
 	import components.controller.serverCommands.RemoveTrack;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
-	import components.controller.serverCommands.ConfigureMidiControlInput;
+	import components.controller.serverCommands.SetMidiControlAutoLearn;
 	import components.controller.serverCommands.SetMidiInputDevices;
 	import components.controller.serverCommands.SetScalerInputRange;
 	import components.controller.serverCommands.SetScalerOutputRange;
@@ -119,6 +119,7 @@ package components.views.ArrangeViewProperties
 
 			addUpdateMethod( SetMidiInputDevices, onMidiInputDevicesChanged );
 			addUpdateMethod( ConfigureMidiControlInput, onMidiControlInputValuesChanged );
+			addUpdateMethod( SetMidiControlAutoLearn, onMidiControlAutolearnChanged );
 			
 			addUpdateMethod( SetConnectionRouting, onConnectionRoutingChanged );
 			addUpdateMethod( SetScalerInputRange, onScalerInputRangeChanged );
@@ -232,6 +233,19 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
+		private function get isDeviceSelected():Boolean
+		{
+			return ( _sourceDeviceCombo.selectedIndex >= 0 );
+		}
+		
+		
+		private function get isAutolearn():Boolean
+		{
+			var midiControlInput:MidiControlInput = midiControlInput;
+			return ( midiControlInput && midiControlInput.autoLearn ); 
+		}
+		
+		
 		private function onMidiInputDevicesChanged( command:SetMidiInputDevices ):void
 		{
 			updateMidiDeviceCombo();
@@ -248,6 +262,17 @@ package components.views.ArrangeViewProperties
 			updateScalerInputControls();
 		}
 
+		
+		private function onMidiControlAutolearnChanged( command:SetMidiControlAutoLearn ):void
+		{
+			if( command.midiControlInputID != _midiControlInputID ) return;
+			
+			updateMidiDeviceCombo();
+			updateStaticMidiCombos();
+			updateMessageValueCombo();
+			updateScalerInputControls();
+		}
+		
 		
 		private function onConnectionRoutingChanged( command:SetConnectionRouting ):void
 		{
@@ -344,15 +369,8 @@ package components.views.ArrangeViewProperties
 			_sourceDeviceCombo.selectedIndex = indexToSelect;
 			
 			var hasDevices:Boolean = ( devices.length > 1 );
-			var deviceSelected:Boolean = ( indexToSelect >= 0 );
 
-			enableComponent( _sourceDeviceCombo, hasDevices );
-			
-			enableComponent( _sourceChannelCombo, deviceSelected );
-			enableComponent( _sourceMessageTypeCombo, deviceSelected );
-			enableComponent( _sourceMessageValueCombo, deviceSelected );
-			enableComponent( _inScaleMinimum, deviceSelected );
-			enableComponent( _inScaleMaximum, deviceSelected );
+			enableComponent( _sourceDeviceCombo, hasDevices && !isAutolearn );
 		}
 		
 		
@@ -385,6 +403,10 @@ package components.views.ArrangeViewProperties
 					Assert.assertTrue( false );
 					break;
 			}
+			
+			var enable:Boolean = isDeviceSelected && !isAutolearn;
+			enableComponent( _sourceChannelCombo, enable );
+			enableComponent( _sourceMessageTypeCombo, enable );
 		}
 		
 		
@@ -415,6 +437,7 @@ package components.views.ArrangeViewProperties
 			
 			_sourceMessageValueCombo.dataProvider = data;
 			_sourceMessageValueCombo.selectedIndex = midiControlInput.noteOrController;
+			enableComponent( _sourceMessageValueCombo, isDeviceSelected && !isAutolearn );
 		}
 		
 		
@@ -584,6 +607,9 @@ package components.views.ArrangeViewProperties
 			
 			_inScaleMinimum.value = scaler.inRangeMin;
 			_inScaleMaximum.value = scaler.inRangeMax;
+			
+			enableComponent( _inScaleMinimum, isDeviceSelected && !isAutolearn );
+			enableComponent( _inScaleMaximum, isDeviceSelected && !isAutolearn );
 		}
 
 		

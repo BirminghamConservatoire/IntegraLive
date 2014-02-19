@@ -652,10 +652,6 @@ package components.model.modelLoader
 			if( info.hasOwnProperty( "scale" ) )
 			{
 				stateInfo.scale.type = info.scale.type;
-				if( info.scale.hasOwnProperty( "base" ) )
-				{
-					stateInfo.scale.exponentRoot = info.scale.base;
-				}
 			}
 			
 			

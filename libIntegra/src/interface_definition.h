@@ -273,11 +273,9 @@ namespace integra_internal
 			~CValueScale();
 
 			scale_type get_scale_type() const { return m_type; }
-			int get_exponent_root() const { return m_exponent_root; }
 
 		private:
 			scale_type m_type;
-			int m_exponent_root;
 	};
 
 

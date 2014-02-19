@@ -345,7 +345,7 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServerLock &server, const i
 {
 	xmlrpc_value *xmlrpc_temp = NULL, *endpoints_array = NULL, *xmlrpc_endpoint = NULL, *struct_ = NULL;
 	xmlrpc_value *xmlrpc_control_info = NULL, *xmlrpc_state_info = NULL, *xmlrpc_stream_info = NULL;
-	xmlrpc_value *xmlrpc_constraint, *xmlrpc_range, *xmlrpc_scale, *xmlrpc_scale_exponent_root, *xmlrpc_allowed_states, *xmlrpc_state_labels = NULL, *xmlrpc_state_label = NULL;
+	xmlrpc_value *xmlrpc_constraint, *xmlrpc_range, *xmlrpc_scale, *xmlrpc_allowed_states, *xmlrpc_state_labels = NULL, *xmlrpc_state_label = NULL;
     xmlrpc_env *env;
     char *module_id_string;
 	GUID guid;
@@ -520,17 +520,14 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServerLock &server, const i
 					{
 						case IValueScale::LINEAR:
 							xmlrpc_temp = xmlrpc_string_new(env, "linear" );
-							xmlrpc_scale_exponent_root = NULL;
 							break;
 
 						case IValueScale::EXPONENTIAL:
 							xmlrpc_temp = xmlrpc_string_new(env, "exponential" );
-							xmlrpc_scale_exponent_root = xmlrpc_int_new( env, value_scale->get_exponent_root() );
 							break;
 
 						case IValueScale::DECIBEL:
 							xmlrpc_temp = xmlrpc_string_new(env, "decibel" );
-							xmlrpc_scale_exponent_root = NULL;
 							break;
 
 						default:
@@ -540,12 +537,6 @@ static xmlrpc_value *ntg_xmlrpc_endpoints_callback( CServerLock &server, const i
 
 					xmlrpc_struct_set_value( env, xmlrpc_scale, "type", xmlrpc_temp );
 					xmlrpc_DECREF( xmlrpc_temp );
-
-					if( xmlrpc_scale_exponent_root )
-					{
-						xmlrpc_struct_set_value( env, xmlrpc_scale, "base", xmlrpc_scale_exponent_root );
-						xmlrpc_DECREF( xmlrpc_scale_exponent_root );
-					}
 
 					xmlrpc_struct_set_value( env, xmlrpc_state_info, "scale", xmlrpc_scale );
 				}

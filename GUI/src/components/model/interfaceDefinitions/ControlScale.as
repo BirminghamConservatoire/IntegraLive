@@ -21,9 +21,6 @@
 
 package components.model.interfaceDefinitions
 {
-	import flexunit.framework.Assert;
-	
-	
 	public class ControlScale
 	{
 		public function ControlScale()
@@ -31,14 +28,10 @@ package components.model.interfaceDefinitions
 		}
 		
 		public function get type():String 							{ return _type; }
-		public function get exponentRoot():int						{ return _exponentRoot; }
 		
 		public function set type( type:String ):void 				{ _type = type; }
-		public function set exponentRoot( exponentRoot:int ):void	{ _exponentRoot = exponentRoot; }
-		
 		
 		private var _type:String = LINEAR;
-		private var _exponentRoot:int = 0;
 		
 		public static const LINEAR:String = "linear";
 		public static const EXPONENTIAL:String = "exponential";

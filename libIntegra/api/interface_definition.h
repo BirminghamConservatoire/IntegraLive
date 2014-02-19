@@ -446,9 +446,6 @@ namespace integra_api
 
 			/** get scale type.  See ::scale_type */
 			virtual scale_type get_scale_type() const = 0;
-
-			/** get exponent root.  Only meaningful when scale_type == EXPONENTIAL */
-			virtual int get_exponent_root() const = 0;
 	};
 
 

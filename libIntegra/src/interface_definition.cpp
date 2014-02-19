@@ -535,7 +535,6 @@ namespace integra_internal
 	CValueScale::CValueScale()
 	{
 		m_type = LINEAR;
-		m_exponent_root = 1;
 	}
 
 

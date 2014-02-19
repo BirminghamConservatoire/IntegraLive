@@ -341,10 +341,6 @@ namespace integra_internal
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.ScaleType",
 			current_endpoint().m_control_info->m_state_info->m_value_scale->m_type );
 
-		READ_MEMBER(
-			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.Base",
-			current_endpoint().m_control_info->m_state_info->m_value_scale->m_exponent_root );
-
 		READ_VALUE( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.StateLabels.Label.State",
 			m_last_state_label_value,

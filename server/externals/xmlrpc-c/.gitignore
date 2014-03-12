@@ -31,6 +31,7 @@ stamp-h
 compile
 aclocal.m4
 ltmain.sh
+install-sh
 INSTALL
 autom4te.cache
 xmlrpc_amconfig.h

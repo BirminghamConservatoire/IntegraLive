@@ -279,6 +279,9 @@
 					../../externals/liblo/src/.libs,
 					"../../externals/xmlrpc-c/src",
 					"../../externals/xmlrpc-c/lib/abyss/src",
+					"../../externals/xmlrpc-c/lib/expat/xmlparse",
+					"../../externals/xmlrpc-c/lib/libutil",
+					"../../externals/xmlrpc-c/lib/expat/xmltok",
 				);
 				OTHER_LDFLAGS = (
 					"-llo",
@@ -286,6 +289,10 @@
 					"-lxmlrpc_server",
 					"-lxmlrpc",
 					"-lxmlrpc_abyss",
+					"-lxmlrpc_xmlparse",
+					"-lxmlrpc_util",
+					"-lxmlrpc_xmltok",
+					"-lc",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -311,6 +318,9 @@
 					../../externals/liblo/src/.libs,
 					"../../externals/xmlrpc-c/src",
 					"../../externals/xmlrpc-c/lib/abyss/src",
+					"../../externals/xmlrpc-c/lib/expat/xmlparse",
+					"../../externals/xmlrpc-c/lib/libutil",
+					"../../externals/xmlrpc-c/lib/expat/xmltok",
 				);
 				OTHER_LDFLAGS = (
 					"-llo",
@@ -318,6 +328,10 @@
 					"-lxmlrpc_server",
 					"-lxmlrpc",
 					"-lxmlrpc_abyss",
+					"-lxmlrpc_xmlparse",
+					"-lxmlrpc_util",
+					"-lxmlrpc_xmltok",
+					"-lc",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

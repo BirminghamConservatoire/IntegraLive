@@ -1,0 +1,4 @@
+<map id="integra_api::CCommandResult" name="integra_api::CCommandResult">
+<area shape="rect" id="node2" href="$classintegra__api_1_1_c_load_command_result.html" title="Represents return information for ILoadCommand. " alt="" coords="5,81,200,122"/>
+<area shape="rect" id="node3" href="$classintegra__api_1_1_c_new_command_result.html" title="Represents return information for INewCommand. " alt="" coords="225,81,417,122"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="integra_api::CServerStartupInfo" name="integra_api::CServerStartupInfo">
+<area shape="rect" id="node2" title="STL class. " alt="" coords="28,99,108,125"/>
+<area shape="rect" id="node3" title="STL class. " alt="" coords="5,6,131,47"/>
+<area shape="rect" id="node4" href="$classintegra__api_1_1_i_notification_sink.html" title="Provides mechanism to recieve feedback about changes to libIntegra&#39;s state. " alt="" coords="177,99,367,125"/>
+</map>

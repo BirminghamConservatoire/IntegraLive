@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classintegra__api_1_1_c_value.html" title="Base class for the concrete value classes CIntegerValue, CFloatValue and CStringValue. " alt="" coords="5,56,144,83"/>
+<area shape="rect" id="node2" href="$classintegra__api_1_1_c_float_value.html" title="Represents a float value. " alt="" coords="198,5,367,32"/>
+<area shape="rect" id="node3" href="$classintegra__api_1_1_c_integer_value.html" title="Represents an integer value. " alt="" coords="193,56,373,83"/>
+<area shape="rect" id="node4" href="$classintegra__api_1_1_c_string_value.html" title="Represents a string value. " alt="" coords="196,107,369,133"/>
+</map>

@@ -117,6 +117,7 @@
 		7D25B1E01896F71A00994A57 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = 7D25B1E31896F71A00994A57 /* Build configuration list for PBXProject "fftw" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -138,7 +139,6 @@
 		7D25B1E11896F71A00994A57 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -149,7 +149,6 @@
 		7D25B1E21896F71A00994A57 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;

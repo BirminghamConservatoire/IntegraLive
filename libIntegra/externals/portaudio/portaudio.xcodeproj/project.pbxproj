@@ -117,6 +117,7 @@
 		7DDB9370187FFFD500480791 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = 7DDB9373187FFFD500480791 /* Build configuration list for PBXProject "portaudio" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -138,7 +139,6 @@
 		7DDB9371187FFFD500480791 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -149,7 +149,6 @@
 		7DDB9372187FFFD500480791 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;

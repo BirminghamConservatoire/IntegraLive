@@ -21,25 +21,13 @@
 		7D2131CA1892B7C500C270A7 /* freeverb~.dsp in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131BD1892B7C500C270A7 /* freeverb~.dsp */; };
 		7D2131CB1892B7C500C270A7 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131BE1892B7C500C270A7 /* LICENSE.txt */; };
 		7D2131CC1892B7C500C270A7 /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131BF1892B7C500C270A7 /* README.txt */; };
-		7D2131D11892B7C500C270A7 /* package.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131C51892B7C500C270A7 /* package.txt */; };
-		7D2131D91892B7EC00C270A7 /* bonk~-help.pd in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131D41892B7EC00C270A7 /* bonk~-help.pd */; };
 		7D2131DA1892B7EC00C270A7 /* bonk~.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131D51892B7EC00C270A7 /* bonk~.c */; };
-		7D2131DB1892B7EC00C270A7 /* GNUmakefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131D61892B7EC00C270A7 /* GNUmakefile.am */; };
-		7D2131DC1892B7EC00C270A7 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131D71892B7EC00C270A7 /* makefile */; };
-		7D2131DD1892B7EC00C270A7 /* templates.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131D81892B7EC00C270A7 /* templates.txt */; };
 		7D2131E81892B7FD00C270A7 /* fts_to_pd.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D2131DF1892B7FD00C270A7 /* fts_to_pd.h */; };
-		7D2131E91892B7FD00C270A7 /* GNUmakefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131E01892B7FD00C270A7 /* GNUmakefile.am */; };
-		7D2131EA1892B7FD00C270A7 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131E11892B7FD00C270A7 /* LICENSE.txt */; };
-		7D2131EB1892B7FD00C270A7 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131E21892B7FD00C270A7 /* makefile */; };
-		7D2131EC1892B7FD00C270A7 /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131E31892B7FD00C270A7 /* README.txt */; };
 		7D2131ED1892B7FD00C270A7 /* vexp.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131E41892B7FD00C270A7 /* vexp.c */; };
 		7D2131EE1892B7FD00C270A7 /* vexp.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D2131E51892B7FD00C270A7 /* vexp.h */; };
 		7D2131EF1892B7FD00C270A7 /* vexp_fun.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131E61892B7FD00C270A7 /* vexp_fun.c */; };
 		7D2131F01892B7FD00C270A7 /* vexp_if.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131E71892B7FD00C270A7 /* vexp_if.c */; };
-		7D2131F61892B80A00C270A7 /* fiddle~-help.pd in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131F21892B80A00C270A7 /* fiddle~-help.pd */; };
 		7D2131F71892B80A00C270A7 /* fiddle~.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131F31892B80A00C270A7 /* fiddle~.c */; };
-		7D2131F81892B80A00C270A7 /* GNUmakefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 7D2131F41892B80A00C270A7 /* GNUmakefile.am */; };
-		7D2131F91892B80A00C270A7 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131F51892B80A00C270A7 /* makefile */; };
 		7D8451DF187DB8CB008639D2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D8451DD187DB8CB008639D2 /* InfoPlist.strings */; };
 		7D845213187DBACF008639D2 /* command_result.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8451FF187DBACF008639D2 /* command_result.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7D845214187DBACF008639D2 /* command_source.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845200187DBACF008639D2 /* command_source.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -171,10 +159,7 @@
 		7DB8170F18967D84005D7C1D /* midi_settings_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DB8170918967D84005D7C1D /* midi_settings_logic.h */; };
 		7DB8171018967D84005D7C1D /* portmidi_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DB8170A18967D84005D7C1D /* portmidi_engine.cpp */; };
 		7DB8171118967D84005D7C1D /* portmidi_engine.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DB8170B18967D84005D7C1D /* portmidi_engine.h */; };
-		7DCA34FB189FEE460031BDDC /* GNUmakefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 7DCA34F7189FEE460031BDDC /* GNUmakefile.am */; };
-		7DCA34FC189FEE460031BDDC /* lrshift~-help.pd in Resources */ = {isa = PBXBuildFile; fileRef = 7DCA34F8189FEE460031BDDC /* lrshift~-help.pd */; };
 		7DCA34FD189FEE460031BDDC /* lrshift~.c in Sources */ = {isa = PBXBuildFile; fileRef = 7DCA34F9189FEE460031BDDC /* lrshift~.c */; };
-		7DCA34FE189FEE460031BDDC /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 7DCA34FA189FEE460031BDDC /* makefile */; };
 		7DFC156218D9B9B600CA083C /* midi_control_input_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFC155E18D9B9B500CA083C /* midi_control_input_logic.cpp */; };
 		7DFC156318D9B9B600CA083C /* midi_control_input_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DFC155F18D9B9B500CA083C /* midi_control_input_logic.h */; };
 		7DFC156418D9B9B600CA083C /* midi_raw_input_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFC156018D9B9B500CA083C /* midi_raw_input_logic.cpp */; };
@@ -204,12 +189,6 @@
 		7D2131BD1892B7C500C270A7 /* freeverb~.dsp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "freeverb~.dsp"; sourceTree = "<group>"; };
 		7D2131BE1892B7C500C270A7 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		7D2131BF1892B7C500C270A7 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
-		7D2131C11892B7C500C270A7 /* fsp_libsndfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fsp_libsndfile.cpp; sourceTree = "<group>"; };
-		7D2131C21892B7C500C270A7 /* fsp_quicktime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fsp_quicktime.cpp; sourceTree = "<group>"; };
-		7D2131C31892B7C500C270A7 /* fsplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fsplay.h; sourceTree = "<group>"; };
-		7D2131C41892B7C500C270A7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		7D2131C51892B7C500C270A7 /* package.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = package.txt; sourceTree = "<group>"; };
-		7D2131C61892B7C500C270A7 /* resample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = resample.hpp; sourceTree = "<group>"; };
 		7D2131D41892B7EC00C270A7 /* bonk~-help.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bonk~-help.pd"; sourceTree = "<group>"; };
 		7D2131D51892B7EC00C270A7 /* bonk~.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "bonk~.c"; sourceTree = "<group>"; };
 		7D2131D61892B7EC00C270A7 /* GNUmakefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GNUmakefile.am; sourceTree = "<group>"; };
@@ -371,7 +350,6 @@
 		7DFC156018D9B9B500CA083C /* midi_raw_input_logic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_raw_input_logic.cpp; sourceTree = "<group>"; };
 		7DFC156118D9B9B500CA083C /* midi_raw_input_logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_raw_input_logic.h; sourceTree = "<group>"; };
 		7DFC158F18D9CCF800CA083C /* libfftw3f.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f.a; path = "macosx/fftw-3.3.3/libfftw3f.a"; sourceTree = "<group>"; };
-		7DFC159118D9CD0700CA083C /* libflext-pd_sd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libflext-pd_sd.a"; path = "macosx/flext-502/libflext-pd_sd.a"; sourceTree = "<group>"; };
 		7DFC159318D9CD1600CA083C /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "macosx/libpd/libpd-osx.a"; sourceTree = "<group>"; };
 		7DFC159518D9CD2300CA083C /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = "macosx/libsndfile-1.0.26pre5/libsndfile.a"; sourceTree = "<group>"; };
 		7DFC159718D9CD3100CA083C /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = "macosx/lua-5.2.3/liblua.a"; sourceTree = "<group>"; };
@@ -414,7 +392,6 @@
 				7D2131DE1892B7FD00C270A7 /* expr~ */,
 				7D2131D31892B7EC00C270A7 /* bonk~ */,
 				7D2131B91892B7C500C270A7 /* freeverb~ */,
-				7D2131C01892B7C500C270A7 /* fsplay~ */,
 				7D2131B11892B7A300C270A7 /* bsaylor */,
 				7D2131B31892B7A300C270A7 /* iemlib */,
 			);
@@ -449,19 +426,6 @@
 				7D2131BF1892B7C500C270A7 /* README.txt */,
 			);
 			path = "freeverb~";
-			sourceTree = "<group>";
-		};
-		7D2131C01892B7C500C270A7 /* fsplay~ */ = {
-			isa = PBXGroup;
-			children = (
-				7D2131C11892B7C500C270A7 /* fsp_libsndfile.cpp */,
-				7D2131C21892B7C500C270A7 /* fsp_quicktime.cpp */,
-				7D2131C31892B7C500C270A7 /* fsplay.h */,
-				7D2131C41892B7C500C270A7 /* main.cpp */,
-				7D2131C51892B7C500C270A7 /* package.txt */,
-				7D2131C61892B7C500C270A7 /* resample.hpp */,
-			);
-			path = "fsplay~";
 			sourceTree = "<group>";
 		};
 		7D2131D31892B7EC00C270A7 /* bonk~ */ = {
@@ -696,7 +660,6 @@
 			isa = PBXGroup;
 			children = (
 				7DFC158F18D9CCF800CA083C /* libfftw3f.a */,
-				7DFC159118D9CD0700CA083C /* libflext-pd_sd.a */,
 				7DFC159318D9CD1600CA083C /* libpd-osx.a */,
 				7DFC159518D9CD2300CA083C /* libsndfile.a */,
 				7DFC159718D9CD3100CA083C /* liblua.a */,
@@ -875,21 +838,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D2131F81892B80A00C270A7 /* GNUmakefile.am in Resources */,
-				7D2131EA1892B7FD00C270A7 /* LICENSE.txt in Resources */,
-				7DCA34FB189FEE460031BDDC /* GNUmakefile.am in Resources */,
 				7D2131C81892B7C500C270A7 /* freeverb~-meta.pd in Resources */,
 				7D2131CA1892B7C500C270A7 /* freeverb~.dsp in Resources */,
-				7D2131EC1892B7FD00C270A7 /* README.txt in Resources */,
-				7D2131DD1892B7EC00C270A7 /* templates.txt in Resources */,
 				7D2131C71892B7C500C270A7 /* freeverb~-help.pd in Resources */,
-				7D2131E91892B7FD00C270A7 /* GNUmakefile.am in Resources */,
-				7D2131F61892B80A00C270A7 /* fiddle~-help.pd in Resources */,
-				7DCA34FC189FEE460031BDDC /* lrshift~-help.pd in Resources */,
-				7D2131DB1892B7EC00C270A7 /* GNUmakefile.am in Resources */,
 				7D2131CB1892B7C500C270A7 /* LICENSE.txt in Resources */,
-				7D2131D11892B7C500C270A7 /* package.txt in Resources */,
-				7D2131D91892B7EC00C270A7 /* bonk~-help.pd in Resources */,
 				7D2131CC1892B7C500C270A7 /* README.txt in Resources */,
 				7D8451DF187DB8CB008639D2 /* InfoPlist.strings in Resources */,
 			);
@@ -928,9 +880,7 @@
 				7D8452CE187DBBA5008639D2 /* server.cpp in Sources */,
 				7D8452C2187DBBA5008639D2 /* ring_buffer.cpp in Sources */,
 				7D8452B4187DBBA5008639D2 /* path.cpp in Sources */,
-				7D2131F91892B80A00C270A7 /* makefile in Sources */,
 				7D84529D187DBBA5008639D2 /* interface_definition.cpp in Sources */,
-				7D2131EB1892B7FD00C270A7 /* makefile in Sources */,
 				7D9FCFA418AA574100968601 /* midi_input_dispatcher.cpp in Sources */,
 				7D84528F187DBBA5008639D2 /* delete_command.cpp in Sources */,
 				7DB8170C18967D84005D7C1D /* midi_engine.cpp in Sources */,
@@ -943,7 +893,6 @@
 				7D845287187DBBA5008639D2 /* connection_logic.cpp in Sources */,
 				7D9FCFA618AA574100968601 /* midi_input_filterer.cpp in Sources */,
 				7D8452A1187DBBA5008639D2 /* load_command.cpp in Sources */,
-				7DCA34FE189FEE460031BDDC /* makefile in Sources */,
 				7DB8171018967D84005D7C1D /* portmidi_engine.cpp in Sources */,
 				7D8452AA187DBBA5008639D2 /* move_command.cpp in Sources */,
 				7D8452DB187DBBA5008639D2 /* value.cpp in Sources */,
@@ -961,7 +910,6 @@
 				7D8454EC187DC023008639D2 /* zip.c in Sources */,
 				7D8452B2187DBBA5008639D2 /* node_endpoint.cpp in Sources */,
 				7D8452A3187DBBA5008639D2 /* logic.cpp in Sources */,
-				7D2131DC1892B7EC00C270A7 /* makefile in Sources */,
 				7D8454E8187DC023008639D2 /* mztools.c in Sources */,
 				7D845295187DBBA5008639D2 /* error.cpp in Sources */,
 				7D84529A187DBBA5008639D2 /* guid_helper.cpp in Sources */,

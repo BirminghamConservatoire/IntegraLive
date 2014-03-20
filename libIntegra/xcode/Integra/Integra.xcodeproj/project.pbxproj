@@ -180,7 +180,6 @@
 		7DFC156418D9B9B600CA083C /* midi_raw_input_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFC156018D9B9B500CA083C /* midi_raw_input_logic.cpp */; };
 		7DFC156518D9B9B600CA083C /* midi_raw_input_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DFC156118D9B9B500CA083C /* midi_raw_input_logic.h */; };
 		7DFC159018D9CCF800CA083C /* libfftw3f.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC158F18D9CCF800CA083C /* libfftw3f.a */; };
-		7DFC159218D9CD0700CA083C /* libflext-pd_sd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159118D9CD0700CA083C /* libflext-pd_sd.a */; };
 		7DFC159418D9CD1600CA083C /* libpd-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159318D9CD1600CA083C /* libpd-osx.a */; };
 		7DFC159618D9CD2300CA083C /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159518D9CD2300CA083C /* libsndfile.a */; };
 		7DFC159818D9CD3100CA083C /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159718D9CD3100CA083C /* liblua.a */; };
@@ -389,7 +388,6 @@
 			files = (
 				7DFC15A018D9CE5900CA083C /* AudioToolbox.framework in Frameworks */,
 				7DFC159E18D9CE4A00CA083C /* AudioUnit.framework in Frameworks */,
-				7DFC159218D9CD0700CA083C /* libflext-pd_sd.a in Frameworks */,
 				7D11074B189FC9E900B4A72E /* Carbon.framework in Frameworks */,
 				7D110748189FC91C00B4A72E /* CoreFoundation.framework in Frameworks */,
 				7DFC159A18D9CD3D00CA083C /* libportaudio.a in Frameworks */,

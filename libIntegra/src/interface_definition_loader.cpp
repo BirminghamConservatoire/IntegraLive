@@ -483,7 +483,6 @@ namespace integra_internal
 
 	CError CInterfaceDefinitionLoader::handle_element_attributes()
 	{
-		char *origin_guid_attribute = NULL;
 		CError error = CError::SUCCESS;
 
 		assert( m_interface_definition && m_reader && !m_element_path.empty() );

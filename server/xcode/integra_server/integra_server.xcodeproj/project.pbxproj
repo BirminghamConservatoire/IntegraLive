@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7D8801A418AABD86006E9F30 /* Integra.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8801A318AABD86006E9F30 /* Integra.framework */; };
+		7D53C5AF18DB3B000073E2BA /* Integra.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC15AD18DB31ED00CA083C /* Integra.framework */; };
 		7D93C44718A9704B0083CB07 /* integra_server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7D93C44618A9704B0083CB07 /* integra_server.1 */; };
 		7D93C45618A970720083CB07 /* close_orphaned_processes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C44D18A970720083CB07 /* close_orphaned_processes.cpp */; };
 		7D93C45718A970720083CB07 /* integra_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C44F18A970720083CB07 /* integra_server.cpp */; };
@@ -15,6 +15,23 @@
 		7D93C45918A970720083CB07 /* xmlrpc_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45218A970720083CB07 /* xmlrpc_common.cpp */; };
 		7D93C45A18A970720083CB07 /* xmlrpc_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45418A970720083CB07 /* xmlrpc_server.cpp */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7DE6758018DB379D00A0AFFE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7D8451D0187DB8CB008639D2;
+			remoteInfo = Integra;
+		};
+		7DFC15AC18DB31ED00CA083C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7D8451D1187DB8CB008639D2;
+			remoteInfo = Integra;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		7D93C43F18A9704B0083CB07 /* CopyFiles */ = {
@@ -30,7 +47,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7D8801A318AABD86006E9F30 /* Integra.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Integra.framework; sourceTree = "<group>"; };
 		7D93C44118A9704B0083CB07 /* integra_server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = integra_server; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D93C44618A9704B0083CB07 /* integra_server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = integra_server.1; sourceTree = "<group>"; };
 		7D93C44D18A970720083CB07 /* close_orphaned_processes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = close_orphaned_processes.cpp; path = ../../../src/close_orphaned_processes.cpp; sourceTree = "<group>"; };
@@ -44,6 +60,7 @@
 		7D93C45518A970720083CB07 /* xmlrpc_server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlrpc_server.h; path = ../../../src/xmlrpc_server.h; sourceTree = "<group>"; };
 		7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "xmlrpc-c.xcodeproj"; path = "../../externals/xmlrpc-c/xmlrpc-c.xcodeproj"; sourceTree = "<group>"; };
 		7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblo.xcodeproj; path = ../../externals/liblo/liblo.xcodeproj; sourceTree = "<group>"; };
+		7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Integra.xcodeproj; path = ../../../libIntegra/xcode/Integra/Integra.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D8801A418AABD86006E9F30 /* Integra.framework in Frameworks */,
+				7D53C5AF18DB3B000073E2BA /* Integra.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,7 +78,6 @@
 		7D88017718AA57EC006E9F30 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7D8801A318AABD86006E9F30 /* Integra.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -104,6 +120,7 @@
 		7D93C81A18A971120083CB07 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */,
 				7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */,
 				7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */,
 			);
@@ -124,6 +141,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		7DFC15A918DB31ED00CA083C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7DFC15AD18DB31ED00CA083C /* Integra.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -138,6 +163,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				7DE6758118DB379D00A0AFFE /* PBXTargetDependency */,
 			);
 			name = integra_server;
 			productName = integra_server;
@@ -165,6 +191,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 7DFC15A918DB31ED00CA083C /* Products */;
+					ProjectRef = 7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */;
+				},
+				{
 					ProductGroup = 7DB4EA8118AAC6F600ED5145 /* Products */;
 					ProjectRef = 7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */;
 				},
@@ -180,6 +210,16 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		7DFC15AD18DB31ED00CA083C /* Integra.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Integra.framework;
+			remoteRef = 7DFC15AC18DB31ED00CA083C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXSourcesBuildPhase section */
 		7D93C43D18A9704B0083CB07 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -194,6 +234,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7DE6758118DB379D00A0AFFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Integra;
+			targetProxy = 7DE6758018DB379D00A0AFFE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7D93C44818A9704B0083CB07 /* Debug */ = {
@@ -265,10 +313,8 @@
 		7D93C44B18A9704B0083CB07 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/jamie/Documents/IntegraLive/server/xcode/integra_server,
-				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -296,7 +342,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "./Integra.framework/Headers ../../externals/liblo";
+				USER_HEADER_SEARCH_PATHS = "../../externals/liblo ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
@@ -304,10 +350,8 @@
 		7D93C44C18A9704B0083CB07 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/jamie/Documents/IntegraLive/server/xcode/integra_server,
-				);
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -335,7 +379,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "./Integra.framework/Headers ../../externals/liblo";
+				USER_HEADER_SEARCH_PATHS = "../../externals/liblo ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};
 			name = Release;

@@ -14,6 +14,16 @@
 		7D93C45818A970720083CB07 /* osc_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45018A970720083CB07 /* osc_client.cpp */; };
 		7D93C45918A970720083CB07 /* xmlrpc_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45218A970720083CB07 /* xmlrpc_common.cpp */; };
 		7D93C45A18A970720083CB07 /* xmlrpc_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D93C45418A970720083CB07 /* xmlrpc_server.cpp */; };
+		7DC7938318DC5EAE008EA8D3 /* liblo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7938218DC5EAE008EA8D3 /* liblo.a */; };
+		7DC7939518DC603D008EA8D3 /* libxmlrpc_abyss.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7938C18DC603D008EA8D3 /* libxmlrpc_abyss.a */; };
+		7DC7939618DC603D008EA8D3 /* libxmlrpc_client.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7938D18DC603D008EA8D3 /* libxmlrpc_client.a */; };
+		7DC7939718DC603D008EA8D3 /* libxmlrpc_server_abyss.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7938E18DC603D008EA8D3 /* libxmlrpc_server_abyss.a */; };
+		7DC7939818DC603D008EA8D3 /* libxmlrpc_server_cgi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7938F18DC603D008EA8D3 /* libxmlrpc_server_cgi.a */; };
+		7DC7939918DC603D008EA8D3 /* libxmlrpc_server.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7939018DC603D008EA8D3 /* libxmlrpc_server.a */; };
+		7DC7939A18DC603D008EA8D3 /* libxmlrpc_util.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7939118DC603D008EA8D3 /* libxmlrpc_util.a */; };
+		7DC7939B18DC603D008EA8D3 /* libxmlrpc_xmlparse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7939218DC603D008EA8D3 /* libxmlrpc_xmlparse.a */; };
+		7DC7939C18DC603D008EA8D3 /* libxmlrpc_xmltok.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7939318DC603D008EA8D3 /* libxmlrpc_xmltok.a */; };
+		7DC7939D18DC603D008EA8D3 /* libxmlrpc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC7939418DC603D008EA8D3 /* libxmlrpc.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,8 +68,16 @@
 		7D93C45318A970720083CB07 /* xmlrpc_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlrpc_common.h; path = ../../../src/xmlrpc_common.h; sourceTree = "<group>"; };
 		7D93C45418A970720083CB07 /* xmlrpc_server.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmlrpc_server.cpp; path = ../../../src/xmlrpc_server.cpp; sourceTree = "<group>"; };
 		7D93C45518A970720083CB07 /* xmlrpc_server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlrpc_server.h; path = ../../../src/xmlrpc_server.h; sourceTree = "<group>"; };
-		7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "xmlrpc-c.xcodeproj"; path = "../../externals/xmlrpc-c/xmlrpc-c.xcodeproj"; sourceTree = "<group>"; };
-		7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = liblo.xcodeproj; path = ../../externals/liblo/liblo.xcodeproj; sourceTree = "<group>"; };
+		7DC7938218DC5EAE008EA8D3 /* liblo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblo.a; path = "../../externals/macosx/liblo-0.28/liblo.a"; sourceTree = "<group>"; };
+		7DC7938C18DC603D008EA8D3 /* libxmlrpc_abyss.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_abyss.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_abyss.a"; sourceTree = "<group>"; };
+		7DC7938D18DC603D008EA8D3 /* libxmlrpc_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_client.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_client.a"; sourceTree = "<group>"; };
+		7DC7938E18DC603D008EA8D3 /* libxmlrpc_server_abyss.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_server_abyss.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_server_abyss.a"; sourceTree = "<group>"; };
+		7DC7938F18DC603D008EA8D3 /* libxmlrpc_server_cgi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_server_cgi.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_server_cgi.a"; sourceTree = "<group>"; };
+		7DC7939018DC603D008EA8D3 /* libxmlrpc_server.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_server.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_server.a"; sourceTree = "<group>"; };
+		7DC7939118DC603D008EA8D3 /* libxmlrpc_util.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_util.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_util.a"; sourceTree = "<group>"; };
+		7DC7939218DC603D008EA8D3 /* libxmlrpc_xmlparse.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_xmlparse.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_xmlparse.a"; sourceTree = "<group>"; };
+		7DC7939318DC603D008EA8D3 /* libxmlrpc_xmltok.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc_xmltok.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc_xmltok.a"; sourceTree = "<group>"; };
+		7DC7939418DC603D008EA8D3 /* libxmlrpc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxmlrpc.a; path = "../../externals/macosx/xmlrpc-c-1.25.15/libxmlrpc.a"; sourceTree = "<group>"; };
 		7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Integra.xcodeproj; path = ../../../libIntegra/xcode/Integra/Integra.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -68,7 +86,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7DC7939C18DC603D008EA8D3 /* libxmlrpc_xmltok.a in Frameworks */,
+				7DC7938318DC5EAE008EA8D3 /* liblo.a in Frameworks */,
+				7DC7939D18DC603D008EA8D3 /* libxmlrpc.a in Frameworks */,
+				7DC7939618DC603D008EA8D3 /* libxmlrpc_client.a in Frameworks */,
+				7DC7939B18DC603D008EA8D3 /* libxmlrpc_xmlparse.a in Frameworks */,
+				7DC7939518DC603D008EA8D3 /* libxmlrpc_abyss.a in Frameworks */,
+				7DC7939818DC603D008EA8D3 /* libxmlrpc_server_cgi.a in Frameworks */,
 				7D53C5AF18DB3B000073E2BA /* Integra.framework in Frameworks */,
+				7DC7939A18DC603D008EA8D3 /* libxmlrpc_util.a in Frameworks */,
+				7DC7939718DC603D008EA8D3 /* libxmlrpc_server_abyss.a in Frameworks */,
+				7DC7939918DC603D008EA8D3 /* libxmlrpc_server.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +106,7 @@
 		7D88017718AA57EC006E9F30 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -120,25 +149,18 @@
 		7D93C81A18A971120083CB07 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */,
-				7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */,
-				7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */,
+				7DC7938C18DC603D008EA8D3 /* libxmlrpc_abyss.a */,
+				7DC7938D18DC603D008EA8D3 /* libxmlrpc_client.a */,
+				7DC7938E18DC603D008EA8D3 /* libxmlrpc_server_abyss.a */,
+				7DC7938F18DC603D008EA8D3 /* libxmlrpc_server_cgi.a */,
+				7DC7939018DC603D008EA8D3 /* libxmlrpc_server.a */,
+				7DC7939118DC603D008EA8D3 /* libxmlrpc_util.a */,
+				7DC7939218DC603D008EA8D3 /* libxmlrpc_xmlparse.a */,
+				7DC7939318DC603D008EA8D3 /* libxmlrpc_xmltok.a */,
+				7DC7939418DC603D008EA8D3 /* libxmlrpc.a */,
+				7DC7938218DC5EAE008EA8D3 /* liblo.a */,
 			);
 			name = Libraries;
-			sourceTree = "<group>";
-		};
-		7D93C84918A9713C0083CB07 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		7DB4EA8118AAC6F600ED5145 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		7DFC15A918DB31ED00CA083C /* Products */ = {
@@ -193,14 +215,6 @@
 				{
 					ProductGroup = 7DFC15A918DB31ED00CA083C /* Products */;
 					ProjectRef = 7DFC15A818DB31ED00CA083C /* Integra.xcodeproj */;
-				},
-				{
-					ProductGroup = 7DB4EA8118AAC6F600ED5145 /* Products */;
-					ProjectRef = 7DB4EA8018AAC6F600ED5145 /* liblo.xcodeproj */;
-				},
-				{
-					ProductGroup = 7D93C84918A9713C0083CB07 /* Products */;
-					ProjectRef = 7D93C84818A9713C0083CB07 /* xmlrpc-c.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -322,27 +336,14 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../../externals/liblo/src/.libs,
-					"../../externals/xmlrpc-c/src",
-					"../../externals/xmlrpc-c/lib/abyss/src",
-					"../../externals/xmlrpc-c/lib/expat/xmlparse",
-					"../../externals/xmlrpc-c/lib/libutil",
-					"../../externals/xmlrpc-c/lib/expat/xmltok",
+					"../../externals/macosx/liblo-0.28",
+					"../../externals/macosx/xmlrpc-c-1.25.15",
+					"/Users/jamie/Documents/IntegraLive/server/externals/macosx/xmlrpc-c-1.25.15",
 				);
-				OTHER_LDFLAGS = (
-					"-llo",
-					"-lxmlrpc_server_abyss",
-					"-lxmlrpc_server",
-					"-lxmlrpc",
-					"-lxmlrpc_abyss",
-					"-lxmlrpc_xmlparse",
-					"-lxmlrpc_util",
-					"-lxmlrpc_xmltok",
-					"-lc",
-				);
+				OTHER_LDFLAGS = "-lc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../../externals/liblo ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
+				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/xmlrpc-c-1.25.15 ../../externals/macosx/liblo-0.28 ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
@@ -359,27 +360,14 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../../externals/liblo/src/.libs,
-					"../../externals/xmlrpc-c/src",
-					"../../externals/xmlrpc-c/lib/abyss/src",
-					"../../externals/xmlrpc-c/lib/expat/xmlparse",
-					"../../externals/xmlrpc-c/lib/libutil",
-					"../../externals/xmlrpc-c/lib/expat/xmltok",
+					"../../externals/macosx/liblo-0.28",
+					"../../externals/macosx/xmlrpc-c-1.25.15",
+					"/Users/jamie/Documents/IntegraLive/server/externals/macosx/xmlrpc-c-1.25.15",
 				);
-				OTHER_LDFLAGS = (
-					"-llo",
-					"-lxmlrpc_server_abyss",
-					"-lxmlrpc_server",
-					"-lxmlrpc",
-					"-lxmlrpc_abyss",
-					"-lxmlrpc_xmlparse",
-					"-lxmlrpc_util",
-					"-lxmlrpc_xmltok",
-					"-lc",
-				);
+				OTHER_LDFLAGS = "-lc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../../externals/liblo ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
+				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/liblo-0.28 ../../externals/macosx/xmlrpc-c-1.25.15 ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};
 			name = Release;

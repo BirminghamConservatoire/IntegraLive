@@ -69,6 +69,8 @@ server:
 	mkdir server
 	xcodebuild -project $(SERVERDIR)/xcode/integra_server/integra_server.xcodeproj -scheme integra_server -configuration Release CONFIGURATION_BUILD_DIR=`pwd`/server
 	rm -rf server/*.dSYM
+	# FIX! For now move csv and xsd to be sibling of integra_server
+	mv server/Integra.framework/Resources/*.csv server/Integra.framework/Resources/*.xsd server/
 
 server-clean:
 	rm -rf server

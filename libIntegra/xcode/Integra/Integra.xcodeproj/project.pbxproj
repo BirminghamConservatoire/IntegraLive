@@ -23,6 +23,7 @@
 		7D2131EF1892B7FD00C270A7 /* vexp_fun.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131E61892B7FD00C270A7 /* vexp_fun.c */; };
 		7D2131F01892B7FD00C270A7 /* vexp_if.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131E71892B7FD00C270A7 /* vexp_if.c */; };
 		7D2131F71892B80A00C270A7 /* fiddle~.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131F31892B80A00C270A7 /* fiddle~.c */; };
+		7D45816818DC7179006F0D60 /* modules in Resources */ = {isa = PBXBuildFile; fileRef = 7D45816718DC7179006F0D60 /* modules */; };
 		7D8451DF187DB8CB008639D2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7D8451DD187DB8CB008639D2 /* InfoPlist.strings */; };
 		7D845213187DBACF008639D2 /* command_result.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8451FF187DBACF008639D2 /* command_result.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7D845214187DBACF008639D2 /* command_source.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845200187DBACF008639D2 /* command_source.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -143,84 +144,6 @@
 		7D8454EB187DC023008639D2 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845403187DC023008639D2 /* unzip.h */; };
 		7D8454EC187DC023008639D2 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D845404187DC023008639D2 /* zip.c */; };
 		7D8454ED187DC023008639D2 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845405187DC023008639D2 /* zip.h */; };
-		7D900D7E18DC65A400AF8DEF /* AddSynth.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3018DC65A400AF8DEF /* AddSynth.module */; };
-		7D900D7F18DC65A400AF8DEF /* AudioIn.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3118DC65A400AF8DEF /* AudioIn.module */; };
-		7D900D8018DC65A400AF8DEF /* AudioOut.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3218DC65A400AF8DEF /* AudioOut.module */; };
-		7D900D8118DC65A400AF8DEF /* AudioSettings.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3318DC65A400AF8DEF /* AudioSettings.module */; };
-		7D900D8218DC65A400AF8DEF /* BandPass.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3418DC65A400AF8DEF /* BandPass.module */; };
-		7D900D8318DC65A400AF8DEF /* BrightnessAnalyser.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3518DC65A400AF8DEF /* BrightnessAnalyser.module */; };
-		7D900D8418DC65A400AF8DEF /* Connection.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3618DC65A400AF8DEF /* Connection.module */; };
-		7D900D8518DC65A400AF8DEF /* Container.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3718DC65A400AF8DEF /* Container.module */; };
-		7D900D8618DC65A400AF8DEF /* ControlPoint.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3818DC65A400AF8DEF /* ControlPoint.module */; };
-		7D900D8718DC65A400AF8DEF /* Delay.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3918DC65A400AF8DEF /* Delay.module */; };
-		7D900D8818DC65A400AF8DEF /* Distortion.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3A18DC65A400AF8DEF /* Distortion.module */; };
-		7D900D8918DC65A400AF8DEF /* Envelope.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3B18DC65A400AF8DEF /* Envelope.module */; };
-		7D900D8A18DC65A400AF8DEF /* EnvelopeFollower.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3C18DC65A400AF8DEF /* EnvelopeFollower.module */; };
-		7D900D8B18DC65A400AF8DEF /* Flanger.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3D18DC65A400AF8DEF /* Flanger.module */; };
-		7D900D8C18DC65A400AF8DEF /* Flute.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3E18DC65A400AF8DEF /* Flute.module */; };
-		7D900D8D18DC65A400AF8DEF /* FourByOneMixer.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D3F18DC65A400AF8DEF /* FourByOneMixer.module */; };
-		7D900D8E18DC65A400AF8DEF /* Gate.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4018DC65A400AF8DEF /* Gate.module */; };
-		7D900D8F18DC65A400AF8DEF /* GranularDelay.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4118DC65A400AF8DEF /* GranularDelay.module */; };
-		7D900D9018DC65A400AF8DEF /* HarmonicFilter.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4218DC65A400AF8DEF /* HarmonicFilter.module */; };
-		7D900D9118DC65A400AF8DEF /* HighPass.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4318DC65A400AF8DEF /* HighPass.module */; };
-		7D900D9218DC65A400AF8DEF /* Limiter.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4418DC65A400AF8DEF /* Limiter.module */; };
-		7D900D9318DC65A400AF8DEF /* LowPass.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4518DC65A400AF8DEF /* LowPass.module */; };
-		7D900D9418DC65A400AF8DEF /* MaterialSimulator.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4618DC65A400AF8DEF /* MaterialSimulator.module */; };
-		7D900D9518DC65A400AF8DEF /* MidiCCoutTest.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4718DC65A400AF8DEF /* MidiCCoutTest.module */; };
-		7D900D9618DC65A400AF8DEF /* MidiControlInput.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4818DC65A400AF8DEF /* MidiControlInput.module */; };
-		7D900D9718DC65A400AF8DEF /* MidiRawInput.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4918DC65A400AF8DEF /* MidiRawInput.module */; };
-		7D900D9818DC65A400AF8DEF /* MidiSettings.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4A18DC65A400AF8DEF /* MidiSettings.module */; };
-		7D900D9918DC65A400AF8DEF /* MidiStuffTest.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4B18DC65A400AF8DEF /* MidiStuffTest.module */; };
-		7D900D9A18DC65A400AF8DEF /* MultiBandCompressor.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4C18DC65A400AF8DEF /* MultiBandCompressor.module */; };
-		7D900D9B18DC65A400AF8DEF /* Noisiness.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4D18DC65A400AF8DEF /* Noisiness.module */; };
-		7D900D9C18DC65A400AF8DEF /* Notch.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4E18DC65A400AF8DEF /* Notch.module */; };
-		7D900D9D18DC65A400AF8DEF /* OctoSoundfiler.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D4F18DC65A400AF8DEF /* OctoSoundfiler.module */; };
-		7D900D9E18DC65A400AF8DEF /* OnsetDetector.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5018DC65A400AF8DEF /* OnsetDetector.module */; };
-		7D900D9F18DC65A400AF8DEF /* PartialAnalyser.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5118DC65A400AF8DEF /* PartialAnalyser.module */; };
-		7D900DA018DC65A400AF8DEF /* PerceptualLoudness.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5218DC65A400AF8DEF /* PerceptualLoudness.module */; };
-		7D900DA118DC65A400AF8DEF /* PercussiveOnsetDetector.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5318DC65A400AF8DEF /* PercussiveOnsetDetector.module */; };
-		7D900DA218DC65A400AF8DEF /* Phaser.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5418DC65A400AF8DEF /* Phaser.module */; };
-		7D900DA318DC65A400AF8DEF /* PhaseVocoder.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5518DC65A400AF8DEF /* PhaseVocoder.module */; };
-		7D900DA418DC65A400AF8DEF /* PianoReverbMSP.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5618DC65A400AF8DEF /* PianoReverbMSP.module */; };
-		7D900DA518DC65A400AF8DEF /* PianoReverbStrings.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5718DC65A400AF8DEF /* PianoReverbStrings.module */; };
-		7D900DA618DC65A400AF8DEF /* PingPongDelay.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5818DC65A400AF8DEF /* PingPongDelay.module */; };
-		7D900DA718DC65A400AF8DEF /* PitchDetector.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5918DC65A400AF8DEF /* PitchDetector.module */; };
-		7D900DA818DC65A400AF8DEF /* PitchShifter.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5A18DC65A400AF8DEF /* PitchShifter.module */; };
-		7D900DA918DC65A400AF8DEF /* Player.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5B18DC65A400AF8DEF /* Player.module */; };
-		7D900DAA18DC65A400AF8DEF /* PluckedString.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5C18DC65A400AF8DEF /* PluckedString.module */; };
-		7D900DAB18DC65A400AF8DEF /* QuadAudioIn.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5D18DC65A400AF8DEF /* QuadAudioIn.module */; };
-		7D900DAC18DC65A400AF8DEF /* QuadAudioOut.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5E18DC65A400AF8DEF /* QuadAudioOut.module */; };
-		7D900DAD18DC65A400AF8DEF /* QuadAutoPanner.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D5F18DC65A400AF8DEF /* QuadAutoPanner.module */; };
-		7D900DAE18DC65A400AF8DEF /* QuadGranularSynthesizer.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6018DC65A400AF8DEF /* QuadGranularSynthesizer.module */; };
-		7D900DAF18DC65A400AF8DEF /* QuadPanner.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6118DC65A400AF8DEF /* QuadPanner.module */; };
-		7D900DB018DC65A400AF8DEF /* QuadSoundFiler.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6218DC65A400AF8DEF /* QuadSoundFiler.module */; };
-		7D900DB118DC65A400AF8DEF /* QuadXYPanner.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6318DC65A400AF8DEF /* QuadXYPanner.module */; };
-		7D900DB218DC65A400AF8DEF /* ResonantBandPass.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6418DC65A400AF8DEF /* ResonantBandPass.module */; };
-		7D900DB318DC65A400AF8DEF /* ResonantLowPass.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6518DC65A400AF8DEF /* ResonantLowPass.module */; };
-		7D900DB418DC65A400AF8DEF /* Reverb.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6618DC65A400AF8DEF /* Reverb.module */; };
-		7D900DB518DC65A400AF8DEF /* RingModulator.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6718DC65A400AF8DEF /* RingModulator.module */; };
-		7D900DB618DC65A400AF8DEF /* Scaler.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6818DC65A400AF8DEF /* Scaler.module */; };
-		7D900DB718DC65A400AF8DEF /* Scene.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6918DC65A400AF8DEF /* Scene.module */; };
-		7D900DB818DC65A400AF8DEF /* Script.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6A18DC65A400AF8DEF /* Script.module */; };
-		7D900DB918DC65A400AF8DEF /* Soundfiler.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6B18DC65A400AF8DEF /* Soundfiler.module */; };
-		7D900DBA18DC65A400AF8DEF /* SPAT.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6C18DC65A400AF8DEF /* SPAT.module */; };
-		7D900DBB18DC65A400AF8DEF /* SpectralDelay.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6D18DC65A400AF8DEF /* SpectralDelay.module */; };
-		7D900DBC18DC65A400AF8DEF /* SpectralFreeze.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6E18DC65A400AF8DEF /* SpectralFreeze.module */; };
-		7D900DBD18DC65A400AF8DEF /* SpectralVocoder.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D6F18DC65A400AF8DEF /* SpectralVocoder.module */; };
-		7D900DBE18DC65A400AF8DEF /* StereoAudioIn.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7018DC65A400AF8DEF /* StereoAudioIn.module */; };
-		7D900DBF18DC65A400AF8DEF /* StereoAudioOut.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7118DC65A400AF8DEF /* StereoAudioOut.module */; };
-		7D900DC018DC65A400AF8DEF /* StereoChorus.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7218DC65A400AF8DEF /* StereoChorus.module */; };
-		7D900DC118DC65A400AF8DEF /* StereoConvolution.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7318DC65A400AF8DEF /* StereoConvolution.module */; };
-		7D900DC218DC65A400AF8DEF /* StereoGranularSynthesizer.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7418DC65A400AF8DEF /* StereoGranularSynthesizer.module */; };
-		7D900DC318DC65A400AF8DEF /* StereoPanner.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7518DC65A400AF8DEF /* StereoPanner.module */; };
-		7D900DC418DC65A400AF8DEF /* StereoReverb.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7618DC65A400AF8DEF /* StereoReverb.module */; };
-		7D900DC518DC65A400AF8DEF /* StereoReverbTwo.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7718DC65A400AF8DEF /* StereoReverbTwo.module */; };
-		7D900DC618DC65A400AF8DEF /* StereoSoundfiler.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7818DC65A400AF8DEF /* StereoSoundfiler.module */; };
-		7D900DC718DC65A400AF8DEF /* SubSynth.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7918DC65A400AF8DEF /* SubSynth.module */; };
-		7D900DC818DC65A400AF8DEF /* TapDelay.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7A18DC65A400AF8DEF /* TapDelay.module */; };
-		7D900DC918DC65A400AF8DEF /* TempoDetector.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7B18DC65A400AF8DEF /* TempoDetector.module */; };
-		7D900DCA18DC65A400AF8DEF /* TestSource.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7C18DC65A400AF8DEF /* TestSource.module */; };
-		7D900DCB18DC65A400AF8DEF /* VibratoChorus.module in Resources */ = {isa = PBXBuildFile; fileRef = 7D900D7D18DC65A400AF8DEF /* VibratoChorus.module */; };
 		7D900DCF18DC663C00AF8DEF /* CollectionSchema.xsd in Resources */ = {isa = PBXBuildFile; fileRef = 7D900DCD18DC663C00AF8DEF /* CollectionSchema.xsd */; };
 		7D900DD018DC663C00AF8DEF /* id2guid.csv in Resources */ = {isa = PBXBuildFile; fileRef = 7D900DCE18DC663C00AF8DEF /* id2guid.csv */; };
 		7D975F6318DC515800EB28CB /* fsp_libsndfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D975F5D18DC515800EB28CB /* fsp_libsndfile.cpp */; };
@@ -288,6 +211,7 @@
 		7D2131F31892B80A00C270A7 /* fiddle~.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "fiddle~.c"; sourceTree = "<group>"; };
 		7D2131F41892B80A00C270A7 /* GNUmakefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GNUmakefile.am; sourceTree = "<group>"; };
 		7D2131F51892B80A00C270A7 /* makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		7D45816718DC7179006F0D60 /* modules */ = {isa = PBXFileReference; lastKnownFileType = folder; name = modules; path = ../../../modules; sourceTree = "<group>"; };
 		7D8451D1187DB8CB008639D2 /* Integra.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Integra.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D8451DC187DB8CB008639D2 /* Integra-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Integra-Info.plist"; sourceTree = "<group>"; };
 		7D8451DE187DB8CB008639D2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -411,84 +335,6 @@
 		7D845403187DC023008639D2 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		7D845404187DC023008639D2 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		7D845405187DC023008639D2 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		7D900D3018DC65A400AF8DEF /* AddSynth.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = AddSynth.module; sourceTree = "<group>"; };
-		7D900D3118DC65A400AF8DEF /* AudioIn.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = AudioIn.module; sourceTree = "<group>"; };
-		7D900D3218DC65A400AF8DEF /* AudioOut.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = AudioOut.module; sourceTree = "<group>"; };
-		7D900D3318DC65A400AF8DEF /* AudioSettings.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = AudioSettings.module; sourceTree = "<group>"; };
-		7D900D3418DC65A400AF8DEF /* BandPass.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = BandPass.module; sourceTree = "<group>"; };
-		7D900D3518DC65A400AF8DEF /* BrightnessAnalyser.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = BrightnessAnalyser.module; sourceTree = "<group>"; };
-		7D900D3618DC65A400AF8DEF /* Connection.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Connection.module; sourceTree = "<group>"; };
-		7D900D3718DC65A400AF8DEF /* Container.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Container.module; sourceTree = "<group>"; };
-		7D900D3818DC65A400AF8DEF /* ControlPoint.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = ControlPoint.module; sourceTree = "<group>"; };
-		7D900D3918DC65A400AF8DEF /* Delay.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Delay.module; sourceTree = "<group>"; };
-		7D900D3A18DC65A400AF8DEF /* Distortion.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Distortion.module; sourceTree = "<group>"; };
-		7D900D3B18DC65A400AF8DEF /* Envelope.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Envelope.module; sourceTree = "<group>"; };
-		7D900D3C18DC65A400AF8DEF /* EnvelopeFollower.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = EnvelopeFollower.module; sourceTree = "<group>"; };
-		7D900D3D18DC65A400AF8DEF /* Flanger.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Flanger.module; sourceTree = "<group>"; };
-		7D900D3E18DC65A400AF8DEF /* Flute.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Flute.module; sourceTree = "<group>"; };
-		7D900D3F18DC65A400AF8DEF /* FourByOneMixer.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = FourByOneMixer.module; sourceTree = "<group>"; };
-		7D900D4018DC65A400AF8DEF /* Gate.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gate.module; sourceTree = "<group>"; };
-		7D900D4118DC65A400AF8DEF /* GranularDelay.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = GranularDelay.module; sourceTree = "<group>"; };
-		7D900D4218DC65A400AF8DEF /* HarmonicFilter.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = HarmonicFilter.module; sourceTree = "<group>"; };
-		7D900D4318DC65A400AF8DEF /* HighPass.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = HighPass.module; sourceTree = "<group>"; };
-		7D900D4418DC65A400AF8DEF /* Limiter.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Limiter.module; sourceTree = "<group>"; };
-		7D900D4518DC65A400AF8DEF /* LowPass.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = LowPass.module; sourceTree = "<group>"; };
-		7D900D4618DC65A400AF8DEF /* MaterialSimulator.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialSimulator.module; sourceTree = "<group>"; };
-		7D900D4718DC65A400AF8DEF /* MidiCCoutTest.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = MidiCCoutTest.module; sourceTree = "<group>"; };
-		7D900D4818DC65A400AF8DEF /* MidiControlInput.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = MidiControlInput.module; sourceTree = "<group>"; };
-		7D900D4918DC65A400AF8DEF /* MidiRawInput.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = MidiRawInput.module; sourceTree = "<group>"; };
-		7D900D4A18DC65A400AF8DEF /* MidiSettings.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = MidiSettings.module; sourceTree = "<group>"; };
-		7D900D4B18DC65A400AF8DEF /* MidiStuffTest.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = MidiStuffTest.module; sourceTree = "<group>"; };
-		7D900D4C18DC65A400AF8DEF /* MultiBandCompressor.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = MultiBandCompressor.module; sourceTree = "<group>"; };
-		7D900D4D18DC65A400AF8DEF /* Noisiness.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Noisiness.module; sourceTree = "<group>"; };
-		7D900D4E18DC65A400AF8DEF /* Notch.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Notch.module; sourceTree = "<group>"; };
-		7D900D4F18DC65A400AF8DEF /* OctoSoundfiler.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = OctoSoundfiler.module; sourceTree = "<group>"; };
-		7D900D5018DC65A400AF8DEF /* OnsetDetector.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = OnsetDetector.module; sourceTree = "<group>"; };
-		7D900D5118DC65A400AF8DEF /* PartialAnalyser.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PartialAnalyser.module; sourceTree = "<group>"; };
-		7D900D5218DC65A400AF8DEF /* PerceptualLoudness.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PerceptualLoudness.module; sourceTree = "<group>"; };
-		7D900D5318DC65A400AF8DEF /* PercussiveOnsetDetector.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PercussiveOnsetDetector.module; sourceTree = "<group>"; };
-		7D900D5418DC65A400AF8DEF /* Phaser.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Phaser.module; sourceTree = "<group>"; };
-		7D900D5518DC65A400AF8DEF /* PhaseVocoder.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PhaseVocoder.module; sourceTree = "<group>"; };
-		7D900D5618DC65A400AF8DEF /* PianoReverbMSP.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PianoReverbMSP.module; sourceTree = "<group>"; };
-		7D900D5718DC65A400AF8DEF /* PianoReverbStrings.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PianoReverbStrings.module; sourceTree = "<group>"; };
-		7D900D5818DC65A400AF8DEF /* PingPongDelay.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PingPongDelay.module; sourceTree = "<group>"; };
-		7D900D5918DC65A400AF8DEF /* PitchDetector.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PitchDetector.module; sourceTree = "<group>"; };
-		7D900D5A18DC65A400AF8DEF /* PitchShifter.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PitchShifter.module; sourceTree = "<group>"; };
-		7D900D5B18DC65A400AF8DEF /* Player.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Player.module; sourceTree = "<group>"; };
-		7D900D5C18DC65A400AF8DEF /* PluckedString.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = PluckedString.module; sourceTree = "<group>"; };
-		7D900D5D18DC65A400AF8DEF /* QuadAudioIn.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = QuadAudioIn.module; sourceTree = "<group>"; };
-		7D900D5E18DC65A400AF8DEF /* QuadAudioOut.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = QuadAudioOut.module; sourceTree = "<group>"; };
-		7D900D5F18DC65A400AF8DEF /* QuadAutoPanner.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = QuadAutoPanner.module; sourceTree = "<group>"; };
-		7D900D6018DC65A400AF8DEF /* QuadGranularSynthesizer.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = QuadGranularSynthesizer.module; sourceTree = "<group>"; };
-		7D900D6118DC65A400AF8DEF /* QuadPanner.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = QuadPanner.module; sourceTree = "<group>"; };
-		7D900D6218DC65A400AF8DEF /* QuadSoundFiler.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = QuadSoundFiler.module; sourceTree = "<group>"; };
-		7D900D6318DC65A400AF8DEF /* QuadXYPanner.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = QuadXYPanner.module; sourceTree = "<group>"; };
-		7D900D6418DC65A400AF8DEF /* ResonantBandPass.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = ResonantBandPass.module; sourceTree = "<group>"; };
-		7D900D6518DC65A400AF8DEF /* ResonantLowPass.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = ResonantLowPass.module; sourceTree = "<group>"; };
-		7D900D6618DC65A400AF8DEF /* Reverb.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Reverb.module; sourceTree = "<group>"; };
-		7D900D6718DC65A400AF8DEF /* RingModulator.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = RingModulator.module; sourceTree = "<group>"; };
-		7D900D6818DC65A400AF8DEF /* Scaler.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Scaler.module; sourceTree = "<group>"; };
-		7D900D6918DC65A400AF8DEF /* Scene.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Scene.module; sourceTree = "<group>"; };
-		7D900D6A18DC65A400AF8DEF /* Script.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Script.module; sourceTree = "<group>"; };
-		7D900D6B18DC65A400AF8DEF /* Soundfiler.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = Soundfiler.module; sourceTree = "<group>"; };
-		7D900D6C18DC65A400AF8DEF /* SPAT.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = SPAT.module; sourceTree = "<group>"; };
-		7D900D6D18DC65A400AF8DEF /* SpectralDelay.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = SpectralDelay.module; sourceTree = "<group>"; };
-		7D900D6E18DC65A400AF8DEF /* SpectralFreeze.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = SpectralFreeze.module; sourceTree = "<group>"; };
-		7D900D6F18DC65A400AF8DEF /* SpectralVocoder.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = SpectralVocoder.module; sourceTree = "<group>"; };
-		7D900D7018DC65A400AF8DEF /* StereoAudioIn.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoAudioIn.module; sourceTree = "<group>"; };
-		7D900D7118DC65A400AF8DEF /* StereoAudioOut.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoAudioOut.module; sourceTree = "<group>"; };
-		7D900D7218DC65A400AF8DEF /* StereoChorus.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoChorus.module; sourceTree = "<group>"; };
-		7D900D7318DC65A400AF8DEF /* StereoConvolution.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoConvolution.module; sourceTree = "<group>"; };
-		7D900D7418DC65A400AF8DEF /* StereoGranularSynthesizer.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoGranularSynthesizer.module; sourceTree = "<group>"; };
-		7D900D7518DC65A400AF8DEF /* StereoPanner.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoPanner.module; sourceTree = "<group>"; };
-		7D900D7618DC65A400AF8DEF /* StereoReverb.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoReverb.module; sourceTree = "<group>"; };
-		7D900D7718DC65A400AF8DEF /* StereoReverbTwo.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoReverbTwo.module; sourceTree = "<group>"; };
-		7D900D7818DC65A400AF8DEF /* StereoSoundfiler.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = StereoSoundfiler.module; sourceTree = "<group>"; };
-		7D900D7918DC65A400AF8DEF /* SubSynth.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = SubSynth.module; sourceTree = "<group>"; };
-		7D900D7A18DC65A400AF8DEF /* TapDelay.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = TapDelay.module; sourceTree = "<group>"; };
-		7D900D7B18DC65A400AF8DEF /* TempoDetector.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = TempoDetector.module; sourceTree = "<group>"; };
-		7D900D7C18DC65A400AF8DEF /* TestSource.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = TestSource.module; sourceTree = "<group>"; };
-		7D900D7D18DC65A400AF8DEF /* VibratoChorus.module */ = {isa = PBXFileReference; lastKnownFileType = file; path = VibratoChorus.module; sourceTree = "<group>"; };
 		7D900DCD18DC663C00AF8DEF /* CollectionSchema.xsd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = CollectionSchema.xsd; path = ../../data/CollectionSchema.xsd; sourceTree = "<group>"; };
 		7D900DCE18DC663C00AF8DEF /* id2guid.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = id2guid.csv; path = ../../data/id2guid.csv; sourceTree = "<group>"; };
 		7D975F5D18DC515800EB28CB /* fsp_libsndfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fsp_libsndfile.cpp; sourceTree = "<group>"; };
@@ -860,98 +706,12 @@
 			path = minizip;
 			sourceTree = "<group>";
 		};
-		7D900D2F18DC65A400AF8DEF /* modules */ = {
-			isa = PBXGroup;
-			children = (
-				7D900D3018DC65A400AF8DEF /* AddSynth.module */,
-				7D900D3118DC65A400AF8DEF /* AudioIn.module */,
-				7D900D3218DC65A400AF8DEF /* AudioOut.module */,
-				7D900D3318DC65A400AF8DEF /* AudioSettings.module */,
-				7D900D3418DC65A400AF8DEF /* BandPass.module */,
-				7D900D3518DC65A400AF8DEF /* BrightnessAnalyser.module */,
-				7D900D3618DC65A400AF8DEF /* Connection.module */,
-				7D900D3718DC65A400AF8DEF /* Container.module */,
-				7D900D3818DC65A400AF8DEF /* ControlPoint.module */,
-				7D900D3918DC65A400AF8DEF /* Delay.module */,
-				7D900D3A18DC65A400AF8DEF /* Distortion.module */,
-				7D900D3B18DC65A400AF8DEF /* Envelope.module */,
-				7D900D3C18DC65A400AF8DEF /* EnvelopeFollower.module */,
-				7D900D3D18DC65A400AF8DEF /* Flanger.module */,
-				7D900D3E18DC65A400AF8DEF /* Flute.module */,
-				7D900D3F18DC65A400AF8DEF /* FourByOneMixer.module */,
-				7D900D4018DC65A400AF8DEF /* Gate.module */,
-				7D900D4118DC65A400AF8DEF /* GranularDelay.module */,
-				7D900D4218DC65A400AF8DEF /* HarmonicFilter.module */,
-				7D900D4318DC65A400AF8DEF /* HighPass.module */,
-				7D900D4418DC65A400AF8DEF /* Limiter.module */,
-				7D900D4518DC65A400AF8DEF /* LowPass.module */,
-				7D900D4618DC65A400AF8DEF /* MaterialSimulator.module */,
-				7D900D4718DC65A400AF8DEF /* MidiCCoutTest.module */,
-				7D900D4818DC65A400AF8DEF /* MidiControlInput.module */,
-				7D900D4918DC65A400AF8DEF /* MidiRawInput.module */,
-				7D900D4A18DC65A400AF8DEF /* MidiSettings.module */,
-				7D900D4B18DC65A400AF8DEF /* MidiStuffTest.module */,
-				7D900D4C18DC65A400AF8DEF /* MultiBandCompressor.module */,
-				7D900D4D18DC65A400AF8DEF /* Noisiness.module */,
-				7D900D4E18DC65A400AF8DEF /* Notch.module */,
-				7D900D4F18DC65A400AF8DEF /* OctoSoundfiler.module */,
-				7D900D5018DC65A400AF8DEF /* OnsetDetector.module */,
-				7D900D5118DC65A400AF8DEF /* PartialAnalyser.module */,
-				7D900D5218DC65A400AF8DEF /* PerceptualLoudness.module */,
-				7D900D5318DC65A400AF8DEF /* PercussiveOnsetDetector.module */,
-				7D900D5418DC65A400AF8DEF /* Phaser.module */,
-				7D900D5518DC65A400AF8DEF /* PhaseVocoder.module */,
-				7D900D5618DC65A400AF8DEF /* PianoReverbMSP.module */,
-				7D900D5718DC65A400AF8DEF /* PianoReverbStrings.module */,
-				7D900D5818DC65A400AF8DEF /* PingPongDelay.module */,
-				7D900D5918DC65A400AF8DEF /* PitchDetector.module */,
-				7D900D5A18DC65A400AF8DEF /* PitchShifter.module */,
-				7D900D5B18DC65A400AF8DEF /* Player.module */,
-				7D900D5C18DC65A400AF8DEF /* PluckedString.module */,
-				7D900D5D18DC65A400AF8DEF /* QuadAudioIn.module */,
-				7D900D5E18DC65A400AF8DEF /* QuadAudioOut.module */,
-				7D900D5F18DC65A400AF8DEF /* QuadAutoPanner.module */,
-				7D900D6018DC65A400AF8DEF /* QuadGranularSynthesizer.module */,
-				7D900D6118DC65A400AF8DEF /* QuadPanner.module */,
-				7D900D6218DC65A400AF8DEF /* QuadSoundFiler.module */,
-				7D900D6318DC65A400AF8DEF /* QuadXYPanner.module */,
-				7D900D6418DC65A400AF8DEF /* ResonantBandPass.module */,
-				7D900D6518DC65A400AF8DEF /* ResonantLowPass.module */,
-				7D900D6618DC65A400AF8DEF /* Reverb.module */,
-				7D900D6718DC65A400AF8DEF /* RingModulator.module */,
-				7D900D6818DC65A400AF8DEF /* Scaler.module */,
-				7D900D6918DC65A400AF8DEF /* Scene.module */,
-				7D900D6A18DC65A400AF8DEF /* Script.module */,
-				7D900D6B18DC65A400AF8DEF /* Soundfiler.module */,
-				7D900D6C18DC65A400AF8DEF /* SPAT.module */,
-				7D900D6D18DC65A400AF8DEF /* SpectralDelay.module */,
-				7D900D6E18DC65A400AF8DEF /* SpectralFreeze.module */,
-				7D900D6F18DC65A400AF8DEF /* SpectralVocoder.module */,
-				7D900D7018DC65A400AF8DEF /* StereoAudioIn.module */,
-				7D900D7118DC65A400AF8DEF /* StereoAudioOut.module */,
-				7D900D7218DC65A400AF8DEF /* StereoChorus.module */,
-				7D900D7318DC65A400AF8DEF /* StereoConvolution.module */,
-				7D900D7418DC65A400AF8DEF /* StereoGranularSynthesizer.module */,
-				7D900D7518DC65A400AF8DEF /* StereoPanner.module */,
-				7D900D7618DC65A400AF8DEF /* StereoReverb.module */,
-				7D900D7718DC65A400AF8DEF /* StereoReverbTwo.module */,
-				7D900D7818DC65A400AF8DEF /* StereoSoundfiler.module */,
-				7D900D7918DC65A400AF8DEF /* SubSynth.module */,
-				7D900D7A18DC65A400AF8DEF /* TapDelay.module */,
-				7D900D7B18DC65A400AF8DEF /* TempoDetector.module */,
-				7D900D7C18DC65A400AF8DEF /* TestSource.module */,
-				7D900D7D18DC65A400AF8DEF /* VibratoChorus.module */,
-			);
-			name = modules;
-			path = ../../../modules;
-			sourceTree = "<group>";
-		};
 		7D900DCC18DC65AD00AF8DEF /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				7D45816718DC7179006F0D60 /* modules */,
 				7D900DCD18DC663C00AF8DEF /* CollectionSchema.xsd */,
 				7D900DCE18DC663C00AF8DEF /* id2guid.csv */,
-				7D900D2F18DC65A400AF8DEF /* modules */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1121,87 +881,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D900DA818DC65A400AF8DEF /* PitchShifter.module in Resources */,
-				7D900DBE18DC65A400AF8DEF /* StereoAudioIn.module in Resources */,
-				7D900DAE18DC65A400AF8DEF /* QuadGranularSynthesizer.module in Resources */,
-				7D900D8C18DC65A400AF8DEF /* Flute.module in Resources */,
-				7D900DB018DC65A400AF8DEF /* QuadSoundFiler.module in Resources */,
-				7D900DA318DC65A400AF8DEF /* PhaseVocoder.module in Resources */,
-				7D900DCA18DC65A400AF8DEF /* TestSource.module in Resources */,
-				7D900DB518DC65A400AF8DEF /* RingModulator.module in Resources */,
-				7D900DB818DC65A400AF8DEF /* Script.module in Resources */,
-				7D900D8318DC65A400AF8DEF /* BrightnessAnalyser.module in Resources */,
-				7D900DC918DC65A400AF8DEF /* TempoDetector.module in Resources */,
-				7D900DBB18DC65A400AF8DEF /* SpectralDelay.module in Resources */,
-				7D900DA118DC65A400AF8DEF /* PercussiveOnsetDetector.module in Resources */,
-				7D900D8D18DC65A400AF8DEF /* FourByOneMixer.module in Resources */,
-				7D900DB618DC65A400AF8DEF /* Scaler.module in Resources */,
-				7D900D7F18DC65A400AF8DEF /* AudioIn.module in Resources */,
-				7D900D9018DC65A400AF8DEF /* HarmonicFilter.module in Resources */,
-				7D900D8918DC65A400AF8DEF /* Envelope.module in Resources */,
-				7D900D8018DC65A400AF8DEF /* AudioOut.module in Resources */,
-				7D900DC018DC65A400AF8DEF /* StereoChorus.module in Resources */,
-				7D900DCB18DC65A400AF8DEF /* VibratoChorus.module in Resources */,
-				7D900D8B18DC65A400AF8DEF /* Flanger.module in Resources */,
-				7D900DB218DC65A400AF8DEF /* ResonantBandPass.module in Resources */,
-				7D900DB718DC65A400AF8DEF /* Scene.module in Resources */,
-				7D900D9318DC65A400AF8DEF /* LowPass.module in Resources */,
-				7D900DBA18DC65A400AF8DEF /* SPAT.module in Resources */,
-				7D900DAC18DC65A400AF8DEF /* QuadAudioOut.module in Resources */,
-				7D900DA618DC65A400AF8DEF /* PingPongDelay.module in Resources */,
-				7D900DAD18DC65A400AF8DEF /* QuadAutoPanner.module in Resources */,
-				7D900D9718DC65A400AF8DEF /* MidiRawInput.module in Resources */,
-				7D900D7E18DC65A400AF8DEF /* AddSynth.module in Resources */,
-				7D900DB318DC65A400AF8DEF /* ResonantLowPass.module in Resources */,
-				7D900DA018DC65A400AF8DEF /* PerceptualLoudness.module in Resources */,
-				7D900DA418DC65A400AF8DEF /* PianoReverbMSP.module in Resources */,
-				7D900DB418DC65A400AF8DEF /* Reverb.module in Resources */,
-				7D900D8A18DC65A400AF8DEF /* EnvelopeFollower.module in Resources */,
-				7D900DA918DC65A400AF8DEF /* Player.module in Resources */,
+				7D45816818DC7179006F0D60 /* modules in Resources */,
 				7D900DD018DC663C00AF8DEF /* id2guid.csv in Resources */,
-				7D900DC318DC65A400AF8DEF /* StereoPanner.module in Resources */,
-				7D900DA718DC65A400AF8DEF /* PitchDetector.module in Resources */,
-				7D900D9418DC65A400AF8DEF /* MaterialSimulator.module in Resources */,
-				7D900DBD18DC65A400AF8DEF /* SpectralVocoder.module in Resources */,
-				7D900DC618DC65A400AF8DEF /* StereoSoundfiler.module in Resources */,
-				7D900D9A18DC65A400AF8DEF /* MultiBandCompressor.module in Resources */,
-				7D900D9118DC65A400AF8DEF /* HighPass.module in Resources */,
-				7D900D8218DC65A400AF8DEF /* BandPass.module in Resources */,
-				7D900DC718DC65A400AF8DEF /* SubSynth.module in Resources */,
-				7D900DC218DC65A400AF8DEF /* StereoGranularSynthesizer.module in Resources */,
-				7D900DAB18DC65A400AF8DEF /* QuadAudioIn.module in Resources */,
-				7D900D9818DC65A400AF8DEF /* MidiSettings.module in Resources */,
-				7D900DC518DC65A400AF8DEF /* StereoReverbTwo.module in Resources */,
-				7D900D8518DC65A400AF8DEF /* Container.module in Resources */,
-				7D900DBC18DC65A400AF8DEF /* SpectralFreeze.module in Resources */,
-				7D900D8618DC65A400AF8DEF /* ControlPoint.module in Resources */,
-				7D900D8418DC65A400AF8DEF /* Connection.module in Resources */,
-				7D900DA518DC65A400AF8DEF /* PianoReverbStrings.module in Resources */,
-				7D900DAF18DC65A400AF8DEF /* QuadPanner.module in Resources */,
-				7D900DA218DC65A400AF8DEF /* Phaser.module in Resources */,
-				7D900DB118DC65A400AF8DEF /* QuadXYPanner.module in Resources */,
-				7D900D8F18DC65A400AF8DEF /* GranularDelay.module in Resources */,
-				7D900DAA18DC65A400AF8DEF /* PluckedString.module in Resources */,
-				7D900D8818DC65A400AF8DEF /* Distortion.module in Resources */,
-				7D900D8718DC65A400AF8DEF /* Delay.module in Resources */,
-				7D900D9B18DC65A400AF8DEF /* Noisiness.module in Resources */,
-				7D900DBF18DC65A400AF8DEF /* StereoAudioOut.module in Resources */,
-				7D900D9F18DC65A400AF8DEF /* PartialAnalyser.module in Resources */,
-				7D900D9218DC65A400AF8DEF /* Limiter.module in Resources */,
-				7D900D9D18DC65A400AF8DEF /* OctoSoundfiler.module in Resources */,
-				7D900D9618DC65A400AF8DEF /* MidiControlInput.module in Resources */,
 				7D8451DF187DB8CB008639D2 /* InfoPlist.strings in Resources */,
-				7D900DC418DC65A400AF8DEF /* StereoReverb.module in Resources */,
-				7D900D9918DC65A400AF8DEF /* MidiStuffTest.module in Resources */,
-				7D900DC118DC65A400AF8DEF /* StereoConvolution.module in Resources */,
-				7D900D9C18DC65A400AF8DEF /* Notch.module in Resources */,
-				7D900D8E18DC65A400AF8DEF /* Gate.module in Resources */,
-				7D900DC818DC65A400AF8DEF /* TapDelay.module in Resources */,
-				7D900D9518DC65A400AF8DEF /* MidiCCoutTest.module in Resources */,
-				7D900D8118DC65A400AF8DEF /* AudioSettings.module in Resources */,
-				7D900D9E18DC65A400AF8DEF /* OnsetDetector.module in Resources */,
 				7D900DCF18DC663C00AF8DEF /* CollectionSchema.xsd in Resources */,
-				7D900DB918DC65A400AF8DEF /* Soundfiler.module in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

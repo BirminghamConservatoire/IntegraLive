@@ -11,7 +11,7 @@ $LastChangedBy: thomas $
 */
 
 #include "fsplay.h"
-#include <sndfile.h>
+#include "sndfile.h"
 
 void CnvFlnm(std::string &dst,const char *src);
 

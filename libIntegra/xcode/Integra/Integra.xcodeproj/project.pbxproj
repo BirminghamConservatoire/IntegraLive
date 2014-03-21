@@ -148,6 +148,12 @@
 		7D8454EB187DC023008639D2 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845403187DC023008639D2 /* unzip.h */; };
 		7D8454EC187DC023008639D2 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D845404187DC023008639D2 /* zip.c */; };
 		7D8454ED187DC023008639D2 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845405187DC023008639D2 /* zip.h */; };
+		7D975F6318DC515800EB28CB /* fsp_libsndfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D975F5D18DC515800EB28CB /* fsp_libsndfile.cpp */; };
+		7D975F6418DC515800EB28CB /* fsp_quicktime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D975F5E18DC515800EB28CB /* fsp_quicktime.cpp */; };
+		7D975F6518DC515800EB28CB /* fsplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D975F5F18DC515800EB28CB /* fsplay.h */; };
+		7D975F6618DC515800EB28CB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D975F6018DC515800EB28CB /* main.cpp */; };
+		7D975F6818DC515800EB28CB /* resample.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 7D975F6218DC515800EB28CB /* resample.hpp */; };
+		7D9B841518DC580100E71980 /* libflext-pd_t.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9B841418DC580100E71980 /* libflext-pd_t.a */; };
 		7D9FCFA418AA574100968601 /* midi_input_dispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D9FCF9E18AA574100968601 /* midi_input_dispatcher.cpp */; };
 		7D9FCFA518AA574100968601 /* midi_input_dispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D9FCF9F18AA574100968601 /* midi_input_dispatcher.h */; };
 		7D9FCFA618AA574100968601 /* midi_input_filterer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D9FCFA018AA574100968601 /* midi_input_filterer.cpp */; };
@@ -330,6 +336,13 @@
 		7D845403187DC023008639D2 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		7D845404187DC023008639D2 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		7D845405187DC023008639D2 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		7D975F5D18DC515800EB28CB /* fsp_libsndfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fsp_libsndfile.cpp; sourceTree = "<group>"; };
+		7D975F5E18DC515800EB28CB /* fsp_quicktime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fsp_quicktime.cpp; sourceTree = "<group>"; };
+		7D975F5F18DC515800EB28CB /* fsplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fsplay.h; sourceTree = "<group>"; };
+		7D975F6018DC515800EB28CB /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7D975F6118DC515800EB28CB /* package.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = package.txt; sourceTree = "<group>"; };
+		7D975F6218DC515800EB28CB /* resample.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = resample.hpp; sourceTree = "<group>"; };
+		7D9B841418DC580100E71980 /* libflext-pd_t.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libflext-pd_t.a"; path = "macosx/flext-502/libflext-pd_t.a"; sourceTree = "<group>"; };
 		7D9FCF9E18AA574100968601 /* midi_input_dispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_input_dispatcher.cpp; sourceTree = "<group>"; };
 		7D9FCF9F18AA574100968601 /* midi_input_dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_input_dispatcher.h; sourceTree = "<group>"; };
 		7D9FCFA018AA574100968601 /* midi_input_filterer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_input_filterer.cpp; sourceTree = "<group>"; };
@@ -368,6 +381,7 @@
 				7DFC159E18D9CE4A00CA083C /* AudioUnit.framework in Frameworks */,
 				7D11074B189FC9E900B4A72E /* Carbon.framework in Frameworks */,
 				7D110748189FC91C00B4A72E /* CoreFoundation.framework in Frameworks */,
+				7D9B841518DC580100E71980 /* libflext-pd_t.a in Frameworks */,
 				7DFC159A18D9CD3D00CA083C /* libportaudio.a in Frameworks */,
 				7DFC159818D9CD3100CA083C /* liblua.a in Frameworks */,
 				7D110745189FC8ED00B4A72E /* CoreAudio.framework in Frameworks */,
@@ -387,6 +401,7 @@
 		7D2131B01892B7A300C270A7 /* extra */ = {
 			isa = PBXGroup;
 			children = (
+				7D975F5C18DC515800EB28CB /* fsplay~ */,
 				7DCA34F6189FEE460031BDDC /* lrshift~ */,
 				7D2131F11892B80A00C270A7 /* fiddle~ */,
 				7D2131DE1892B7FD00C270A7 /* expr~ */,
@@ -662,6 +677,7 @@
 				7DFC158F18D9CCF800CA083C /* libfftw3f.a */,
 				7DFC159318D9CD1600CA083C /* libpd-osx.a */,
 				7DFC159518D9CD2300CA083C /* libsndfile.a */,
+				7D9B841418DC580100E71980 /* libflext-pd_t.a */,
 				7DFC159718D9CD3100CA083C /* liblua.a */,
 				7DFC159918D9CD3D00CA083C /* libportaudio.a */,
 				7DFC159B18D9CD4900CA083C /* libportmidi_s.a */,
@@ -686,6 +702,19 @@
 				7D845405187DC023008639D2 /* zip.h */,
 			);
 			path = minizip;
+			sourceTree = "<group>";
+		};
+		7D975F5C18DC515800EB28CB /* fsplay~ */ = {
+			isa = PBXGroup;
+			children = (
+				7D975F5D18DC515800EB28CB /* fsp_libsndfile.cpp */,
+				7D975F5E18DC515800EB28CB /* fsp_quicktime.cpp */,
+				7D975F5F18DC515800EB28CB /* fsplay.h */,
+				7D975F6018DC515800EB28CB /* main.cpp */,
+				7D975F6118DC515800EB28CB /* package.txt */,
+				7D975F6218DC515800EB28CB /* resample.hpp */,
+			);
+			path = "fsplay~";
 			sourceTree = "<group>";
 		};
 		7DCA34F6189FEE460031BDDC /* lrshift~ */ = {
@@ -724,6 +753,7 @@
 				7D845221187DBACF008639D2 /* server_lock.h in Headers */,
 				7D9FCFAB18AA575D00968601 /* documentation_mainpage.h in Headers */,
 				7D845222187DBACF008639D2 /* server_startup_info.h in Headers */,
+				7D975F6818DC515800EB28CB /* resample.hpp in Headers */,
 				7D845223187DBACF008639D2 /* server.h in Headers */,
 				7D845224187DBACF008639D2 /* string_helper.h in Headers */,
 				7D845225187DBACF008639D2 /* trace.h in Headers */,
@@ -774,6 +804,7 @@
 				7D8454E9187DC023008639D2 /* mztools.h in Headers */,
 				7D8452B6187DBBA5008639D2 /* platform_specifics.h in Headers */,
 				7D8452B1187DBBA5008639D2 /* node.h in Headers */,
+				7D975F6518DC515800EB28CB /* fsplay.h in Headers */,
 				7D8454ED187DC023008639D2 /* zip.h in Headers */,
 				7DFC156318D9B9B600CA083C /* midi_control_input_logic.h in Headers */,
 				7D8452C1187DBBA5008639D2 /* rename_command.h in Headers */,
@@ -863,6 +894,7 @@
 				7D2131C91892B7C500C270A7 /* freeverb~.c in Sources */,
 				7D8452C0187DBBA5008639D2 /* rename_command.cpp in Sources */,
 				7D2131EF1892B7FD00C270A7 /* vexp_fun.c in Sources */,
+				7D975F6318DC515800EB28CB /* fsp_libsndfile.cpp in Sources */,
 				7D8452BE187DBBA5008639D2 /* reentrance_checker.cpp in Sources */,
 				7D8452C4187DBBA5008639D2 /* save_command.cpp in Sources */,
 				7D8452D1187DBBA5008639D2 /* set_command.cpp in Sources */,
@@ -885,11 +917,13 @@
 				7D84528F187DBBA5008639D2 /* delete_command.cpp in Sources */,
 				7DB8170C18967D84005D7C1D /* midi_engine.cpp in Sources */,
 				7D8452D3187DBBA5008639D2 /* state_table.cpp in Sources */,
+				7D975F6418DC515800EB28CB /* fsp_quicktime.cpp in Sources */,
 				7D8452D9187DBBA5008639D2 /* validator.cpp in Sources */,
 				7D8452B9187DBBA5008639D2 /* player_logic.cpp in Sources */,
 				7D8452D8187DBBA5008639D2 /* trace.cpp in Sources */,
 				7D84528B187DBBA5008639D2 /* control_point_logic.cpp in Sources */,
 				7D8452B5187DBBA5008639D2 /* platform_specifics.cpp in Sources */,
+				7D975F6618DC515800EB28CB /* main.cpp in Sources */,
 				7D845287187DBBA5008639D2 /* connection_logic.cpp in Sources */,
 				7D9FCFA618AA574100968601 /* midi_input_filterer.cpp in Sources */,
 				7D8452A1187DBBA5008639D2 /* load_command.cpp in Sources */,

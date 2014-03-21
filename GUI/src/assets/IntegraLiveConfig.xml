@@ -26,10 +26,10 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<!--			mac-specific filename settings												-->
 		<mac>
 			<!--		path and filename of server executable, relative to gui						-->
-                        <serverpath>server/bin/integra_server</serverpath>
+                        <serverpath>integra_server</serverpath>
 		
 			<!--		path to modules directory, relative to server								-->
-                        <modulespath>../../modules</modulespath>
+                        <modulespath>Integra.framework/Resources/modules</modulespath>
 
 			<!--		path to directory viewer, relative to drive root							-->
 			<fileviewerpath>/usr/bin/open</fileviewerpath>

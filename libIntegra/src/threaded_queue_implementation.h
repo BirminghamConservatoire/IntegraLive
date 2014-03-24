@@ -40,8 +40,19 @@ namespace integra_internal
 
 		pthread_mutex_init( &m_queue_mutex, NULL );
 
-		sem_init( &m_semaphore, 0, 0 );
-
+#ifdef __APPLE__
+        m_semaphore = sem_open("/semaphore", O_CREAT, 0777, 0);
+#else
+        m_semaphore = new sem_t;
+        sem_init( m_semaphore, 0, 0 );
+#endif
+        
+        if (m_semaphore == SEM_FAILED )
+        {
+            INTEGRA_TRACE_ERROR << "Semaphore open error: " << strerror(errno);
+            return;
+        }
+        
 		pthread_create( &m_output_thread, NULL, threaded_queue_thread_function<T>, this );
 	}
 
@@ -56,7 +67,19 @@ namespace integra_internal
 
 		pthread_mutex_destroy( &m_queue_mutex );
 
-		sem_destroy( &m_semaphore );
+        int sem_rv = 0;
+        
+#ifdef __APPLE__
+        sem_rv = sem_close( m_semaphore );
+#else
+        sem_rv = sem_destroy( m_semaphore );
+        delete m_semaphore;
+#endif
+        
+        if (sem_rv == -1)
+        {
+            INTEGRA_TRACE_ERROR << "Semaphore close error: " << strerror(errno);
+        }
 
 		assert( m_content );
 		assert( m_content->empty() );
@@ -93,7 +116,7 @@ namespace integra_internal
 
 	template<class T> void CThreadedQueue<T>::send_signal_to_output_thread()
 	{
-		sem_post( &m_semaphore );
+		sem_post( m_semaphore );
 	}
 
 
@@ -103,7 +126,7 @@ namespace integra_internal
 
 		while( !finished )
 		{
-			sem_wait( &m_semaphore );
+			sem_wait( m_semaphore );
 
 			pthread_mutex_lock( &m_queue_mutex );
 

@@ -65,7 +65,7 @@ namespace integra_internal
 			std::list<T> *m_content;
 
 			pthread_mutex_t m_queue_mutex;
-			sem_t m_semaphore;
+			sem_t *m_semaphore;
 
 			pthread_t m_output_thread;
 

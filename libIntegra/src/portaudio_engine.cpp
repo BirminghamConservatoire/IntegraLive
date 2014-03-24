@@ -67,8 +67,20 @@ namespace integra_internal
 		m_process_buffer = NULL;
 
 		m_no_device_thread = NULL;
-		sem_init( &m_stop_no_device_thread, 0, 0 );
+        
+#ifdef __APPLE__
+        m_stop_no_device_thread = sem_open("/sem_no_device_thread", O_CREAT, 0777, 0);
+#else
+        m_stop_no_device_thread = new sem_t;
+        sem_init( m_stop_no_device_thread, 0, 0 );
+#endif
 
+        if (m_stop_no_device_thread == SEM_FAILED )
+        {
+            INTEGRA_TRACE_ERROR << "Semaphore open error: " << strerror(errno);
+            return;
+        }
+        
 		PaError error_code = Pa_Initialize();
 		m_initialized_ok = ( error_code == paNoError );
 		if( !m_initialized_ok )
@@ -100,7 +112,20 @@ namespace integra_internal
 		assert( !m_process_buffer );
 
 		assert( !m_no_device_thread );
-		sem_destroy( &m_stop_no_device_thread );
+        
+        int sem_rv = 0;
+        
+#ifdef __APPLE__
+        sem_rv = sem_close( m_stop_no_device_thread );
+#else
+        sem_rv = sem_destroy( m_stop_no_device_thread );
+        delete m_stop_no_device_thread;
+#endif
+        
+        if (sem_rv == -1)
+        {
+            INTEGRA_TRACE_ERROR << "Semaphore close error: " << strerror(errno);
+        }
 
 		PaError error_code = Pa_Terminate();
 		if( error_code != paNoError )
@@ -1021,7 +1046,7 @@ namespace integra_internal
 	{
 		assert( m_no_device_thread );
 
-		sem_post( &m_stop_no_device_thread );
+		sem_post( m_stop_no_device_thread );
 		pthread_join( *m_no_device_thread, NULL);
 		delete m_no_device_thread;
 		m_no_device_thread = NULL;
@@ -1045,7 +1070,7 @@ namespace integra_internal
 		float *out_buffer = new float[ CDspEngine::samples_per_buffer * number_of_channels ];
 		memset( out_buffer, 0, CDspEngine::samples_per_buffer * number_of_channels * sizeof( float ) );
 
-		while( sem_trywait( &m_stop_no_device_thread ) < 0 ) 
+		while( sem_trywait( m_stop_no_device_thread ) < 0 ) 
 		{
 			usleep( update_microseconds );
 

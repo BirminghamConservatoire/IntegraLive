@@ -138,7 +138,7 @@ namespace integra_internal
 			CRingBuffer *m_ring_buffer;
 
 			pthread_t *m_no_device_thread;
-			sem_t m_stop_no_device_thread;
+			sem_t *m_stop_no_device_thread;
 
 			static const string none;
 			static const int potential_sample_rates[];

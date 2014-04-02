@@ -93,21 +93,12 @@
 	</P>
 	<P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>IntegraLive
 	GUI consists of a main application, distributable as a .swf file
-	(shockwave flash binary), and a set of control plugins, each of
-	which is also distributable as a .swf file.  These control plugins
-	are loaded at runtime by the main application, and have
-	bi-directional communication with the main application using flash
-	'local connections'.  The plugin architecture is described more
-	fully in a separate document called “</FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2><B>Integra
-	Live GUI Control Plugin Architecture</B></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2>”.</FONT></FONT></P>
+	(shockwave flash binary)</FONT></FONT></P>
 	<P CLASS="western"><BR><BR>
 	</P>
 	<P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>This
 	component relationship is illustrated in the following diagram:</FONT></FONT></P>
-	<P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=2>S<IMG SRC="Documentation%20of%20Integra%20Live%20GUI_html_23441092.gif" NAME="Object1" ALIGN=LEFT WIDTH=403 HEIGHT=570><BR CLEAR=LEFT>ince
-	the control plugins are described in a separate document, this
-	document will restrict itself to describing the main application
-	“IntegraLive GUI”.</FONT></FONT></P>
+	<P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=2><IMG SRC="Documentation%20of%20Integra%20Live%20GUI_html_23441092.gif" NAME="Object1" ALIGN=LEFT WIDTH=403 HEIGHT=570><BR CLEAR=LEFT></FONT></FONT></P>
 	<P CLASS="western"><BR><BR>
 	</P>
 	<H3 CLASS="western">1.3.Build Environment</H3>
@@ -2170,19 +2161,14 @@
 	Their purposes are as follows:</SPAN></FONT></FONT></P>
 	<H4 CLASS="western">3.5.1.ControlContainer	</H4>
 	<P CLASS="western">The class <I>ControlContainer </I><SPAN STYLE="font-style: normal">is
-	the main GUI application's bridge with the control plugins.  It
-	loads and displays them, sets their values via flash local
-	connections, listens to their responses, and fires Controller
+	the main GUI application's bridge with the control control widgets.  It
+	loads and displays them, sets their values, listens to their responses, and fires Controller
 	commands when module attribute value change as a result of control
-	plugins.</SPAN></P>
+	widget input.</SPAN></P>
 	<P CLASS="western" STYLE="font-style: normal">It contains some
 	marshalling code to convert between different attribute types and
 	scales, and supports 'enumeration' type controls by handling the
 	'allowed value' field of attribute definitions.</P>
-	<P CLASS="western"><FONT FACE="Arial, sans-serif"><FONT SIZE=2><SPAN STYLE="font-style: normal">For
-	more information about the control plugin architecture see the
-	separate document called “</SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2><SPAN STYLE="font-style: normal"><B>Integra
-	Live GUI Control Plugin Architecture</B></SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=2><SPAN STYLE="font-style: normal">”.</SPAN></FONT></FONT></P>
 	<H4 CLASS="western">3.5.2.AggregateVUContainer	</H4>
 	<P CLASS="western" STYLE="font-style: normal">The class
 	<I>AggregateVUContainer </I>is a specialised version of
@@ -2326,15 +2312,6 @@
 	</P>
 	<P CLASS="western" STYLE="font-style: normal"><BR>
 	</P>
-	<H4 CLASS="western">3.5.9.IntegraSWFLoader	</H4>
-	<P CLASS="western"><SPAN STYLE="font-style: normal">The class
-	</SPAN><I>IntegraSWFLoader </I><SPAN STYLE="font-style: normal">extends
-	the flash </SPAN><I>SWFLoader, </I><SPAN STYLE="font-style: normal">and
-	is used to load control plugins.  </SPAN><I>IntegraSWFLoader </I><SPAN STYLE="font-style: normal">adds
-	functionality to handle the flash two way LocalConnection
-	communication between the main GUI application and control plugins. 
-	</SPAN>
-	</P>
 	<P CLASS="western" STYLE="font-style: normal"><BR>
 	</P>
 	<H4 CLASS="western">3.5.10.LibraryRenderer	</H4>
@@ -2376,7 +2353,7 @@
 	</I>when a control is repositioned.  Control reposition operations
 	have to be initiated by the <I>ControlContainer, </I>because
 	controls can be repositioned by clicking on any inactive area of the
-	control plugin itself.   The event is received by any owner of
+	control widget itself.   The event is received by any owner of
 	<I>ControlContainer </I>in<I> </I>which controls can be repositioned
 	(currently only <I>LiveViewBlock).</I></P>
 	<P CLASS="western" STYLE="font-style: normal"><BR>

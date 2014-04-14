@@ -35,6 +35,7 @@ package components.model.userData
 		
 		public function get primarySelectedChildID():int { return _primarySelectedChildID; }
 		public function set primarySelectedChildID( primarySelectedChildID:int ):void { _primarySelectedChildID = primarySelectedChildID; }
+		public function get selectedChildIDs():Object { return _selectedChildIDs; }
 
 		public function isChildSelected( childID:int ):Boolean 
 		{

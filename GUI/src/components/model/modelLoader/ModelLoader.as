@@ -51,6 +51,7 @@ package components.model.modelLoader
 	import components.model.Scene;
 	import components.model.Script;
 	import components.model.Track;
+	import components.model.userData.TrackUserData;
 	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.InterfaceDefinition;
@@ -246,8 +247,8 @@ package components.model.modelLoader
 
 			for each( var track:Track in _model.project.tracks )
 			{
-				loadObjectState( track, methodCalls );  
-
+				loadObjectState( track, methodCalls );
+				
 				for each( var block:Block in track.blocks )
 				{
 					loadObjectState( block, methodCalls );  
@@ -421,6 +422,7 @@ package components.model.modelLoader
 				case ModelLoadPhase.STATES:
 					resolveBlockEnvelopes();
 					resolveScalerConnections( _model.project );
+					removeInvalidChildSelection();
 					LegacyMidiHandler.instance.translateToNewModules();
 						
 					loadComplete();
@@ -981,7 +983,8 @@ package components.model.modelLoader
 							default:
 								foundExtraneousNode( path, interfaceDefinition, "unexpected class in hierarchy level 3" );
 								break;
-						}							
+						}
+																			
 						break;
 						
 					case 4:
@@ -1214,6 +1217,10 @@ package components.model.modelLoader
 			}
 		}
 		
+		private function foundInvalidSelectedChild( containerType:String ):void
+		{
+			Trace.error( "Found selectedChild in userData with no corresponding ", containerType );
+		}
 		
 		private function objectStatesHandler( event:Event ):void
 		{
@@ -1390,6 +1397,28 @@ package components.model.modelLoader
 			}
 		}		
 		
+		// This function works around a bug in <=1.6 where the selectedChild field in userData is not removed when blocks are moved between tracks -jb
+		private function removeInvalidChildSelection():void
+		{
+			if( _mode == IMPORTING_BLOCK || _mode == IMPORTING_MODULE )
+			{
+				return;	
+			}
+			
+			for each( var track:Track in _model.project.tracks )
+			{				
+				var trackUserData:TrackUserData = track.trackUserData;
+								
+				for ( var selectedItem:String in trackUserData.selectedChildIDs )
+				{
+					if ( selectedItem == "-1" )
+					{
+						foundInvalidSelectedChild( "Block" );
+						trackUserData.setChildSelected( -1, false );
+					}
+				}  
+			}
+		}
 		
 		private function foundExtraneousBlockEnvelope( envelope:Envelope ):void
 		{

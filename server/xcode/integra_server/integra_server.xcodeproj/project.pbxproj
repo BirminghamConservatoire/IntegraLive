@@ -346,7 +346,7 @@
 				);
 				OTHER_LDFLAGS = "-lc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/xmlrpc-c-1.25.15 ../../externals/macosx/liblo-0.28 ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};
@@ -372,7 +372,7 @@
 				);
 				OTHER_LDFLAGS = "-lc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/liblo-0.28 ../../externals/macosx/xmlrpc-c-1.25.15 ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};

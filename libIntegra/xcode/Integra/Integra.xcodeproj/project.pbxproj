@@ -1091,13 +1091,13 @@
 				INFOPLIST_FILE = "Integra/Integra-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/fftw-3.3.3",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/flext-502",
-					/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/libpd,
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/libsndfile-1.0.26pre5",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/lua-5.2.3",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portaudio-19",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portmidi-217",
+					"../../externals/macosx/fftw-3.3.3",
+					"../../externals/macosx/flext-502",
+					../../externals/macosx/libpd,
+					"../../externals/macosx/libsndfile-1.0.26pre5",
+					"../../externals/macosx/lua-5.2.3",
+					"../../externals/macosx/portaudio-19",
+					"../../externals/macosx/portmidi-217",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
@@ -1112,7 +1112,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/**";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1146,13 +1146,13 @@
 				INFOPLIST_FILE = "Integra/Integra-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/fftw-3.3.3",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/flext-502",
-					/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/libpd,
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/libsndfile-1.0.26pre5",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/lua-5.2.3",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portaudio-19",
-					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portmidi-217",
+					"../../externals/macosx/fftw-3.3.3",
+					"../../externals/macosx/flext-502",
+					../../externals/macosx/libpd,
+					"../../externals/macosx/libsndfile-1.0.26pre5",
+					"../../externals/macosx/lua-5.2.3",
+					"../../externals/macosx/portaudio-19",
+					"../../externals/macosx/portmidi-217",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
@@ -1167,7 +1167,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx10.8;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/**";
 				WRAPPER_EXTENSION = framework;
 			};

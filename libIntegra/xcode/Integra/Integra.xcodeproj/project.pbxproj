@@ -1020,8 +1020,9 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					../..,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.7;
 			};
 			name = Debug;
 		};
@@ -1056,19 +1057,26 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					../..,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx10.7;
 			};
 			name = Release;
 		};
 		7D8451FA187DB8CB008639D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Integra/Integra-Prefix.pch";
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -1091,6 +1099,7 @@
 					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portaudio-19",
 					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portmidi-217",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
 					"-DUSE_FILE32API",
 					"-DPD",
@@ -1103,6 +1112,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/**";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1111,12 +1121,17 @@
 		7D8451FB187DB8CB008639D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = NO;
 				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Integra/Integra-Prefix.pch";
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -1139,6 +1154,7 @@
 					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portaudio-19",
 					"/Users/jamie/Documents/IntegraLive/libIntegra/externals/macosx/portmidi-217",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = (
 					"-DUSE_FILE32API",
 					"-DPD",
@@ -1151,6 +1167,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/**";
 				WRAPPER_EXTENSION = framework;
 			};

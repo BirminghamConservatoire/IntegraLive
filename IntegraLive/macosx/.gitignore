@@ -1,0 +1,12 @@
+Make.config
+*.dmg
+host/
+*.tar.gz
+*.zip
+libIntegra-dependencies-OSX/
+server/
+*.app
+IntegraLiveConfig.xml
+__MACOSX
+fsplay~
+

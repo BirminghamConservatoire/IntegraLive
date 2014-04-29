@@ -1,8 +1,7 @@
-
--include Make.config
-
+REPOSITORYROOT=../..
 PRODUCT=Integra\ Live
 CREATORPRODUCT=Module\ Creator
+
 APPNAME=$(PRODUCT).app
 CREATORAPPNAME=$(CREATORPRODUCT).app
 RESDIR=Contents/Resources
@@ -39,13 +38,11 @@ dmg: $(DEFAULTBUILD)
 	    hdiutil create -megabytes 300 -fs HFS+ -volname $(PRODUCT) $(PRODUCT)_temp.dmg; \
 	fi
 	hdiutil mount $(PRODUCT)_temp.dmg
-	#rsync -av $(APPNAME) /Volumes/$(PRODUCT)
 	mv $(APPNAME) /Volumes/$(PRODUCT)
 	hdiutil detach /Volumes/$(PRODUCT)
 	-rm -f $(PRODUCT).dmg
 	hdiutil convert $(PRODUCT)_temp.dmg -format UDZO -imagekey zlib-level=9 -o $(PRODUCT).dmg
 	rm $(PRODUCT)_temp.dmg
-	#codesign -f -v -s "3rd Party Mac Developer Installer: Birmingham City University" $(PRODUCT).dmg
 
 dropdmg: $(DEFAULTBUILD)
 	-mkdir $(PRODUCT)

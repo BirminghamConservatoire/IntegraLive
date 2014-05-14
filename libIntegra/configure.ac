@@ -43,7 +43,7 @@ AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
 # age to 0.
 INTEGRA_SO_VERSION=0:0:0
 dnl BASE_CFLAGS="-$(srcdir)/i -Wall -pedantic -ansi"
-BASE_CFLAGS="-$(srcdir)/i -Wall"
+BASE_CFLAGS="-Wall"
 
 # We have to specify optimisations like this becuase -fdefer-pop causes a program crash, and -fno-defer-pop isn't supported with O3 on OS X
 # Note also -fdelayed-branch doesn't seem to be supported

@@ -154,6 +154,9 @@ host:
 	if [ ! -e $(FSPLAY).zip ]; then \
 		wget http://integralive.org/incoming/$(FSPLAY).zip; \
 	fi
+	# Hacky fix for not working slipdec
+	chmod 644 host/extra/mrpeach/unpackOSCstream.pd 
+	cp unpackOSCstream.pd host/extra/mrpeach
 	unzip $(FSPLAY).zip
 	mv $(FSPLAY)/* host/extra/
 	rm -rf $(FSPLAY)

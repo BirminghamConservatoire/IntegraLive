@@ -12,4 +12,4 @@ copy "..\externals\win32\libxml2-2.7.8.win32\bin\libxml2.dll" "%1"
 copy "..\externals\win32\iconv\iconv.dll" "%1"
 
 copy "..\data\*.*" "%1"
-
+copy "..\schemas\v1.7\*.xsd" "%1"

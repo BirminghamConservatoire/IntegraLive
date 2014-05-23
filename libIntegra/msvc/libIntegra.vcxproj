@@ -309,6 +309,35 @@ call copy_dependencies.bat ..\bin\Release\ Release
   <ItemGroup>
     <ResourceCompile Include="libIntegra.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\schemas\v1.7\gixd.xml" />
+    <None Include="..\schemas\v1.7\iid.xml" />
+    <None Include="..\schemas\v1.7\iid2.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\schemas\v1.7\ixd.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\schemas\v2.0\gixd-17-20.xsl" />
+    <None Include="..\schemas\v2.0\gixd.xml" />
+    <None Include="..\schemas\v2.0\iid-17-20.xsl" />
+    <None Include="..\schemas\v2.0\iid.xml" />
+    <None Include="..\schemas\v2.0\iid2.xml" />
+    <None Include="..\schemas\v2.0\ixd-17-20.xsl">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\schemas\v2.0\ixd.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\schemas\v1.7\gixd.xsd" />
+    <Xsd Include="..\schemas\v1.7\iid.xsd" />
+    <Xsd Include="..\schemas\v1.7\ixd.xsd" />
+    <None Include="..\schemas\v2.0\gixd.xsd" />
+    <None Include="..\schemas\v2.0\iid.xsd" />
+    <None Include="..\schemas\v2.0\ixd.xsd" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

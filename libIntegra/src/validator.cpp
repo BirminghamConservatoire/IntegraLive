@@ -30,8 +30,6 @@
 
 namespace integra_internal
 {
-	const char *CValidator::schema_file = "CollectionSchema.xsd";
-
 	static void schemaErrorCallback( void *none, const char *message, ...)
 	{
 		char trace[ CStringHelper::string_buffer_length ];
@@ -55,8 +53,7 @@ namespace integra_internal
 		INTEGRA_TRACE_ERROR << trace;
 	}
 
-
-	CValidator::CValidator()
+	CValidator::CValidator(char *schema_file)
 	{
 		m_schema_parser_context = NULL;
 		m_schema = NULL;
@@ -104,9 +101,7 @@ namespace integra_internal
 		}
 	}
 
-
-	
-	CError CValidator::validate_ixd( const char *xml_buffer, unsigned int buffer_length )
+	CError CValidator::validate( const char *xml_buffer, unsigned int buffer_length )
 	{
 		assert( xml_buffer );
 

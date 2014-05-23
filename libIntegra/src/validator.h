@@ -37,18 +37,17 @@ namespace integra_internal
 	{
 		public:
 
-			CValidator();
+			CValidator(char *schema_file = "CollectionSchema.xsd");
 			~CValidator();
 
-			/* \brief high-level function to validate an IXD 
+			/* \brief high-level function to validate an XML document against the configured schema (renamed from "validate_ixd")
 			 *
 			 * \param *xml_buffer pointer to buffer containing xml data
 			 * \param buffer_length size of buffer in bytes
 			 */
-			CError validate_ixd( const char *xml_buffer, unsigned int buffer_length );
+			CError validate( const char *xml_buffer, unsigned int buffer_length );
 
 		private:
-
 
 			xmlDocPtr document_read( const char *xml_buffer, unsigned int buffer_length );
 			CError document_free( xmlDocPtr doc );
@@ -59,7 +58,7 @@ namespace integra_internal
 			xmlSchemaPtr m_schema;
 			xmlSchemaValidCtxtPtr m_validity_context;
 
-			static const char *schema_file;
+			char *schema_file;
 	};
 
 

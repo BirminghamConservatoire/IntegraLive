@@ -26,6 +26,7 @@
 
 #include <time.h>
 
+#include "validator.h"
 #include "api/interface_definition.h"
 #include "api/common_typedefs.h"
 #include "api/guid_helper.h"
@@ -96,6 +97,7 @@ namespace integra_internal
 			endpoint_definition_list m_endpoint_definitions;
 			widget_definition_list m_widget_definitions;
 			CImplementationInfo *m_implementation_info;
+			CValidator validator;
 
 			const static string core_tag;
 	};

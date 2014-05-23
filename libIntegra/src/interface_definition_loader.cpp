@@ -131,11 +131,23 @@ namespace integra_internal
 
 	CInterfaceDefinition *CInterfaceDefinitionLoader::load( const unsigned char &buffer, unsigned int buffer_size )
 	{
+		CValidator validator("iid.xsd");
+		CError error = CError::SUCCESS;
+
 		assert( !m_interface_definition && !m_reader && m_element_path.empty() );
 
 		m_interface_definition = new CInterfaceDefinition;
 
 		xmlInitParser();
+		
+		/* validate candidate IID file against schema */
+		error = validator.validate( (char *) &buffer, buffer_size );
+		if( error != CError::SUCCESS ) 
+		{
+			INTEGRA_TRACE_ERROR << "iid validation failed";
+			cleanup();
+			return NULL;
+		}
 
 		m_reader = xmlReaderForMemory( (char *) &buffer, buffer_size, NULL, NULL, 0 );
 		if( !m_reader )
@@ -341,6 +353,10 @@ namespace integra_internal
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.ScaleType",
 			current_endpoint().m_control_info->m_state_info->m_value_scale->m_type );
 
+		//READ_MEMBER(
+		//	"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.Scale.Base",
+		//	current_endpoint().m_control_info->m_state_info->m_value_scale->m_base );
+
 		READ_VALUE( 
 			"InterfaceDeclaration.EndpointInfo.Endpoint.ControlInfo.StateInfo.StateLabels.Label.State",
 			m_last_state_label_value,
@@ -483,6 +499,7 @@ namespace integra_internal
 
 	CError CInterfaceDefinitionLoader::handle_element_attributes()
 	{
+		char *origin_guid_attribute = NULL;
 		CError error = CError::SUCCESS;
 
 		assert( m_interface_definition && m_reader && !m_element_path.empty() );

@@ -87,7 +87,7 @@ namespace integra_internal
 		xmlTextReaderPtr reader = NULL;
 		node_list new_nodes;
 		node_list::const_iterator new_node_iterator;
-		CValidator validator;
+		CValidator validator("ixd.xsd");
 		CError error = CError::SUCCESS;
 
 		LIBXML_TEST_VERSION;
@@ -125,7 +125,7 @@ namespace integra_internal
 		xmlInitParser();
 
 		/* validate candidate IXD file against schema */
-		error = validator.validate_ixd( (char *)ixd_buffer, ixd_buffer_length );
+		error = validator.validate( (char *)ixd_buffer, ixd_buffer_length );
 		if( error != CError::SUCCESS ) 
 		{
 			INTEGRA_TRACE_ERROR << "ixd validation failed: " << filename;

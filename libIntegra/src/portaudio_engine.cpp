@@ -68,18 +68,27 @@ namespace integra_internal
 
 		m_no_device_thread = NULL;
         
+		CError error = CError::SUCCESS;
 #ifdef __APPLE__
         m_stop_no_device_thread = sem_open("/sem_no_device_thread", O_CREAT, 0777, 0);
+
+		if(m_stop_no_device_thread == SEM_FAILED )
+		{
+			error = CError::FAILED;
+		}
 #else
         m_stop_no_device_thread = new sem_t;
-        sem_init( m_stop_no_device_thread, 0, 0 );
-#endif
 
-        if (m_stop_no_device_thread == SEM_FAILED )
-        {
-            INTEGRA_TRACE_ERROR << "Semaphore open error: " << strerror(errno);
-            return;
-        }
+		if (sem_init( m_stop_no_device_thread, 0, 0 )==-1)
+		{
+			error = CError::FAILED;
+		}
+#endif
+		if( error != CError::SUCCESS )
+		{
+			INTEGRA_TRACE_ERROR << "Semaphore open error: " << strerror(errno);
+			return;
+		}
         
 		PaError error_code = Pa_Initialize();
 		m_initialized_ok = ( error_code == paNoError );

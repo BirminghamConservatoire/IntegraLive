@@ -40,19 +40,28 @@ namespace integra_internal
 
 		pthread_mutex_init( &m_queue_mutex, NULL );
 
+        CError error = CError::SUCCESS;
 #ifdef __APPLE__
         m_semaphore = sem_open("/semaphore", O_CREAT, 0777, 0);
+
+        if (m_semaphore == SEM_FAILED )
+        {
+            error = CError::FAILED;
+        }
 #else
         m_semaphore = new sem_t;
-        sem_init( m_semaphore, 0, 0 );
+
+        if (sem_init( m_semaphore, 0, 0 )==-1)
+        {
+            error = CError::FAILED;
+        }
 #endif
-        
-        if (m_semaphore == SEM_FAILED )
+        if( error != CError::SUCCESS )
         {
             INTEGRA_TRACE_ERROR << "Semaphore open error: " << strerror(errno);
             return;
         }
-        
+
 		pthread_create( &m_output_thread, NULL, threaded_queue_thread_function<T>, this );
 	}
 

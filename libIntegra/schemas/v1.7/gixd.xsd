@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-node"
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified"
+>
+
+  <xsd:annotation>
+    <xsd:documentation>
+      The XML Schema for the main container format for the Integra Environment. Instances of this Schema defines a given DSP graph and its current state at some point in time. Following is an example instance:
+
+      &lt;IntegraCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      integraVersion="x.x.x.xxxx"&gt;
+
+      &lt;object classId="7" name="Project1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="7" name="Block1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="5" name="TapDelay1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+      &lt;attribute name="out1" typeCode="5"&gt;&lt;/attribute&gt;
+      &lt;attribute name="in1" typeCode="5"&gt;&lt;/attribute&gt;
+      &lt;attribute name="delayTime" typeCode="2"&gt;0.5&lt;/attribute&gt;
+      &lt;attribute name="feedback" typeCode="2"&gt;0.5&lt;/attribute&gt;
+      &lt;/object&gt;
+      &lt;object classId="5" name="TapDelay2"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+      &lt;/object&gt;
+      &lt;/object&gt;
+      &lt;object classId="7" name="Block2"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="5" name="TapDelay1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+      &lt;attribute name="out1" typeCode="5"&gt;&lt;/attribute&gt;
+      &lt;/object&gt;
+      &lt;/object&gt;
+      &lt;/object&gt;
+      &lt;/IntegraCollection&gt;
+
+      An object represents a container (a module, a connection, a player) that has attributes that defins its current state as well as other objects that are contained in its parent object.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="IntegraCollection">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          Collection root object.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="object" type="project"/>
+      </xsd:sequence>
+      <xsd:attribute name="integraVersion" type="xsd:string" use="optional" />
+      <xsd:attribute name="collectionSchemaVersionMajor" type="xsd:int" use="optional"/>
+      <xsd:attribute name="collectionSchemaVersionMinor" type="xsd:int" use="optional" fixed="0" />
+      <xsd:attribute name="collectionAbsoluteVersion" type="xsd:int" use="optional" fixed="0" />
+      <xsd:anyAttribute />
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="project">
+    <xsd:annotation>
+      <xsd:documentation>
+        Represents an Integra Live project.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="container">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="attribute" type="project-attribute" />
+          <xsd:element maxOccurs="unbounded" name="object" type="track" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="track">
+    <xsd:annotation>
+      <xsd:documentation>
+        Represents an Integra Live track.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="container">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="attribute" type="track-attribute" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="object" type="block" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="block">
+    <xsd:annotation>
+      <xsd:documentation>
+        Represents an Integra Live block.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="container">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="attribute" type="block-attribute" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="object" type="module" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="module">
+    <xsd:annotation>
+      <xsd:documentation>
+        Represents an Integra Live module.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="container">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="attribute" type="module-attribute"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="container" abstract="true">
+
+    <xsd:attribute name="moduleId" type="guid" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          The unique indentifier for this container
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="originId" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          The unique indentifier for this container's origin
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="name" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          A human readable name for this container
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+
+  <xsd:complexType name="project-attribute">
+    <xsd:annotation>
+      <xsd:documentation>
+        An attribute of the parent project.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="attribute" />
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="track-attribute">
+    <xsd:annotation>
+      <xsd:documentation>
+        An attribute of the parent track.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="attribute" />
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="block-attribute">
+    <xsd:annotation>
+      <xsd:documentation>
+        An attribute of the parent block.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="attribute" />
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="module-attribute">
+    <xsd:annotation>
+      <xsd:documentation>
+        An attribute of the parent module.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="attribute" />
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="attribute" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>
+        This type defines legal values for generic container attributes.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="name" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>
+              Indicates the name of of this attribute
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="typeCode" type="type-code" use="required" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:simpleType name="type-code">
+    <xsd:annotation>
+      <xsd:documentation>
+        Indicates the type of data stored in this attribute (1=int,2=float,3=string)
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:unsignedByte">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="3"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="guid">
+    <xsd:annotation>
+      <xsd:documentation>
+        A simple type that enforces a guid-specific format on string data
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

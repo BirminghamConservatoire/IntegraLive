@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<IntegraCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-node" integraVersion="1.7.0.3301">
+ <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="sound_loop_vocoder">
+  <attribute name="zIndex" typeCode="1">0</attribute>
+  <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;primarySelectedChild&gt;Track2&lt;/primarySelectedChild&gt;  &lt;viewMode&gt;arrange&lt;/viewMode&gt;  &lt;blockPropertiesOpen&gt;false&lt;/blockPropertiesOpen&gt;  &lt;popups/&gt;  &lt;timelineScroll&gt;0&lt;/timelineScroll&gt;  &lt;timelineZoom&gt;0.4&lt;/timelineZoom&gt;  &lt;colorScheme&gt;light&lt;/colorScheme&gt;&lt;/userdata&gt;</attribute>
+  <attribute name="active" typeCode="1">1</attribute>
+  <attribute name="info" typeCode="3">This text is a placeholder for your *project* documentation
+
+Use the Info view 'edit' mode to add documentation to this *project*</attribute>
+  <object moduleId="3e36b6fc-363d-e917-91f1-c7844640e336" originId="0f9203b8-e091-40f8-8968-4ee96185523f" name="Player1">
+   <attribute name="tick" typeCode="1">1707</attribute>
+   <attribute name="play" typeCode="1">0</attribute>
+   <attribute name="start" typeCode="1">-1</attribute>
+   <attribute name="loop" typeCode="1">0</attribute>
+   <attribute name="scene" typeCode="3"/>
+   <attribute name="rate" typeCode="1">40</attribute>
+   <attribute name="end" typeCode="1">-1</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Track1">
+   <attribute name="zIndex" typeCode="1">0</attribute>
+   <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;color&gt;1018603&lt;/color&gt;  &lt;arrangeViewHeight&gt;100&lt;/arrangeViewHeight&gt;  &lt;arrangeViewExpanded&gt;true&lt;/arrangeViewExpanded&gt;  &lt;liveViewExpanded&gt;true&lt;/liveViewExpanded&gt;&lt;/userdata&gt;</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+   <attribute name="info" typeCode="3">This text is a placeholder for your *track* documentation
+
+Use the Info View 'edit' mode to add documentation to this *track*</attribute>
+   <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Block1">
+    <attribute name="zIndex" typeCode="1">0</attribute>
+    <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;primarySelectedChild&gt;AudioIn1&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;AudioIn1&lt;/selectedChild&gt;  &lt;selectedChild&gt;StereoAudioOut1&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name=&quot;AudioIn1&quot;&gt;      &lt;x&gt;0.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;StereoAudioOut1&quot;&gt;      &lt;x&gt;28.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</attribute>
+    <attribute name="active" typeCode="1">0</attribute>
+    <attribute name="info" typeCode="3">This text is a placeholder for your *block* documentation
+
+Use the Info View 'edit' mode to add documentation to this *block*</attribute>
+    <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="offset" typeCode="1">1</attribute>
+     <attribute name="active" typeCode="1">0</attribute>
+    </object>
+    <object moduleId="13ac287e-4841-bc84-b4d6-927b1e0293bc" originId="b6f7421a-888a-47d7-b266-76a0b6c2b86b" name="AudioIn1">
+     <attribute name="active" typeCode="1">0</attribute>
+     <attribute name="outLevel" typeCode="2">0.8</attribute>
+     <attribute name="offset" typeCode="1">1</attribute>
+    </object>
+   </object>
+   <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+    <attribute name="sourcePath" typeCode="3">BlockEnvelope1.currentValue</attribute>
+    <attribute name="targetPath" typeCode="3">Block1.active</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+   </object>
+   <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope2">
+    <attribute name="startTick" typeCode="1">1600</attribute>
+    <attribute name="currentTick" typeCode="1">1707</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">-1</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">0</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">799</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">800</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+   </object>
+   <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope1">
+    <attribute name="startTick" typeCode="1">0</attribute>
+    <attribute name="currentTick" typeCode="1">1707</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">-1</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">0</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">799</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">800</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+   </object>
+   <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="SoundfileLoop">
+    <attribute name="zIndex" typeCode="1">0</attribute>
+    <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;primarySelectedChild&gt;BandPass2&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;Connection10&lt;/selectedChild&gt;  &lt;selectedChild&gt;BandPass2&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection9&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name=&quot;BandPass1&quot;&gt;      &lt;x&gt;20.260330578512395&lt;/x&gt;      &lt;y&gt;2.0516528925619832&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;BandPass2&quot;&gt;      &lt;x&gt;15.785123966942148&lt;/x&gt;      &lt;y&gt;8.016528925619834&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;Reverb1&quot;&gt;      &lt;x&gt;33.18181818181818&lt;/x&gt;      &lt;y&gt;5.0413223140495855&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;StereoAudioOut1&quot;&gt;      &lt;x&gt;46.24586776859504&lt;/x&gt;      &lt;y&gt;2.8099173553719003&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;RingModulator1&quot;&gt;      &lt;x&gt;32.32644628099173&lt;/x&gt;      &lt;y&gt;10.979338842975205&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;StereoSoundfiler1&quot;&gt;      &lt;x&gt;5.413223140495868&lt;/x&gt;      &lt;y&gt;4.421487603305785&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;TestSource1&quot;&gt;      &lt;x&gt;16.90082644628099&lt;/x&gt;      &lt;y&gt;13.05785123966942&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+    <attribute name="info" typeCode="3">This demo block contains an embedded soundfile, which is automatically triggered every time the block becomes active.
+
+Move the playhead onto the block to hear the soundfile, move it off to stop playback.
+
+The automatic triggering of the soundfile is achieved using the Routing panel at the bottom of the Arrange View.</attribute>
+    <object moduleId="ce0f5411-816e-6159-bb23-840444b62618" originId="bf519e13-c924-4198-bb1a-a1c66b64ac5d" name="Scaler1">
+     <attribute name="outScale" typeCode="3">linear</attribute>
+     <attribute name="outRangeMax" typeCode="2">1.</attribute>
+     <attribute name="inValue" typeCode="2">1.</attribute>
+     <attribute name="inRangeMax" typeCode="2">1.</attribute>
+     <attribute name="inRangeMin" typeCode="2">0.</attribute>
+     <attribute name="inScale" typeCode="3">linear</attribute>
+     <attribute name="inMode" typeCode="3">snap</attribute>
+     <attribute name="outRangeMin" typeCode="2">0.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="b3f23f41-f60c-1359-6e1d-83e97ffe96d8" originId="c12680da-12c4-44c7-9b9b-5c24c322e812" name="TestSource1">
+     <attribute name="gain" typeCode="2">1.</attribute>
+     <attribute name="mute" typeCode="1">0</attribute>
+     <attribute name="frequency" typeCode="2">440.</attribute>
+     <attribute name="source" typeCode="3">sine</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="offset" typeCode="1">1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection3">
+     <attribute name="sourcePath" typeCode="3">StereoAudioOut1.active</attribute>
+     <attribute name="targetPath" typeCode="3">Scaler1.inValue</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection4">
+     <attribute name="sourcePath" typeCode="3">Scaler1.outValue</attribute>
+     <attribute name="targetPath" typeCode="3">StereoSoundfiler1.play</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="09d2b6bc-ae7c-0f34-e616-a1a30c8dc9e8" originId="fa3f8bc6-b9d8-be0f-5173-9190d252be63" name="StereoSoundfiler1">
+     <attribute name="load" typeCode="3">soundfile.wav</attribute>
+     <attribute name="record" typeCode="1">0</attribute>
+     <attribute name="mute" typeCode="1">0</attribute>
+     <attribute name="loop" typeCode="1">1</attribute>
+     <attribute name="play" typeCode="1">1</attribute>
+     <attribute name="speed" typeCode="2">1.</attribute>
+     <attribute name="position" typeCode="2">0.441763</attribute>
+     <attribute name="gain" typeCode="2">1.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="48f1ca59-6efd-7485-dbc4-49872180af60" originId="b4cabc6b-5c06-498b-a3df-643f93fe225f" name="RingModulator1">
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="lfoAmount" typeCode="2">0.5</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="lfoShape" typeCode="3">sine</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+     <attribute name="lfoRate" typeCode="2">0.2</attribute>
+     <attribute name="modulationFrequency" typeCode="2">3.</attribute>
+     <attribute name="modulationDrive" typeCode="2">1.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="b5a5d10b-1bb0-16bd-7565-6d46e51ee334" originId="7335d47d-b1e8-4489-9d6f-f0826cb1bd53" name="BandPass1">
+     <attribute name="frequency" typeCode="2">57.220512</attribute>
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="q" typeCode="2">0.102329</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection7">
+     <attribute name="sourcePath" typeCode="3">StereoSoundfiler1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">BandPass1.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection8">
+     <attribute name="sourcePath" typeCode="3">BandPass1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">StereoAudioOut1.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="b5a5d10b-1bb0-16bd-7565-6d46e51ee334" originId="7335d47d-b1e8-4489-9d6f-f0826cb1bd53" name="BandPass2">
+     <attribute name="frequency" typeCode="2">373.911774</attribute>
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="q" typeCode="2">0.01122</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection9">
+     <attribute name="sourcePath" typeCode="3">StereoSoundfiler1.out2</attribute>
+     <attribute name="targetPath" typeCode="3">BandPass2.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="25083304-bdce-5eb1-7498-3ec1920319bb" originId="eb5dd331-0516-453d-81a0-25f254d5a58c" name="Reverb1">
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="decayTimeHigh" typeCode="2">1.5</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+     <attribute name="decayTimeLow" typeCode="2">3.5</attribute>
+     <attribute name="decayTimeMid" typeCode="2">2.5</attribute>
+     <attribute name="decayTimeMidHigh" typeCode="2">2.</attribute>
+     <attribute name="decayTimeMidLow" typeCode="2">3.</attribute>
+     <attribute name="roomVolume" typeCode="2">350.</attribute>
+     <attribute name="earlyLateBalance" typeCode="2">0.822368</attribute>
+     <attribute name="sourceDistance" typeCode="2">0.5</attribute>
+     <attribute name="roomShape" typeCode="2">0.5</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection10">
+     <attribute name="sourcePath" typeCode="3">BandPass2.out1</attribute>
+     <attribute name="targetPath" typeCode="3">Reverb1.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection13">
+     <attribute name="sourcePath" typeCode="3">Reverb1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">RingModulator1.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection14">
+     <attribute name="sourcePath" typeCode="3">RingModulator1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">StereoAudioOut1.in2</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection11">
+     <attribute name="sourcePath" typeCode="3">TestSource1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">RingModulator1.in2</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+   </object>
+   <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+    <attribute name="sourcePath" typeCode="3">BlockEnvelope2.currentValue</attribute>
+    <attribute name="targetPath" typeCode="3">SoundfileLoop.active</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+   </object>
+  </object>
+  <object moduleId="a7a062bb-4508-739b-7ef1-4795e7da99cb" originId="c264ee51-efc6-29d8-a00b-ac34af2c9c61" name="MidiMonitor">
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+   <attribute name="sourcePath" typeCode="3">Player1.tick</attribute>
+   <attribute name="targetPath" typeCode="3">Track1.BlockEnvelope1.currentTick</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+   <attribute name="sourcePath" typeCode="3">Player1.tick</attribute>
+   <attribute name="targetPath" typeCode="3">Track1.BlockEnvelope2.currentTick</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection4">
+   <attribute name="sourcePath" typeCode="3">Player1.tick</attribute>
+   <attribute name="targetPath" typeCode="3">Track2.BlockEnvelope2.currentTick</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Track2">
+   <attribute name="zIndex" typeCode="1">1</attribute>
+   <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;primarySelectedChild&gt;SpectralDelay&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;SpectralDelay&lt;/selectedChild&gt;  &lt;color&gt;15627537&lt;/color&gt;  &lt;arrangeViewHeight&gt;100&lt;/arrangeViewHeight&gt;  &lt;arrangeViewExpanded&gt;true&lt;/arrangeViewExpanded&gt;  &lt;liveViewExpanded&gt;true&lt;/liveViewExpanded&gt;&lt;/userdata&gt;</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+   <attribute name="info" typeCode="3">This text is a placeholder for your *track* documentation
+
+Use the Info View 'edit' mode to add documentation to this *track*</attribute>
+   <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+    <attribute name="sourcePath" typeCode="3">BlockEnvelope1.currentValue</attribute>
+    <attribute name="targetPath" typeCode="3">Block1.active</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+   </object>
+   <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Block1">
+    <attribute name="zIndex" typeCode="1">0</attribute>
+    <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;primarySelectedChild&gt;AudioIn1&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;StereoAudioOut1&lt;/selectedChild&gt;  &lt;selectedChild&gt;AudioIn1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection2&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name=&quot;AudioIn1&quot;&gt;      &lt;x&gt;0.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;StereoAudioOut1&quot;&gt;      &lt;x&gt;28.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</attribute>
+    <attribute name="active" typeCode="1">0</attribute>
+    <attribute name="info" typeCode="3">This text is a placeholder for your *block* documentation
+
+Use the Info View 'edit' mode to add documentation to this *block*</attribute>
+    <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="offset" typeCode="1">1</attribute>
+     <attribute name="active" typeCode="1">0</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+     <attribute name="sourcePath" typeCode="3">AudioIn1.out</attribute>
+     <attribute name="targetPath" typeCode="3">StereoAudioOut1.in1</attribute>
+     <attribute name="active" typeCode="1">0</attribute>
+    </object>
+    <object moduleId="13ac287e-4841-bc84-b4d6-927b1e0293bc" originId="b6f7421a-888a-47d7-b266-76a0b6c2b86b" name="AudioIn1">
+     <attribute name="active" typeCode="1">0</attribute>
+     <attribute name="outLevel" typeCode="2">0.8</attribute>
+     <attribute name="offset" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+     <attribute name="sourcePath" typeCode="3">AudioIn1.out</attribute>
+     <attribute name="targetPath" typeCode="3">StereoAudioOut1.in2</attribute>
+     <attribute name="active" typeCode="1">0</attribute>
+    </object>
+   </object>
+   <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope2">
+    <attribute name="startTick" typeCode="1">1222</attribute>
+    <attribute name="currentTick" typeCode="1">1707</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">-1</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">0</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">799</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">800</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+   </object>
+   <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope1">
+    <attribute name="startTick" typeCode="1">7</attribute>
+    <attribute name="currentTick" typeCode="1">1707</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">-1</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">0</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+     <attribute name="value" typeCode="2">1.</attribute>
+     <attribute name="tick" typeCode="1">799</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+    <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+     <attribute name="value" typeCode="2">0.</attribute>
+     <attribute name="tick" typeCode="1">800</attribute>
+     <attribute name="curvature" typeCode="2">0.</attribute>
+    </object>
+   </object>
+   <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="SpectralDelay">
+    <attribute name="zIndex" typeCode="1">0</attribute>
+    <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;primarySelectedChild&gt;StereoSoundfiler1&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;Connection10&lt;/selectedChild&gt;  &lt;selectedChild&gt;StereoSoundfiler1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection5&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name=&quot;StereoAudioOut1&quot;&gt;      &lt;x&gt;39.17355371900826&lt;/x&gt;      &lt;y&gt;3.429752066115702&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;StereoSoundfiler1&quot;&gt;      &lt;x&gt;4.256198347107437&lt;/x&gt;      &lt;y&gt;3.429752066115702&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;SpectralDelay1&quot;&gt;      &lt;x&gt;28.512396694214875&lt;/x&gt;      &lt;y&gt;1.1983471074380163&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;SpectralDelay2&quot;&gt;      &lt;x&gt;28.51239669421487&lt;/x&gt;      &lt;y&gt;5.702479338842974&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;LowPass1&quot;&gt;      &lt;x&gt;16.28099173553719&lt;/x&gt;      &lt;y&gt;1.1983471074380163&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;LowPass2&quot;&gt;      &lt;x&gt;16.28099173553719&lt;/x&gt;      &lt;y&gt;5.702479338842974&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+    <attribute name="info" typeCode="3"/>
+    <object moduleId="818edb1e-d95d-c925-21f0-c9f845ea42aa" originId="c23b5bdc-bc9f-48ca-9b1b-3077d186ce9f" name="LowPass1">
+     <attribute name="frequency" typeCode="2">800.</attribute>
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection5">
+     <attribute name="sourcePath" typeCode="3">StereoSoundfiler1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">LowPass1.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="06b1176c-6c69-8beb-52e0-8ea5b13070fb" originId="da7a7720-c428-4cbc-a09e-c16ec0456ffe" name="SpectralDelay2">
+     <attribute name="delay3" typeCode="2">0.05</attribute>
+     <attribute name="feedback1" typeCode="2">0.</attribute>
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+     <attribute name="delay1" typeCode="2">0.</attribute>
+     <attribute name="delay2" typeCode="2">0.</attribute>
+     <attribute name="delay4" typeCode="2">0.016667</attribute>
+     <attribute name="delay5" typeCode="2">0.</attribute>
+     <attribute name="delay6" typeCode="2">0.</attribute>
+     <attribute name="delay7" typeCode="2">0.</attribute>
+     <attribute name="delay8" typeCode="2">0.</attribute>
+     <attribute name="feedback2" typeCode="2">0.</attribute>
+     <attribute name="feedback3" typeCode="2">0.633333</attribute>
+     <attribute name="feedback4" typeCode="2">0.741667</attribute>
+     <attribute name="feedback5" typeCode="2">0.</attribute>
+     <attribute name="feedback6" typeCode="2">0.</attribute>
+     <attribute name="feedback7" typeCode="2">0.</attribute>
+     <attribute name="feedback8" typeCode="2">0.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="06b1176c-6c69-8beb-52e0-8ea5b13070fb" originId="da7a7720-c428-4cbc-a09e-c16ec0456ffe" name="SpectralDelay1">
+     <attribute name="delay3" typeCode="2">0.183333</attribute>
+     <attribute name="feedback1" typeCode="2">0.</attribute>
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+     <attribute name="delay1" typeCode="2">0.</attribute>
+     <attribute name="delay2" typeCode="2">0.033333</attribute>
+     <attribute name="delay4" typeCode="2">0.266667</attribute>
+     <attribute name="delay5" typeCode="2">0.</attribute>
+     <attribute name="delay6" typeCode="2">0.</attribute>
+     <attribute name="delay7" typeCode="2">0.</attribute>
+     <attribute name="delay8" typeCode="2">0.</attribute>
+     <attribute name="feedback2" typeCode="2">0.983333</attribute>
+     <attribute name="feedback3" typeCode="2">0.166667</attribute>
+     <attribute name="feedback4" typeCode="2">0.158333</attribute>
+     <attribute name="feedback5" typeCode="2">0.</attribute>
+     <attribute name="feedback6" typeCode="2">0.</attribute>
+     <attribute name="feedback7" typeCode="2">0.</attribute>
+     <attribute name="feedback8" typeCode="2">0.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection6">
+     <attribute name="sourcePath" typeCode="3">SpectralDelay2.out1</attribute>
+     <attribute name="targetPath" typeCode="3">StereoAudioOut1.in2</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="offset" typeCode="1">1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="818edb1e-d95d-c925-21f0-c9f845ea42aa" originId="c23b5bdc-bc9f-48ca-9b1b-3077d186ce9f" name="LowPass2">
+     <attribute name="frequency" typeCode="2">800.</attribute>
+     <attribute name="mix" typeCode="2">1.</attribute>
+     <attribute name="bypass" typeCode="1">0</attribute>
+     <attribute name="inLevel" typeCode="2">1.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+     <attribute name="outLevel" typeCode="2">1.</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection7">
+     <attribute name="sourcePath" typeCode="3">LowPass1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">SpectralDelay1.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection9">
+     <attribute name="sourcePath" typeCode="3">LowPass2.out1</attribute>
+     <attribute name="targetPath" typeCode="3">SpectralDelay2.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection11">
+     <attribute name="sourcePath" typeCode="3">StereoAudioOut1.active</attribute>
+     <attribute name="targetPath" typeCode="3">Scaler1.inValue</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection12">
+     <attribute name="sourcePath" typeCode="3">Scaler1.outValue</attribute>
+     <attribute name="targetPath" typeCode="3">StereoSoundfiler1.play</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection10">
+     <attribute name="sourcePath" typeCode="3">StereoSoundfiler1.out2</attribute>
+     <attribute name="targetPath" typeCode="3">LowPass2.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection8">
+     <attribute name="sourcePath" typeCode="3">SpectralDelay1.out1</attribute>
+     <attribute name="targetPath" typeCode="3">StereoAudioOut1.in1</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="ce0f5411-816e-6159-bb23-840444b62618" originId="bf519e13-c924-4198-bb1a-a1c66b64ac5d" name="Scaler1">
+     <attribute name="outScale" typeCode="3">linear</attribute>
+     <attribute name="outRangeMax" typeCode="2">1.</attribute>
+     <attribute name="inValue" typeCode="2">1.</attribute>
+     <attribute name="inRangeMax" typeCode="2">1.</attribute>
+     <attribute name="inRangeMin" typeCode="2">0.</attribute>
+     <attribute name="inScale" typeCode="3">linear</attribute>
+     <attribute name="inMode" typeCode="3">snap</attribute>
+     <attribute name="outRangeMin" typeCode="2">0.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+    <object moduleId="09d2b6bc-ae7c-0f34-e616-a1a30c8dc9e8" originId="fa3f8bc6-b9d8-be0f-5173-9190d252be63" name="StereoSoundfiler1">
+     <attribute name="load" typeCode="3">soundfile.wav</attribute>
+     <attribute name="record" typeCode="1">0</attribute>
+     <attribute name="mute" typeCode="1">0</attribute>
+     <attribute name="loop" typeCode="1">1</attribute>
+     <attribute name="play" typeCode="1">1</attribute>
+     <attribute name="speed" typeCode="2">1.</attribute>
+     <attribute name="position" typeCode="2">0.524991</attribute>
+     <attribute name="gain" typeCode="2">1.</attribute>
+     <attribute name="active" typeCode="1">1</attribute>
+    </object>
+   </object>
+   <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+    <attribute name="sourcePath" typeCode="3">BlockEnvelope2.currentValue</attribute>
+    <attribute name="targetPath" typeCode="3">SpectralDelay.active</attribute>
+    <attribute name="active" typeCode="1">1</attribute>
+   </object>
+  </object>
+  <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection3">
+   <attribute name="sourcePath" typeCode="3">Player1.tick</attribute>
+   <attribute name="targetPath" typeCode="3">Track2.BlockEnvelope1.currentTick</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+ </object>
+</IntegraCollection>

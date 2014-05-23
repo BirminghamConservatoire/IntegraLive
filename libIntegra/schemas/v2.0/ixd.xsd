@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xsd:schema xmlns="http://www.integralive.org/schemas/ixd/2.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            targetNamespace="http://www.integralive.org/schemas/ixd/2.0"
+>
+  <xsd:annotation>
+    <xsd:documentation>
+      The XML Schema for module graphs supported by libIntegra as of version 2.0.
+      Instances of this Schema define a given DSP graph and its current state at some point in time.
+      For example:
+
+      &lt;IntegraCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      integraVersion="x.x.x.xxxx"&gt;
+
+      &lt;object classId="7" name="Project1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="7" name="Block1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="5" name="TapDelay1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+      &lt;attribute name="out1" typeCode="5"&gt;&lt;/attribute&gt;
+      &lt;attribute name="in1" typeCode="5"&gt;&lt;/attribute&gt;
+      &lt;attribute name="delayTime" typeCode="2"&gt;0.5&lt;/attribute&gt;
+      &lt;attribute name="feedback" typeCode="2"&gt;0.5&lt;/attribute&gt;
+      &lt;/object&gt;
+      &lt;object classId="5" name="TapDelay2"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+      &lt;/object&gt;
+      &lt;/object&gt;
+      &lt;object classId="7" name="Block2"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="zIndex" typeCode="1"&gt;0&lt;/attribute&gt;
+      &lt;object classId="5" name="TapDelay1"&gt;
+      &lt;attribute name="userData" typeCode="3"&gt;&lt;/attribute&gt;
+      &lt;attribute name="active" typeCode="1"&gt;1&lt;/attribute&gt;
+      &lt;attribute name="out1" typeCode="5"&gt;&lt;/attribute&gt;
+      &lt;/object&gt;
+      &lt;/object&gt;
+      &lt;/object&gt;
+      &lt;/IntegraCollection&gt;
+
+      An object represents a container (a module, a connection, a player) 
+      that has attributes that defines its current state 
+      as well as other objects that are contained in its parent object.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="root">
+    <xsd:annotation>
+      <xsd:documentation>
+        Root element for libIntegra generic node graph.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="client" minOccurs="0" maxOccurs="1" type="client"/>
+        <xsd:element name="object" minOccurs="1" maxOccurs="unbounded" type="object" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="client">
+    <xsd:annotation>
+      <xsd:documentation>
+        Optional info regarding the client application that generated this document.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="optional"/>
+    <xsd:attribute name="version" type="xsd:string" use="optional"/>
+    <xsd:attribute name="collectionSchemaVersionMajor" type="xsd:int" use="optional"/>
+    <xsd:attribute name="collectionSchemaVersionMinor" type="xsd:int" use="optional" fixed="0" />
+    <xsd:attribute name="collectionAbsoluteVersion" type="xsd:int" use="optional" fixed="0" />
+    <xsd:anyAttribute />
+  </xsd:complexType>
+
+  <xsd:complexType name="object">
+    <xsd:annotation>
+      <xsd:documentation>
+        The type that gives the legal values for the object child elements.
+        This definition defines itself as a legal child.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="attribute" type="attribute" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="object" type="object" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="moduleId" type="xsd:string" use="optional" />
+    <xsd:attribute name="originId" type="xsd:string" use="optional" />
+    <xsd:attribute name="instanceId" type="xsd:string" use="optional" />
+    <xsd:attribute name="classId" type="xsd:int" use="optional" />
+    <xsd:attribute name="name" type="xsd:string" use="optional" />
+  </xsd:complexType>
+
+  <xsd:complexType name="attribute">
+    <xsd:choice minOccurs="1" maxOccurs="1">
+      <xsd:element name="integer" type="xsd:int" />
+      <xsd:element name="float" type="xsd:float" />
+      <xsd:element name="string" type="xsd:string" />
+      <xsd:element name="integerList" type="integerList" />
+    </xsd:choice>
+    <xsd:attribute name="name" type="xsd:string" />
+  </xsd:complexType>
+
+  <xsd:complexType name="integerList">
+    <xsd:sequence>
+      <xsd:element name="integer" type="xsd:int" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

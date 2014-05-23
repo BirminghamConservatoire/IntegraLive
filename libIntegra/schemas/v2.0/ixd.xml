@@ -1,0 +1,1162 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root xmlns="http://www.integralive.org/schemas/ixd/2.0">
+  <client name="IntegraLive" version="1.7.0.3301" />
+  <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="sound_loop_vocoder">
+    <attribute name="zIndex">
+      <integer>0</integer>
+    </attribute>
+    <attribute name="userData">
+      <string>&lt;userdata&gt;  &lt;primarySelectedChild&gt;Track2&lt;/primarySelectedChild&gt;  &lt;viewMode&gt;arrange&lt;/viewMode&gt;  &lt;blockPropertiesOpen&gt;false&lt;/blockPropertiesOpen&gt;  &lt;popups/&gt;  &lt;timelineScroll&gt;0&lt;/timelineScroll&gt;  &lt;timelineZoom&gt;0.4&lt;/timelineZoom&gt;  &lt;colorScheme&gt;light&lt;/colorScheme&gt;&lt;/userdata&gt;</string>
+    </attribute>
+    <attribute name="active">
+      <integer>1</integer>
+    </attribute>
+    <attribute name="info">
+      <string>This text is a placeholder for your *project* documentation
+
+Use the Info view 'edit' mode to add documentation to this *project*</string>
+    </attribute>
+    <object moduleId="3e36b6fc-363d-e917-91f1-c7844640e336" originId="0f9203b8-e091-40f8-8968-4ee96185523f" name="Player1">
+      <attribute name="tick">
+        <integer>1707</integer>
+      </attribute>
+      <attribute name="play">
+        <integer>0</integer>
+      </attribute>
+      <attribute name="start">
+        <integer>-1</integer>
+      </attribute>
+      <attribute name="loop">
+        <integer>0</integer>
+      </attribute>
+      <attribute name="scene">
+        <string></string>
+      </attribute>
+      <attribute name="rate">
+        <integer>40</integer>
+      </attribute>
+      <attribute name="end">
+        <integer>-1</integer>
+      </attribute>
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+      <attribute name="test">
+        <integerList>
+          <integer>1</integer>
+          <integer>1</integer>
+          <integer>1</integer>
+        </integerList>
+      </attribute>
+    </object>
+    <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Track1">
+      <attribute name="zIndex">
+        <integer>0</integer>
+      </attribute>
+      <attribute name="userData">
+        <string>&lt;userdata&gt;  &lt;color&gt;1018603&lt;/color&gt;  &lt;arrangeViewHeight&gt;100&lt;/arrangeViewHeight&gt;  &lt;arrangeViewExpanded&gt;true&lt;/arrangeViewExpanded&gt;  &lt;liveViewExpanded&gt;true&lt;/liveViewExpanded&gt;&lt;/userdata&gt;</string>
+      </attribute>
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+      <attribute name="info">
+        <string>This text is a placeholder for your *track* documentation
+
+Use the Info View 'edit' mode to add documentation to this *track*</string>
+      </attribute>
+      <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Block1">
+        <attribute name="zIndex">
+          <integer>0</integer>
+        </attribute>
+        <attribute name="userData">
+          <string>&lt;userdata&gt;  &lt;primarySelectedChild&gt;AudioIn1&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;AudioIn1&lt;/selectedChild&gt;  &lt;selectedChild&gt;StereoAudioOut1&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name="AudioIn1"&gt;      &lt;x&gt;0.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="StereoAudioOut1"&gt;      &lt;x&gt;28.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</string>
+        </attribute>
+        <attribute name="active">
+          <integer>0</integer>
+        </attribute>
+        <attribute name="info">
+          <string>This text is a placeholder for your *block* documentation
+
+Use the Info View 'edit' mode to add documentation to this *block*</string>
+        </attribute>
+        <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="offset">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="active">
+            <integer>0</integer>
+          </attribute>
+        </object>
+        <object moduleId="13ac287e-4841-bc84-b4d6-927b1e0293bc" originId="b6f7421a-888a-47d7-b266-76a0b6c2b86b" name="AudioIn1">
+          <attribute name="active">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="outLevel">
+            <float>0.8</float>
+          </attribute>
+          <attribute name="offset">
+            <integer>1</integer>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+        <attribute name="sourcePath">
+          <string>BlockEnvelope1.currentValue</string>
+        </attribute>
+        <attribute name="targetPath">
+          <string>Block1.active</string>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+      </object>
+      <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope2">
+        <attribute name="startTick">
+          <integer>1600</integer>
+        </attribute>
+        <attribute name="currentTick">
+          <integer>1707</integer>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>-1</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>799</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>800</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope1">
+        <attribute name="startTick">
+          <integer>0</integer>
+        </attribute>
+        <attribute name="currentTick">
+          <integer>1707</integer>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>-1</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>799</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>800</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="SoundfileLoop">
+        <attribute name="zIndex">
+          <integer>0</integer>
+        </attribute>
+        <attribute name="userData">
+          <string>&lt;userdata&gt;  &lt;primarySelectedChild&gt;BandPass2&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;Connection10&lt;/selectedChild&gt;  &lt;selectedChild&gt;BandPass2&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection9&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name="BandPass1"&gt;      &lt;x&gt;20.260330578512395&lt;/x&gt;      &lt;y&gt;2.0516528925619832&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="BandPass2"&gt;      &lt;x&gt;15.785123966942148&lt;/x&gt;      &lt;y&gt;8.016528925619834&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="Reverb1"&gt;      &lt;x&gt;33.18181818181818&lt;/x&gt;      &lt;y&gt;5.0413223140495855&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="StereoAudioOut1"&gt;      &lt;x&gt;46.24586776859504&lt;/x&gt;      &lt;y&gt;2.8099173553719003&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="RingModulator1"&gt;      &lt;x&gt;32.32644628099173&lt;/x&gt;      &lt;y&gt;10.979338842975205&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="StereoSoundfiler1"&gt;      &lt;x&gt;5.413223140495868&lt;/x&gt;      &lt;y&gt;4.421487603305785&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="TestSource1"&gt;      &lt;x&gt;16.90082644628099&lt;/x&gt;      &lt;y&gt;13.05785123966942&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</string>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+        <attribute name="info">
+          <string>This demo block contains an embedded soundfile, which is automatically triggered every time the block becomes active.
+
+Move the playhead onto the block to hear the soundfile, move it off to stop playback.
+
+The automatic triggering of the soundfile is achieved using the Routing panel at the bottom of the Arrange View.</string>
+        </attribute>
+        <object moduleId="ce0f5411-816e-6159-bb23-840444b62618" originId="bf519e13-c924-4198-bb1a-a1c66b64ac5d" name="Scaler1">
+          <attribute name="outScale">
+            <string>linear</string>
+          </attribute>
+          <attribute name="outRangeMax">
+            <float>1.</float>
+          </attribute>
+          <attribute name="inValue">
+            <float>1.</float>
+          </attribute>
+          <attribute name="inRangeMax">
+            <float>1.</float>
+          </attribute>
+          <attribute name="inRangeMin">
+            <float>0.</float>
+          </attribute>
+          <attribute name="inScale">
+            <string>linear</string>
+          </attribute>
+          <attribute name="inMode">
+            <string>snap</string>
+          </attribute>
+          <attribute name="outRangeMin">
+            <float>0.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="b3f23f41-f60c-1359-6e1d-83e97ffe96d8" originId="c12680da-12c4-44c7-9b9b-5c24c322e812" name="TestSource1">
+          <attribute name="gain">
+            <float>1.</float>
+          </attribute>
+          <attribute name="mute">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="frequency">
+            <float>440.</float>
+          </attribute>
+          <attribute name="source">
+            <string>sine</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="offset">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection3">
+          <attribute name="sourcePath">
+            <string>StereoAudioOut1.active</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>Scaler1.inValue</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection4">
+          <attribute name="sourcePath">
+            <string>Scaler1.outValue</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoSoundfiler1.play</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="09d2b6bc-ae7c-0f34-e616-a1a30c8dc9e8" originId="fa3f8bc6-b9d8-be0f-5173-9190d252be63" name="StereoSoundfiler1">
+          <attribute name="load">
+            <string>soundfile.wav</string>
+          </attribute>
+          <attribute name="record">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="mute">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="loop">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="play">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="speed">
+            <float>1.</float>
+          </attribute>
+          <attribute name="position">
+            <float>0.441763</float>
+          </attribute>
+          <attribute name="gain">
+            <float>1.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="48f1ca59-6efd-7485-dbc4-49872180af60" originId="b4cabc6b-5c06-498b-a3df-643f93fe225f" name="RingModulator1">
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="lfoAmount">
+            <float>0.5</float>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="lfoShape">
+            <string>sine</string>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="lfoRate">
+            <float>0.2</float>
+          </attribute>
+          <attribute name="modulationFrequency">
+            <float>3.</float>
+          </attribute>
+          <attribute name="modulationDrive">
+            <float>1.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="b5a5d10b-1bb0-16bd-7565-6d46e51ee334" originId="7335d47d-b1e8-4489-9d6f-f0826cb1bd53" name="BandPass1">
+          <attribute name="frequency">
+            <float>57.220512</float>
+          </attribute>
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="q">
+            <float>0.102329</float>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection7">
+          <attribute name="sourcePath">
+            <string>StereoSoundfiler1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>BandPass1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection8">
+          <attribute name="sourcePath">
+            <string>BandPass1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoAudioOut1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="b5a5d10b-1bb0-16bd-7565-6d46e51ee334" originId="7335d47d-b1e8-4489-9d6f-f0826cb1bd53" name="BandPass2">
+          <attribute name="frequency">
+            <float>373.911774</float>
+          </attribute>
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="q">
+            <float>0.01122</float>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection9">
+          <attribute name="sourcePath">
+            <string>StereoSoundfiler1.out2</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>BandPass2.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="25083304-bdce-5eb1-7498-3ec1920319bb" originId="eb5dd331-0516-453d-81a0-25f254d5a58c" name="Reverb1">
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="decayTimeHigh">
+            <float>1.5</float>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="decayTimeLow">
+            <float>3.5</float>
+          </attribute>
+          <attribute name="decayTimeMid">
+            <float>2.5</float>
+          </attribute>
+          <attribute name="decayTimeMidHigh">
+            <float>2.</float>
+          </attribute>
+          <attribute name="decayTimeMidLow">
+            <float>3.</float>
+          </attribute>
+          <attribute name="roomVolume">
+            <float>350.</float>
+          </attribute>
+          <attribute name="earlyLateBalance">
+            <float>0.822368</float>
+          </attribute>
+          <attribute name="sourceDistance">
+            <float>0.5</float>
+          </attribute>
+          <attribute name="roomShape">
+            <float>0.5</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection10">
+          <attribute name="sourcePath">
+            <string>BandPass2.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>Reverb1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection13">
+          <attribute name="sourcePath">
+            <string>Reverb1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>RingModulator1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection14">
+          <attribute name="sourcePath">
+            <string>RingModulator1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoAudioOut1.in2</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection11">
+          <attribute name="sourcePath">
+            <string>TestSource1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>RingModulator1.in2</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+        <attribute name="sourcePath">
+          <string>BlockEnvelope2.currentValue</string>
+        </attribute>
+        <attribute name="targetPath">
+          <string>SoundfileLoop.active</string>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+      </object>
+    </object>
+    <object moduleId="a7a062bb-4508-739b-7ef1-4795e7da99cb" originId="c264ee51-efc6-29d8-a00b-ac34af2c9c61" name="MidiMonitor">
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+      <attribute name="sourcePath">
+        <string>Player1.tick</string>
+      </attribute>
+      <attribute name="targetPath">
+        <string>Track1.BlockEnvelope1.currentTick</string>
+      </attribute>
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+      <attribute name="sourcePath">
+        <string>Player1.tick</string>
+      </attribute>
+      <attribute name="targetPath">
+        <string>Track1.BlockEnvelope2.currentTick</string>
+      </attribute>
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection4">
+      <attribute name="sourcePath">
+        <string>Player1.tick</string>
+      </attribute>
+      <attribute name="targetPath">
+        <string>Track2.BlockEnvelope2.currentTick</string>
+      </attribute>
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+    </object>
+    <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Track2">
+      <attribute name="zIndex">
+        <integer>1</integer>
+      </attribute>
+      <attribute name="userData">
+        <string>&lt;userdata&gt;  &lt;primarySelectedChild&gt;SpectralDelay&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;SpectralDelay&lt;/selectedChild&gt;  &lt;color&gt;15627537&lt;/color&gt;  &lt;arrangeViewHeight&gt;100&lt;/arrangeViewHeight&gt;  &lt;arrangeViewExpanded&gt;true&lt;/arrangeViewExpanded&gt;  &lt;liveViewExpanded&gt;true&lt;/liveViewExpanded&gt;&lt;/userdata&gt;</string>
+      </attribute>
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+      <attribute name="info">
+        <string>This text is a placeholder for your *track* documentation
+
+Use the Info View 'edit' mode to add documentation to this *track*</string>
+      </attribute>
+      <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+        <attribute name="sourcePath">
+          <string>BlockEnvelope1.currentValue</string>
+        </attribute>
+        <attribute name="targetPath">
+          <string>Block1.active</string>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+      </object>
+      <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="Block1">
+        <attribute name="zIndex">
+          <integer>0</integer>
+        </attribute>
+        <attribute name="userData">
+          <string>&lt;userdata&gt;  &lt;primarySelectedChild&gt;AudioIn1&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;StereoAudioOut1&lt;/selectedChild&gt;  &lt;selectedChild&gt;AudioIn1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection2&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name="AudioIn1"&gt;      &lt;x&gt;0.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="StereoAudioOut1"&gt;      &lt;x&gt;28.875&lt;/x&gt;      &lt;y&gt;5.25&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</string>
+        </attribute>
+        <attribute name="active">
+          <integer>0</integer>
+        </attribute>
+        <attribute name="info">
+          <string>This text is a placeholder for your *block* documentation
+
+Use the Info View 'edit' mode to add documentation to this *block*</string>
+        </attribute>
+        <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="offset">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="active">
+            <integer>0</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+          <attribute name="sourcePath">
+            <string>AudioIn1.out</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoAudioOut1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>0</integer>
+          </attribute>
+        </object>
+        <object moduleId="13ac287e-4841-bc84-b4d6-927b1e0293bc" originId="b6f7421a-888a-47d7-b266-76a0b6c2b86b" name="AudioIn1">
+          <attribute name="active">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="outLevel">
+            <float>0.8</float>
+          </attribute>
+          <attribute name="offset">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+          <attribute name="sourcePath">
+            <string>AudioIn1.out</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoAudioOut1.in2</string>
+          </attribute>
+          <attribute name="active">
+            <integer>0</integer>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope2">
+        <attribute name="startTick">
+          <integer>1222</integer>
+        </attribute>
+        <attribute name="currentTick">
+          <integer>1707</integer>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>-1</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>799</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>800</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="8afa1733-21ef-a9a6-3bfa-911df1b58019" originId="0b78bba4-bb49-46e4-868e-82777f92deae" name="BlockEnvelope1">
+        <attribute name="startTick">
+          <integer>7</integer>
+        </attribute>
+        <attribute name="currentTick">
+          <integer>1707</integer>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint1">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>-1</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint2">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint3">
+          <attribute name="value">
+            <float>1.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>799</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+        <object moduleId="1a944853-99cc-4e93-b964-802a456c908e" originId="158ae85a-a9a3-44b2-872e-f920f4543b81" name="ControlPoint4">
+          <attribute name="value">
+            <float>0.</float>
+          </attribute>
+          <attribute name="tick">
+            <integer>800</integer>
+          </attribute>
+          <attribute name="curvature">
+            <float>0.</float>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="SpectralDelay">
+        <attribute name="zIndex">
+          <integer>0</integer>
+        </attribute>
+        <attribute name="userData">
+          <string>&lt;userdata&gt;  &lt;primarySelectedChild&gt;StereoSoundfiler1&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;Connection10&lt;/selectedChild&gt;  &lt;selectedChild&gt;StereoSoundfiler1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection5&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name="StereoAudioOut1"&gt;      &lt;x&gt;39.17355371900826&lt;/x&gt;      &lt;y&gt;3.429752066115702&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="StereoSoundfiler1"&gt;      &lt;x&gt;4.256198347107437&lt;/x&gt;      &lt;y&gt;3.429752066115702&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="SpectralDelay1"&gt;      &lt;x&gt;28.512396694214875&lt;/x&gt;      &lt;y&gt;1.1983471074380163&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="SpectralDelay2"&gt;      &lt;x&gt;28.51239669421487&lt;/x&gt;      &lt;y&gt;5.702479338842974&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="LowPass1"&gt;      &lt;x&gt;16.28099173553719&lt;/x&gt;      &lt;y&gt;1.1983471074380163&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name="LowPass2"&gt;      &lt;x&gt;16.28099173553719&lt;/x&gt;      &lt;y&gt;5.702479338842974&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</string>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+        <attribute name="info">
+          <string></string>
+        </attribute>
+        <object moduleId="818edb1e-d95d-c925-21f0-c9f845ea42aa" originId="c23b5bdc-bc9f-48ca-9b1b-3077d186ce9f" name="LowPass1">
+          <attribute name="frequency">
+            <float>800.</float>
+          </attribute>
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection5">
+          <attribute name="sourcePath">
+            <string>StereoSoundfiler1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>LowPass1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="06b1176c-6c69-8beb-52e0-8ea5b13070fb" originId="da7a7720-c428-4cbc-a09e-c16ec0456ffe" name="SpectralDelay2">
+          <attribute name="delay3">
+            <float>0.05</float>
+          </attribute>
+          <attribute name="feedback1">
+            <float>0.</float>
+          </attribute>
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="delay1">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay2">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay4">
+            <float>0.016667</float>
+          </attribute>
+          <attribute name="delay5">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay6">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay7">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay8">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback2">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback3">
+            <float>0.633333</float>
+          </attribute>
+          <attribute name="feedback4">
+            <float>0.741667</float>
+          </attribute>
+          <attribute name="feedback5">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback6">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback7">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback8">
+            <float>0.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="06b1176c-6c69-8beb-52e0-8ea5b13070fb" originId="da7a7720-c428-4cbc-a09e-c16ec0456ffe" name="SpectralDelay1">
+          <attribute name="delay3">
+            <float>0.183333</float>
+          </attribute>
+          <attribute name="feedback1">
+            <float>0.</float>
+          </attribute>
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="delay1">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay2">
+            <float>0.033333</float>
+          </attribute>
+          <attribute name="delay4">
+            <float>0.266667</float>
+          </attribute>
+          <attribute name="delay5">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay6">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay7">
+            <float>0.</float>
+          </attribute>
+          <attribute name="delay8">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback2">
+            <float>0.983333</float>
+          </attribute>
+          <attribute name="feedback3">
+            <float>0.166667</float>
+          </attribute>
+          <attribute name="feedback4">
+            <float>0.158333</float>
+          </attribute>
+          <attribute name="feedback5">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback6">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback7">
+            <float>0.</float>
+          </attribute>
+          <attribute name="feedback8">
+            <float>0.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection6">
+          <attribute name="sourcePath">
+            <string>SpectralDelay2.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoAudioOut1.in2</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="offset">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="818edb1e-d95d-c925-21f0-c9f845ea42aa" originId="c23b5bdc-bc9f-48ca-9b1b-3077d186ce9f" name="LowPass2">
+          <attribute name="frequency">
+            <float>800.</float>
+          </attribute>
+          <attribute name="mix">
+            <float>1.</float>
+          </attribute>
+          <attribute name="bypass">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="inLevel">
+            <float>1.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="outLevel">
+            <float>1.</float>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection7">
+          <attribute name="sourcePath">
+            <string>LowPass1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>SpectralDelay1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection9">
+          <attribute name="sourcePath">
+            <string>LowPass2.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>SpectralDelay2.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection11">
+          <attribute name="sourcePath">
+            <string>StereoAudioOut1.active</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>Scaler1.inValue</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection12">
+          <attribute name="sourcePath">
+            <string>Scaler1.outValue</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoSoundfiler1.play</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection10">
+          <attribute name="sourcePath">
+            <string>StereoSoundfiler1.out2</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>LowPass2.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection8">
+          <attribute name="sourcePath">
+            <string>SpectralDelay1.out1</string>
+          </attribute>
+          <attribute name="targetPath">
+            <string>StereoAudioOut1.in1</string>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="ce0f5411-816e-6159-bb23-840444b62618" originId="bf519e13-c924-4198-bb1a-a1c66b64ac5d" name="Scaler1">
+          <attribute name="outScale">
+            <string>linear</string>
+          </attribute>
+          <attribute name="outRangeMax">
+            <float>1.</float>
+          </attribute>
+          <attribute name="inValue">
+            <float>1.</float>
+          </attribute>
+          <attribute name="inRangeMax">
+            <float>1.</float>
+          </attribute>
+          <attribute name="inRangeMin">
+            <float>0.</float>
+          </attribute>
+          <attribute name="inScale">
+            <string>linear</string>
+          </attribute>
+          <attribute name="inMode">
+            <string>snap</string>
+          </attribute>
+          <attribute name="outRangeMin">
+            <float>0.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+        <object moduleId="09d2b6bc-ae7c-0f34-e616-a1a30c8dc9e8" originId="fa3f8bc6-b9d8-be0f-5173-9190d252be63" name="StereoSoundfiler1">
+          <attribute name="load">
+            <string>soundfile.wav</string>
+          </attribute>
+          <attribute name="record">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="mute">
+            <integer>0</integer>
+          </attribute>
+          <attribute name="loop">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="play">
+            <integer>1</integer>
+          </attribute>
+          <attribute name="speed">
+            <float>1.</float>
+          </attribute>
+          <attribute name="position">
+            <float>0.524991</float>
+          </attribute>
+          <attribute name="gain">
+            <float>1.</float>
+          </attribute>
+          <attribute name="active">
+            <integer>1</integer>
+          </attribute>
+        </object>
+      </object>
+      <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+        <attribute name="sourcePath">
+          <string>BlockEnvelope2.currentValue</string>
+        </attribute>
+        <attribute name="targetPath">
+          <string>SpectralDelay.active</string>
+        </attribute>
+        <attribute name="active">
+          <integer>1</integer>
+        </attribute>
+      </object>
+    </object>
+    <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection3">
+      <attribute name="sourcePath">
+        <string>Player1.tick</string>
+      </attribute>
+      <attribute name="targetPath">
+        <string>Track2.BlockEnvelope1.currentTick</string>
+      </attribute>
+      <attribute name="active">
+        <integer>1</integer>
+      </attribute>
+    </object>
+  </object>
+</root>

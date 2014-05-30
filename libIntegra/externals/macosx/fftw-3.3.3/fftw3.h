@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2007-11 Matteo Frigo
- * Copyright (c) 2003, 2007-11 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-14 Matteo Frigo
+ * Copyright (c) 2003, 2007-14 Massachusetts Institute of Technology
  *
  * The following statement of license applies *only* to this header file,
  * and *not* to the other files distributed with FFTW or derived therefrom:
@@ -332,6 +332,7 @@ FFTW_EXTERN int X(import_wisdom)(X(read_char_func) read_char, void *data); \
 									   \
 FFTW_EXTERN void X(fprint_plan)(const X(plan) p, FILE *output_file);	   \
 FFTW_EXTERN void X(print_plan)(const X(plan) p);			   \
+FFTW_EXTERN char *X(sprint_plan)(const X(plan) p);			   \
 									   \
 FFTW_EXTERN void *X(malloc)(size_t n);					   \
 FFTW_EXTERN R *X(alloc_real)(size_t n);					   \
@@ -343,7 +344,8 @@ FFTW_EXTERN void X(flops)(const X(plan) p,				   \
 FFTW_EXTERN double X(estimate_cost)(const X(plan) p);			   \
 FFTW_EXTERN double X(cost)(const X(plan) p);				   \
 									   \
-FFTW_EXTERN const char X(version)[];					   \
+FFTW_EXTERN int X(alignment_of)(R *p);                                     \
+FFTW_EXTERN const char X(version)[];                                       \
 FFTW_EXTERN const char X(cc)[];						   \
 FFTW_EXTERN const char X(codelet_optim)[];
 

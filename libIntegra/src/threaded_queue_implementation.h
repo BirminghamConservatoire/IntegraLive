@@ -26,8 +26,9 @@
 
 #include "assert.h"
 #include "api/trace.h"
+#include "api/error.h"
 
-
+using namespace integra_api;
 
 namespace integra_internal
 {

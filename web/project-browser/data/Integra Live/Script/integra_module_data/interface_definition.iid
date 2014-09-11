@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="dc217e4d-6f58-d0b9-a499-e15a91c7e0c5" originGuid="122fadb9-215e-4bd3-9e11-2ed792ea90b0" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>Script</Name>
+    <Label>Script</Label>
+    <Description>Class for running Integra script</Description>
+    <Tags>
+      <Tag>core</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>true</ImplementedInLibIntegra>
+    <Author>Jamie Bullock</Author>
+    <CreatedDate>2012-10-26 13:09:51.520000</CreatedDate>
+    <ModifiedDate>2013-04-17 12:43:34.652000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>text</Name>
+      <Label>text</Label>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default>-- todo: enter your script here</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>trigger</Name>
+      <Label>trigger</Label>
+      <Description>Manually trigger execution of script</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>bang</ControlType>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>info</Name>
+      <Label>info</Label>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default>This is a script.  You can write lua code here in order to programatically get and set module endpoints.For documentation of the lua language [click here](http://www.lua.org/docs.html)Scripts can be executed in the following ways:* manually, by context-clicking the script's name and choosing 'Execute'.	* automatically, by adding a routing item and setting the target to the script's 'trigger' endpoint (the script will execute when the routing item's source endpoint is set).Scripts can access module endpoints via their paths, for example:Player1.tick = Track1.Block1.AudioIn1.vu1 + 60</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+</InterfaceDeclaration>

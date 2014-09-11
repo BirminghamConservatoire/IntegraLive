@@ -1,0 +1,185 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="f4539a70-9723-49d3-4dd7-5c573d7e53dd" originGuid="0f4bc0a6-9152-ee2f-9ec4-ef9f747d7278" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>MidiControlInput</Name>
+    <Label>Midi Control Input</Label>
+    <Description>Listens for control change or note on messages on specified device, channel, and cc number/note</Description>
+    <Tags>
+      <Tag>core</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>true</ImplementedInLibIntegra>
+    <Author>Leighton Hargreaves</Author>
+    <CreatedDate>2014-02-10 16:32:02.548000</CreatedDate>
+    <ModifiedDate>2014-02-17 12:26:57.962000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>device</Name>
+      <Label>Device Name</Label>
+      <Description>The midi input device to which this module will respond.The special value "Any Device" instructs the module to respond to all active midi input devices</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>channel</Name>
+      <Label>Channel</Label>
+      <Description>The midi channel on which this module will respond, as an index from 1 to 16.The value 0 has a special meaning - it instructs the module to respond to incoming messages on any channel.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>16</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>messageType</Name>
+      <Label>Message Type</Label>
+      <Description>Enumeration of 'noteon' and 'cc'.  Tells the module which type of midi input to listen to.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <AllowedStates>
+              <State>cc</State>
+              <State>noteon</State>
+            </AllowedStates>
+          </Constraint>
+          <Default>cc</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>noteOrController</Name>
+      <Label>Note On pitch, or Control Change number</Label>
+      <Description>Tells the module which midi input message to listen for.The meaning of 'noteOrController' depends on whether messageType is set to 'noteon' or 'cc'.  When noteon, noteOrController is the midi note to listen for.When cc, noteOrController is the cc number to listen for</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>127</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>value</Name>
+      <Label>Output Value</Label>
+      <Description>This is the endpoint which is triggered when midi input is received.The meaning of 'value' depends on whether messageType is set to 'noteon' or 'cc'.  When noteon, value is the velocity of the triggered note.  When cc, value is the control value</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>127</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>autoLearn</Name>
+      <Label>Enable Autolearn Mode</Label>
+      <Description>When switched into autolearn mode, the module ceases to update it's 'value' endpoint on midi input.  Instead, it listens to all input devices on all channels, when the first midi message is received, it updates the device, channel, messageType and noteOfController endpoints to reflect the received message.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>Active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+</InterfaceDeclaration>

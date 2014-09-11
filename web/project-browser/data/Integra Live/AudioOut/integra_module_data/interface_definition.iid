@@ -1,0 +1,183 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="721507ea-8495-c13e-cc69-0433db158e55" originGuid="171ccd25-cdb0-4003-96d8-ee0d9a0ada37" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>AudioOut</Name>
+    <Label>Audio Output</Label>
+    <Description>Mono audio output</Description>
+    <Tags>
+      <Tag>core</Tag>
+      <Tag>simple</Tag>
+      <Tag>output</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
+    <Author>Jamie Bullock</Author>
+    <CreatedDate>2009-12-03 15:59:49.804000</CreatedDate>
+    <ModifiedDate>2014-05-05 18:33:02.496000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>in</Name>
+      <Label>Audio input</Label>
+      <Type>stream</Type>
+      <StreamInfo>
+        <StreamType>audio</StreamType>
+        <StreamDirection>input</StreamDirection>
+      </StreamInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>startChannel</Name>
+      <Label>startChannel</Label>
+      <Description>Set input channel on the audio interface.An offset of "2" will mean that the AudioIn module uses audio from channel 2 on the audio interface.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>1</Minimum>
+              <Maximum>24</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inLevel</Name>
+      <Label>Input Level</Label>
+      <Description>Set the input level of the module</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>vu1</Name>
+      <Label>VU Meter</Label>
+      <Description>Display audio output level</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-120</Minimum>
+              <Maximum>0</Maximum>
+            </Range>
+          </Constraint>
+          <Default>-120</Default>
+          <Scale>
+            <ScaleType>decibel</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>Active</Label>
+      <Description>Turn module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+  <WidgetInfo>
+    <Widget>
+      <WidgetType>Slider</WidgetType>
+      <Label>inLevel</Label>
+      <Position>
+        <X>195</X>
+        <Y>10</Y>
+        <Width>50</Width>
+        <Height>180</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>inLevel</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>VuMeter</WidgetType>
+      <Label>vu1</Label>
+      <Position>
+        <X>255</X>
+        <Y>10</Y>
+        <Width>50</Width>
+        <Height>180</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>level</WidgetAttribute>
+          <Endpoint>vu1</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>Knob</WidgetType>
+      <Label>startChannel</Label>
+      <Position>
+        <X>100</X>
+        <Y>10</Y>
+        <Width>85</Width>
+        <Height>110</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>startChannel</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+  </WidgetInfo>
+  <ImplementationInfo>
+    <PatchName>AudioOut.pd</PatchName>
+  </ImplementationInfo>
+</InterfaceDeclaration>

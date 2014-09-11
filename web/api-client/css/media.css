@@ -1,0 +1,228 @@
+
+/*-- Media Screen Style Sheet  -- */
+
+@media all and (max-width: 1200px) and (min-width: 769px) {}
+
+@media (max-width: 1024px) {
+	
+.carousel-caption h3 { font-size:28px;}
+.carousel-caption h4 { font-size:28px;}
+.carousel-caption p { font-size:14px;}
+	
+
+	}
+
+@media (min-width: 768px) and (max-width:1002px) {
+	
+.navigation .nav li a {font-size: 12px; padding: 0 5px;}
+.carousel-caption h3 { font-size:20px;}
+.carousel-caption h4 { font-size:20px;}
+.carousel-caption p { font-size:12px;}
+.news-control { width:8%;}
+.it-services h2 { font-size:20px;}
+.services { border:none;}
+.footer { background-size:cover;}
+
+.u-name { width: 47%;}
+.u-message { width:100%;}
+
+}
+@media (max-width: 767px) {
+
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */	
+.logo img { margin: 0 auto;}
+.top-link {margin: 10px 0 0; text-align:center;}
+.top-search { width:60%; margin:10px 0 0 0;}
+.navigation { margin:0 !important; padding:0 !important;}
+.navigation .nav { float:none; margin:0; text-align:center; content: inherit;}
+.navigation .nav li { margin: 5px 0 0 0;}
+.navigation .nav > li + li:before { content:none;}
+.navigation .nav li a { float:none;}
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */
+
+.carousel-caption { position:relative; left: 0; padding: 10px 5px; background:#0375AE; text-align:center; margin:0;}
+.carousel-caption h3 { margin: 0 0 10px 0; font-size:22px;}
+.carousel-caption h4 { font-size:22px;}
+.carousel-caption p { font-size:14px; width:100%;}
+.carousel-indicators { display:none;}
+
+.news-txt { position:relative; left:0; text-align:center}
+.news-head { bottom:0; display:block; float:none;}
+.news-txt p { margin:0; width: 75%;}
+
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+.it-services { margin: 0 0 10px 0;}
+.footer { background-size:cover;}
+.c-profile { border:none;}
+.copyright-txt { margin: 10px 0 0 0;}
+.s-icons { text-align:center;}
+.copyright-txt { text-align:center; float:none;} 
+
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+
+.no_float { float:none !important;}
+.no_margin { margin:0 !important;} 
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+.sect-txt-head { font-size: 24px;}
+.content-txt p { font-size: 16px;}
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+
+}
+
+
+@media (max-width: 480px) {
+	
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */
+.logo img { margin: 0 auto;}
+.top-link {margin: 10px 0 0; text-align:center;}
+.top-search { width:60%; margin:10px 0 0 0;}
+.navigation { margin:0 !important; padding:0 !important;}
+.navigation .nav { float:none; margin:0; text-align:center; content: inherit;}
+.navigation .nav li { margin: 5px 0 0 0;}
+.navigation .nav > li + li:before { content:none;}
+.navigation .nav li a { float:none;}
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */
+
+.carousel-caption { position:relative; left: 0; padding: 10px 5px; background:#0375AE; text-align:center; margin:0;}
+.carousel-caption h3 { margin: 0 0 10px 0; font-size:22px;}
+.carousel-caption h4 { font-size:22px;}
+.carousel-caption p { font-size:14px; width:100%;}
+.carousel-indicators { display:none;}
+
+.news-txt { position:relative; left:0; text-align:center}
+.news-head { bottom:0; display:block; float:none;}
+.news-txt p { margin:0; width: 75%;}
+
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+.it-services { margin: 0 0 10px 0;}
+.footer { background-size:cover;}
+.c-profile { border:none;}
+.copyright-txt { margin: 10px 0 0 0;}
+.s-icons { text-align:center;}
+.copyright-txt { text-align:center; float:none;} 
+
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+
+.no_float { float:none !important;}
+.no_margin { margin:0 !important;}
+
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+.sect-txt-head { font-size: 18px;}
+.content-txt p { font-size: 14px;}
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+
+
+/* --------------------------------------------------------------Contact Us Starts------------------------------------------------------------------------ */
+.u-name { float:none; width: 100%; margin: 0 0 10px 0;}
+.btn-right { text-align:center;}
+/* --------------------------------------------------------------Contact Us Ends------------------------------------------------------------------------ */
+ 
+
+ }
+
+@media (max-width: 360px) {
+
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */
+.logo img { margin: 0 auto;}
+.top-link {margin: 10px 0 0; text-align:center;}
+.top-search { width:60%; margin:10px 0 0 0;}
+.navigation { margin:0 !important; padding:0 !important;}
+.navigation .nav { float:none; margin:0; text-align:center; content: inherit;}
+.navigation .nav li { margin: 5px 0 0 0;}
+.navigation .nav > li + li:before { content:none;}
+.navigation .nav li a { float:none;}
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */
+.carousel-caption { position:relative; left: 0; padding: 10px 5px; background:#0375AE; text-align:center; margin:0;}
+.carousel-caption h3 { margin: 0 0 10px 0; font-size:22px;}
+.carousel-caption h4 { font-size:22px;}
+.carousel-caption p { font-size:14px; width:100%;}
+.carousel-indicators { display:none;}
+
+.news-txt { position:relative; left:0; text-align:center}
+.news-head { bottom:0; display:block; float:none;}
+.news-txt p { margin:0; width: 75%;}
+
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+.it-services { margin: 0 0 10px 0;}
+.footer { background-size:cover;}
+.c-profile { border:none;}
+.copyright-txt { margin: 10px 0 0 0;}
+.s-icons { text-align:center;}
+.copyright-txt { text-align:center; float:none;} 
+
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+
+.no_float { float:none !important;}
+.no_margin { margin:0 !important;}
+
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+
+.sect-txt-head { font-size: 18px;}
+.content-txt p { font-size: 14px;}
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+
+
+/* --------------------------------------------------------------Contact Us Starts------------------------------------------------------------------------ */
+.u-name { float:none; width: 100%; margin: 0 0 10px 0;}
+.btn-right { text-align:center;}
+/* --------------------------------------------------------------Contact Us Ends------------------------------------------------------------------------ */
+ 
+	
+}
+
+  @media (max-width: 320px) { 
+  
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */
+.logo img { margin: 0 auto;}
+.top-link {margin: 10px 0 0; text-align:center;}
+.top-search { width:60%; margin:10px 0 0 0;}
+.navigation { margin:0 !important; padding:0 !important;}
+.navigation .nav { float:none; margin:0; text-align:center; content: inherit;}
+.navigation .nav li { margin: 5px 0 0 0;}
+.navigation .nav > li + li:before { content:none;}
+.navigation .nav li a { float:none;}
+.mid-heading h1 { font-size: 24px;}
+/* --------------------------------------------------------------Header Section------------------------------------------------------------------------ */
+.carousel-caption { position:relative; left: 0; padding: 10px 5px; background:#0375AE; text-align:center; margin:0;}
+.carousel-caption h3 { margin: 0 0 10px 0; font-size:22px;}
+.carousel-caption h4 { font-size:22px;}
+.carousel-caption p { font-size:14px; width:100%;}
+.carousel-indicators { display:none;}
+
+.news-txt { position:relative; left:0; text-align:center}
+.news-head { bottom:0; display:block; float:none;}
+.news-txt p { margin:0; width: 75%;}
+
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+.it-services { margin: 0 0 10px 0;}
+.it-services h2 { font-size:20px;}
+.footer { background-size:cover;}
+.c-profile { border:none;}
+.copyright-txt { margin: 10px 0 0 0;}
+.s-icons { text-align:center;}
+.copyright-txt { text-align:center; float:none;} 
+/* --------------------------------------------------------------Footer Section------------------------------------------------------------------------ */
+
+.no_float { float:none !important;}
+.no_margin { margin:0 !important;}
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+
+.sect-txt-head { font-size: 15px;}
+.content-txt p { font-size: 14px;}
+
+/* --------------------------------------------------------------About Us------------------------------------------------------------------------ */
+
+
+/* --------------------------------------------------------------Contact Us Starts------------------------------------------------------------------------ */
+.u-name { float:none; width: 100%; margin: 0 0 10px 0;}
+.btn-right { text-align:center;}
+/* --------------------------------------------------------------Contact Us Ends------------------------------------------------------------------------ */
+
+}  

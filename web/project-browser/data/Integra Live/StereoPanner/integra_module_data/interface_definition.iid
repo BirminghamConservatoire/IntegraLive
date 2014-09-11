@@ -1,0 +1,247 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="d6e3e09c-2102-3872-0caf-618a1731b9a9" originGuid="7367e797-b7c5-485c-bd4b-e983ad31a850" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>StereoPanner</Name>
+    <Label>Stereo Panner</Label>
+    <Description>Takes a monophonic input and pans between 2 stereo channels using equal power panningThe panner assumes that speakers are placed in a layout as follows:out1 : left  out2 : right</Description>
+    <Tags>
+      <Tag>simple</Tag>
+      <Tag>processing</Tag>
+      <Tag>panning</Tag>
+      <Tag>dynamics</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
+    <Author>Jamie Bullock</Author>
+    <CreatedDate>2010-06-06 13:31:14.439000</CreatedDate>
+    <ModifiedDate>2013-08-09 16:01:02.788000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>in1</Name>
+      <Label>Audio Input</Label>
+      <Type>stream</Type>
+      <StreamInfo>
+        <StreamType>audio</StreamType>
+        <StreamDirection>input</StreamDirection>
+      </StreamInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>out1</Name>
+      <Label>Audio Output 1</Label>
+      <Description>Audio Output corresponding to pan "left"</Description>
+      <Type>stream</Type>
+      <StreamInfo>
+        <StreamType>audio</StreamType>
+        <StreamDirection>output</StreamDirection>
+      </StreamInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>out2</Name>
+      <Label>Audio Output 1</Label>
+      <Description>Audio Output corresponding to pan right</Description>
+      <Type>stream</Type>
+      <StreamInfo>
+        <StreamType>audio</StreamType>
+        <StreamDirection>output</StreamDirection>
+      </StreamInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>bypass</Name>
+      <Label>Bypass</Label>
+      <Description>Bypass the module processing</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inLevel</Name>
+      <Label>Input Level</Label>
+      <Description>Set the input level of the module</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>outLevel</Name>
+      <Label>Output Level</Label>
+      <Description>Set the output level of the module</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>panning</Name>
+      <Label>panning</Label>
+      <Description>This parameter pans the input channel to the 2 output channels -45 pans the signal left +45 pans the signal right. 0 divides the signal into 70 % to the 1st and 70 % to the 2nd output thus preserving **equal power** as the Audio Input is panned</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-45</Minimum>
+              <Maximum>45</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+  <WidgetInfo>
+    <Widget>
+      <WidgetType>PanoramaBalance</WidgetType>
+      <Label>panning</Label>
+      <Position>
+        <X>220</X>
+        <Y>10</Y>
+        <Width>190</Width>
+        <Height>180</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>panning</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>Slider</WidgetType>
+      <Label>inLevel</Label>
+      <Position>
+        <X>100</X>
+        <Y>10</Y>
+        <Width>50</Width>
+        <Height>180</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>inLevel</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>Slider</WidgetType>
+      <Label>outLevel</Label>
+      <Position>
+        <X>160</X>
+        <Y>10</Y>
+        <Width>50</Width>
+        <Height>180</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>outLevel</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>Checkbox</WidgetType>
+      <Label>bypass</Label>
+      <Position>
+        <X>20</X>
+        <Y>20</Y>
+        <Width>70</Width>
+        <Height>85</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>bypass</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+  </WidgetInfo>
+  <ImplementationInfo>
+    <PatchName>StereoPanner.pd</PatchName>
+  </ImplementationInfo>
+</InterfaceDeclaration>

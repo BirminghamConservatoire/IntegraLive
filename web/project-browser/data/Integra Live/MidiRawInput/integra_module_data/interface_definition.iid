@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="a7a062bb-4508-739b-7ef1-4795e7da99cb" originGuid="c264ee51-efc6-29d8-a00b-ac34af2c9c61" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>MidiRawInput</Name>
+    <Label>Midi Raw Input</Label>
+    <Description>This module passes midi messages directly from all active midi input devices.</Description>
+    <Tags>
+      <Tag>core</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>true</ImplementedInLibIntegra>
+    <Author>Leighton Hargreaves</Author>
+    <CreatedDate>2014-02-13 15:36:22.256000</CreatedDate>
+    <ModifiedDate>2014-02-13 15:52:23.252000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>midiMessage</Name>
+      <Label>Midi Message</Label>
+      <Description>A single 3-byte midi message, represented as an unsigned int.This value is set by the implementation every time a midi message is received by the system.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>16777215</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>Active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+</InterfaceDeclaration>

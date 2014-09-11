@@ -1,0 +1,277 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="ce0f5411-816e-6159-bb23-840444b62618" originGuid="bf519e13-c924-4198-bb1a-a1c66b64ac5d" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>Scaler</Name>
+    <Label>Scaler</Label>
+    <Description>Control processing module for scaling from an input range to an output range</Description>
+    <Tags>
+      <Tag>core</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>true</ImplementedInLibIntegra>
+    <Author>Jamie Bullock</Author>
+    <CreatedDate>2011-01-24 16:50:12.000000</CreatedDate>
+    <ModifiedDate>2014-02-19 10:42:44.985000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>inValue</Name>
+      <Label>Input Value</Label>
+      <Description>The value which is scaled in order to produce an output value</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-2147483648</Minimum>
+              <Maximum>2147483647</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0.</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inRangeMin</Name>
+      <Label>Input Range Minimum</Label>
+      <Description>Together with InRangeMax, defines the limits of the scaler's input range</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-2147483648</Minimum>
+              <Maximum>2147483647</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inRangeMax</Name>
+      <Label>Input Range Maximum</Label>
+      <Description>Together with InRangeMin, defines the limits of the scaler's input range</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-2147483648</Minimum>
+              <Maximum>2147483647</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inScale</Name>
+      <Label>Input Scale</Label>
+      <Description>Allows for nonlinear input scaling, for when a scaler's input source has a nonlinear relationship between value and perceptual linearity.For example, if a scaler's input source is a vu meter, represented in decibels, it would probably be desirable to set inScale to 'decibel'</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <AllowedStates>
+              <State>decibel</State>
+              <State>exponential</State>
+              <State>linear</State>
+            </AllowedStates>
+          </Constraint>
+          <Default>linear</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inMode</Name>
+      <Label>Input Mode</Label>
+      <Description>Enumeration of ['snap', 'ignore'].Specifies how the Scaler should respond on receipt of input values outside of the specified Input Range.  'snap' means an output value should be determined from the closest legal input value.'ignore' means the Scaler should do nothing when out-of-range input is received.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <AllowedStates>
+              <State>ignore</State>
+              <State>snap</State>
+            </AllowedStates>
+          </Constraint>
+          <Default>snap</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>outRangeMin</Name>
+      <Label>Output Range Minimum</Label>
+      <Description>Together with OutRangeMax, defines the limits of the scaler's output range</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-2147483648</Minimum>
+              <Maximum>2147483647</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>outRangeMax</Name>
+      <Label>Output Range Maximum</Label>
+      <Description>Together with OutRangeMin, defines the limits of the scaler's output range</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-2147483648</Minimum>
+              <Maximum>2147483647</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>outScale</Name>
+      <Label>Output Scale</Label>
+      <Description>Allows for nonlinear output scaling, for when a scaler's output target has a nonlinear relationship between value and perceptual linearity.For example, if a scaler's output target is a filter's curoff frequency, represented in hz, it would probably be desirable to set outScale to 'exponential'</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <AllowedStates>
+              <State>decibel</State>
+              <State>exponential</State>
+              <State>linear</State>
+            </AllowedStates>
+          </Constraint>
+          <Default>linear</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>outValue</Name>
+      <Label>Output Value</Label>
+      <Description>The Scaler's output value.  Updated by the system when inValue changes, according to the scaling settings specified by the other endpoints</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>-2147483648</Minimum>
+              <Maximum>2147483647</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0.</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+</InterfaceDeclaration>

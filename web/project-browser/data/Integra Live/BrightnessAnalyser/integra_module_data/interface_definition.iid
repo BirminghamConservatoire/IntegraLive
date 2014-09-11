@@ -1,0 +1,144 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="36fbaf4d-7ee5-0c9f-a7fa-5037f2f71404" originGuid="ceefdb94-538f-6a01-c0fa-94145d60ccb5" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>BrightnessAnalyser</Name>
+    <Label>Brightness Analyser</Label>
+    <Description>Detect and display the frequency measured in Hz of the perceptual brightness.</Description>
+    <Tags>
+      <Tag>simple</Tag>
+      <Tag>analysis</Tag>
+      <Tag>spectral</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
+    <Author>Balandino Di Donato</Author>
+    <CreatedDate>2013-07-12 17:38:15.256000</CreatedDate>
+    <ModifiedDate>2013-07-31 14:25:48.913000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>in1</Name>
+      <Label>Audio Input</Label>
+      <Description>Set the input level of the module</Description>
+      <Type>stream</Type>
+      <StreamInfo>
+        <StreamType>audio</StreamType>
+        <StreamDirection>input</StreamDirection>
+      </StreamInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inLevel</Name>
+      <Label>Input Level</Label>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>brightness</Name>
+      <Label>brightness</Label>
+      <Description>Display the frequency measured in Hz of the perceptual brightness.</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>20</Minimum>
+              <Maximum>20050</Maximum>
+            </Range>
+          </Constraint>
+          <Default>20</Default>
+          <Scale>
+            <ScaleType>exponential</ScaleType>
+            <Base>2</Base>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+  <WidgetInfo>
+    <Widget>
+      <WidgetType>Slider</WidgetType>
+      <Label>inLevel</Label>
+      <Position>
+        <X>11</X>
+        <Y>5</Y>
+        <Width>63</Width>
+        <Height>218</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>inLevel</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>VuMeter</WidgetType>
+      <Label>brightness</Label>
+      <Position>
+        <X>84</X>
+        <Y>5</Y>
+        <Width>63</Width>
+        <Height>218</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>level</WidgetAttribute>
+          <Endpoint>brightness</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+  </WidgetInfo>
+  <ImplementationInfo>
+    <PatchName>PerceptualBrightness.pd</PatchName>
+  </ImplementationInfo>
+</InterfaceDeclaration>

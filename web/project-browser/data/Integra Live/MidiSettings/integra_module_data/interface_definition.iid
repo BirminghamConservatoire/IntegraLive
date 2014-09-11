@@ -1,0 +1,123 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="8811225b-9567-d345-6c6c-452bf6e1c253" originGuid="f9cc2c13-7d97-a78d-5048-c7751c8d58d8" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>MidiSettings</Name>
+    <Label>Midi Settings</Label>
+    <Description>manages MIDI setup (selecting valid backends, such as ALSA or PortMidi, and then selecting available devices)</Description>
+    <Tags>
+      <Tag>core</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>true</ImplementedInLibIntegra>
+    <Author>Leighton Hargreaves</Author>
+    <CreatedDate>2012-10-05 21:17:28.899000</CreatedDate>
+    <ModifiedDate>2014-02-06 15:23:05.942000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>availableInputDevices</Name>
+      <Label>Available Input Devices</Label>
+      <Description>The set of available midi input devices for the selected driver.Represented as a list concatenated into a single string, with each element prepended by its length and a colonExample: "First Item", "Second Item" would be represented as 10:First Item11:Second Item</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>availableOutputDevices</Name>
+      <Label>Available Output Devices</Label>
+      <Description>The set of available midi output devices for the selected driver.Represented as a list concatenated into a single string, with each element prepended by its length and a colonExample: "First Item", "Second Item" would be represented as 10:First Item11:Second Item</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>false</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default/>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>false</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>activeInputDevices</Name>
+      <Label>Active Input Devices</Label>
+      <Description>The set of Midi input devices which are currently open.Represented as a list concatenated into a single string, with each element prepended by its length and a colonExample: "First Item", "Second Item" would be represented as 10:First Item11:Second Item</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default>None</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>activeOutputDevices</Name>
+      <Label>Active Output Devices</Label>
+      <Description>The set of Midi output devices which are currently open.Represented as a list concatenated into a single string, with each element prepended by its length and a colonExample: "First Item", "Second Item" would be represented as 10:First Item11:Second Item</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>string</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1000000</Maximum>
+            </Range>
+          </Constraint>
+          <Default>None</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>restoreDefaults</Name>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>bang</ControlType>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+</InterfaceDeclaration>

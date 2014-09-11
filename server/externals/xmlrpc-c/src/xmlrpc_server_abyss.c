@@ -932,7 +932,9 @@ xmlrpc_server_abyss_set_handlers2(TServer *         const srvP,
                                   const char *      const uriPath,
                                   xmlrpc_registry * const registryP) {
 
-    setHandlersRegistry(srvP, uriPath, registryP, false, NULL, false, 0);
+    //setHandlersRegistry(srvP, uriPath, registryP, false, NULL, false, 0);
+    setHandlersRegistry(srvP, uriPath, registryP, false, "*", false, 0);
+    // [DGS 10/07/14] Amended to allow global CORS access
 }
 
 

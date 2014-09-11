@@ -1,0 +1,48 @@
+/* Fonts settings
+--------------------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../font/glyphicons-halflings-regular.eot');
+  src: url('../font/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../font/glyphicons-halflings-regular.woff') format('woff'), url('../font/glyphicons-halflings-regular.ttf') format('truetype'), url('../font/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+}
+
+
+
+@font-face {
+	font-family: 'GothamBoldRegular';
+	src: url('../font/gotham_bold-webfont.eot');
+	src: url('../font/gotham_bold-webfontd41d.eot?#iefix') format('embedded-opentype'),
+		url('../font/gotham_bold-webfont.ttf') format('truetype'),
+		url('../font/gotham_bold-webfont.svg#GothamBoldRegular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'GothamBookRegular';
+	src: url('../font/gotham_book-webfont.eot');
+	src: url('../font/gotham_book-webfontd41d.eot?#iefix') format('embedded-opentype'),
+		url('../font/gotham_book-webfont.ttf') format('truetype'),
+		url('../font/gotham_book-webfont.svg#GothamBookRegular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'GothamMediumRegular';
+	src: url('../font/gotham_medium-webfont.eot');
+	src: url('../font/gotham_medium-webfontd41d.eot?#iefix') format('embedded-opentype'),
+		url('../font/gotham_medium-webfont.ttf') format('truetype'),
+		url('../font/gotham_medium-webfont.svg#GothamMediumRegular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'GothamLightRegular';
+	src: url('../font/gotham_light-webfont.eot');
+	src: url('../font/gotham_light-webfontd41d.eot?#iefix') format('embedded-opentype'),
+		url('../font/gotham_light-webfont.woff') format('woff'),
+		url('../font/gotham_light-webfont.ttf') format('truetype'),
+		url('../font/gotham_light-webfont.svg#GothamLightRegular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

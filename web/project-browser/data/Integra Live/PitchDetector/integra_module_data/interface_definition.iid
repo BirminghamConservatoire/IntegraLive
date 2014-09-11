@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="aa088bf0-336a-f3d5-777d-6459ca34d239" originGuid="ce0380dc-af98-4175-bb09-90c0764f43f4" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>PitchDetector</Name>
+    <Label>Pitch Detector</Label>
+    <Description>Detect and display the pitch of the incoming sound</Description>
+    <Tags>
+      <Tag>simple</Tag>
+      <Tag>analysis</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
+    <Author>Jamie Bullock</Author>
+    <CreatedDate>2013-07-12 18:09:43.914000</CreatedDate>
+    <ModifiedDate>2013-11-04 16:52:51.984000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>in1</Name>
+      <Label>Audio Input</Label>
+      <Description>Set the input level of the module</Description>
+      <Type>stream</Type>
+      <StreamInfo>
+        <StreamType>audio</StreamType>
+        <StreamDirection>input</StreamDirection>
+      </StreamInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inLevel</Name>
+      <Label>Input Level</Label>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>pitch</Name>
+      <Label>pitch</Label>
+      <Description>Displays the detected pitch in MIDI cents</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>12700</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+  <WidgetInfo>
+    <Widget>
+      <WidgetType>Slider</WidgetType>
+      <Label>inLevel</Label>
+      <Position>
+        <X>0</X>
+        <Y>8</Y>
+        <Width>63</Width>
+        <Height>210</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>inLevel</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>NumberBox</WidgetType>
+      <Label>pitch</Label>
+      <Position>
+        <X>73</X>
+        <Y>74</Y>
+        <Width>120</Width>
+        <Height>80</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>pitch</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+  </WidgetInfo>
+  <ImplementationInfo>
+    <PatchName>Pitch.pd</PatchName>
+  </ImplementationInfo>
+</InterfaceDeclaration>

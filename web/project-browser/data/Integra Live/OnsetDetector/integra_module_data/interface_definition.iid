@@ -1,0 +1,144 @@
+<?xml version="1.0" ?>
+<InterfaceDeclaration moduleGuid="793cc148-f276-6d18-9e50-a848d304b8ad" originGuid="8cd76d4e-0b1d-4a40-baca-c2011ec84466" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+  <InterfaceInfo>
+    <Name>OnsetDetector</Name>
+    <Label>Pitched Onset Detector</Label>
+    <Description>Onset detector optimised for pitched soundsOnset refers to the beginning of a musical note or other sound, in which the amplitude rises from zero to an initial peak (Source: [Wikipedia](http://en.wikipedia.org/wiki/Onset_(audio))</Description>
+    <Tags>
+      <Tag>simple</Tag>
+      <Tag>analysis</Tag>
+      <Tag>dynamics</Tag>
+      <Tag>pitch</Tag>
+    </Tags>
+    <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
+    <Author>Jamie Bullock</Author>
+    <CreatedDate>2012-10-18 18:53:26.489000</CreatedDate>
+    <ModifiedDate>2013-08-01 12:31:47.044000</ModifiedDate>
+  </InterfaceInfo>
+  <EndpointInfo>
+    <Endpoint>
+      <Name>in1</Name>
+      <Label>Audio Input</Label>
+      <Type>stream</Type>
+      <StreamInfo>
+        <StreamType>audio</StreamType>
+        <StreamDirection>input</StreamDirection>
+      </StreamInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>inLevel</Name>
+      <Label>Input Level</Label>
+      <Description>Set the input level of the module</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>onset</Name>
+      <Label>Onset</Label>
+      <Description>Show the relative level of any detected onset</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>float</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>100</Maximum>
+            </Range>
+          </Constraint>
+          <Default>0</Default>
+          <Scale>
+            <ScaleType>linear</ScaleType>
+          </Scale>
+        </StateInfo>
+        <CanBeSource>true</CanBeSource>
+        <CanBeTarget>true</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+    <Endpoint>
+      <Name>active</Name>
+      <Label>active</Label>
+      <Description>Turns module processing on and off</Description>
+      <Type>control</Type>
+      <ControlInfo>
+        <ControlType>state</ControlType>
+        <StateInfo>
+          <StateType>integer</StateType>
+          <IsSavedToFile>true</IsSavedToFile>
+          <IsInputFile>false</IsInputFile>
+          <Constraint>
+            <Range>
+              <Minimum>0</Minimum>
+              <Maximum>1</Maximum>
+            </Range>
+          </Constraint>
+          <Default>1</Default>
+        </StateInfo>
+        <CanBeSource>false</CanBeSource>
+        <CanBeTarget>false</CanBeTarget>
+        <IsSentToHost>true</IsSentToHost>
+      </ControlInfo>
+    </Endpoint>
+  </EndpointInfo>
+  <WidgetInfo>
+    <Widget>
+      <WidgetType>Slider</WidgetType>
+      <Label>inLevel</Label>
+      <Position>
+        <X>18</X>
+        <Y>12</Y>
+        <Width>68</Width>
+        <Height>197</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>inLevel</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+    <Widget>
+      <WidgetType>NumberBox</WidgetType>
+      <Label>onset</Label>
+      <Position>
+        <X>96</X>
+        <Y>12</Y>
+        <Width>120</Width>
+        <Height>80</Height>
+      </Position>
+      <AttributeMappings>
+        <AttributeMapping>
+          <WidgetAttribute>value</WidgetAttribute>
+          <Endpoint>onset</Endpoint>
+        </AttributeMapping>
+      </AttributeMappings>
+    </Widget>
+  </WidgetInfo>
+  <ImplementationInfo>
+    <PatchName>OnsetDetector.pd</PatchName>
+  </ImplementationInfo>
+</InterfaceDeclaration>

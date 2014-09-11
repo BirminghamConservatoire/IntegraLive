@@ -415,6 +415,9 @@ ResponseAccessControl(TSession *        const abyssSessionP,
                          accessControl.allowOrigin);
         ResponseAddField(abyssSessionP, "Access-Control-Allow-Methods",
                          "POST");
+        // [DGS 10/07/14] Added to support browser-based AJAX access
+        ResponseAddField(abyssSessionP, "Access-Control-Allow-Headers",
+                         "Content-Type");
         if (accessControl.expires) {
             char buffer[64];
             sprintf(buffer, "%u", accessControl.maxAge);

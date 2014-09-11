@@ -1,0 +1,64 @@
+
+  <xsl:variable name="and"><![CDATA[&]]></xsl:variable>
+  <xsl:variable name="lt"><![CDATA[<]]></xsl:variable>
+  <xsl:variable name="gt"><![CDATA[>]]></xsl:variable>
+  <xsl:variable name="quot"><![CDATA["]]></xsl:variable>
+
+  <xsl:template name="parse">
+    <xsl:param name="text" />
+    <xsl:variable name="name_and_atts" select="substring-after(substring-before($text,$gt),$lt)"/>
+    <xsl:variable name="name">
+      <xsl:choose>
+        <xsl:when test="contains($name_and_atts,' ')">
+          <xsl:value-of select="substring-before($name_and_atts,' ')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$name_and_atts"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="atts">
+      <xsl:value-of select="substring-after($name_and_atts,concat($name,' '))"/>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$name=''">
+        <xsl:value-of select="$text"/>
+      </xsl:when>
+      <xsl:when test="contains($name,'/')">
+        <xsl:variable name="tag-empty" select="concat($lt,$name,$gt)"/>
+        <xsl:element name="{substring($name,0,string-length($name))}"/>
+        <xsl:call-template name="parse">
+          <xsl:with-param name="text" select="substring-after($text,$tag-empty)"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="tag-open" select="concat($lt,$name,$gt)"/>
+        <xsl:variable name="tag-close" select="concat($lt,'/',$name,$gt)"/>
+        <xsl:element name="{$name}">
+          <xsl:call-template name="parse-atts">
+            <xsl:with-param name="text" select="$atts"/>
+          </xsl:call-template>
+          <xsl:call-template name="parse">
+            <xsl:with-param name="text" select="substring-after(substring-before($text,$tag-close),$tag-open)"/>
+          </xsl:call-template>
+        </xsl:element>
+        <xsl:call-template name="parse">
+          <xsl:with-param name="text" select="substring-after($text,$tag-close)"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="parse-atts">
+    <xsl:param name="text" />
+    <xsl:variable name="name" select="substring-before($text,'=')"/>
+    <xsl:variable name="value" select="substring-before(substring-after($text,concat($name,'=',$quot)),$quot)"/>
+    <xsl:if test="not(normalize-space($name)='')">
+      <xsl:attribute name="{$name}">
+        <xsl:value-of select="$value"/>
+      </xsl:attribute>
+      <xsl:call-template name="parse-atts">
+        <xsl:with-param name="text" select="substring-after($text,concat($name,'=',$quot,$value,$quot,' '))"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>

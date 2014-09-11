@@ -1,0 +1,145 @@
+/* --------------------------------------------------------------General Styling------------------------------------------------------------------------- */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	font-family: 'GothamBookRegular';
+	font-size:12px;
+}
+
+ol, ul {list-style: none;
+}
+
+a {
+	text-decoration: none;
+	color: #fff;
+}
+
+body {
+	
+}
+
+/* --------------------------------------------------------------General Styling Ends----------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------Index Page Starts------------------------------------------------------------------------- */
+
+.Main { height:auto; display:block; width: 100%; padding:0; margin:0;}
+.Full { max-width: 1440px; display:block; height:auto;}
+.container { max-width:960px;}
+.top-header { height:auto; width:100%; background: #f8f8f8; padding: 12px 0; box-shadow: 0 6px 1px rgba(3,112,155,.3)}
+.top-link { width: 100%; text-align:right;}
+.logo { text-align:center; margin: 7px 0 0 0px;}
+.topmost-nav { display:inline-block; padding: 2px 0;}
+.topmost-nav a { color:#00a1df; font-size:14px; font-family: 'GothamBoldRegular'; border-right: 1px solid #00a1df; padding: 0 10px 0 0; margin: 0 10px 0 0;}
+.topmost-nav a:last-child { border:none;}
+.top-search { display: inline-block; background:#f1f1f1; border: 1px solid transparent; border-radius: 5px 5px 5px 5px; box-shadow: 1px 2px 1px #B0B0B0 inset; padding: 3px 5px; width:30%; }
+.top-search input { background: transparent; border:none; float:left; width:90%;}
+.top-search span { color: #00a1df;}
+
+/* --------------------------------------------------------------Navigation Start------------------------------------------------------------------------- */
+
+.navigation { padding: 18px 0 0;}
+.navigation .nav { float:right;}
+.navigation .nav li a { font-size:16px; color:#005682; padding: 0px 8px; float: right;}
+.navigation .nav li.dropdown a {font-size:16px; color:#005682; padding: 0px 8px; float: right;}
+.navigation .nav li:last-child a { padding-right:0;}
+.navigation .nav li { margin:0;}
+.navigation .nav > li + li:before { content: "/"; font-size: 15px;}
+
+/* --------------------------------------------------------------Navigation End------------------------------------------------------------------------- */
+
+.carousel-caption h3 { margin:10px 0;}
+
+
+/* --------------------------------------------------------------News Section Start----------------------------------------------------------------------- */
+
+.news-item { background: #fff; box-shadow:0 0px 10px 0px rgba(34, 34, 34, 0.6) inset; }
+.news-txt { padding: 10px 0; bottom: 0; left: 15%; position: relative; right: 0; text-align: left;  z-index: 10; top:0}
+.news-head {float:left;}
+.news-head h3 { color: #444444; font-size:16px; font-family: 'GothamBoldRegular'; margin:0 }
+.news-txt p { color: #3b3a3a; font-size:12px; display:inline-block; width: 60%; margin:0 0 0 10px}
+.news-txt p a {color:#2d2c2c; font-weight:600;}
+a.news-control { background: none !important; color:#666666;}
+
+/* --------------------------------------------------------------News Section Ends----------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------Footer Starts----------------------------------------------------------------------- */
+
+.footer { background:url(../img/foot-back.png) no-repeat; padding: 20px 0;}
+.it-services { background:#fff; border:2px solid #fff; border-radius: 5px 5px 5px 5px; box-shadow: 2px 3px 5px rgba(0,0,0,.4); padding: 10px 10px;}
+.it-services h2 { width:60%; color:#049bda; font-size:28px; text-align:right; font-style:italic;}
+.con-bottom { text-align:left; width:85%;}
+.con-bottom p { color:#3e3d3d; margin:0;}
+.con-bottom a { color:#2d2c2c; float:right; font-family: 'GothamMediumRegular'; text-transform:none; margin: 15px 0 0 0;}
+.seprator { border-bottom: 1px solid #8f8f8f;}
+.c-profile { display:block; padding-right: 30px; border-right: 1px solid #e1e1e1;}
+.top-head { background: rgba(3, 130, 190, 0.7); padding: 3px 10px;}
+.top-head p { font-family: 'GothamBookRegular'; margin:0; text-align:left; color:#fff; font-size:13px; text-shadow:2px 2px rgba(0,0,0,.4);}
+.c-profile ul { margin:4px 0 0 0; } 
+.c-profile ul li a { color:#e1dbdb; line-height:25px;}
+
+/* --------------------------------------------------------------Footer Ends----------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------Copyright Section Starts----------------------------------------------------------------- */
+
+.copyright-block { padding:15px 0; background:#5a5a5a;}
+.s-icons {}
+.s-icons a { display:inline-block;}
+.copyright-txt { float:right;}
+.copyright-txt p { color:#fff;}
+
+/* --------------------------------------------------------------Copyright Section Ends----------------------------------------------------------------- */
+
+/* --------------------------------------------------------------Index Page Ends------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------About Us Starts------------------------------------------------------------------------ */
+.mid-content { background:#fff; }
+.heading {border-bottom:1px solid #8f8f8f;}
+.mid-heading { padding: 15px 0; }
+.mid-heading h1 { font-size:36px; color:#005681; font-family: 'GothamBoldRegular'; margin:0}
+.section1 {border-bottom:1px solid #8f8f8f; padding: 30px 0;}
+.img-border { border: 2px solid #e1e1e1;}
+.sect-txt-head { color:#656669; font-size:24px; font-family: 'GothamMediumRegular'; text-transform:uppercase;}
+.content-txt p { color:#666363; font-size:16px; line-height:25px;}
+.section2 { padding: 30px 0;}
+/* --------------------------------------------------------------About Us Starts------------------------------------------------------------------------ */
+
+/* --------------------------------------------------------------Contact Us Starts------------------------------------------------------------------------ */
+.contact-map { margin:20px 0; }
+.con-map {border: 5px solid #eeeeee;}
+.cont-adrss {border-top:1px solid #8f8f8f; padding: 20px 0;}
+.addres-sect {  width:100%; }
+.addres-sect h4 { color:#444444; font-size:20px; margin:0; }
+.phne {border-bottom: 1px solid #e5e5e5;  padding: 20px 0;}
+.phne span { color:#cccccc; margin: 4px 10px 0 0; float:left;}
+.phne p { color:#666666; font-family: 'GothamLightRegular'; font-size:14px; margin:0; overflow:hidden; }
+.mail p a {color:#666666; font-family: 'GothamLightRegular'; font-size:14px;}
+.address { border:none;}
+.addres-sect form { padding: 20px 0;}
+.u-name { float: left; width: 48%; margin-right:20px;}
+.u-email { margin:0;}
+.u-name p { color:#959595; font-size:14px; margin:0 0 20px 0;}
+.txtbox { width: 99%; border: 1px solid #ebebeb; box-shadow: 2px 2px 2px rgba(0,0,0,.1); padding: 10px 5px;}
+.u-message { width: 100%; margin: 20px 0 0 0;}
+.u-message .msg-box { height: 170px; resize:none;}
+.btn-right { width: 100%; text-align:right; margin: 10px 0 20px; }
+.buttn { padding: 10px 28px; border-radius: 5px 5px 5px 5px; display:inline-block;}
+.blue-btn { color:#fff; font-family: 'GothamLightRegular'; font-size:16px; background:#0380b3; margin: 0 40px 0 0;}
+.blue-btn:hover { background: #188bba; color:#fff;}
+.grey-btn { color:#fff; font-family: 'GothamLightRegular'; font-size:16px; background:#434446; }
+.grey-btn:hover { background: #565656; color:#fff;}
+/* --------------------------------------------------------------Contact Us Ends------------------------------------------------------------------------ */

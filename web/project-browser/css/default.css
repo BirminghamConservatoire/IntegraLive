@@ -117,3 +117,8 @@ ul.attributes li.error { color: #900; font-weight: bolder; }
 .att-custom ul.attributes li[class*='cc'] .key { display:none; }
 .att-custom ul.attributes li[class*='cc'] .eq { display:none; }
 .att-custom ul.attributes li[class*='cc'] .value { padding:0; }
+
+.module-id { color: blue; font-weight:bold; }
+
+.ImplementedInLibIntegra { border-color:black;  }
+.ImplementedInLibIntegra > legend { border-color:black;  }

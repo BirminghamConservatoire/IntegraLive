@@ -8,13 +8,6 @@ echo   * running in cwd  : %~dp0
 echo   * running against : %*
 echo ======================================================
 
-if "%~1" == "" (
-	echo  No projects were specified for extraction
-	echo   - try running win-extract-ixd from the command line, specifying your project file as the first argument
-	echo   - alternatively, you can drag your project file onto win-extract.cmd in Windows Explorer
-	goto end
-)
-
 set skipped=0
 set extracted=0
 set indexed=0
@@ -35,6 +28,13 @@ for %%f in (..\..\..\modules\*.module) do (
 )
 echo.
 echo   DONE (%extracted% modules extracted, %skipped% skipped)
+
+if "%~1" == "" (
+	echo  No projects were specified for extraction
+	echo   - try running win-extract-ixd from the command line, specifying your project file as the first argument
+	echo   - alternatively, you can drag your project file onto win-extract.cmd in Windows Explorer
+	goto end
+)
 
 REM INITIALIZE MODULE INDEX
 copy NUL modules.xml > nul

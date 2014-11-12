@@ -37,7 +37,7 @@ namespace integra_api
 	class CLoadModuleInDevelopmentResult;
 
 	/** \class IModuleManager module_manager.h "api/module_manager.h"
-	 *  \brief Provides funtionality to interact with 3rd party, embedded and in-development modules
+	 *  \brief Provides functionality to interact with 3rd party, embedded and in-development modules
 	 *
 	 *  see http://www.integralive.org/tutorials/module-development-guide/#what-is-a-module
 	 */

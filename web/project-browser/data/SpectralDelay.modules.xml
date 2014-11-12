@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="../xsl/module-list.xsl"?>
+<?xml version="1.0" encoding="UTF-8"?> 
+<?xml-stylesheet type="text/xsl" href="../xsl/module-list.xsl"?> 
 <IntegraModules> 
 	<!-- default modules included with Integra Live --> 
-	<collection src="Integra%20Live"> 
+	<collection src="Integra Live"> 
 		<module name="AddSynth" moduleGuid="6f6c9429-c3d1-509d-807f-88dbc6482c1e" originGuid="99afbf9a-b6b2-443b-8996-1f484e56a606"/>
 		<module name="AudioIn" moduleGuid="ea703711-4e38-d682-6e9d-f844ac26d1f1" originGuid="b6f7421a-888a-47d7-b266-76a0b6c2b86b"/>
 		<module name="AudioOut" moduleGuid="721507ea-8495-c13e-cc69-0433db158e55" originGuid="171ccd25-cdb0-4003-96d8-ee0d9a0ada37"/>
@@ -84,9 +84,5 @@
 	</collection> 
 	<!-- modules included with project "SpectralDelay" --> 
 	<collection src="SpectralDelay"> 
-		<module name="LowPass-818edb1e-d95d-c925-21f0-c9f845ea42aa" moduleGuid="818edb1e-d95d-c925-21f0-c9f845ea42aa" originGuid="c23b5bdc-bc9f-48ca-9b1b-3077d186ce9f"/>
-		<module name="SpectralDelay-06b1176c-6c69-8beb-52e0-8ea5b13070fb" moduleGuid="06b1176c-6c69-8beb-52e0-8ea5b13070fb" originGuid="da7a7720-c428-4cbc-a09e-c16ec0456ffe"/>
-		<module name="StereoAudioOut-dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" moduleGuid="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originGuid="2809b248-8194-4269-a168-d9f811d137b7"/>
-		<module name="StereoSoundfiler-2bfcd24b-2132-29f8-0661-e73640e9aa54" moduleGuid="2bfcd24b-2132-29f8-0661-e73640e9aa54" originGuid="bf935af8-5d2a-2c8f-a3bb-885ce5e54a71"/>
-	</collection>
-</IntegraModules>
+	</collection> 
+</IntegraModules> 

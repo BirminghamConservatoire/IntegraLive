@@ -149,7 +149,10 @@
 
     <script type="text/javascript">
 
-      var dataTarget = "http://localhost:8003".replace("localhost",location.host);
+      var port = location.hash ? location.hash.substring(1) : "8000";
+      port = isNaN(port) ? 8000 : Number(port);
+
+      var dataTarget = "http://localhost:8000".replace("localhost",location.host).replace("8000",String(port));
       
       function formatDate(date)
       {

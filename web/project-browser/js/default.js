@@ -52,8 +52,11 @@ $(function(){
 		var id = att.find(".id").remove().find(".value").text() || "undefined";
 		var name = att.find(".name").remove().find(".value").text() || "undefined";
 		var type = att.find(".type").remove().find(".value").text() || "undefined";
-		legend.html(legend.html()+" <small>("+type+":"+id+")</small>");
+		var ImplementedInLibIntegra = att.find(".ImplementedInLibIntegra").remove().find(".value").text() || "undefined";
+		legend.html(legend.html()+" <small>("+type+":<span class='module-id'>"+id+"</span>)</small>");
 		if(att.children().length==0) att.remove();
+
+		if(ImplementedInLibIntegra=="true") $this.addClass("ImplementedInLibIntegra");
 	}
 
 	$("fieldset.module").each(formatModuleLegendText);

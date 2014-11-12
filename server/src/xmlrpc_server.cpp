@@ -1575,6 +1575,9 @@ static xmlrpc_value *ntg_xmlrpc_nodelist(xmlrpc_env * const env,
     INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(A)", &xmlrpc_path);
+    
+    if (env->fault_occurred)
+        return NULL;
 
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
@@ -1596,6 +1599,10 @@ static xmlrpc_value *ntg_xmlrpc_delete(xmlrpc_env * const env,
     INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(A)", &xmlrpc_path);
+
+    if (env->fault_occurred)
+        return NULL;
+
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
@@ -1617,6 +1624,10 @@ static xmlrpc_value *ntg_xmlrpc_rename(xmlrpc_env * const env,
     INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(As)", &xmlrpc_path, &name);
+
+    if (env->fault_occurred)
+        return NULL;
+
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
@@ -1638,6 +1649,10 @@ static xmlrpc_value *ntg_xmlrpc_save(xmlrpc_env * const env,
     INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(As)", &xmlrpc_path, &file_path);
+
+    if (env->fault_occurred)
+        return NULL;
+
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
@@ -1658,6 +1673,10 @@ static xmlrpc_value *ntg_xmlrpc_load(xmlrpc_env * const env,
     INTEGRA_TRACE_VERBOSE;
 
     xmlrpc_decompose_value(env, parameter_array, "(sA)", &file_path, &xmlrpc_path);
+
+    if (env->fault_occurred)
+        return NULL;
+
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     if (env->fault_occurred)
@@ -1680,7 +1699,14 @@ static xmlrpc_value *ntg_xmlrpc_move(xmlrpc_env * const env,
     xmlrpc_decompose_value(env, parameter_array, "(AA)", &xmlrpc_node_path,
             &xmlrpc_parent_path);
 
+    if (env->fault_occurred)
+        return NULL;
+
     CPath node_path = ntg_xmlrpc_get_path(env, xmlrpc_node_path);
+
+    if (env->fault_occurred)
+        return NULL;
+
     CPath parent_path = ntg_xmlrpc_get_path(env, xmlrpc_parent_path);
 
     if (env->fault_occurred)
@@ -1802,6 +1828,9 @@ static xmlrpc_value *ntg_xmlrpc_new(xmlrpc_env * const env,
     xmlrpc_decompose_value(env, parameter_array, "(ssA)", &name, &node_name,
             &xmlrpc_path);
 
+    if (env->fault_occurred)
+        return NULL;
+
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
 
     xmlrpc_DECREF(xmlrpc_path);
@@ -1845,7 +1874,13 @@ static xmlrpc_value *ntg_xmlrpc_set(xmlrpc_env * const env,
 			return NULL;
 	}
 
+    if (env->fault_occurred)
+        return NULL;
+
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+
+    if (env->fault_occurred)
+        return NULL;
 
 	CIntegraSession *integra_session = ( CIntegraSession * ) user_data;
 
@@ -1867,7 +1902,13 @@ static xmlrpc_value *ntg_xmlrpc_get(xmlrpc_env * const env,
 
     xmlrpc_decompose_value(env, parameter_array, "(A)", &xmlrpc_path);
 
+    if (env->fault_occurred)
+        return NULL;
+
     CPath path = ntg_xmlrpc_get_path(env, xmlrpc_path);
+
+    if (env->fault_occurred)
+        return NULL;
 
     xmlrpc_DECREF(xmlrpc_path);
 

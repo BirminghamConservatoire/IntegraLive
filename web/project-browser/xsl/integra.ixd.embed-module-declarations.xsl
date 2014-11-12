@@ -20,6 +20,13 @@
               <xsl:with-param name="moduleGuid" select="substring-after(name(signature/*/*),'MODULE-')"/>
             </xsl:call-template>
           </xsl:when>
+          <xsl:when test="ancestor::signature and not(parent::signature)">
+            <xsl:call-template name="embed-module-declaration">
+              <xsl:with-param name="modules" select="$modules"/>
+              <xsl:with-param name="originGuid" select="substring-after(name(..),'ORIGIN-')"/>
+              <xsl:with-param name="moduleGuid" select="substring-after(name(.),'MODULE-')"/>
+            </xsl:call-template>
+          </xsl:when>
           <xsl:when test="parent::endpoints">
             <xsl:call-template name="embed-module-declaration">
               <xsl:with-param name="modules" select="$modules"/>
@@ -55,6 +62,9 @@
           <xsl:with-param name="moduleGuidMatches" select="$moduleGuidMatches"/>
         </xsl:call-template>
       </xsl:if>
+      <xsl:if test="ancestor::signature and not(parent::signature)">
+        <xsl:copy-of select="exslt:node-set($moduleGuidMatches)/InterfaceInfo/@*"/>
+      </xsl:if>
       <xsl:if test="parent::endpoints">
         <xsl:variable name="endpointName" select="name()"/>
         <xsl:copy-of select="exslt:node-set($moduleGuidMatches)/EndpointInfo/Endpoint[@Name=$endpointName]/@*"/>
@@ -82,6 +92,7 @@
         <xsl:attribute name="type">
           <xsl:value-of select="exslt:node-set($moduleGuidMatches)/InterfaceInfo/@Name"/>
         </xsl:attribute>
+        <xsl:copy-of select="exslt:node-set($moduleGuidMatches)/InterfaceInfo/@ImplementedInLibIntegra"/>
         <!--
         <xsl:copy-of select="exslt:node-set($moduleGuidMatches)/@*"/>
         -->

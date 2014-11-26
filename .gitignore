@@ -6,3 +6,4 @@
 *.suo
 
 _UpgradeReport_Files
+.DS_Store

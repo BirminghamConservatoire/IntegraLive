@@ -147,7 +147,6 @@
 		7D900DCF18DC663C00AF8DEF /* CollectionSchema.xsd in Resources */ = {isa = PBXBuildFile; fileRef = 7D900DCD18DC663C00AF8DEF /* CollectionSchema.xsd */; };
 		7D900DD018DC663C00AF8DEF /* id2guid.csv in Resources */ = {isa = PBXBuildFile; fileRef = 7D900DCE18DC663C00AF8DEF /* id2guid.csv */; };
 		7D975F6318DC515800EB28CB /* fsp_libsndfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D975F5D18DC515800EB28CB /* fsp_libsndfile.cpp */; };
-		7D975F6418DC515800EB28CB /* fsp_quicktime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D975F5E18DC515800EB28CB /* fsp_quicktime.cpp */; };
 		7D975F6518DC515800EB28CB /* fsplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D975F5F18DC515800EB28CB /* fsplay.h */; };
 		7D975F6618DC515800EB28CB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D975F6018DC515800EB28CB /* main.cpp */; };
 		7D975F6818DC515800EB28CB /* resample.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 7D975F6218DC515800EB28CB /* resample.hpp */; };
@@ -927,7 +926,6 @@
 				7D84528F187DBBA5008639D2 /* delete_command.cpp in Sources */,
 				7DB8170C18967D84005D7C1D /* midi_engine.cpp in Sources */,
 				7D8452D3187DBBA5008639D2 /* state_table.cpp in Sources */,
-				7D975F6418DC515800EB28CB /* fsp_quicktime.cpp in Sources */,
 				7D8452D9187DBBA5008639D2 /* validator.cpp in Sources */,
 				7D8452B9187DBBA5008639D2 /* player_logic.cpp in Sources */,
 				7D8452D8187DBBA5008639D2 /* trace.cpp in Sources */,
@@ -988,6 +986,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1030,6 +1029,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -1058,6 +1058,7 @@
 					../..,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx10.7;
 			};
 			name = Release;

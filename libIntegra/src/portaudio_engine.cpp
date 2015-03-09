@@ -41,7 +41,7 @@ namespace integra_internal
 {
 	const string CPortAudioEngine::none = "none";
 
-	const int CPortAudioEngine::potential_sample_rates[] = { 11025, 22050, 32000, 44100, 48000, 96000, 192000, 0 };
+	const int CPortAudioEngine::potential_sample_rates[] = { 44100, 48000, 96000, 192000, 0 };
 
 	const int CPortAudioEngine::ring_buffer_msecs = 2000;
 

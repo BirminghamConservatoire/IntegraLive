@@ -229,9 +229,8 @@ namespace integra_internal
 			m_number_of_output_channels = 0;
 		}
 
-		open_streams();
-
 		update_available_sample_rates();
+        open_streams();
 
 		return CError::SUCCESS;
 	}
@@ -276,9 +275,8 @@ namespace integra_internal
 			m_number_of_input_channels = 0;
 		}
 
-		open_streams();
-
 		update_available_sample_rates();
+        open_streams();
 
 		return CError::SUCCESS;
 	}

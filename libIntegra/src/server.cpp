@@ -138,6 +138,7 @@ namespace integra_internal
 		INTEGRA_TRACE_PROGRESS << "cleaning up XML parser";
 		xmlCleanupParser();
 		xmlCleanupGlobals();
+		xsltCleanupGlobals();
 
 		INTEGRA_TRACE_PROGRESS << "done!";
 

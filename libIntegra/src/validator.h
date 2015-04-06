@@ -22,9 +22,24 @@
 #ifndef INTEGRA_VALIDATE_H
 #define INTEGRA_VALIDATE_H
 
+#include <unordered_map>
 
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
+
+#include <string.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/debugXML.h>
+#include <libxml/HTMLtree.h>
+#include <libxml/xmlIO.h>
+#include <libxml/DOCBparser.h>
+#include <libxml/xinclude.h>
+#include <libxml/catalog.h>
+
+#include <libxslt/xslt.h>
+#include <libxslt/xsltInternals.h>
+#include <libxslt/transform.h>
+#include <libxslt/xsltutils.h>
 
 #include "api/error.h"
 
@@ -47,6 +62,12 @@ namespace integra_internal
 			 */
 			CError validate( const char *xml_buffer, unsigned int buffer_length );
 
+			/* \brief registers an additional transform validation step, based on a transformed version of the source document and a secondary schema
+			 * \param *transform_file filename of an XSL transform
+			 * \param *transform_schema_file filename of the associated XSD schema file
+			 */
+			CError register_transform(char *transform_file,char *transform_schema_file);
+
 		private:
 
 			xmlDocPtr document_read( const char *xml_buffer, unsigned int buffer_length );
@@ -59,6 +80,10 @@ namespace integra_internal
 			xmlSchemaValidCtxtPtr m_validity_context;
 
 			char *schema_file;
+
+			typedef std::unordered_map<char*,CValidator*> transform_validator_map;
+
+			transform_validator_map m_transform_validators;
 	};
 
 

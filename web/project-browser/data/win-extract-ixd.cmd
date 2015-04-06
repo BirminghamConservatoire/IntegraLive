@@ -1,9 +1,9 @@
 @echo off
 cls
-title Integra Project Extractor
+title Integra Block/Project Extractor
 
 echo ======================================================
-echo  Integra Project Extractor
+echo  Integra Block/Project Extractor
 echo   * running in cwd  : %~dp0
 echo   * running against : %*
 echo ======================================================
@@ -60,7 +60,7 @@ if "%~1" neq "" (
 	echo Processing file "%~1":
 
 	if "%~x1" neq ".integra" (
-		echo * skipping non-.integra project
+		echo * skipping non-.integra block/project
 	) else (
 		REM EXTRACT PROJECT IXD
 		echo * extracting IXD
@@ -82,7 +82,7 @@ if "%~1" neq "" (
 				set /a skipped+=1
 			) ELSE (
 				echo|set /p=+
-				7z x -r -o"%project%/integra_data/implementation/%%~nf" "%%f" "*.iid" > nul
+				call 7z x -r -o"%project%/integra_data/implementation/%%~nf" "%%f" "*.iid" > nul
 				IF EXIST "%project%\integra_data\implementation\%%~nf" del "%%f"
 				set /a extracted+=1
 			)
@@ -91,7 +91,7 @@ if "%~1" neq "" (
 		echo   DONE (%extracted% modules extracted, %skipped% skipped^)
 		
 		echo|set /p="* indexing   "
-		echo 	^<!-- modules included with project "%project%" --^> >> modules.xml
+		echo 	^<!-- modules included with block/project "%project%" --^> >> modules.xml
 		echo 	^<collection src="%src%"^> >> modules.xml
 		for %%f in ("%project%\integra_data\implementation\*.module") do (
 			call win-extract-iid.cmd "%%~nf" "%project%\integra_data\implementation\%%~nf\integra_module_data\interface_definition.iid" >> modules.xml
@@ -102,9 +102,9 @@ if "%~1" neq "" (
 		REM ARG-SPECIFIED MODULE EXTRACTION/INDEXING - END
 	)
 ) else (
-	echo  No projects were specified for extraction ^(leaving bundled module index in modules.xml^)
-	echo   - if running win-extract-ixd from the command line, specifying your project file as the first argument
-	echo   - alternatively, you can drag your project file onto win-extract.cmd in Windows Explorer
+	echo  No block/project files were specified for extraction ^(leaving bundled module index in modules.xml^)
+	echo   - if running win-extract-ixd from the command line, specifying your block/project file as the first argument
+	echo   - alternatively, you can drag your block/project file onto win-extract.cmd in Windows Explorer
 )
 
 echo.

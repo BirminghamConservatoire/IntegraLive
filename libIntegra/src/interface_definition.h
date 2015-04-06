@@ -278,7 +278,8 @@ namespace integra_internal
 
 		private:
 			scale_type m_type;
-	};
+			int m_base;
+    };
 
 
 	class CStreamInfo : public IStreamInfo

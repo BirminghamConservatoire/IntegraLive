@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-node"
+            xmlns="http://www.integralive.org/schemas/2014/rixd"
+            xmlns:core="http://www.integralive.org/schemas/2014/rixd/core"
+            targetNamespace="http://www.integralive.org/schemas/2014/rixd"
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified"
+>
+    <xsd:import id="riid" namespace="http://www.integralive.org/schemas/2014/riid" schemaLocation="riid.xsd"/>
+    <xsd:import id="core" namespace="http://www.integralive.org/schemas/2014/rixd/core" schemaLocation="rixd.core.xsd"/>
+
+    <xsd:annotation>
+        <xsd:documentation>
+            The XML Schema for the reified version of the Integra container format (RIXD).
+            Instances of this Schema:
+             * define a given DSP graph and its current state at some point in time.
+             * are generated automatically from instances of the main IXD container format via an XSL transform
+             * represent nested module instances as named elements, allowing more structural validation than is feasible for IXD
+            
+            Following is an example instance:
+
+            &lt;ReifiedIntegraCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" integraVersion="x.x.x.xxxx"&gt;
+              &lt;project classId="7" name="Project1" userData="" zIndex="0" &gt;
+                &lt;block classId="7" name="Block1" userData="" zIndex="1" &gt;
+                  &lt;tapdelay classId="5" name="TapDelay1" userData="" active="1" out1="" in1="" delayTime="0.5" feedback="0.5" /&gt;
+                  &lt;tapdelay classId="5" name="TapDelay2" userData="" active="1" /&gt;
+                &lt;/block&gt;
+                &lt;block classId="7" name="Block1" userData="" zIndex="0" &gt;
+                  &lt;tapdelay classId="5" name="TapDelay1" userData="" active="1" out1="" /&gt;
+                &lt;/block&gt;
+              &lt;/project&gt;
+            &lt;/ReifiedIntegraCollection&gt;
+
+            Each element represents a typed container (a module, a connection, a player) whose attributes define its current state, as well as other hierarchically nested container objects.
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="ReifiedIntegraCollection">
+        <xsd:complexType>
+            <xsd:annotation>
+                <xsd:documentation>
+                    The root object of a generic reified Integra node graph.
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:group ref="core:rootContainer"  minOccurs="1" maxOccurs="1"/>
+            <xsd:attribute name="integraVersion" type="xsd:string" use="optional" />
+            <xsd:attribute name="collectionSchemaVersionMajor" type="xsd:int" use="optional"/>
+            <xsd:attribute name="collectionSchemaVersionMinor" type="xsd:int" use="optional" fixed="0" />
+            <xsd:attribute name="collectionAbsoluteVersion" type="xsd:int" use="optional" fixed="0" />
+            <xsd:anyAttribute />
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

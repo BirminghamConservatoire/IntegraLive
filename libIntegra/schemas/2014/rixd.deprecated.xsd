@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-node"
+            xmlns="http://www.integralive.org/schemas/rixd/1.7/deprecated"
+            targetNamespace="http://www.integralive.org/schemas/rixd/1.7/deprecated"
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified"
+>
+
+</xsd:schema>

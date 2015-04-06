@@ -45,12 +45,13 @@
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Clean</CustomBuildBeforeTargets>
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Clean</CustomBuildBeforeTargets>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\api;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/win32/libsndfile/include;../externals/boost;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/libxslt-1.1.26.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/win32/libsndfile/include;../externals/boost;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;MSW;_DEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -61,10 +62,12 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
+      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformationFile>$(IntDir)</BrowseInformationFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;libsndfile-1.lib;flext-pd_td.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/zlib-1.2.5/lib;../externals/win32/fftw-3.3.3;../externals/portaudio/build/msvc/Win32/Debug;../externals/portmidi/Debug;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;libxslt.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;libsndfile-1.lib;flext-pd_td.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/libxslt-1.1.26.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/zlib-1.2.5/lib;../externals/win32/fftw-3.3.3;../externals/portaudio/build/msvc/Win32/Debug;../externals/portmidi/Debug;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
       <OptimizeReferences>false</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -102,7 +105,7 @@ call copy_dependencies.bat ..\bin\Debug\ Debug
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/boost;../externals/win32/libsndfile/include;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/libxslt-1.1.26.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/boost;../externals/win32/libsndfile/include;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;MSW;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -111,8 +114,8 @@ call copy_dependencies.bat ..\bin\Debug\ Debug
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;flext-pd_t.lib;libsndfile-1.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/fftw-3.3.3;../externals/win32/zlib-1.2.5/lib;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/portaudio/build/msvc/Win32/Release;../externals/portmidi/Release;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;libxslt.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;flext-pd_t.lib;libsndfile-1.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/libxslt-1.1.26.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/fftw-3.3.3;../externals/win32/zlib-1.2.5/lib;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/portaudio/build/msvc/Win32/Release;../externals/portmidi/Release;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>
       </ImportLibrary>
     </Link>
@@ -310,33 +313,48 @@ call copy_dependencies.bat ..\bin\Release\ Release
     <ResourceCompile Include="libIntegra.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\schemas\v1.7\gixd.xml" />
-    <None Include="..\schemas\v1.7\iid.xml" />
-    <None Include="..\schemas\v1.7\iid2.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\schemas\v1.7\ixd.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\schemas\v2.0\gixd-17-20.xsl" />
-    <None Include="..\schemas\v2.0\gixd.xml" />
-    <None Include="..\schemas\v2.0\iid-17-20.xsl" />
-    <None Include="..\schemas\v2.0\iid.xml" />
-    <None Include="..\schemas\v2.0\iid2.xml" />
-    <None Include="..\schemas\v2.0\ixd-17-20.xsl">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="..\schemas\v2.0\ixd.xml">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="api-1-misc.cd" />
+    <None Include="api-2-commands.cd" />
+    <None Include="api-3-nodes.cd" />
+    <None Include="commands.cd" />
+    <None Include="endpoint.cd" />
+    <None Include="interfaces.cd" />
+    <None Include="io.cd" />
+    <None Include="logic-wide.cd" />
+    <None Include="logic.cd" />
+    <None Include="misc.cd" />
+    <None Include="module_manager.cd" />
+    <None Include="orphans.cd" />
+    <None Include="queue.cd" />
+    <None Include="server.cd" />
+    <None Include="sink.cd" />
+    <None Include="state.cd" />
+    <None Include="widget.cd" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="..\schemas\v1.7\gixd.xsd" />
-    <Xsd Include="..\schemas\v1.7\iid.xsd" />
-    <Xsd Include="..\schemas\v1.7\ixd.xsd" />
-    <None Include="..\schemas\v2.0\gixd.xsd" />
-    <None Include="..\schemas\v2.0\iid.xsd" />
-    <None Include="..\schemas\v2.0\ixd.xsd" />
+    <None Include="..\schemas\2014\reify-iid.xsl"/>
+    <None Include="..\schemas\2014\reify-ixd.xsl"/>
+    <None Include="..\schemas\2014\reify-module-collection.xsl"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\schemas\2014\riid.xsd"/>
+    <None Include="..\schemas\2014\rixd.base.xsd"/>
+    <None Include="..\schemas\2014\rixd.xsd"/>
+    <None Include="..\schemas\2014\rixd.core.xsd"/>
+    <None Include="..\schemas\2014\rixd.deprecated.xsd"/>
+    <None Include="..\schemas\2014\rixd.native.xsd"/>
+    <None Include="..\schemas\2014\rixd.user.xsd"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\schemas\2014\module-collection.xml"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\schemas\2014\AudioThru.ixd"/>
+    <None Include="..\schemas\2014\AudioThru.rixd"/>
+    <None Include="..\schemas\2014\Sound Loop Vocoder.ixd" />
+    <None Include="..\schemas\2014\Sound Loop Vocoder.rixd" />
+    <None Include="..\schemas\2014\Multivers II essais.ixd"/>
+    <None Include="..\schemas\2014\Multivers II essais.rixd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

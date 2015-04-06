@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<xsd:schema targetNamespace      = "http://www.integralive.org/schemas/2014/rixd/core"
+            xmlns                = "http://www.integralive.org/schemas/2014/rixd/core"
+            xmlns:xsd            = "http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi            = "http://www.w3.org/2001/XMLSchema-node"
+            
+            xmlns:riid           = "http://www.integralive.org/schemas/2014/riid"
+            xmlns:rixd           = "http://www.integralive.org/schemas/2014/rixd"
+            xmlns:native         = "http://www.integralive.org/schemas/2014/rixd/native"
+            
+            attributeFormDefault = "unqualified"
+            elementFormDefault   = "qualified"
+>
+    <xsd:import id="riid"   namespace="http://www.integralive.org/schemas/2014/riid"        schemaLocation="riid.xsd"        />
+    <xsd:import id="rixd"   namespace="http://www.integralive.org/schemas/2014/rixd"        schemaLocation="rixd.xsd"        />
+    <xsd:import id="native" namespace="http://www.integralive.org/schemas/2014/rixd/native" schemaLocation="rixd.native.xsd" />
+
+    <xsd:annotation>
+        <xsd:documentation>
+            XML Schema definitions for core module instances within the reified Integra container format (RIXD) and their permitted arrangements.
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:group name="rootContainer">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines the group of elements that can legally be used as root in a reified Integra Live node graph.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice>
+            <xsd:element name="ProjectContainer" type="projectContainer"/>
+            <!-- and audio/midi settings? -->
+        </xsd:choice>
+    </xsd:group>
+
+    <!-- LEVEL 1 -->
+
+    <xsd:complexType name="projectContainer">
+        <xsd:annotation>
+            <xsd:documentation>
+                The container type for an Integra Live project, with up to 3 levels of modules nested within.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="container">
+                <xsd:sequence>
+                    <!-- exactly one player element required -->
+                    <xsd:element minOccurs="1" maxOccurs="1" name="Player" type="player">
+                        <xsd:annotation>
+                            <xsd:documentation>A core:projectContainer must contain exactly one core:player node as its first child.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <!-- arbitrary additional track/connection/user elements -->
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:annotation>
+                            <xsd:documentation>A core:projectContainer can contain an arbitrary number of core:trackContainer/core:connection nodes as children. (All deprecated nodes are ignored.)</xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:choice>
+                            <xsd:element name="TrackContainer" type="trackContainer" />
+                            <xsd:element name="Connection" type="connection" />
+                            <!-- skip processing deprecated modules -->
+                            <xsd:any namespace="http://www.integralive.org/schemas/2014/rixd/deprecated" processContents="skip"/>
+                        </xsd:choice>
+                    </xsd:sequence>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- LEVEL 2 -->
+
+    <xsd:complexType name="trackContainer">
+        <xsd:annotation>
+            <xsd:documentation>
+                The container type for an Integra Live track, with up to 2 levels of modules nested within.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="container">
+                <!-- arbitrary additional block/connection/user elements -->
+                <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xsd:choice>
+                        <xsd:element name="BlockContainer" type="blockContainer" />
+                        <xsd:element name="Connection" type="connection" />
+                        <xsd:element name="Envelope" type="envelope" />
+                        <!-- skip processing user modules -->
+                        <xsd:any namespace="http://www.integralive.org/schemas/2014/rixd/user" processContents="skip"/>
+                        <!-- skip processing deprecated modules -->
+                        <xsd:any namespace="http://www.integralive.org/schemas/2014/rixd/deprecated" processContents="skip"/>
+                    </xsd:choice>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- LEVEL 3 -->
+
+    <xsd:complexType name="blockContainer">
+        <xsd:annotation>
+            <xsd:documentation>
+                The container type for an Integra Live block, with up to 1 level of modules nested within.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="container">
+                <!-- arbitrary track/connection elements -->
+                <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                    <xsd:element name="Connection" type="connection" />
+                    <xsd:element name="Envelope" type="envelope" />
+                    <xsd:element name="Scaler" type="scaler" />
+                    <xsd:element name="Script" type="script" />
+                    <xsd:element name="AudioIn" type="audioIn" />
+                    <xsd:element name="AudioOut" type="audioOut" />
+                    <xsd:element name="StereoAudioIn" type="stereoAudioIn" />
+                    <xsd:element name="StereoAudioOut" type="stereoAudioOut" />
+                    <xsd:group ref="native:nonCoreModuleGroup">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                Any native module.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:group>
+                    <!-- skip processing user modules -->
+                    <xsd:any namespace="http://www.integralive.org/schemas/2014/rixd/user" processContents="skip"/>
+                    <!-- skip processing deprecated modules -->
+                    <xsd:any namespace="http://www.integralive.org/schemas/2014/rixd/deprecated" processContents="skip"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!--CORE MODULE TYPES-->
+    <xsd:complexType name="audioIn">
+        <xsd:annotation>
+            <xsd:documentation>
+                Mono audio input.
+
+                [Tags:core|simple|input]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:audioInAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="audioOut">
+        <xsd:annotation>
+            <xsd:documentation>
+                Mono audio output.
+
+                [Tags:core|simple|output]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:audioOutAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="audioSettings">
+        <xsd:annotation>
+            <xsd:documentation>
+                Manages Audio setup (selecting valid backends, selecting available devices, selecting device properties).
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:audioSettingsAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="connection">
+        <xsd:annotation>
+            <xsd:documentation>
+                Connection class for connecting to attributes of child instances.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:connectionAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="container">
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:containerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="controlPoint">
+        <xsd:annotation>
+            <xsd:documentation>
+                A class for storing a control datum that can be used to set the value of an attribute.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:controlPointAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="envelope">
+        <xsd:annotation>
+            <xsd:documentation>
+                Container class for storing ControlPoint instances.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="ControlPoint" type="controlPoint">
+                <xsd:annotation>
+                    <xsd:documentation>An envelope node can contain an arbitrary number of controlPoint nodes as children.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:envelopeAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="midiControlInput">
+        <xsd:annotation>
+            <xsd:documentation>
+                Listens for control change or note on messages on specified device, channel, and cc number/note.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:midiControlInputAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="midiRawInput">
+        <xsd:annotation>
+            <xsd:documentation>
+                This module passes midi messages directly from all active midi input devices.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:midiRawInputAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="midiSettings">
+        <xsd:annotation>
+            <xsd:documentation>
+                manages MIDI setup (selecting valid backends, such as ALSA or PortMidi, and then selecting available devices).
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:midiSettingsAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="player">
+        <xsd:annotation>
+            <xsd:documentation>
+                Integra clock source.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="Scene" type="scene">
+                <xsd:annotation>
+                    <xsd:documentation>A player node can contain an arbitrary number of scene nodes as children.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:playerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="scaler">
+        <xsd:annotation>
+            <xsd:documentation>
+                Control processing module for scaling from an input range to an output range.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:scalerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="scene">
+        <xsd:annotation>
+            <xsd:documentation>
+                None.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:sceneAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="script">
+        <xsd:annotation>
+            <xsd:documentation>
+                Class for running Integra script.
+
+                [Tags:core]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:scriptAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoAudioIn">
+        <xsd:annotation>
+            <xsd:documentation>
+                Stereo audio input.
+
+                [Tags:core|simple|input]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoAudioInAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoAudioOut">
+        <xsd:annotation>
+            <xsd:documentation>
+                Stereo audio output.
+
+                [Tags:core|simple|output]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoAudioOutAttributeGroup" />
+    </xsd:complexType>
+
+    <!--CORE MODULE GROUP-->
+    <xsd:group name="coreModuleGroup">
+        <xsd:choice>
+            <xsd:element name="AudioIn" type="audioIn" />
+            <xsd:element name="AudioOut" type="audioOut" />
+            <xsd:element name="AudioSettings" type="audioSettings" />
+            <xsd:element name="Connection" type="connection" />
+            <xsd:element name="Container" type="container" />
+            <xsd:element name="ControlPoint" type="controlPoint" />
+            <xsd:element name="Envelope" type="envelope" />
+            <xsd:element name="MidiControlInput" type="midiControlInput" />
+            <xsd:element name="MidiRawInput" type="midiRawInput" />
+            <xsd:element name="MidiSettings" type="midiSettings" />
+            <xsd:element name="Player" type="player" />
+            <xsd:element name="Scaler" type="scaler" />
+            <xsd:element name="Scene" type="scene" />
+            <xsd:element name="Script" type="script" />
+            <xsd:element name="StereoAudioIn" type="stereoAudioIn" />
+            <xsd:element name="StereoAudioOut" type="stereoAudioOut" />
+        </xsd:choice>
+    </xsd:group>
+</xsd:schema>

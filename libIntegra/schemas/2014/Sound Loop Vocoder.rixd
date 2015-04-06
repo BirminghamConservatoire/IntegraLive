@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ReifiedIntegraCollection integraVersion="1.7.0.3301" xmlns="http://www.integralive.org/schemas/2014/rixd" xmlns:core="http://www.integralive.org/schemas/2014/rixd/core" xmlns:native="http://www.integralive.org/schemas/2014/rixd/native" xmlns:user="http://www.integralive.org/schemas/2014/rixd/user">
+  <core:ProjectContainer name="sound_loop_vocoder" zIndex="0" active="1">
+    <core:Player name="Player1" tick="1707" play="0" start="-1" loop="0" scene="" rate="40" end="-1" active="1" />
+    <core:TrackContainer name="Track1" zIndex="0" active="1">
+      <core:BlockContainer name="Block1" zIndex="0" active="0">
+        <native:StereoAudioOut name="StereoAudioOut1" inLevel="1." offset="1" active="0" />
+        <native:AudioIn name="AudioIn1" active="0" outLevel="0.8" offset="1" />
+      </core:BlockContainer>
+      <core:Connection name="Connection1" sourcePath="BlockEnvelope1.currentValue" targetPath="Block1.active" active="1" />
+      <core:Envelope name="BlockEnvelope2" startTick="1600" currentTick="1707" active="1">
+        <core:ControlPoint name="ControlPoint1" value="0." tick="-1" curvature="0." />
+        <core:ControlPoint name="ControlPoint2" value="1." tick="0" curvature="0." />
+        <core:ControlPoint name="ControlPoint3" value="1." tick="799" curvature="0." />
+        <core:ControlPoint name="ControlPoint4" value="0." tick="800" curvature="0." />
+      </core:Envelope>
+      <core:Envelope name="BlockEnvelope1" startTick="0" currentTick="1707" active="1">
+        <core:ControlPoint name="ControlPoint1" value="0." tick="-1" curvature="0." />
+        <core:ControlPoint name="ControlPoint2" value="1." tick="0" curvature="0." />
+        <core:ControlPoint name="ControlPoint3" value="1." tick="799" curvature="0." />
+        <core:ControlPoint name="ControlPoint4" value="0." tick="800" curvature="0." />
+      </core:Envelope>
+      <core:BlockContainer name="SoundfileLoop" zIndex="0" active="1">
+        <core:Scaler name="Scaler1" outScale="linear" outRangeMax="1." inValue="1." inRangeMax="1." inRangeMin="0." inScale="linear" inMode="snap" outRangeMin="0." active="1" />
+        <native:TestSource name="TestSource1" gain="1." mute="0" frequency="440." source="sine" active="1" />
+        <native:StereoAudioOut name="StereoAudioOut1" inLevel="1." offset="1" active="1" />
+        <core:Connection name="Connection3" sourcePath="StereoAudioOut1.active" targetPath="Scaler1.inValue" active="1" />
+        <core:Connection name="Connection4" sourcePath="Scaler1.outValue" targetPath="StereoSoundfiler1.play" active="1" />
+        <native:StereoSoundfiler name="StereoSoundfiler1" load="soundfile.wav" record="0" mute="0" loop="1" play="1" speed="1." position="0.441763" gain="1." active="1" />
+        <native:RingModulator name="RingModulator1" mix="1." lfoAmount="0.5" inLevel="1." lfoShape="sine" bypass="0" outLevel="1." lfoRate="0.2" modulationFrequency="3." modulationDrive="1." active="1" />
+        <native:BandPass name="BandPass1" frequency="57.220512" mix="1." bypass="0" q="0.102329" inLevel="1." active="1" outLevel="1." />
+        <core:Connection name="Connection7" sourcePath="StereoSoundfiler1.out1" targetPath="BandPass1.in1" active="1" />
+        <core:Connection name="Connection8" sourcePath="BandPass1.out1" targetPath="StereoAudioOut1.in1" active="1" />
+        <native:BandPass name="BandPass2" frequency="373.911774" mix="1." bypass="0" q="0.01122" inLevel="1." active="1" outLevel="1." />
+        <core:Connection name="Connection9" sourcePath="StereoSoundfiler1.out2" targetPath="BandPass2.in1" active="1" />
+        <native:Reverb name="Reverb1" mix="1." bypass="0" decayTimeHigh="1.5" inLevel="1." outLevel="1." decayTimeLow="3.5" decayTimeMid="2.5" decayTimeMidHigh="2." decayTimeMidLow="3." roomVolume="350." earlyLateBalance="0.822368" sourceDistance="0.5" roomShape="0.5" active="1" />
+        <core:Connection name="Connection10" sourcePath="BandPass2.out1" targetPath="Reverb1.in1" active="1" />
+        <core:Connection name="Connection13" sourcePath="Reverb1.out1" targetPath="RingModulator1.in1" active="1" />
+        <core:Connection name="Connection14" sourcePath="RingModulator1.out1" targetPath="StereoAudioOut1.in2" active="1" />
+        <core:Connection name="Connection11" sourcePath="TestSource1.out1" targetPath="RingModulator1.in2" active="1" />
+      </core:BlockContainer>
+      <core:Connection name="Connection2" sourcePath="BlockEnvelope2.currentValue" targetPath="SoundfileLoop.active" active="1" />
+    </core:TrackContainer>
+    <core:MidiRawInput name="MidiMonitor" active="1" />
+    <core:Connection name="Connection1" sourcePath="Player1.tick" targetPath="Track1.BlockEnvelope1.currentTick" active="1" />
+    <core:Connection name="Connection2" sourcePath="Player1.tick" targetPath="Track1.BlockEnvelope2.currentTick" active="1" />
+    <core:Connection name="Connection4" sourcePath="Player1.tick" targetPath="Track2.BlockEnvelope2.currentTick" active="1" />
+    <core:TrackContainer name="Track2" zIndex="1" active="1">
+      <core:Connection name="Connection1" sourcePath="BlockEnvelope1.currentValue" targetPath="Block1.active" active="1" />
+      <core:BlockContainer name="Block1" zIndex="0" active="0">
+        <native:StereoAudioOut name="StereoAudioOut1" inLevel="1." offset="1" active="0" />
+        <core:Connection name="Connection1" sourcePath="AudioIn1.out" targetPath="StereoAudioOut1.in1" active="0" />
+        <native:AudioIn name="AudioIn1" active="0" outLevel="0.8" offset="1" />
+        <core:Connection name="Connection2" sourcePath="AudioIn1.out" targetPath="StereoAudioOut1.in2" active="0" />
+      </core:BlockContainer>
+      <core:Envelope name="BlockEnvelope2" startTick="1222" currentTick="1707" active="1">
+        <core:ControlPoint name="ControlPoint1" value="0." tick="-1" curvature="0." />
+        <core:ControlPoint name="ControlPoint2" value="1." tick="0" curvature="0." />
+        <core:ControlPoint name="ControlPoint3" value="1." tick="799" curvature="0." />
+        <core:ControlPoint name="ControlPoint4" value="0." tick="800" curvature="0." />
+      </core:Envelope>
+      <core:Envelope name="BlockEnvelope1" startTick="7" currentTick="1707" active="1">
+        <core:ControlPoint name="ControlPoint1" value="0." tick="-1" curvature="0." />
+        <core:ControlPoint name="ControlPoint2" value="1." tick="0" curvature="0." />
+        <core:ControlPoint name="ControlPoint3" value="1." tick="799" curvature="0." />
+        <core:ControlPoint name="ControlPoint4" value="0." tick="800" curvature="0." />
+      </core:Envelope>
+      <core:BlockContainer name="SpectralDelay" zIndex="0" active="1">
+        <native:LowPass name="LowPass1" frequency="800." mix="1." bypass="0" inLevel="1." active="1" outLevel="1." />
+        <core:Connection name="Connection5" sourcePath="StereoSoundfiler1.out1" targetPath="LowPass1.in1" active="1" />
+        <native:SpectralDelay name="SpectralDelay2" delay3="0.05" feedback1="0." mix="1." bypass="0" inLevel="1." outLevel="1." delay1="0." delay2="0." delay4="0.016667" delay5="0." delay6="0." delay7="0." delay8="0." feedback2="0." feedback3="0.633333" feedback4="0.741667" feedback5="0." feedback6="0." feedback7="0." feedback8="0." active="1" />
+        <native:SpectralDelay name="SpectralDelay1" delay3="0.183333" feedback1="0." mix="1." bypass="0" inLevel="1." outLevel="1." delay1="0." delay2="0.033333" delay4="0.266667" delay5="0." delay6="0." delay7="0." delay8="0." feedback2="0.983333" feedback3="0.166667" feedback4="0.158333" feedback5="0." feedback6="0." feedback7="0." feedback8="0." active="1" />
+        <core:Connection name="Connection6" sourcePath="SpectralDelay2.out1" targetPath="StereoAudioOut1.in2" active="1" />
+        <native:StereoAudioOut name="StereoAudioOut1" inLevel="1." offset="1" active="1" />
+        <native:LowPass name="LowPass2" frequency="800." mix="1." bypass="0" inLevel="1." active="1" outLevel="1." />
+        <core:Connection name="Connection7" sourcePath="LowPass1.out1" targetPath="SpectralDelay1.in1" active="1" />
+        <core:Connection name="Connection9" sourcePath="LowPass2.out1" targetPath="SpectralDelay2.in1" active="1" />
+        <core:Connection name="Connection11" sourcePath="StereoAudioOut1.active" targetPath="Scaler1.inValue" active="1" />
+        <core:Connection name="Connection12" sourcePath="Scaler1.outValue" targetPath="StereoSoundfiler1.play" active="1" />
+        <core:Connection name="Connection10" sourcePath="StereoSoundfiler1.out2" targetPath="LowPass2.in1" active="1" />
+        <core:Connection name="Connection8" sourcePath="SpectralDelay1.out1" targetPath="StereoAudioOut1.in1" active="1" />
+        <core:Scaler name="Scaler1" outScale="linear" outRangeMax="1." inValue="1." inRangeMax="1." inRangeMin="0." inScale="linear" inMode="snap" outRangeMin="0." active="1" />
+        <native:StereoSoundfiler name="StereoSoundfiler1" load="soundfile.wav" record="0" mute="0" loop="1" play="1" speed="1." position="0.524991" gain="1." active="1" />
+      </core:BlockContainer>
+      <core:Connection name="Connection2" sourcePath="BlockEnvelope2.currentValue" targetPath="SpectralDelay.active" active="1" />
+    </core:TrackContainer>
+    <core:Connection name="Connection3" sourcePath="Player1.tick" targetPath="Track2.BlockEnvelope1.currentTick" active="1" />
+  </core:ProjectContainer>
+</ReifiedIntegraCollection>

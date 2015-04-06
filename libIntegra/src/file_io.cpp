@@ -124,6 +124,9 @@ namespace integra_internal
 
 		xmlInitParser();
 
+		/* register an additional transform validation step */
+		validator.register_transform("reify-ixd.xsl","rixd.xsd");
+
 		/* validate candidate IXD file against schema */
 		error = validator.validate( (char *)ixd_buffer, ixd_buffer_length );
 		if( error != CError::SUCCESS ) 

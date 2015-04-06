@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://www.integralive.org/schemas/2014/rixd" 
+            xmlns="http://www.integralive.org/schemas/2014/rixd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            attributeFormDefault="unqualified" 
+            elementFormDefault="qualified" 
+>
+    <xsd:annotation>
+        <xsd:documentation>XML Schema definitions for base types/groups within the reified Integra container format (RIID).</xsd:documentation>
+    </xsd:annotation>
+
+    <!-- BASE TYPES/GROUPS -->
+
+    <xsd:simpleType name="nodeName">
+        <!-- 
+            This type explicitly constrains string values to a limited character set as 
+            defined in CStringHelper member node_name_character_set (cf.string_helper.cpp).
+        -->
+        <xsd:annotation>
+            <xsd:documentation>
+                A character-constrained node name string.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="([0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]+)" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="dateTime">
+        <!-- 
+            This type explicitly constrains string values to the YYYY-MM-DDTHH:mm:ss format used
+            in CStringHelper methods date_to_string and string_to_date (cf.string_helper.cpp).
+        -->
+        <xsd:annotation>
+            <xsd:documentation>
+                A format-constrained date/time string.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="guid">
+        <!-- 
+            This type explicitly constrains string values to a ########-####-####-####-############ GUID format.
+        -->
+        <xsd:annotation>
+            <xsd:documentation>
+                A format-constrained globally unique identifier string.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:attributeGroup name="baseAttributeGroup">
+        <xsd:attribute name="name" type="nodeName" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Module instance name.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="moduleId" type="guid" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Version-specific module type.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="originId" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Version-independent module type.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+</xsd:schema>

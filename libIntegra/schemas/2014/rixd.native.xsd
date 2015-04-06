@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsd:schema targetNamespace="http://www.integralive.org/schemas/2014/rixd/native"
+            xmlns="http://www.integralive.org/schemas/2014/rixd/native"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-node"
+            xmlns:riid="http://www.integralive.org/schemas/2014/riid"
+            xmlns:rixd="http://www.integralive.org/schemas/2014/rixd"
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified"
+>
+    <xsd:import id="rixd" namespace="http://www.integralive.org/schemas/2014/rixd" schemaLocation="rixd.xsd"/>
+    <xsd:import id="riid" namespace="http://www.integralive.org/schemas/2014/riid" schemaLocation="riid.xsd"/>
+
+    <!--NON-CORE MODULE TYPES-->
+    <xsd:complexType name="addSynth">
+        <xsd:annotation>
+            <xsd:documentation>
+                Synthesise a sound using additive synthesis with 8 controllable partials and adjustable attack, decay, sustain and release settings.
+
+                MIDI notes are received directly by the module.
+
+                Further information on Additive Synthesis can be found [here](http://en.wikipedia.org/wiki/Additive_synthesis).
+
+                [Tags:complex|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:addSynthAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="bandPass">
+        <xsd:annotation>
+            <xsd:documentation>
+                Filter module allowing only a specific band of frequencies to pass through to the output.
+
+                [Tags:simple|processing|filter]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:bandPassAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="brightnessAnalyser">
+        <xsd:annotation>
+            <xsd:documentation>
+                Detect and display the frequency measured in Hz of the perceptual brightness.
+
+                [Tags:simple|analysis|spectral]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:brightnessAnalyserAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="delay">
+        <xsd:annotation>
+            <xsd:documentation>
+                Basic delay without feedback.
+
+                [Tags:simple|processing|delay]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:delayAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="distortion">
+        <xsd:annotation>
+            <xsd:documentation>
+                Distort the audio signal.
+
+                [Tags:simple|processing|distortion]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:distortionAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="envelopeFollower">
+        <xsd:annotation>
+            <xsd:documentation>
+                Amplitude envelope follower.
+
+                [Tags:simple|analysis|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:envelopeFollowerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="flanger">
+        <xsd:annotation>
+            <xsd:documentation>
+                A flanger adds a signal processed by a modulated delay to the input signal. The effect is like the sound in a tunnel.
+
+                [Tags:complex|processing|spectral|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:flangerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="flute">
+        <xsd:annotation>
+            <xsd:documentation>
+                Flute syntheiser based on physical modelling
+
+                Playable via MIDI.
+
+                [Tags:simple|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:fluteAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="fourByOneMixer">
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:fourByOneMixerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="gate">
+        <xsd:annotation>
+            <xsd:documentation>
+                Gate module allowing the input signal to pass through to the output only if it is above the *threshold* setting
+
+                For further information about the operation of noise gates see [here](http://en.wikipedia.org/wiki/Noise_gate).
+
+                [Tags:simple|processing|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:gateAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="granularDelay">
+        <xsd:annotation>
+            <xsd:documentation>
+                Delay and granulate the sound.
+
+                [Tags:complex|processing|delay|granular|panning]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:granularDelayAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="harmonicFilter">
+        <xsd:annotation>
+            <xsd:documentation>
+                The harmonic filter is an harmonic bank filters of notch filter where the cut-off frequencies represent the harmonic series of a fundamental frequency.
+
+                [Tags:simple|processing|filter|spectral]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:harmonicFilterAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="highPass">
+        <xsd:annotation>
+            <xsd:documentation>
+                Filter module allowing only frequencies above a given threshold to pass through to the output.
+
+                [Tags:simple|processing|filter]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:highPassAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="limiter">
+        <xsd:annotation>
+            <xsd:documentation>
+                Limiter with Hard Knee, Attack Time, Release Time, Threshold, Makeup Gain.
+
+                The second audio output provides a copy of the side chain signal.
+
+                Look Ahead Time is automatically set to 33% of the Attack Time.
+
+                For further information about the operation of Limiters see [here](http://en.wikipedia.org/wiki/Dynamic_range_compression).
+
+                [Tags:simple|processing|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:limiterAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="lowPass">
+        <xsd:annotation>
+            <xsd:documentation>
+                Filter module allowing only frequencies below a given threshold to pass through to the output.
+
+                [Tags:simple|processing|filter]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:lowPassAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="materialSimulator">
+        <xsd:annotation>
+            <xsd:documentation>
+                A filter, which imposes the formant characteristics of various materials on the input sound.
+
+                [Tags:complex|processing|spectral|resonance]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:materialSimulatorAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="midiCCoutTest">
+        <xsd:annotation>
+            <xsd:documentation>
+                A module for testing cc out.
+
+                [Tags:synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:midiCCoutTestAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="midiStuffTest">
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:midiStuffTestAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="multiBandCompressor">
+        <xsd:annotation>
+            <xsd:documentation>
+                A four band compressor where you can to set each band limit, exept the first setted at 20 Hz and the last at 20 kHz.
+                Each band may be compressed by a compressor wher you can set the input and output gain and the compression level.
+
+                [Tags:simple|processing|dynamics|filter]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:multiBandCompressorAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="noisiness">
+        <xsd:annotation>
+            <xsd:documentation>
+                Detect and display the noiseless of the incoming audio signal with a value between 0 and 127. When the value is 127 the incoming sound is very noisy when is 0 it isn't.
+
+                [Tags:simple|analysis|spectral]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:noisinessAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="notch">
+        <xsd:annotation>
+            <xsd:documentation>
+                Band Stop filter of second order with Q.
+
+                [Tags:simple|processing|filter|resonance]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:notchAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="octoSoundfiler">
+        <xsd:annotation>
+            <xsd:documentation>
+                Play and records octo soundfiles.
+
+                [Tags:simple|soundfile|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:octoSoundfilerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="onsetDetector">
+        <xsd:annotation>
+            <xsd:documentation>
+                Onset detector optimised for pitched sounds
+
+                Onset refers to the beginning of a musical note or other sound, in which the amplitude rises from zero to an initial peak (Source: [Wikipedia](http://en.wikipedia.org/wiki/Onset_(audio)).
+
+                [Tags:simple|analysis|dynamics|pitch]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:onsetDetectorAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="partialAnalyser">
+        <xsd:annotation>
+            <xsd:documentation>
+                Extract the amplitude (in absolute value from 0 to 1) and the frequency (in Hz) of the first ten relevant partials of the input signal.
+
+                [Tags:simple|analysis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:partialAnalyserAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="perceptualLoudness">
+        <xsd:annotation>
+            <xsd:documentation>
+                Detect and display the perceptual loudness and intensity level measured in dBA.
+
+                [Tags:simple|analysis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:perceptualLoudnessAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="percussiveOnsetDetector">
+        <xsd:annotation>
+            <xsd:documentation>
+                Onset detector optimised for percussive sounds
+
+                Onset refers to the beginning of a musical note or other sound, in which the amplitude rises from zero to an initial peak (Source: [Wikipedia](http://en.wikipedia.org/wiki/Onset_(audio&amp;#41;)).
+
+                [Tags:simple|analysis|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:percussiveOnsetDetectorAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="phaser">
+        <xsd:annotation>
+            <xsd:documentation>
+                A phaser adds a signal processed by a modulated allpass chain to the input signal. The effect is like the sound in a tunnel.
+
+                [Tags:complex|processing|spectral|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:phaserAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="phaseVocoder">
+        <xsd:annotation>
+            <xsd:documentation>
+                Provides the ability to scrub through an audio file or recorded sound and alter its pitch or playback position dynamically.
+
+                [Tags:complex|processing|filter|dynamics|soundfile|spectral]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:phaseVocoderAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="pianoReverbMSP">
+        <xsd:annotation>
+            <xsd:documentation>
+                Spectral Piano Reverb, based on Miller Puckette's Phase Vocoder reverb.
+
+                [Tags:processing|complex|spectral|delay]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:pianoReverbMSPAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="pianoReverbStrings">
+        <xsd:annotation>
+            <xsd:documentation>
+                A Piano Reverb with 88 String Resonators using a string physical model.
+
+                [Tags:complex|processing|reverb|delay]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:pianoReverbStringsAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="pingPongDelay">
+        <xsd:annotation>
+            <xsd:documentation>
+                1-in-2-out ping pong delay with bandpass filters in the feedback path.
+
+                [Tags:simple|processing|delay|panning]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:pingPongDelayAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="pitchDetector">
+        <xsd:annotation>
+            <xsd:documentation>
+                Detect and display the pitch of the incoming sound.
+
+                [Tags:simple|analysis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:pitchDetectorAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="pitchShifter">
+        <xsd:annotation>
+            <xsd:documentation>
+                Transposes the pitch of sounds in a harmonic way.
+
+                [Tags:simple|processing|pitch]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:pitchShifterAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="pluckedString">
+        <xsd:annotation>
+            <xsd:documentation>
+                Plucked string synthesiser using the Karplus-Strong technique.
+
+                [Tags:complex|synthesis|resonance]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:pluckedStringAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="quadAudioIn">
+        <xsd:annotation>
+            <xsd:documentation>
+                4 channel audio input.
+
+                [Tags:input|simple]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:quadAudioInAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="quadAudioOut">
+        <xsd:annotation>
+            <xsd:documentation>
+                4 channel audio output.
+
+                [Tags:simple|output]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:quadAudioOutAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="quadAutoPanner">
+        <xsd:annotation>
+            <xsd:documentation>
+                Automatically pans the input sound in a circular pattern to the module outputs
+
+                The panner assumes that speakers are placed in a circular layout as follows:
+
+                &gt; **out1** : back-left
+                &gt; **out2** : front-left
+                &gt; **out3** : front-right
+                &gt; **out4** : back-right.
+
+                [Tags:simple|processing|panning|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:quadAutoPannerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="quadGranularSynthesizer">
+        <xsd:annotation>
+            <xsd:documentation>
+                Perform granular synthesis and quadraphonic spatialisation using an audio buffer.
+
+                The buffer can be filled by loading a soundfile or by recording audio in live from the Audio Input.
+
+                [Tags:complex|processing|granular]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:quadGranularSynthesizerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="quadPanner">
+        <xsd:annotation>
+            <xsd:documentation>
+                Takes a monophonic input and pans amongst 4 channels
+
+                The panner assumes that speakers are placed in a circular layout as follows:
+
+                &gt; **out1** : back-left
+                &gt; **out2** : front-left
+                &gt; **out3** : front-right
+                &gt; **out4** : back-right.
+
+                [Tags:simple|processing|panning]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:quadPannerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="quadSoundFiler">
+        <xsd:annotation>
+            <xsd:documentation>
+                Play and records quad soundfiles.
+
+                [Tags:simple|soundfile|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:quadSoundFilerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="quadXYPanner">
+        <xsd:annotation>
+            <xsd:documentation>
+                Pan the sound by specifying an X-Y position
+
+                The panner assumes that speakers are placed in a row layout as follows:
+
+                &gt; **out1** : front-left
+                &gt; **out2** : front-right
+                &gt; **out3** : back-left
+                &gt; **out4** : back-right.
+
+                [Tags:simple|processing|panning]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:quadXYPannerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="resonantBandPass">
+        <xsd:annotation>
+            <xsd:documentation>
+                Filter module with resonance applied to a specific band of frequencies.
+
+                [Tags:simple|processing|filter|resonance]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:resonantBandPassAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="resonantLowPass">
+        <xsd:annotation>
+            <xsd:documentation>
+                Filter module with resonance applied to frequencies below a certain threshold.
+
+                [Tags:simple|processing|filter|resonance]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:resonantLowPassAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="reverb">
+        <xsd:annotation>
+            <xsd:documentation>
+                Mono Reverb based on a Feedback Delay Network 12th order using a room simulation model.
+
+                [Tags:complex|processing|reverb|spectral|delay]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:reverbAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="ringModulator">
+        <xsd:annotation>
+            <xsd:documentation>
+                Ring Modulator capable of amplitude modulation or classic ring modulation
+
+                It sounds like an old valve radio with bad reception.
+
+                [Tags:complex|processing|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:ringModulatorAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="soundfiler">
+        <xsd:annotation>
+            <xsd:documentation>
+                Play and records mono soundfiles.
+
+                [Tags:simple|soundfile|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:soundfilerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="sPAT">
+        <xsd:annotation>
+            <xsd:documentation>
+                The SPAT is simple spatializer.
+
+                [Tags:simple|processing|panning]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:sPATAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="spectralDelay">
+        <xsd:annotation>
+            <xsd:documentation>
+                Module that divides the signal into 8 spectral bands, and allows a separate delay-time and feedback to be specified for each band.
+
+                [Tags:complex|processing|spectral|delay|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:spectralDelayAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="spectralFreeze">
+        <xsd:annotation>
+            <xsd:documentation>
+                Freeze a snapshot the audio spectrum at a given moment for an indefinite period of time.
+
+                [Tags:complex|processing|spectral]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:spectralFreezeAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="spectralVocoder">
+        <xsd:annotation>
+            <xsd:documentation>
+                This module imposes the spectral qualities of the sound from an audio buffer onto the incoming signal from Audio Input 1
+
+                The sound in the buffer must be loaded from an audio file or recorded live from Audio Input 2.
+
+                [Tags:spectral|complex|processing]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:spectralVocoderAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoChorus">
+        <xsd:annotation>
+            <xsd:documentation>
+                A simple "Roland-style" stereo chorus.
+
+                [Tags:complex|processing|spectral|panning]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoChorusAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoConvolution">
+        <xsd:annotation>
+            <xsd:documentation>
+                Performs 2 channels of partioned convolution on Audio Input 1 and Audio Input 2 using impulse responses loaded from file.
+
+                [Tags:complex|processing|spectral|soundfile]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoConvolutionAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoGranularSynthesizer">
+        <xsd:annotation>
+            <xsd:documentation>
+                Perform granular synthesis and stereo spatialisation using an audio buffer.
+
+                The buffer can be filled by loading a soundfile or by recording audio in live from the Audio Input.
+
+                [Tags:complex|processing|granular|panning|soundfile|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoGranularSynthesizerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoPanner">
+        <xsd:annotation>
+            <xsd:documentation>
+                Takes a monophonic input and pans between 2 stereo channels using equal power panning
+
+                The panner assumes that speakers are placed in a layout as follows:
+
+                out1 : left
+                out2 : right.
+
+                [Tags:simple|processing|panning|dynamics]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoPannerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoReverb">
+        <xsd:annotation>
+            <xsd:documentation>
+                Stereo Reverb based on a Feedback Delay Network 12th order.
+
+                [Tags:complex|processing|reverb|panning|delay]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoReverbAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoReverbTwo">
+        <xsd:annotation>
+            <xsd:documentation>
+                Simple stereo reverb with a freeze function.
+
+                [Tags:complex|processing|reverb|dynamics|delay]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoReverbTwoAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="stereoSoundfiler">
+        <xsd:annotation>
+            <xsd:documentation>
+                Play and records stereo soundfiles.
+
+                [Tags:simple|soundfile|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:stereoSoundfilerAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="subSynth">
+        <xsd:annotation>
+            <xsd:documentation>
+                Basic subtractive synthesis module
+
+                The module can be played directly via MIDI with 12-note polyphony
+
+                Provides multiple waveforms (sine, square, triangle, sawtooth), attack, decay, sustain and release parameters, two formants and one amplitude-dependent lowpass filter.
+
+                [Tags:complex|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:subSynthAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="tapDelay">
+        <xsd:annotation>
+            <xsd:documentation>
+                Basic delay with feedback.
+
+                [Tags:simple|processing|delay]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:tapDelayAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="tempoDetector">
+        <xsd:annotation>
+            <xsd:documentation>
+                Detect and display the current and the complessive tempo value of the incoming sound in BPM.
+
+                [Tags:simple|analysis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:tempoDetectorAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="testSource">
+        <xsd:annotation>
+            <xsd:documentation>
+                Module providing a selection of audio testing sources.
+
+                [Tags:simple|synthesis]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:testSourceAttributeGroup" />
+    </xsd:complexType>
+    <xsd:complexType name="vibratoChorus">
+        <xsd:annotation>
+            <xsd:documentation>
+                Basic vibrato module.
+
+                [Tags:simple|processing]
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="rixd:baseAttributeGroup" />
+        <xsd:attributeGroup ref="riid:vibratoChorusAttributeGroup" />
+    </xsd:complexType>
+
+    <!--NON-CORE MODULE GROUP-->
+    <xsd:group name="nonCoreModuleGroup">
+        <xsd:choice>
+            <xsd:element name="AddSynth" type="addSynth" />
+            <xsd:element name="BandPass" type="bandPass" />
+            <xsd:element name="BrightnessAnalyser" type="brightnessAnalyser" />
+            <xsd:element name="Delay" type="delay" />
+            <xsd:element name="Distortion" type="distortion" />
+            <xsd:element name="EnvelopeFollower" type="envelopeFollower" />
+            <xsd:element name="Flanger" type="flanger" />
+            <xsd:element name="Flute" type="flute" />
+            <xsd:element name="FourByOneMixer" type="fourByOneMixer" />
+            <xsd:element name="Gate" type="gate" />
+            <xsd:element name="GranularDelay" type="granularDelay" />
+            <xsd:element name="HarmonicFilter" type="harmonicFilter" />
+            <xsd:element name="HighPass" type="highPass" />
+            <xsd:element name="Limiter" type="limiter" />
+            <xsd:element name="LowPass" type="lowPass" />
+            <xsd:element name="MaterialSimulator" type="materialSimulator" />
+            <xsd:element name="MidiCCoutTest" type="midiCCoutTest" />
+            <xsd:element name="MidiStuffTest" type="midiStuffTest" />
+            <xsd:element name="MultiBandCompressor" type="multiBandCompressor" />
+            <xsd:element name="Noisiness" type="noisiness" />
+            <xsd:element name="Notch" type="notch" />
+            <xsd:element name="OctoSoundfiler" type="octoSoundfiler" />
+            <xsd:element name="OnsetDetector" type="onsetDetector" />
+            <xsd:element name="PartialAnalyser" type="partialAnalyser" />
+            <xsd:element name="PerceptualLoudness" type="perceptualLoudness" />
+            <xsd:element name="PercussiveOnsetDetector" type="percussiveOnsetDetector" />
+            <xsd:element name="Phaser" type="phaser" />
+            <xsd:element name="PhaseVocoder" type="phaseVocoder" />
+            <xsd:element name="PianoReverbMSP" type="pianoReverbMSP" />
+            <xsd:element name="PianoReverbStrings" type="pianoReverbStrings" />
+            <xsd:element name="PingPongDelay" type="pingPongDelay" />
+            <xsd:element name="PitchDetector" type="pitchDetector" />
+            <xsd:element name="PitchShifter" type="pitchShifter" />
+            <xsd:element name="PluckedString" type="pluckedString" />
+            <xsd:element name="QuadAudioIn" type="quadAudioIn" />
+            <xsd:element name="QuadAudioOut" type="quadAudioOut" />
+            <xsd:element name="QuadAutoPanner" type="quadAutoPanner" />
+            <xsd:element name="QuadGranularSynthesizer" type="quadGranularSynthesizer" />
+            <xsd:element name="QuadPanner" type="quadPanner" />
+            <xsd:element name="QuadSoundFiler" type="quadSoundFiler" />
+            <xsd:element name="QuadXYPanner" type="quadXYPanner" />
+            <xsd:element name="ResonantBandPass" type="resonantBandPass" />
+            <xsd:element name="ResonantLowPass" type="resonantLowPass" />
+            <xsd:element name="Reverb" type="reverb" />
+            <xsd:element name="RingModulator" type="ringModulator" />
+            <xsd:element name="Soundfiler" type="soundfiler" />
+            <xsd:element name="SPAT" type="sPAT" />
+            <xsd:element name="SpectralDelay" type="spectralDelay" />
+            <xsd:element name="SpectralFreeze" type="spectralFreeze" />
+            <xsd:element name="SpectralVocoder" type="spectralVocoder" />
+            <xsd:element name="StereoChorus" type="stereoChorus" />
+            <xsd:element name="StereoConvolution" type="stereoConvolution" />
+            <xsd:element name="StereoGranularSynthesizer" type="stereoGranularSynthesizer" />
+            <xsd:element name="StereoPanner" type="stereoPanner" />
+            <xsd:element name="StereoReverb" type="stereoReverb" />
+            <xsd:element name="StereoReverbTwo" type="stereoReverbTwo" />
+            <xsd:element name="StereoSoundfiler" type="stereoSoundfiler" />
+            <xsd:element name="SubSynth" type="subSynth" />
+            <xsd:element name="TapDelay" type="tapDelay" />
+            <xsd:element name="TempoDetector" type="tempoDetector" />
+            <xsd:element name="TestSource" type="testSource" />
+            <xsd:element name="VibratoChorus" type="vibratoChorus" />
+        </xsd:choice>
+    </xsd:group>
+</xsd:schema>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<IntegraCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-node" integraVersion="1.6.0.3282">
+ <object moduleId="86c25f15-345a-f9ca-f6b8-a2430e2c0bd5" originId="892b7437-a3dc-4a1f-863d-17b4ba973ef1" name="AudioThru">
+  <attribute name="zIndex" typeCode="1">0</attribute>
+  <attribute name="userData" typeCode="3">&lt;userdata&gt;  &lt;primarySelectedChild&gt;Limiter1&lt;/primarySelectedChild&gt;  &lt;selectedChild&gt;Limiter1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection3&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection1&lt;/selectedChild&gt;  &lt;selectedChild&gt;Connection2&lt;/selectedChild&gt;  &lt;modulePositions&gt;    &lt;modulePosition name=&quot;StereoAudioOut1&quot;&gt;      &lt;x&gt;29.17355371900826&lt;/x&gt;      &lt;y&gt;2.2727272727272725&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;Limiter1&quot;&gt;      &lt;x&gt;15.454545454545451&lt;/x&gt;      &lt;y&gt;2.2727272727272725&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;    &lt;modulePosition name=&quot;AudioIn1&quot;&gt;      &lt;x&gt;2.644628099173554&lt;/x&gt;      &lt;y&gt;2.2727272727272725&lt;/y&gt;      &lt;width&gt;7&lt;/width&gt;      &lt;height&gt;3&lt;/height&gt;    &lt;/modulePosition&gt;  &lt;/modulePositions&gt;  &lt;liveViewControls/&gt;&lt;/userdata&gt;</attribute>
+  <attribute name="active" typeCode="1">1</attribute>
+  <attribute name="info" typeCode="3">This demo Block simply connects an input to an output.
+
+Use it to run some audio through Integra Live, and make sure that your input and output devices are working properly.
+
+Or open it in the Module View to see how easy it is to connect Modules together.
+
+_Note: this Block also uses a 'limiter' Module.  This is to prevent the Block from causing acoustic feedback, if your microphone and speakers are too close together._</attribute>
+  <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection1">
+   <attribute name="sourcePath" typeCode="3">Limiter1.out1</attribute>
+   <attribute name="targetPath" typeCode="3">StereoAudioOut1.in1</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection2">
+   <attribute name="sourcePath" typeCode="3">Limiter1.out1</attribute>
+   <attribute name="targetPath" typeCode="3">StereoAudioOut1.in2</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="1ca9d5cf-89f5-0cd8-d1b0-30a33e288734" originId="cb718748-f1ac-44fe-abbc-a997bcf06fe4" name="MIDI1">
+   <attribute name="active" typeCode="1">1</attribute>
+   <attribute name="channel" typeCode="1">0</attribute>
+   <attribute name="cc0" typeCode="1">0</attribute>
+   <attribute name="cc1" typeCode="1">0</attribute>
+   <attribute name="cc2" typeCode="1">0</attribute>
+   <attribute name="cc3" typeCode="1">0</attribute>
+   <attribute name="cc4" typeCode="1">0</attribute>
+   <attribute name="cc5" typeCode="1">0</attribute>
+   <attribute name="cc6" typeCode="1">0</attribute>
+   <attribute name="cc7" typeCode="1">0</attribute>
+   <attribute name="cc8" typeCode="1">0</attribute>
+   <attribute name="cc9" typeCode="1">0</attribute>
+   <attribute name="cc10" typeCode="1">0</attribute>
+   <attribute name="cc11" typeCode="1">0</attribute>
+   <attribute name="cc12" typeCode="1">0</attribute>
+   <attribute name="cc13" typeCode="1">0</attribute>
+   <attribute name="cc14" typeCode="1">0</attribute>
+   <attribute name="cc15" typeCode="1">0</attribute>
+   <attribute name="cc16" typeCode="1">0</attribute>
+   <attribute name="cc17" typeCode="1">0</attribute>
+   <attribute name="cc18" typeCode="1">0</attribute>
+   <attribute name="cc19" typeCode="1">0</attribute>
+   <attribute name="cc20" typeCode="1">0</attribute>
+   <attribute name="cc21" typeCode="1">0</attribute>
+   <attribute name="cc22" typeCode="1">0</attribute>
+   <attribute name="cc23" typeCode="1">0</attribute>
+   <attribute name="cc24" typeCode="1">0</attribute>
+   <attribute name="cc25" typeCode="1">0</attribute>
+   <attribute name="cc26" typeCode="1">0</attribute>
+   <attribute name="cc27" typeCode="1">0</attribute>
+   <attribute name="cc28" typeCode="1">0</attribute>
+   <attribute name="cc29" typeCode="1">0</attribute>
+   <attribute name="cc30" typeCode="1">0</attribute>
+   <attribute name="cc31" typeCode="1">0</attribute>
+   <attribute name="cc32" typeCode="1">0</attribute>
+   <attribute name="cc33" typeCode="1">0</attribute>
+   <attribute name="cc34" typeCode="1">0</attribute>
+   <attribute name="cc35" typeCode="1">0</attribute>
+   <attribute name="cc36" typeCode="1">0</attribute>
+   <attribute name="cc37" typeCode="1">0</attribute>
+   <attribute name="cc38" typeCode="1">0</attribute>
+   <attribute name="cc39" typeCode="1">0</attribute>
+   <attribute name="cc40" typeCode="1">0</attribute>
+   <attribute name="cc41" typeCode="1">0</attribute>
+   <attribute name="cc42" typeCode="1">0</attribute>
+   <attribute name="cc43" typeCode="1">0</attribute>
+   <attribute name="cc44" typeCode="1">0</attribute>
+   <attribute name="cc45" typeCode="1">0</attribute>
+   <attribute name="cc46" typeCode="1">0</attribute>
+   <attribute name="cc47" typeCode="1">0</attribute>
+   <attribute name="cc48" typeCode="1">0</attribute>
+   <attribute name="cc49" typeCode="1">0</attribute>
+   <attribute name="cc50" typeCode="1">0</attribute>
+   <attribute name="cc51" typeCode="1">0</attribute>
+   <attribute name="cc52" typeCode="1">0</attribute>
+   <attribute name="cc53" typeCode="1">0</attribute>
+   <attribute name="cc54" typeCode="1">0</attribute>
+   <attribute name="cc55" typeCode="1">0</attribute>
+   <attribute name="cc56" typeCode="1">0</attribute>
+   <attribute name="cc57" typeCode="1">0</attribute>
+   <attribute name="cc58" typeCode="1">0</attribute>
+   <attribute name="cc59" typeCode="1">0</attribute>
+   <attribute name="cc60" typeCode="1">0</attribute>
+   <attribute name="cc61" typeCode="1">0</attribute>
+   <attribute name="cc62" typeCode="1">0</attribute>
+   <attribute name="cc63" typeCode="1">0</attribute>
+   <attribute name="cc64" typeCode="1">0</attribute>
+   <attribute name="cc65" typeCode="1">0</attribute>
+   <attribute name="cc66" typeCode="1">0</attribute>
+   <attribute name="cc67" typeCode="1">0</attribute>
+   <attribute name="cc68" typeCode="1">0</attribute>
+   <attribute name="cc69" typeCode="1">0</attribute>
+   <attribute name="cc70" typeCode="1">0</attribute>
+   <attribute name="cc71" typeCode="1">0</attribute>
+   <attribute name="cc72" typeCode="1">0</attribute>
+   <attribute name="cc73" typeCode="1">0</attribute>
+   <attribute name="cc74" typeCode="1">0</attribute>
+   <attribute name="cc75" typeCode="1">0</attribute>
+   <attribute name="cc76" typeCode="1">0</attribute>
+   <attribute name="cc77" typeCode="1">0</attribute>
+   <attribute name="cc78" typeCode="1">0</attribute>
+   <attribute name="cc79" typeCode="1">0</attribute>
+   <attribute name="cc80" typeCode="1">0</attribute>
+   <attribute name="cc81" typeCode="1">0</attribute>
+   <attribute name="cc82" typeCode="1">0</attribute>
+   <attribute name="cc83" typeCode="1">0</attribute>
+   <attribute name="cc84" typeCode="1">0</attribute>
+   <attribute name="cc85" typeCode="1">0</attribute>
+   <attribute name="cc86" typeCode="1">0</attribute>
+   <attribute name="cc87" typeCode="1">0</attribute>
+   <attribute name="cc88" typeCode="1">0</attribute>
+   <attribute name="cc89" typeCode="1">0</attribute>
+   <attribute name="cc90" typeCode="1">0</attribute>
+   <attribute name="cc91" typeCode="1">0</attribute>
+   <attribute name="cc92" typeCode="1">0</attribute>
+   <attribute name="cc93" typeCode="1">0</attribute>
+   <attribute name="cc94" typeCode="1">0</attribute>
+   <attribute name="cc95" typeCode="1">0</attribute>
+   <attribute name="cc96" typeCode="1">0</attribute>
+   <attribute name="cc97" typeCode="1">0</attribute>
+   <attribute name="cc98" typeCode="1">0</attribute>
+   <attribute name="cc99" typeCode="1">0</attribute>
+   <attribute name="cc100" typeCode="1">0</attribute>
+   <attribute name="cc101" typeCode="1">0</attribute>
+   <attribute name="cc102" typeCode="1">0</attribute>
+   <attribute name="cc103" typeCode="1">0</attribute>
+   <attribute name="cc104" typeCode="1">0</attribute>
+   <attribute name="cc105" typeCode="1">0</attribute>
+   <attribute name="cc106" typeCode="1">0</attribute>
+   <attribute name="cc107" typeCode="1">0</attribute>
+   <attribute name="cc108" typeCode="1">0</attribute>
+   <attribute name="cc109" typeCode="1">0</attribute>
+   <attribute name="cc110" typeCode="1">0</attribute>
+   <attribute name="cc111" typeCode="1">0</attribute>
+   <attribute name="cc112" typeCode="1">0</attribute>
+   <attribute name="cc113" typeCode="1">0</attribute>
+   <attribute name="cc114" typeCode="1">0</attribute>
+   <attribute name="cc115" typeCode="1">0</attribute>
+   <attribute name="cc116" typeCode="1">0</attribute>
+   <attribute name="cc117" typeCode="1">0</attribute>
+   <attribute name="cc118" typeCode="1">0</attribute>
+   <attribute name="cc119" typeCode="1">0</attribute>
+   <attribute name="cc120" typeCode="1">0</attribute>
+   <attribute name="cc121" typeCode="1">0</attribute>
+   <attribute name="cc122" typeCode="1">0</attribute>
+   <attribute name="cc123" typeCode="1">0</attribute>
+   <attribute name="cc124" typeCode="1">0</attribute>
+   <attribute name="cc125" typeCode="1">0</attribute>
+   <attribute name="cc126" typeCode="1">0</attribute>
+   <attribute name="cc127" typeCode="1">0</attribute>
+  </object>
+  <object moduleId="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originId="2809b248-8194-4269-a168-d9f811d137b7" name="StereoAudioOut1">
+   <attribute name="offset" typeCode="1">1</attribute>
+   <attribute name="inLevel" typeCode="2">1.</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="13ac287e-4841-bc84-b4d6-927b1e0293bc" originId="b6f7421a-888a-47d7-b266-76a0b6c2b86b" name="AudioIn1">
+   <attribute name="offset" typeCode="1">1</attribute>
+   <attribute name="outLevel" typeCode="2">0.8</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="36c9c7c5-b954-0a12-84f2-ded0de687886" originId="5dfd7aa5-eed1-4666-9d19-844a5a9912c9" name="Connection3">
+   <attribute name="sourcePath" typeCode="3">AudioIn1.out</attribute>
+   <attribute name="targetPath" typeCode="3">Limiter1.in1</attribute>
+   <attribute name="active" typeCode="1">1</attribute>
+  </object>
+  <object moduleId="0e6653a9-bf1b-3fb0-a88d-37391efd1f27" originId="f0018b50-848e-416f-848b-8d7dc60ca746" name="Limiter1">
+   <attribute name="active" typeCode="1">1</attribute>
+   <attribute name="bypass" typeCode="1">0</attribute>
+   <attribute name="inLevel" typeCode="2">1.</attribute>
+   <attribute name="attackTime" typeCode="1">0</attribute>
+   <attribute name="makeUp" typeCode="2">-10.</attribute>
+   <attribute name="mix" typeCode="2">1.</attribute>
+   <attribute name="outLevel" typeCode="2">1.</attribute>
+   <attribute name="releaseTime" typeCode="1">1</attribute>
+   <attribute name="threshold" typeCode="2">-10.</attribute>
+  </object>
+ </object>
+</IntegraCollection>

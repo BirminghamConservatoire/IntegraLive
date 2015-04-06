@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+           attributeFormDefault="unqualified" 
+           elementFormDefault="qualified" 
+>
+    <xsd:element name="IntegraModules">
+        <xsd:annotation>
+            <xsd:documentation>
+                Root element for a document describing an arbitrary number of module collections.
+                This effectively serves as a lookup table for XML applications that require the collation of multiple Integra Interface Definition (IID) files.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="collection" type="collection" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="collection">
+        <xsd:annotation>
+            <xsd:documentation>
+                A single module collection. This serves as a lookup table for XML applications requiring access to Integra Interface Definition (IID) files.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" name="module" type="module"/>
+        </xsd:sequence>
+        <xsd:attribute name="src" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    A label that uniquely identifies the origin of these IID files.
+                    This is typically either "Integra Live" (for bundled modules) or the name of an IXD project (from which user/legacy modules have been extracted).
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="module">
+        <xsd:annotation>
+            <xsd:documentation>
+                A module whose uniquely identified interface definition (IID) is available as part of this collection
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    A string indicating this module's name
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="moduleGuid" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    A unique indentifier indicating the version-specific type for this module
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="originGuid" type="xsd:string" use="required" >
+            <xsd:annotation>
+                <xsd:documentation>
+                    A unique indentifier indicating the version-independent type for this module
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+</xsd:schema>

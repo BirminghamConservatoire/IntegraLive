@@ -13,5 +13,3 @@ iemlib/soundfile_info
 
 fsplay~
 
-mediasettings/midisettings
-mediasettings/audiosettings

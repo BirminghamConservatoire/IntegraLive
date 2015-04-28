@@ -53,7 +53,7 @@ t_copy;
 
 t_class *copy_class;
 
-int copy(const char *source, const char *target);
+static int do_copy(const char *source, const char *target);
 
 void *copy_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -63,7 +63,7 @@ void *copy_new(t_symbol *s, int argc, t_atom *argv)
   return (void *)x;
 }
 
-void copy_list(t_copy *x, t_symbol *s, int ac, t_atom *av)
+static void copy_list(t_copy *x, t_symbol *s, int ac, t_atom *av)
 {
     char source[MAXPDSTRING];
     char target[MAXPDSTRING];
@@ -76,7 +76,7 @@ void copy_list(t_copy *x, t_symbol *s, int ac, t_atom *av)
     atom_string(&av[0], source, MAXPDSTRING);
     atom_string(&av[1], target, MAXPDSTRING);
 
-    int rv = copy(source, target);
+    int rv = do_copy(source, target);
     rv++;
     
     if(rv)
@@ -96,7 +96,7 @@ void copy_setup(void)
   class_addlist(copy_class, copy_list);
 }
 
-void block(int fd, int event) 
+static void block(int fd, int event)
 {
     struct pollfd topoll;
     topoll.fd = fd;
@@ -106,7 +106,7 @@ void block(int fd, int event)
     // next read/write will tell us
 }
 
-int copy_data_buffer(int fdin, int fdout, void *buf, size_t bufsize)
+static int copy_data_buffer(int fdin, int fdout, void *buf, size_t bufsize)
 {
     for(;;)
     {
@@ -151,7 +151,7 @@ int copy_data_buffer(int fdin, int fdout, void *buf, size_t bufsize)
 #define FILECOPY_BUFFER_SIZE (64*1024)
 #endif
 
-int copy_data(int fdin, int fdout) 
+static int copy_data(int fdin, int fdout)
 {
     for (size_t bufsize = FILECOPY_BUFFER_SIZE; bufsize >= 256; bufsize /= 2)
     {
@@ -167,7 +167,7 @@ int copy_data(int fdin, int fdout)
     return -1;
 }
 
-int copy(const char *source, const char *target)
+static int do_copy(const char *source, const char *target)
 {
     struct stat info;
 

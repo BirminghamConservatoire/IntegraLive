@@ -34,12 +34,18 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
-#include <poll.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
 #ifdef __APPLE__
 #define O_BINARY 0
+#endif
+
+#ifdef WIN32
+#define open _open
+#define close _close
+#define fdopen _fdopen
+#define fdclose _fdclose
 #endif
 
 #define CONSOLE_PREFIX "[copy]: "
@@ -67,6 +73,7 @@ static void copy_list(t_copy *x, t_symbol *s, int ac, t_atom *av)
 {
     char source[MAXPDSTRING];
     char target[MAXPDSTRING];
+	int rv;
 
     if(ac != 2 || (av[0].a_type != A_SYMBOL && av[1].a_type != A_SYMBOL))
     {
@@ -76,7 +83,7 @@ static void copy_list(t_copy *x, t_symbol *s, int ac, t_atom *av)
     atom_string(&av[0], source, MAXPDSTRING);
     atom_string(&av[1], target, MAXPDSTRING);
 
-    int rv = do_copy(source, target);
+    rv = do_copy(source, target);
     rv++;
     
     if(rv)
@@ -96,110 +103,69 @@ void copy_setup(void)
   class_addlist(copy_class, copy_list);
 }
 
-static void block(int fd, int event)
-{
-    struct pollfd topoll;
-    topoll.fd = fd;
-    topoll.events = event;
-    poll(&topoll, 1, -1);
-    // no need to check errors - if the stream is bust then the
-    // next read/write will tell us
-}
 
-static int copy_data_buffer(int fdin, int fdout, void *buf, size_t bufsize)
+static int copy_data(FILE *source, FILE *target)
 {
-    for(;;)
+    char            buffer[BUFSIZ];
+    size_t          n;
+
+    while ((n = fread(buffer, sizeof(char), sizeof(buffer), source)) > 0)
     {
-        void *pos;
-        // read data to buffer
-        ssize_t bytestowrite = read(fdin, buf, bufsize);
-        if (bytestowrite == 0) break; // end of input
-        if (bytestowrite == -1)
-        {
-            if (errno == EINTR) continue; // signal handled
-            if (errno == EAGAIN)
-            {
-                block(fdin, POLLIN);
-                continue;
-            }
-            return -1; 
-        }
-
-        // write data from buffer
-        pos = buf;
-        while (bytestowrite > 0)
-        {
-            ssize_t bytes_written = write(fdout, pos, bytestowrite);
-            if (bytes_written == -1) 
-            {
-                if (errno == EINTR) continue;
-                if (errno == EAGAIN)
-                {
-                    block(fdout, POLLOUT);
-                    continue;
-                }
-                return -1;
-            }
-            bytestowrite -= bytes_written;
-            pos += bytes_written;
-        }
+        if (fwrite(buffer, sizeof(char), n, target) != n)
+		{
+            error("write failed");
+			return -1;
+		}
     }
+
     return 0;
 }
 
-#ifndef FILECOPY_BUFFER_SIZE
-#define FILECOPY_BUFFER_SIZE (64*1024)
-#endif
-
-static int copy_data(int fdin, int fdout)
-{
-    for (size_t bufsize = FILECOPY_BUFFER_SIZE; bufsize >= 256; bufsize /= 2)
-    {
-        void *buffer = malloc(bufsize);
-        if (buffer != NULL)
-        {
-            int result = copy_data_buffer(fdin, fdout, buffer, bufsize);
-            free(buffer);
-            return result;
-        }
-    }
-
-    return -1;
-}
 
 static int do_copy(const char *source, const char *target)
-{
+{   
     struct stat info;
+	int rv;
+	int fdtarget;
+    int fdsource;
+	FILE *fsource;
+	FILE *ftarget;
+	
+	fdsource = open(source, O_RDONLY|O_BINARY, 0);
 
-    int fdin = open(source, O_RDONLY|O_BINARY, 0);
-    if (fdin == -1) 
-    {
+    if (fdsource == -1)
+    {   
         error(CONSOLE_PREFIX "invalid input");
         return -1;
     }
-
-    int rv = fstat(fdin, &info);
-
+    
+    rv = fstat(fdsource, &info);
+    
     if(rv == -1)
     {
         error(CONSOLE_PREFIX "stat failed\n");
         return -1;
     }
-
-    int fdout = open(target, O_WRONLY|O_BINARY|O_CREAT|O_TRUNC, info.st_mode);
-    if (fdout == -1)
-    {
+    
+    fdtarget = open(target, O_WRONLY|O_BINARY|O_CREAT|O_TRUNC, info.st_mode);
+    
+	if (fdtarget == -1)
+    {   
         error(CONSOLE_PREFIX "invalid output\n");
-        close(fdin);
+        close(fdsource);
         return -1;
-    } 
+    }
 
-    rv = copy_data(fdin, fdout);
-
+    fsource = fdopen(fdsource, "rb");
+    ftarget = fdopen(fdtarget, "wb");
+    
+    rv = copy_data(fsource, ftarget);
+    
     if (rv == -1)
     {
         error(CONSOLE_PREFIX "copy failed\n");
     }
 
-    return 0;
+	return rv;
+
 }

@@ -145,6 +145,7 @@ call copy_dependencies.bat ..\bin\Release\ Release
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\externals\extra\bsaylor\partconv~.c" />
+    <ClCompile Include="..\externals\extra\copy\copy.c" />
     <ClCompile Include="..\externals\extra\freeverb~\freeverb~.c" />
     <ClCompile Include="..\externals\extra\fsplay~\fsp_libsndfile.cpp" />
     <ClCompile Include="..\externals\extra\fsplay~\main.cpp" />

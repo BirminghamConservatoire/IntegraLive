@@ -3,6 +3,13 @@ PRODUCT=Integra\ Live
 CREATORPRODUCT=Module\ Creator
 
 APPNAME=$(PRODUCT).app
+PDVERSION=0.43-3
+PDDLPATH=0.43.3
+PDPREFIX=pd-$(PDVERSION)
+PDAPPNAME=$(PDPREFIX).app
+PDGZNAME=$(PDPREFIX).mac.tar.gz
+EXTRABINDIR=../../libIntegra/externals/macosx/extra
+PDDLBASE=http://garr.dl.sourceforge.net/project/pure-data/pure-data
 CREATORAPPNAME=$(CREATORPRODUCT).app
 RESDIR=Contents/Resources
 APPRESDIR=$(APPNAME)/$(RESDIR)
@@ -18,6 +25,7 @@ DEFAULTBUILD=release
 INTEGRA_BASE_URL=http://www.integralive.org/incoming
 SDKROOT=$(REPOSITORYROOT)/SDK
 TEMPLATESDIR=$(SDKROOT)/templates
+PDHOSTDIR=$(CREATORRESIDR)/$(APPNAME)/Contents/Resources/host
 
 GDB=gdb --args
 
@@ -74,7 +82,17 @@ server:
 server-clean:
 	rm -rf server
 
-creator: documentation
+
+host:
+	curl $(PDDLBASE)/$(PDDLPATH)/$(PDGZNAME) > $(PDGZNAME)
+	tar zxf $(PDGZNAME)
+	cp -r $(EXTRABINDIR)/* $(PDAPPNAME)/Contents/Resources/extra
+
+
+host-clean:
+	rm -rf $(PDGZNAME) $(PDAPPNAME)
+
+creator: documentation host
 	@if test ! -d $(APPNAME); \
 	then echo $(APPNAME) does not exist. Run 'make release' first. && exit 2; \
 	fi
@@ -84,6 +102,10 @@ creator: documentation
 	cp -r $(TEMPLATESDIR) $(CREATORRESIDR)
 	cp -r $(APPNAME) $(CREATORRESIDR)
 	mv documentation $(CREATORRESIDR)
+	mkdir $(PDHOSTDIR)
+	cp -r $(PDAPPNAME)/Contents/Resources/* $(PDHOSTDIR)
+	ln -s pd $(PDHOSTDIR)/bin/pd_integra
+
 	
 documentation:
 	make -C $(DOCDIR)/markdown
@@ -99,7 +121,7 @@ dependencies-clean:
 gui-clean:
 	make -C $(GUIDIR) clean
 
-clean: server-clean gui-clean
+clean: server-clean gui-clean host-clean
 	make -C $(DOCDIR)/markdown clean
 	-rm -rf documentation
 	-diskutil unmount $(PD_MOUNT_NAME)
@@ -108,13 +130,11 @@ clean: server-clean gui-clean
 	-rm -rf $(PRODUCT).dmg
 	-rm -rf $(CREATORAPPNAME)
 
-
 maintainer-clean: clean dependencies-clean
 	-rm *.dmg
 	make -C $(LIBINTEGRAPATH) maintainer-clean
 	cd $(LIBINTEGRAPATH) && ./autogen.sh && cd -
 
-
 upload:
-	scp Integra\ Live.dmg postlude@frs.sourceforge.net:/home/frs/project/integralive/
+	scp Integra Live.dmg postlude@frs.sourceforge.net:/home/frs/project/integralive/
 

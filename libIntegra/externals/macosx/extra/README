@@ -1,0 +1,3 @@
+These are 32-bit builds of the IL Pd externals. These are are temporary requirement to support the Pd bundled with the Module Creator, because we are still on Pd 0.43.3 and that version of Pd is 32-bit.
+
+This will disappear when we move to a full 64-bit system which will happen when we incorporate the latest libPd.

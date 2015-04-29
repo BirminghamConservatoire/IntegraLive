@@ -10,37 +10,33 @@
 	<string>Integra</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>027EA054-A1EC-4B69-BBD9-0A60C9D6A6B3</key>
-		<string>https://github.com/libpd/libpd.git</string>
-		<key>84FE1638-03F6-47BF-96F2-A8DCCBE7F438</key>
-		<string>https://github.com/erikd/libsndfile.git</string>
-		<key>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</key>
+		<key>00D6F8F983B9461F3E46A5BE8D6354569D8F4F3D</key>
 		<string>https://github.com/BirminghamConservatoire/IntegraLive</string>
+		<key>1A0B07D1631AC7F0F17FCE76695E42D64F01958F</key>
+		<string>https://github.com/libpd/libpd.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>libIntegra/xcode/Integra/Integra.xcodeproj/project.xcworkspace</string>
+	<string>libIntegra/xcode/Integra/Integra.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>027EA054-A1EC-4B69-BBD9-0A60C9D6A6B3</key>
-		<string>../../../../externals/libpd</string>
-		<key>84FE1638-03F6-47BF-96F2-A8DCCBE7F438</key>
-		<string>../../../../externals/libsndfile</string>
-		<key>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</key>
+		<key>00D6F8F983B9461F3E46A5BE8D6354569D8F4F3D</key>
 		<string>../../../../..</string>
+		<key>1A0B07D1631AC7F0F17FCE76695E42D64F01958F</key>
+		<string>../../../../..libIntegra/externals/libpd</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/BirminghamConservatoire/IntegraLive</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</string>
+	<string>00D6F8F983B9461F3E46A5BE8D6354569D8F4F3D</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>D3CD30EB-96D5-4E96-A3F0-B1E8AD497C00</string>
+			<string>00D6F8F983B9461F3E46A5BE8D6354569D8F4F3D</string>
 			<key>IDESourceControlWCCName</key>
 			<string>IntegraLive</string>
 		</dict>
@@ -48,17 +44,9 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>027EA054-A1EC-4B69-BBD9-0A60C9D6A6B3</string>
+			<string>1A0B07D1631AC7F0F17FCE76695E42D64F01958F</string>
 			<key>IDESourceControlWCCName</key>
 			<string>libpd</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>84FE1638-03F6-47BF-96F2-A8DCCBE7F438</string>
-			<key>IDESourceControlWCCName</key>
-			<string>libsndfile</string>
 		</dict>
 	</array>
 </dict>

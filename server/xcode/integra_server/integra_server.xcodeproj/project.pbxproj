@@ -198,7 +198,7 @@
 		7D93C43918A9704B0083CB07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Birmingham Conservatoire";
 			};
 			buildConfigurationList = 7D93C43C18A9704B0083CB07 /* Build configuration list for PBXProject "integra_server" */;
@@ -291,7 +291,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -322,7 +322,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				SDKROOT = macosx10.7;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -330,7 +330,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -347,7 +346,7 @@
 				);
 				OTHER_LDFLAGS = "-lc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/xmlrpc-c-1.25.15 ../../externals/macosx/liblo-0.28 ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};
@@ -357,7 +356,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -374,7 +372,7 @@
 				);
 				OTHER_LDFLAGS = "-lc";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../../externals/macosx/liblo-0.28 ../../externals/macosx/xmlrpc-c-1.25.15 ${BUILT_PRODUCTS_DIR}/Integra.framework/Headers";
 				VALID_ARCHS = x86_64;
 			};

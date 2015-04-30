@@ -24,7 +24,7 @@ ECHO DONE
 ECHO.
 
 ECHO Copying modules
-	CALL copy_modules.bat ..\%1\
+	CALL copy_modules.bat ..\%1
 ECHO DONE
 ECHO.
 
@@ -33,10 +33,9 @@ ECHO Copying GUI block library
 ECHO DONE
 ECHO.
 
-if %1 eq Debug
-(
-ECHO Copying GUI debug block library
+IF %1 EQU Debug (
+ ECHO Copying GUI debug block library
 	CALL copy_block_library.bat ..\%1\gui-debug\BlockLibrary
-ECHO DONE
-ECHO.
+ ECHO DONE
+ ECHO.
 )

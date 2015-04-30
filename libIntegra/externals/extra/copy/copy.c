@@ -126,6 +126,7 @@ static int do_copy(const char *source, const char *target)
 {   
     struct stat info;
 	int rv;
+        int rv2;
 	int fdtarget;
     int fdsource;
 	FILE *fsource;
@@ -160,12 +161,20 @@ static int do_copy(const char *source, const char *target)
     ftarget = fdopen(fdtarget, "wb");
     
     rv = copy_data(fsource, ftarget);
-    
+
     if (rv == -1)
     {
-        error(CONSOLE_PREFIX "copy failed\n");
+        error(CONSOLE_PREFIX "copy failed");
     }
 
-	return rv;
+    rv  = fclose(fsource);
+    rv2 = fclose(ftarget);
 
+    if (rv || rv2)
+    {
+        error(CONSOLE_PREFIX "file close failed");
+        rv = -1;
+    }
+
+    return rv;
 }

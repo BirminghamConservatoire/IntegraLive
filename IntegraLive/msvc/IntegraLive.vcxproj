@@ -74,7 +74,9 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>post_build.bat Release</Command>
+      <Command>ECHO ON
+ECHO "Running post build events"
+CALL post_build.bat Release</Command>
     </PostBuildEvent>
     <CustomBuildStep>
       <Command>rd /s /q ..\Release\documentation</Command>

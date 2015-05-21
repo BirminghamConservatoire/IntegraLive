@@ -53,6 +53,7 @@
 int sprintf_s_alt (char *str, size_t size, const char *format, ...);
 int vsprintf_s_alt (char *str, size_t size, const char *format, va_list ap);
 #endif
+#include "version.h" // For LIBINTEGRA_VERSION
 
 #endif /* __APPLE__ */
 

@@ -115,7 +115,7 @@ namespace integra_internal
 	}
 
 
-	CError CDataDirectory::extract_from_zip( const CServer &server, const string &file_path, const CNode *parent_node )
+	CError CDataDirectory::extract_from_zip( const CServer &server, const string &file_path, const CNode *parent_node, const CNode *outer_node  )
 	{
 		unzFile unzip_file = unzOpen( file_path.c_str() );
 		if( !unzip_file )
@@ -163,9 +163,15 @@ namespace integra_internal
 				continue;
 			}
 
-			CPath relative_node_path = CPath( relative_node_path_string );
-			const CNode *node = CNode::downcast( server.find_node( relative_node_path, parent_node ) );
+            /* Get the "file" node name from the path e.g. Soundfiler1 from Block1.Soundfiler1 */
+            string node_name_string = relative_node_path_string.substr(relative_node_path_string.find_first_of('.') + 1);
+			CPath relative_node_path = CPath( node_name_string );
+            
+            /* Find the actual node by searching by relative_node_path inside the passed in outer_node */
+            const CNode *node = CNode::downcast( server.find_node( relative_node_path, outer_node ) );
 
+            INTEGRA_TRACE_VERBOSE << "extracting data directory for node: " << node->get_name() << "." << node_name_string; //Debug.StereoSoundfiler1
+            
 			if( !node )
 			{
 				INTEGRA_TRACE_ERROR << "couldn't resolve path: " << relative_node_path_string;
@@ -182,6 +188,7 @@ namespace integra_internal
 
 			if( unzOpenCurrentFile( unzip_file ) == UNZ_OK )
 			{
+                // extract ZIP to the data directory for the wrong node!
 				extract_from_zip_to_data_directory( unzip_file, &file_info, *node, relative_file_path );
 
 				unzCloseCurrentFile( unzip_file );

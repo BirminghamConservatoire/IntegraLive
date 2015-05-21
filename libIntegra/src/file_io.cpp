@@ -77,8 +77,10 @@ namespace integra_internal
 	const string CFileIO::instance_id = "instanceId";
 	const string CFileIO::class_id = "classId";
 
-
-
+    // TODO: this method assumes that a loaded file has a top-level container node, under which all other nodes are contained
+    // Whilst this would be true for Integra Live Projects, Tracks, Blocks, a valid IXD could contain multiple top-level nodes
+    // So either the CollectionSchema needs to be changed to insist on a top-level container, or generic libIntegra needs to
+    // be split out from Integra Live specifics
 	CError CFileIO::load( CServer &server, const string &filename, const CNode *parent, guid_set &new_embedded_module_ids )
 	{
 		unsigned char *ixd_buffer = NULL;
@@ -148,11 +150,12 @@ namespace integra_internal
 			INTEGRA_TRACE_ERROR << "failed to load nodes: " << filename;
 			goto CLEANUP;
 		}
-
+        
 		/* load the data directories */
 		if( is_zip_file )
 		{
-			if( CDataDirectory::extract_from_zip( server, filename, parent ) != CError::SUCCESS )
+            const CNode *top_level_node = *new_nodes.begin();
+			if( CDataDirectory::extract_from_zip( server, filename, parent, top_level_node ) != CError::SUCCESS )
 			{
 				INTEGRA_TRACE_ERROR << "failed to load data directories: " << filename;
 			}

@@ -419,7 +419,7 @@ namespace integra_internal
 			"InterfaceDeclaration.ImplementationInfo.PatchName",
 			m_interface_definition->m_implementation_info->m_patch_name );
 
-		INTEGRA_TRACE_ERROR << "unhandled element: " << m_element_path;
+		INTEGRA_TRACE_ERROR << "unhandled element: " << m_element_path << " for module: " << m_interface_definition->m_interface_info->m_name;
 	
 		return CError::SUCCESS;
 

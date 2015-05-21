@@ -44,38 +44,38 @@ namespace integra_api
 	const int CTrace::max_timestamp_length = 32;
 
 
-	std::ostream &CTrace::error( const char *location )
+	std::ostream &CTrace::error( const char *location, const char *function )
 	{
 		if( !s_trace_errors ) 
 		{
 			return s_null_stream;
 		}
 
-		do_trace( "Error", location );
+		do_trace( "Error", location, function );
 		return s_trace_stream;
 	}
 
 
-	std::ostream &CTrace::progress( const char *location )
+	std::ostream &CTrace::progress( const char *location, const char *function )
 	{
 		if( !s_trace_progress )
 		{
 			return s_null_stream;
 		}
 
-		do_trace( "Progress", location );
+		do_trace( "Progress", location, function );
 		return s_trace_stream;
 	}
 
 
-	std::ostream &CTrace::verbose( const char *location )
+	std::ostream &CTrace::verbose( const char *location, const char *function )
 	{
 		if( !s_trace_verbose )
 		{
 			return s_null_stream;
 		}
 
-		do_trace( "Verbose", location );
+		do_trace( "Verbose", location, function );
 		return s_trace_stream;
 	}
 
@@ -96,7 +96,7 @@ namespace integra_api
 	}
 
 
-	void CTrace::do_trace( const char *category, const char *location )
+	void CTrace::do_trace( const char *category, const char *location, const char *function )
 	{
 		s_trace_stream << std::unitbuf << std::endl;
 		s_trace_stream << category;
@@ -127,7 +127,7 @@ namespace integra_api
 
 		if( s_trace_location )
 		{
-			s_trace_stream << " " << location;
+			s_trace_stream << " " << location << "(" << function << ")";
 		}
 
 		s_trace_stream << "     ";

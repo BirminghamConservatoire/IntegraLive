@@ -1,0 +1,316 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FC44D9BF-1E20-44A7-B456-BEECA84DA30F}</ProjectGuid>
+    <RootNamespace>libIntegra</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)\..\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(TargetName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)\..\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(TargetName)\</IntDir>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateManifest>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Clean</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Clean</CustomBuildBeforeTargets>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/win32/libsndfile/include;../externals/boost;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;MSW;_DEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;libsndfile-1.lib;flext-pd_td.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/zlib-1.2.5/lib;../externals/win32/fftw-3.3.3;../externals/portaudio/build/msvc/Win32/Debug;../externals/portmidi/Debug;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <OptimizeReferences>false</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>
+      </ImportLibrary>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+    <PostBuildEvent>
+      <Command>call versioning/StampVer.bat ..\bin\Debug\libIntegra.dll
+call copy_dependencies.bat ..\bin\Debug\ Debug
+
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>call libpd_autobuild/build_libpd.bat</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>call libpd_autobuild/clean_libpd.bat
+</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>forcing rebuild of libpd</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>nothing</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/boost;../externals/win32/libsndfile/include;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;MSW;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;flext-pd_t.lib;libsndfile-1.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../externals/win32/pthreads-win32/lib;../externals/win32/libxml2-2.7.8.win32/lib;../externals/win32/lua-5.2.0;../externals/win32/fftw-3.3.3;../externals/win32/zlib-1.2.5/lib;../externals/win32/libsndfile/lib;../externals/flext/pd-msvc;../externals/portaudio/build/msvc/Win32/Release;../externals/portmidi/Release;../externals/libpd/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>
+      </ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>call versioning\StampVer.bat ..\bin\Release\libIntegra.dll
+call copy_dependencies.bat ..\bin\Release\ Release
+
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>call libpd_autobuild/build_libpd.bat</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>call libpd_autobuild/clean_libpd.bat</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>forcing rebuild of libpd</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>nothing</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\externals\extra\bsaylor\partconv~.c" />
+    <ClCompile Include="..\externals\extra\copy\copy.c" />
+    <ClCompile Include="..\externals\extra\freeverb~\freeverb~.c" />
+    <ClCompile Include="..\externals\extra\fsplay~\fsp_libsndfile.cpp" />
+    <ClCompile Include="..\externals\extra\fsplay~\main.cpp" />
+    <ClCompile Include="..\externals\extra\iemlib\soundfile_info.c" />
+    <ClCompile Include="..\externals\libpd\cpp\PdBase.cpp" />
+    <ClCompile Include="..\externals\libpd\cpp\PdTypes.cpp" />
+    <ClCompile Include="..\externals\libpd\libpd_wrapper\util\z_print_util.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\externals\libpd\pure-data\extra\bonk~\bonk~.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp_fun.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\expr~\vexp_if.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\fiddle~\fiddle~.c" />
+    <ClCompile Include="..\externals\libpd\pure-data\extra\lrshift~\lrshift~.c" />
+    <ClCompile Include="..\externals\minizip\ioapi.c" />
+    <ClCompile Include="..\externals\minizip\iowin32.c" />
+    <ClCompile Include="..\externals\minizip\mztools.c" />
+    <ClCompile Include="..\externals\minizip\unzip.c" />
+    <ClCompile Include="..\externals\minizip\zip.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\src\audio_engine.cpp" />
+    <ClCompile Include="..\src\audio_settings_logic.cpp" />
+    <ClCompile Include="..\src\command_source.cpp" />
+    <ClCompile Include="..\src\connection_logic.cpp" />
+    <ClCompile Include="..\src\container_logic.cpp" />
+    <ClCompile Include="..\src\control_point_logic.cpp" />
+    <ClCompile Include="..\src\delete_command.cpp" />
+    <ClCompile Include="..\src\dsp_engine.cpp" />
+    <ClCompile Include="..\src\envelope_logic.cpp" />
+    <ClCompile Include="..\src\guid_helper.cpp" />
+    <ClCompile Include="..\src\integra_session.cpp" />
+    <ClCompile Include="..\src\load_command.cpp" />
+    <ClCompile Include="..\src\logic.cpp" />
+    <ClCompile Include="..\src\lua_engine.cpp" />
+    <ClCompile Include="..\src\midi_engine.cpp" />
+    <ClCompile Include="..\src\midi_input_dispatcher.cpp" />
+    <ClCompile Include="..\src\midi_input_filterer.cpp" />
+    <ClCompile Include="..\src\midi_control_input_logic.cpp" />
+    <ClCompile Include="..\src\midi_raw_input_logic.cpp" />
+    <ClCompile Include="..\src\midi_settings_logic.cpp" />
+    <ClCompile Include="..\src\move_command.cpp" />
+    <ClCompile Include="..\src\new_command.cpp" />
+    <ClCompile Include="..\src\data_directory.cpp" />
+    <ClCompile Include="..\src\error.cpp" />
+    <ClCompile Include="..\src\file_helper.cpp" />
+    <ClCompile Include="..\src\file_io.cpp" />
+    <ClCompile Include="..\src\init.cpp" />
+    <ClCompile Include="..\src\interface_definition.cpp" />
+    <ClCompile Include="..\src\interface_definition_loader.cpp" />
+    <ClCompile Include="..\src\module_manager.cpp" />
+    <ClCompile Include="..\src\MurmurHash2.cpp" />
+    <ClCompile Include="..\src\node.cpp" />
+    <ClCompile Include="..\src\node_endpoint.cpp" />
+    <ClCompile Include="..\src\path.cpp" />
+    <ClCompile Include="..\src\platform_specifics.cpp" />
+    <ClCompile Include="..\src\player_handler.cpp" />
+    <ClCompile Include="..\src\player_logic.cpp" />
+    <ClCompile Include="..\src\polling_notification_sink.cpp" />
+    <ClCompile Include="..\src\portaudio_engine.cpp" />
+    <ClCompile Include="..\src\portmidi_engine.cpp" />
+    <ClCompile Include="..\src\reentrance_checker.cpp" />
+    <ClCompile Include="..\src\rename_command.cpp" />
+    <ClCompile Include="..\src\ring_buffer.cpp" />
+    <ClCompile Include="..\src\save_command.cpp" />
+    <ClCompile Include="..\src\scaler_logic.cpp" />
+    <ClCompile Include="..\src\scene_logic.cpp" />
+    <ClCompile Include="..\src\scratch_directory.cpp" />
+    <ClCompile Include="..\src\script_logic.cpp" />
+    <ClCompile Include="..\src\server.cpp" />
+    <ClCompile Include="..\src\server_lock.cpp" />
+    <ClCompile Include="..\src\set_command.cpp" />
+    <ClCompile Include="..\src\state_table.cpp" />
+    <ClCompile Include="..\src\string_helper.cpp" />
+    <ClCompile Include="..\src\trace.cpp" />
+    <ClCompile Include="..\src\validator.cpp" />
+    <ClCompile Include="..\src\value.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\api\command.h" />
+    <ClInclude Include="..\api\documentation_mainpage.h" />
+    <ClInclude Include="..\api\notification_sink.h" />
+    <ClInclude Include="..\api\command_result.h" />
+    <ClInclude Include="..\api\command_source.h" />
+    <ClInclude Include="..\api\common_typedefs.h" />
+    <ClInclude Include="..\api\error.h" />
+    <ClInclude Include="..\api\guid_helper.h" />
+    <ClInclude Include="..\api\integra_session.h" />
+    <ClInclude Include="..\api\interface_definition.h" />
+    <ClInclude Include="..\api\module_manager.h" />
+    <ClInclude Include="..\api\node.h" />
+    <ClInclude Include="..\api\node_endpoint.h" />
+    <ClInclude Include="..\api\path.h" />
+    <ClInclude Include="..\api\server.h" />
+    <ClInclude Include="..\api\server_lock.h" />
+    <ClInclude Include="..\api\server_startup_info.h" />
+    <ClInclude Include="..\api\polling_notification_sink.h" />
+    <ClInclude Include="..\api\string_helper.h" />
+    <ClInclude Include="..\api\trace.h" />
+    <ClInclude Include="..\api\value.h" />
+    <ClInclude Include="..\externals\extra\fsplay~\fsplay.h" />
+    <ClInclude Include="..\externals\extra\fsplay~\resample.hpp" />
+    <ClInclude Include="..\externals\extra\iemlib\iemlib.h" />
+    <ClInclude Include="..\externals\libpd\pure-data\extra\expr~\fts_to_pd.h" />
+    <ClInclude Include="..\externals\libpd\pure-data\extra\expr~\vexp.h" />
+    <ClInclude Include="..\externals\minizip\crypt.h" />
+    <ClInclude Include="..\externals\minizip\ioapi.h" />
+    <ClInclude Include="..\externals\minizip\iowin32.h" />
+    <ClInclude Include="..\externals\minizip\mztools.h" />
+    <ClInclude Include="..\externals\minizip\unzip.h" />
+    <ClInclude Include="..\externals\minizip\zip.h" />
+    <ClInclude Include="..\src\audio_engine.h" />
+    <ClInclude Include="..\src\audio_settings_logic.h" />
+    <ClInclude Include="..\src\connection_logic.h" />
+    <ClInclude Include="..\src\container_logic.h" />
+    <ClInclude Include="..\src\control_point_logic.h" />
+    <ClInclude Include="..\src\delete_command.h" />
+    <ClInclude Include="..\src\dsp_engine.h" />
+    <ClInclude Include="..\src\envelope_logic.h" />
+    <ClInclude Include="..\src\load_command.h" />
+    <ClInclude Include="..\src\logic.h" />
+    <ClInclude Include="..\src\lua_engine.h" />
+    <ClInclude Include="..\src\midi_engine.h" />
+    <ClInclude Include="..\src\midi_input_dispatcher.h" />
+    <ClInclude Include="..\src\midi_input_filterer.h" />
+    <ClInclude Include="..\src\midi_control_input_logic.h" />
+    <ClInclude Include="..\src\midi_raw_input_logic.h" />
+    <ClInclude Include="..\src\midi_settings_logic.h" />
+    <ClInclude Include="..\src\move_command.h" />
+    <ClInclude Include="..\src\MurmurHash2.h" />
+    <ClInclude Include="..\src\new_command.h" />
+    <ClInclude Include="..\src\data_directory.h" />
+    <ClInclude Include="..\src\file_helper.h" />
+    <ClInclude Include="..\src\file_io.h" />
+    <ClInclude Include="..\src\interface_definition.h" />
+    <ClInclude Include="..\src\interface_definition_loader.h" />
+    <ClInclude Include="..\src\module_manager.h" />
+    <ClInclude Include="..\src\node.h" />
+    <ClInclude Include="..\src\node_endpoint.h" />
+    <ClInclude Include="..\src\platform_specifics.h" />
+    <ClInclude Include="..\src\player_handler.h" />
+    <ClInclude Include="..\src\player_logic.h" />
+    <ClInclude Include="..\src\portaudio_engine.h" />
+    <ClInclude Include="..\src\portmidi_engine.h" />
+    <ClInclude Include="..\src\reentrance_checker.h" />
+    <ClInclude Include="..\src\rename_command.h" />
+    <ClInclude Include="..\src\ring_buffer.h" />
+    <ClInclude Include="..\src\save_command.h" />
+    <ClInclude Include="..\src\scaler_logic.h" />
+    <ClInclude Include="..\src\scene_logic.h" />
+    <ClInclude Include="..\src\scratch_directory.h" />
+    <ClInclude Include="..\src\script_logic.h" />
+    <ClInclude Include="..\src\server.h" />
+    <ClInclude Include="..\src\set_command.h" />
+    <ClInclude Include="..\src\state_table.h" />
+    <ClInclude Include="..\src\threaded_queue.h" />
+    <ClInclude Include="..\src\threaded_queue_implementation.h" />
+    <ClInclude Include="..\src\validator.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libIntegra.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

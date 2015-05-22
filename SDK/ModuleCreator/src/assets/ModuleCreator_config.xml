@@ -1,7 +1,7 @@
 <modulecreatorconfig>
 
 	<!--  integradeveloper is an easter-egg tag which allows the use of 'core' and 'implemented in libIntegra' settings -->
-	<!--  <integradeveloper/>	 --> 
+	  <!-- <integradeveloper/>	  -->
 
 	<!--  bundlemaker is an easter-egg tag which switches on Module Creator's 'bundle maker' functionality   -->
 	<!--  <bundlemaker/>	 --> 

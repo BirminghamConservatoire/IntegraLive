@@ -45,15 +45,12 @@ package components.utils
 
 
 		public function get serverPath():String 			{ return _serverPath; }
-		public function get bridgePath():String 			{ return _bridgePath; }
 		public function get modulesPath():String			{ return _modulesPath; }
-		public function get hostPath():String				{ return _hostPath; }
-		public function get hostArgs():Vector.<String>		{ return _hostArgs; }
+		public function get fileViewerPath():String			{ return _fileViewerPath; }
 		
 		public function get serverUrl():String				{ return _serverUrl; }
 		public function get guiUrl():String					{ return _guiUrl; }
 		public function get xmlrpcServerPort():int			{ return _xmlrpcServerPort; }
-		public function get oscServerPort():int				{ return _oscServerPort; }
 		public function get oscClientPort():int				{ return _oscClientPort; }
 
 		public function get helpLinks():Vector.<String>		{ return _helpLinks; }
@@ -134,14 +131,6 @@ package components.utils
 						loadOsSpecificStartupFields( startup.child( "mac" ) );
 					}
 				}
-				
-				if( startup.hasOwnProperty( "hostargs" ) )
-				{
-					for each( var hostArg:XML in startup.hostargs.hostarg ) 
-					{ 
-						_hostArgs.push( hostArg.toString() );
-					}
-				}
 			}
 
 			if( xml.hasOwnProperty( "connections" ) )
@@ -161,11 +150,6 @@ package components.utils
 				if( connections.hasOwnProperty( "xmlrpcserverport" ) )
 				{
 					_xmlrpcServerPort = connections.child( "xmlrpcserverport" ).toString();
-				}				
-
-				if( connections.hasOwnProperty( "oscserverport" ) )
-				{
-					_oscServerPort = connections.child( "oscserverport" ).toString();
 				}				
 
 				if( connections.hasOwnProperty( "oscclientport" ) )
@@ -297,19 +281,14 @@ package components.utils
 				_serverPath = osSpecificStartupFields.child( "serverpath" ).toString();
 			}
 			
-			if( osSpecificStartupFields.hasOwnProperty( "bridgepath" ) )
-			{
-				_bridgePath = osSpecificStartupFields.child( "bridgepath" ).toString();
-			}
-			
 			if( osSpecificStartupFields.hasOwnProperty( "modulespath" ) )
 			{
 				_modulesPath = osSpecificStartupFields.child( "modulespath" ).toString();
 			}
-
-			if( osSpecificStartupFields.hasOwnProperty( "hostpath" ) )
+			
+			if( osSpecificStartupFields.hasOwnProperty( "fileviewerpath" ) )
 			{
-				_hostPath = osSpecificStartupFields.child( "hostpath" ).toString();
+				_fileViewerPath = osSpecificStartupFields.fileviewerpath;						
 			}
 		}
 		
@@ -374,15 +353,12 @@ package components.utils
 		private static var _singleInstance:Config = null;
 		
 		private var _serverPath:String = null;
-		private var _bridgePath:String = null;
 		private var _modulesPath:String = null;
-		private var _hostPath:String = null;
-		private var _hostArgs:Vector.<String> = new Vector.<String>;
+		private var _fileViewerPath:String = null;
 		
 		private var _serverUrl:String = null;
 		private var _guiUrl:String = null;
 		private var _xmlrpcServerPort:int = 0;
-		private var _oscServerPort:int = 0;
 		private var _oscClientPort:int = 0;
 		
 		private var _documentationDirectory:File = null;

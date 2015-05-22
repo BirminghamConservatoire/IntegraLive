@@ -1,6 +1,6 @@
-/* libIntegra multimedia module interface
- *  
- * Copyright (C) 2012 Birmingham City University
+/* libIntegra modular audio framework
+ *
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,36 +18,58 @@
  * USA.
  */
 
+
 #ifndef INTEGRA_DATA_DIRECTORY_H
 #define INTEGRA_DATA_DIRECTORY_H
 
 #include "../externals/minizip/zip.h"
 #include "../externals/minizip/unzip.h"
 
+#include "api/error.h"
+#include "api/common_typedefs.h"
 
-#include "server.h"
+using namespace integra_api;
 
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-char *ntg_node_data_directory_create( const ntg_node *node, const ntg_server *server );
-void ntg_node_data_directory_change( const char *previous_directory_name, const char *new_directory_name );
-
-void ntg_copy_node_data_directories_to_zip( zipFile zip_file, const ntg_node *node, const ntg_node *path_root );
-
-
-ntg_error_code ntg_load_data_directories( const char *file_path, const ntg_node *parent_node );
-
-const char *ntg_copy_file_to_data_directory( const ntg_node_attribute *attribute );
-
-const char *ntg_extract_filename_from_path( const char *path );
-
-
-#ifdef __cplusplus
+namespace integra_api
+{
+	class CPath;
 }
-#endif
+
+
+namespace integra_internal
+{
+	class CNode;
+	class CNodeEndpoint;
+	class CServer;
+
+	class CDataDirectory
+	{
+		public:
+			static string create_for_node( const CNode &node, const CServer &server );
+
+			static void change( const string &old_directory, const string &new_directory );
+
+			static void copy_to_zip( zipFile zip_file, const CNode &node, const CPath &path_root );
+
+			static CError extract_from_zip( const CServer &server, const string &file_path, const CNode *parent_node, const CNode *node );
+
+			static string copy_file_to_data_directory( const CNodeEndpoint &input_file );
+
+		private:
+
+			static string get_relative_node_path( const CNode &node, const CPath &root );
+
+			static string get_node_directory_path_in_zip( unzFile unzip_file );
+
+			static void extract_from_zip_to_data_directory( unzFile unzip_file, unz_file_info *file_info, const CNode &node, const char *relative_file_path );
+
+			static bool does_zip_contain_directory( unzFile unzip_file, const string &directory );
+
+			static void copy_directory_contents_to_zip( zipFile zip_file, const string &target_path, const string &source_path );
+
+			static const string node_directory;
+	};
+}
+
 
 #endif /*INTEGRA_DATA_DIRECTORY_H*/

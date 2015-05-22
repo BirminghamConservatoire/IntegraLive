@@ -27,7 +27,6 @@ package components.controller
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
-	import flash.utils.flash_proxy;
 	
 	import mx.controls.Alert;
 	
@@ -179,6 +178,8 @@ package components.controller
 					guiCommand.postChain( _model, this );
 					activateUndoStack = true;
 
+					guiCommand.remoteCommandPostChain( _model, this );
+					
 					return;
 					
 				case RemoteCommandResponse.RELOAD_ALL:
@@ -216,11 +217,11 @@ package components.controller
 			newProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
 			newProjectCall.callQueued( "command.delete" );
 			
-			//unload orphaned embedded modules
-			var unloadOrphanedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( Event.COMPLETE, newProjectHandler );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			unloadOrphanedEmbeddedModulesCall.callQueued( "module.unloadorphanedembedded" );
+			//unload unused embedded modules
+			var unloadUnusedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			unloadUnusedEmbeddedModulesCall.addEventListener( Event.COMPLETE, newProjectHandler );
+			unloadUnusedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			unloadUnusedEmbeddedModulesCall.callQueued( "module.unloadunusedembedded" );
 		}
 
 
@@ -232,10 +233,10 @@ package components.controller
 			newProjectCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
 			newProjectCall.callQueued( "command.delete" );
 
-			//unload orphaned embedded modules
-			var unloadOrphanedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
-			unloadOrphanedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			unloadOrphanedEmbeddedModulesCall.callQueued( "module.unloadorphanedembedded" );
+			//unload unused embedded modules
+			var unloadUnusedEmbeddedModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			unloadUnusedEmbeddedModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			unloadUnusedEmbeddedModulesCall.callQueued( "module.unloadunusedembedded" );
 			
 			//load the new project
 			var loadProjectCall:IntegraConnection = new IntegraConnection( _serverUrl );
@@ -306,11 +307,28 @@ package components.controller
 		}
 
 		
-		public function dumpServerState():void
+		public function dumpLibIntegraState():void
 		{
 			var dumpStateCall:IntegraConnection = new IntegraConnection( _serverUrl );
 			dumpStateCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-			dumpStateCall.callQueued( "system.printstate" );
+			dumpStateCall.callQueued( "system.dumplibintegrastate" );
+		}
+
+		
+		public function dumpDspState( filepath:String ):void
+		{
+			var dumpStateCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			dumpStateCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			dumpStateCall.addParam( filepath, XMLRPCDataTypes.STRING );
+			dumpStateCall.callQueued( "system.dumpdspstate" );
+		}
+		
+		
+		public function pingAllDspModules():void
+		{
+			var pingModulesCall:IntegraConnection = new IntegraConnection( _serverUrl );
+			pingModulesCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+			pingModulesCall.callQueued( "system.pingalldspmodules" );
 		}
 		
 		

@@ -29,16 +29,15 @@ package components.views.ArrangeViewProperties
 	import mx.containers.VBox;
 	import mx.controls.Button;
 	
+	import components.controller.serverCommands.AddMidiControlInput;
 	import components.controller.serverCommands.AddScaledConnection;
 	import components.controller.serverCommands.RemoveScaledConnection;
-	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
 	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.Scaler;
 	import components.model.userData.ColorScheme;
 	import components.utils.FontSize;
-	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
 	import components.views.Skins.AddButtonSkin;
@@ -67,6 +66,7 @@ package components.views.ArrangeViewProperties
 			addUpdateMethod( SetPrimarySelectedChild, onPrimarySelectionChanged );
 			addUpdateMethod( AddScaledConnection, onScaledConnectionAdded );
 			addUpdateMethod( RemoveScaledConnection, onScaledConnectionRemoved );
+			addUpdateMethod( AddMidiControlInput, onMidiControlInputAdded );
 		}
 
 
@@ -150,6 +150,12 @@ package components.views.ArrangeViewProperties
 				
 				for each( var scaler:Scaler in container.scalers )
 				{
+					if( scaler.midiControlInput )
+					{
+						//these scalers are handled in separate tab
+						continue;
+					}
+					
 					addRoutingViewItem( scaler );
 				}
 			}
@@ -170,6 +176,12 @@ package components.views.ArrangeViewProperties
 			var scaler:Scaler = model.getScaler( command.scalerID );
 			Assert.assertNotNull( scaler );
 			
+			if( scaler.midiControlInput )
+			{
+				//these scalers are handled in separate tab
+				return;				
+			}
+			
 			addRoutingViewItem( scaler );
 		}
 
@@ -184,6 +196,17 @@ package components.views.ArrangeViewProperties
 			}
 			
 			removeRoutingViewItem( scalerID );
+		}
+		
+		
+		private function onMidiControlInputAdded( command:AddMidiControlInput ):void
+		{
+			/*
+			tidy up - midi control input scalers don't have cross-reference when they're first 
+			added so get added to routingview erroneously
+			*/
+			
+			updateAll();
 		}
 		
 		
@@ -210,6 +233,11 @@ package components.views.ArrangeViewProperties
 		
 		private function removeRoutingViewItem( scalerID:int ):void
 		{
+			if( !_routingItems.hasOwnProperty( scalerID ) )
+			{
+				return;
+			}
+			
 			var routingItem:RoutingItem = _routingItems[ scalerID ];
 			Assert.assertNotNull( routingItem );
 			
@@ -233,7 +261,7 @@ package components.views.ArrangeViewProperties
 		private var _vbox:VBox = new VBox;
 		private var _newItemButton:Button = new Button;
 				
-		private var _routingItems:Object = new Object;		//maps connection ids to routing items
+		private var _routingItems:Object = new Object;		//maps scaler ids to routing items
 
       	private const _padding:Number = 10;
 	}

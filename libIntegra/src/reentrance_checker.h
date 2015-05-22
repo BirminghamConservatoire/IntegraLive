@@ -1,6 +1,6 @@
-/* libIntegra multimedia module interface
- *  
- * Copyright (C) 2012 Birmingham City University
+/* libIntegra modular audio framework
+ *
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,50 @@
  * USA.
  */
 
+
 #ifndef INTEGRA_REENTRANCE_CHECKER_H
 #define INTEGRA_REENTRANCE_CHECKER_H
 
-#include "server.h"
+#include <list>
+#include <unordered_map>
+
+#include "api/common_typedefs.h"
+#include "api/command_source.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct ntg_reentrance_checker_state_ ntg_reentrance_checker_state;
+using namespace integra_api;
 
 
-void ntg_reentrance_checker_initialize( ntg_server *server );
-void ntg_reentrance_checker_free( ntg_server *server );
-
-/**\brief push reentrance stack, returns true if rentrance detected */
-bool ntg_reentrance_push( ntg_server *server, ntg_node_attribute *attribute, ntg_command_source cmd_source );
-
-/**\brief pop reentrance stack.  must be called once for every ntg_reentrance_push */
-void ntg_reentrance_pop( ntg_server *server, ntg_command_source cmd_source );
+namespace integra_internal
+{
+	class CNodeEndpoint;
 
 
-#ifdef __cplusplus
+	class CReentranceChecker
+	{
+		public:	
+
+			CReentranceChecker();
+			~CReentranceChecker();
+
+			/**\brief push reentrance stack, returns true if rentrance detected */
+			bool push( const CNodeEndpoint *node_endpoint, CCommandSource source );
+
+			/**\brief pop reentrance stack.  must be called once for every push which returns false */
+			void pop();
+
+		private:
+
+			static bool cares_about_source( CCommandSource source );
+
+
+			typedef std::list<const CNodeEndpoint *> node_endpoint_stack;
+			typedef std::unordered_map<const CNodeEndpoint *, CCommandSource> map_node_endpoint_to_source;
+
+			node_endpoint_stack m_stack;
+			map_node_endpoint_to_source m_map_endpoint_to_source;
+	};
 }
-#endif
+
 
 #endif /*INTEGRA_REENTRANCE_CHECKER_H*/

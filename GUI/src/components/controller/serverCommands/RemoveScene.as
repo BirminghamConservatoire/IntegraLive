@@ -24,8 +24,9 @@ package components.controller.serverCommands
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
 	import components.controller.userDataCommands.SetSceneKeybinding;
-	import components.controller.userDataCommands.UpdateProjectLength;	
+	import components.controller.userDataCommands.UpdateProjectLength;
 	import components.model.IntegraModel;
+	import components.model.MidiControlInput;
 	import components.model.Scene;
 	
 	import flexunit.framework.Assert;
@@ -59,7 +60,18 @@ package components.controller.serverCommands
 
 		public override function preChain( model:IntegraModel, controller:IntegraController ):void
 		{
-			removeConnectionsReferringTo( _sceneID, model, controller );
+			//remove midi control inputs
+
+			while( true )
+			{
+				var midiControlInput:MidiControlInput = model.getUpstreamMidiControlInput( _sceneID, "activate" );
+				if( !midiControlInput ) 
+				{
+					break;
+				}
+				
+				controller.processCommand( new RemoveMidiControlInput( midiControlInput.id ) );
+			}
 			
 			var scene:Scene = model.getScene( _sceneID );
 			Assert.assertNotNull( scene );
@@ -98,9 +110,6 @@ package components.controller.serverCommands
 		{
 			return ( response.response == "command.delete" );
 		}
-		
-		
-		
 		
 		
 		private var _sceneID:int;

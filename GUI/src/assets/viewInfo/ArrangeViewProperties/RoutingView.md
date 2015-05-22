@@ -1,6 +1,6 @@
 # Routing View
 
-Use Routing view to create routes, e.g. to route an external MIDI controller to a *module* parameter
+Use Routing view to create routes, e.g. to route a *module* parameter to another *module* parameter
 
 To add a route to a *block*: select block -> routing tab in properties panel -> ‘+’
 

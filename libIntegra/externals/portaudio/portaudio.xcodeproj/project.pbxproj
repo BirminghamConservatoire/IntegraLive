@@ -1,0 +1,209 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		7DDB9375187FFFD500480791 /* aclocal.m4 */ = {isa = PBXFileReference; lastKnownFileType = text; path = aclocal.m4; sourceTree = "<group>"; };
+		7DDB9376187FFFD500480791 /* autom4te.cache */ = {isa = PBXFileReference; lastKnownFileType = folder; path = autom4te.cache; sourceTree = "<group>"; };
+		7DDB9377187FFFD500480791 /* bindings */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bindings; sourceTree = "<group>"; };
+		7DDB9378187FFFD500480791 /* build */ = {isa = PBXFileReference; lastKnownFileType = folder; path = build; sourceTree = "<group>"; };
+		7DDB9379187FFFD500480791 /* cmake_support */ = {isa = PBXFileReference; lastKnownFileType = folder; path = cmake_support; sourceTree = "<group>"; };
+		7DDB937A187FFFD500480791 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		7DDB937B187FFFD500480791 /* compile */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = compile; sourceTree = "<group>"; };
+		7DDB937C187FFFD500480791 /* config.guess */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config.guess; sourceTree = "<group>"; };
+		7DDB937D187FFFD500480791 /* config.log */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.log; sourceTree = "<group>"; };
+		7DDB937E187FFFD500480791 /* config.status */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config.status; sourceTree = "<group>"; };
+		7DDB937F187FFFD500480791 /* config.sub */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = config.sub; sourceTree = "<group>"; };
+		7DDB9380187FFFD500480791 /* configure */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = configure; sourceTree = "<group>"; };
+		7DDB9381187FFFD500480791 /* configure.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = configure.in; sourceTree = "<group>"; };
+		7DDB9382187FFFD500480791 /* depcomp */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = depcomp; sourceTree = "<group>"; };
+		7DDB9383187FFFD500480791 /* doc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = doc; sourceTree = "<group>"; };
+		7DDB9384187FFFD500480791 /* Doxyfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
+		7DDB9385187FFFD500480791 /* Doxyfile.developer */ = {isa = PBXFileReference; lastKnownFileType = text; path = Doxyfile.developer; sourceTree = "<group>"; };
+		7DDB9386187FFFD500480791 /* examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = examples; sourceTree = "<group>"; };
+		7DDB9387187FFFD500480791 /* fixdir.bat */ = {isa = PBXFileReference; lastKnownFileType = text; path = fixdir.bat; sourceTree = "<group>"; };
+		7DDB9388187FFFD500480791 /* fixfile.bat */ = {isa = PBXFileReference; lastKnownFileType = text; path = fixfile.bat; sourceTree = "<group>"; };
+		7DDB9389187FFFD500480791 /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; path = include; sourceTree = "<group>"; };
+		7DDB938A187FFFD500480791 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		7DDB938B187FFFD500480791 /* install-sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "install-sh"; sourceTree = "<group>"; };
+		7DDB938C187FFFD500480791 /* libtool */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = libtool; sourceTree = "<group>"; };
+		7DDB938D187FFFD500480791 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		7DDB938E187FFFD500480791 /* ltmain.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ltmain.sh; sourceTree = "<group>"; };
+		7DDB938F187FFFD500480791 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		7DDB9390187FFFD500480791 /* Makefile.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
+		7DDB9391187FFFD500480791 /* missing */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = missing; sourceTree = "<group>"; };
+		7DDB9392187FFFD500480791 /* pablio */ = {isa = PBXFileReference; lastKnownFileType = folder; path = pablio; sourceTree = "<group>"; };
+		7DDB9393187FFFD500480791 /* portaudio-2.0.pc */ = {isa = PBXFileReference; lastKnownFileType = text; path = "portaudio-2.0.pc"; sourceTree = "<group>"; };
+		7DDB9394187FFFD500480791 /* portaudio-2.0.pc.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = "portaudio-2.0.pc.in"; sourceTree = "<group>"; };
+		7DDB9395187FFFD500480791 /* qa */ = {isa = PBXFileReference; lastKnownFileType = folder; path = qa; sourceTree = "<group>"; };
+		7DDB9396187FFFD500480791 /* README.configure.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.configure.txt; sourceTree = "<group>"; };
+		7DDB9397187FFFD500480791 /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		7DDB9398187FFFD500480791 /* SConstruct */ = {isa = PBXFileReference; lastKnownFileType = text; path = SConstruct; sourceTree = "<group>"; };
+		7DDB9399187FFFD500480791 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
+		7DDB939A187FFFD500480791 /* test */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test; sourceTree = "<group>"; };
+		7DDB939B187FFFD500480791 /* testcvs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = testcvs; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		7DDB936F187FFFD500480791 = {
+			isa = PBXGroup;
+			children = (
+				7DDB9375187FFFD500480791 /* aclocal.m4 */,
+				7DDB9376187FFFD500480791 /* autom4te.cache */,
+				7DDB9377187FFFD500480791 /* bindings */,
+				7DDB9378187FFFD500480791 /* build */,
+				7DDB9379187FFFD500480791 /* cmake_support */,
+				7DDB937A187FFFD500480791 /* CMakeLists.txt */,
+				7DDB937B187FFFD500480791 /* compile */,
+				7DDB937C187FFFD500480791 /* config.guess */,
+				7DDB937D187FFFD500480791 /* config.log */,
+				7DDB937E187FFFD500480791 /* config.status */,
+				7DDB937F187FFFD500480791 /* config.sub */,
+				7DDB9380187FFFD500480791 /* configure */,
+				7DDB9381187FFFD500480791 /* configure.in */,
+				7DDB9382187FFFD500480791 /* depcomp */,
+				7DDB9383187FFFD500480791 /* doc */,
+				7DDB9384187FFFD500480791 /* Doxyfile */,
+				7DDB9385187FFFD500480791 /* Doxyfile.developer */,
+				7DDB9386187FFFD500480791 /* examples */,
+				7DDB9387187FFFD500480791 /* fixdir.bat */,
+				7DDB9388187FFFD500480791 /* fixfile.bat */,
+				7DDB9389187FFFD500480791 /* include */,
+				7DDB938A187FFFD500480791 /* index.html */,
+				7DDB938B187FFFD500480791 /* install-sh */,
+				7DDB938C187FFFD500480791 /* libtool */,
+				7DDB938D187FFFD500480791 /* LICENSE.txt */,
+				7DDB938E187FFFD500480791 /* ltmain.sh */,
+				7DDB938F187FFFD500480791 /* Makefile */,
+				7DDB9390187FFFD500480791 /* Makefile.in */,
+				7DDB9391187FFFD500480791 /* missing */,
+				7DDB9392187FFFD500480791 /* pablio */,
+				7DDB9393187FFFD500480791 /* portaudio-2.0.pc */,
+				7DDB9394187FFFD500480791 /* portaudio-2.0.pc.in */,
+				7DDB9395187FFFD500480791 /* qa */,
+				7DDB9396187FFFD500480791 /* README.configure.txt */,
+				7DDB9397187FFFD500480791 /* README.txt */,
+				7DDB9398187FFFD500480791 /* SConstruct */,
+				7DDB9399187FFFD500480791 /* src */,
+				7DDB939A187FFFD500480791 /* test */,
+				7DDB939B187FFFD500480791 /* testcvs */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		7DDB9374187FFFD500480791 /* portaudio */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 7DDB939C187FFFD500480791 /* Build configuration list for PBXLegacyTarget "portaudio" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/jamie/Documents/IntegraLive/libIntegra/externals/portaudio;
+			dependencies = (
+			);
+			name = portaudio;
+			passBuildSettingsInEnvironment = 1;
+			productName = portaudio;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		7DDB9370187FFFD500480791 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
+			buildConfigurationList = 7DDB9373187FFFD500480791 /* Build configuration list for PBXProject "portaudio" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DDB936F187FFFD500480791;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7DDB9374187FFFD500480791 /* portaudio */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		7DDB9371187FFFD500480791 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		7DDB9372187FFFD500480791 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+			};
+			name = Release;
+		};
+		7DDB939D187FFFD500480791 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = portaudio;
+			};
+			name = Debug;
+		};
+		7DDB939E187FFFD500480791 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = portaudio;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7DDB9373187FFFD500480791 /* Build configuration list for PBXProject "portaudio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7DDB9371187FFFD500480791 /* Debug */,
+				7DDB9372187FFFD500480791 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7DDB939C187FFFD500480791 /* Build configuration list for PBXLegacyTarget "portaudio" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7DDB939D187FFFD500480791 /* Debug */,
+				7DDB939E187FFFD500480791 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7DDB9370187FFFD500480791 /* Project object */;
+}

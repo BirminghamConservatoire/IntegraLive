@@ -43,12 +43,13 @@ package components.model.userData
 		public function get timelineState():TimelineState { return _timelineState; }
 		public function get colorScheme():String { return _colorScheme; }
 		public function get highContrast():Boolean { return _highContrast; }
-
+		public function get showSceneInTitlebar():Boolean { return _showSceneInTitlebar; }
+		
 		public function set viewMode( mode:ViewMode ):void { _viewMode = mode; }
 		public function set timelineState( timelineState:TimelineState ):void { _timelineState = timelineState; } 
 		public function set colorScheme( colorScheme:String ):void { _colorScheme = colorScheme; }
 		public function set highContrast( highContrast:Boolean ):void { _highContrast = highContrast; }
-
+		public function set showSceneInTitlebar( showSceneInTitlebar:Boolean ):void{ _showSceneInTitlebar = showSceneInTitlebar; }
 
 		protected override function writeToXML( xml:XML, model:IntegraModel ):void
 		{
@@ -76,6 +77,11 @@ package components.model.userData
 			if( _highContrast )
 			{
 				xml.appendChild( <highContrast>true</highContrast> );
+			}
+			
+			if( _showSceneInTitlebar )
+			{
+				xml.appendChild( <showSceneInTitlebar>true</showSceneInTitlebar> );
 			}
 		}
 
@@ -127,6 +133,16 @@ package components.model.userData
 				_highContrast = false;
 			}
 			
+			if( xml.hasOwnProperty( "showSceneInTitlebar" ) )
+			{
+				_showSceneInTitlebar = ( xml.showSelectionInTitlebar.toString() == "true" );
+			}
+			else
+			{
+				_showSceneInTitlebar = false;
+			}
+			
+			
 			super.readFromXML( xml, model, myID );
 		}
 
@@ -139,6 +155,7 @@ package components.model.userData
 			_timelineState.clear();
 			_colorScheme = ColorScheme.LIGHT;
 			_highContrast = false;
+			_showSceneInTitlebar = false;
 		}
 
 
@@ -146,5 +163,7 @@ package components.model.userData
 		private var _timelineState:TimelineState = new TimelineState;
 		private var _colorScheme:String = ColorScheme.LIGHT;
 		private var _highContrast:Boolean = false;
+		private var _showSceneInTitlebar:Boolean = false;
+
 	}
 }

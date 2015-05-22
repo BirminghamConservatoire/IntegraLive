@@ -154,6 +154,7 @@
 
 				var importGroup:NativeMenuItem = new NativeMenuItem( "Import Template..." );
 				fileMenu.submenu.addItem( importGroup );
+				importGroup.submenu = new NativeMenu;
 
 				//relative paths don't work unless we reconstruct File object from full path name 
 				var applicationDirectory:File = new File( File.applicationDirectory.nativePath );
@@ -270,14 +271,15 @@
 				var directoryListing:Array = directory.getDirectoryListing();
 				directoryListing.sort( compareTemplateFiles );
 				
-				parentItem.submenu = new NativeMenu; 
-				
+				Assert.assertTrue( parentItem.submenu ); 
+
 				for each( var content:File in directoryListing )
 				{
 					var menuItem:NativeMenuItem = new NativeMenuItem( content.name );
 					
 					if( content.isDirectory )
 					{
+						menuItem.submenu = new NativeMenu;
 						addTemplateMenus( menuItem, content );
 					}
 					else

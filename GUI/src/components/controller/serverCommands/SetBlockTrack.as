@@ -24,6 +24,7 @@ package components.controller.serverCommands
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
 	import components.controller.userDataCommands.SetPrimarySelectedChild;
+	import components.controller.userDataCommands.SetObjectSelection;
 	import components.model.Block;
 	import components.model.Connection;
 	import components.model.Envelope;
@@ -115,6 +116,7 @@ package components.controller.serverCommands
 			if( _shouldMoveSelection )
 			{
 				controller.processCommand( new SetPrimarySelectedChild( currentTrack.id, -1 ) );
+				controller.processCommand( new SetObjectSelection( _blockID, false ) );
 			} 
 		}
 

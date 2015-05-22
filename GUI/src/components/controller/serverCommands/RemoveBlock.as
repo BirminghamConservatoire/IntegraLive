@@ -70,7 +70,6 @@ package components.controller.serverCommands
 			removeChildConnections( _blockID, model, controller );
 			
 			removeChildScripts( _blockID, model, controller );
-			removeMidi( _blockID, model, controller );
 
 			//remove envelopes
 			var envelopesToRemove:Vector.<int> = new Vector.<int>;			

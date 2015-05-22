@@ -147,9 +147,6 @@ package components.controller.serverCommands
 		
 		public override function postChain( model:IntegraModel, controller:IntegraController ):void
 		{
-			//track midi
-			controller.processCommand( new AddMidi( _trackID ) );
-			
 			//track color
 			controller.processCommand( new SetTrackColor( _trackID, _color ) );	
 			

@@ -55,6 +55,9 @@ package components.views.ArrangeViewProperties
 	import components.model.Info;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
+	import components.model.MidiControlInput;
+	import components.model.MidiRawInput;
+	import components.model.Player;
 	import components.model.Scaler;
 	import components.model.interfaceDefinitions.EndpointDefinition;
 	import components.model.interfaceDefinitions.StateInfo;
@@ -299,11 +302,16 @@ package components.views.ArrangeViewProperties
 		}
 		
 		
-		private function buildObjectComboContents( objectComboContents:Array, container:IntegraContainer, currentConnectedID:int, isTarget:Boolean, ancestorName:String = "" ):int
+		private function buildObjectComboContents( objectComboContents:Array, container:IntegraDataObject, currentConnectedID:int, isTarget:Boolean, ancestorName:String = "" ):int
 		{
 			var indexToSelect:int = -1;
 			
-			for each( var child:IntegraDataObject in container.children )
+			var children:Object = null;
+			if( container is IntegraContainer ) children = ( container as IntegraContainer ).children;
+			if( container is Player ) children = ( container as Player ).scenes;
+			if( !children ) return -1;
+			
+			for each( var child:IntegraDataObject in children )
 			{
 				var childName:String = ancestorName + child.name;
 				
@@ -317,7 +325,7 @@ package components.views.ArrangeViewProperties
 					objectComboContents.push( childName );
 				}
 				
-				if( child is IntegraContainer )
+				if( child is IntegraContainer || child is Player )
 				{
 					indexToSelect = Math.max( indexToSelect, buildObjectComboContents( objectComboContents, child as IntegraContainer, currentConnectedID, isTarget, childName + "." ) );
 				}				
@@ -703,7 +711,7 @@ package components.views.ArrangeViewProperties
 		
 		private function shouldMakeClassAvailableForConnections( object:IntegraDataObject, isTarget:Boolean ):Boolean
 		{
-			if( object is Envelope || object is Scaler ) 
+			if( object is Envelope || object is Scaler || object is MidiControlInput || object is MidiRawInput ) 
 			{
 				return false;
 			}

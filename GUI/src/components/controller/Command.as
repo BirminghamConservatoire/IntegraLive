@@ -81,6 +81,13 @@ package components.controller
 		public function postChain( model:IntegraModel, controller:IntegraController ):void {}
 
 
+		/* 
+		Implement remoteCommandPostChain when a command needs to execute other commands after it is 
+		execute as a server-originating command
+		*/
+		
+		public function remoteCommandPostChain( model:IntegraModel, controller:IntegraController ):void {}
+		
 		/*
 		Implement canReplacePreviousCommand for commands which replace a value, to minimise size of 
 		transactions in which a single value changes many times.  canReplacePreviousCommand must only

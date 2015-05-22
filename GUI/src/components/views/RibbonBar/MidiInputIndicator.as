@@ -30,11 +30,14 @@ package components.views.RibbonBar
 	import mx.core.ScrollPolicy;
 	import mx.core.UIComponent;
 	
-	import components.controller.serverCommands.ReceiveMidiInput;
+	import components.controller.serverCommands.ReceiveRawMidiInput;
 	import components.model.Info;
 	import components.utils.FontSize;
+	import components.utils.Utilities;
 	import components.views.IntegraView;
 	import components.views.InfoView.InfoMarkupForViews;
+	
+	import flexunit.framework.Assert;
 	
 
 	public class MidiInputIndicator extends IntegraView
@@ -62,7 +65,7 @@ package components.views.RibbonBar
 			mask = _mask;
 			addChild( _mask );
 			
-			addUpdateMethod( ReceiveMidiInput, onMidiInput );
+			addUpdateMethod( ReceiveRawMidiInput, onMidiInput );
 			
 			addEventListener( Event.RESIZE, onResize );
 			
@@ -80,21 +83,30 @@ package components.views.RibbonBar
 		public function get fullWidth():Number { return FontSize.getTextRowHeight( this ) * 3.5; }
 
 		
-		public function onMidiInput( command:ReceiveMidiInput ):void
+		public function onMidiInput( command:ReceiveRawMidiInput ):void
 		{
-			if( command.midiID != model.project.midi.id ) return;
+			if( command.midiMonitorID != model.project.midiMonitor.id ) return;
 			
-			switch( command.type )
+			var message:uint = command.message;
+			
+			var status_nibble:uint = ( message & 0xF0 ) >> 4;
+			Assert.assertTrue( status_nibble >= 0 && status_nibble << 0xF );
+			
+			var value1:uint = ( message & 0xFF00 ) >> 8;
+			
+			switch( status_nibble )
 			{
-				case ReceiveMidiInput.CC:
-					_ccLabel.text = _ccLabelText + String( command.index );
-					_ccValue.text = String( command.value );
+				case 0xB:	//control change
+					var value2:uint = ( message & 0xFF0000 ) >> 16;		
+
+					_ccLabel.text = _ccLabelText + String( value1 );
+					_ccValue.text = String( value2 );
 					_ccHideTimer.reset();
 					_ccHideTimer.start();
 					break;
 				
-				case ReceiveMidiInput.NOTE_ON:
-					_noteValue.text = String( command.index );
+				case 0x9:	// note on
+					_noteValue.text = Utilities.midiPitchToName( value1 );
 					_noteHideTimer.reset();
 					_noteHideTimer.start();
 					break;
@@ -135,7 +147,7 @@ package components.views.RibbonBar
 			graphics.cubicCurveTo( height * 0.5, height * 0.5, height * 0.5, height - 1, height, height - 1 );
         }
 
-
+		
         private function onResize( event:Event ):void
         {
 			repositionControls();

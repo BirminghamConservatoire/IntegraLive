@@ -1,0 +1,15 @@
+#N canvas 470 62 398 308 10;
+#X obj 46 119 copy;
+#X obj 46 154 sel 0 1;
+#X msg 65 179 set copied;
+#X msg 46 209 set failed;
+#X symbolatom 46 250 10 0 0 0 - - -, f 10;
+#X msg 46 62 list /source/path /destination/path;
+#X text 42 21 [copy] copy file from source path to destination path
+;
+#X connect 0 0 1 0;
+#X connect 1 0 3 0;
+#X connect 1 1 2 0;
+#X connect 2 0 4 0;
+#X connect 3 0 4 0;
+#X connect 5 0 0 0;

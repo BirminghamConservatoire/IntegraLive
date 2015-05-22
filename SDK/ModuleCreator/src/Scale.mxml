@@ -17,26 +17,14 @@
 					 width="{Globals.propertyColumnWidth( 3 )}" 
 					 dataProvider="{[_linearLabel, _exponentialLabel, _decibelLabel ]}"/>		
 		</mx:HBox>
-		<mx:HBox id="_baseGroup" visible="false" maxHeight="0">
-			<mx:Label text="Exponent Base" width="{Globals.labelColumnWidth( 3 )}" textAlign="right"/>
-			<mx:TextInput id="_base" 
-					 change="{ interfaceChanged() }"
-					 restrict="0-9"
-					 toolTip="Specify a number base"
-					 width="{Globals.propertyColumnWidth( 3 )}"/>
-		</mx:HBox>
 	</mx:VBox>
 	
 	<fx:Script>
 		<![CDATA[	
 			
-			import flexunit.framework.Assert;
-			
 			public function doInitialize():void
 			{
 				_scaleType.selectedItem = _linearLabel;
-				_base.text = "2";
-				showNumberBase( false );
 			}
 			
 			
@@ -71,17 +59,6 @@
 					}
 				}
 				
-				if( _base.visible && int( _base.text ) < 2 )
-				{
-					_base.errorString = "Exponent Base must be an integer greater than 1";
-					valid = false;
-				}
-				else
-				{
-					_base.errorString = null;
-					
-				}
-				
 				return valid;
 			}
 			
@@ -108,19 +85,6 @@
 						return false;
 				}				
 
-				if( _scaleType.selectedItem == _exponentialLabel )
-				{
-					if( !xml.hasOwnProperty( "Base" ) ) return false;
-
-					_base.text = xml.Base.toString();
-					
-					showNumberBase( true );
-				}
-				else
-				{
-					showNumberBase( false );
-				}
-
 				return true;
 			}
 			
@@ -137,7 +101,6 @@
 					
 					case _exponentialLabel:
 						xml.appendChild( <ScaleType>exponential</ScaleType> );
-						xml.appendChild( <Base>{_base.text}</Base> );
 						break;	
 					
 					case _decibelLabel:
@@ -151,17 +114,9 @@
 			
 			private function onChangeScaleType():void
 			{
-				showNumberBase( _scaleType.selectedItem == _exponentialLabel );
 				interfaceChanged();
 			}
 
-			
-			private function showNumberBase( show:Boolean ):void
-			{
-				_baseGroup.visible = show;
-				_baseGroup.maxHeight = show ? NaN : 0;
-			}
-				
 			
 			private function interfaceChanged():void
 			{

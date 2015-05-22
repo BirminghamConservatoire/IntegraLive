@@ -20,9 +20,6 @@ BLOCKDIR=$(SVNROOT)/blocks
 
 CERTIFICATE=integraCert.pfx
 
-#FLEX_SDK_PATH=
-#AIR_SDK_PATH=
-
 ADL_FLAGS=-profile extendedDesktop #-nodebug
 AMXMLC_DEBUG= -compiler.verbose-stacktraces
 AMXMLC_FLAGS=$(AMXMLC_DEBUG) -load-config $(CONFIG)

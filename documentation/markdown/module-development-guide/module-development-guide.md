@@ -194,6 +194,8 @@ When patch editing is complete, the top-level Pd patch for the module should be 
 
 > By convention top-level Pd patches for modules are named <module name>.pd for example a SpectralDelay module would have a top-level patch called SpectralDelay.pd
 
+**NOTE: Behind the scenes Integra Live creates one instance of your Pd implementation per module instance. Therefore any Pd sends and receives that need to be instance-specific should be prefixed with a $0, e.g. [r $0-test]**
+
 #### Sending Values to libIntegra
 
 Sometimes a module implementation will need to send values back to libIntegra, for example so that the current value of a VU meter can be displayed, or so that the state of a “playPosition” endpoint can be updated. In order to send values back to libIntegra, messages must be sent to the `integra` receive symbol using `[s integra]`. The message format for sending these values is:

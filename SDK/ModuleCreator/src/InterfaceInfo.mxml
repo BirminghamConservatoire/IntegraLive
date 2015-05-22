@@ -60,7 +60,7 @@
 		<mx:HBox>
 			<mx:Label text="Author" width="{Globals.labelColumnWidth()}" textAlign="right"/>
 			<mx:TextInput id="_iidAuthor" 
-						  click="{interfaceChanged();}"
+						  change="{interfaceChanged();}"
 						  width="{Globals.propertyColumnWidth()}" />
 		</mx:HBox>
 		<mx:HBox>

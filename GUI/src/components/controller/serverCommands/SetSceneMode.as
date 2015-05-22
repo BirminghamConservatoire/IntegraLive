@@ -24,7 +24,6 @@ package components.controller.serverCommands
 	import components.controller.Command;
 	import components.controller.IntegraController;
 	import components.controller.ServerCommand;
-	import components.controller.serverCommands.SetPlayerMidiNavigation;
 	import components.model.IntegraModel;
 	import components.model.Player;
 	import components.model.Scene;

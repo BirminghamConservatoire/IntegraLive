@@ -577,12 +577,12 @@ package components.model
 		}
 
 		
-		public function getMidi( midiID:int ):Midi
+		public function getMidiControlInput( midiControlInputID:int ):MidiControlInput
 		{
-			var object:IntegraDataObject = getDataObjectByID( midiID );
-			if( object && object is Midi )
+			var object:IntegraDataObject = getDataObjectByID( midiControlInputID );
+			if( object && object is MidiControlInput )
 			{
-				return object as Midi;
+				return object as MidiControlInput;
 			} 
 			
 			Assert.assertTrue( false );		//not found, or wrong type
@@ -776,6 +776,19 @@ package components.model
 			Assert.assertTrue( false );		//not found, or wrong type
 			return null;
 		}		
+
+		
+		public function getContainerFromMidiControlInput( midiControlInputID:int ):IntegraContainer
+		{
+			var parent:IntegraContainer = getParent( midiControlInputID ) as IntegraContainer;
+			if( parent  )
+			{
+				return parent;
+			} 
+			
+			Assert.assertTrue( false );		//not found, or wrong type
+			return null;
+		}		
 		
 
 		public function getParent( id:int ):IntegraDataObject
@@ -859,8 +872,19 @@ package components.model
 			
 			var sourceObject:IntegraDataObject = getDataObjectByID( sourceObjectID );
 			var targetObject:IntegraDataObject = getDataObjectByID( targetObjectID );
-			var sourceContainer:IntegraContainer = getParent( sourceObjectID ) as IntegraContainer;
-			var targetContainer:IntegraContainer = getParent( targetObjectID ) as IntegraContainer;
+			var sourceContainer:IntegraDataObject = getParent( sourceObjectID );
+			if( !(sourceContainer is IntegraContainer) && !(sourceContainer is Player ) )
+			{
+				Assert.assertTrue( false );		
+				return false;		 
+			}
+			
+			var targetContainer:IntegraDataObject = getParent( targetObjectID );
+			if( !(targetContainer is IntegraContainer) && !(targetContainer is Player ) )
+			{
+				Assert.assertTrue( false );		
+				return false;		 
+			}
 			
 			if( !sourceObject || !targetObject || !sourceContainer || !targetContainer )
 			{
@@ -897,8 +921,11 @@ package components.model
 			var sourceEndpoint:EndpointDefinition = getEndpointDefinition( sourceObjectID, sourceAttributeName );
 			var targetEndpoint:EndpointDefinition = getEndpointDefinition( targetObjectID, targetAttributeName );
 			
-			Assert.assertNotNull( sourceEndpoint );
-			Assert.assertNotNull( targetEndpoint );
+			if( !sourceEndpoint || !targetEndpoint )
+			{
+				Trace.error( "can't find endpoint definition" );
+				return false;
+			}
 
 			if( sourceEndpoint.type != EndpointDefinition.STREAM || sourceEndpoint.streamInfo.streamDirection != StreamInfo.DIRECTION_OUTPUT )
 			{
@@ -973,27 +1000,30 @@ package components.model
 			var isConnectionTarget:Boolean = false;
 			
 			//walk parent chain looking for connections that target this attribute
-			for( var container:IntegraContainer = getParent( objectID ) as IntegraContainer; container; container = getParent( container.id ) as IntegraContainer )
+			for( var parent:IntegraDataObject = getParent( objectID ); parent; parent = getParent( parent.id ) )
 			{
-				for each( var connection:Connection in container.connections )
+				if( parent is IntegraContainer )
 				{
-					if( connection.targetObjectID != objectID || connection.targetAttributeName != endpointName )
+					for each( var connection:Connection in ( parent as IntegraContainer ).connections )
 					{
-						continue;
+						if( connection.targetObjectID != objectID || connection.targetAttributeName != endpointName )
+						{
+							continue;
+						}
+						
+						if( connection.sourceObjectID < 0 || connection.sourceAttributeName == null ) 
+						{
+							continue;
+						}
+						
+						if( upstreamObjects )
+						{
+							var connectionSource:IntegraDataObject = getDataObjectByID( connection.sourceObjectID );
+							upstreamObjects.push( connectionSource );
+						}
+						
+						isConnectionTarget = true;
 					}
-					
-					if( connection.sourceObjectID < 0 || connection.sourceAttributeName == null ) 
-					{
-						continue;
-					}
-					
-					if( upstreamObjects )
-					{
-						var connectionSource:IntegraDataObject = getDataObjectByID( connection.sourceObjectID );
-						upstreamObjects.push( connectionSource );
-					}
-					
-					isConnectionTarget = true;
 				}
 			}
 			
@@ -1028,7 +1058,30 @@ package components.model
 			
 			return false;
 		}		
+		
+		
+		public function getUpstreamMidiControlInput( targetID:int, targetEndpointName:String ):MidiControlInput
+		{
+			var upstreamObjects:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>; 
+			if( isConnectionTarget( targetID, targetEndpointName, upstreamObjects ) )
+			{
+				for each( var upstreamObject:IntegraDataObject in upstreamObjects )
+				{
+					if( upstreamObject is Scaler )
+					{
+						var scaler:Scaler = upstreamObject as Scaler;
+						if( scaler.midiControlInput )
+						{
+							return scaler.midiControlInput;
+						}
+					}
+				}
+			}
+			
+			return null;			
+		}
 
+		
 		//modification methods 
 		public function clearAll():void
 		{
@@ -1061,12 +1114,12 @@ package components.model
 			initializeInterfaceDefinition( player );
 			addDataObject( _project.id, player );
 			
-			//create project midi 
-			var midi:Midi = new Midi();
-			midi.id = generateNewID();
-			midi.name = Midi.defaultMidiName;
-			initializeInterfaceDefinition( midi );
-			addDataObject( _project.id, midi );
+			//create project midi monitor
+			var midiMonitor:MidiRawInput = new MidiRawInput();
+			midiMonitor.id = generateNewID();
+			midiMonitor.name = MidiRawInput.defaultName;
+			initializeInterfaceDefinition( midiMonitor );
+			addDataObject( _project.id, midiMonitor );
 			
 			//create settings objects
 			_audioSettings = new AudioSettings();
@@ -1503,22 +1556,25 @@ package components.model
 		}
 
 		
-		private function doesScaledConnectionExistInAncestorChain( container:IntegraContainer, sourceObjectID:int, sourceAttributeName:String, targetObjectID:int, targetAttributeName:String, scalerIDToIgnore:int ):Boolean
+		private function doesScaledConnectionExistInAncestorChain( container:IntegraDataObject, sourceObjectID:int, sourceAttributeName:String, targetObjectID:int, targetAttributeName:String, scalerIDToIgnore:int ):Boolean
 		{
-			for each( var existingScaler:Scaler in container.scalers )
+			if( container is IntegraContainer ) 
 			{
-				if( existingScaler.id == scalerIDToIgnore )
+				for each( var existingScaler:Scaler in ( container as IntegraContainer ).scalers )
 				{
-					continue;
+					if( existingScaler.id == scalerIDToIgnore )
+					{
+						continue;
+					}
+					
+					if( existingScaler.upstreamConnection.sourceObjectID == sourceObjectID && 
+						existingScaler.upstreamConnection.sourceAttributeName == sourceAttributeName &&
+						existingScaler.downstreamConnection.targetObjectID == targetObjectID && 
+						existingScaler.downstreamConnection.targetAttributeName == targetAttributeName )
+					{
+						return true;	
+					} 
 				}
-				
-				if( existingScaler.upstreamConnection.sourceObjectID == sourceObjectID && 
-					existingScaler.upstreamConnection.sourceAttributeName == sourceAttributeName &&
-					existingScaler.downstreamConnection.targetObjectID == targetObjectID && 
-					existingScaler.downstreamConnection.targetAttributeName == targetAttributeName )
-				{
-					return true;	
-				} 
 			}
 			
 			var parentContainer:IntegraContainer = getParent( container.id ) as IntegraContainer;
@@ -1725,6 +1781,7 @@ package components.model
 		private var _currentInfo:Info = null;
 		private var _showInfoView:Boolean = true;
 		private var _alwaysUpgrade:Boolean = false;
+		
 		
 		private var _audioSettings:AudioSettings;
 		private var _midiSettings:MidiSettings;

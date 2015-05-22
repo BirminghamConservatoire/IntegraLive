@@ -26,7 +26,6 @@ package components.utils
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
-	import flash.html.script.Package;
 	import flash.system.Capabilities;
 	
 	import flexunit.framework.Assert;
@@ -123,6 +122,22 @@ package components.utils
 		}
 		
 		
+		public function get timestamp():String
+		{
+			function makeTwoDigit( input:String ):String { while ( input.length < 2 ) input = "0" + input; return input; }
+			
+			var now:Date = new Date;
+			
+			var hours:String = makeTwoDigit( now.hours );
+			var minutes:String = makeTwoDigit( now.minutes );
+			var seconds:String = makeTwoDigit( now.seconds );
+			var date:String = makeTwoDigit( now.date );
+			var month:String = makeTwoDigit( now.month + 1 );
+			var year:String = makeTwoDigit( String( now.fullYear ).substr( -1, 2 ) );
+			
+			return " [" + hours + ":" + minutes + ":" + seconds + " " + date + "/" + month + "/" + year + "]";			
+		}
+		
 		
 		private function doTrace( traceType:String, error:Error, arguments:Array, isError:Boolean ):void
 		{
@@ -162,23 +177,6 @@ package components.utils
 		}
 		
 		
-		private function get timestamp():String
-		{
-			function makeTwoDigit( input:String ):String { while ( input.length < 2 ) input = "0" + input; return input; }
-			
-			var now:Date = new Date;
-			
-			var hours:String = makeTwoDigit( now.hours );
-			var minutes:String = makeTwoDigit( now.minutes );
-			var seconds:String = makeTwoDigit( now.seconds );
-			var date:String = makeTwoDigit( now.date );
-			var month:String = makeTwoDigit( now.month + 1 );
-			var year:String = makeTwoDigit( String( now.fullYear ).substr( -1, 2 ) );
-
-			return " [" + hours + ":" + minutes + ":" + seconds + " " + date + "/" + month + "/" + year + "]";			
-		}
-		
-
 		private function getLocationstamp( error:Error, isError:Boolean ):String
 		{
 			const callstackLineStart:String = "\tat ";

@@ -53,7 +53,7 @@ package components.utils
 					break;
 				
 				case ControlScale.EXPONENTIAL:	
-					unitValue = endpointValueToExponentialUnit( endpointValue, minimum, maximum, stateInfo.scale.exponentRoot );
+					unitValue = endpointValueToExponentialUnit( endpointValue, minimum, maximum );
 					break;
 				
 				case ControlScale.DECIBEL:		
@@ -89,7 +89,7 @@ package components.utils
 					break;
 
 				case ControlScale.EXPONENTIAL:	
-					endpointValue = exponentialUnitToEndpointValue( controlUnit, minimum, maximum, stateInfo.scale.exponentRoot );
+					endpointValue = exponentialUnitToEndpointValue( controlUnit, minimum, maximum );
 					break;
 
 				case ControlScale.DECIBEL:
@@ -133,16 +133,14 @@ package components.utils
 
 		
 		
-		private static function endpointValueToExponentialUnit( endpointValue:Number, minimum:Number, maximum:Number, exponentRoot:int ):Number
+		private static function endpointValueToExponentialUnit( endpointValue:Number, minimum:Number, maximum:Number ):Number
 		{
-			Assert.assertTrue( exponentRoot > 1 );
+			const exponentRoot:Number = 2;	//it doesn't matter what exponent root we use
+			const logBase:Number = Math.log( exponentRoot );
+			const logBaseInverse:Number = 1 / logBase;
+
 			Assert.assertTrue( minimum > 0 );
 			Assert.assertTrue( maximum > minimum );
-			
-			var logBase:Number = Math.log( exponentRoot );
-			Assert.assertTrue( logBase > 0 );
-			
-			var logBaseInverse:Number = 1 / logBase;
 			
 			var logMin:Number = Math.log( minimum ) * logBaseInverse;
 			var logMax:Number = Math.log( maximum ) * logBaseInverse;
@@ -153,16 +151,15 @@ package components.utils
 		}
 
 	
-		private static function exponentialUnitToEndpointValue( controlUnit:Number, minimum:Number, maximum:Number, exponentRoot:int ):Number
+		private static function exponentialUnitToEndpointValue( controlUnit:Number, minimum:Number, maximum:Number ):Number
 		{
-			Assert.assertTrue( exponentRoot > 1 );
+			const exponentRoot:Number = 2;	//it doesn't matter what exponent root we use
+
+			const logBase:Number = Math.log( exponentRoot );
+			const logBaseInverse:Number = 1 / logBase;
+			
 			Assert.assertTrue( minimum > 0 );
 			Assert.assertTrue( maximum > minimum );
-			
-			var logBase:Number = Math.log( exponentRoot );
-			Assert.assertTrue( logBase > 0 );
-			
-			var logBaseInverse:Number = 1 / logBase;
 			
 			var logMin:Number = Math.log( minimum ) * logBaseInverse;
 			var logMax:Number = Math.log( maximum ) * logBaseInverse;

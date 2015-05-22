@@ -15,37 +15,26 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 			<!--		path and filename of server executable, relative to gui						-->
          	<serverpath>..\server\IntegraServer.exe</serverpath>						    									 
 		
-			<!--		path and filename of server->host bridge, relative to server				-->
-			<bridgepath>OscBridge.dll</bridgepath>
-
-			<!--		path to modules directory, relative to server									-->
+			<!--		path to modules directory, relative to server								-->
 			<modulespath>..\modules</modulespath>
 			
-			<!-- 		path and filename of host executable, relative to serve						-->
-			<hostpath>..\host\bin\pd.exe</hostpath>
+			<!--		path to directory viewer, relative to drive root							-->
+			<fileviewerpath>Windows\explorer.exe</fileviewerpath>
+			
 		</windows>
 		
 		<!--			mac-specific filename settings												-->
 		<mac>
 			<!--		path and filename of server executable, relative to gui						-->
-                        <serverpath>server/bin/integra_server</serverpath>
+                        <serverpath>integra_server</serverpath>
 		
-			<!--		path and filename of server->host bridge, relative to server				-->
-                        <bridgepath>../lib/integra/integra_osc_bridge.so</bridgepath>
-			
-			<!--		path to modules directory, relative to server									-->
-                        <modulespath>../../modules</modulespath>
+			<!--		path to modules directory, relative to server								-->
+                        <modulespath>Integra.framework/Resources/modules</modulespath>
 
-			<!-- 		path and filename of host executable, relative to serve						-->
-                        <hostpath>../../host/bin/pd_integra</hostpath>
+			<!--		path to directory viewer, relative to drive root							-->
+			<fileviewerpath>/usr/bin/open</fileviewerpath>
 		</mac>
 	
-		<!-- 		arguments to be passed into host executable on startup							-->
-		<hostargs>
-	   		<hostarg>-nogui</hostarg>				   
-			<hostarg>-noprefs</hostarg>
-			<hostarg>Integra_Host.pd</hostarg>
-		</hostargs>
 	</startup>
 
 	<!--        configuration of connections between components:									-->
@@ -59,9 +48,6 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<!-- 		port on which libIntegra's xmlrpc interface listens for connections 			-->
 		<xmlrpcserverport>8003</xmlrpcserverport>
 
-		<!-- 		port on which libIntegra's osc interface listens for connections	 			-->
-		<oscserverport>8004</oscserverport>
-		
 		<!-- 		port on which libIntegra sends osc feedback about executed server commands		-->
 		<oscclientport>8005</oscclientport>
 	</connections>
@@ -131,7 +117,7 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<threadstamptrace>false</threadstamptrace>
 		
 		<!-- 		stamp all errors with full callstack (gui only)								-->
-		<callstackstamperrors>false</callstackstamperrors>
+		<callstackstamperrors>true</callstackstamperrors>
 		
 		<!-- 		number of days for which old log files should be retained						-->
 		<logfileretentiondays>30</logfileretentiondays>

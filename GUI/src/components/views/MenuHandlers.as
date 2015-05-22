@@ -26,6 +26,8 @@ package components.views
 	import flash.display.NativeMenuItem;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.filesystem.File;
+	import flash.net.FileFilter;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	import flash.ui.Keyboard;
@@ -46,6 +48,7 @@ package components.views
 	import components.model.userData.ViewMode;
 	import components.utils.Config;
 	import components.utils.FontSize;
+	import components.utils.ModuleDocumentationWriter;
 	import components.utils.Trace;
 	import components.utils.Utilities;
 	
@@ -354,6 +357,14 @@ package components.views
 				first = false;
 			}
 				
+			//separator 
+			helpMenu.submenu.addItem( new NativeMenuItem( "", true ) );
+
+			var showModuleDocumentationItem:NativeMenuItem = new NativeMenuItem( "Module Documentation" );
+			showModuleDocumentationItem.addEventListener( Event.SELECT, showModuleDocumentation );
+			helpMenu.submenu.addItem( showModuleDocumentationItem );
+			
+			
 			if( Utilities.isWindows )
 			{
 				//separator 
@@ -381,9 +392,21 @@ package components.views
 				introspectServerItem.addEventListener( Event.SELECT, introspectServer ); 
 				debugMenu.submenu.addItem( introspectServerItem );
 
-				var dumpServerStateItem:NativeMenuItem = new NativeMenuItem( "dump server state to server log" ); 
-				dumpServerStateItem.addEventListener( Event.SELECT, dumpServerState ); 
-				debugMenu.submenu.addItem( dumpServerStateItem );
+				var dumpLibIntegraStateItem:NativeMenuItem = new NativeMenuItem( "dump libintegra state to server log" ); 
+				dumpLibIntegraStateItem.addEventListener( Event.SELECT, dumpLibIntegraState ); 
+				debugMenu.submenu.addItem( dumpLibIntegraStateItem );
+
+				var dumpDspStateItem:NativeMenuItem = new NativeMenuItem( "dump dsp state to PD patch" ); 
+				dumpDspStateItem.addEventListener( Event.SELECT, dumpDspState ); 
+				debugMenu.submenu.addItem( dumpDspStateItem );
+				
+				var pingAllDspModulesItem:NativeMenuItem = new NativeMenuItem( "ping all dsp modules" );
+				pingAllDspModulesItem.addEventListener( Event.SELECT, pingAllDspModules ); 
+				debugMenu.submenu.addItem( pingAllDspModulesItem );
+
+				var viewLogsItem:NativeMenuItem = new NativeMenuItem( "view logs" );
+				viewLogsItem.addEventListener( Event.SELECT, viewLogs ); 
+				debugMenu.submenu.addItem( viewLogsItem );
 			}
 		}
 
@@ -558,9 +581,42 @@ package components.views
 		}
 		
 		
-		private function dumpServerState( event:Event ):void
+		private function dumpLibIntegraState( event:Event ):void
 		{
-			_controller.dumpServerState();
+			_controller.dumpLibIntegraState();
+		}
+
+		
+		private function dumpDspState( event:Event ):void
+		{
+			var filter:FileFilter = new FileFilter( "PD Patches", "*.pd" );
+			var file:File = File.desktopDirectory.resolvePath( "dsp dump.pd" );
+			file.browseForSave( "Dump DSP state" );
+			
+			file.addEventListener( Event.SELECT, function( event:Event ):void { _controller.dumpDspState( event.target.nativePath) } );      			
+		}
+		
+		
+		private function pingAllDspModules( event:Event ):void
+		{
+			_controller.pingAllDspModules();
+		}
+		
+		
+		private function viewLogs( event:Event ):void
+		{
+			_application.viewLogs();
+		}
+
+		
+		private function showModuleDocumentation( event:Event ):void
+		{
+			if( !_moduleDocumentationWriter )
+			{
+				_moduleDocumentationWriter = new ModuleDocumentationWriter( _model );
+			}
+			
+			_moduleDocumentationWriter.writeModuleDocumentation();
 		}
 		
 		
@@ -739,5 +795,7 @@ package components.views
 		private var _controller:IntegraController;
 		
 		private var _menu:NativeMenu;
+		
+		private var _moduleDocumentationWriter:ModuleDocumentationWriter = null;
 	}
 }

@@ -8,9 +8,9 @@ Integra script is a superset of the [Lua](http://www.lua.org/) programming langu
 
 A good tutorial on the Lua language can be found [here](http://lua-users.org/wiki/LuaTutorial).
 
-### Integra functions
+### Module attribute semantics
 
-The Integra scripting processor adds the following additional functions to the basic Lua language:
+The Integra scripting processor adds the following additional semantics to the basic Lua language:
 
 > **Set the value of a parameter** <br/>
 > `<instance name>.<parameter name> = <value>` <br/>
@@ -79,7 +79,7 @@ We then need to add a conditional expression to the beginning of the script. Thi
         AddSynth1.test = 1
     end
 
-This script does two things. It uses the integra.get() function to get the current value of MIDI controller 4, and it then compares the result to the integer value 127, using the Lua logical comparison operator '=='. If the result of this comparison evaluates **true** then the value of `AddSynth1.test` gets set to 1.
+This script does two things. It gets the current value of MIDI controller 4, and it then compares the result to the integer value 127 using the Lua logical comparison operator '=='. If the result of this comparison evaluates **true** then the value of `AddSynth1.test` gets set to 1.
 
 We can test this now by tapping our external controller. The result should be the same as when we executed the script via the script context menu. If you don't hear anything, check that you've routed **MIDI1** **cc4** to **Script1** **trigger** in the *Block routing panel*.
 
@@ -93,7 +93,7 @@ Next, we are going to extend the script by adding a *loop*, which gradually adds
         AddSynth1.test = 1
 
         for i=1, 8 do
-            integra.set("AddSynth1", "partial" ..i, .5)
+            integra.set("AddSynth1", "partial" .. i, .5)
             local t0 = os.clock()
             while os.clock() - t0 <= .1 do
             end
@@ -147,7 +147,7 @@ In our final version of the script, we're going to use the Lua `math.random()` f
         AddSynth1.test = 1
 
         for i=1, 8 do
-            integra.set("AddSynth1", "partial" ..math.random(1,8), math.random())
+            integra.set("AddSynth1", "partial" .. math.random(1,8), math.random())
             local t0 = os.clock()
             while os.clock() - t0 <= .1 do
             end

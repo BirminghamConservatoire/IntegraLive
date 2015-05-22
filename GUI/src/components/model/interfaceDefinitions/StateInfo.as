@@ -35,9 +35,7 @@ package components.model.interfaceDefinitions
 		public function get defaultValue():Object 				{ return _defaultValue; }
 		public function get scale():ControlScale 				{ return _scale; } 
 		public function get stateLabels():Vector.<StateLabel> 	{ return _stateLabels; }
-		public function get isInputFile():Boolean				{ return _isInputFile; }
-		public function get isSavedToFile():Boolean				{ return _isSavedToFile; }
-
+		
 		public function set valueType( valueType:String ):void
 		{
 			switch( valueType )
@@ -80,25 +78,11 @@ package components.model.interfaceDefinitions
 		}
 		
 		
-		public function set isInputFile( isInputFile:Boolean ):void
-		{ 
-			_isInputFile = isInputFile;
-		}
-
-		
-		public function set isSavedToFile( isSavedToFile:Boolean ):void
-		{ 
-			_isSavedToFile = isSavedToFile;
-		}
-		
-		
 		private var _type:String;
 		private var _constraint:Constraint = new Constraint;
 		private var _defaultValue:Object;
 		private var _scale:ControlScale = new ControlScale; 
 		private var _stateLabels:Vector.<StateLabel> = new Vector.<StateLabel>;
-		private var _isInputFile:Boolean;
-		private var _isSavedToFile:Boolean;
 
 		
 		public static const FLOAT:String = "float";

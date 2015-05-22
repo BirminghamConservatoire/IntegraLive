@@ -1,0 +1,37 @@
+
+# Build directories
+/lib
+/bin
+lib-stamp
+bin-stamp
+/bindings/cpp/build
+
+
+# Intermediate object files
+*.o
+*.lo
+*.la
+*.a
+
+# Autotools generated files
+Makefile
+Makefile.in
+config.h
+config.h.in
+config.guess
+config.log
+config.status
+config.sub
+configure.lineno
+portaudio-2.0.pc
+libtool
+stamp-h1
+compile
+aclocal.m4
+ltmain.sh
+INSTALL
+autom4te.cache
+
+# Xcode non-shared
+xcuserdata
+

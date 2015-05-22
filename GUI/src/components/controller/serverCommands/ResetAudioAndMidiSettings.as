@@ -70,11 +70,11 @@ package components.controller.serverCommands
 			
 			methodCalls[ 0 ] = new Object;
 			methodCalls[ 0 ].methodName = "command.set";
-			methodCalls[ 0 ].params = [ audioSettingsPath.concat( "restoreHostDefaults" ) ]; 
+			methodCalls[ 0 ].params = [ audioSettingsPath.concat( "restoreDefaults" ) ]; 
 			
 			methodCalls[ 1 ] = new Object;
 			methodCalls[ 1 ].methodName = "command.set";
-			methodCalls[ 1 ].params = [ midiSettingsPath.concat( "restoreHostDefaults" ) ]; 
+			methodCalls[ 1 ].params = [ midiSettingsPath.concat( "restoreDefaults" ) ]; 
 			
 			connection.addArrayParam( methodCalls );
 			connection.callQueued( "system.multicall" );						

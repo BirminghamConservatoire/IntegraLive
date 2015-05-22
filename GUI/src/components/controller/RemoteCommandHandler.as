@@ -24,7 +24,8 @@ package components.controller
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
-	import components.controller.serverCommands.ReceiveMidiInput;
+	import components.controller.serverCommands.ConfigureMidiControlInput;
+	import components.controller.serverCommands.ReceiveRawMidiInput;
 	import components.controller.serverCommands.SelectScene;
 	import components.controller.serverCommands.SetAudioDriver;
 	import components.controller.serverCommands.SetAudioInputDevice;
@@ -33,21 +34,26 @@ package components.controller
 	import components.controller.serverCommands.SetAvailableAudioDevices;
 	import components.controller.serverCommands.SetAvailableAudioDrivers;
 	import components.controller.serverCommands.SetAvailableMidiDevices;
-	import components.controller.serverCommands.SetAvailableMidiDrivers;
+	import components.controller.serverCommands.SetAvailableSampleRates;
 	import components.controller.serverCommands.SetContainerActive;
-	import components.controller.serverCommands.SetMidiDriver;
-	import components.controller.serverCommands.SetMidiInputDevice;
-	import components.controller.serverCommands.SetMidiOutputDevice;
+	import components.controller.serverCommands.SetMidiControlAutoLearn;
+	import components.controller.serverCommands.SetMidiControlInputValue;
+	import components.controller.serverCommands.SetMidiInputDevices;
+	import components.controller.serverCommands.SetMidiOutputDevices;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.serverCommands.SetObjectInfo;
 	import components.controller.serverCommands.SetPlayPosition;
 	import components.controller.serverCommands.SetPlaying;
+	import components.controller.serverCommands.SetScalerInputRange;
+	import components.controller.serverCommands.SetScalerOutputRange;
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
-	import components.model.Midi;
+	import components.model.MidiControlInput;
+	import components.model.MidiRawInput;
 	import components.model.ModuleInstance;
 	import components.model.Player;
+	import components.model.Scaler;
 	import components.model.Script;
 	import components.model.interfaceDefinitions.ControlInfo;
 	import components.model.interfaceDefinitions.EndpointDefinition;
@@ -227,7 +233,7 @@ package components.controller
 					case "scene":
 						var playerPath:Array = model.getPathArrayFromID( model.project.player.id );
 						var scenePath:Array = playerPath.concat( value );
-						command = new SelectScene( model.getIDFromPathArray( scenePath ) );
+						command = new SelectScene( model.getIDFromPathArray( scenePath ), false );
 						break;
 						
 					default:
@@ -248,6 +254,19 @@ package components.controller
 					
 					default:
 						Assert.assertTrue( false );
+						break;
+				}
+			}
+			else if( object is MidiRawInput )
+			{
+				command = new ReceiveRawMidiInput( object.id, uint( value ) );
+			}
+			else if( object is IntegraContainer )
+			{
+				switch( endpointName )
+				{
+					case "active":
+						command = new SetContainerActive( object.id, ( value != 0 ) );
 						break;
 				}
 			}
@@ -286,6 +305,14 @@ package components.controller
 						Utilities.makeStringVectorFromPackedString( String( value ), availableOutputDevices );
 						command = new SetAvailableAudioDevices( null, availableOutputDevices );
 						break;
+					
+					case "availableSampleRates":
+						var availableSampleRates:Vector.<int> = new Vector.<int>;
+						var stringVector:Vector.<String> = new Vector.<String>;
+						Utilities.makeStringVectorFromPackedString( String( value ), stringVector );
+						Utilities.stringVectorToIntVector( stringVector, availableSampleRates );
+						command = new SetAvailableSampleRates( availableSampleRates );
+						break;
 
 					case "selectedDriver":
 						command = new SetAudioDriver( String( value ), false );
@@ -300,21 +327,17 @@ package components.controller
 						break;
 					
 					case "sampleRate":
-						command = new SetAudioSettings( int( value ), audioSettings.inputChannels, audioSettings.outputChannels, audioSettings.bufferSize ); 
+						command = new SetAudioSettings( int( value ), -1, -1 ); 
 						break;
 						
 					case "inputChannels":
-						command = new SetAudioSettings( audioSettings.sampleRate, int( value ), audioSettings.outputChannels, audioSettings.bufferSize ); 
+						command = new SetAudioSettings( -1, int( value ), -1 ); 
 						break;
 						
 					case "outputChannels":
-						command = new SetAudioSettings( audioSettings.sampleRate, audioSettings.inputChannels, int( value ), audioSettings.bufferSize ); 
+						command = new SetAudioSettings( -1, -1, int( value ) ); 
 						break;
 
-					case "bufferSize":
-						command = new SetAudioSettings( audioSettings.sampleRate, audioSettings.inputChannels, audioSettings.outputChannels, int( value ) ); 
-						break;
-						
 					default:
 						break;					
 				}
@@ -323,12 +346,6 @@ package components.controller
 			{
 				switch( endpointName )
 				{
-					case "availableDrivers":
-						availableDrivers = new Vector.<String>;
-						Utilities.makeStringVectorFromPackedString( String( value ), availableDrivers );
-						command = new SetAvailableMidiDrivers( availableDrivers );
-						break;
-					
 					case "availableInputDevices":
 						availableInputDevices = new Vector.<String>;
 						Utilities.makeStringVectorFromPackedString( String( value ), availableInputDevices );
@@ -341,33 +358,48 @@ package components.controller
 						command = new SetAvailableMidiDevices( null, availableOutputDevices );
 						break;
 					
-					case "selectedDriver":
-						command = new SetMidiDriver( String( value ), false );
+					case "activeInputDevices":
+						var activeInputDevices:Vector.<String> = new Vector.<String>;
+						Utilities.makeStringVectorFromPackedString( String( value ), activeInputDevices );
+						command = new SetMidiInputDevices( activeInputDevices );
 						break;
 					
-					case "selectedInputDevice":
-						command = new SetMidiInputDevice( String( value ) );
-						break;
-					
-					case "selectedOutputDevice":
-						command = new SetMidiOutputDevice( String( value ) );
+					case "activeOutputDevices":
+						var activeOutputDevices:Vector.<String> = new Vector.<String>;
+						Utilities.makeStringVectorFromPackedString( String( value ), activeOutputDevices );
+						command = new SetMidiOutputDevices( activeOutputDevices );
 						break;
 					
 					default:
 						break;					
 				}
 			}
-			else if( object is Midi )
-			{
-				command = new ReceiveMidiInput( object.id, endpointName, int( value ) );
-				if( !( command as ReceiveMidiInput ).valid ) command = null;
-			}
-			else if( object is IntegraContainer )
+			else if( object is MidiControlInput )
 			{
 				switch( endpointName )
 				{
-					case "active":
-						command = new SetContainerActive( object.id, ( value != 0 ) );
+					case "value":
+						command = new SetMidiControlInputValue( object.id, int( value ) );
+						break;
+					
+					case "autoLearn":
+						command = new SetMidiControlAutoLearn( object.id, ( value != 0 ) );
+						break;
+					
+					case "device":
+						command = new ConfigureMidiControlInput( object.id, String( value ) );
+						break;
+
+					case "channel":
+						command = new ConfigureMidiControlInput( object.id, null, int( value ) );
+						break;
+
+					case "messageType":
+						command = new ConfigureMidiControlInput( object.id, null, -1, String( value ) );
+						break;
+
+					case "noteOrController":
+						command = new ConfigureMidiControlInput( object.id, null, -1, null, int( value ) );
 						break;
 				}
 			}
@@ -404,72 +436,6 @@ package components.controller
 		}
 		
 		
-		public function commandNew( commandOrigin:String, className:String, instanceName:String, path:String ):String
-		{
-			if( commandOrigin != XMLRPC_COMMAND )
-			{
-				clearSetCommandQueue();
-				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
-			}
-			
-			return "command.new";
-		}
-
-		
-		public function commandDelete( commandOrigin:String, path:String ):String
-		{
-			if( commandOrigin != XMLRPC_COMMAND )
-			{
-				clearSetCommandQueue();
-				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
-			}
-			
-			return "command.delete";
-		}
-
-		
-		public function commandRename( commandOrigin:String, path:String, newName:String ):String
-		{
-			if( commandOrigin != XMLRPC_COMMAND )
-			{
-				clearSetCommandQueue();
-				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
-			}
-			
-			return "command.rename";
-		}
-
-		
-		public function commandSave( commandOrigin:String, path:String, fileName:String ):String
-		{
-			return "command.save";
-		}
-
-		
-		public function commandLoad( commandOrigin:String, fileName:String, path:String ):String
-		{
-			if( commandOrigin != XMLRPC_COMMAND )
-			{
-				clearSetCommandQueue();
-				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
-			}
-			
-			return "command.load";
-		}
-
-		
-		public function commandMove( commandOrigin:String, instancePath:String, newInstancePath:String ):String
-		{
-			if( commandOrigin != XMLRPC_COMMAND )
-			{
-				clearSetCommandQueue();
-				IntegraController.singleInstance.processRemoteCommand( new RemoteCommandResponse( RemoteCommandResponse.RELOAD_ALL ) );
-			}
-			
-			return "command.move";
-		}
-		
-		
 		public function onAttributesChangedLocally( changedAttributes:Vector.<String> ):void
 		{
 			for each( var changedAttribute:String in changedAttributes )
@@ -480,7 +446,6 @@ package components.controller
 				}
 			}
 		}
-	
 
 		
 		private var _attributesLastTouchedRemotely:Object = new Object;
@@ -491,6 +456,6 @@ package components.controller
 
 		private static var _singleInstance:RemoteCommandHandler = null;
 		
-		private static const XMLRPC_COMMAND:String = "xmlrpc_api";
+		private static const XMLRPC_COMMAND:String = "public_api";
 	}
 }

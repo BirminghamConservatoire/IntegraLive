@@ -1,5 +1,5 @@
-/* libIntegra multimedia module interface
- *  
+/* libIntegra modular audio framework
+ *
  * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,20 +18,17 @@
  * USA.
  */
 
+
 #ifndef INTEGRA_PLATFORM_SPECIFICS_PRIVATE_H
 #define INTEGRA_PLATFORM_SPECIFICS_PRIVATE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #ifdef _WINDOWS
 #include "windows_build_stuff.h"
-#define MIN min
-#define MAX max
+#define MIN( a, b ) ( ( a < b ) ? a : b )
+#define MAX( a, b ) ( ( a > b ) ? a : b )
 #endif
 
-#ifdef __APPLE__
 #if !defined MAX
 #define MAX(a,b) \
     ({ __typeof__ (a) __a = (a); \
@@ -46,6 +43,8 @@ extern "C" {
      __a < __b ? __a : __b; })
 #endif
 
+#ifdef __APPLE__
+
 #if !defined sprintf_s
 #define sprintf_s sprintf_s_alt
 #define vsprintf_s vsprintf_s_alt
@@ -54,11 +53,9 @@ extern "C" {
 int sprintf_s_alt (char *str, size_t size, const char *format, ...);
 int vsprintf_s_alt (char *str, size_t size, const char *format, va_list ap);
 #endif
+#include "version.h" // For LIBINTEGRA_VERSION
 
 #endif /* __APPLE__ */
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

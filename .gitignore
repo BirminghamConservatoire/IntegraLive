@@ -1,3 +1,9 @@
-build
-install
-libIntegra_dependencies
+/build
+/install
+
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+
+_UpgradeReport_Files
+.DS_Store

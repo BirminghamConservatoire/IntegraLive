@@ -43,7 +43,8 @@ package components.model.modelLoader
 	import components.model.IntegraContainer;
 	import components.model.IntegraDataObject;
 	import components.model.IntegraModel;
-	import components.model.Midi;
+	import components.model.MidiControlInput;
+	import components.model.MidiRawInput;
 	import components.model.ModuleInstance;
 	import components.model.Player;
 	import components.model.Scaler;
@@ -80,6 +81,8 @@ package components.model.modelLoader
 		public function set serverUrl( serverUrl:String ):void
 		{
 			_serverUrl = serverUrl;
+			
+			LegacyMidiHandler.instance.serverUrl = _serverUrl;
 		}
 		
 
@@ -97,6 +100,7 @@ package components.model.modelLoader
 			_error = null;
 			_topLevelLoadedObjectPaths = new Vector.<Array>;
 			_loadHierarchyLevel = 1;
+			LegacyMidiHandler.instance.clear();
 			
 			_timeoutTimer.start();
 			
@@ -120,6 +124,7 @@ package components.model.modelLoader
 			_error = null;
 			_topLevelLoadedObjectPaths = new Vector.<Array>;
 			_loadHierarchyLevel = branchPath.length + 1;
+			LegacyMidiHandler.instance.clear();
 
 			var interfacesToLoad:Vector.<String> = new Vector.<String>;
 			for each( var guid:String in newEmbeddedModuleGuids )
@@ -263,6 +268,11 @@ package components.model.modelLoader
 						loadObjectState( scaler, methodCalls );  
 					}
 
+					for each( var midiControlInput:MidiControlInput in block.midiControlInputs )
+					{
+						loadObjectState( midiControlInput, methodCalls );  
+					}
+
 					for each( var envelope:Envelope in block.envelopes )
 					{
 						loadObjectState( envelope, methodCalls );
@@ -303,6 +313,11 @@ package components.model.modelLoader
 				{
 					loadObjectState( scaler, methodCalls );  
 				}
+				
+				for each( midiControlInput in track.midiControlInputs )
+				{
+					loadObjectState( midiControlInput, methodCalls );  
+				}
 			}
 			
 			for each( script in _model.project.scripts )
@@ -319,6 +334,12 @@ package components.model.modelLoader
 			{
 				loadObjectState( scaler, methodCalls );  
 			}
+			
+			for each( midiControlInput in _model.project.midiControlInputs )
+			{
+				loadObjectState( midiControlInput, methodCalls );  
+			}
+			
 
 			for each( var scene:Scene in _model.project.player.scenes )
 			{
@@ -401,7 +422,9 @@ package components.model.modelLoader
 				case ModelLoadPhase.STATES:
 					resolveBlockEnvelopes();
 					resolveScalerConnections( _model.project );
-					removeInvalidChildSelection();						
+					removeInvalidChildSelection();
+					LegacyMidiHandler.instance.translateToNewModules();
+						
 					loadComplete();
 					break;
 					
@@ -492,13 +515,6 @@ package components.model.modelLoader
 			for each( var tag:String in info.tags )
 			{
 				interfaceDefinition.interfaceInfo.tags.push( tag );
-			}
-			
-			interfaceDefinition.interfaceInfo.implementedInLibintegra = ( info.implementedinlibintegra > 0 );
-
-			for each( var implementation:String in info.implementations )
-			{
-				interfaceDefinition.interfaceInfo.implementationList.push( implementation );
 			}
 			
 			interfaceDefinition.interfaceInfo.author = info.author;
@@ -638,10 +654,6 @@ package components.model.modelLoader
 			if( info.hasOwnProperty( "scale" ) )
 			{
 				stateInfo.scale.type = info.scale.type;
-				if( info.scale.hasOwnProperty( "base" ) )
-				{
-					stateInfo.scale.exponentRoot = info.scale.base;
-				}
 			}
 			
 			
@@ -653,9 +665,6 @@ package components.model.modelLoader
 				
 				stateInfo.stateLabels.push( stateLabel );
 			}
-			
-			stateInfo.isInputFile = ( info.isinputfile > 0 );
-			stateInfo.isSavedToFile = ( info.issavedtofile > 0 );
 			
 			return stateInfo;
 		}
@@ -713,7 +722,7 @@ package components.model.modelLoader
 
 			var foundProject:Boolean = false;
 			var foundProjectPlayer:Boolean = false;
-			var foundProjectMidi:Boolean = false;
+			var foundProjectMidiMonitor:Boolean = false;
 			var foundAudioSettings:Boolean = false;
 			var foundMidiSettings:Boolean = false;
 			
@@ -736,9 +745,16 @@ package components.model.modelLoader
 
 				var path:Array = node.path;
 				var hierarchyLevel:uint = path.length;
-				
+
 				Assert.assertTrue( hierarchyLevel >= 1 );
 
+				if( LegacyMidiHandler.instance.isLegacyMidiModule( interfaceDefinition ) )
+				{
+					Trace.progress( "Encoutered legacy \"MIDI\" module: ", path );
+					LegacyMidiHandler.instance.storeLegacyMidiModulePath( path );
+					continue;
+				}
+				
 				if( ( _mode != LOADING_ALL ) && _model.getIDFromPathArray( path ) >= 0 )
 				{
 					continue;	//we already have this node!
@@ -825,7 +841,7 @@ package components.model.modelLoader
 						break;
 						
 					case 2:
-						//this gui only expects to find containers, scripts, connections, scalers, one player and one midi at level 2, 
+						//this gui only expects to find containers, scripts, connections, scalers, midi control inputs, one player and one midi at level 2, 
 						//which it interprets as tracks, project-level scripts and connections, and the project player respectively
 						//they are all expected to have the project as their parent.
 						if( path[ 0 ] != _model.project.name )
@@ -864,6 +880,13 @@ package components.model.modelLoader
 								_model.addDataObject( parentID, scaler );
 								break;
 
+							case MidiControlInput._serverInterfaceName:
+								var midiControlInput:MidiControlInput = new MidiControlInput();
+								giveNewID( midiControlInput );
+								midiControlInput.name = name;
+								_model.addDataObject( parentID, midiControlInput );
+								break;
+							
 							case Player._serverInterfaceName:
 								if( foundProjectPlayer )
 								{
@@ -876,20 +899,19 @@ package components.model.modelLoader
 								}
 								break;
 							
-							case Midi._serverInterfaceName:
-								if( foundProjectMidi )
+							case MidiRawInput._serverInterfaceName:
+								if( foundProjectMidiMonitor )
 								{
-									foundExtraneousNode( path, interfaceDefinition, "more than one project Midi" );
+									foundExtraneousNode( path, interfaceDefinition, "more than one project midi monitor" );
 								}
 								else
 								{
-									foundProjectMidi = true;
-									_model.project.midi.name = name;
-									_model.project.midi.interfaceDefinition = interfaceDefinition;
-									
+									foundProjectMidiMonitor = true;
+									_model.project.midiMonitor.name = name;
+									_model.project.midiMonitor.interfaceDefinition = interfaceDefinition;
 								}
 								break;
-								
+							
 							default:
 								foundExtraneousNode( path, interfaceDefinition, "unexpected class in hierarchy level 2" );
 								break;
@@ -897,8 +919,8 @@ package components.model.modelLoader
 						break;
 						
 					case 3:
-						//this gui only expects to find containers, envelopes, connections, scalers, scripts, midi and scenes at level 3, 
-						//it interprets these as blocks, block envelopes, track-level connections scripts and midi, and scenes (under the player)
+						//this gui only expects to find containers, envelopes, connections, scalers, midi control inputs, scripts, midi and scenes at level 3, 
+						//it interprets these as blocks, block envelopes, track-level connections scripts, and scenes (under the player)
 						//they are expected to have an existing track as their parent.
 						parent = _model.getDataObjectByID( parentID );
 						if( !parent is Track && !(interfaceName == "Scene" && parent is Player ) )
@@ -944,14 +966,13 @@ package components.model.modelLoader
 								_model.addDataObject( parentID, scaler );
 								break;
 
-							case Midi._serverInterfaceName:
-								var midi:Midi = new Midi();
-								giveNewID( midi );
-								midi.name = name;
-								midi.interfaceDefinition = interfaceDefinition;
-								_model.addDataObject( parentID, midi );
+							case MidiControlInput._serverInterfaceName:
+								midiControlInput = new MidiControlInput();
+								giveNewID( midiControlInput );
+								midiControlInput.name = name;
+								_model.addDataObject( parentID, midiControlInput );
 								break;
-
+							
 							case Scene._serverInterfaceName:
 								var scene:Scene = new Scene();
 								giveNewID( scene );
@@ -967,7 +988,7 @@ package components.model.modelLoader
 						break;
 						
 					case 4:
-						//this gui only expects to find audio modules, connections, scalers, scripts, midi, envelopes and control points for block envelopes at level 4
+						//this gui only expects to find audio modules, connections, scalers, midi control inputs, scripts, envelopes and control points for block envelopes at level 4
 						parent = _model.getDataObjectByID( parentID );
 						if( !parent is Block && !(interfaceName == "ControlPoint" && parent is Envelope ) )
 						{
@@ -989,6 +1010,13 @@ package components.model.modelLoader
 								giveNewID( scaler );
 								scaler.name = name;
 								_model.addDataObject( parentID, scaler );
+								break;
+							
+							case MidiControlInput._serverInterfaceName:
+								midiControlInput = new MidiControlInput();
+								giveNewID( midiControlInput );
+								midiControlInput.name = name;
+								_model.addDataObject( parentID, midiControlInput );
 								break;
 
 							case Envelope._serverInterfaceName:
@@ -1012,16 +1040,7 @@ package components.model.modelLoader
 								_model.addDataObject( parentID, script );
 								break;	
 
-							case Midi._serverInterfaceName:
-								midi = new Midi();
-								giveNewID( midi );
-								midi.name = name;
-								midi.interfaceDefinition = interfaceDefinition;
-								_model.addDataObject( parentID, midi );
-								break;	
-
 							default:
-								
 								var moduleInstance:ModuleInstance = new ModuleInstance;
 								giveNewID( moduleInstance );
 								moduleInstance.name = name;
@@ -1098,14 +1117,14 @@ package components.model.modelLoader
 				createProjectPlayerCall.callQueued( "command.new" );
 			}
 
-			if( !foundProjectMidi )
+			if( !foundProjectMidiMonitor )
 			{
-				var createProjectMidiCall:IntegraConnection = new IntegraConnection( _serverUrl );
-				createProjectMidiCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-				createProjectMidiCall.addParam( _model.getCoreInterfaceGuid( Midi._serverInterfaceName ), XMLRPCDataTypes.STRING );
-				createProjectMidiCall.addParam( _model.project.midi.name, XMLRPCDataTypes.STRING );
-				createProjectMidiCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
-				createProjectMidiCall.callQueued( "command.new" );
+				var createProjectMidiMonitorCall:IntegraConnection = new IntegraConnection( _serverUrl );
+				createProjectMidiMonitorCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
+				createProjectMidiMonitorCall.addParam( _model.getCoreInterfaceGuid( MidiRawInput._serverInterfaceName ), XMLRPCDataTypes.STRING );
+				createProjectMidiMonitorCall.addParam( _model.project.midiMonitor.name, XMLRPCDataTypes.STRING );
+				createProjectMidiMonitorCall.addArrayParam( _model.getPathArrayFromID( _model.project.id ) );
+				createProjectMidiMonitorCall.callQueued( "command.new" );
 			}
 			
 			//the audio/midi settings objects are expected to be both present, or both not present
@@ -1141,11 +1160,6 @@ package components.model.modelLoader
 				newAudioSettingsCall.addParam( _model.audioSettings.name, XMLRPCDataTypes.STRING );
 				newAudioSettingsCall.addArrayParam( new Array );
 				newAudioSettingsCall.callQueued( "command.new" );
-
-				var initAudioSettingsCall:IntegraConnection = new IntegraConnection( _serverUrl );
-				initAudioSettingsCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-				initAudioSettingsCall.addArrayParam( [ _model.audioSettings.name, "restoreHostDefaults" ] );
-				initAudioSettingsCall.callQueued( "command.set" );
 			}
 
 			var midiSettingsLocalFile:File = MidiSettings.localFile;
@@ -1165,18 +1179,18 @@ package components.model.modelLoader
 				newMidiSettingsCall.addParam( _model.midiSettings.name, XMLRPCDataTypes.STRING );
 				newMidiSettingsCall.addArrayParam( new Array );
 				newMidiSettingsCall.callQueued( "command.new" );
-
-				var initMidiSettingsCall:IntegraConnection = new IntegraConnection( _serverUrl );
-				initMidiSettingsCall.addEventListener( ErrorEvent.ERROR, rpcErrorHandler );
-				initMidiSettingsCall.addArrayParam( [ _model.midiSettings.name, "restoreHostDefaults" ] );
-				initMidiSettingsCall.callQueued( "command.set" );
 			}
 		}
 		
 		
-		private function foundExtraneousNode( path:Array, interfaceDefinition:InterfaceDefinition, comment:String ):void
+		private function foundExtraneousNode( path:Array, interfaceDefinition:InterfaceDefinition, comment:String, shouldPreventLoad:Boolean = true ):void
 		{
 			Trace.error( "Found extraneous node.  Path = " + path.join( "." ) + ", classname = " + interfaceDefinition.interfaceInfo.name + ", comment = " + comment );
+
+			if( !shouldPreventLoad )
+			{
+				return;
+			}
 			
 			switch( _mode )
 			{
@@ -1350,6 +1364,14 @@ package components.model.modelLoader
 							if( connection.targetAttributeName == "inValue" )
 							{
 								scaler.upstreamConnection = connection;
+								
+								// midi input control crossreferences
+								if( sourceObject && sourceObject is MidiControlInput )
+								{
+									var midiControlInput:MidiControlInput = sourceObject as MidiControlInput;
+									scaler.midiControlInput = midiControlInput;
+									midiControlInput.scaler = scaler;
+								}
 							}
 						}
 					}
@@ -1414,7 +1436,7 @@ package components.model.modelLoader
 		
 		private function foundScalerWithoutConnections( scaler:Scaler ):void
 		{
-			foundExtraneousNode( _model.getPathArrayFromID( scaler.id ), scaler.interfaceDefinition, "foundScalerWithoutConnections" );
+			foundExtraneousNode( _model.getPathArrayFromID( scaler.id ), scaler.interfaceDefinition, "foundScalerWithoutConnections", false );
 			
 			if( scaler.upstreamConnection ) _model.removeDataObject( scaler.upstreamConnection.id );
 			if( scaler.downstreamConnection ) _model.removeDataObject( scaler.downstreamConnection.id );
@@ -1559,7 +1581,6 @@ package components.model.modelLoader
 		
 		private var _shouldAddDefaultNewProjectObjects:Boolean = false;
 		private var _error:String = null;
-
 		
 		private var _timeoutTimer:Timer = new Timer( _timeoutMilliseconds, 1 );
 		

@@ -295,7 +295,7 @@ When a *project*, *track* or *block* is opened or imported, and improved version
 - Click Upgrade to upgrade modules in the *project*, *track* or *block* to the Latest Official versions—these Latest Official versions will then be embedded in the project file and replace current instances of those modules
 - Check the Always Upgrade checkbox before clicking Upgrade to always upgrade *modules* in future without prompting—this option can later be unchecked using the [Module Manager](#module-management)
 - Click [Module Manager...](#module-management) to selectively upgrade specific modules 
-- Click Cancel to leave the project as it is—*modules* can always be upgraded later using the [Module Manager](#module-management)
+- Click Don't Upgrade to leave the project as it is—*modules* can always be upgraded later using the [Module Manager](#module-management)
 
 If modules are upgraded, an Upgrade Report will be shown, providing a detailed report of the changes that have been made.
 

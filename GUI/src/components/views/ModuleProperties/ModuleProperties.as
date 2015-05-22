@@ -29,14 +29,15 @@ package components.views.ModuleProperties
 	import __AS3__.vec.Vector;
 	
 	import components.controller.ServerCommand;
-	import components.controller.serverCommands.AddConnection;
+	import components.controller.events.MidiLearnEvent;
 	import components.controller.serverCommands.AddEnvelope;
-	import components.controller.serverCommands.AddScaledConnection;
-	import components.controller.serverCommands.ReceiveMidiInput;
+	import components.controller.serverCommands.AddMidiControlInput;
 	import components.controller.serverCommands.RemoveEnvelope;
+	import components.controller.serverCommands.RemoveMidiControlInput;
 	import components.controller.serverCommands.RenameObject;
 	import components.controller.serverCommands.SetConnectionRouting;
 	import components.controller.serverCommands.SetContainerActive;
+	import components.controller.serverCommands.SetMidiControlAutoLearn;
 	import components.controller.serverCommands.SetModuleAttribute;
 	import components.controller.serverCommands.SwitchModuleVersion;
 	import components.controller.userDataCommands.SetColorScheme;
@@ -45,7 +46,10 @@ package components.views.ModuleProperties
 	import components.controller.userDataCommands.SetTrackColor;
 	import components.controller.userDataCommands.ToggleLiveViewControl;
 	import components.model.Block;
+	import components.model.Connection;
 	import components.model.Info;
+	import components.model.IntegraDataObject;
+	import components.model.MidiControlInput;
 	import components.model.ModuleInstance;
 	import components.model.Scaler;
 	import components.model.interfaceDefinitions.EndpointDefinition;
@@ -78,11 +82,11 @@ package components.views.ModuleProperties
 			addUpdateMethod( SetLiveViewControls, onLiveViewControlsChanged );
 			addUpdateMethod( ToggleLiveViewControl, onLiveViewControlToggled );
 			addUpdateMethod( SetConnectionRouting, onPadlockStateMightHaveChanged );
+			addUpdateMethod( SetMidiControlAutoLearn, onAutolearnChanged );
 			addUpdateMethod( AddEnvelope, onPadlockStateMightHaveChanged );
 			addUpdateMethod( RemoveEnvelope, onPadlockStateMightHaveChanged );
 			addUpdateMethod( SetTrackColor, onTrackColorChanged );
 			addUpdateMethod( SwitchModuleVersion, onModuleVersionSwitched );
-			addUpdateMethod( ReceiveMidiInput, onMidiInput );
 			addUpdateMethod( SetContainerActive, onContainerActiveChanged );
 
 			addTitleInvalidatingCommand( SetPrimarySelectedChild );			
@@ -90,6 +94,8 @@ package components.views.ModuleProperties
 			addColorChangingCommand( SetColorScheme );
 			
 			addEventListener( MouseEvent.RIGHT_MOUSE_DOWN, onRightMouseDown );
+			addEventListener( MidiLearnEvent.ADD_MIDI_LEARN, onAddMidiLearn );
+			addEventListener( MidiLearnEvent.REMOVE_MIDI_LEARN, onRemoveMidiLearn );
 			contextMenuDataProvider = contextMenuData;
 		}
 
@@ -171,7 +177,6 @@ package components.views.ModuleProperties
 		{
 			_endpointNameToWidgetMap = new Object;
 		
-			 // removeAllChildren(); // FL4U
 			removeAllElements();
 			_allControls.length = 0;
 			
@@ -309,6 +314,30 @@ package components.views.ModuleProperties
 		}
 		
 		
+		private function onAutolearnChanged( command:SetMidiControlAutoLearn ):void
+		{
+			onPadlockStateMightHaveChanged( command );
+			
+			if( command.autoLearn == false )
+			{
+				var midiControlInput:MidiControlInput = model.getMidiControlInput( command.midiControlInputID );
+				Assert.assertTrue( midiControlInput );
+				
+				var connection:Connection = midiControlInput.scaler.downstreamConnection;
+				if( connection.targetObjectID == _module.id )
+				{
+					for each( var control:ControlContainer in _allControls )
+					{
+						if( control.midiLearnEndpoint == connection.targetAttributeName )
+						{
+							control.endMidiLearn();
+						}
+					}
+				}
+			}
+		}
+		
+		
 		private function onPadlockStateMightHaveChanged( command:ServerCommand ):void
 		{
 			for each( var control:ControlContainer in _allControls )
@@ -368,41 +397,6 @@ package components.views.ModuleProperties
 				_liveViewControlSet[ liveViewControl.controlInstanceName ] = 1;
 			}
 		}	
-		
-		
-		private function onMidiInput( command:ReceiveMidiInput ):void
-		{
-			if( command.midiID != model.primarySelectedBlock.midi.id ) return;
-
-			for each( var control:ControlContainer in _allControls )
-			{
-				if( control.isInMidiLearnMode )
-				{
-					control.endMidiLearnMode();
-					doMidiLearn( command.midiEndpoint, control.midiLearnEndpoint )
-				}
-			}
-		}
-		
-		
-		private function doMidiLearn( midiEndpointName:String, targetEndpointName:String ):void
-		{
-			var block:Block = model.primarySelectedBlock;
-			var blockID:int = _module.parentID;
-			
-			var addScaledConnection:AddScaledConnection = new AddScaledConnection( blockID );
-			controller.processCommand( addScaledConnection );
-
-			var scalerID:int = addScaledConnection.scalerID;
-			var scaler:Scaler = model.getScaler( scalerID );
-			Assert.assertNotNull( scaler );
-			
-			var upstreamConnectionID:int = scaler.upstreamConnection.id;
-			var downstreamConnectionID:int = scaler.downstreamConnection.id;
-			
-			controller.processCommand( new SetConnectionRouting( upstreamConnectionID, block.midi.id, midiEndpointName, scalerID, "inValue" ) );
-			controller.processCommand( new SetConnectionRouting( downstreamConnectionID, scalerID, "outValue", _module.id, targetEndpointName ) );
-		}
 		
 		
 		private function onRightMouseDown( event:MouseEvent ):void
@@ -530,6 +524,58 @@ package components.views.ModuleProperties
 			revertSubmenu.addItem( revertAllItem );
 			
 			menuItem.submenu = revertSubmenu;
+		}
+		
+		
+		private function onAddMidiLearn( event:MidiLearnEvent ):void
+		{
+			var addMidiControl:AddMidiControlInput = new AddMidiControlInput( _module.parentID );
+			controller.processCommand( addMidiControl );
+			
+			var midiControlInput:MidiControlInput = model.getMidiControlInput( addMidiControl.midiControlInputID );
+			Assert.assertNotNull( midiControlInput );
+				
+			controller.processCommand( new SetMidiControlAutoLearn( midiControlInput.id, true ) );
+
+			var connection:Connection = midiControlInput.scaler.downstreamConnection;
+			controller.processCommand( new SetConnectionRouting( connection.id, connection.sourceObjectID, connection.sourceAttributeName, _module.id, event.endpointName ) );
+		}
+
+		
+		private function onRemoveMidiLearn( event:MidiLearnEvent ):void
+		{
+			var midiControlInput:MidiControlInput = getAutolearner( event.endpointName );
+			
+			if( midiControlInput )
+			{
+				controller.processCommand( new RemoveMidiControlInput( midiControlInput.id ) );
+			}
+		}
+		
+		
+		private function getAutolearner( endpointName:String ):MidiControlInput
+		{
+			if( !model.doesObjectExist( _module.id ) ) return null;
+			
+			var upstreamObjects:Vector.<IntegraDataObject> = new Vector.<IntegraDataObject>;
+			if( !model.isConnectionTarget( _module.id, endpointName, upstreamObjects ) )
+			{
+				return null;
+			}
+
+			for each( var upstreamObject:IntegraDataObject in upstreamObjects )
+			{
+				if( !( upstreamObject is Scaler ) ) continue;
+				
+				var scaler:Scaler = upstreamObject as Scaler;
+				var midiControlInput:MidiControlInput = scaler.midiControlInput;
+				
+				if( !midiControlInput || !midiControlInput.autoLearn ) continue;
+				
+				return midiControlInput;
+			}
+
+			return null;
 		}
 		
 		

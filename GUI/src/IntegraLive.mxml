@@ -62,6 +62,7 @@
 			import components.controller.serverCommands.PreviousScene;
 			import components.controller.serverCommands.RenameObject;
 			import components.controller.serverCommands.ResetAllBlocks;
+			import components.controller.serverCommands.SetPlayerHome;
 			import components.controller.serverCommands.SetPlaying;
 			import components.controller.userDataCommands.PollForUpgradableModules;
 			import components.controller.userDataCommands.SetDisplayedInfo;
@@ -222,6 +223,12 @@
 			}
 			
 			
+			public function viewLogs():void
+			{
+				_loggingSystem.viewLogs();
+			}
+
+			
 			private function onInvoke( event:InvokeEvent ):void
 			{
 				if( !_doneInitialize )
@@ -366,12 +373,9 @@
 				}
 				
 				var serverArguments:Vector.<String> = new Vector.<String>;
-				serverArguments.push( "-bridge=" + config.bridgePath );
 				serverArguments.push( "-system_modules=" + config.modulesPath );
 				serverArguments.push( "-third_party_modules=" + Utilities.get3rdPartyModulesDirectory() );
-				serverArguments.push( "-host=" + config.hostPath );
 				serverArguments.push( "-xmlrpc_server_port=" + config.xmlrpcServerPort );
-				serverArguments.push( "-osc_server_port=" + config.oscServerPort );
 				serverArguments.push( "-osc_client_port=" + config.oscClientPort );
 
 				serverArguments.push( "-trace_errors=" + ( config.traceErrors ? "1" : "0" ) );
@@ -381,13 +385,6 @@
 				if( config.locationstampTrace ) serverArguments.push( "-locationstamp_trace" );
 				if( config.threadstampTrace )  serverArguments.push( "-threadstamp_trace" );
 
-				serverArguments.push( "-hostargs" );
-				
-				for each( var hostArgument:String in config.hostArgs )
-				{
-					serverArguments.push( hostArgument );
-				}
-				
 				var serverStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 				serverStartupInfo.executable = serverFile;
 				serverStartupInfo.arguments = serverArguments;
@@ -865,42 +862,31 @@
 			
 			private function onServerOutput( event:ProgressEvent ):void
 			{
-				var logfileName:String = _loggingSystem.serverLogfile;
-				
-				if( logfileName && _serverProcess )
+				if( !_serverProcess )
 				{
-					var serverOutput:IDataInput = _serverProcess.standardOutput;
+					Trace.error( "No server process" );
+					return;
+				}
+				
+				var serverOutput:IDataInput = _serverProcess.standardOutput;
 					
-					var stream:FileStream = new FileStream;
-					stream.open( new File( _loggingSystem.serverLogfile ), FileMode.APPEND );
-					
-					var buffer:ByteArray = new ByteArray;
-					serverOutput.readBytes( buffer )
-						
-					stream.writeBytes( buffer );
-					stream.close();
-				}				
+				var outputString:String = serverOutput.readUTFBytes( serverOutput.bytesAvailable );
+				_loggingSystem.handleServerOutput( outputString );
 			}
 
 			
 			private function onServerError( event:ProgressEvent ):void
 			{
-				var logfileName:String = _loggingSystem.serverLogfile;
-				
-				if( logfileName && _serverProcess )
+				if( !_serverProcess )
 				{
-					var serverError:IDataInput = _serverProcess.standardError;
-					
-					var stream:FileStream = new FileStream;
-					stream.open( new File( _loggingSystem.serverLogfile ), FileMode.APPEND );
-					
-					var buffer:ByteArray = new ByteArray;
-					serverError.readBytes( buffer )
-					
-					stream.writeUTFBytes( "Standard Error: " );
-					stream.writeBytes( buffer );
-					stream.close();
-				}				
+					Trace.error( "No server process" );
+					return;
+				}
+				
+				var serverError:IDataInput = _serverProcess.standardError;
+				
+				var errorString:String = serverError.readUTFBytes( serverError.bytesAvailable );
+				_loggingSystem.handleServerOutput( "Standard Error: " + errorString );
 			}
 			
 			
@@ -1125,6 +1111,10 @@
 
 					case Keyboard.RIGHT:
 						_controller.processCommand( new NextScene() );
+						break;
+
+					case Keyboard.ENTER:
+						_controller.processCommand( new SetPlayerHome() );
 						break;
 
 					default:

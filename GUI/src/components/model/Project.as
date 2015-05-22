@@ -39,6 +39,7 @@ package components.model
 
 		public function get tracks():Object { return _tracks; }
 		public function get player():Player { return _player; }
+		public function get midiMonitor():MidiRawInput { return _midiMonitor; }
 		
 		public function get projectUserData():ProjectUserData { return userData as ProjectUserData; }
 		
@@ -69,6 +70,7 @@ package components.model
 			
 			_tracks = new Object;
 			_player = null;
+			_midiMonitor = null;
 			
 			for each( var child:IntegraDataObject in children )
 			{
@@ -79,7 +81,7 @@ package components.model
 				
 				if( child is Player )
 				{
-					if( player )
+					if( _player )
 					{
 						Assert.assertTrue( false );		//didn't expect two players as children of project		
 					}
@@ -88,59 +90,19 @@ package components.model
 						_player = child as Player;
 					}
 				}
+
+				if( child is MidiRawInput )
+				{
+					if( _midiMonitor )
+					{
+						Assert.assertTrue( false );		//didn't expect two raw midi inputs as children of project		
+					}
+					else
+					{
+						_midiMonitor = child as MidiRawInput;
+					}
+				}
 			} 
-		}
-		
-		
-		public function getConnectedCCNumber( objectID:int, attributeName:String ):int
-		{
-			if( !midi ) 
-			{
-				return -1;
-			}
-			
-			for each( var connection:Connection in connections )
-			{
-				if( connection.targetObjectID == objectID && connection.targetAttributeName == attributeName )
-				{
-					if( connection.sourceObjectID == midi.id )
-					{
-						if( connection.sourceAttributeName.substr( 0, Midi.ccAttributePrefix.length ) == Midi.ccAttributePrefix )
-						{
-							return int( connection.sourceAttributeName.substr( Midi.ccAttributePrefix.length ) );
-						}
-					}
-				}
-			}
-
-			//no connected cc
-			return -1;
-		}
-
-		
-		public function getConnectedMidiNote( objectID:int, attributeName:String ):int
-		{
-			if( !midi ) 
-			{
-				return -1;
-			}
-			
-			for each( var connection:Connection in connections )
-			{
-				if( connection.targetObjectID == objectID && connection.targetAttributeName == attributeName )
-				{
-					if( connection.sourceObjectID == midi.id )
-					{
-						if( connection.sourceAttributeName.substr( 0, Midi.noteAttributePrefix.length ) == Midi.noteAttributePrefix )
-						{
-							return int( connection.sourceAttributeName.substr( Midi.noteAttributePrefix.length ) );
-						}
-					}
-				}
-			}
-			
-			//no connected cc
-			return -1;
 		}
 		
 
@@ -148,5 +110,7 @@ package components.model
 
 		private var _tracks:Object = new Object;
 		private var _player:Player = null;
+		private var _midiMonitor:MidiRawInput = null;
+		
 	}
 }

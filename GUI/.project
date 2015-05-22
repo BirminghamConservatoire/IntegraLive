@@ -31,7 +31,7 @@
 		<link>
 			<name>bin-debug</name>
 			<type>2</type>
-			<location>C:/IntegraLive.git/build/Debug/gui-debug</location>
+			<location>C:/IntegraLive.git/integraLive/Debug/gui-debug</location>
 		</link>
 	</linkedResources>
 </projectDescription>

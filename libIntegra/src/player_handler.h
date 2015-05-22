@@ -1,6 +1,6 @@
-/* libIntegra multimedia module interface
- *  
- * Copyright (C) 2012 Birmingham City University
+/* libIntegra modular audio framework
+ *
+ * Copyright (C) 2007 Birmingham City University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,29 +18,85 @@
  * USA.
  */
 
+
 #ifndef INTEGRA_PLAYER_HANDLER_H
 #define INTEGRA_PLAYER_HANDLER_H
 
-#include "server.h"
+#include "api/common_typedefs.h"
+
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#include "api/path.h"
+#include "node.h"
+
+using namespace integra_api;
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace integra_internal
+{
+	class CNode;
+	class CServer;
 
-/*typedef struct ntg_player_state_ ntg_player_state; */
+	class CPlayerHandler
+	{
+		public:
+			CPlayerHandler( CServer &server );
+			~CPlayerHandler();
 
-void ntg_player_initialize( ntg_server *server );
-void ntg_player_free( ntg_server *server );
+			void update( const CNode &player_node );
 
-void ntg_player_update( ntg_server *server, ntg_id player_id );
+			void handle_path_change( const CNode &player_node );
+			void handle_delete( const CNode &player_node );
 
-void ntg_player_handle_path_change( ntg_server *server, const ntg_node *player_node );
-void ntg_player_handle_delete( ntg_server *server, const ntg_node *player_node );
+		private:
+
+			friend void *player_handler_thread_function( void *context );
+
+			void thread_function();
+
+			void stop_player( internal_id player_id );
+			int64_t get_current_msecs() const;
 
 
-#ifdef __cplusplus
+			class CPlayerState 
+			{
+				public:
+					CPlayerState();
+
+					integra_internal::internal_id m_id;
+					CPath m_tick_path;
+					CPath m_play_path;
+					int m_rate;
+					int m_initial_ticks;
+					int m_previous_ticks;
+					int64_t m_start_msecs;
+
+					bool m_loop;
+					int m_loop_start_ticks;
+					int m_loop_end_ticks;
+			};
+
+			typedef std::unordered_map<internal_id, CPlayerState *> player_state_map;
+
+			player_state_map m_player_states;
+
+			pthread_t m_thread;
+			pthread_mutex_t m_mutex;
+
+			sem_t *m_thread_shutdown_semaphore;
+
+			CServer &m_server;
+
+			static const int player_update_microseconds;
+			static const int player_sanity_check_seconds;
+	};
+    
+    void *player_handler_thread_function( void *context );
+
 }
-#endif
+
+
 
 #endif /*INTEGRA_PLAYER_HANDLER_H*/

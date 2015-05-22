@@ -135,6 +135,7 @@ namespace integra_internal
 		freeverb_tilde_setup();
 		soundfile_info_setup();
 		fsplay_tilde_setup();
+                copy_setup();
 	}
 
 

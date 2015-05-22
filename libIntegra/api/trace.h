@@ -48,13 +48,11 @@
 #define INTEGRA_FUNCTION __FUNCTION__
 #else 
 /** Used internally by subsequent macros */
-#define INTEGRA_FUNCTION TOSTRING(__FUNCTION__)
+#define INTEGRA_FUNCTION __PRETTY_FUNCTION__
 #endif /*_WINDOWS*/
 
 /** Used internally by subsequent macros */
-#define INTEGRA_LOCATION __FILE__ ": " TOSTRING(__LINE__) "(" INTEGRA_FUNCTION ")"
-
-
+#define INTEGRA_LOCATION __FILE__ ": " TOSTRING(__LINE__)
 
 
 /** \brief Main error tracing macro.  
@@ -63,7 +61,7 @@
  * Only traces anything when tracing of errors is enabled
  * Automatically traces time, location and thread ID (subject to configuration). 
  */
-#define INTEGRA_TRACE_ERROR			integra_api::CTrace::error( INTEGRA_LOCATION )
+#define INTEGRA_TRACE_ERROR			integra_api::CTrace::error( INTEGRA_LOCATION, INTEGRA_FUNCTION )
 
 /** \brief Main progress tracing macro.  
  * Usage example: INTEGRA_TRACE_PROGRESS << "A normal (not unexpected) thing happened.  Details: " << some_details << of_mixed_type;
@@ -71,7 +69,7 @@
  * Only traces anything when tracing of progress is enabled
  * Automatically traces time, location and thread ID (subject to configuration). 
  */
-#define INTEGRA_TRACE_PROGRESS		integra_api::CTrace::progress( INTEGRA_LOCATION )
+#define INTEGRA_TRACE_PROGRESS		integra_api::CTrace::progress( INTEGRA_LOCATION, INTEGRA_FUNCTION )
 
 /** \brief Main verbose progress tracing macro.  
  *
@@ -83,7 +81,7 @@
  * Only traces anything when verbose tracing is enabled
  * Automatically traces time, location and thread ID (subject to configuration). 
  */
-#define INTEGRA_TRACE_VERBOSE		integra_api::CTrace::verbose( INTEGRA_LOCATION )
+#define INTEGRA_TRACE_VERBOSE		integra_api::CTrace::verbose( INTEGRA_LOCATION, INTEGRA_FUNCTION )
 
 
 
@@ -123,17 +121,17 @@ namespace integra_api
 			static void set_details_to_trace( bool timestamp, bool location, bool thread );
 
 			/** Internal use only */
-			static std::ostream &error( const char *location );
+			static std::ostream &error( const char *location, const char *function );
 
 			/** Internal use only */
-			static std::ostream &progress( const char *location );
+			static std::ostream &progress( const char *location, const char *function );
 
 			/** Internal use only */
-			static std::ostream &verbose( const char *location );
+			static std::ostream &verbose( const char *location, const char *function );
 
 		private:
 
-			static void do_trace( const char *category, const char *location ); 
+			static void do_trace( const char *category, const char *location, const char *function ); 
 
 			static bool s_trace_errors;
 			static bool s_trace_progress;

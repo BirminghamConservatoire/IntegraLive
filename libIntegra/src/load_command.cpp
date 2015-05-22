@@ -63,7 +63,9 @@ namespace integra_internal
 
 		if( result )
 		{
-			CLoadCommandResult *load_command_result = dynamic_cast<CLoadCommandResult *> ( result );
+                        // TODO: this was to work around a bug on 10.7 and 10.8. re-add dynamic_cast when we stop supporting OS X 10.8 and earlier
+			// CLoadCommandResult *load_command_result = dynamic_cast<CLoadCommandResult *> ( result );
+			CLoadCommandResult *load_command_result = (CLoadCommandResult *)result;
 			if( load_command_result )
 			{
 				load_command_result->set_new_embedded_module_ids( new_embedded_module_ids );

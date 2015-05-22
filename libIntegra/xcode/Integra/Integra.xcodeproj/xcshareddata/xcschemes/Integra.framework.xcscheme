@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0510"
+   LastUpgradeVersion = "0630"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -10,7 +10,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "&#10;">
+               scriptText = "echo &quot;#define LIBINTEGRA_VERSION&quot; $(cat $PROJECT_DIR/../../../BASEVERSION) &gt; $PROJECT_DIR/../../src/version.h&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
@@ -67,6 +67,15 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7D8451D0187DB8CB008639D2"
+            BuildableName = "Integra.framework"
+            BlueprintName = "Integra"
+            ReferencedContainer = "container:Integra.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

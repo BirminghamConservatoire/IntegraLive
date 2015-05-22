@@ -117,7 +117,7 @@ It allows configuration of IntegraLive_GUI and Integra Server (via arguments pas
 		<threadstamptrace>false</threadstamptrace>
 		
 		<!-- 		stamp all errors with full callstack (gui only)								-->
-		<callstackstamperrors>false</callstackstamperrors>
+		<callstackstamperrors>true</callstackstamperrors>
 		
 		<!-- 		number of days for which old log files should be retained						-->
 		<logfileretentiondays>30</logfileretentiondays>

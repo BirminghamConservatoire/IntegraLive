@@ -197,6 +197,13 @@ package components.controller.moduleManagement
 							{
 								previouslyInDevelopmentModuleGuids.push( responseNode.previousmoduleid );
 							}
+							// This is a fix for #972.
+							// libIntegra returns a previousmoduleid of 00000000-0000-0000-0000-000000000000 when loadmoduleindevelopment is called and no previous module exists. However if this GUID gets added to removedModuleGuids (as below), then the assertion at model/IntegraModel.as:1213 fails because no previous module with that GUID exists in the GUI's interface definitions list. To prevent this, we simply don't add this GUID to removedModuleGuids.
+							// JB <jamie.bullock@bcu.ac.uk> 4/5/2014
+							else if ( String(responseNode.previousmoduleid) == "00000000-0000-0000-0000-000000000000" )
+							{
+								// do nothing
+							}
 							else
 							{
 								removedModuleGuids.push( responseNode.previousmoduleid );

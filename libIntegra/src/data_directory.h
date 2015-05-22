@@ -51,7 +51,7 @@ namespace integra_internal
 
 			static void copy_to_zip( zipFile zip_file, const CNode &node, const CPath &path_root );
 
-			static CError extract_from_zip( const CServer &server, const string &file_path, const CNode *parent_node );
+			static CError extract_from_zip( const CServer &server, const string &file_path, const CNode *parent_node, const CNode *node );
 
 			static string copy_file_to_data_directory( const CNodeEndpoint &input_file );
 

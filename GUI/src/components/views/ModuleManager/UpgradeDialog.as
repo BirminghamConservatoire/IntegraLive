@@ -82,13 +82,13 @@ package components.views.ModuleManager
 			_description.setStyle( "paddingBottom", 20 );
 			addChild( _description );
 			
-			_upgradeButton.setStyle( "skin", TextButtonSkin );
-			_moduleManagerButton.setStyle( "skin", TextButtonSkin );
 			_closeButton.setStyle( "skin", TextButtonSkin );
+			_moduleManagerButton.setStyle( "skin", TextButtonSkin );
+			_upgradeButton.setStyle( "skin", TextButtonSkin );
 			
-			_upgradeButton.label = "Upgrade";
+			_closeButton.label = "Don't Upgrade";
 			_moduleManagerButton.label = "Module Manager...";
-			_closeButton.label = "Cancel";
+			_upgradeButton.label = "Upgrade";
 			
 			_alwaysUpgradeCheckbox.label = "Always Upgrade";
 			
@@ -100,9 +100,9 @@ package components.views.ModuleManager
 			
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage );
 			
-			addChild( _upgradeButton );
-			addChild( _moduleManagerButton );
 			addChild( _closeButton );
+			addChild( _moduleManagerButton );
+			addChild( _upgradeButton );
 			addChild( _alwaysUpgradeCheckbox );
 			
 			onStyleChanged( null );
@@ -286,11 +286,11 @@ package components.views.ModuleManager
 			_upgradeButton.height = _moduleManagerButton.height = _closeButton.height = rowHeight;
 			_upgradeButton.y = _moduleManagerButton.y = _closeButton.y = height - internalMargin * 2 - rowHeight * 2;
 
-			_upgradeButton.x = internalMargin;
+			_closeButton.x = internalMargin;
 			_moduleManagerButton.x = width / 3 + internalMargin;
-			_closeButton.x = width * 2/3 + internalMargin;
+			_upgradeButton.x = width * 2/3 + internalMargin;
 			
-			_alwaysUpgradeCheckbox.x = _closeButton.x;
+			_alwaysUpgradeCheckbox.x = _upgradeButton.x;
 			_alwaysUpgradeCheckbox.setStyle( "bottom", internalMargin );
 			
 			_upgradeButton.invalidateDisplayList();

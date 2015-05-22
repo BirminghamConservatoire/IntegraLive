@@ -136,7 +136,9 @@ namespace integra_internal
 
 		if( result )
 		{
-			CNewCommandResult *new_command_result = dynamic_cast<CNewCommandResult *> ( result );
+                        // TODO: this was to work around a bug on 10.7 and 10.8. re-add dynamic_cast when we stop supporting OS X 10.8 and earlier
+			// CNewCommandResult *new_command_result = dynamic_cast<CNewCommandResult *> ( result );
+			CNewCommandResult *new_command_result = (CNewCommandResult *)result;
 			if( new_command_result )
 			{
 				new_command_result->set_created_node( node );

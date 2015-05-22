@@ -13,13 +13,13 @@ for /r %%f in (*.md) do (
 	CALL %olddirectory%\documentation_deployment\compileMarkdown.bat %%f %olddirectory%\%1\documentation\html\
 )
 
-cd ..\..\documentation\page-images
+REM cd ..\..\documentation\page-images
 
-del shadow-*.png /q
+REM del shadow-*.png /q
 
-for /r %%f in (*.png) do (
-	CALL %olddirectory%\documentation_deployment\addDropShadow.bat %%f %olddirectory% 
-)
+REM for /r %%f in (*.png) do (
+REM	CALL %olddirectory%\documentation_deployment\addDropShadow.bat %%f %olddirectory% 
+REM )
 
 
 cd %olddirectory%

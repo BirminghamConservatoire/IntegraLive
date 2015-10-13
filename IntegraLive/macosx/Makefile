@@ -27,9 +27,11 @@ SDKROOT=$(REPOSITORYROOT)/SDK
 TEMPLATESDIR=$(SDKROOT)/templates
 PDHOSTDIR=$(CREATORRESIDR)/$(APPNAME)/Contents/Resources/host
 
+-include Make.config
+
 GDB=gdb --args
 
-.PHONY:
+.PHONY: dropdmg
 
 all: $(DEFAULTBUILD)
 	
@@ -38,8 +40,6 @@ movedirs:
 	mv documentation $(APPRESDIR)
 
 release: server gui documentation movedirs
-	#cd $(APPNAME) && find ./ -name .REPOSITORY | xargs rm -rf && cd ..
-	# codesign --deep --force -f -v -s "3rd Party Mac Developer Application: Birmingham City" --entitlements entitlements.plist $(APPNAME)
 
 dmg: $(DEFAULTBUILD)
 	if [ ! -e $(PRODUCT)_temp.dmg ]; then \
@@ -52,17 +52,19 @@ dmg: $(DEFAULTBUILD)
 	hdiutil convert $(PRODUCT)_temp.dmg -format UDZO -imagekey zlib-level=9 -o $(PRODUCT).dmg
 	rm $(PRODUCT)_temp.dmg
 
-dropdmg: $(DEFAULTBUILD)
+dropdmg:
 	-mkdir $(PRODUCT)
 	-cp .VolumeIcon.icns $(PRODUCT)
-	-cp -r $(APPNAME) $(PRODUCT)
+	-cp -R $(APPNAME) $(PRODUCT)
+	codesign --deep --force -s $(CERTIFICATENAME) --entitlements entitlements.plist $(PRODUCT)/$(APPNAME)
 	dropdmg --config-name="Integra Live" $(PRODUCT)
 	-rm -rf $(PRODUCT)
 
-creator-dropdmg: creator
+creator-dropdmg:
 	-mkdir $(CREATORPRODUCT)
 	-cp .VolumeIcon.icns $(CREATORPRODUCT)
-	-cp -r $(CREATORAPPNAME) $(CREATORPRODUCT)
+	-cp -R $(CREATORAPPNAME) $(CREATORPRODUCT)
+	codesign --deep --force -s $(CERTIFICATENAME) --entitlements entitlements.plist $(CREATORPRODUCT)/$(CREATORAPPNAME)
 	dropdmg --config-name="Developer SDK" $(CREATORPRODUCT)
 	-rm -rf $(CREATORPRODUCT)
 	
@@ -92,7 +94,7 @@ host:
 host-clean:
 	rm -rf $(PDGZNAME) $(PDAPPNAME)
 
-creator: documentation host
+creator: documentation
 	@if test ! -d $(APPNAME); \
 	then echo $(APPNAME) does not exist. Run 'make release' first. && exit 2; \
 	fi

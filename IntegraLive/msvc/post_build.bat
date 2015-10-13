@@ -28,6 +28,11 @@ ECHO Copying modules
 ECHO DONE
 ECHO.
 
+ECHO Copying host
+	CALL copy_host.bat ..\%1
+ECHO DONE
+ECHO.
+
 ECHO Copying GUI block library
 	CALL copy_block_library.bat ..\%1\gui\BlockLibrary
 ECHO DONE

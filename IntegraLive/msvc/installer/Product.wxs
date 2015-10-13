@@ -36,6 +36,8 @@
           <Directory Id="GUILOCATION" Name="gui">
 
             <Component Id="ExecutableComponent" Guid="EDE975B4-3357-43C9-B0AB-7BD608AD6F04">
+             
+
               <File Id="ExecutableFile" KeyPath="yes" Source="$(var.SourceDirectory)\gui\Integra Live.exe" />
 
               <ProgId Id="IntegraLive.integra" Description="Integra File" Icon='IntegraIcon.ico'> 

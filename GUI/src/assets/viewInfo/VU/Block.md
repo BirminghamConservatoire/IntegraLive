@@ -2,4 +2,4 @@
 
 # Block VU meter
 
-Indicates the *block*'s output volume level
+Show the *block* audio output level

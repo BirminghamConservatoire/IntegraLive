@@ -1,7 +1,7 @@
 ## Integra Scripting
 Scripting in Integra Live allows users to perform basic programmatic operations on module parameters such as:
 
-- [condititional evaluation](http://en.wikipedia.org/wiki/Conditional_\(programming\))
+- [conditional evaluation](http://en.wikipedia.org/wiki/Conditional_\(programming\))
 - mathematical operations such as [arithmetic](http://en.wikipedia.org/wiki/Arithmetic), [trigonometry](http://en.wikipedia.org/wiki/Arithmetic) and [random number generation](http://en.wikipedia.org/wiki/Random_number_generation)
 
 Integra script is a superset of the [Lua](http://www.lua.org/) programming language.

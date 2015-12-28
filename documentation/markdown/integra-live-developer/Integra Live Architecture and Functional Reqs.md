@@ -141,7 +141,7 @@ The `implementation` folder in a `.integra` file must contain one Integra module
 
 #### Node data
 
-The `node_data` folder in a `.integra` file contains data files used by module instances at run time. These may include audio, text or any other data that a module may load or generate. The data is managed by libIntegra and stored in a temporary location on the system hard drive. When a “save” operation is performed, libIntegra bundles up this data into the `.integra` archive. `node_data` subdirectories are identified by their “path” within the saved module graph. In the example above this path is `SoundfileLoop.StereoSoundfiler1` because the “SoundfileLoop” block was the node from which the save operation was performed. Another example would be `Project1.Track1.Block1.StereoSoundfiler1` in which case “Project1” is the node from which the save operation is performed and “StereoSoundfiler1” is the node we are saving “node data” for. 
+The `node_data` folder in a `.integra` file contains data files used by module instances at runtime. These may include audio, text or any other data that a module may load or generate. The data is managed by libIntegra and stored in a temporary location on the system hard drive. When a “save” operation is performed, libIntegra bundles up this data into the `.integra` archive. `node_data` subdirectories are identified by their “path” within the saved module graph. In the example above this path is `SoundfileLoop.StereoSoundfiler1` because the “SoundfileLoop” block was the node from which the save operation was performed. Another example would be `Project1.Track1.Block1.StereoSoundfiler1` in which case “Project1” is the node from which the save operation is performed and “StereoSoundfiler1” is the node we are saving “node data” for. 
 
 ### System modules <a name=“system-modules”></a>
 
@@ -198,8 +198,8 @@ The private data stored in IntegraModel is as follows:
 
 All instantiable data objects are represented in IntegraLive GUI's internal data model as subclasses of IntegraDataObject. However, there isn't quite a one to one mapping between the classes used in IntegraLive GUI and the set of libIntegra classes. There are two reasons for this:
 
-1. IntegraLive GUI uses the libIntegra class Container in a gui-specific way; it always treats the top-level container as the 'project', treats 2nd level containers as 'tracks' and 3rd level containers as 'blocks'. These concepts 'project', 'track' and 'block' have no meaning for libIntegra – they are merely implementation details of the IntegraLive GUI. But it's useful for the GUI to have separate classes to represent them in it's internal model, since it performs different operations on them.
-2. LibIntegra has two types of class: 'system' classes and 'non-system classes'. System classes are assumed to always exist by the GUI – it needs to make hardcoded assumptions about their existence, attributes and behaviour because they provide the GUI’s core functionality. LibIntegra’s system classes are listed [above](#system-modules). These are all represented explicitly in the GUI by their own class (with three subclasses for Container as described above). 
+1. IntegraLive GUI uses the libIntegra class Container in a gui-specific way; it always treats the top-level container as the 'project', treats 2nd level containers as 'tracks' and 3rd level containers as 'blocks'. These concepts 'project', 'track' and 'block' have no meaning for libIntegra – they are merely implementation details of the IntegraLive GUI. But it's useful for the GUI to have separate classes to represent them in its internal model, since it performs different operations on them.
+2. libIntegra has two types of class: 'system' classes and 'non-system classes'. System classes are assumed to always exist by the GUI – it needs to make hardcoded assumptions about their existence, attributes and behaviour because they provide the GUI’s core functionality. LibIntegra’s system classes are listed [above](#system-modules). These are all represented explicitly in the GUI by their own class (with three subclasses for Container as described above). 
 In contrast, non-system classes can be added and removed from libIntegra without any requirement to make changes to the GUI, because they are all represented in the GUI by the single class: ModuleInstance.
 
 The following inheritance diagram illustrates the set of classes in IntegraLive GUI which inherit from IntegraDataObject, and shows which libIntegra classes they store data for:
@@ -212,7 +212,7 @@ For example, an object of type ‘Connection’ whose parent is an object of typ
 
 Each object must have a unique name within its set of siblings, whilst objects with different parents can have the same name. 
 
-Therefore this concatenated notation is the minimum identification system sufficient to uniquely identity objects.
+Therefore this concatenated notation is the minimum identification system sufficient to uniquely identify objects.
 
 #### Model Loader
 The class ModelLoader is responsible for loading all the contents of the model from libIntegra.

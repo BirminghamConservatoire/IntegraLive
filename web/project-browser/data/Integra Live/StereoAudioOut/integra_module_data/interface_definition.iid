@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<InterfaceDeclaration moduleGuid="6890a44f-294c-6d04-8b59-da931469a4f0" originGuid="2809b248-8194-4269-a168-d9f811d137b7" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+<InterfaceDeclaration moduleGuid="dfd3cf17-f737-2ae2-255b-3c90f9dc45f3" originGuid="2809b248-8194-4269-a168-d9f811d137b7" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
   <InterfaceInfo>
     <Name>StereoAudioOut</Name>
     <Label>Stereo Audio Out</Label>
@@ -12,7 +12,7 @@
     <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
     <Author>Jamie Bullock</Author>
     <CreatedDate>2010-03-26 09:02:18.111000</CreatedDate>
-    <ModifiedDate>2014-05-05 18:58:24.972000</ModifiedDate>
+    <ModifiedDate>2013-06-07 11:48:05.863000</ModifiedDate>
   </InterfaceInfo>
   <EndpointInfo>
     <Endpoint>
@@ -34,8 +34,8 @@
       </StreamInfo>
     </Endpoint>
     <Endpoint>
-      <Name>startChannel</Name>
-      <Label>startChannel</Label>
+      <Name>offset</Name>
+      <Label>Offset</Label>
       <Description>Set input channel on the audio interfaceAn offset of "2" will mean that the AudioIn module uses audio from channel 2 on the audio interface</Description>
       <Type>control</Type>
       <ControlInfo>
@@ -214,7 +214,7 @@
     </Widget>
     <Widget>
       <WidgetType>Knob</WidgetType>
-      <Label>startChannel</Label>
+      <Label>offset</Label>
       <Position>
         <X>100</X>
         <Y>10</Y>
@@ -224,7 +224,7 @@
       <AttributeMappings>
         <AttributeMapping>
           <WidgetAttribute>value</WidgetAttribute>
-          <Endpoint>startChannel</Endpoint>
+          <Endpoint>offset</Endpoint>
         </AttributeMapping>
       </AttributeMappings>
     </Widget>

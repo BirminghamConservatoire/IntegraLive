@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<InterfaceDeclaration moduleGuid="53f27817-f139-5dd5-e3a7-172bbc4e72e4" originGuid="e9c394be-2d57-4711-8291-9753a9448a10" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
+<InterfaceDeclaration moduleGuid="2f027327-972b-6ab1-d02c-faa3aa0bb0d2" originGuid="e9c394be-2d57-4711-8291-9753a9448a10" infoSchemaVersionMajor="1" infoSchemaVersionMinor="0">
   <InterfaceInfo>
     <Name>QuadAudioOut</Name>
     <Label>Quad Audio Out</Label>
@@ -11,7 +11,7 @@
     <ImplementedInLibIntegra>false</ImplementedInLibIntegra>
     <Author>Thomas Musil</Author>
     <CreatedDate>2010-07-29 19:05:39.182000</CreatedDate>
-    <ModifiedDate>2014-05-05 18:49:04.033000</ModifiedDate>
+    <ModifiedDate>2013-06-10 14:39:25.661000</ModifiedDate>
   </InterfaceInfo>
   <EndpointInfo>
     <Endpoint>
@@ -51,8 +51,8 @@
       </StreamInfo>
     </Endpoint>
     <Endpoint>
-      <Name>startChannel</Name>
-      <Label>Start Channel</Label>
+      <Name>offset</Name>
+      <Label>Output Offset</Label>
       <Description>Set input channel on the audio interface.An offset of "2" will mean that the AudioIn module uses audio from channel 2 on the audio interface.</Description>
       <Type>control</Type>
       <ControlInfo>
@@ -253,7 +253,7 @@
     </Widget>
     <Widget>
       <WidgetType>Knob</WidgetType>
-      <Label>startChannel</Label>
+      <Label>offset</Label>
       <Position>
         <X>100</X>
         <Y>10</Y>
@@ -263,7 +263,7 @@
       <AttributeMappings>
         <AttributeMapping>
           <WidgetAttribute>value</WidgetAttribute>
-          <Endpoint>startChannel</Endpoint>
+          <Endpoint>offset</Endpoint>
         </AttributeMapping>
       </AttributeMappings>
     </Widget>

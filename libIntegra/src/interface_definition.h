@@ -97,7 +97,6 @@ namespace integra_internal
 			endpoint_definition_list m_endpoint_definitions;
 			widget_definition_list m_widget_definitions;
 			CImplementationInfo *m_implementation_info;
-			CValidator validator;
 
 			const static string core_tag;
 	};

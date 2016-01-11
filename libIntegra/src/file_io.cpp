@@ -87,7 +87,7 @@ namespace integra_internal
 		xmlTextReaderPtr reader = NULL;
 		node_list new_nodes;
 		node_list::const_iterator new_node_iterator;
-		CValidator validator("ixd.xsd");
+		CValidator validator; // initialise CValidator instance using default schema CollectionSchema.xsd
 		CError error = CError::SUCCESS;
 
 		LIBXML_TEST_VERSION;

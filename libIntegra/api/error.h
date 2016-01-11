@@ -65,7 +65,7 @@ namespace integra_api
 				/** Aborting a chain of set commands because reentrance has been detected, for example because of a circular chain of connections, or a circular interaction of connections and scripts */
 				REENTRANCE_ERROR = 5,			
 
-				/** The .ixd representation of a node tree within a .integra file fails to conform to the schema defined in CollectionSchema.xsd */
+				/** Either the .ixd representation of a node tree within a .integra file fails to conform to the schema defined in CollectionSchema.xsd, or its reified transformation fails to conform to the schema defined in ReifiedCollectionSchema.xsd */
 				FILE_VALIDATION_ERROR = 6,		
 
 				/** A file can't be loaded because it was saved in a more recent version of libIntegra */

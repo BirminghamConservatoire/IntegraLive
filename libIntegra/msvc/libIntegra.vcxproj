@@ -353,8 +353,6 @@ call copy_dependencies.bat ..\bin\Release\ Release
     <None Include="..\schemas\2014\AudioThru.rixd"/>
     <None Include="..\schemas\2014\Sound Loop Vocoder.ixd" />
     <None Include="..\schemas\2014\Sound Loop Vocoder.rixd" />
-    <None Include="..\schemas\2014\Multivers II essais.ixd"/>
-    <None Include="..\schemas\2014\Multivers II essais.rixd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

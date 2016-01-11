@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:msxsl="urn:schemas-microsoft-com:xslt"
-                xmlns:rixd="http://www.integralive.org/schemas/2014/rixd"
+                xmlns:rixd="http://www.integralive.org/schemas/2014/rixd/base"
                 xmlns:core="http://www.integralive.org/schemas/2014/rixd/core"
                 xmlns:native="http://www.integralive.org/schemas/2014/rixd/native"
                 xmlns:deprecated="http://www.integralive.org/schemas/2014/rixd/deprecated"

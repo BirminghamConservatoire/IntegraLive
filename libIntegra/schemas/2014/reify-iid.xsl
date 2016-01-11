@@ -3,7 +3,7 @@
                 xmlns               =   "http://www.integralive.org/schemas/2014/riid" 
                 xmlns:xsd           =   "http://www.w3.org/2001/XMLSchema"
                 xmlns:xsl           =   "http://www.w3.org/1999/XSL/Transform"
-                xmlns:rixd          =   "http://www.integralive.org/schemas/2014/rixd"
+                xmlns:rixd          =   "http://www.integralive.org/schemas/2014/rixd/base"
 >
     <xsl:output method="xml" indent="yes"/>
 

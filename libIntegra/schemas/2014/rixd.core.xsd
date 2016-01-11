@@ -6,7 +6,7 @@
             xmlns:xsi            = "http://www.w3.org/2001/XMLSchema-node"
             
             xmlns:riid           = "http://www.integralive.org/schemas/2014/riid"
-            xmlns:rixd           = "http://www.integralive.org/schemas/2014/rixd"
+            xmlns:rixd           = "http://www.integralive.org/schemas/2014/rixd/base"
             xmlns:native         = "http://www.integralive.org/schemas/2014/rixd/native"
             
             attributeFormDefault = "unqualified"
@@ -14,6 +14,7 @@
 >
     <xsd:import id="riid"   namespace="http://www.integralive.org/schemas/2014/riid"        schemaLocation="riid.xsd"        />
     <xsd:import id="rixd"   namespace="http://www.integralive.org/schemas/2014/rixd"        schemaLocation="rixd.xsd"        />
+    <xsd:import id="base"   namespace="http://www.integralive.org/schemas/2014/rixd/base"   schemaLocation="rixd.base.xsd"   />
     <xsd:import id="native" namespace="http://www.integralive.org/schemas/2014/rixd/native" schemaLocation="rixd.native.xsd" />
 
     <xsd:annotation>

@@ -4,11 +4,11 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-node"
             xmlns:riid="http://www.integralive.org/schemas/2014/riid"
-            xmlns:rixd="http://www.integralive.org/schemas/2014/rixd"
+            xmlns:rixd="http://www.integralive.org/schemas/2014/rixd/base"
             attributeFormDefault="unqualified"
             elementFormDefault="qualified"
 >
-    <xsd:import id="rixd" namespace="http://www.integralive.org/schemas/2014/rixd" schemaLocation="rixd.xsd"/>
+    <xsd:import id="rixd" namespace="http://www.integralive.org/schemas/2014/rixd/base" schemaLocation="rixd.base.xsd"/>
     <xsd:import id="riid" namespace="http://www.integralive.org/schemas/2014/riid" schemaLocation="riid.xsd"/>
 
     <!--NON-CORE MODULE TYPES-->

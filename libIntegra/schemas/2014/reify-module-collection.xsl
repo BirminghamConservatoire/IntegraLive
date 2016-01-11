@@ -15,20 +15,20 @@
         </xsl:message>
 
         <xsl:comment>
-            <xsl:text>This is an auto-generated document, being the transformation output of the default modules list, which represents the full set of IID module interface contracts as XSD attribute types, and defines minimal base types (for use as module instances in IXD node graphs).</xsl:text>
+            <xsl:text>This is an auto-generated document, being the transformation output of the default modules list (specifically reify-module-collection.xsl applied to module-collection.xml), which represents the full set of IID module interface contracts as XSD attribute types, and defines minimal base types (for use as module instances in IXD node graphs).</xsl:text>
         </xsl:comment>
 
         <!-- NB: xsd-dummy is used to prevent validation errors when the parser forgets we're doing XSL and not actually XSD -->
         <xsd-dummy:schema targetNamespace="http://www.integralive.org/schemas/2014/riid"
                           xmlns:riid="http://www.integralive.org/schemas/2014/riid"
-                          xmlns:rixd="http://www.integralive.org/schemas/2014/rixd"
+                          xmlns:rixd="http://www.integralive.org/schemas/2014/rixd/base"
                           attributeFormDefault="unqualified"
                           elementFormDefault="qualified"
         >
             <xsd:annotation>
                 <xsd:documentation>XML Schema definitions for attribute groups within the reified Integra container format (RIXD).</xsd:documentation>
             </xsd:annotation>
-            <xsd:import id="rixd" namespace="http://www.integralive.org/schemas/2014/rixd" schemaLocation="rixd.base.xsd"/>
+            <xsd:import id="rixd" namespace="http://www.integralive.org/schemas/2014/rixd/base" schemaLocation="rixd.base.xsd"/>
             
             <xsl:text>&#xa;&#xa;</xsl:text>
             <xsl:comment>ATTRIBUTE GROUPS</xsl:comment> 

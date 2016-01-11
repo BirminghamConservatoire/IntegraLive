@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xsd:schema targetNamespace="http://www.integralive.org/schemas/2014/rixd" 
-            xmlns="http://www.integralive.org/schemas/2014/rixd"
+<xsd:schema targetNamespace="http://www.integralive.org/schemas/2014/rixd/base" 
+            xmlns="http://www.integralive.org/schemas/2014/rixd/base"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
             attributeFormDefault="unqualified" 
             elementFormDefault="qualified" 

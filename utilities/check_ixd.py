@@ -13,7 +13,7 @@ else:
 
 
 pp = pprint.PrettyPrinter(depth=6)
-tree = ET.parse('nodes.ixd')
+tree = ET.parse(IXD_file)
 root = tree.getroot()
 parent_map = dict((c, p) for p in root.getiterator() for c in p)
 block_envelopes = []
@@ -74,16 +74,16 @@ for envelope in block_envelopes:
                        print "%s: connection targetPath connects to a valid endpoint" % envelopeName
                        targetPathValid = True
                    else:
-                       print "%s: target endpoint not found for connection" % envelopeName
+                       print "%s: [ERROR] target endpoint not found for connection" % envelopeName
                else:
                    track = parent_map[connection]
-                   print "%s: target node not found for connection %s" % (envelopeName, track.get('name') + "." + connection.get('name'))
-                   print "%s: targetPath was set to %s" % (envelopeName, targetPath)
+                   print "%s: [ERROR] target node not found for connection %s" % (envelopeName, track.get('name') + "." + connection.get('name'))
+                   print "%s: [ERROR] targetPath was set to %s" % (envelopeName, targetPath)
             else:
-                print "%s: connection targetPath is of an invalid form"
+                print "%s: [ERROR] connection targetPath is of an invalid form"
 
     if not sourcePathFound:
-        print "%s: no Connection with expected sourcePath %s" % (envelopeName, expectedSourcePath)
+        print "%s: [ERROR] no Connection with expected sourcePath %s" % (envelopeName, expectedSourcePath)
 
     if not sourcePathFound or not targetPathValid:
         envelopesWithoutValidConnections.append(parent.get('name') + "." + envelopeName)
@@ -96,15 +96,21 @@ pp.pprint(envelopesWithoutValidConnections)
 for track in trackMap:
     blocks = trackMap[track]["blocks"]
     targets = trackMap[track]["targets"]
-    diff = list(blocks - targets) + list(targets - blocks)
-    print "%s: the following are at the end of a broken connection: %s" % (track, diff)
+    blocks_no_connection = list(blocks - targets)
+    connections_no_block = list(targets - blocks)
+
+    if blocks_no_connection:
+        print "%s: the following Blocks have no corresponding Connection targetPath: %s" % (track, blocks_no_connection)
+    if connections_no_block:
+        print "%s: the following Connection targetPaths have no corresponding Block: %s" % (track, connections_no_block)
+
 
 for track in trackMap:
     trackMap[track]["blocks"] = list(trackMap[track]["blocks"])
     trackMap[track]["targets"] = list(trackMap[track]["targets"])
 
-print "Track map:"
-pp.pprint(trackMap)
+# print "Track map:"
+# pp.pprint(trackMap)
 
 
 

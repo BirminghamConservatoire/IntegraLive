@@ -13,7 +13,7 @@ else:
 
 
 pp = pprint.PrettyPrinter(depth=6)
-tree = ET.parse('nodes.ixd')
+tree = ET.parse(IXD_file)
 root = tree.getroot()
 parent_map = dict((c, p) for p in root.getiterator() for c in p)
 block_envelopes = []

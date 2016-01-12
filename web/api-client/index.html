@@ -25,6 +25,23 @@
       li { padding-bottom: 1px; }
       textarea { width:100%; height:auto; background-color:rgba(255,255,0,0.05); border-radius:3px; }
       noscript { color: #900; font-style:italic; font-size:1.1em; }
+
+      span[contenteditable="true"]
+      {
+          background: #fafafa; padding: .3em; border: 1px solid #f0f0f0; border-radius: 3px;
+      }
+
+      [contenteditable="true"]:active,
+      [contenteditable="true"]:focus  
+      {
+          border-color:#fcc;
+          background-color:#ffe; 
+      }
+      
+      [contenteditable="true"]:hover 
+      {
+          border-color:#aaa;
+      }
     </style>
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
@@ -37,7 +54,7 @@
     <![endif]-->
   </head>
   
-  <body>
+  <body spellcheck="false">
 
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
@@ -73,7 +90,7 @@
     
     <div class="container" style="display:none;">
         <p>
-          This page is configured to query an instance of Integra Server running at <span id="target"><i>{not specified}</i></span>.
+          This page is configured to query an instance of Integra Server running at <span id="target" contenteditable="true" title="Click to edit">{not specified}</span>.
         </p>
 
         <div class="row">
@@ -226,6 +243,7 @@
         }).click(function() {
           $btn = $(this);
           $("#modal-waiting").show({duration:200, done:function() {
+            var dataTarget = $("#target").text();
             query(dataTarget, $btn.attr("method"), $btn.attr("data"));
             $(this).hide({duration:800});
           }});

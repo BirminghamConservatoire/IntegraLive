@@ -337,6 +337,7 @@ call copy_dependencies.bat ..\bin\Release\ Release
     <None Include="..\schemas\2014\reify-module-collection.xsl"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\schemas\2014\iid.xsd" />
     <None Include="..\schemas\2014\riid.xsd"/>
     <None Include="..\schemas\2014\rixd.base.xsd"/>
     <None Include="..\schemas\2014\rixd.xsd"/>

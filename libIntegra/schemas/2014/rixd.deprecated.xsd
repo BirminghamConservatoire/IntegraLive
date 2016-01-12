@@ -2,8 +2,8 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-node"
-            xmlns="http://www.integralive.org/schemas/rixd/1.7/deprecated"
-            targetNamespace="http://www.integralive.org/schemas/rixd/1.7/deprecated"
+            xmlns="http://www.integralive.org/schemas/2014/rixd/deprecated"
+            targetNamespace="http://www.integralive.org/schemas/2014/rixd/deprecated"
             attributeFormDefault="unqualified"
             elementFormDefault="qualified"
 >

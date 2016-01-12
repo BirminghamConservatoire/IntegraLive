@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+  
+  <xsd:element name="InterfaceDeclaration" type="InterfaceDeclaration">
+    <xsd:annotation>
+      <xsd:documentation>
+        The root element as used in libIntegra module interface declaration (IID) files.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="IntegraModules">
+    <xsd:annotation>
+      <xsd:documentation>
+        The root element for libIntegra module list files (as used by the project browser web application).
+        This simply serves as a container for multiple InterfaceDeclaration elements.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="InterfaceDeclaration" type="InterfaceDeclaration" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="InterfaceDeclaration">
+    <xsd:sequence>
+      <xsd:element name="InterfaceInfo">
+        <xsd:annotation>
+          <xsd:documentation>
+            Metadata for this libIntegra module, principally used for discovery and filtering.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <!-- TODO: confirm the enforced character constraints on persisted values consistent with specified types -->
+            <xsd:element name="Name" type="xsd:Name" />
+            <xsd:element name="Label" type="xsd:normalizedString" minOccurs="0" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+            <xsd:element name="Tags">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element maxOccurs="unbounded" name="Tag" type="xsd:Name" />
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="ImplementedInLibIntegra" type="xsd:boolean" />
+            <xsd:element name="Author" type="xsd:normalizedString" minOccurs="0" />
+            <xsd:element name="CreatedDate" type="datetime" />
+            <xsd:element name="ModifiedDate" type="datetime" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="EndpointInfo">
+        <xsd:annotation>
+          <xsd:documentation>
+            Specifies a sequence of endpoints (inputs and outputs) for this module.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Endpoint" type="Endpoint" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="WidgetInfo" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Specifies a sequence of GUI widget configurations that may be used to render/control this module's endpoints.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Widget" type="Widget" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ImplementationInfo" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Specifies the name of a Pure Data patch, providing a compiled implementation of this module's DSP logic.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="PatchName" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="moduleGuid" type="guid" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          Uniquely identifies this specific version of this module.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="originGuid" type="guid" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          Uniquely identifies this module across all versions.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="infoSchemaVersionMajor" type="xsd:unsignedByte" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          (This doesn't appear to be used anywhere: pending implementation or deprecated?)
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="infoSchemaVersionMinor" type="xsd:unsignedByte" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          (This doesn't appear to be used anywhere: pending implementation or deprecated?)
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="Endpoint">
+    <xsd:sequence>
+      <!-- TODO: confirm the enforced character constraints on persisted values consistent with specified types -->
+      <xsd:element name="Name" type="xsd:Name" />
+      <xsd:element name="Label" type="xsd:normalizedString" minOccurs="0" />
+      <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Type" type="endpointType" />
+      <xsd:element name="ControlInfo" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ControlType" type="controlType" />
+            <xsd:element name="StateInfo" type="StateInfo" minOccurs="0" />
+            <xsd:element name="CanBeSource" type="xsd:boolean" />
+            <xsd:element name="CanBeTarget" type="xsd:boolean" />
+            <xsd:element name="IsSentToHost" type="xsd:boolean" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="StreamInfo" type="StreamInfo" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="StreamInfo">
+    <xsd:sequence>
+      <xsd:element name="StreamType" type="streamType" />
+      <xsd:element name="StreamDirection" type="streamDirection" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="StateInfo">
+    <xsd:sequence>
+      <xsd:element name="StateType" type="stateType" />
+      <xsd:element name="IsSavedToFile" type="xsd:boolean" />
+      <xsd:element name="IsInputFile" type="xsd:boolean" />
+      <xsd:element name="Constraint" type="Constraint"/>
+      <xsd:element name="Default" type="xsd:string"/>
+      <xsd:element name="Scale" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ScaleType" type="scaleType" />
+            <xsd:element name="Base" type="xsd:unsignedByte" minOccurs="0" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="StateLabels" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Label" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="State" type="xsd:unsignedByte" />
+                  <xsd:element name="Text" type="xsd:normalizedString" />
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Constraint">
+    <xsd:annotation>
+      <xsd:documentation>
+        Specifies a constraint on allowed values for this endpoint's state.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice>
+      <xsd:element name="AllowedStates">
+        <xsd:annotation>
+          <xsd:documentation>
+            Only values from the options specified here are permitted.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="State" type="xsd:string" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="Range">
+        <xsd:annotation>
+          <xsd:documentation>
+            Only values that fall within the specified numeric range are permitted.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Minimum" type="xsd:decimal" />
+            <xsd:element name="Maximum" type="xsd:decimal" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="Widget">
+    <xsd:sequence>
+      <xsd:element name="WidgetType" type="xsd:string" />
+      <xsd:element name="Label" type="xsd:string" />
+      <xsd:element name="Position">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="X" type="xsd:unsignedShort" />
+            <xsd:element name="Y" type="xsd:unsignedByte" />
+            <xsd:element name="Width" type="xsd:unsignedShort" />
+            <xsd:element name="Height" type="xsd:unsignedShort" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="AttributeMappings">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" name="AttributeMapping">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="WidgetAttribute" type="xsd:string" />
+                  <xsd:element name="Endpoint" type="xsd:string" />
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="guid">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        (GUID: A globally unique identifier, represented as a formatted collection of 32 hex digits.)
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="datetime">
+    <!-- TODO: reformat dates with 'T' date/time separator, compliant with native datetime type -->
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:pattern value="[0-9]{4}-[0-1][0-9]-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{6}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="controlType">
+    <xsd:restriction base="xsd:Name">
+      <xsd:enumeration value="bang" />
+      <xsd:enumeration value="state" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="endpointType">
+    <xsd:restriction base="xsd:Name">
+      <xsd:enumeration value="control" />
+      <xsd:enumeration value="stream" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="scaleType">
+    <xsd:restriction base="xsd:Name">
+      <xsd:enumeration value="decibel" />
+      <xsd:enumeration value="exponential" />
+      <xsd:enumeration value="linear" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="integerStateType">
+    <xsd:restriction base="stateType">
+      <xsd:enumeration value="integer" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="stateType">
+    <xsd:restriction base="xsd:Name">
+      <xsd:enumeration value="integer" />
+      <xsd:enumeration value="float" />
+      <xsd:enumeration value="string" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="streamDirection">
+    <xsd:restriction base="xsd:Name">
+      <xsd:enumeration value="input" />
+      <xsd:enumeration value="output" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="streamType">
+    <xsd:restriction base="xsd:Name">
+      <xsd:enumeration value="audio" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

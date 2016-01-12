@@ -13,6 +13,7 @@ copy "..\externals\win32\libxslt-1.1.26.win32\bin\libxslt.dll" "%1"
 copy "..\externals\win32\iconv\iconv.dll" "%1"
 
 copy "..\data\*.*" "%1"
+copy "..\schemas\2014\iid.xsd" "%1"
 copy "..\schemas\2014\riid.xsd" "%1"
 copy "..\schemas\2014\rixd.xsd" "%1"
 copy "..\schemas\2014\rixd.*.xsd" "%1"

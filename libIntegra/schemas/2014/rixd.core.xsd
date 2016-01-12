@@ -32,6 +32,7 @@
         <xsd:choice>
             <xsd:element name="ProjectContainer" type="projectContainer"/>
             <!-- and audio/midi settings? -->
+            <xsd:element name="BlockContainer" type="blockContainer"/>
         </xsd:choice>
     </xsd:group>
 
@@ -60,6 +61,8 @@
                         <xsd:choice>
                             <xsd:element name="TrackContainer" type="trackContainer" />
                             <xsd:element name="Connection" type="connection" />
+                            <!-- MidiRawInput instance observed in sample 'Sound Loop Vocoder' - further options required? -->
+                            <xsd:element name="MidiRawInput" type="midiRawInput" />
                             <!-- skip processing deprecated modules -->
                             <xsd:any namespace="http://www.integralive.org/schemas/2014/rixd/deprecated" processContents="skip"/>
                         </xsd:choice>

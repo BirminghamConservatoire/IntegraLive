@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:msxsl="urn:schemas-microsoft-com:xslt"
-                xmlns:rixd="http://www.integralive.org/schemas/2014/rixd/base"
+                xmlns:rixd="http://www.integralive.org/schemas/2014/rixd"
                 xmlns:core="http://www.integralive.org/schemas/2014/rixd/core"
                 xmlns:native="http://www.integralive.org/schemas/2014/rixd/native"
                 xmlns:deprecated="http://www.integralive.org/schemas/2014/rixd/deprecated"
@@ -32,14 +32,35 @@
                 <xsl:when test="@originId='8b1826a1-1a76-d13a-0488-e84b06c97f7f'">core:AudioSettings</xsl:when>
                 <xsl:when test="@originId='5dfd7aa5-eed1-4666-9d19-844a5a9912c9'">core:Connection</xsl:when>
                 <xsl:when test="@originId='892b7437-a3dc-4a1f-863d-17b4ba973ef1'">
+                    <!-- detect the nesting level of the current node -->
                     <xsl:variable name="level">
                         <xsl:value-of select="count(ancestor::*)"/>
                     </xsl:variable>
+                    <!-- count how many player nodes there are in the document -->
+                    <xsl:variable name="players">
+                        <xsl:value-of select="count(//*[@originId='0f9203b8-e091-40f8-8968-4ee96185523f'])"/>
+                    </xsl:variable>
+                    <!-- note that this logic allows for (currently) illegal depths of container nesting; if there 
+                         is a problem in the original document structure, we leave it for the XSD to flag it up 
+                         since there may be other issues that premature termination of the transform would obscure
+                    -->
                     <xsl:choose>
-                        <xsl:when test="$level=1">core:ProjectContainer</xsl:when>
-                        <xsl:when test="$level=2">core:TrackContainer</xsl:when>
-                        <xsl:when test="$level=3">core:BlockContainer</xsl:when>
-                        <xsl:otherwise>core:Container</xsl:otherwise>
+                        <!-- if no player nodes exist, assume the root element is a block -->
+                        <xsl:when test="$players=0">
+                            <xsl:choose>
+                                <xsl:when test="$level=1">core:BlockContainer</xsl:when>
+                                <xsl:otherwise>core:Container</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:when>
+                        <!-- otherwise, assume it's a project -->
+                        <xsl:otherwise>
+                            <xsl:choose>
+                                <xsl:when test="$level=1">core:ProjectContainer</xsl:when>
+                                <xsl:when test="$level=2">core:TrackContainer</xsl:when>
+                                <xsl:when test="$level=3">core:BlockContainer</xsl:when>
+                                <xsl:otherwise>core:Container</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
                 <xsl:when test="@originId='158ae85a-a9a3-44b2-872e-f920f4543b81'">core:ControlPoint</xsl:when>
@@ -139,6 +160,12 @@
             </xsl:choose>
         </xsl:variable>
 
+        <!-- generate an indented message to indicate that this node is being parsed -->
+        <xsl:message>
+            <xsl:variable name="padding" xml:space="preserve"><xsl:for-each select="ancestor::*">  </xsl:for-each></xsl:variable>
+            <xsl:value-of select="concat($padding,'o parsed node &quot;',@name,'&quot; (',$name,')')"/>
+        </xsl:message>
+
         <!-- transformation output -->
         <xsl:element name="{$name}">
             <!-- render 'name' attribute first (for readability) -->
@@ -162,12 +189,6 @@
             <xsl:apply-templates select="object"/>
         </xsl:element>
 
-        <!-- generate an indented message to indicate that this node has been parsed -->
-        <xsl:message>
-            <xsl:variable name="padding" xml:space="preserve"><xsl:for-each select="ancestor::*">  </xsl:for-each></xsl:variable>
-            <xsl:value-of select="concat($padding,'o node &quot;',@name,'&quot; (',$name,')')"/>
-        </xsl:message>
-        
     </xsl:template>
     
     <xsl:template match="attribute">

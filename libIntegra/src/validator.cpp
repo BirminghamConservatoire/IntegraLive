@@ -120,7 +120,7 @@ namespace integra_internal
 		// iterate over any registered transform validators
 		for( transform_validator_map::iterator i = m_transform_validators.begin(); i != m_transform_validators.end() && validation_code == CError::SUCCESS; i++ )
 		{
-			INTEGRA_TRACE_PROGRESS << "Validating transformed XML data against secondary schema
+			INTEGRA_TRACE_PROGRESS << "Validating transformed XML data against secondary schema";
 			INTEGRA_TRACE_PROGRESS << ""; // output a blank trace header for any messages produced during validation
 
 			// transform xml_buffer by transform_file

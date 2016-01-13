@@ -36,6 +36,7 @@
             height: auto;
             background-color: rgba(255,255,0,0.05);
             border-radius: 3px;
+            resize: vertical;
         }
         noscript
         {
@@ -61,6 +62,11 @@
         [contenteditable="true"]:hover
         {
             border-color: #aaa;
+        }
+        
+        button[disabled]
+        {
+            color: #aaa;
         }
     </style>
     <!-- Just for debugging purposes. Don't actually copy this line! -->
@@ -186,6 +192,11 @@
                 <h4>Request</h4>
                 <textarea cols="40" readonly="readonly"></textarea>
             </div>
+            <div class="col-md-8" style="text-align: center;">
+                <button id="submitbutton" disabled="disabled"><span style="position: relative; top: -2px;">Submit Request</span>
+                    <input id="submitauto" type="checkbox" title="Check to submit requests automatically" checked="checked" />
+                </button>
+            </div>
             <div class="col-md-8 response">
                 <h4>Response</h4>
                 <textarea cols="40" readonly="readonly"></textarea>
@@ -195,7 +206,7 @@
     <!-- /.container -->
     <div id="modal-waiting" style="display: none;">
         <div style="position: absolute; top: 50%; left: 50%; z-index: 1050;">
-            <img id="modal-gif" src="img/ajax-loader.gif" alt="waiting" style="position: relative; top: -15px; left: -15px;" />
+            <img id="modal-gif" src="img/ajax-loader.gif" style="position: relative; top: -15px; left: -15px;" />
         </div>
         <div class="modal-backdrop in" style="background-color: white;">
         </div>
@@ -222,10 +233,12 @@
           + date.getSeconds() + "."
           + date.getMilliseconds();
         }
+
         function formatMilliseconds(ms)
         {
             return Math.abs(ms) < 1000 ? (ms + "ms") : (ms / 1000 + "s")
         }
+
         function autoHeight()
         {
             $(this).height(0);
@@ -238,13 +251,10 @@
         {
             var request = new XmlRpcRequest(target, method);
 
-            var paramArray = (params || "").split("|");
-            for (var p in paramArray)
+            params = JSON.parse(params);
+            for (var p in params)
             {
-                var param = paramArray[p];
-                if (param[0] == '[' || param[0] == '{') param = JSON.parse(param);
-                if (typeof param == "string" && param == "") continue;
-                if (typeof param != "undefined") request.addParam(param);
+                request.addParam(params[p]);
             }
 
             var state = { request: {}, response: {} };
@@ -277,6 +287,20 @@
             $("textarea").each(autoHeight);
         }
 
+        function parseParams(params)
+        {
+            var result = [];
+            var paramArray = (params || "").split("|");
+            for (var p in paramArray)
+            {
+                var param = paramArray[p];
+                if (param[0] == '[' || param[0] == '{') param = JSON.parse(param);
+                if (typeof param == "string" && param == "") continue;
+                if (typeof param != "undefined") result.push(param);
+            }
+            return result;
+        }
+
         $(function()
         {
             $(".container").show(0);
@@ -285,14 +309,58 @@
             $("[data-method]").each(function()
             {
                 $btn = $(this);
-                $btn.html("<i class='glyphicon glyphicon-envelope'></i> <span>" + $btn.attr("data-method") + "</span>");
+                $btn.html("<i class='glyphicon glyphicon-envelope'></i> <span>" + $(this).attr("data-method") + "</span>");
             }).click(function()
             {
                 $btn = $(this);
+                var o = {
+                    dataTarget: $("#target").text(),
+                    method: $(this).attr("data-method"),
+                    data: $(this).attr("data-args") || ""
+                };
+                $(".request").data(o);
+
+                $(".request textarea").val(JSON.stringify(parseParams(o.data), null, 2)).each(autoHeight);
+
+                if ($("#submitauto").is(":checked"))
+                {
+                    $("#modal-waiting").show({ duration: 200, done: function()
+                    {
+                        var data = $(".request").data();
+                        var params = $(".request textarea").val();
+
+                        query(data.dataTarget, data.method, params);
+
+                        $(this).hide({ duration: 800 });
+                    }
+                    });
+                }
+            });
+
+            $("#submitauto").change(function(evt)
+            {
+                if (evt.currentTarget.checked)
+                {
+                    $("#submitbutton").attr("disabled", "disabled");
+                    $(".request textarea").attr("readonly", "readonly");
+                } else
+                {
+                    $("#submitbutton").removeAttr("disabled");
+                    $(".request textarea").removeAttr("readonly");
+                }
+            });
+
+            $("#submitbutton").click(function(evt)
+            {
+                if (evt.target.id == "submitauto") return;
+
                 $("#modal-waiting").show({ duration: 200, done: function()
                 {
-                    var dataTarget = $("#target").text();
-                    query(dataTarget, $btn.attr("data-method"), $btn.attr("data-args"));
+                    var data = $(".request").data();
+                    var params = $(".request textarea").val();
+
+                    query(data.dataTarget, data.method, params);
+
                     $(this).hide({ duration: 800 });
                 }
                 });

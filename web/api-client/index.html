@@ -188,7 +188,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-8 request">
+            <div class="col-md-8 request" data-method="system.version">
                 <h4>Request</h4>
                 <textarea cols="40" readonly="readonly"></textarea>
             </div>
@@ -247,15 +247,54 @@
             $(this).height(this.scrollHeight - padding);
         }
 
-        function query(target, method, params)
+        function startRequest()
         {
+            $("#modal-waiting").show({ duration: 200, done: function()
+            {
+                submitRequest();
+
+                $(this).hide({ duration: 800 });
+            } 
+            });
+        }
+
+        function createRequest()
+        {
+            var target = $("#target").text();
+            var method = $(".request").data("method");
+
             var request = new XmlRpcRequest(target, method);
 
-            params = JSON.parse(params);
-            for (var p in params)
+            var paramString = $(".request textarea").val();
+            var paramArray = [];
+
+            try
             {
-                request.addParam(params[p]);
+                paramArray = JSON.parse(paramString);
             }
+            catch (error)
+            {
+                $(".request h4").html("Request <small>(aborted due to invalid request arguments)</small>");
+                $(".response h4").html("Request");
+                $(".response textarea").text("").each(autoHeight);
+
+                return;
+            }
+
+            for (var p in paramArray)
+            {
+                var param = paramArray[p];
+                request.addParam(param);
+            }
+
+            return request;
+        }
+
+        function submitRequest()
+        {
+            var request = createRequest();
+
+            if (request == null) return;
 
             var state = { request: {}, response: {} };
 
@@ -264,7 +303,7 @@
             state.request.status = "Request <small>(submitted " + formatDate(state.request.timestamp) + ")</small>";
 
             $(".request h4").html(state.request.status);
-            $(".request textarea").text(state.request.json);
+            $(".request textarea").text(state.request.json).each(autoHeight);
 
             try
             {
@@ -282,15 +321,14 @@
             }
 
             $(".response h4").html(state.response.status);
-            $(".response textarea").text(state.response.json)
-
-            $("textarea").each(autoHeight);
+            $(".response textarea").text(state.response.json).each(autoHeight);
         }
 
-        function parseParams(params)
+        function parseParams(paramString)
         {
             var result = [];
-            var paramArray = (params || "").split("|");
+            var paramArray = (paramString || "").split("|");
+
             for (var p in paramArray)
             {
                 var param = paramArray[p];
@@ -298,7 +336,15 @@
                 if (typeof param == "string" && param == "") continue;
                 if (typeof param != "undefined") result.push(param);
             }
+
             return result;
+        }
+
+        function configureButton()
+        {
+            var method = $(this).data("method");
+            var html = "<i class='glyphicon glyphicon-envelope'></i> <span>" + method + "</span>";
+            $(this).html(html);
         }
 
         $(function()
@@ -306,35 +352,29 @@
             $(".container").show(0);
             $("#modal-waiting").hide();
             $("#target").html(dataTarget);
-            $("[data-method]").each(function()
-            {
-                $btn = $(this);
-                $btn.html("<i class='glyphicon glyphicon-envelope'></i> <span>" + $(this).attr("data-method") + "</span>");
-            }).click(function()
-            {
-                $btn = $(this);
-                var o = {
-                    dataTarget: $("#target").text(),
-                    method: $(this).attr("data-method"),
-                    data: $(this).attr("data-args") || ""
-                };
-                $(".request").data(o);
 
-                $(".request textarea").val(JSON.stringify(parseParams(o.data), null, 2)).each(autoHeight);
+            $("button[data-method]").each(configureButton).click(function()
+            {
+                var data = $(this).data();
+                var args = JSON.stringify(parseParams(data.args), null, 2);
+
+                $(".request").data("method", data.method);
+                $(".request textarea").text(args).each(autoHeight);
 
                 if ($("#submitauto").is(":checked"))
                 {
-                    $("#modal-waiting").show({ duration: 200, done: function()
-                    {
-                        var data = $(".request").data();
-                        var params = $(".request textarea").val();
-
-                        query(data.dataTarget, data.method, params);
-
-                        $(this).hide({ duration: 800 });
-                    }
-                    });
+                    startRequest();
                 }
+                else
+                {
+                    $(".response h4").html("Response");
+                    $(".response textarea").text("").each(autoHeight);
+                }
+            });
+
+            $("#submitbutton").click(function(evt)
+            {
+                if (evt.target.id != "submitauto") startRequest();
             });
 
             $("#submitauto").change(function(evt)
@@ -343,27 +383,12 @@
                 {
                     $("#submitbutton").attr("disabled", "disabled");
                     $(".request textarea").attr("readonly", "readonly");
-                } else
+                }
+                else
                 {
                     $("#submitbutton").removeAttr("disabled");
                     $(".request textarea").removeAttr("readonly");
                 }
-            });
-
-            $("#submitbutton").click(function(evt)
-            {
-                if (evt.target.id == "submitauto") return;
-
-                $("#modal-waiting").show({ duration: 200, done: function()
-                {
-                    var data = $(".request").data();
-                    var params = $(".request textarea").val();
-
-                    query(data.dataTarget, data.method, params);
-
-                    $(this).hide({ duration: 800 });
-                }
-                });
             });
         });
     </script>

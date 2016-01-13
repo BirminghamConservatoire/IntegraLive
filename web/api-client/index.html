@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-
     <title>Integra Live 1.7 - API Web Client</title>
-
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="css/jquery-ui.css">
     <link rel="stylesheet" href="css/layout.css">
@@ -17,239 +15,289 @@
     <link rel="stylesheet" href="css/media.css">
     <link rel="stylesheet" href="css/font.css">
     <link rel="stylesheet" href="css/reuse.css">
-
     <!-- Custom styles for this template -->
     <style type="text/css">
-      body { padding-top: 50px; }
-      .btn { width:100%; text-align:left; }
-      li { padding-bottom: 1px; }
-      textarea { width:100%; height:auto; background-color:rgba(255,255,0,0.05); border-radius:3px; }
-      noscript { color: #900; font-style:italic; font-size:1.1em; }
-
-      span[contenteditable="true"]
-      {
-          background: #fafafa; padding: .3em; border: 1px solid #f0f0f0; border-radius: 3px;
-      }
-
-      [contenteditable="true"]:active,
-      [contenteditable="true"]:focus  
-      {
-          border-color:#fcc;
-          background-color:#ffe; 
-      }
-      
-      [contenteditable="true"]:hover 
-      {
-          border-color:#aaa;
-      }
+        body
+        {
+            padding-top: 50px;
+        }
+        .btn
+        {
+            width: 100%;
+            text-align: left;
+        }
+        li
+        {
+            padding-bottom: 1px;
+        }
+        textarea
+        {
+            width: 100%;
+            height: auto;
+            background-color: rgba(255,255,0,0.05);
+            border-radius: 3px;
+        }
+        noscript
+        {
+            color: #900;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+        
+        span[contenteditable="true"]
+        {
+            background: #fafafa;
+            padding: .3em;
+            border: 1px solid #f0f0f0;
+            border-radius: 3px;
+        }
+        
+        [contenteditable="true"]:active, [contenteditable="true"]:focus
+        {
+            border-color: #fcc;
+            background-color: #ffe;
+        }
+        
+        [contenteditable="true"]:hover
+        {
+            border-color: #aaa;
+        }
     </style>
-
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-  </head>
-  
-  <body spellcheck="false">
-
+</head>
+<body spellcheck="false">
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Integra Live 1.7</a>
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+                <a class="navbar-brand" href="#">Integra Live 1.7</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="index.html">API Web Client</a></li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
         </div>
-        <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="client17.html">API Web Client</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
     </div>
-
     <div class="container">
-      <div>
-        <h1>API Web Client</h1>
-        <p class="lead">
-          A browser-based client for XML-RPC API methods exposed by Integra Server
-        </p>
-      </div>
-
-      <noscript>
-        This site requires JavaScript - please review your settings and/or browser support to continue.
-      </noscript>
+        <div>
+            <h1>API Web Client</h1>
+            <p class="lead">
+                A browser-based client for XML-RPC API methods exposed by Integra Server
+            </p>
+        </div>
+        <noscript>
+            This site requires JavaScript - please review your settings and/or browser support to continue.
+        </noscript>
     </div>
-    
-    <div class="container" style="display:none;">
+    <div class="container" style="display: none;">
         <p>
-          This page is configured to query an instance of Integra Server running at <span id="target" contenteditable="true" title="Click to edit">{not specified}</span>.
+            This page is configured to query an instance of Integra Server running at <span id="target" contenteditable="true" title="Click to edit">{not specified}</span>.
         </p>
-
         <div class="row">
-          <div class="col-md-4">
-            <h4>System</h4>
-            <ul>
-              <li><button class="btn btn-primary" method="system.version"                      title="Return the current version of libIntegra"                                                                                                                                                                     >    </button></li>
-              <li><button class="btn btn-primary" method="system.dumplibintegrastate"          title="Dump the entire node and attribute state to stdout for testing purposes"                                                                                                                                      >    </button></li>
-              <li><button class="btn btn-primary" method="system.dumpdspstate"                 title="Dump the state of libpd as a pd patch for testing purposes"                                                                     data="web-client-test-dump.pd"                                                >    </button></li>
-              <li><button class="btn btn-primary" method="system.pingalldspmodules"            title="Send a pings message to all dsp modules, log the results"                                                                                                                                                     >    </button></li>
-            </ul>
-
-            <h4>Query</h4>
-            <ul>
-              <li><button class="btn btn-primary" method="query.interfacelist"                 title="Return a list of ids of interfaces available for instantiation on the server"                                                                                                                                  >    </button></li>
-              <li><button class="btn btn-primary" method="query.interfaceinfo"                 title="Return interface info for a specified interface"                                                                                data="6f6c9429-c3d1-509d-807f-88dbc6482c1e"                                    >    </button></li>
-              <li><button class="btn btn-primary" method="query.endpoints"                     title="Return endpoints for a specified interface"                                                                                     data="6f6c9429-c3d1-509d-807f-88dbc6482c1e"                                    >    </button></li>
-              <li><button class="btn btn-primary" method="query.widgets"                       title="Return widgets for a specified interface"                                                                                       data="6f6c9429-c3d1-509d-807f-88dbc6482c1e"                                    >    </button></li>
-              <li><button class="btn btn-primary" method="query.nodelist"                      title="Return a list of nodes under the current node using depth-first recursion"                                                      data='[]'                                                                      >    </button></li>
-              <li><button class="btn btn-primary" method="query.get"                           title="Get the value of an attribute"                                                                                                  data='["SoundfileLoop","StereoSoundfiler1","dataDirectory"]'                   >    </button></li>
-            </ul>
-
-            <h4>Command</h4>
-            <ul>
-              <li><button class="btn btn-primary" method="command.set"                         title="Set the value of an attribute"                                                                                                  data='[]|attName'                                                              >    </button></li>
-              <li><button class="btn btn-primary" method="command.new"                         title="Create a new node on the server"                                                                                                data='className|nodeName|[]'                                                   >    </button></li>
-              <li><button class="btn btn-primary" method="command.delete"                      title="Delete a node from the server"                                                                                                  data='[]'                                                                      >    </button></li>
-              <li><button class="btn btn-primary" method="command.rename"                      title="Rename a node on the server"                                                                                                    data='["path"]|nodeName'                                                       >    </button></li>
-              <li><button class="btn btn-primary" method="command.save"                        title="Save all nodes including and below a given node on the server to a path on the filesystem"                                      data='["path"]|param'                                                          >    </button></li>
-              <li><button class="btn btn-primary" method="command.load"                        title="Load all nodes including and below a given node from the filesystem beneath the path given to the given node on the server"     data='../../../blocks/SoundfileLoop.integra|[]'                                >    </button></li>
-              <li><button class="btn btn-primary" method="command.move"                        title="Move a node on the server"                                                                                                      data='["nodePath"]|["newNodeParentPath"]'                                      >    </button></li>
-            </ul>
-
-            <h4>Module</h4>
-            <ul>
-              <li><button class="btn btn-primary" method="module.unloadunusedembedded"         title="Remove orphaned embedded modules"                                                                                                                                                                               >    </button></li>
-              <li><button class="btn btn-primary" method="module.installintegramodulefile"     title="Install 3rd party module from module file"                                                                                      data="moduleFilePath"                                                           >    </button></li>
-              <li><button class="btn btn-primary" method="module.installembeddedmodule"        title="Install embedded module"                                                                                                        data="moduleGuid"                                                               >    </button></li>
-              <li><button class="btn btn-primary" method="module.uninstallmodule"              title="Uninstall 3rd party module"                                                                                                     data="moduleGuid"                                                               >    </button></li>
-              <li><button class="btn btn-primary" method="module.loadmoduleindevelopment"      title="Temporarily install module-in-development - only for this lifecycle of libIntegra"                                              data="moduleFilePath"                                                           >    </button></li>
-            </ul>
+            <div class="col-md-4">
+                <h4>System</h4>
+                <ul>
+                    <li>
+                        <button class="btn btn-primary" data-method="system.version" title="Return the current version of libIntegra" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="system.dumplibintegrastate" title="Dump the entire node and attribute state to stdout for testing purposes" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="system.dumpdspstate" title="Dump the state of libpd as a pd patch for testing purposes" data-args="web-client-test-dump.pd" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="system.pingalldspmodules" title="Send a pings message to all dsp modules, log the results" />
+                    </li>
+                </ul>
+                <h4>Query</h4>
+                <ul>
+                    <li>
+                        <button class="btn btn-primary" data-method="query.interfacelist" title="Return a list of ids of interfaces available for instantiation on the server" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="query.interfaceinfo" title="Return interface info for a specified interface" data-args="6f6c9429-c3d1-509d-807f-88dbc6482c1e" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="query.endpoints" title="Return endpoints for a specified interface" data-args="6f6c9429-c3d1-509d-807f-88dbc6482c1e" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="query.widgets" title="Return widgets for a specified interface" data-args="6f6c9429-c3d1-509d-807f-88dbc6482c1e" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="query.nodelist" title="Return a list of nodes under the current node using depth-first recursion" data-args='[]' />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="query.get" title="Get the value of an attribute" data-args='["SoundfileLoop","StereoSoundfiler1","dataDirectory"]' />
+                    </li>
+                </ul>
+                <h4>Command</h4>
+                <ul>
+                    <li>
+                        <button class="btn btn-primary" data-method="command.set" title="Set the value of an attribute" data-args='[]|attName' />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="command.new" title="Create a new node on the server" data-args='className|nodeName|[]' />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="command.delete" title="Delete a node from the server" data-args='[]' />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="command.rename" title="Rename a node on the server" data-args='["path"]|nodeName' />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="command.save" title="Save all nodes including and below a given node on the server to a path on the filesystem" data-args='["path"]|param' />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="command.load" title="Load all nodes including and below a given node from the filesystem beneath the path given to the given node on the server" data-args='../../../blocks/SoundfileLoop.integra|[]' />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="command.move" title="Move a node on the server" data-args='["nodePath"]|["newNodeParentPath"]' />
+                    </li>
+                </ul>
+                <h4>Module</h4>
+                <ul>
+                    <li>
+                        <button class="btn btn-primary" data-method="module.unloadunusedembedded" title="Remove orphaned embedded modules" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="module.installintegramodulefile" title="Install 3rd party module from module file" data-args="moduleFilePath" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="module.installembeddedmodule" title="Install embedded module" data-args="moduleGuid" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="module.uninstallmodule" title="Uninstall 3rd party module" data-args="moduleGuid" />
+                    </li>
+                    <li>
+                        <button class="btn btn-primary" data-method="module.loadmoduleindevelopment" title="Temporarily install module-in-development - only for this lifecycle of libIntegra" data-args="moduleFilePath" />
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-8 request">
+                <h4>Request</h4>
+                <textarea cols="40" readonly="readonly"></textarea>
+            </div>
+            <div class="col-md-8 response">
+                <h4>Response</h4>
+                <textarea cols="40" readonly="readonly"></textarea>
+            </div>
         </div>
-        
-        <div class="col-md-8 request">
-            <h4>Request</h4>
-            <textarea readonly=readonly></textarea>
-        </div>
-        
-        <div class="col-md-8 response">
-            <h4>Response</h4>
-            <textarea readonly=readonly></textarea>
-        </div>
-      </div>
-
-    </div><!-- /.container -->
-
-    <div id="modal-waiting" style="display:none;">
-      <div style="position:absolute;top:50%;left:50%;z-index:1050;">
-        <img id="modal-gif" src="img/ajax-loader.gif" style="position:relative;top:-15px;left:-15px;" />
-      </div>
-      <div class="modal-backdrop in" style="background-color:white;"></div>
     </div>
-
+    <!-- /.container -->
+    <div id="modal-waiting" style="display: none;">
+        <div style="position: absolute; top: 50%; left: 50%; z-index: 1050;">
+            <img id="modal-gif" src="img/ajax-loader.gif" alt="waiting" style="position: relative; top: -15px; left: -15px;" />
+        </div>
+        <div class="modal-backdrop in" style="background-color: white;">
+        </div>
+    </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="js/jquery.min.js"></script>
-    <script src="js/jquery-ui.js"></script>
-    <script src="js/modernizr.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/mimic.js"></script>
-
-
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/modernizr.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/mimic.js"></script>
     <script type="text/javascript">
 
-      var port = location.hash ? location.hash.substring(1) : "8000";
-      port = isNaN(port) ? 8000 : Number(port);
+        var port = location.hash ? location.hash.substring(1) : "8000";
+        port = isNaN(port) ? 8000 : Number(port);
 
-      var dataTarget = "http://localhost:8000".replace("localhost",location.host).replace("8000",String(port));
-      
-      function formatDate(date)
-      {
-        return date.getHours() + ":"
+        var dataTarget = "http://localhost:8000".replace("localhost", location.host).replace("8000", String(port));
+
+        function formatDate(date)
+        {
+            return date.getHours() + ":"
           + date.getMinutes() + ":"
           + date.getSeconds() + "."
           + date.getMilliseconds();
-      }
-      function formatMilliseconds(ms)
-      {
-        return Math.abs(ms)<1000 ? (ms+"ms") : (ms/1000+"s")
-      }
-      function autoHeight(){
-        $(this).height(0);
-        var padding = 2 * parseInt($(this).css("padding"));
-        if(isNaN(padding)) padding=0;
-        $(this).height(this.scrollHeight-padding);
-      }
-
-      function query(target,method,params)
-      {
-        var request = new XmlRpcRequest(target, method);
-        
-        var paramArray = (params||"").split("|");
-        for(var p in paramArray)
+        }
+        function formatMilliseconds(ms)
         {
-          var param = paramArray[p];
-          if(param[0]=='['||param[0]=='{') param = JSON.parse(param);
-          if(typeof param == "string" && param=="") continue;
-          if(typeof param != "undefined") request.addParam(param);
+            return Math.abs(ms) < 1000 ? (ms + "ms") : (ms / 1000 + "s")
+        }
+        function autoHeight()
+        {
+            $(this).height(0);
+            var padding = 2 * parseInt($(this).css("padding"));
+            if (isNaN(padding)) padding = 0;
+            $(this).height(this.scrollHeight - padding);
         }
 
-        var state = {request:{},response:{}};
-        
-        state.request.timestamp = new Date();
-        state.request.json = JSON.stringify(request.params, null, 2);
-        state.request.status = "Request <small>(submitted "+formatDate(state.request.timestamp)+")</small>";
-        
-        $(".request h4").html(state.request.status);
-        $(".request textarea").text(state.request.json);
-    
-        try
+        function query(target, method, params)
         {
-          var response = request.send();
-          state.response.xml = response.parseXML();
-          state.response.timestamp = new Date();
-          state.response.json = JSON.stringify(state.response.xml, null, 2);
-          state.response.status = "Response <small>(received "+formatDate(state.response.timestamp)+" = "+formatMilliseconds(state.response.timestamp-state.request.timestamp)+" duration for round trip)</small>";
-        }
-        catch(error)
-        {
-          state.response.timestamp = new Date();
-          state.response.json = error.message;
-          state.response.status = "Response <small>(aborted after "+formatMilliseconds(state.response.timestamp-state.request.timestamp)+")</small>";
+            var request = new XmlRpcRequest(target, method);
+
+            var paramArray = (params || "").split("|");
+            for (var p in paramArray)
+            {
+                var param = paramArray[p];
+                if (param[0] == '[' || param[0] == '{') param = JSON.parse(param);
+                if (typeof param == "string" && param == "") continue;
+                if (typeof param != "undefined") request.addParam(param);
+            }
+
+            var state = { request: {}, response: {} };
+
+            state.request.timestamp = new Date();
+            state.request.json = JSON.stringify(request.params, null, 2);
+            state.request.status = "Request <small>(submitted " + formatDate(state.request.timestamp) + ")</small>";
+
+            $(".request h4").html(state.request.status);
+            $(".request textarea").text(state.request.json);
+
+            try
+            {
+                var response = request.send();
+                state.response.xml = response.parseXML();
+                state.response.timestamp = new Date();
+                state.response.json = JSON.stringify(state.response.xml, null, 2);
+                state.response.status = "Response <small>(received " + formatDate(state.response.timestamp) + " = " + formatMilliseconds(state.response.timestamp - state.request.timestamp) + " duration for round trip)</small>";
+            }
+            catch (error)
+            {
+                state.response.timestamp = new Date();
+                state.response.json = error.message;
+                state.response.status = "Response <small>(aborted after " + formatMilliseconds(state.response.timestamp - state.request.timestamp) + ")</small>";
+            }
+
+            $(".response h4").html(state.response.status);
+            $(".response textarea").text(state.response.json)
+
+            $("textarea").each(autoHeight);
         }
 
-        $(".response h4").html(state.response.status);
-        $(".response textarea").text(state.response.json)
-        
-        $("textarea").each(autoHeight);
-      }
-      
-      $(function()
-      {
-        $(".container").show(0);
-        $("#modal-waiting").hide();
-        $("#target").html(dataTarget);
-        $("[method]").each(function() {
-          $btn = $(this);
-          $btn.html("<i class='glyphicon glyphicon-envelope'></i> <span>"+$btn.attr("method")+"</span>");
-        }).click(function() {
-          $btn = $(this);
-          $("#modal-waiting").show({duration:200, done:function() {
-            var dataTarget = $("#target").text();
-            query(dataTarget, $btn.attr("method"), $btn.attr("data"));
-            $(this).hide({duration:800});
-          }});
+        $(function()
+        {
+            $(".container").show(0);
+            $("#modal-waiting").hide();
+            $("#target").html(dataTarget);
+            $("[data-method]").each(function()
+            {
+                $btn = $(this);
+                $btn.html("<i class='glyphicon glyphicon-envelope'></i> <span>" + $btn.attr("data-method") + "</span>");
+            }).click(function()
+            {
+                $btn = $(this);
+                $("#modal-waiting").show({ duration: 200, done: function()
+                {
+                    var dataTarget = $("#target").text();
+                    query(dataTarget, $btn.attr("data-method"), $btn.attr("data-args"));
+                    $(this).hide({ duration: 800 });
+                }
+                });
+            });
         });
-      });
     </script>
-    
-  </body>
+</body>
 </html>

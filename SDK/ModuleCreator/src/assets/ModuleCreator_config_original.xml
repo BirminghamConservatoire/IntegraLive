@@ -1,0 +1,152 @@
+<modulecreatorconfig>
+
+	<!--  integradeveloper is an easter-egg tag which allows the use of 'core' and 'implemented in libIntegra' settings -->
+	  <!-- <integradeveloper/>	  -->
+
+	<!--  bundlemaker is an easter-egg tag which switches on Module Creator's 'bundle maker' functionality   -->
+	<!--  <bundlemaker/>	 --> 
+
+	<!-- 		standard tags - these are presented in the combo box control as defaults						-->
+	<standardtags>
+		<standardtag>simple</standardtag>
+		<standardtag>complex</standardtag>
+		<standardtag>processing</standardtag>
+		<standardtag>synthesis</standardtag>
+		<standardtag>analysis</standardtag>
+		<standardtag>delay</standardtag>
+		<standardtag>filter</standardtag>
+		<standardtag>spectral</standardtag>
+		<standardtag>granular</standardtag>
+		<standardtag>distortion</standardtag>
+		<standardtag>dynamics</standardtag>
+		<standardtag>resonance</standardtag>
+		<standardtag>pitch</standardtag>
+		<standardtag>panning</standardtag>
+		<standardtag>reverb</standardtag>
+		<standardtag>soundfile</standardtag>
+		<standardtag>input</standardtag>
+		<standardtag>output</standardtag>
+	</standardtags>	
+
+
+	<!--        configuration of paths 													-->
+	<paths>
+
+		<!--			windows-specific paths											-->
+		<windows>
+			<!--		path to template modules directory, relative to Module Creator	-->
+			<templatespath>..\templates\</templatespath>
+			<hostpath>..\..\host\bin\pd.exe</hostpath>
+			<fileviewerpath>Windows\explorer.exe</fileviewerpath>
+			<documentspath>..\..\documentation</documentspath>
+			<integralivepath>..\..\gui\Integra Live.exe</integralivepath>
+		</windows>
+		
+		<!--			mac-specific paths												-->
+		<mac>
+			<!--		path to template modules directory, relative to Module Creator	-->
+            <templatespath>./templates/</templatespath>
+			<hostpath>./Integra Live.app/Contents/Resources/host/bin/pd_integra</hostpath>
+			<fileviewerpath>/usr/bin/open</fileviewerpath>
+			<documentspath>./documentation</documentspath>			
+			<integralivepath>./Integra Live.app/Contents/MacOS/Integra Live</integralivepath>
+		</mac>
+	</paths>
+
+	<!-- 		arguments to be passed into host executable on startup							-->
+	<hostargs>
+		<hostarg>-noprefs</hostarg>
+	</hostargs>	
+	
+
+	<!-- 		help links.  Can be web or local relative to documentation directory			-->
+	<helplinks>
+		<helplink name="Module Development Quick Start">
+			html/module-development-quickstart/module-development-quickstart.htm
+		</helplink>
+		<helplink name="Module Development Guide">
+			html/module-development-guide/module-development-guide.htm
+		</helplink>
+		<helplink name="Integra Live Website">
+			http://www.integralive.org
+		</helplink>
+		<helplink name="User Forum...">
+			http://integralive.org/forum
+		</helplink>
+	</helplinks>		
+	
+	
+	
+    <!--        available widgets:									-->
+    <widgets>
+        <widget name="Checkbox" minWidth="16" minHeight="16" defaultWidth="64" defaultHeight="64" maxWidth="320" maxHeight="320">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="DryWetBalance" minWidth="92" minHeight="64" defaultWidth="240" defaultHeight="180" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="EarlyLateBalance" minWidth="92" minHeight="64" defaultWidth="240" defaultHeight="180" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="ExampleBalance" minWidth="92" minHeight="64" defaultWidth="240" defaultHeight="180" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="ExampleFileLoadDialog" minWidth="72" minHeight="24" defaultWidth="150" defaultHeight="60" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="FileLoadDialog" minWidth="72" minHeight="24" defaultWidth="150" defaultHeight="60" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="FileSaveDialog" minWidth="72" minHeight="24" defaultWidth="150" defaultHeight="60" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="Knob" minWidth="32" minHeight="32" defaultWidth="120" defaultHeight="120" maxWidth="320" maxHeight="320">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="LocateFolderDialog" minWidth="72" minHeight="24" defaultWidth="150" defaultHeight="60" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="NumberBox" minWidth="32" minHeight="32" defaultWidth="120" defaultHeight="80" maxWidth="320" maxHeight="320">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="PanoramaBalance" minWidth="92" minHeight="64" defaultWidth="240" defaultHeight="180" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="PlayButton" minWidth="16" minHeight="16" defaultWidth="64" defaultHeight="64" maxWidth="320" maxHeight="320">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="RadioGroup" minWidth="48" minHeight="48" defaultWidth="120" defaultHeight="120" maxWidth="320" maxHeight="512">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="RangeSlider" minWidth="64" minHeight="48" defaultWidth="256" defaultHeight="80" maxWidth="1024" maxHeight="1024">
+            <attribute>min</attribute>
+            <attribute>max</attribute>
+        </widget>
+        <widget name="RecButton" minWidth="16" minHeight="16" defaultWidth="64" defaultHeight="64" maxWidth="320" maxHeight="320">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="Slider" minWidth="32" minHeight="32" defaultWidth="256" defaultHeight="48" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="SoundFileLoadDialog" minWidth="72" minHeight="24" defaultWidth="150" defaultHeight="60" maxWidth="1024" maxHeight="1024">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="StopButton" minWidth="16" minHeight="16" defaultWidth="64" defaultHeight="64" maxWidth="320" maxHeight="320">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="Trigger" minWidth="16" minHeight="16" defaultWidth="64" defaultHeight="64" maxWidth="320" maxHeight="320">
+            <attribute>value</attribute>
+        </widget>
+        <widget name="VuMeter" minWidth="24" minHeight="24" defaultWidth="20" defaultHeight="128" maxWidth="512" maxHeight="512">
+            <attribute>level</attribute>
+        </widget>
+        <widget name="XYPanPad" minWidth="160" minHeight="160" defaultWidth="240" defaultHeight="240" maxWidth="1000" maxHeight="1000">
+            <attribute>x</attribute>
+            <attribute>y</attribute>
+        </widget>
+        <widget name="XYScratchPad" minWidth="160" minHeight="160" defaultWidth="240" defaultHeight="240" maxWidth="1000" maxHeight="1000">
+            <attribute>x</attribute>
+            <attribute>y</attribute>
+        </widget>
+    </widgets>
+</modulecreatorconfig>

@@ -1,0 +1,4 @@
+#N canvas 472 200 305 298 10;
+#X obj 93 66 inlet;
+#X obj 93 180 ntg_send_ \$1 scalar;
+#X connect 0 0 1 0;

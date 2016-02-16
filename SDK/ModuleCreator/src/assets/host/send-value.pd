@@ -1,4 +1,4 @@
-#N canvas 542 64 401 630 10;
+#N canvas 146 103 401 630 10;
 #X obj 106 312 s integra-broadcast-receive;
 #X obj 102 -177 loadbang;
 #X msg 106 266 1 \$1 \$2;
@@ -9,8 +9,8 @@
 #X obj 255 -55 s \$0-param;
 #X msg 255 -77 label \$1;
 #X obj 255 -104 symbol \$2;
-#X obj 100 100 cnv 15 100 50 empty \$0-param empty 2 11 1 12 -233017
--66577 0;
+#X obj 100 100 cnv 15 100 50 empty \$0-param parameterThree 2 11 1
+12 -233017 -66577 0;
 #X obj 100 100 \$1-box \$0;
 #X msg 121 -33 range \$1 \$2;
 #X obj 121 -104 pack \$1 \$4 \$5;

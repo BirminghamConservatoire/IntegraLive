@@ -20,31 +20,31 @@
 #X connect 2 0 1 0;
 #X connect 4 0 7 0;
 #X connect 7 0 6 0;
-#X restore -353 8 pd host;
-#X obj -286 7 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+#X restore 24 12 pd host;
+#X obj 83 13 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
 0;
-#X text -282 5 Toggle Audio On / Off;
-#X obj -285 32 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
+#X text 87 12 Toggle Audio On / Off;
+#X obj 83 36 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
 0;
-#X obj -275 42 tgl 40 0 empty empty empty 17 7 0 40 -262144 -1 -1 0
+#X obj 93 46 tgl 40 0 empty empty empty 17 7 0 40 -262144 -1 -1 0 1
+;
+#X msg 93 107 \; pd dsp \$1;
+#X msg 254 107 \; pd-DummyStereoProcessor.pd vis \$1;
+#X obj 244 13 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+0;
+#X obj 244 34 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
+0;
+#X obj 254 44 tgl 40 1 empty empty empty 17 7 0 40 -262144 -1 -1 1
 1;
-#X msg -275 103 \; pd dsp \$1;
-#X msg -114 103 \; pd-DummyStereoProcessor.pd vis \$1;
-#X obj -125 7 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
+#X text 248 12 Show / Hide Module;
+#X obj 500 12 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
 0;
-#X obj -124 30 cnv 15 60 60 empty empty empty 20 12 0 14 -228856 -66577
-0;
-#X obj -114 40 tgl 40 1 empty empty empty 17 7 0 40 -262144 -1 -1 1
-1;
-#X text -121 5 Show / Hide Module;
-#X obj 132 6 cnv 15 150 15 empty empty empty 20 12 0 14 -261234 -66577
-0;
-#X text 136 4 Test Module Parameters;
-#X obj 132 30 send-value float parameterOne 1.22;
-#X obj 236 30 send-value symbol parameterTwo Hello;
-#X obj 340 30 send-value bang parameterThree bang;
-#X obj 444 30 send-value float parameterFour 0.1;
-#X obj 548 30 send-value float parameterFive 0.3;
-#X obj 132 84 send-value float parameterSix 0.1;
+#X text 504 11 Test Module Parameters;
+#X obj 708 34 send-value bang parameterThree bang;
+#X obj 500 34 send-value float parameterOne 1.22;
+#X obj 604 34 send-value symbol parameterTwo Hello;
+#X obj 812 34 send-value float parameterFour 0.1;
+#X obj 916 34 send-value float parameterFive 0.3;
+#X obj 500 88 send-value float parameterSix 0.1;
 #X connect 4 0 5 0;
 #X connect 9 0 6 0;

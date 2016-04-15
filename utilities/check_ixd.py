@@ -1,3 +1,4 @@
+
 # coding: utf-8
 import xml.etree.ElementTree as ET
 import pprint
@@ -20,6 +21,8 @@ block_envelopes = []
 blocks = []
 trackMap = {}
 envelopesWithoutValidConnections = []
+
+print ""
 
 # Find all BlockEnvelope instances
 for object in root.iter('object'):
@@ -91,7 +94,12 @@ for envelope in block_envelopes:
 
 print ""
 print "Suspected erroneous nodes:"
+print ""
 pp.pprint(envelopesWithoutValidConnections)
+
+print ""
+print "Details:"
+print ""
 
 for track in trackMap:
     blocks = trackMap[track]["blocks"]
@@ -104,6 +112,7 @@ for track in trackMap:
     if connections_no_block:
         print "%s: the following Connection targetPaths have no corresponding Block: %s" % (track, connections_no_block)
 
+print ""
 
 for track in trackMap:
     trackMap[track]["blocks"] = list(trackMap[track]["blocks"])

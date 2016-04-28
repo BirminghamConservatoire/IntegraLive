@@ -9,7 +9,7 @@ PDPREFIX=pd-$(PDVERSION)
 PDAPPNAME=$(PDPREFIX).app
 PDGZNAME=$(PDPREFIX).mac.tar.gz
 EXTRABINDIR=../../libIntegra/externals/macosx/extra
-PDDLBASE=http://garr.dl.sourceforge.net/project/pure-data/pure-data
+PDDLBASE=http://downloads.sourceforge.net/project/pure-data/pure-data
 CREATORAPPNAME=$(CREATORPRODUCT).app
 RESDIR=Contents/Resources
 APPRESDIR=$(APPNAME)/$(RESDIR)
@@ -86,7 +86,7 @@ server-clean:
 
 
 host:
-	curl $(PDDLBASE)/$(PDDLPATH)/$(PDGZNAME) > $(PDGZNAME)
+	curl -L $(PDDLBASE)/$(PDDLPATH)/$(PDGZNAME) > $(PDGZNAME)
 	tar zxf $(PDGZNAME)
 	cp -r $(EXTRABINDIR)/* $(PDAPPNAME)/Contents/Resources/extra
 

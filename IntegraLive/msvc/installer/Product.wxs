@@ -13,7 +13,7 @@
 
 		<Directory Id="TARGETDIR" Name="SourceDir">
 
-      <Merge Id="CRT" Language="0" SourceFile="c:\Program Files\Common Files\Merge Modules\microsoft_vc100_crt_x86.msm" DiskId="1" />
+      <Merge Id="CRT" Language="0" SourceFile="c:\Program Files (x86)\Common Files\Merge Modules\Microsoft_VC140_CRT_x86.msm" DiskId="1" />
 
       <Directory Id="DesktopFolder" Name="Desktop">
         <Component Id="DesktopShortcut" Guid="88CD27C2-ECC0-478D-B41F-2C6CA1B85CE3">
@@ -39,6 +39,9 @@
              
 
               <File Id="ExecutableFile" KeyPath="yes" Source="$(var.SourceDirectory)\gui\Integra Live.exe" />
+              <File Id="IntegraIcon.ico" Source="../../../GUI/src/icons/IntegraIcon.ico"  />
+              <File Id="ModuleIcon.ico" Source="../../../GUI/src/icons/ModuleIcon.ico"  />
+              <File Id="BundleIcon.ico" Source="../../../GUI/src/icons/BundleIcon.ico"  />
 
               <ProgId Id="IntegraLive.integra" Description="Integra File" Icon='IntegraIcon.ico'> 
                   <Extension Id="integra" ContentType="application/zip">
@@ -118,7 +121,7 @@
 
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="DesktopShortcut" />
-      <ComponentGroupRef Id="Product.Generated" />
+<!--      <ComponentGroupRef Id="Product.Generated" /> -->
       <MergeRef Id="CRT"/>
       
     </Feature>
@@ -130,7 +133,7 @@
       <ComponentRef Id="ModuleCreatorExecutableComponent" />
 
       <ComponentRef Id="ModuleCreatorApplicationShortcut" />
-      <ComponentGroupRef Id="Product.Generated" />
+<!--      <ComponentGroupRef Id="Product.Generated" /> -->
 
     </Feature>
 

@@ -1,3 +1,3 @@
 [submodule "libIntegra/externals/flext"]
 	path = libIntegra/externals/flext
-	url = https://github.com/grrrr/flext.git
+	url = https://github.com/jamiebullock/flext.git

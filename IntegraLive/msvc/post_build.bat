@@ -28,10 +28,10 @@ ECHO Copying modules
 ECHO DONE
 ECHO.
 
-ECHO Copying host
-	CALL copy_host.bat ..\%1
-ECHO DONE
-ECHO.
+REM ECHO Copying host
+REM	CALL copy_host.bat ..\%1
+REM ECHO DONE
+REM ECHO.
 
 ECHO Copying GUI block library
 	CALL copy_block_library.bat ..\%1\gui\BlockLibrary
@@ -40,7 +40,7 @@ ECHO.
 
 IF %1 EQU Debug (
  ECHO Copying GUI debug block library
-	CALL copy_block_library.bat ..\%1\gui-debug\BlockLibrary
+	copy_block_library.bat ..\%1\gui-debug\BlockLibrary
  ECHO DONE
  ECHO.
 )

@@ -13,7 +13,7 @@ $LastChangedBy: thomas $
 #ifndef __FSPLAY_H
 #define __FSPLAY_H
 
-#define FLEXT_ATTRIBUTES 1
+//#define FLEXT_ATTRIBUTES 1
 
 #include <flext.h>
 

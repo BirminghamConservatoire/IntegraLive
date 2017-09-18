@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -14,18 +14,19 @@
     <ProjectGuid>{FC44D9BF-1E20-44A7-B456-BEECA84DA30F}</ProjectGuid>
     <RootNamespace>libIntegra</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -48,12 +49,18 @@
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Clean</CustomBuildBeforeTargets>
     <CustomBuildBeforeTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Clean</CustomBuildBeforeTargets>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>$(WindowsSdkDir)\Lib\winv6.3\km\$(PlatformTarget)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>$(WindowsSdkDir)\Lib\winv6.3\km\$(PlatformTarget)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/win32/libsndfile/include;../externals/boost;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;MSW;_DEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;MSW;HAVE_STRUCT_TIMESPEC;_DEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -105,12 +112,14 @@ call copy_dependencies.bat ..\bin\Debug\ Debug
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>../;visual_studio_includes;../externals/win32/iconv;../externals/win32/pthreads-win32/include;../externals/win32/lua-5.2.0/include;../externals/win32/libxml2-2.7.8.win32/include;../externals/win32/zlib-1.2.5/include;../externals/win32/fftw-3.3.3;../externals/flext/source;../externals/boost;../externals/win32/libsndfile/include;../externals/portaudio/include;../externals/portmidi/pm_common;../externals/libpd/libpd_wrapper;../externals/libpd/libpd_wrapper/util;../externals/libpd/pure-data/src;../externals/libpd/cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;MSW;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;MSW;HAVE_STRUCT_TIMESPEC;NDEBUG;_WINDOWS;_USRDLL;LIBINTEGRA_EXPORTS;_CRT_SECURE_NO_WARNINGS;PD;FLEXT_THREADS;FLEXT_ATTRIBUTES=1;FLEXT_USE_SIMD;FLEXT_USE_CMEM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <AdditionalDependencies>pthreadVC2.lib;libxml2.lib;zdll.lib;lua52.lib;Version.lib;libpd.lib;libfftw3f-3.lib;portaudio_x86.lib;portmidi.lib;flext-pd_t.lib;libsndfile-1.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>

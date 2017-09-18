@@ -39,9 +39,9 @@
              
 
               <File Id="ExecutableFile" KeyPath="yes" Source="$(var.SourceDirectory)\gui\Integra Live.exe" />
-              <File Id="IntegraIcon.ico" Source="../../../GUI/src/icons/IntegraIcon.ico"  />
+             <!-- <File Id="IntegraIcon.ico" Source="../../../GUI/src/icons/IntegraIcon.ico"  />
               <File Id="ModuleIcon.ico" Source="../../../GUI/src/icons/ModuleIcon.ico"  />
-              <File Id="BundleIcon.ico" Source="../../../GUI/src/icons/BundleIcon.ico"  />
+              <File Id="BundleIcon.ico" Source="../../../GUI/src/icons/BundleIcon.ico"  /> -->
 
               <ProgId Id="IntegraLive.integra" Description="Integra File" Icon='IntegraIcon.ico'> 
                   <Extension Id="integra" ContentType="application/zip">

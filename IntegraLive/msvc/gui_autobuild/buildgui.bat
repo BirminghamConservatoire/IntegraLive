@@ -45,7 +45,7 @@ echo built swf.
 rem package it
 
 echo packaging...
-%ADT% -package -storetype pkcs12 -keystore integraCert.pfx -storepass integra -tsa "http://sha256timestamp.ws.symantec.com/sha256/timestamp" -target bundle "%olddirectory%\%1" IntegraLive-app.xml IntegraLive.swf icons assets
+call %ADT% -package -storetype pkcs12 -keystore integraCert.pfx -storepass integra -tsa "http://sha256timestamp.ws.symantec.com/sha256/timestamp" -target bundle "%olddirectory%\%1" IntegraLive-app.xml IntegraLive.swf icons assets
 echo packaged.
 
 del IntegraLive.swf

@@ -20,7 +20,7 @@ set ENVIRONMENT_PATH=/..
 set FLEX_PATH_FILE=flex_path.txt
 set FLEX_PATH_FILE_ESCAPED=flex_path_escaped.txt
 echo %FLEX_SDK_PATH%>%FLEX_PATH_FILE%
-%olddirectory%/gui_autobuild/sed -e "s|\\|/|g" -e "s| |\\ |g" -e "s/*//;s/ *$//" %FLEX_PATH_FILE% > %FLEX_PATH_FILE_ESCAPED%
+"%olddirectory%/gui_autobuild/sed" -e "s|\\|/|g" -e "s| |\\ |g" -e "s/*//;s/ *$//" %FLEX_PATH_FILE% > %FLEX_PATH_FILE_ESCAPED%
 
 set /p ADOBE_FLEX_PATH=<%FLEX_PATH_FILE_ESCAPED%
 del %FLEX_PATH_FILE%
@@ -28,13 +28,13 @@ del %FLEX_PATH_FILE_ESCAPED%
 
 rem build app-config.xml
 
-%olddirectory%/gui_autobuild/sed -e "s|@ENVIRONMENT_PATH@|%ENVIRONMENT_PATH%|g" -e "s|@ADOBE_FLEX_PATH@|%ADOBE_FLEX_PATH%|g" %CONFIG%.in > %CONFIG%
+"%olddirectory%/gui_autobuild/sed" -e "s|@ENVIRONMENT_PATH@|%ENVIRONMENT_PATH%|g" -e "s|@ADOBE_FLEX_PATH@|%ADOBE_FLEX_PATH%|g" %CONFIG%.in > %CONFIG%
 
 rem build IntegraLive-app.xml
 
 set /p VERSION_NUMBER=<../../BASEVERSION
 set /p VERSION_LABEL=<../../FULLVERSION
-%olddirectory%/gui_autobuild/sed -e "s|<versionNumber>\(.*\)</versionNumber>|<versionNumber>%VERSION_NUMBER%</versionNumber>|g" -e "s|<versionLabel>\(.*\)</versionLabel>|<versionLabel>Version %VERSION_LABEL%</versionLabel>|g" IntegraLive-app.xml.in > IntegraLive-app.xml
+"%olddirectory%/gui_autobuild/sed" -e "s|<versionNumber>\(.*\)</versionNumber>|<versionNumber>%VERSION_NUMBER%</versionNumber>|g" -e "s|<versionLabel>\(.*\)</versionLabel>|<versionLabel>Version %VERSION_LABEL%</versionLabel>|g" IntegraLive-app.xml.in > IntegraLive-app.xml
 
 rem build the swf
 

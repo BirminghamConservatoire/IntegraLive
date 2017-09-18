@@ -9,16 +9,16 @@ set olddirectory=%CD%
 
 cd ..\..\documentation\markdown
 
-for /r %%f in (*.md) do (
-	CALL %olddirectory%\documentation_deployment\compileMarkdown.bat %%f %olddirectory%\%1\documentation\html\
+for /f "delims=" /r %%f in (*.md) do (
+	"%olddirectory%\documentation_deployment\compileMarkdown.bat" "%%f" %olddirectory%\%1\documentation\html\
 )
 
 REM cd ..\..\documentation\page-images
 
 REM del shadow-*.png /q
 
-REM for /r %%f in (*.png) do (
-REM	CALL %olddirectory%\documentation_deployment\addDropShadow.bat %%f %olddirectory% 
+REM for /f "delims=" /r %%f in (*.png) do (
+REM	CALL "%olddirectory%\documentation_deployment\addDropShadow.bat" %%f %olddirectory% 
 REM )
 
 

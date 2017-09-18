@@ -45,7 +45,7 @@ echo built swf.
 rem package it
 
 echo packaging...
-call %ADT% -package -storetype pkcs12 -keystore module_creator_certificate.p12 -storepass password -target bundle %olddirectory%\%1 ModuleCreator-app.xml ModuleCreator.swf icons assets
+call %ADT% -package -storetype pkcs12 -keystore integraCert.pfx -storepass integra -tsa "http://sha256timestamp.ws.symantec.com/sha256/timestamp" -target bundle "%olddirectory%\%1" ModuleCreator-app.xml ModuleCreator.swf icons assets
 echo packaged.
 
 del ModuleCreator.swf

@@ -1,0 +1,8 @@
+<Blocks>
+<Block>AudioThru.integra</Block>
+<Block>BasicDelay.integra</Block>
+<Block>SoundfileLoop.integra</Block>
+<Block>SpectralDelay.integra</Block>
+<Block>LiveViewControls.integra</Block>
+<Block>ScriptedFreezer.integra</Block>
+</Blocks>

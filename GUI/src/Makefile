@@ -61,7 +61,7 @@ key:
 	fi
 
 app: IntegraLive.swf key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -target bundle Integra\ Live.app IntegraLive-app.xml IntegraLive.swf assets icons
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass integra -tsa "http://sha256timestamp.ws.symantec.com/sha256/timestamp" -target bundle Integra\ Live.app IntegraLive-app.xml IntegraLive.swf assets icons
 	# Do this separately otherwise adt complains:
 	# "is not part of a Mac OS X Native Extensions framework"
 	cp -r BlockLibrary $(PRODUCT).app/Contents/Resources

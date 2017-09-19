@@ -57,7 +57,7 @@ key:
 	fi
 
 app: $(SWF) key
-	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass $(PASSWORD) -target bundle $(PRODUCT).app $(DESCRIPTOR) $(SWF) $(ASSETS) icons
+	$(ADT) -package -storetype pkcs12 -keystore $(CERTIFICATE) -storepass $(PASSWORD) -tsa "http://sha256timestamp.ws.symantec.com/sha256/timestamp" -target bundle $(PRODUCT).app $(DESCRIPTOR) $(SWF) $(ASSETS) icons
 	cp icons/*.icns $(PRODUCT).app/Contents/Resources/
 	# Remove unused .icns and .ico files but leave PNG icons are some are used in-app
 	rm $(PRODUCT).app/Contents/Resources/icons/*.icns

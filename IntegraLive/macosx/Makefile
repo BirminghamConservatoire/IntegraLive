@@ -60,7 +60,7 @@ dropdmg: $(DEFAULTBUILD)
 	dropdmg --config-name="Integra Live" $(PRODUCT)
 	-rm -rf $(PRODUCT)
 
-creator-dropdmg:
+creator-dropdmg: creator
 	-mkdir $(CREATORPRODUCT)
 	-cp .VolumeIcon.icns $(CREATORPRODUCT)
 	-cp -R $(CREATORAPPNAME) $(CREATORPRODUCT)
@@ -94,7 +94,7 @@ host:
 host-clean:
 	rm -rf $(PDGZNAME) $(PDAPPNAME)
 
-creator: documentation
+creator: documentation host
 	@if test ! -d $(APPNAME); \
 	then echo $(APPNAME) does not exist. Run 'make release' first. && exit 2; \
 	fi

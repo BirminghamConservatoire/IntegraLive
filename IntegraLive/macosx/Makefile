@@ -52,7 +52,7 @@ dmg: $(DEFAULTBUILD)
 	hdiutil convert $(PRODUCT)_temp.dmg -format UDZO -imagekey zlib-level=9 -o $(PRODUCT).dmg
 	rm $(PRODUCT)_temp.dmg
 
-dropdmg:
+dropdmg: $(DEFAULTBUILD)
 	-mkdir $(PRODUCT)
 	-cp .VolumeIcon.icns $(PRODUCT)
 	-cp -R $(APPNAME) $(PRODUCT)
@@ -130,6 +130,7 @@ clean: server-clean gui-clean host-clean
 	-diskutil unmount $(PRODUCT)
 	-rm -rf $(APPNAME)
 	-rm -rf $(PRODUCT).dmg
+	-rm -rf $(PRODUCT)
 	-rm -rf $(CREATORAPPNAME)
 
 maintainer-clean: clean dependencies-clean

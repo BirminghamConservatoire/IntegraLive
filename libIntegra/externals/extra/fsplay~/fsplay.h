@@ -13,9 +13,9 @@ $LastChangedBy: thomas $
 #ifndef __FSPLAY_H
 #define __FSPLAY_H
 
-//#define FLEXT_ATTRIBUTES 1
+#define FLEXT_ATTRIBUTES 1
 
-#include <flext.h>
+#include "flext.h"
 
 #if !defined(FLEXT_VERSION) || (FLEXT_VERSION < 500)
 #error You need at least flext version 0.5.0

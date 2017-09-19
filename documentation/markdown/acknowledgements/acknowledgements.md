@@ -6,16 +6,15 @@ The software originally formed part of the EU-funded Integra Project, directed b
 
 The core Integra Live contributors are as follows:
 
-- **Jamie Bullock** — Project Manager &amp; Technical Lead
-- **Leighton Hargreaves** — Lead Developer
-- **Richard Cornock** — Lead Designer
+- **Jamie Bullock** — Lead Developer
 - **James Dooley** — Tester &amp; Module Developer
 - **Balandino Di Donato** — Tester &amp; Module Developer
-- **Tychonas Michailidis** — Tester
-
+- **Niccolo Granieri** — Tester &amp; Module Developer
 
 Other contributors include:
 
+- **Leighton Hargreaves** — GUI Development 
+- **Tychonas Michailidis** — Testing
 - **Daniel Beattie** — Interface Design
 - **Lessrain** — Graphic Design
 - **Thomas Musil** — Module Development

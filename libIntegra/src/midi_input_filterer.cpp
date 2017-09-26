@@ -127,7 +127,7 @@ namespace integra_internal
 		}
 
 		unsigned int channel_nibble = message & 0xF;
-		assert( channel_nibble >= 0 && channel_nibble < 0xF );
+		assert( channel_nibble >= 0 && channel_nibble <= 0xF );
 
 		unsigned int value1 = ( message & 0xFF00 ) >> 8;
 		unsigned int value2 = ( message & 0xFF0000 ) >> 16;

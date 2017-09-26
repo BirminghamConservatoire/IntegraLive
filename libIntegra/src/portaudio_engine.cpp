@@ -225,7 +225,7 @@ namespace integra_internal
 		if( new_input_device != paNoDevice && m_available_output_devices.count( input_device ) > 0 )
 		{
 			/* selecting duplex device */
-			m_selected_output_device = new_input_device;
+                        m_selected_output_device = m_available_output_devices[input_device];
 			m_number_of_output_channels = 0;
 		}
 
@@ -271,7 +271,7 @@ namespace integra_internal
 		if( new_output_device != paNoDevice && m_available_input_devices.count( output_device ) > 0 )
 		{
 			/* selecting duplex device */
-			m_selected_input_device = new_output_device;
+                        m_selected_input_device = m_available_input_devices[output_device];
 			m_number_of_input_channels = 0;
 		}
 
@@ -722,10 +722,22 @@ namespace integra_internal
 			initialize_stream_parameters( output_parameters, m_selected_output_device, true );
 
 			PaError supported = Pa_IsFormatSupported( &input_parameters, &output_parameters, m_sample_rate );
-			if( supported != paFormatIsSupported )
+			if( supported == paInvalidSampleRate )
 			{
 				m_sample_rate = get_default_sample_rate( m_selected_input_device );
+                INTEGRA_TRACE_VERBOSE << "SAMPLERATE NOT SUPPORTED, SET TO: " << m_sample_rate;
 			}
+            else if ( supported == paInvalidChannelCount )
+            {
+                if (!input_parameters.channelCount)
+                {
+                    input_parameters.channelCount = 2;
+                }
+                if (!output_parameters.channelCount)
+                {
+                    output_parameters.channelCount = 2;
+                }
+            }
 
 			PaError result = Pa_OpenStream( &m_duplex_stream, &input_parameters, &output_parameters, m_sample_rate, CDspEngine::samples_per_buffer, paNoFlag, duplex_callback, this );
 			if( result == paNoError )

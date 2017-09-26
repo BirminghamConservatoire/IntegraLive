@@ -162,14 +162,14 @@
 		7DB8170F18967D84005D7C1D /* midi_settings_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DB8170918967D84005D7C1D /* midi_settings_logic.h */; };
 		7DB8171018967D84005D7C1D /* portmidi_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DB8170A18967D84005D7C1D /* portmidi_engine.cpp */; };
 		7DB8171118967D84005D7C1D /* portmidi_engine.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DB8170B18967D84005D7C1D /* portmidi_engine.h */; };
+		7DC426421F791C4E00334F11 /* libpd-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC426411F791C4E00334F11 /* libpd-osx.a */; };
+		7DC426441F791C6D00334F11 /* libfftw3f.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC426431F791C6C00334F11 /* libfftw3f.a */; };
 		7DCA34FD189FEE460031BDDC /* lrshift~.c in Sources */ = {isa = PBXBuildFile; fileRef = 7DCA34F9189FEE460031BDDC /* lrshift~.c */; };
 		7DD407621AEF9E62005F44D2 /* copy.c in Sources */ = {isa = PBXBuildFile; fileRef = 7DD4075C1AEF9E62005F44D2 /* copy.c */; };
 		7DFC156218D9B9B600CA083C /* midi_control_input_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFC155E18D9B9B500CA083C /* midi_control_input_logic.cpp */; };
 		7DFC156318D9B9B600CA083C /* midi_control_input_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DFC155F18D9B9B500CA083C /* midi_control_input_logic.h */; };
 		7DFC156418D9B9B600CA083C /* midi_raw_input_logic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7DFC156018D9B9B500CA083C /* midi_raw_input_logic.cpp */; };
 		7DFC156518D9B9B600CA083C /* midi_raw_input_logic.h in Headers */ = {isa = PBXBuildFile; fileRef = 7DFC156118D9B9B500CA083C /* midi_raw_input_logic.h */; };
-		7DFC159018D9CCF800CA083C /* libfftw3f.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC158F18D9CCF800CA083C /* libfftw3f.a */; };
-		7DFC159418D9CD1600CA083C /* libpd-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159318D9CD1600CA083C /* libpd-osx.a */; };
 		7DFC159618D9CD2300CA083C /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159518D9CD2300CA083C /* libsndfile.a */; };
 		7DFC159818D9CD3100CA083C /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159718D9CD3100CA083C /* liblua.a */; };
 		7DFC159A18D9CD3D00CA083C /* libportaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DFC159918D9CD3D00CA083C /* libportaudio.a */; };
@@ -355,6 +355,8 @@
 		7DB8170918967D84005D7C1D /* midi_settings_logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_settings_logic.h; sourceTree = "<group>"; };
 		7DB8170A18967D84005D7C1D /* portmidi_engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = portmidi_engine.cpp; sourceTree = "<group>"; };
 		7DB8170B18967D84005D7C1D /* portmidi_engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = portmidi_engine.h; sourceTree = "<group>"; };
+		7DC426411F791C4E00334F11 /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../../externals/macosx/libpd/libpd-osx.a"; sourceTree = "<group>"; };
+		7DC426431F791C6C00334F11 /* libfftw3f.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f.a; path = "../../externals/macosx/fftw-3.3.3/libfftw3f.a"; sourceTree = "<group>"; };
 		7DCA34F7189FEE460031BDDC /* GNUmakefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GNUmakefile.am; sourceTree = "<group>"; };
 		7DCA34F8189FEE460031BDDC /* lrshift~-help.pd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "lrshift~-help.pd"; sourceTree = "<group>"; };
 		7DCA34F9189FEE460031BDDC /* lrshift~.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "lrshift~.c"; sourceTree = "<group>"; };
@@ -364,8 +366,6 @@
 		7DFC155F18D9B9B500CA083C /* midi_control_input_logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_control_input_logic.h; sourceTree = "<group>"; };
 		7DFC156018D9B9B500CA083C /* midi_raw_input_logic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi_raw_input_logic.cpp; sourceTree = "<group>"; };
 		7DFC156118D9B9B500CA083C /* midi_raw_input_logic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = midi_raw_input_logic.h; sourceTree = "<group>"; };
-		7DFC158F18D9CCF800CA083C /* libfftw3f.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f.a; path = "macosx/fftw-3.3.3/libfftw3f.a"; sourceTree = "<group>"; };
-		7DFC159318D9CD1600CA083C /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "macosx/libpd/libpd-osx.a"; sourceTree = "<group>"; };
 		7DFC159518D9CD2300CA083C /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = "macosx/libsndfile-1.0.26pre5/libsndfile.a"; sourceTree = "<group>"; };
 		7DFC159718D9CD3100CA083C /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = "macosx/lua-5.2.3/liblua.a"; sourceTree = "<group>"; };
 		7DFC159918D9CD3D00CA083C /* libportaudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libportaudio.a; path = "macosx/portaudio-19/libportaudio.a"; sourceTree = "<group>"; };
@@ -387,10 +387,10 @@
 				7DFC159A18D9CD3D00CA083C /* libportaudio.a in Frameworks */,
 				7DFC159818D9CD3100CA083C /* liblua.a in Frameworks */,
 				7D110745189FC8ED00B4A72E /* CoreAudio.framework in Frameworks */,
-				7DFC159418D9CD1600CA083C /* libpd-osx.a in Frameworks */,
 				7D110742189FC8C300B4A72E /* CoreMIDI.framework in Frameworks */,
 				7DFC159C18D9CD4900CA083C /* libportmidi_s.a in Frameworks */,
-				7DFC159018D9CCF800CA083C /* libfftw3f.a in Frameworks */,
+				7DC426421F791C4E00334F11 /* libpd-osx.a in Frameworks */,
+				7DC426441F791C6D00334F11 /* libfftw3f.a in Frameworks */,
 				7D21319B1892AE4300C270A7 /* libz.dylib in Frameworks */,
 				7D8452DD187DBCCD008639D2 /* libxml2.dylib in Frameworks */,
 				7DFC159618D9CD2300CA083C /* libsndfile.a in Frameworks */,
@@ -500,6 +500,7 @@
 				7D845227187DBBA4008639D2 /* src */,
 				7D8452DE187DBCE2008639D2 /* Libraries */,
 				7D8451D2187DB8CB008639D2 /* Products */,
+				7DC426401F791C4E00334F11 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -678,8 +679,6 @@
 		7D8452DF187DC023008639D2 /* externals */ = {
 			isa = PBXGroup;
 			children = (
-				7DFC158F18D9CCF800CA083C /* libfftw3f.a */,
-				7DFC159318D9CD1600CA083C /* libpd-osx.a */,
 				7DFC159518D9CD2300CA083C /* libsndfile.a */,
 				7D9B841418DC580100E71980 /* libflext-pd_t.a */,
 				7DFC159718D9CD3100CA083C /* liblua.a */,
@@ -729,6 +728,15 @@
 				7D975F6218DC515800EB28CB /* resample.hpp */,
 			);
 			path = "fsplay~";
+			sourceTree = "<group>";
+		};
+		7DC426401F791C4E00334F11 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7DC426431F791C6C00334F11 /* libfftw3f.a */,
+				7DC426411F791C4E00334F11 /* libpd-osx.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		7DCA34F6189FEE460031BDDC /* lrshift~ */ = {

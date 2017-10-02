@@ -9,4 +9,8 @@ copy "..\externals\xmlrpc-c\bin\%2-Win32\libxmlrpc_server_abyss.dll" "%1"
 copy "..\externals\xmlrpc-c\bin\%2-Win32\libxmlrpc_util.dll" "%1"
 copy "..\externals\xmlrpc-c\bin\%2-Win32\libxmlrpc_xmlparse.dll" "%1"
 copy "..\externals\xmlrpc-c\bin\%2-Win32\libxmlrpc_xmltok.dll" "%1"
+copy "..\externals\win32\libgcc_s_dw2-1.dll" "%1"
+copy "..\externals\win32\pthreadGC-3.dll" "%1"
+copy "..\externals\win32\msvcr100.dll" "%1"
+copy "..\externals\win32\libwinpthread-1.dll" "%1"
 

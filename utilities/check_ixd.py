@@ -36,6 +36,7 @@ for envelope in block_envelopes:
     parent = parent_map[envelope]
     envelopeName = envelope.get('name')
     trackName = parent.get('name')
+    fullEnvelopeName = trackName + "." + envelopeName
     # It would be great here if we could test if the parent is a Track, but since Tracks can be renamed the only thing we can do is check if the parent is a Container!
 
     expectedSourcePath = envelopeName + ".currentValue"
@@ -52,6 +53,14 @@ for envelope in block_envelopes:
     for connection in connections:
         sourcePath = connection.find("attribute[@name='sourcePath']").text
         targetPath = connection.find("attribute[@name='targetPath']").text
+        connectionName = trackName + "." + connection.get('name')
+
+        if sourcePath == None:
+            print "%s: [ERROR] No sourcePath attribute for connection " % connectionName
+        if targetPath == None:
+            print "%s: [ERROR] No targetPath attribute for connection " % connectionName
+        continue
+
         trackMap[trackName]["targets"].add(targetPath[:targetPath.find(".")])
 
         for child in parent.findall("object"):
@@ -77,16 +86,16 @@ for envelope in block_envelopes:
                        print "%s: connection targetPath connects to a valid endpoint" % envelopeName
                        targetPathValid = True
                    else:
-                       print "%s: [ERROR] target endpoint not found for connection" % envelopeName
+                       print "%s: [ERROR] target endpoint not found for connection" % fullEnvelopeName 
                else:
                    track = parent_map[connection]
                    print "%s: [ERROR] target node not found for connection %s" % (envelopeName, track.get('name') + "." + connection.get('name'))
-                   print "%s: [ERROR] targetPath was set to %s" % (envelopeName, targetPath)
+                   print "%s: [ERROR] targetPath was set to %s" % (fullEnvelopeName, targetPath)
             else:
                 print "%s: [ERROR] connection targetPath is of an invalid form"
 
     if not sourcePathFound:
-        print "%s: [ERROR] no Connection with expected sourcePath %s" % (envelopeName, expectedSourcePath)
+        print "%s: [ERROR] no Connection with expected sourcePath %s" % (fullEnvelopeName, expectedSourcePath)
 
     if not sourcePathFound or not targetPathValid:
         envelopesWithoutValidConnections.append(parent.get('name') + "." + envelopeName)

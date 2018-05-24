@@ -42,18 +42,32 @@ for envelope in block_envelopes:
 
     # Find all Connections under the parent
     connections = parent.findall("./*[@moduleId='36c9c7c5-b954-0a12-84f2-ded0de687886']")
+        
     sourcePathFound = False
     targetPathValid = False
+    connectionsFound = False
 
     if not trackMap.has_key(trackName):
         trackMap[trackName] = {"targets":Set([]), "blocks":Set([])}
 
+    # Check if the block has missing connections
+    if not connections:
+        print "No connections found for " + envelopeName + " on " + trackName
+    
     # For each connection check if sourcePath and targetPath are valid for the given BlockEnvelope
     for connection in connections:
+        connectionsFound = True
         sourcePath = connection.find("attribute[@name='sourcePath']").text
         targetPath = connection.find("attribute[@name='targetPath']").text
         trackMap[trackName]["targets"].add(targetPath[:targetPath.find(".")])
 
+        # Uncomment for debugging connections
+        #print "Module ID: " + connection.get('moduleId')
+        #print "Connection Name: " + connection.get('name')
+        #print "Track Name: " + trackName
+        #print "Expected Path: " + expectedSourcePath
+        #print "Source Path: " + sourcePath
+    
         for child in parent.findall("object"):
            nodeName = child.get("name")
            if nodeName.find("BlockEnvelope") == -1 and nodeName.find("Connection") == -1:
@@ -84,14 +98,13 @@ for envelope in block_envelopes:
                    print "%s: [ERROR] targetPath was set to %s" % (envelopeName, targetPath)
             else:
                 print "%s: [ERROR] connection targetPath is of an invalid form"
-
+               
     if not sourcePathFound:
         print "%s: [ERROR] no Connection with expected sourcePath %s" % (envelopeName, expectedSourcePath)
 
     if not sourcePathFound or not targetPathValid:
         envelopesWithoutValidConnections.append(parent.get('name') + "." + envelopeName)
-
-
+        
 print ""
 print "Suspected erroneous nodes:"
 print ""

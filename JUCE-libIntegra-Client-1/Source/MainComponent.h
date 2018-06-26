@@ -17,8 +17,7 @@ public:
 private:
     IntegraServer integra;
 
-    TextButton startButton;
-    TextButton stopButton;
+    TextButton startBtn, dumpStateBtn, loadFileBtn, updateParamBtn, saveFileBtn, stopBtn;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

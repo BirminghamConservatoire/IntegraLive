@@ -1,71 +1,86 @@
 #include "IntegraServer.h"
-#include "server_startup_info.h"
-#include "integra_session.h"
-#include "interface_definition.h"
-#include "error.h"
-#include "server.h"
-#include "server_lock.h"
-#include "command.h"
-#include "path.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-IntegraServer::IntegraServer()
+IntegraServer::IntegraServer(std::string mainModulePath, std::string thirdPartyPath)
+: session_started(false)
 {
+    sinfo.system_module_directory = mainModulePath;
+    sinfo.third_party_module_directory = thirdPartyPath;
 }
 
 IntegraServer::~IntegraServer()
 {
+    if (session_started) stop();
 }
 
-void IntegraServer::start()
+CError IntegraServer::start()
 {
-    CServerStartupInfo sinfo;
-    sinfo.system_module_directory = "/Users/shane/Documents/GitHub/IntegraLive/IntegraLive/modules";
-    sinfo.third_party_module_directory = "/Users/shane/Documents/GitHub/IntegraLive/IntegraLive/third_party_modules";
-
     CError err = session.start_session(sinfo);
-    if (err != CError::code::SUCCESS)
+    if (err != CError::SUCCESS)
     {
-        return;
+        return err;
     }
-
+    session_started = true;
+    
     CServerLock server = session.get_server();
+
+    // Get libIntegra version
     DBG(server->get_libintegra_version());
 
-    std::string file_path = "/Users/shane/Desktop/Integra Live/SimpleDelay.integra";
-    CPath module_path;
-
+    // Get a complete list of available module IDs and some information about them
     const guid_set& module_ids = server->get_all_module_ids();
-
+    moduleGUIDs.clear();
     for (auto id : module_ids)
     {
         string module_id_string = CGuidHelper::guid_to_string(id);
-        DBG(module_id_string);
+        //DBG(module_id_string);
         const IInterfaceDefinition *interface_definition = server->find_interface(id);
         const IInterfaceInfo& info = interface_definition->get_interface_info();
         DBG(info.get_name());
+        moduleGUIDs.insert(std::pair< std::string, GUID >(info.get_name(), id));
     }
 
-    GUID module_id;
-    CGuidHelper::string_to_guid("8c6ce564-9ba0-6314-5e56-599c8f5ac053", module_id);
-
+    // Create an AudioSettings object at top level (required to activate audio I/O)
+    CPath module_path;
+    GUID module_id = moduleGUIDs["AudioSettings"];
     err = server->process_command(INewCommand::create(module_id, "AudioSettings1", module_path));
 
-    err = server->process_command(ILoadCommand::create(file_path, module_path));
-    if (err != CError::code::SUCCESS)
-    {
-        DBG(err.get_text());
-        return;
-    }
-
-    err = server->process_command(ISetCommand::create(CPath("SimpleDelay.Track1.Block1.Delay1.delayTime"), CFloatValue(1.0)));
-
-    server->process_command(ISaveCommand::create("/Users/shane/Desktop/test.integra", CPath("SimpleDelay")));
-
-    server->dump_libintegra_state();
+    return err;
 }
 
-void IntegraServer::stop()
+void IntegraServer::dump_state()
 {
-    session.end_session();
+    session.get_server()->dump_libintegra_state();
+}
+
+CError IntegraServer::open_file(std::string integraFilePath)
+{
+    CServerLock server = session.get_server();
+
+    CPath module_path;
+    CError err = server->process_command(ILoadCommand::create(integraFilePath, module_path));
+    if (err != CError::code::SUCCESS) DBG(err.get_text());
+    return err;
+}
+
+CError IntegraServer::update_param(std::string paramPath, float value)
+{
+    CServerLock server = session.get_server();
+
+    return server->process_command(ISetCommand::create(CPath(paramPath), CFloatValue(value)));
+}
+
+CError IntegraServer::save_file(std::string saveFilePath)
+{
+    CServerLock server = session.get_server();
+
+    return server->process_command(ISaveCommand::create(saveFilePath, CPath("SimpleDelay")));
+}
+
+CError IntegraServer::stop()
+{
+    CError err = session.end_session();
+    if (err != CError::SUCCESS) DBG(err.get_text());
+    else session_started = false;
+    return err;
 }

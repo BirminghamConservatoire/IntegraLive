@@ -1286,9 +1286,10 @@ public:
         virtual ~Timer();
 
         //! Set timer callback function.
-        void SetCallback(void (*cb)(void *data)) { clss = NULL,cback = cb; }
+        void SetCallback(void (*cb)(void *data)) { clss = NULL; cback = cb; }
         //! Set timer callback function (with class pointer).
-        void SetCallback(FLEXT_CLASSDEF(flext_base) &th,bool (*cb)(FLEXT_CLASSDEF(flext_base) *th,void *data)) { clss = &th,cback = (void (*)(void *))cb; }
+        void SetCallback(FLEXT_CLASSDEF(flext_base) &th,bool (*cb)(FLEXT_CLASSDEF(flext_base) *th,void *data))
+        { clss = &th; cback = (void (*)(void *))cb; }
 
         //! Clear timer.
         bool Reset();

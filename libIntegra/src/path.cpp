@@ -47,7 +47,7 @@ namespace integra_api
 		int element_start = 0;
 		while( true )
 		{
-			int element_end = path_string.find( '.', element_start );
+			int element_end = (int)(path_string.find( '.', element_start ));
 
 			if( element_end == string::npos )
 			{
@@ -81,7 +81,7 @@ namespace integra_api
 
 	int CPath::get_number_of_elements()	const
 	{
-		return m_elements.size();
+		return (int)(m_elements.size());
 	}
 
 
@@ -118,7 +118,7 @@ namespace integra_api
 
 	string CPath::pop_element()
 	{
-		int number_of_elements = m_elements.size();
+		int number_of_elements = (int)(m_elements.size());
 		if( number_of_elements == 0 )
 		{
 			INTEGRA_TRACE_ERROR << "trying to pop empty path";
@@ -157,7 +157,7 @@ namespace integra_api
 
 	void CPath::rebuild_string()
 	{
-		int number_of_elements = m_elements.size();
+		int number_of_elements = (int)(m_elements.size());
 
 		m_string.clear();
 

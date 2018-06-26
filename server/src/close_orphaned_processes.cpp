@@ -104,8 +104,8 @@ char *build_absolute_path(const char *filename)
 		*last_separator=0;
 	}
 
-	length_of_path = strlen( absolute_path );
-	length_of_filename = strlen( filename );
+	length_of_path = (unsigned int)strlen( absolute_path );
+	length_of_filename = (unsigned int)strlen( filename );
 	
 	/*append separator*/
 	absolute_path[ length_of_path ] = PATH_SEPARATOR;

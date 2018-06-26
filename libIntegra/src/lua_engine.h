@@ -42,9 +42,9 @@ namespace integra_internal
 {
 	class CServer;
     
-	static int set_callback( lua_State *state );
-    static int get_callback( lua_State *state );
-    static int print_callback( lua_State *state );
+	int set_callback( lua_State *state );
+    int get_callback( lua_State *state );
+    int print_callback( lua_State *state );
     
 	class CLuaEngine
 	{

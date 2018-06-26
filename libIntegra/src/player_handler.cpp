@@ -257,7 +257,7 @@ namespace integra_internal
 			{
 				CPlayerState *player_state = i->second;
 				int player_rate = player_state->m_rate;
-				int elapsed_ticks = ( current_msecs - player_state->m_start_msecs ) * player_rate / 1000;
+				int elapsed_ticks = (int)(current_msecs - player_state->m_start_msecs) * player_rate / 1000;
 			
 				int new_tick_value = player_state->m_initial_ticks + elapsed_ticks;
 

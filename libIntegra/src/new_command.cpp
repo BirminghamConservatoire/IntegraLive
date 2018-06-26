@@ -90,7 +90,10 @@ namespace integra_internal
 
 		if( !node->get_logic().can_be_child_of( parent ) )
 		{
-			INTEGRA_TRACE_ERROR << interface_definition->get_interface_info().get_name() << " cannot be created as child of " << parent ? parent->get_interface_definition().get_interface_info().get_name() : "top level";
+			INTEGRA_TRACE_ERROR
+                << interface_definition->get_interface_info().get_name()
+                << " cannot be created as child of "
+                << (parent ? parent->get_interface_definition().get_interface_info().get_name() : "top level");
 			delete node;
 			return CError::TYPE_ERROR;
 		}

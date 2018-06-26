@@ -660,8 +660,8 @@ namespace integra_internal
 
 		const string &old_connection_path = *connection_path.get_value();
 
-		previous_name_length = previous_name.length();
-		old_connection_path_length = old_connection_path.length();
+		previous_name_length = (int)(previous_name.length());
+		old_connection_path_length = (int)(old_connection_path.length());
 		if( old_connection_path_length <= previous_name_length || previous_name != old_connection_path.substr( 0, previous_name_length ) )
 		{
 			/* connection path doesn't refer to the renamed object */
@@ -761,8 +761,8 @@ namespace integra_internal
 
 		const string &absolute_path = absolute_path_stream.str();
 
-		previous_path_length = previous_path.get_string().length();
-		absolute_path_length = absolute_path.length();
+		previous_path_length = (int)(previous_path.get_string().length());
+		absolute_path_length = (int)absolute_path.length();
 		if( previous_path_length > absolute_path_length || previous_path.get_string() != absolute_path.substr( 0, previous_path_length ) )
 		{
 			/* connection_path isn't affected by this move */

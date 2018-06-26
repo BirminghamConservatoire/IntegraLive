@@ -907,7 +907,7 @@ ex_dzdetect(struct expr *expr)
 {
         char *etype;
 
-        if (!expr->exp_error & EE_DZ) {
+        if (!(expr->exp_error & EE_DZ)) {
                 if (IS_EXPR(expr))
                         etype = "expr";
                 else if (IS_EXPR_TILDE(expr))
@@ -1103,7 +1103,7 @@ abort();
         case ET_LB:
         default:
                 post_error((fts_object_t *) expr,
-                        "expr: ex_eval: unexpected type %d\n", eptr->ex_type);
+                        "expr: ex_eval: unexpected type %d\n", (int)(eptr->ex_type));
                 return (exNULL);
         }
         if (!eptr[1].ex_type) {
@@ -1185,7 +1185,7 @@ abort();
         case OP_COMMA:
         case OP_SEMI:
         default:
-                post_error((fts_object_t *) expr, "expr: ex_print: bad op 0x%x\n", eptr->ex_op);
+                post_error((fts_object_t *) expr, "expr: ex_print: bad op 0x%x\n", (int)(eptr->ex_op));
                 return (exNULL);
         }
 
@@ -1253,11 +1253,11 @@ eval_store(struct expr *expr, struct ex_ex *eptr, struct ex_ex *optr, int idx)
 /* the operation stack */
 /* the result pointer */
 {
-        struct ex_ex arg;
-        int isvalue;
-        char *tbl = (char *) 0;
-        char *var = (char *) 0;
-        int badleft = 0;
+        //struct ex_ex arg;
+        //int isvalue;
+        //char *tbl = (char *) 0;
+        //char *var = (char *) 0;
+        //int badleft = 0;
 
 post("store called\n");
 ex_print(eptr);
@@ -1360,7 +1360,7 @@ eval_var(struct expr *expr, struct ex_ex *eptr, struct ex_ex *optr, int idx)
 /* the operation stack */
 /* the result pointer */
 {
-        struct ex_ex arg;
+        //struct ex_ex arg;
         char *var = (char *) 0;
         int novar = 0;
         
@@ -1406,10 +1406,10 @@ eval_sigidx(struct expr *expr, struct ex_ex *eptr, struct ex_ex *optr, int idx)
 {
         struct ex_ex arg;
         struct ex_ex *reteptr;
-        int i = 0, j = 0;
+        int i = 0 /*, j = 0 */;
         float fi = 0,           /* index in float */
               rem_i = 0;        /* remains of the float */
-        char *tbl;
+        //har *tbl;
 
         arg.ex_type = 0;
         arg.ex_int = 0;
@@ -1420,7 +1420,7 @@ eval_sigidx(struct expr *expr, struct ex_ex *eptr, struct ex_ex *optr, int idx)
                 rem_i =  arg.ex_flt - i;        /* remains of integer */
         } else if (arg.ex_type == ET_INT) {
                 fi = arg.ex_int;                /* float index */
-                i = arg.ex_int;
+                i = (int)(arg.ex_int);
                 rem_i = 0;
         } else {
                 post("eval_sigidx: bad res type (%d)", arg.ex_type);
@@ -1683,7 +1683,7 @@ retry:
                 break;
 
         case '|':
-                if ((*expr->exp_str == '|')) {
+                if (*expr->exp_str == '|') {
                         expr->exp_str++;
                         eptr->ex_op = OP_LOR;
                 } else

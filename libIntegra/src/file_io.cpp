@@ -267,7 +267,7 @@ namespace integra_internal
 			size_t bytes_read = fread( buffer, 1, data_copy_buffer_size, input_file );
 			if( bytes_read > 0 )
 			{
-				zipWriteInFileInZip( zip_file, buffer, bytes_read );
+				zipWriteInFileInZip( zip_file, buffer, (unsigned)bytes_read );
 			}
 			else
 			{
@@ -328,7 +328,7 @@ namespace integra_internal
 			return CError::FAILED;
 		}
 
-		*ixd_buffer_length = file_info.uncompressed_size;
+		*ixd_buffer_length = (unsigned)file_info.uncompressed_size;
 		*ixd_buffer = new unsigned char[ *ixd_buffer_length ];
 
 		if( unzReadCurrentFile( unzip_file, *ixd_buffer, *ixd_buffer_length ) != *ixd_buffer_length )
@@ -361,7 +361,7 @@ namespace integra_internal
 
 		/* find size of the file */
 		fseek( file, 0, SEEK_END );
-		*ixd_buffer_length = ftell( file );
+		*ixd_buffer_length = (unsigned)ftell( file );
 		fseek( file, 0, SEEK_SET );
 
 		*ixd_buffer = new unsigned char[ *ixd_buffer_length ];
@@ -619,20 +619,20 @@ namespace integra_internal
 		int index_after_last_slash = 0;
 		int index_after_last_backslash = 0;
 
-		if( last_slash != string::npos ) index_after_last_slash = ( last_slash + 1 );
-		if( last_backslash != string::npos ) index_after_last_backslash = ( last_backslash + 1 );
+		if( last_slash != string::npos ) index_after_last_slash = (int)( last_slash + 1 );
+		if( last_backslash != string::npos ) index_after_last_backslash = (int)( last_backslash + 1 );
 
 		string name = filename.substr( MAX( index_after_last_slash, index_after_last_backslash ) );
 
 		/* strip extension */
-		index_of_extension = name.length() - file_suffix.length() - 1;
+		index_of_extension = (int)(name.length() - file_suffix.length() - 1);
 		if( index_of_extension > 0 && name.substr( index_of_extension ) == ( "." + file_suffix ) ) 
 		{
 			name = name.substr( 0, index_of_extension );
 		}
 
 		/* remove illegal characters */
-		length = name.length();
+		length = (int)name.length();
 		for( i = 0; i < length; i++ )
 		{
 			if( CStringHelper::node_name_character_set.find_first_of( name[ i ] ) == string::npos )
@@ -871,13 +871,13 @@ namespace integra_internal
 		/* write out node->interface->module_guid */
 		string guid_string = CGuidHelper::guid_to_string( node.get_interface_definition().get_module_guid() );
 		tmp = convert_input( guid_string, xml_encoding );
-		xmlTextWriterWriteFormatAttribute(writer, BAD_CAST module_id.c_str(), (char * ) tmp );
+		xmlTextWriterWriteFormatAttribute(writer, BAD_CAST module_id.c_str(), "%s", (const char * ) tmp );
 		free( tmp );
 
 		/* write out node->interface->origin_guid */
 		guid_string = CGuidHelper::guid_to_string( node.get_interface_definition().get_origin_guid() );
 		tmp = convert_input( guid_string, xml_encoding );
-		xmlTextWriterWriteFormatAttribute( writer, BAD_CAST origin_id.c_str(), (char * ) tmp );
+		xmlTextWriterWriteFormatAttribute( writer, BAD_CAST origin_id.c_str(), "%s", (const char * ) tmp );
 		free( tmp );
 
 		/* write out node->name */
@@ -996,7 +996,7 @@ namespace integra_internal
 			return NULL;
 		}
 
-		size = in.length() + 1;
+		size = (int)(in.length() + 1);
 		out_size = size * 2 - 1;
 		out = new unsigned char[ out_size ];
 

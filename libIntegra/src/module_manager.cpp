@@ -25,6 +25,11 @@
 #include <assert.h>
 #include <dirent.h>
 
+//#define USE_TEMPNAM
+#ifndef USE_TEMPNAM
+#include <stdlib.h>
+#endif
+
 #ifdef _WINDOWS
 #include <direct.h>
 #else
@@ -167,7 +172,8 @@ namespace integra_internal
 				continue;
 			}
 
-			temporary_file_name = tempnam( m_server.get_scratch_directory().c_str(), "embedded_module" );
+#ifdef USE_TEMPNAM
+ 			temporary_file_name = tempnam( m_server.get_scratch_directory().c_str(), "embedded_module" );
 			if( !temporary_file_name )
 			{
 				INTEGRA_TRACE_ERROR << "couldn't generate temporary filename";
@@ -182,6 +188,26 @@ namespace integra_internal
 				CError = CError::FAILED;
 				goto CLEANUP;
 			}
+#else
+            std::string tpl(m_server.get_scratch_directory() + "embedded_module_XXXXXX");
+            temporary_file_name = new char[tpl.size() + 1];
+            strcpy(temporary_file_name, tpl.c_str());
+            int temp_fd = mkstemp(temporary_file_name);
+            if (temp_fd < 0)
+            {
+                INTEGRA_TRACE_ERROR << "couldn't generate temporary file: " << temporary_file_name;
+                CError = CError::FAILED;
+                continue;
+            }
+
+            temporary_file = fdopen( temp_fd, "wb" );
+            if( !temporary_file )
+            {
+                INTEGRA_TRACE_ERROR << "couldn't open temporary file: " << temporary_file_name;
+                CError = CError::FAILED;
+                goto CLEANUP;
+            }
+#endif
 
 			if( unzOpenCurrentFile( unzip_file ) != UNZ_OK )
 			{
@@ -193,7 +219,7 @@ namespace integra_internal
 			total_bytes_read = 0;
 			while( total_bytes_read < file_info.uncompressed_size )
 			{
-				bytes_remaining = file_info.uncompressed_size - total_bytes_read;
+				bytes_remaining = (int)(file_info.uncompressed_size - total_bytes_read);
 				assert( bytes_remaining > 0 );
 
 				bytes_read = unzReadCurrentFile( unzip_file, copy_buffer, MIN( CFileIO::data_copy_buffer_size, bytes_remaining ) );
@@ -488,7 +514,7 @@ namespace integra_internal
 		string implementation_path = get_implementation_path( interface_definition ) + implementation_info->get_patch_name();
 
 		/* chop off patch extension */
-		int implementation_path_length = implementation_path.length() - patch_extension.length();
+		int implementation_path_length = (int)(implementation_path.length() - patch_extension.length());
 		if( implementation_path_length <= 0 || implementation_path.substr( implementation_path_length ) != patch_extension )
 		{
 			INTEGRA_TRACE_ERROR << "Implementation path doesn't end in correct patch extension: " << implementation_path;
@@ -664,7 +690,7 @@ namespace integra_internal
 				continue;
 			}
 
-			for( int i = m_legacy_module_id_table.size(); i <= old_id; i++ )
+			for( int i = (int)(m_legacy_module_id_table.size()); i <= old_id; i++ )
 			{
 				m_legacy_module_id_table.push_back( CGuidHelper::null_guid ); 
 			}
@@ -810,7 +836,7 @@ namespace integra_internal
 			return NULL;
 		}
 
-		buffer_size = file_info.uncompressed_size;
+		buffer_size = (int)(file_info.uncompressed_size);
 		buffer = new unsigned char[ buffer_size ];
 
 		if( unzReadCurrentFile( unzip_file, buffer, buffer_size ) != buffer_size )
@@ -880,7 +906,7 @@ namespace integra_internal
 
 			string target_path = implementation_directory + relative_file_path;
 
-			checksum ^= MurmurHash2( relative_file_path.c_str(), relative_file_path.length(), checksum_seed );
+			checksum ^= MurmurHash2( relative_file_path.c_str(), (int)(relative_file_path.length()), checksum_seed );
 
 			if( unzOpenCurrentFile( unzip_file ) == UNZ_OK )
 			{
@@ -889,13 +915,13 @@ namespace integra_internal
 				{
 					unsigned char *output_buffer = new unsigned char[ file_info.uncompressed_size ];
 
-					if( unzReadCurrentFile( unzip_file, output_buffer, file_info.uncompressed_size ) != file_info.uncompressed_size )
+					if( unzReadCurrentFile( unzip_file, output_buffer, (unsigned)file_info.uncompressed_size ) != file_info.uncompressed_size )
 					{
 						INTEGRA_TRACE_ERROR << "Error decompressing file: " << file_name;
 					}
 					else
 					{
-						checksum ^= MurmurHash2( output_buffer, file_info.uncompressed_size, checksum_seed );
+						checksum ^= MurmurHash2( output_buffer, (int)file_info.uncompressed_size, checksum_seed );
 
 						fwrite( output_buffer, 1, file_info.uncompressed_size, output_file );
 					}

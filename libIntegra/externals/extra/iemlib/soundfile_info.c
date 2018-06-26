@@ -62,9 +62,10 @@ static long soundfile_info_str2long(char *cvec)
 static void soundfile_info_read(t_soundfile_info *x, t_symbol *filename)
 {
   char completefilename[400];
-  int i, n, n2, n4, filesize, read_chars, header_size=0, ch, bps, sr;
+  int i, n, n2, n4, read_chars, header_size=0, ch, bps, sr;
+  long filesize;
   FILE *fh;
-  t_atom *at;
+  //t_atom *at;
   char *cvec;
   long ll;
   short ss;
@@ -73,9 +74,10 @@ static void soundfile_info_read(t_soundfile_info *x, t_symbol *filename)
   {
     strcpy(completefilename, filename->s_name);
   }
-  else if(((filename->s_name[0] >= 'A')&&(filename->s_name[0] <= 'Z')||
-    (filename->s_name[0] >= 'a')&&(filename->s_name[0] <= 'z'))&&
-    (filename->s_name[1] == ':')&&(filename->s_name[2] == '/'))
+  else if ((((filename->s_name[0] >= 'A') && (filename->s_name[0] <= 'Z')) ||
+            ((filename->s_name[0] >= 'a') && (filename->s_name[0] <= 'z'))) &&
+           (filename->s_name[1] == ':') &&
+           (filename->s_name[2] == '/') )
   {
     strcpy(completefilename, filename->s_name);
   }
@@ -169,7 +171,7 @@ soundfile_info_fmt:
         goto soundfile_info_end;
       }
       SETFLOAT(x->x_atheader+SFI_HEADER_SAMPLERATE, (t_float)ll);
-      sr = ll;
+      sr = (int)ll;
       header_size += 4;
       cvec += 4;
       

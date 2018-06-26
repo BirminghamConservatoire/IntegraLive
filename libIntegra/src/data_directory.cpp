@@ -211,7 +211,7 @@ namespace integra_internal
 		char *target_path;
 		FILE *output_file;
 		unsigned char *output_buffer;
-		int bytes_read, total_bytes_read, bytes_remaining;
+		long bytes_read, total_bytes_read, bytes_remaining;
 
 		assert( unzip_file && file_info && relative_file_path );
 
@@ -241,7 +241,7 @@ namespace integra_internal
 			bytes_remaining = file_info->uncompressed_size - total_bytes_read;
 			assert( bytes_remaining > 0 );
 
-			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, MIN( CFileIO::data_copy_buffer_size, bytes_remaining ) );
+			bytes_read = unzReadCurrentFile( unzip_file, output_buffer, (unsigned)MIN( (long)CFileIO::data_copy_buffer_size, bytes_remaining ) );
 			if( bytes_read <= 0 )
 			{
 				INTEGRA_TRACE_ERROR << "Error decompressing file";

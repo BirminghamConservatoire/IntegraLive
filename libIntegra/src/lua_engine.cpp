@@ -77,11 +77,11 @@ namespace integra_internal
 		context->m_parent_path = &parent_path;
 
 		const char *timestamp_format = "_executing script at %H:%M:%S..._";
-		int timestamp_format_length = strlen( timestamp_format ) + 1;
+		int timestamp_format_length = (int)(strlen( timestamp_format ) + 1);
 		char *formatted_time_stamp = new char[ timestamp_format_length ];
 		strftime( formatted_time_stamp, timestamp_format_length, timestamp_format, localtime( &raw_time_stamp ) );
 		context->m_output = formatted_time_stamp;
-		delete formatted_time_stamp;
+        delete[] formatted_time_stamp;
 
 		/* push the stack */
 		m_context_stack.push_back( context );
@@ -418,7 +418,7 @@ namespace integra_internal
 		INTEGRA_TRACE_VERBOSE << "luascript output: " << progress_string;
 
 		/* replace illegal characters with space, to prevent invalid html */
-		int progress_string_length = strlen( progress_string );
+		int progress_string_length = (int)strlen( progress_string );
 		for( int i = 0; i < progress_string_length; i++ )
 		{
 			if( strchr( illegal_characters, progress_string[ i ] ) != NULL )
@@ -539,7 +539,7 @@ namespace integra_internal
 		sprintf( metatable, metatable_template, object_name.c_str(), parameter_string.c_str(), parameter_string.c_str() );
 
 		string result( metatable );
-		delete metatable;
+        delete[] metatable;
 		return result;
 	}
 
@@ -615,19 +615,19 @@ namespace integra_internal
 		return self;
 	}
 
-	static int set_callback( lua_State *state )
+	int set_callback( lua_State *state )
 	{
 		return CLuaEngine::from_lua_state( state )->handle_set( state );
 	}
 
 
-	static int get_callback( lua_State *state )
+	int get_callback( lua_State *state )
 	{
 		return CLuaEngine::from_lua_state( state )->handle_get( state );
 	}
 
 
-	static int print_callback( lua_State *state )
+	int print_callback( lua_State *state )
 	{
 		return CLuaEngine::from_lua_state( state )->handle_print( state );
 	}

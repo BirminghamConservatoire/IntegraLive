@@ -104,6 +104,9 @@ namespace integra_internal
 			case CCommandSource::INITIALIZATION:
 			case CCommandSource::SYSTEM:
 				return;
+
+            default:    // there are several other cases
+            { /* do nothing */}
 		}
 
 		if( endpoint_name == endpoint_selected_driver )

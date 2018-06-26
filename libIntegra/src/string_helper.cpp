@@ -78,7 +78,7 @@ namespace integra_api
 
 	bool CStringHelper::validate_node_name( const string &name )
 	{
-		int length = name.length();
+		int length = (int)(name.length());
 
 		if( length == 0 ) return false;
 	
@@ -111,11 +111,11 @@ namespace integra_api
 		output.clear();
 			
 		int position = 0;
-		int input_length = input.length();
+		int input_length = (int)(input.length());
 			
 		while( position < input_length )
 		{
-			int index_of_colon = input.find_first_of( ':', position );
+            int index_of_colon = (int)(input.find_first_of( ':', position ));
 			if( index_of_colon < 0 )
 			{
 				INTEGRA_TRACE_ERROR << "Can't find colon from position: " << position << " in packed string " << input;
@@ -124,7 +124,7 @@ namespace integra_api
 				
 			string string_length_substr = input.substr( position, index_of_colon - position );
 			char *end_pointer = NULL;
-			int string_length = strtoul( string_length_substr.c_str(), &end_pointer, 10 );
+			int string_length = (int)strtoul( string_length_substr.c_str(), &end_pointer, 10 );
 			if( end_pointer == string_length_substr.c_str() )
 			{
 				INTEGRA_TRACE_ERROR << "Can't parse string length at position: " << position << " in packed string " << input;

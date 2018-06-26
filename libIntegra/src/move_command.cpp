@@ -63,7 +63,9 @@ namespace integra_internal
 
 		if( !node->get_logic().can_be_child_of( new_parent ) )
 		{
-			INTEGRA_TRACE_ERROR << node->get_interface_definition().get_interface_info().get_name() << " cannot be moved into " << new_parent ? new_parent->get_interface_definition().get_interface_info().get_name() : "top level";
+			INTEGRA_TRACE_ERROR << node->get_interface_definition().get_interface_info().get_name()
+                << " cannot be moved into "
+                << (new_parent ? new_parent->get_interface_definition().get_interface_info().get_name() : "top level");
 			delete node;
 			return CError::TYPE_ERROR;
 		}

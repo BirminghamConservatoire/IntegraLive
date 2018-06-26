@@ -128,7 +128,7 @@ static t_int *partconv_perform(t_int *w)
 	t_float *out = (t_float *)(w[3]);
 	int n = (int)(w[4]);
 	int i;
-	int j;
+	//int j;
 	int k;	// bin
 	int p;	// partition
 	int endpart;
@@ -253,7 +253,7 @@ static void partconv_set(t_partconv *x, t_symbol *s)
 	int j;
 	t_garray *arrayobj;
 	t_word *array;
-	int arraysize;
+	int arraysize=0;
 	int arraypos;
 
 	// get the array from pd

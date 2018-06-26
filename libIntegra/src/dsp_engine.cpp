@@ -108,7 +108,7 @@ namespace integra_internal
 		m_pd->clear();
 		delete m_pd;
 
-		delete m_feedback_queue;
+//        delete m_feedback_queue;
 
 		delete m_midi_input_filterer;
 
@@ -336,7 +336,7 @@ namespace integra_internal
 
 		m_next_module_y_slot ++;
 
-		m_map_id_to_patch_id[ id ] = m_map_id_to_patch_id.size();
+		m_map_id_to_patch_id[ (int)id ] = (int)(m_map_id_to_patch_id.size());
 
 		test_map_sanity();
 
@@ -378,7 +378,7 @@ namespace integra_internal
 		m_pd->sendMessage( patch_message_target, "cut" );
 
 		int patch_id = get_patch_id( id );
-		m_map_id_to_patch_id.erase( id );
+		m_map_id_to_patch_id.erase( (const int)id );
 
 		for( int_map::iterator i = m_map_id_to_patch_id.begin(); i != m_map_id_to_patch_id.end(); i++ )
 		{
@@ -714,7 +714,7 @@ namespace integra_internal
 				return false;
 		}
 
-		int channel = message.channel % 16;
+		//int channel = message.channel % 16;
 		int device_index = message.channel / 16;
 
 		unsigned int midi_message = message.channel | ( status << 4 ) | ( value1 << 8 ) | ( value2 << 16 );
@@ -875,7 +875,7 @@ namespace integra_internal
 
 	int CDspEngine::get_patch_id( internal_id id ) const
 	{
-		int_map::const_iterator lookup = m_map_id_to_patch_id.find( id );
+		int_map::const_iterator lookup = m_map_id_to_patch_id.find( (const int)id );
 		if( lookup == m_map_id_to_patch_id.end() )
 		{
 			INTEGRA_TRACE_ERROR << "Can't find patch id from internal id " << id;

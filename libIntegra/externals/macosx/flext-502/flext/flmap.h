@@ -34,7 +34,7 @@ public:
     virtual void _delmap(TableAnyMap *map) = 0;
 
     struct Data {
-        void operator()(size_t k,void *v) { key = k,value = v; }
+        void operator()(size_t k,void *v) { key = k; value = v; }
         void operator =(void *v) { value = v; }
 
         size_t key;
@@ -91,7 +91,7 @@ public:
         iterator(const TableAnyMap &m): map(&m),ix(0) { leftmost(); }
         iterator(const iterator &it): map(it.map),ix(it.ix) {}
     
-        iterator &operator =(const iterator &it) { map = it.map,ix = it.ix; return *this; }
+        iterator &operator =(const iterator &it) { map = it.map; ix = it.ix; return *this; }
 
         operator bool() const { return map && ix < map->n; }
 

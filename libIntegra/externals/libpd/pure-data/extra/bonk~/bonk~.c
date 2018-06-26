@@ -361,9 +361,11 @@ static t_filterbank *bonk_newfilterbank(int npoints, int nfilters,
             normalizer += window;
         }
         normalizer = 1/(normalizer * sqrt(nhops));
-        for (fp = b->b_vec[i].k_stuff, j = 0;
-             j < filterpoints; j++, fp+= 2)
-            fp[0] *= normalizer, fp[1] *= normalizer;
+        for (fp = b->b_vec[i].k_stuff, j = 0; j < filterpoints; j++, fp+= 2)
+        {
+            fp[0] *= normalizer;
+            fp[1] *= normalizer;
+        }
 #if 0
         post("i %d  cf %.2f  bw %.2f  nhops %d, hop %d, skip %d, npoints %d",
              i, cf, bw, nhops, hoppoints, skippoints, filterpoints);
@@ -379,7 +381,10 @@ static t_filterbank *bonk_newfilterbank(int npoints, int nfilters,
         bw = newbw;
     }
     for (; i < nfilters; i++)
-        b->b_vec[i].k_stuff = 0, b->b_vec[i].k_filterpoints = 0;
+    {
+        b->b_vec[i].k_stuff = 0;
+        b->b_vec[i].k_filterpoints = 0;
+    }
     return (b);
 }
 
@@ -389,7 +394,7 @@ static void bonk_freefilterbank(t_filterbank *b)
     int i;
     if (bonk_filterbanklist == b)
         bonk_filterbanklist = b->b_next;
-    else for (b2 = bonk_filterbanklist; b3 = b2->b_next; b2 = b3)
+    else for (b2 = bonk_filterbanklist; (b3 = b2->b_next) != 0; b2 = b3)
         if (b3 == b)
     {
         b2->b_next = b3->b_next;
@@ -415,7 +420,8 @@ static void bonk_donew(t_bonk *x, int npoints, int period, int nsig,
     {
         for (i = 0, h = g->g_hist; i--; h++)
         {
-            h->h_power = h->h_before = 0, h->h_countup = 0;
+            h->h_power = h->h_before = 0;
+            h->h_countup = 0;
             for (j = 0; j < MASKHIST; j++)
                 h->h_mask[j] = 0;
         }
@@ -465,9 +471,10 @@ static void bonk_donew(t_bonk *x, int npoints, int period, int nsig,
         break;
     }
     if (!x->x_filterbank)
-        x->x_filterbank = bonk_newfilterbank(npoints, nfilters, 
-            halftones, overlap, firstbin, minbandwidth),
-                x->x_filterbank->b_refcount++;
+    {
+        x->x_filterbank = bonk_newfilterbank(npoints, nfilters, halftones, overlap, firstbin, minbandwidth);
+        x->x_filterbank->b_refcount++;
+    }
 }
 
 static void bonk_tick(t_bonk *x)
@@ -638,9 +645,15 @@ static void bonk_doit(t_bonk *x)
     if (oldmaskphase < 0)
         oldmaskphase += MASKHIST;
     if (x->x_useloudness)
-        hithresh = qrsqrt(qrsqrt(x->x_hithresh)),
+    {
+        hithresh = qrsqrt(qrsqrt(x->x_hithresh));
         lothresh = qrsqrt(qrsqrt(x->x_lothresh));
-    else hithresh = x->x_hithresh, lothresh = x->x_lothresh;
+    }
+    else
+    {
+        hithresh = x->x_hithresh;
+        lothresh = x->x_lothresh;
+    }
     for (ch = 0, gp = x->x_insig; ch < ninsig; ch++, gp++)
     {
         for (i = 0, k = x->x_filterbank->b_vec, h = gp->g_hist;
@@ -723,7 +736,10 @@ static void bonk_doit(t_bonk *x)
         x->x_attacked = 0;
         for (ch = 0, gp = x->x_insig; ch < ninsig; ch++, gp++)
             for (i = nfilters, h = gp->g_hist; i--; h++)
-                h->h_mask[nextphase] = h->h_power, h->h_countup = 0;
+            {
+                h->h_mask[nextphase] = h->h_power;
+                h->h_countup = 0;
+            }
     }
     
     /* if in "spew" mode just always output */
@@ -1002,7 +1018,8 @@ static void bonk_read(t_bonk *x, t_symbol *s)
         ntemplate++;
     }
 nomore:
-    if (remaining = (ntemplate % x->x_ninsig))
+    remaining = ntemplate % x->x_ninsig;
+    if (!remaining)
     {
         post("bonk_read: %d templates not a multiple of %d; dropping extras");
         x->x_template = (t_template *)t_resizebytes(x->x_template,

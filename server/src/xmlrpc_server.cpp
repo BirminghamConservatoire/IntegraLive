@@ -1357,7 +1357,7 @@ static xmlrpc_value *ntg_xmlrpc_set_callback( CServerLock &server, const int arg
     xmlrpc_value *struct_ = NULL;
     CPath *path;
     CValue *value = NULL;
-    xmlrpc_value *value_xmlrpc = NULL, *xmlrpc_temp = NULL, *xmlrpc_path;
+    xmlrpc_value *xmlrpc_temp = NULL, *xmlrpc_path;
 
     env = va_arg(argv, xmlrpc_env *);
     path = va_arg(argv, CPath *);

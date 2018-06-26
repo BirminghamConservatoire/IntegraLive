@@ -74,8 +74,8 @@ static const int combtuningR[numcombs]
 
 static const int allpasstuningL[numallpasses]
                      = { 556, 441, 341, 225 };
-static const int allpasstuningR[numallpasses]
-                     = { 556+stereospread, 441+stereospread, 341+stereospread, 225+stereospread };
+//static const int allpasstuningR[numallpasses]
+//                     = { 556+stereospread, 441+stereospread, 341+stereospread, 225+stereospread };
 
 static char *version = "freeverb~ v1.2";
 
@@ -169,7 +169,7 @@ static void comb_setdamp(t_freeverb *x, t_floatarg val);
 static void comb_setfeedback(t_freeverb *x, t_floatarg val);
 static inline t_float comb_processL(t_freeverb *x, int filteridx, t_float input);
 static inline t_float comb_processR(t_freeverb *x, int filteridx, t_float input);
-static void allpass_setfeedback(t_freeverb *x, t_floatarg val);
+//static void allpass_setfeedback(t_freeverb *x, t_floatarg val);
 static inline t_float allpass_processL(t_freeverb *x, int filteridx, t_float input);
 static inline t_float allpass_processR(t_freeverb *x, int filteridx, t_float input);
 t_int *freeverb_perform(t_int *w);
@@ -186,7 +186,7 @@ static float freeverb_getwet(t_freeverb *x);
 static void freeverb_setdry(t_freeverb *x, t_floatarg value);
 static float freeverb_getdry(t_freeverb *x);
 static void freeverb_setwidth(t_freeverb *x, t_floatarg value);
-static float freeverb_getwidth(t_freeverb *x);
+//static float freeverb_getwidth(t_freeverb *x);
 static void freeverb_setmode(t_freeverb *x, t_floatarg value);
 static float freeverb_getmode(t_freeverb *x);
 static void freeverb_setbypass(t_freeverb *x, t_floatarg value);
@@ -256,10 +256,10 @@ static inline t_float comb_processR(t_freeverb *x, int filteridx, t_float input)
 }
 
 /* -------------------- allpass filter stuff ----------------------- */
-static void allpass_setfeedback(t_freeverb *x, t_floatarg val) 
-{
-	x->x_allpassfeedback = val;
-}
+//static void allpass_setfeedback(t_freeverb *x, t_floatarg val)
+//{
+//    x->x_allpassfeedback = val;
+//}
 
 // Big to inline - but crucial for speed
 static inline t_float allpass_processL(t_freeverb *x, int filteridx, t_float input)
@@ -554,9 +554,6 @@ void freeverb_dsp(t_freeverb *x, t_signal **sp)
 	// recalculate internal values after parameter change
 static void freeverb_update(t_freeverb *x)
 {
-
-	int i;
-
 	x->x_wet1 = x->x_wet*(x->x_width/2 + 0.5);
 	x->x_wet2 = x->x_wet*((1-x->x_width)/2);
 
@@ -627,10 +624,10 @@ static void freeverb_setwidth(t_freeverb *x, t_floatarg value)
 	freeverb_update(x);
 }
 
-static float freeverb_getwidth(t_freeverb *x)
-{
-	return x->x_width;
-}
+//static float freeverb_getwidth(t_freeverb *x)
+//{
+//    return x->x_width;
+//}
 
 static void freeverb_setmode(t_freeverb *x, t_floatarg value)
 {

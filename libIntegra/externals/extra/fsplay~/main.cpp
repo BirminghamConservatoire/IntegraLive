@@ -74,9 +74,10 @@ bool fspformat::Add(NewHandler newfun)
 void fspformat::Setup()
 {
     if(setuphandlers)
-        for(SetupList::const_iterator it = setuphandlers->begin(); it != setuphandlers->end(); ++it) {
-            bool ret = (*it)();
+        for(SetupList::const_iterator it = setuphandlers->begin(); it != setuphandlers->end(); ++it)
+        {
 #ifdef FLEXT_DEBUG
+            bool ret = (*it)();
             if(!ret) post("Handler couldn't be set up");
 #endif
         }
@@ -96,14 +97,12 @@ void fspformat::ThreadEnd() {}
 
 typedef boost::shared_ptr<fspformat> FormatPtr;
 
-static void copy_samples(t_sample *outb,size_t outs,const t_sample *inb,size_t ins,size_t cnt)
+static void copy_samples(t_sample *outb, size_t outs, const t_sample *inb, size_t ins, size_t cnt)
 {
-    if(ins == 1 && outs == 1)
-        flext::CopySamples(outb,inb,cnt);
-    else {
-        for(size_t i = 0; i < cnt; ++i)
-            outb[i*outs] = inb[i*ins];
-    }
+    if (ins == 1 && outs == 1)
+        flext::CopySamples(outb, inb, (int)cnt);
+    else for(size_t i = 0; i < cnt; ++i)
+        outb[i*outs] = inb[i*ins];
 }
 
 ////////////////// Resampler ////////////////////
@@ -482,18 +481,18 @@ public:
                 const int cm = std::min<int>(fmt->Channels(),chns);
                 for(c = 0; c < cm; ++c) {
                     Buffer *b = rb->buf[c];
-                    incnt = inhave,outcnt = outneed;
+                    incnt = inhave;
+                    outcnt = outneed;
                     const t_sample *sp = speed+fn*spdstride;
                     resampler[c]->work(sp,spdstride,ratio,outsigs[c]+fn,1,outcnt,b->get()+rb->rptr,1,incnt,eof);
-                    if(!c) // only for first channel
-                        if(!spdstride)
-                            adv += *sp * outcnt;
-                        else
-                            for(int i = 0; i < outcnt; ++i,sp += spdstride)
-                                adv += *sp;
+                    if (!c) // only for first channel
+                    {
+                        if (!spdstride) adv += *sp * outcnt;
+                        else for (int i = 0; i < outcnt; ++i,sp += spdstride) adv += *sp;
+                    }
                 }
                 for(; c < chns; ++c) {
-                    Buffer *b = rb->buf[c];
+                    //Buffer *b = rb->buf[c];
                     ZeroSamples(outsigs[c]+fn,outcnt);
                 }
 

@@ -977,7 +977,7 @@ namespace integra_internal
 		if( m_process_buffer )
 		{
 			get_dsp_engine().process_buffer( input, m_process_buffer, m_number_of_input_channels, m_number_of_output_channels, m_sample_rate );
-			m_ring_buffer->write( m_process_buffer, frames_per_buffer );
+			m_ring_buffer->write( m_process_buffer, (unsigned)frames_per_buffer );
 		}
 		else
 		{
@@ -1169,7 +1169,7 @@ namespace integra_internal
 	}
 
 
-	static int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	int input_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
 	{
 		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
 		assert( port_audio_engine );
@@ -1179,7 +1179,7 @@ namespace integra_internal
 	}
 
 
-	static int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	int output_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
 	{
 		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
 		assert( port_audio_engine );
@@ -1189,7 +1189,7 @@ namespace integra_internal
 	}
 
 
-	static int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
+	int duplex_callback( const void *input_buffer, void *output_buffer, unsigned long frames_per_buffer, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data )
 	{
 		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) user_data;
 		assert( port_audio_engine );
@@ -1199,7 +1199,7 @@ namespace integra_internal
 	}
 
 
-	static void *no_device_thread( void *context )
+	void *no_device_thread( void *context )
 	{
 		CPortAudioEngine *port_audio_engine = ( CPortAudioEngine * ) context;
 		assert( port_audio_engine );

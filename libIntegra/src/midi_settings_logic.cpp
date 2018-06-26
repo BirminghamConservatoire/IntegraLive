@@ -99,6 +99,8 @@ namespace integra_internal
 			case CCommandSource::INITIALIZATION:
 			case CCommandSource::SYSTEM:
 				return;
+            default:
+            { /* carry on to code below */ }
 		}
 
 		if( endpoint_name == endpoint_active_input_devices )

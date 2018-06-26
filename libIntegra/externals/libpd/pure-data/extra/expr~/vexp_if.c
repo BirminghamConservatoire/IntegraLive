@@ -94,17 +94,17 @@ expr_list(t_expr *x, t_symbol *s, int argc, const fts_atom_t *argv)
         expr_bang(x);
 }
 
-static void
-expr_flt(t_expr *x, t_float f, int in)
-{
-        if (in > MAX_VARS)
-                return;
-
-        if (x->exp_var[in].ex_type == ET_FI)
-                x->exp_var[in].ex_flt = f;
-        else if (x->exp_var[in].ex_type == ET_II)
-                x->exp_var[in].ex_int = f;
-}
+//static void
+//expr_flt(t_expr *x, t_float f, int in)
+//{
+//        if (in > MAX_VARS)
+//                return;
+//
+//        if (x->exp_var[in].ex_type == ET_FI)
+//                x->exp_var[in].ex_flt = f;
+//        else if (x->exp_var[in].ex_type == ET_II)
+//                x->exp_var[in].ex_int = f;
+//}
 
 static t_class *exprproxy_class;
 
@@ -163,7 +163,7 @@ expr_ff(t_expr *x)
 #endif
                 y = x->exp_proxy;
         }
-        for (i = 0 ; i < x->exp_nexpr; i++);
+        for (i = 0 ; i < x->exp_nexpr; i++)
                 if (x->exp_stack[i])
                         fts_free(x->exp_stack[i]);
 /*
@@ -719,7 +719,8 @@ fexpr_tilde_clear(t_expr *x, t_symbol *s, int argc, t_atom *argv)
 {
         t_symbol *sx;
         int vecno;
-        int i, nargs;
+        int i;
+        //int nargs;
 
         /*
          *  if no arguement clear all input and output buffers
@@ -894,7 +895,8 @@ max_ex_tab(struct expr *expr, fts_symbol_t s, struct ex_ex *arg,
 {
 #ifdef PD
         t_garray *garray;
-        int size, indx;
+        int size;
+        long indx;
         t_word *wvec;
 
         if (!s || !(garray = (t_garray *)pd_findbyclass(s, garray_class)) ||
@@ -1032,7 +1034,7 @@ ex_Sum(t_expr *e, long int argc, struct ex_ex *argv, struct ex_ex *optr)
         int size;
         t_word *wvec;
         t_float sum;
-        int indx, n1, n2;
+        long indx, n1, n2;
 
         if (argv->ex_type != ET_SYM)
         {

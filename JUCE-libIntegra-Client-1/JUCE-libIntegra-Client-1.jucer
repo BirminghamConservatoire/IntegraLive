@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="RIAZm6" name="JUCE-libIntegra-Client-1" projectType="guiapp"
+              jucerVersion="5.3.2" headerPath="../../../libIntegra/api">
+  <MAINGROUP id="fCRXEo" name="JUCE-libIntegra-Client-1">
+    <GROUP id="{1AAD880B-C985-F2BF-B517-E68E60344A8A}" name="api">
+      <FILE id="G6709S" name="command.h" compile="0" resource="0" file="../libIntegra/api/command.h"/>
+      <FILE id="B9tLss" name="command_result.h" compile="0" resource="0"
+            file="../libIntegra/api/command_result.h"/>
+      <FILE id="ZFxqqs" name="command_source.h" compile="0" resource="0"
+            file="../libIntegra/api/command_source.h"/>
+      <FILE id="jZePdd" name="common_typedefs.h" compile="0" resource="0"
+            file="../libIntegra/api/common_typedefs.h"/>
+      <FILE id="SlzPFa" name="documentation_mainpage.h" compile="0" resource="0"
+            file="../libIntegra/api/documentation_mainpage.h"/>
+      <FILE id="JOVPI6" name="error.h" compile="0" resource="0" file="../libIntegra/api/error.h"/>
+      <FILE id="b4OsUz" name="guid_helper.h" compile="0" resource="0" file="../libIntegra/api/guid_helper.h"/>
+      <FILE id="QV5pu2" name="integra_session.h" compile="0" resource="0"
+            file="../libIntegra/api/integra_session.h"/>
+      <FILE id="CbJ8WL" name="interface_definition.h" compile="0" resource="0"
+            file="../libIntegra/api/interface_definition.h"/>
+      <FILE id="oRZ26T" name="module_manager.h" compile="0" resource="0"
+            file="../libIntegra/api/module_manager.h"/>
+      <FILE id="R5mE6n" name="node.h" compile="0" resource="0" file="../libIntegra/api/node.h"/>
+      <FILE id="Qindwk" name="node_endpoint.h" compile="0" resource="0" file="../libIntegra/api/node_endpoint.h"/>
+      <FILE id="RxXOxF" name="notification_sink.h" compile="0" resource="0"
+            file="../libIntegra/api/notification_sink.h"/>
+      <FILE id="rAdbWD" name="path.h" compile="0" resource="0" file="../libIntegra/api/path.h"/>
+      <FILE id="E5k5a2" name="polling_notification_sink.h" compile="0" resource="0"
+            file="../libIntegra/api/polling_notification_sink.h"/>
+      <FILE id="B6iwBU" name="server.h" compile="0" resource="0" file="../libIntegra/api/server.h"/>
+      <FILE id="dCERZT" name="server_lock.h" compile="0" resource="0" file="../libIntegra/api/server_lock.h"/>
+      <FILE id="kH3K2G" name="server_startup_info.h" compile="0" resource="0"
+            file="../libIntegra/api/server_startup_info.h"/>
+      <FILE id="cK0UCF" name="string_helper.h" compile="0" resource="0" file="../libIntegra/api/string_helper.h"/>
+      <FILE id="eITzFb" name="trace.h" compile="0" resource="0" file="../libIntegra/api/trace.h"/>
+      <FILE id="hheqcV" name="value.h" compile="0" resource="0" file="../libIntegra/api/value.h"/>
+    </GROUP>
+    <GROUP id="{8E26BADA-210D-3B02-2B74-189BFAA102E9}" name="Source">
+      <FILE id="WZ5yC9" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="TocXIt" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+      <FILE id="uW99la" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+  <JUCEOPTIONS/>
+</JUCERPROJECT>

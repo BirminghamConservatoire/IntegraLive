@@ -39,7 +39,7 @@ namespace integra_internal
 
 	CMidiInputDispatcher::~CMidiInputDispatcher()
 	{
-		delete m_message_queue;
+		// delete m_message_queue;
 
 		if( m_new_active_midi_input_devices ) 
 		{

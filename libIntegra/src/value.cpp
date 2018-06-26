@@ -242,7 +242,7 @@ namespace integra_api
 
 	void CIntegerValue::set_from_string( const string &source )
 	{
-        m_value = strtol( source.c_str(), NULL, 0 );
+        m_value = (int)strtol( source.c_str(), NULL, 0 );
 		if( errno == ERANGE )
 		{
 			INTEGRA_TRACE_ERROR << "value too large to convert to int - truncating" << source;
@@ -349,7 +349,7 @@ namespace integra_api
 		//remove trailing zeros
 		if( value.find( "." ) != string::npos )
 		{
-			int new_length = value.find_last_not_of( '0' );
+			int new_length = (int)value.find_last_not_of( '0' );
 			value = value.substr( 0, new_length + 1 );
 		}
 
@@ -471,8 +471,8 @@ namespace integra_api
 
 		assert( string1 && string2 );
 
-		length1 = strlen( string1 );
-		length2 = strlen( string2 );
+		length1 = (int)strlen( string1 );
+		length2 = (int)strlen( string2 );
 
 		if( length1 == 0 ) return length2;
 		if( length2 == 0 ) return length1;

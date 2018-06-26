@@ -197,7 +197,7 @@ private:
                 // need new sample(s) from input
             
     		    long oint = (long)o;
-                int ninc = inc+oint;
+                int ninc = (int)(inc + oint);
                 if(UNLIKELY(ninc >= incnt)) {
                     int dif = incnt-inc;  // remaining samples in the buffer
                     o -= dif; // consider remaining input samples
@@ -237,7 +237,8 @@ private:
             memory[i] = in[i+inc-(A::order+1)];
 
         offset = o;
-        incnt = inc,outcnt = outc;
+        incnt = inc;
+        outcnt = outc;
     }
 
 

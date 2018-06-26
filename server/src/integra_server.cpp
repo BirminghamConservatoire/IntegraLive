@@ -138,7 +138,7 @@ int main( int argc, char *argv[] )
         equals = strchr( argument, '=' );
         if( equals != NULL )
         {
-            flag_length = ( equals - argument );
+            flag_length = (int)( equals - argument );
 
             /*test for options with values here: */
 

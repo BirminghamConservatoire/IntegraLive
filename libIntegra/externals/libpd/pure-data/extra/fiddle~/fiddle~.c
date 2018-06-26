@@ -393,9 +393,11 @@ void sigfiddle_doit(t_sigfiddle *x)
          * multiply the H points by a 1/4-wave complex exponential,
          * and take FFT of the result.
          */
-    for (i = 0, fp1 = x->x_inbuf, fp2 = x->x_spiral, fp3 = spect1;
-        i < hop; i++, fp1++, fp2 += 2, fp3 += 2)
-            fp3[0] = fp1[0] * fp2[0], fp3[1] = fp1[0] * fp2[1];
+    for (i = 0, fp1 = x->x_inbuf, fp2 = x->x_spiral, fp3 = spect1; i < hop; i++, fp1++, fp2 += 2, fp3 += 2)
+    {
+        fp3[0] = fp1[0] * fp2[0];
+        fp3[1] = fp1[0] * fp2[1];
+    }
 
 #ifdef MAX26
     fft(spect1, hop, 0);
@@ -413,25 +415,31 @@ void sigfiddle_doit(t_sigfiddle *x)
          * now redistribute the points to get in effect the odd-numbered
          * points of the FFT of the H points, zero padded to 4*H in length.
          */
-    for (i = 0, fp1 = spect1, fp2 = spect2 + (2*FILTSIZE);
-        i < (hop>>1); i++, fp1 += 2, fp2 += 4)
-            fp2[0] = fp1[0], fp2[1] = fp1[1];
-    for (i = 0, fp1 = spect1 + n - 2, fp2 = spect2 + (2*FILTSIZE+2);
-        i < (hop>>1); i++, fp1 -= 2, fp2 += 4)
-            fp2[0] = fp1[0], fp2[1] = -fp1[1];
-    for (i = 0, fp1 = spect2 + (2*FILTSIZE), fp2 = spect2 + (2*FILTSIZE-2);
-        i<FILTSIZE; i++, fp1+=2, fp2-=2)
-            fp2[0] = fp1[0],  fp2[1] = -fp1[1];
-    for (i = 0, fp1 = spect2 + (2*FILTSIZE+n-2), fp2 = spect2 + (2*FILTSIZE+n);
-        i<FILTSIZE; i++, fp1-=2, fp2+=2)
-            fp2[0] = fp1[0],  fp2[1] = -fp1[1];
+    for (i = 0, fp1 = spect1, fp2 = spect2 + (2*FILTSIZE); i < (hop>>1); i++, fp1 += 2, fp2 += 4)
+    {
+        fp2[0] = fp1[0];
+        fp2[1] = fp1[1];
+    }
+    for (i = 0, fp1 = spect1 + n - 2, fp2 = spect2 + (2*FILTSIZE+2); i < (hop>>1); i++, fp1 -= 2, fp2 += 4)
+    {
+        fp2[0] = fp1[0];
+        fp2[1] = -fp1[1];
+    }
+    for (i = 0, fp1 = spect2 + (2*FILTSIZE), fp2 = spect2 + (2*FILTSIZE-2); i<FILTSIZE; i++, fp1+=2, fp2-=2)
+    {
+        fp2[0] = fp1[0];
+        fp2[1] = -fp1[1];
+    }
+    for (i = 0, fp1 = spect2 + (2*FILTSIZE+n-2), fp2 = spect2 + (2*FILTSIZE+n); i<FILTSIZE; i++, fp1-=2, fp2+=2)
+    {
+        fp2[0] = fp1[0];
+        fp2[1] = -fp1[1];
+    }
 #if 0
     {
         fp = spect2 + 2*FILTSIZE;
-        post("x1 re %12.4f %12.4f %12.4f %12.4f %12.4f",
-            fp[0], fp[2], fp[4], fp[6], fp[8]);
-        post("x1 im %12.4f %12.4f %12.4f %12.4f %12.4f",
-            fp[1], fp[3], fp[5], fp[7], fp[9]);
+        post("x1 re %12.4f %12.4f %12.4f %12.4f %12.4f", fp[0], fp[2], fp[4], fp[6], fp[8]);
+        post("x1 im %12.4f %12.4f %12.4f %12.4f %12.4f", fp[1], fp[3], fp[5], fp[7], fp[9]);
     }
 #endif
         /* spect2 is now prepared; now combine spect2 and lastanalysis into
@@ -474,7 +482,7 @@ void sigfiddle_doit(t_sigfiddle *x)
         fp1[4] = fp2[0] + fp3[1];
         fp1[5] = fp2[1] - fp3[0];
         
-        fp1 += 8, fp2 += 2, fp3 += 2;
+        fp1 += 8; fp2 += 2; fp3 += 2;
         re= FILT1 * ( fp2[ -2] -fp2[ 1]  -fp3[ -2] +fp3[ 1]) +
             FILT2 * ( fp2[ -3] -fp2[ 2]  -fp3[ -3] +fp3[ 2]) +
             FILT3 * (-fp2[ -6] +fp2[ 5]  +fp3[ -6] -fp3[ 5]) +
@@ -492,7 +500,7 @@ void sigfiddle_doit(t_sigfiddle *x)
         fp1[4] = fp2[0] - fp3[1];
         fp1[5] = fp2[1] + fp3[0];
         
-        fp1 += 8, fp2 += 2, fp3 += 2;
+        fp1 += 8; fp2 += 2; fp3 += 2;
     }
 #if 0
     if (x->x_nprint)
@@ -727,8 +735,7 @@ void sigfiddle_doit(t_sigfiddle *x)
         else
         {
             for (best = 0, indx = -1, j=0; j < maxbin; j++)
-                if (histogram[j] > best)
-                    indx = j,  best = histogram[j];
+                if (histogram[j] > best) { indx = j; best = histogram[j]; }
         }
         if (indx < 0) break;
         histvec[npitch].h_value = best;
@@ -1101,8 +1108,10 @@ int sigfiddle_setnpoints(t_sigfiddle *x, t_floatarg fnpoints)
     for (i = 0; i < npoints + 4 * FILTSIZE; i++)
         x->x_lastanalysis[i] = 0;
     for (i = 0; i < x->x_hop; i++)
-        x->x_spiral[2*i] =    cos((3.14159*i)/(npoints)),
+    {
+        x->x_spiral[2*i]   =  cos((3.14159*i)/(npoints));
         x->x_spiral[2*i+1] = -sin((3.14159*i)/(npoints));
+    }
     x->x_phase = 0;
     return (1);
 fail:
@@ -1113,16 +1122,16 @@ fail:
 int sigfiddle_doinit(t_sigfiddle *x, long npoints, long npitch,
     long npeakanal, long npeakout)
 {
-    float *buf1, *buf2,  *buf3;
+    //float *buf1, *buf2, *buf3;
     t_peakout *buf4;
     int i;
 
-    if (!npeakanal && !npeakout) npeakanal = DEFNPEAK, npeakout = 0;
-    if (!npeakanal < 0) npeakanal = 0;
+    if (!npeakanal && !npeakout) { npeakanal = DEFNPEAK; npeakout = 0; }
+    if (npeakanal < 0) npeakanal = 0;
     else if (npeakanal > MAXPEAK) npeakanal = MAXPEAK;
-    if (!npeakout < 0) npeakout = 0;
+    if (npeakout < 0) npeakout = 0;
     else if (npeakout > MAXPEAK) npeakout = MAXPEAK;
-    if (npitch <= 0) npitch = 0;
+    if (npitch < 0) npitch = 0;
     else if (npitch > MAXNPITCH) npitch = MAXNPITCH;
     if (npeakanal && !npitch) npitch = 1;
     if (!npoints)
@@ -1142,8 +1151,8 @@ int sigfiddle_doinit(t_sigfiddle *x, long npoints, long npitch,
         buf4[i].po_freq = buf4[i].po_amp = 0;
     x->x_peakbuf = buf4;
 
-    x->x_npeakout = npeakout;
-    x->x_npeakanal = npeakanal;
+    x->x_npeakout = (int)npeakout;
+    x->x_npeakanal = (int)npeakanal;
     x->x_phase = 0;
     x->x_histphase = 0;
     x->x_sr = 44100;            /* this and the next are filled in later */
@@ -1158,7 +1167,7 @@ int sigfiddle_doinit(t_sigfiddle *x, long npoints, long npitch,
             x->x_hist[i].h_amps[j] = x->x_hist[i].h_pitches[j] = 0;
     }
     x->x_nprint = 0;
-    x->x_npitch = npitch;
+    x->x_npitch = (int)npitch;
     for (i = 0; i < HISTORY; i++) x->x_dbs[i] = 0;
     x->x_dbage = 0;
     x->x_peaked = 0;

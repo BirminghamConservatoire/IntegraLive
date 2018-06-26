@@ -413,7 +413,7 @@ namespace integra_internal
 					{
 						/* for strings, range constraint defines min/max length */
 						const string &string_value = value;
-						int string_length = string_value.length();
+						int string_length = (int)(string_value.length());
 			
 						if( string_length < ( int ) range->get_minimum() ) return false;
 						if( string_length > ( int ) range->get_maximum() ) return false;

@@ -6,6 +6,9 @@ IntegraServer::IntegraServer(std::string mainModulePath, std::string thirdPartyP
 {
     sinfo.system_module_directory = mainModulePath;
     sinfo.third_party_module_directory = thirdPartyPath;
+
+    // Stop the incessant chatter
+    CTrace::set_categories_to_trace(false, false, false);
 }
 
 IntegraServer::~IntegraServer()
@@ -36,7 +39,7 @@ CError IntegraServer::start()
         //DBG(module_id_string);
         const IInterfaceDefinition *interface_definition = server->find_interface(id);
         const IInterfaceInfo& info = interface_definition->get_interface_info();
-        DBG(info.get_name());
+        DBG(info.get_name() + " " + info.get_label());
         moduleGUIDs.insert(std::pair< std::string, GUID >(info.get_name(), id));
     }
 
@@ -79,6 +82,8 @@ CError IntegraServer::save_file(std::string saveFilePath)
 
 CError IntegraServer::stop()
 {
+    if (!session_started) return CError::SUCCESS;
+    
     CError err = session.end_session();
     if (err != CError::SUCCESS) DBG(err.get_text());
     else session_started = false;

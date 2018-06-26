@@ -37,10 +37,15 @@ MainComponent::MainComponent()
     stopBtn.onClick = [this] { integra.stop(); };
     stopBtn.setButtonText ("Stop Server");
     addAndMakeVisible(stopBtn);
+
+    integra.start();
+    startBtn.setButtonText("Server Running");
 }
 
 MainComponent::~MainComponent()
 {
+    integra.stop();
+    startBtn.setButtonText("Server STOPPED");
 }
 
 void MainComponent::paint (Graphics& g)

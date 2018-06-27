@@ -17,7 +17,9 @@ public:
 private:
     IntegraServer integra;
 
-    TextButton getModulesBtn, dumpStateBtn, loadFileBtn, updateParamBtn, saveFileBtn;
-
+    TextButton getModulesBtn, getNodesBtn, dumpStateBtn;
+    TextButton loadFileBtn, updateParamBtn, saveFileBtn;
+    TextButton loadFile2Btn;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

@@ -18,13 +18,21 @@ MainComponent::MainComponent()
     getModulesBtn.setButtonText ("Dump module details");
     addAndMakeVisible(getModulesBtn);
 
+    getNodesBtn.onClick = [this] { integra.dump_nodes_details(); };
+    getNodesBtn.setButtonText ("Dump node details");
+    addAndMakeVisible(getNodesBtn);
+
     dumpStateBtn.onClick = [this] { integra.dump_state(); };
     dumpStateBtn.setButtonText ("Dump state");
     addAndMakeVisible(dumpStateBtn);
 
     loadFileBtn.onClick = [this] { integra.open_file("/Users/shane/Desktop/Integra Live/SimpleDelay.integra"); };
-    loadFileBtn.setButtonText ("Load .integra file");
+    loadFileBtn.setButtonText ("Load SimpleDelay.integra");
     addAndMakeVisible(loadFileBtn);
+
+    loadFile2Btn.onClick = [this] { integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra"); };
+    loadFile2Btn.setButtonText ("Load StereoChorus.integra");
+    addAndMakeVisible(loadFile2Btn);
 
     updateParamBtn.onClick = [this] { integra.update_param("SimpleDelay.Track1.Block1.Delay1.delayTime", 1.0f); };
     updateParamBtn.setButtonText ("Update delay time");
@@ -51,9 +59,12 @@ void MainComponent::paint (Graphics& g)
 void MainComponent::resized()
 {
     auto area = getLocalBounds();
-    getModulesBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
-    dumpStateBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
-    loadFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
-    updateParamBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
-    saveFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
+    int numberOfBtns = 7;
+    getModulesBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/numberOfBtns)));
+    getNodesBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/numberOfBtns)));
+    dumpStateBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/numberOfBtns)));
+    loadFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/numberOfBtns)));
+    loadFile2Btn.setBounds (area.removeFromTop (proportionOfHeight (1.0/numberOfBtns)));
+    updateParamBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/numberOfBtns)));
+    saveFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/numberOfBtns)));
 }

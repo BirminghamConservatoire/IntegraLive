@@ -268,6 +268,22 @@ void IntegraServer::dump_modules_details()
     }
 }
 
+void IntegraServer::dump_nodes_details()
+{
+    CServerLock server = session.get_server();
+
+    DBG("Nodes:");
+    const node_map &nodes = server->get_nodes();
+    for (auto node : nodes)
+    {
+        const CPath path = node.second->get_path();
+        const IInterfaceDefinition *interface_definition = &(node.second->get_interface_definition());
+        const IInterfaceInfo& info = interface_definition->get_interface_info();
+
+        DBG(path.get_string() + "  " + info.get_name());
+    }
+}
+
 void IntegraServer::dump_state()
 {
     session.get_server()->dump_libintegra_state();
@@ -277,9 +293,34 @@ CError IntegraServer::open_file(std::string integraFilePath)
 {
     CServerLock server = session.get_server();
 
+#if 0
+    // If we had loaded a file already, delete that tree
+    if (lastLoadedPath.get_number_of_elements() > 0)
+    {
+        CError err = server->process_command(IDeleteCommand::create(lastLoadedPath));
+        if (err != CError::code::SUCCESS)
+        {
+            DBG("Unable to delete path " + lastLoadedPath.get_string());
+            return err;
+        }
+    }
+#endif
+    
     CPath module_path;
     CError err = server->process_command(ILoadCommand::create(integraFilePath, module_path));
-    if (err != CError::code::SUCCESS) DBG(err.get_text());
+    if (err == CError::code::SUCCESS)
+    {
+        // get the path to what we just loaded: it's the first Container object
+        for (auto node : server->get_nodes())
+        {
+            const CPath path = node.second->get_path();
+            const IInterfaceDefinition *interface_definition = &(node.second->get_interface_definition());
+            const IInterfaceInfo& info = interface_definition->get_interface_info();
+            if (info.get_name() == std::string("Container"))
+                lastLoadedPath = path;
+        }
+    }
+    else DBG(err.get_text());
     return err;
 }
 

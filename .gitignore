@@ -1,3 +1,7 @@
+## JUCE related
+JuceLibraryCode/
+
+## More Visual Studio stuff
 /build
 /install
 host

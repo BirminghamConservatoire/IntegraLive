@@ -1,6 +1,187 @@
 #include "IntegraServer.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
+static const char* mod_source(IInterfaceDefinition::module_source src)
+{
+    switch (src)
+    {
+        case IInterfaceDefinition::MODULE_SHIPPED_WITH_INTEGRA:
+            return "MODULE_SHIPPED_WITH_INTEGRA";
+        case IInterfaceDefinition::MODULE_IN_DEVELOPMENT:
+            return "MODULE_IN_DEVELOPMENT";
+        case IInterfaceDefinition::MODULE_EMBEDDED:
+            return "MODULE_EMBEDDED";
+        case IInterfaceDefinition::MODULE_3RD_PARTY:
+            return "MODULE_3RD_PARTY";
+        default:
+            return "*** UNKNOWN ***";
+    }
+}
+
+static const char* endpt_type(IEndpointDefinition::endpoint_type type)
+{
+    switch (type)
+    {
+        case IEndpointDefinition::CONTROL:
+            return "CONTROL";
+        case IEndpointDefinition::STREAM:
+            return "STREAM";
+        default:
+            return "*** UNKNOWN ***";
+    }
+}
+
+static const char* ctrl_type(IControlInfo::control_type type)
+{
+    switch (type)
+    {
+        case IControlInfo::control_type::STATEFUL:
+            return "STATEFUL";
+        case IControlInfo::control_type::BANG:
+            return "BANG";
+        default:
+            return "*** UNKNOWN ***";
+    }
+}
+
+static const char* val_type(CValue::type type)
+{
+    switch (type)
+    {
+        case CValue::type::INTEGER:
+            return "INTEGER";
+        case CValue::type::FLOAT:
+            return "FLOAT";
+        case CValue::type::STRING:
+            return "STRING";
+        default:
+            return "*** UNKNOWN ***";
+    }
+}
+
+static const char* scale_type(const IValueScale::scale_type type)
+{
+    switch (type)
+    {
+        case IValueScale::scale_type::LINEAR:
+            return "LINEAR";
+        case IValueScale::scale_type::EXPONENTIAL:
+            return "EXPONENTIAL";
+        case IValueScale::scale_type::DECIBEL:
+            return "DECIBEL";
+        default:
+            return "*** UNKNOWN ***";
+    }
+}
+
+static std::string endpt_stream_details(IEndpointDefinition* endpt)
+{
+    const IStreamInfo* info = endpt->get_stream_info();
+    std::string details;
+    if (info->get_direction() == IStreamInfo::stream_direction::INPUT)
+        details.append("INPUT");
+    else
+        details.append("OUTPUT");
+    return details;
+}
+
+static std::string constraint_details(const IConstraint& cst)
+{
+    std::string details;
+    const IValueRange* range = cst.get_value_range();
+    const value_set* states = cst.get_allowed_states();
+    if (range)
+    {
+        details.append("Range ");
+        details.append(range->get_minimum().get_as_string());
+        details.append(" to ");
+        details.append(range->get_maximum().get_as_string());
+    }
+    else if (states)
+    {
+        details.append("Values ");
+        for (auto val : *states)
+        {
+            details.append(val->get_as_string());
+            details.append(" ");
+        }
+    }
+
+    return details;
+}
+
+static std::string endpt_control_details(IEndpointDefinition* endpt)
+{
+    const IControlInfo* info = endpt->get_control_info();
+    IControlInfo::control_type type = info->get_type();
+    std::string details;
+    details.append(ctrl_type(type));
+    if (info->get_can_be_source()) details.append(" can_be_source");
+    if (info->get_can_be_target()) details.append(" can_be_target");
+    if (type == IControlInfo::control_type::STATEFUL)
+    {
+        const IStateInfo* sinfo = info->get_state_info();
+        details.append("\n      ");
+        details.append(val_type(sinfo->get_type()));
+        details.append(" ");
+        details.append(constraint_details(sinfo->get_constraint()));
+        details.append("\n      Default ");
+        details.append(sinfo->get_default_value().get_as_string());
+        const IValueScale* vscale = sinfo->get_value_scale();
+        if (vscale)
+        {
+            details.append("\n      Scale Type ");
+            details.append(scale_type(sinfo->get_value_scale()->get_scale_type()));
+        }
+        const value_map& state_labels = sinfo->get_state_labels();
+        if (state_labels.size() > 0)
+        {
+            details.append("\n      State Labels:");
+            for (auto label : state_labels)
+            {
+                details.append(" ");
+                details.append(label.first);
+                details.append(" (");
+                details.append(label.second->get_as_string());
+                details.append(")");
+            }
+        }
+    }
+    return details;
+}
+
+static std::string endpt_details(IEndpointDefinition* endpt)
+{
+    std::string details;
+    //details.append(endpt_type(endpt->get_type()));
+    //details.append(" ");
+    if (endpt->is_audio_stream())
+        details.append(endpt_stream_details(endpt));
+    else
+        details.append(endpt_control_details(endpt));
+    return details;
+}
+
+static std::string widget_pos (const IWidgetPosition& wpos)
+{
+    std::string details;
+    details.append("X " + std::to_string(wpos.get_x()));
+    details.append(", Y " + std::to_string(wpos.get_y()));
+    details.append(", Width " + std::to_string(wpos.get_width()));
+    details.append(", Height " + std::to_string(wpos.get_height()));
+    return details;
+}
+
+static std::string widget_attr (const string_map& map)
+{
+    std::string details;
+    for (auto entry : map)
+    {
+        details.append(entry.first + "->" + entry.second + ", ");
+    }
+    return details;
+}
+
 IntegraServer::IntegraServer(std::string mainModulePath, std::string thirdPartyPath)
 : session_started(false)
 {
@@ -18,6 +199,8 @@ IntegraServer::~IntegraServer()
 
 CError IntegraServer::start()
 {
+    if (session_started) return CError::SUCCESS;
+
     CError err = session.start_session(sinfo);
     if (err != CError::SUCCESS)
     {
@@ -27,19 +210,13 @@ CError IntegraServer::start()
     
     CServerLock server = session.get_server();
 
-    // Get libIntegra version
-    DBG(server->get_libintegra_version());
-
-    // Get a complete list of available module IDs and some information about them
+    // Build moduleGUIDs map, so we can look up GUID for AudioSettings below
     const guid_set& module_ids = server->get_all_module_ids();
     moduleGUIDs.clear();
     for (auto id : module_ids)
     {
-        string module_id_string = CGuidHelper::guid_to_string(id);
-        //DBG(module_id_string);
         const IInterfaceDefinition *interface_definition = server->find_interface(id);
         const IInterfaceInfo& info = interface_definition->get_interface_info();
-        DBG(info.get_name() + " " + info.get_label());
         moduleGUIDs.insert(std::pair< std::string, GUID >(info.get_name(), id));
     }
 
@@ -49,6 +226,46 @@ CError IntegraServer::start()
     err = server->process_command(INewCommand::create(module_id, "AudioSettings1", module_path));
 
     return err;
+}
+
+void IntegraServer::dump_modules_details()
+{
+    CServerLock server = session.get_server();
+
+    // Get libIntegra version
+    DBG("libIntegra version " + server->get_libintegra_version());
+
+    // Get a complete list of available module IDs and some information about them
+    const guid_set& module_ids = server->get_all_module_ids();
+    moduleGUIDs.clear();
+    for (auto id : module_ids)
+    {
+        const IInterfaceDefinition *interface_definition = server->find_interface(id);
+        const IInterfaceInfo& info = interface_definition->get_interface_info();
+        moduleGUIDs.insert(std::pair< std::string, GUID >(info.get_name(), id));
+
+        DBG(info.get_name() + ":");
+        for (auto endpoint : interface_definition->get_endpoint_definitions())
+        {
+            //            DBG("   " + endpoint->get_name() + " (" + endpoint->get_label() + ") " + endpoint->get_description());
+            DBG("   " + endpoint->get_name() + " (" + endpoint->get_label() + ") " + endpt_details(endpoint));
+        }
+
+        DBG("  Widgets:");
+        for (auto widget : interface_definition->get_widget_definitions())
+        {
+            DBG("   " + widget->get_type() + ": " + widget->get_label());
+            DBG("       Position " + widget_pos(widget->get_position()));
+            DBG("       Attribute Mappings " + widget_attr(widget->get_attribute_mappings()));
+        }
+
+        //        DBG(info.get_name() + " -- " + info.get_description());
+        //        DBG(info.get_name() + " -- " + mod_source(interface_definition->get_module_source()));
+        //        DBG(info.get_name() + ": " +
+        //            CGuidHelper::guid_to_string(id) + "  " +
+        //            CGuidHelper::guid_to_string(interface_definition->get_module_guid()) + "  " +
+        //            CGuidHelper::guid_to_string(interface_definition->get_origin_guid()) );
+    }
 }
 
 void IntegraServer::dump_state()

@@ -14,9 +14,9 @@ MainComponent::MainComponent()
 {
     setSize (600, 400);
 
-    startBtn.onClick = [this] { integra.start(); };
-    startBtn.setButtonText ("Start Server");
-    addAndMakeVisible(startBtn);
+    getModulesBtn.onClick = [this] { integra.dump_modules_details(); };
+    getModulesBtn.setButtonText ("Dump module details");
+    addAndMakeVisible(getModulesBtn);
 
     dumpStateBtn.onClick = [this] { integra.dump_state(); };
     dumpStateBtn.setButtonText ("Dump state");
@@ -34,18 +34,12 @@ MainComponent::MainComponent()
     saveFileBtn.setButtonText ("Save file");
     addAndMakeVisible(saveFileBtn);
 
-    stopBtn.onClick = [this] { integra.stop(); };
-    stopBtn.setButtonText ("Stop Server");
-    addAndMakeVisible(stopBtn);
-
     integra.start();
-    startBtn.setButtonText("Server Running");
 }
 
 MainComponent::~MainComponent()
 {
     integra.stop();
-    startBtn.setButtonText("Server STOPPED");
 }
 
 void MainComponent::paint (Graphics& g)
@@ -57,10 +51,9 @@ void MainComponent::paint (Graphics& g)
 void MainComponent::resized()
 {
     auto area = getLocalBounds();
-    startBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/6)));
-    dumpStateBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/6)));
-    loadFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/6)));
-    updateParamBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/6)));
-    saveFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/6)));
-    stopBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/6)));
+    getModulesBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
+    dumpStateBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
+    loadFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
+    updateParamBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
+    saveFileBtn.setBounds (area.removeFromTop (proportionOfHeight (1.0/5)));
 }

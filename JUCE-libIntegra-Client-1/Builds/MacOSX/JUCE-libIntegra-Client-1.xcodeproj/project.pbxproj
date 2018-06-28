@@ -10,6 +10,7 @@
 		12A9FFCDD63F6C57D6DD0DFC /* include_juce_core.mm in Sources */ = {isa = PBXBuildFile; fileRef = D8407DA382860DD197300415 /* include_juce_core.mm */; };
 		32A2B0CAE3ACDCBE915D459B /* RecentFilesMenuTemplate.nib in Resources */ = {isa = PBXBuildFile; fileRef = 672FB659833EB776FCF62CDA /* RecentFilesMenuTemplate.nib */; };
 		3444B06520DF9E76005DA0D1 /* IntegraServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3444B06320DF9E76005DA0D1 /* IntegraServer.cpp */; };
+		344DE71920E4CDA7005E4167 /* WidgetPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 344DE71820E4CDA7005E4167 /* WidgetPanel.cpp */; };
 		34E85B0A20DD1F770090A4D9 /* Integra.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34E85B0820DD1DD90090A4D9 /* Integra.framework */; };
 		3F7296DA4D40DFFDEC11E385 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206418A0E433C37532537AB2 /* Main.cpp */; };
 		53CF174ECBA6E5ED993D6876 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B3266D3368D14ABD17E29C /* Carbon.framework */; };
@@ -56,6 +57,8 @@
 		335EB884D8D33A2508809B34 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		3444B06320DF9E76005DA0D1 /* IntegraServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IntegraServer.cpp; path = ../../Source/IntegraServer.cpp; sourceTree = "<group>"; };
 		3444B06420DF9E76005DA0D1 /* IntegraServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntegraServer.h; path = ../../Source/IntegraServer.h; sourceTree = "<group>"; };
+		344DE71520E4CBE0005E4167 /* WidgetPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WidgetPanel.h; path = ../../Source/WidgetPanel.h; sourceTree = "<group>"; };
+		344DE71820E4CDA7005E4167 /* WidgetPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WidgetPanel.cpp; path = ../../Source/WidgetPanel.cpp; sourceTree = "<group>"; };
 		3456393420DCDA5A00BF15A6 /* Integra.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Integra.framework; path = ../../../libIntegra/xcode/Integra/Integra.framework; sourceTree = "<group>"; };
 		34E85B0320DD1DD90090A4D9 /* Integra.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Integra.xcodeproj; path = ../../../libIntegra/xcode/Integra/Integra.xcodeproj; sourceTree = "<group>"; };
 		36F747FE4BE81829EE717EE1 /* path.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = path.h; path = ../../../libIntegra/api/path.h; sourceTree = SOURCE_ROOT; };
@@ -237,6 +240,8 @@
 				EB2AEF58962B2FDE47DF0A88 /* MainComponent.h */,
 				2A7DA91962A24E1D74AE4F51 /* MainComponent.cpp */,
 				206418A0E433C37532537AB2 /* Main.cpp */,
+				344DE71520E4CBE0005E4167 /* WidgetPanel.h */,
+				344DE71820E4CDA7005E4167 /* WidgetPanel.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -346,6 +351,7 @@
 				12A9FFCDD63F6C57D6DD0DFC /* include_juce_core.mm in Sources */,
 				DCB168711345C638C8187DFF /* include_juce_data_structures.mm in Sources */,
 				8E9E323FAF2CB412462DFF26 /* include_juce_events.mm in Sources */,
+				344DE71920E4CDA7005E4167 /* WidgetPanel.cpp in Sources */,
 				74DE158CADA62F1246CA83B9 /* include_juce_graphics.mm in Sources */,
 				E1851D950F67EA7044CB5E33 /* include_juce_gui_basics.mm in Sources */,
 				9B29CD96A985903E748E83B3 /* include_juce_gui_extra.mm in Sources */,

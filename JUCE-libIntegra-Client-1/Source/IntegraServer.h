@@ -17,6 +17,7 @@ public:
     CError open_file(std::string integraFilePath);
     CError update_param(std::string paramPath, float value);
     CError save_file(std::string saveFilePath);
+    CIntegraSession& get_session() { return session; }
 
 private:
     CServerStartupInfo sinfo;

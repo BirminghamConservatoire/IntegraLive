@@ -2,8 +2,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "IntegraServer.h"
-
-using namespace integra_api;
+#include "WidgetPanel.h"
 
 class MainComponent   : public Component
 {
@@ -20,6 +19,8 @@ private:
     TextButton getModulesBtn, getNodesBtn, dumpStateBtn;
     TextButton loadFileBtn, updateParamBtn, saveFileBtn;
     TextButton loadFile2Btn;
+
+    WidgetPanel widgetPanel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

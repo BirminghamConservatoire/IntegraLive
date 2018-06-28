@@ -268,19 +268,33 @@ void IntegraServer::dump_modules_details()
     }
 }
 
+static void dump_node_tree(INode* root, int indent_level=0)
+{
+    std::string spaces;
+    for (int level=indent_level; level > 0; level--) spaces.append("   ");
+    DBG(spaces + root->get_name() /*+ ": " + root->get_path().get_string()*/);
+
+    for (auto child : root->get_children())
+        dump_node_tree(child.second, indent_level + 1);
+}
+
 void IntegraServer::dump_nodes_details()
 {
     CServerLock server = session.get_server();
 
-    DBG("Nodes:");
-    const node_map &nodes = server->get_nodes();
-    for (auto node : nodes)
+    DBG("");
+    const node_map &nmap = server->get_nodes();
+    for (auto entry : nmap)
     {
-        const CPath path = node.second->get_path();
-        const IInterfaceDefinition *interface_definition = &(node.second->get_interface_definition());
-        const IInterfaceInfo& info = interface_definition->get_interface_info();
+        dump_node_tree(entry.second);
 
-        DBG(path.get_string() + "  " + info.get_name());
+        //std::string node_name = entry.first;
+        //INode* node = entry.second;
+        //DBG("    " + node_name + ": " + node->get_path().get_string());
+
+        //const IInterfaceDefinition *interface_definition = &(node.second->get_interface_definition());
+        //const IInterfaceInfo& info = interface_definition->get_interface_info();
+        //DBG(path.get_string() + "  " + info.get_name());
     }
 }
 
@@ -293,8 +307,7 @@ CError IntegraServer::open_file(std::string integraFilePath)
 {
     CServerLock server = session.get_server();
 
-#if 0
-    // If we had loaded a file already, delete that tree
+    // If we had loaded a file already, delete that whole node tree
     if (lastLoadedPath.get_number_of_elements() > 0)
     {
         CError err = server->process_command(IDeleteCommand::create(lastLoadedPath));
@@ -304,8 +317,7 @@ CError IntegraServer::open_file(std::string integraFilePath)
             return err;
         }
     }
-#endif
-    
+
     CPath module_path;
     CError err = server->process_command(ILoadCommand::create(integraFilePath, module_path));
     if (err == CError::code::SUCCESS)

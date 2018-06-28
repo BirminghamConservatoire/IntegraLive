@@ -2,6 +2,7 @@
 
 #include "integra_api.h"
 #include <map>
+#include <vector>
 
 class IntegraServer
 {
@@ -19,10 +20,15 @@ public:
     CError save_file(std::string saveFilePath);
     CIntegraSession& get_session() { return session; }
 
+    const std::vector< std::string > & get_node_paths() { return node_paths; }
+
 private:
     CServerStartupInfo sinfo;
     CIntegraSession session;
     bool session_started;
     std::map< std::string, GUID > moduleGUIDs;  // maps canonical module names to GUIDs
     CPath lastLoadedPath;
+    std::vector< std::string > node_paths;
+
+    void walk_node_tree(const INode* root);
 };

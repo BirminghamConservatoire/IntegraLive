@@ -21,14 +21,16 @@ MainComponent::MainComponent()
 
     loadFileBtn.onClick = [this] {
         integra.open_file("/Users/shane/Desktop/Integra Live/SimpleDelay.integra");
-        widgetPanel.populate(CPath("SimpleDelay.Track1.Block1.Delay1"));
+        widgetPanel.clear();
+        populateNodeCombo();
     };
     loadFileBtn.setButtonText ("Load SimpleDelay.integra");
     addAndMakeVisible(loadFileBtn);
 
     loadFile2Btn.onClick = [this] {
         integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra");
-        widgetPanel.populate(CPath("StereoChorus.Track1.Block1.StereoChorus1"));
+        widgetPanel.clear();
+        populateNodeCombo();
     };
     loadFile2Btn.setButtonText ("Load StereoChorus.integra");
     addAndMakeVisible(loadFile2Btn);
@@ -40,6 +42,17 @@ MainComponent::MainComponent()
     saveFileBtn.onClick = [this] { integra.save_file("/Users/shane/Desktop/test.integra"); };
     saveFileBtn.setButtonText ("Save file");
     addAndMakeVisible(saveFileBtn);
+
+    nodeCombo.setEditableText(false);
+    nodeCombo.onChange = [this] {
+        int path_index = nodeCombo.getSelectedItemIndex();
+        if (path_index >= 0)
+        {
+            // path_index may be -1 when rebuilding the list
+            widgetPanel.populate(CPath(integra.get_node_paths()[path_index]));
+        }
+    };
+    addAndMakeVisible(nodeCombo);
 
     addAndMakeVisible(widgetPanel);
 
@@ -60,7 +73,10 @@ void MainComponent::paint (Graphics& g)
 void MainComponent::resized()
 {
     int buttonHeight = 30;
+    int comboHeight = 36;
+
     auto area = getLocalBounds();
+
     getModulesBtn.setBounds(area.removeFromTop(buttonHeight));
     getNodesBtn.setBounds(area.removeFromTop(buttonHeight));
     dumpStateBtn.setBounds(area.removeFromTop(buttonHeight));
@@ -68,5 +84,18 @@ void MainComponent::resized()
     loadFile2Btn.setBounds(area.removeFromTop(buttonHeight));
     updateParamBtn.setBounds(area.removeFromTop(buttonHeight));
     saveFileBtn.setBounds(area.removeFromTop(buttonHeight));
+
+    nodeCombo.setBounds(area.removeFromTop(comboHeight));
+
     widgetPanel.setBounds(area);
+}
+
+void MainComponent::populateNodeCombo()
+{
+    nodeCombo.clear();
+    int itemId = 1;
+    for (auto path : integra.get_node_paths())
+    {
+        nodeCombo.addItem(path, itemId++);
+    }
 }

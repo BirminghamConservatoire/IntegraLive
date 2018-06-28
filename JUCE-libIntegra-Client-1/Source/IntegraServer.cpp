@@ -303,6 +303,14 @@ void IntegraServer::dump_state()
     session.get_server()->dump_libintegra_state();
 }
 
+// Perform breadth-first traversal of a node tree, building a list of node paths in node_paths
+void IntegraServer::walk_node_tree(const INode* root)
+{
+    node_paths.push_back(root->get_path().get_string());
+    for (auto child : root->get_children())
+        walk_node_tree(child.second);
+}
+
 CError IntegraServer::open_file(std::string integraFilePath)
 {
     CServerLock server = session.get_server();
@@ -316,6 +324,8 @@ CError IntegraServer::open_file(std::string integraFilePath)
             DBG("Unable to delete path " + lastLoadedPath.get_string());
             return err;
         }
+
+        node_paths.clear();
     }
 
     CPath module_path;
@@ -329,13 +339,19 @@ CError IntegraServer::open_file(std::string integraFilePath)
             const IInterfaceDefinition *interface_definition = &(node.second->get_interface_definition());
             const IInterfaceInfo& info = interface_definition->get_interface_info();
             if (info.get_name() == std::string("Container"))
+            {
                 lastLoadedPath = path;
+                break;
+            }
         }
+
+        // populate node_paths
+        walk_node_tree(server->find_node(lastLoadedPath));
+
     }
     else DBG(err.get_text());
     return err;
 }
-
 CError IntegraServer::update_param(std::string paramPath, float value)
 {
     CServerLock server = session.get_server();

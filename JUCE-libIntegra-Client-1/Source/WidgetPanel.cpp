@@ -71,26 +71,36 @@ void WidgetPanel::make_slider(IWidgetDefinition* widget, const INode* node)
     const std::string& endpoint_name = widget->get_attribute_mappings().find("value")->second;
     const INodeEndpoint* node_endpoint = node->get_node_endpoint(endpoint_name);
 
-    // set slider range
+    // set slider range and step
     const IEndpointDefinition& endpoint_definition = node_endpoint->get_endpoint_definition();
     const IControlInfo* control_info = endpoint_definition.get_control_info();
     const IStateInfo* control_state_info = control_info->get_state_info();
     const IConstraint& constraint = control_state_info->get_constraint();
     const IValueRange* range = constraint.get_value_range();
-    slider->setRange(range->get_minimum(), range->get_maximum());
-
-    // set slider linearity
-    switch (control_state_info->get_value_scale()->get_scale_type())
+    if (control_state_info->get_type() == CValue::type::INTEGER)
     {
-        case IValueScale::scale_type::EXPONENTIAL:
-            slider->setSkewFactor(2.5);
-        case IValueScale::scale_type::DECIBEL:
-            slider->setSkewFactor(0.25);
-        default: {}
-    }
+        slider->setRange(int(range->get_minimum()), int(range->get_maximum()), 1.0);
 
-    // set slider value
-    slider->setValue(float(*node_endpoint->get_value()));
+        // set slider value
+        slider->setValue(int(*node_endpoint->get_value()));
+    }
+    else
+    {
+        slider->setRange(float(range->get_minimum()), float(range->get_maximum()));
+
+        // set slider linearity
+        switch (control_state_info->get_value_scale()->get_scale_type())
+        {
+            case IValueScale::scale_type::EXPONENTIAL:
+                slider->setSkewFactor(2.5);
+            case IValueScale::scale_type::DECIBEL:
+                slider->setSkewFactor(0.25);
+            default: {}
+        }
+
+        // set slider value
+        slider->setValue(float(*node_endpoint->get_value()));
+    }
 
     // create a listener callback
     CPath endpoint_path = node_endpoint->get_path();

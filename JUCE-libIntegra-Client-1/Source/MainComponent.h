@@ -20,6 +20,9 @@ private:
     TextButton loadFileBtn, updateParamBtn, saveFileBtn;
     TextButton loadFile2Btn;
 
+    ComboBox nodeCombo;
+    void populateNodeCombo();
+
     WidgetPanel widgetPanel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

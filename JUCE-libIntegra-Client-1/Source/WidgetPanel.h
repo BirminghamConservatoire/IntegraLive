@@ -20,8 +20,9 @@ private:
     CPath nodePath;
 
     void make_label(IWidgetDefinition* widget, const IWidgetPosition& pos);
-    void make_slider(IWidgetDefinition* widget, const INode* node);
     void make_checkbox(IWidgetDefinition* widget, const INode* node);
+    void make_slider(IWidgetDefinition* widget, const INode* node);
+    void make_knob(IWidgetDefinition* widget, const INode* node);
     void make_drywet(IWidgetDefinition* widget, const INode* node);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WidgetPanel)

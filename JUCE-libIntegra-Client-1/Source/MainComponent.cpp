@@ -28,11 +28,13 @@ MainComponent::MainComponent()
     addAndMakeVisible(loadFileBtn);
 
     loadFile2Btn.onClick = [this] {
-        integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra");
+//        integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra");
+        integra.open_file("/Users/shane/Desktop/Integra Live/learning(fixed).integra");
         widgetPanel.clear();
         populateNodeCombo();
     };
-    loadFile2Btn.setButtonText ("Load StereoChorus.integra");
+//    loadFile2Btn.setButtonText ("Load StereoChorus.integra");
+    loadFile2Btn.setButtonText ("Load learning(fixed).integra");
     addAndMakeVisible(loadFile2Btn);
 
     updateParamBtn.onClick = [this] { integra.update_param("SimpleDelay.Track1.Block1.Delay1.delayTime", 1.0f); };

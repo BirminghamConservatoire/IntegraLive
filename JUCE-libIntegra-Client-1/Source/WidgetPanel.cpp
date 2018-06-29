@@ -3,6 +3,7 @@
 WidgetPanel::WidgetPanel(IntegraServer& server)
 : integra(server)
 {
+    setFramesPerSecond(5);
 }
 
 WidgetPanel::~WidgetPanel()
@@ -23,6 +24,7 @@ void WidgetPanel::resized()
 void WidgetPanel::clear()
 {
     deleteAllChildren();
+    widget_map.clear();
 }
 
 void WidgetPanel::make_label(IWidgetDefinition* widget, const IWidgetPosition& pos)
@@ -45,7 +47,7 @@ void WidgetPanel::make_checkbox(IWidgetDefinition* widget, const INode* node)
     const std::string& endpoint_name = widget->get_attribute_mappings().find("value")->second;
     const INodeEndpoint* node_endpoint = node->get_node_endpoint(endpoint_name);
 
-    // set slider value
+    // set value (toggle state)
     toggle->setToggleState(int(*node_endpoint->get_value()) != 0, dontSendNotification);
 
     // create a listener callback
@@ -77,7 +79,13 @@ void WidgetPanel::make_slider(IWidgetDefinition* widget, const INode* node)
     const IStateInfo* control_state_info = control_info->get_state_info();
     const IConstraint& constraint = control_state_info->get_constraint();
     const IValueRange* range = constraint.get_value_range();
-    if (control_state_info->get_type() == CValue::type::INTEGER)
+    bool isInteger = control_state_info->get_type() == CValue::type::INTEGER;
+
+    // add an entry in the control_map, for handling server-initiated value changes
+    CPath endpoint_path = node_endpoint->get_path();
+    widget_map[endpoint_path.get_string()] = new Widget(slider, isInteger);
+
+    if (isInteger)
     {
         slider->setRange(int(range->get_minimum()), int(range->get_maximum()), 1.0);
 
@@ -103,11 +111,63 @@ void WidgetPanel::make_slider(IWidgetDefinition* widget, const INode* node)
     }
 
     // create a listener callback
-    CPath endpoint_path = node_endpoint->get_path();
     slider->onValueChange = [ this, slider, endpoint_path ] {
         CServerLock server = integra.get_session().get_server();
         server->process_command(ISetCommand::create(CPath(endpoint_path), CFloatValue(slider->getValue())));
     };
+}
+
+void WidgetPanel::make_vumeter(IWidgetDefinition* widget, const INode* node)
+{
+    Slider* slider = new Slider();
+    Slider::SliderStyle style = Slider::SliderStyle::LinearBar;
+    const IWidgetPosition& pos = widget->get_position();
+    if (pos.get_height() > pos.get_width()) style = Slider::SliderStyle::LinearBarVertical;
+    slider->setSliderStyle(style);
+    slider->setBounds(pos.get_x(), pos.get_y(), pos.get_width(), pos.get_height());
+    addAndMakeVisible(slider);
+    make_label(widget, pos);
+
+    // get the endpoint we're controlling (look it up by name)
+    const std::string& endpoint_name = widget->get_attribute_mappings().find("level")->second;
+    const INodeEndpoint* node_endpoint = node->get_node_endpoint(endpoint_name);
+
+    // set slider range and step
+    const IEndpointDefinition& endpoint_definition = node_endpoint->get_endpoint_definition();
+    const IControlInfo* control_info = endpoint_definition.get_control_info();
+    const IStateInfo* control_state_info = control_info->get_state_info();
+    const IConstraint& constraint = control_state_info->get_constraint();
+    const IValueRange* range = constraint.get_value_range();
+    bool isInteger = control_state_info->get_type() == CValue::type::INTEGER;
+
+    // add an entry in the control_map, for handling server-initiated value changes
+    CPath endpoint_path = node_endpoint->get_path();
+    widget_map[endpoint_path.get_string()] = new Widget(slider, isInteger);
+
+    if (isInteger)
+    {
+        slider->setRange(int(range->get_minimum()), int(range->get_maximum()), 1.0);
+
+        // set slider value
+        slider->setValue(int(*node_endpoint->get_value()));
+    }
+    else
+    {
+        slider->setRange(float(range->get_minimum()), float(range->get_maximum()));
+
+        // set slider linearity
+        switch (control_state_info->get_value_scale()->get_scale_type())
+        {
+            case IValueScale::scale_type::EXPONENTIAL:
+                slider->setSkewFactor(2.5);
+            case IValueScale::scale_type::DECIBEL:
+                slider->setSkewFactor(0.25);
+            default: {}
+        }
+
+        // set slider value
+        slider->setValue(float(*node_endpoint->get_value()));
+    }
 }
 
 void WidgetPanel::make_knob(IWidgetDefinition* widget, const INode* node)
@@ -136,5 +196,39 @@ void WidgetPanel::populate(CPath activeNodePath)
         else if (type == "Slider") make_slider(widget, node);
         else if (type == "Knob") make_knob(widget, node);
         else if (type == "Checkbox") make_checkbox(widget, node);
+        else if (type == "VuMeter") make_vumeter(widget, node);
+    }
+}
+
+void WidgetPanel::update()
+{
+    CPollingNotificationSink::changed_endpoint_map change_map;
+    integra.get_changed_endpoints(change_map);
+    if (change_map.empty()) return;
+
+    for (auto change : change_map)
+    {
+        std::string endpoint_name(change.first);
+        //CCommandSource source(change.second);
+
+        auto it = widget_map.find(endpoint_name);
+        if (it != widget_map.end())
+        {
+            Widget* widget = it->second;
+            Slider* slider = widget->slider;
+            if (slider)
+            {
+                CServerLock server = integra.get_session().get_server();
+                const CValue* value = server->get_value(CPath(endpoint_name));
+                if (widget->isInteger)
+                {
+                    slider->setValue(int(*value));
+                }
+                else
+                {
+                     slider->setValue(float(*value));
+                }
+            }
+        }
     }
 }

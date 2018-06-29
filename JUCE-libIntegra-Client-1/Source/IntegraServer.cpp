@@ -187,8 +187,9 @@ IntegraServer::IntegraServer(std::string mainModulePath, std::string thirdPartyP
 {
     sinfo.system_module_directory = mainModulePath;
     sinfo.third_party_module_directory = thirdPartyPath;
+    sinfo.notification_sink = &sink;
 
-    // Stop the incessant chatter
+    // silence debug-trace chatter
     CTrace::set_categories_to_trace(false, false, false);
 }
 
@@ -301,6 +302,47 @@ void IntegraServer::dump_nodes_details()
 void IntegraServer::dump_state()
 {
     session.get_server()->dump_libintegra_state();
+}
+
+static const char* cmd_source(CCommandSource src)
+{
+    // I could just use src.get_text(), but I want to figure out how to set up a
+    // switch statement like this.
+    switch ((integra_api::CCommandSource::source)src)
+    {
+        case integra_api::CCommandSource::NONE:
+            return "NONE";
+        case integra_api::CCommandSource::INITIALIZATION:
+            return "INITIALIZATION";
+        case integra_api::CCommandSource::LOAD:
+            return "LOAD";
+        case integra_api::CCommandSource::SYSTEM:
+            return "SYSTEM";
+        case integra_api::CCommandSource::CONNECTION:
+            return "CONNECTION";
+        case integra_api::CCommandSource::SCRIPT:
+            return "SCRIPT";
+        case integra_api::CCommandSource::MODULE_IMPLEMENTATION:
+            return "MODULE_IMPLEMENTATION";
+        case integra_api::CCommandSource::PUBLIC_API:
+            return "PUBLIC_API";
+    }
+}
+
+// Call this instead of get_changed_endpoints(), not in addition to it
+void IntegraServer::dump_changed_endpoints()
+{
+    CPollingNotificationSink::changed_endpoint_map change_map;
+    sink.get_changed_endpoints(change_map);
+    if (change_map.empty()) return;
+
+    DBG("\nChanges:");
+    for (auto change : change_map)
+    {
+        std::string endpoint_name(change.first);
+        CCommandSource source(change.second);
+        DBG("  " + endpoint_name + ": " + cmd_source(source));
+    }
 }
 
 // Perform breadth-first traversal of a node tree, building a list of node paths in node_paths

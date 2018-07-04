@@ -28,18 +28,18 @@ MainComponent::MainComponent()
     addAndMakeVisible(loadFileBtn);
 
     loadFile2Btn.onClick = [this] {
-//        integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra");
-        integra.open_file("/Users/shane/Desktop/Integra Live/learning(fixed).integra");
+        integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra");
+//        integra.open_file("/Users/shane/Desktop/Integra Live/learning(fixed).integra");
         widgetPanel.clear();
         populateNodeCombo();
     };
-//    loadFile2Btn.setButtonText ("Load StereoChorus.integra");
-    loadFile2Btn.setButtonText ("Load learning(fixed).integra");
+    loadFile2Btn.setButtonText ("Load StereoChorus.integra");
+//    loadFile2Btn.setButtonText ("Load learning(fixed).integra");
     addAndMakeVisible(loadFile2Btn);
 
-    updateParamBtn.onClick = [this] { integra.update_param("SimpleDelay.Track1.Block1.Delay1.delayTime", 1.0f); };
-    updateParamBtn.setButtonText ("Update delay time");
-    addAndMakeVisible(updateParamBtn);
+    createBtn.onClick = [this] { createNodeGraph(); };
+    createBtn.setButtonText ("Create node graph from scratch");
+    addAndMakeVisible(createBtn);
 
     saveFileBtn.onClick = [this] { integra.save_file("/Users/shane/Desktop/test.integra"); };
     saveFileBtn.setButtonText ("Save file");
@@ -84,7 +84,7 @@ void MainComponent::resized()
     dumpStateBtn.setBounds(area.removeFromTop(buttonHeight));
     loadFileBtn.setBounds(area.removeFromTop(buttonHeight));
     loadFile2Btn.setBounds(area.removeFromTop(buttonHeight));
-    updateParamBtn.setBounds(area.removeFromTop(buttonHeight));
+    createBtn.setBounds(area.removeFromTop(buttonHeight));
     saveFileBtn.setBounds(area.removeFromTop(buttonHeight));
 
     nodeCombo.setBounds(area.removeFromTop(comboHeight));
@@ -100,4 +100,47 @@ void MainComponent::populateNodeCombo()
     {
         nodeCombo.addItem(path, itemId++);
     }
+}
+
+void MainComponent::createNodeGraph()
+{
+    integra.clear_any_loaded_graph();
+
+    CServerLock server = integra.get_session().get_server();
+    CPath root_path;
+    GUID connectionID = integra.get_moduleGUID("Connection");
+
+    server->process_command(INewCommand::create(integra.get_moduleGUID("Container"), "MyBlock", root_path));
+    CPath block_path("MyBlock");
+    server->process_command(INewCommand::create(integra.get_moduleGUID("AudioIn"), "AudioIn", block_path));
+    server->process_command(INewCommand::create(integra.get_moduleGUID("StereoAudioOut"), "AudioOut", block_path));
+
+#if 0
+    // simple pass-through
+    server->process_command(INewCommand::create(connectionID, "LeftConn", block_path));
+    server->process_command(ISetCommand::create(CPath("MyBlock.LeftConn.sourcePath"), CStringValue("AudioIn.out")));
+    server->process_command(ISetCommand::create(CPath("MyBlock.LeftConn.targetPath"), CStringValue("AudioOut.in1")));
+
+    server->process_command(INewCommand::create(connectionID, "RightConn", block_path));
+    server->process_command(ISetCommand::create(CPath("MyBlock.RightConn.sourcePath"), CStringValue("AudioIn.out")));
+    server->process_command(ISetCommand::create(CPath("MyBlock.RightConn.targetPath"), CStringValue("AudioOut.in2")));
+#else
+    // delay right channel only
+    server->process_command(INewCommand::create(integra.get_moduleGUID("Delay"), "Delay", block_path));
+
+    server->process_command(INewCommand::create(connectionID, "LeftConn", block_path));
+    server->process_command(ISetCommand::create(CPath("MyBlock.LeftConn.sourcePath"), CStringValue("AudioIn.out")));
+    server->process_command(ISetCommand::create(CPath("MyBlock.LeftConn.targetPath"), CStringValue("AudioOut.in1")));
+
+    server->process_command(INewCommand::create(connectionID, "RightToDelay", block_path));
+    server->process_command(ISetCommand::create(CPath("MyBlock.RightToDelay.sourcePath"), CStringValue("AudioIn.out")));
+    server->process_command(ISetCommand::create(CPath("MyBlock.RightToDelay.targetPath"), CStringValue("Delay.in1")));
+
+    server->process_command(INewCommand::create(connectionID, "DelayToRight", block_path));
+    server->process_command(ISetCommand::create(CPath("MyBlock.DelayToRight.sourcePath"), CStringValue("Delay.out1")));
+    server->process_command(ISetCommand::create(CPath("MyBlock.DelayToRight.targetPath"), CStringValue("AudioOut.in2")));
+#endif
+
+    integra.set_last_loaded_path(server, block_path);
+    populateNodeCombo();
 }

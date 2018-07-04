@@ -12,11 +12,18 @@ public:
 
     CError start();
     CError stop();
+
+    CError clear_any_loaded_graph();
+
     CError open_file(std::string integraFilePath);
     CError update_param(std::string paramPath, float value);
     CError save_file(std::string saveFilePath);
 
+    void set_last_loaded_path(CServerLock &server, const CPath& path);
+
     CIntegraSession& get_session() { return session; }
+    const GUID get_moduleGUID(std::string moduleName) { return moduleGUIDs[moduleName]; }
+
     void get_changed_endpoints( CPollingNotificationSink::changed_endpoint_map &changed_endpoints ) { sink.get_changed_endpoints(changed_endpoints); }
     const std::vector< std::string > & get_node_paths() { return node_paths; }
 

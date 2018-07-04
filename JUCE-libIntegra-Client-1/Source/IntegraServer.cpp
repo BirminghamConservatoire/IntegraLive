@@ -275,6 +275,23 @@ static void dump_node_tree(INode* root, int indent_level=0)
     for (int level=indent_level; level > 0; level--) spaces.append("   ");
     DBG(spaces + root->get_name() /*+ ": " + root->get_path().get_string()*/);
 
+#if 0
+    // display userData XML where present
+    const IInterfaceDefinition *interface_definition = &(root->get_interface_definition());
+    const IInterfaceInfo& info = interface_definition->get_interface_info();
+    const node_endpoint_map& endpoints_map = root->get_node_endpoints();
+    for (auto ep_entry : endpoints_map)
+    {
+        std::string ep_name = ep_entry.first;
+        if (ep_name == "userData")
+        {
+            INodeEndpoint* ep = ep_entry.second;
+            const CValue* user_data = ep->get_value();
+            DBG(spaces + ep_name + ": " + user_data->get_as_string());
+        }
+    }
+#endif
+
     for (auto child : root->get_children())
         dump_node_tree(child.second, indent_level + 1);
 }
@@ -288,14 +305,6 @@ void IntegraServer::dump_nodes_details()
     for (auto entry : nmap)
     {
         dump_node_tree(entry.second);
-
-        //std::string node_name = entry.first;
-        //INode* node = entry.second;
-        //DBG("    " + node_name + ": " + node->get_path().get_string());
-
-        //const IInterfaceDefinition *interface_definition = &(node.second->get_interface_definition());
-        //const IInterfaceInfo& info = interface_definition->get_interface_info();
-        //DBG(path.get_string() + "  " + info.get_name());
     }
 }
 
@@ -353,7 +362,7 @@ void IntegraServer::walk_node_tree(const INode* root)
         walk_node_tree(child.second);
 }
 
-CError IntegraServer::open_file(std::string integraFilePath)
+CError IntegraServer::clear_any_loaded_graph()
 {
     CServerLock server = session.get_server();
 
@@ -368,10 +377,20 @@ CError IntegraServer::open_file(std::string integraFilePath)
         }
 
         node_paths.clear();
+        lastLoadedPath = CPath();
     }
+    return CError::code::SUCCESS;
+}
+
+CError IntegraServer::open_file(std::string integraFilePath)
+{
+    CError err = clear_any_loaded_graph();
+    if (err != CError::code::SUCCESS) return err;
+
+    CServerLock server = session.get_server();
 
     CPath module_path;
-    CError err = server->process_command(ILoadCommand::create(integraFilePath, module_path));
+    err = server->process_command(ILoadCommand::create(integraFilePath, module_path));
     if (err == CError::code::SUCCESS)
     {
         // get the path to what we just loaded: it's the first Container object
@@ -394,6 +413,14 @@ CError IntegraServer::open_file(std::string integraFilePath)
     else DBG(err.get_text());
     return err;
 }
+
+void IntegraServer::set_last_loaded_path(CServerLock &server, const CPath& path)
+{
+    lastLoadedPath = path;
+    node_paths.clear();
+    walk_node_tree(server->find_node(lastLoadedPath));
+}
+
 CError IntegraServer::update_param(std::string paramPath, float value)
 {
     CServerLock server = session.get_server();

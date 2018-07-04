@@ -17,11 +17,13 @@ private:
     IntegraServer integra;
 
     TextButton getModulesBtn, getNodesBtn, dumpStateBtn;
-    TextButton loadFileBtn, updateParamBtn, saveFileBtn;
-    TextButton loadFile2Btn;
+    TextButton loadFileBtn, loadFile2Btn, saveFileBtn;
+    TextButton createBtn;
 
     ComboBox nodeCombo;
     void populateNodeCombo();
+
+    void createNodeGraph();
 
     WidgetPanel widgetPanel;
     

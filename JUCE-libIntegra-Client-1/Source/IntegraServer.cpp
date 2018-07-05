@@ -432,7 +432,7 @@ CError IntegraServer::save_file(std::string saveFilePath)
 {
     CServerLock server = session.get_server();
 
-    return server->process_command(ISaveCommand::create(saveFilePath, CPath("SimpleDelay")));
+    return server->process_command(ISaveCommand::create(saveFilePath, lastLoadedPath));
 }
 
 CError IntegraServer::stop()

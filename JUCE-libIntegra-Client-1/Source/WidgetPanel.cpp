@@ -161,7 +161,7 @@ void WidgetPanel::make_vumeter(IWidgetDefinition* widget, const INode* node)
             case IValueScale::scale_type::EXPONENTIAL:
                 slider->setSkewFactor(2.5);
             case IValueScale::scale_type::DECIBEL:
-                slider->setSkewFactor(0.25);
+                slider->setSkewFactor(1.95);
             default: {}
         }
 

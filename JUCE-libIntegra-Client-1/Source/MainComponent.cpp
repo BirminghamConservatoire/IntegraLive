@@ -28,13 +28,15 @@ MainComponent::MainComponent()
     addAndMakeVisible(loadFileBtn);
 
     loadFile2Btn.onClick = [this] {
-        integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra");
+//        integra.open_file("/Users/shane/Desktop/Integra Live/StereoChorus.integra");
 //        integra.open_file("/Users/shane/Desktop/Integra Live/learning(fixed).integra");
+        integra.open_file("/Users/shane/Desktop/test.integra");
         widgetPanel.clear();
         populateNodeCombo();
     };
-    loadFile2Btn.setButtonText ("Load StereoChorus.integra");
+//    loadFile2Btn.setButtonText ("Load StereoChorus.integra");
 //    loadFile2Btn.setButtonText ("Load learning(fixed).integra");
+    loadFile2Btn.setButtonText ("Load test.integra");
     addAndMakeVisible(loadFile2Btn);
 
     createBtn.onClick = [this] { createNodeGraph(); };
@@ -105,6 +107,7 @@ void MainComponent::populateNodeCombo()
 void MainComponent::createNodeGraph()
 {
     integra.clear_any_loaded_graph();
+    widgetPanel.clear();
 
     CServerLock server = integra.get_session().get_server();
     CPath root_path;

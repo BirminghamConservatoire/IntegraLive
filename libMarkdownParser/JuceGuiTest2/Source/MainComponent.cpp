@@ -28,7 +28,15 @@ MainComponent::MainComponent()
 {
     setSize (600, 400);
     this->addAndMakeVisible(&markdownView);
-    markdownView.setMarkdownText(mdString1);
+    //markdownView.setMarkdownText(mdString1);
+
+    FileChooser chooser("Choose a .md file");
+    if (chooser.browseForFileToOpen())
+    {
+        File mdfile = chooser.getResult();
+        String mdtext = mdfile.loadFileAsString();
+        markdownView.setMarkdownText(mdtext.toStdString());
+    }
 }
 
 MainComponent::~MainComponent()

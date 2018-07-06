@@ -53,6 +53,7 @@ void MarkdownView::mouseDown(const MouseEvent& evt)
 
 void MarkdownView::setMarkdownText(const std::string text)
 {
+    clear();
     listCounters[0] = 1;
     mdp::MarkdownNode root;
     parser.parse(text, root);

@@ -40,13 +40,14 @@ void MarkdownView::mouseDown(const MouseEvent& evt)
 {
     TextEditor::mouseDown(evt);
     int idx = getTextIndexAt(evt.getMouseDownX(), evt.getMouseDownY());
-    //DBG("MouseDown at index " + std::to_string(idx));
 
     for (WebLink* link : links)
     {
         if (idx >= link->start && idx < link->end)
         {
-            DBG("Open URL " + link->url);
+            DBG("Opening URL " + link->url);
+            URL url(link->url);
+            url.launchInDefaultBrowser();
             break;
         }
     }
@@ -55,6 +56,7 @@ void MarkdownView::mouseDown(const MouseEvent& evt)
 void MarkdownView::setMarkdownText(const std::string text)
 {
     clear();
+    links.clear();
     listCounters[0] = 1;
     mdp::MarkdownNode root;
     parser.parse(text, root);

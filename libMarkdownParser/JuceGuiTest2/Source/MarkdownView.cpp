@@ -14,6 +14,7 @@ MarkdownView::MarkdownView()
     , underlined(14, Font::underlined)
     , bold(14, Font::bold)
     , italic(14, Font::italic)
+    // default font on Mac doesn't do bold+italic so I'm adding underlining too
     , boldItalic(14, Font::italic | Font::bold | Font::underlined)
     , fixedWidth(Font::getDefaultMonospacedFontName(), 14, Font::plain)
     , defaultColour(Colours::white)

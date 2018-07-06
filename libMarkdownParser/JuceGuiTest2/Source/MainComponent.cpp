@@ -2,6 +2,16 @@
 
 MainComponent::MainComponent()
 {
+    LookAndFeel &laf = getLookAndFeel();
+    LookAndFeel_V4* laf4 = dynamic_cast<LookAndFeel_V4*>(&laf);
+    if (laf4)
+    {
+        //laf4->setColourScheme(LookAndFeel_V4::getDarkColourScheme());
+        //laf4->setColourScheme(LookAndFeel_V4::getMidnightColourScheme());
+        //laf4->setColourScheme(LookAndFeel_V4::getGreyColourScheme());
+        laf4->setColourScheme(LookAndFeel_V4::getLightColourScheme());
+    }
+
     menuBar.reset (new MenuBarComponent (this));
     addAndMakeVisible (menuBar.get());
     setApplicationCommandManagerToWatch (&commandManager);

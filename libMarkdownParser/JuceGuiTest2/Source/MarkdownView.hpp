@@ -58,7 +58,7 @@ private:
     // so I'm keeping the as ordinary members for now.
     Font plain, underlined, bold, italic, boldItalic, fixedWidth;
     Font heading[6];
-    Colour defaultColour, linkColour;
+    Colour linkColour;
 
     // List of Web links found in the Markdown text
     OwnedArray<WebLink> links;

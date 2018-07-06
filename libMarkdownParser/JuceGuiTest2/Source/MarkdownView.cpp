@@ -17,7 +17,6 @@ MarkdownView::MarkdownView()
     // default font on Mac doesn't do bold+italic so I'm adding underlining too
     , boldItalic(14, Font::italic | Font::bold | Font::underlined)
     , fixedWidth(Font::getDefaultMonospacedFontName(), 14, Font::plain)
-    , defaultColour(Colours::white)
     , linkColour(Colours::cornflowerblue)
 {
     setMultiLine(true);
@@ -29,7 +28,6 @@ MarkdownView::MarkdownView()
     heading[4] = bold;
     heading[5] = italic;
     setFont(plain);
-    //setLineSpacing(1.25);
 }
 
 MarkdownView::~MarkdownView()
@@ -186,7 +184,11 @@ void MarkdownView::interpretParagraphText(bool separateParagraphs, const std::st
         else if (c == '\x04')
         {
             if (!linkText) setColour(TextEditor::textColourId, linkColour);
-            else setColour(TextEditor::textColourId, defaultColour);
+            else
+            {
+                Colour defaultColour = getLookAndFeel().findColour(textColourId);
+                setColour(TextEditor::textColourId, defaultColour);
+            }
             linkText = !linkText;
             if (linkText) linkStart = getCaretPosition();
             else linkEnd = getCaretPosition();

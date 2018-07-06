@@ -99,7 +99,7 @@ void MarkdownView::interpretMarkdownNode(mdp::MarkdownNode& node, bool separateP
                 for (int i=0; i < level; i++) insertTextAtCaret("  ");
                 if (nodeData & MKD_LIST_ORDERED)
                 {
-                    if (level < 10)
+                    if (level < 9)
                     {
                         listCounters[level + 1] = 1;
                         insertTextAtCaret(" " + std::to_string(listCounters[level]++) + ". ");

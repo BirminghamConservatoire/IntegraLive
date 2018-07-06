@@ -1,49 +1,32 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-  ==============================================================================
-*/
-
 #include "MainComponent.h"
-
-//==============================================================================
-
-std::string MainComponent::mdString1 =
-    "# Header 1\n## Header 2\n"
-    "This is a **script**. "
-    "You can *write lua code here* in order to ***programatically get and set module endpoints***.\n"
-    "\nFor documentation of the lua language [click here](http://www.lua.org/docs.html).\n"
-    "\nScripts can be executed in the following ways:\n\n"
-    "1. manually, by context-clicking the script's name and choosing 'Execute'.\n"
-    "1. automatically, by adding a routing item and setting the target to the script's 'trigger' endpoint (the script will execute when the routing item's source endpoint is set).\n"
-    "  * el barfo\n"
-    "1. ethereally, through interpretive dance.\n"
-    "\nScripts can access module endpoints via their paths, for example:\n"
-    "\n    Player1.tick = Track1.Block1.AudioIn1.vu1 + 60"
-    "\nAnother way: `Player1.tick = Track1.Block1.AudioIn1.vu1 + 60`";
 
 MainComponent::MainComponent()
 {
-    setSize (600, 400);
-    this->addAndMakeVisible(&markdownView);
-    //markdownView.setMarkdownText(mdString1);
+    menuBar.reset (new MenuBarComponent (this));
+    addAndMakeVisible (menuBar.get());
+    setApplicationCommandManagerToWatch (&commandManager);
+    commandManager.registerAllCommandsForTarget (this);
+    addKeyListener (commandManager.getKeyMappings());
 
-    FileChooser chooser("Choose a .md file");
-    if (chooser.browseForFileToOpen())
-    {
-        File mdfile = chooser.getResult();
-        String mdtext = mdfile.loadFileAsString();
-        markdownView.setMarkdownText(mdtext.toStdString());
-    }
+#if JUCE_MAC
+    MenuBarModel::setMacMainMenu(this);
+#else
+    menuBar->setVisible(true);
+#endif
+    menuItemsChanged();
+
+    setSize (600, 400);
+
+    this->addAndMakeVisible(&markdownView);
 }
 
 MainComponent::~MainComponent()
 {
+#if JUCE_MAC
+    MenuBarModel::setMacMainMenu (nullptr);
+#endif
 }
 
-//==============================================================================
 void MainComponent::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -52,6 +35,82 @@ void MainComponent::paint (Graphics& g)
 
 void MainComponent::resized()
 {
-    // This is called when the MainComponent is resized.
-    markdownView.setBounds(this->getBounds());
+    auto b = getLocalBounds();
+#if !JUCE_MAC
+    menuBar->setBounds (b.removeFromTop (LookAndFeel::getDefaultLookAndFeel()
+                                         .getDefaultMenuBarHeight()));
+#endif
+    markdownView.setBounds(b);
+}
+
+//==============================================================================
+StringArray MainComponent::getMenuBarNames()
+{
+    return { "File" };
+}
+
+PopupMenu MainComponent::getMenuForIndex (int topLevelMenuIndex,
+                                          const String& menuName)
+{
+    PopupMenu menu;
+
+    if (topLevelMenuIndex == 0)
+    {
+        menu.addCommandItem (&commandManager, CommandIDs::openFile);
+    }
+
+    return menu;
+}
+
+void MainComponent::menuItemSelected (int menuItemID,
+                                      int topLevelMenuIndex)
+{
+    // nothing to do here
+}
+
+//==============================================================================
+ApplicationCommandTarget* MainComponent::getNextCommandTarget()
+{
+    return this;
+}
+
+void MainComponent::getAllCommands (Array<CommandID>& commands)
+{
+    commands.add(CommandIDs::openFile);
+}
+
+void MainComponent::getCommandInfo (CommandID commandID,
+                                    ApplicationCommandInfo& result)
+{
+    switch (commandID)
+    {
+        case CommandIDs::openFile:
+            result.setInfo ("Open File", "Select a file for opening", "Menu", 0);
+            result.addDefaultKeypress ('o', ModifierKeys::commandModifier);
+            break;
+        default:
+            break;
+    }
+}
+
+bool MainComponent::perform (const InvocationInfo& info)
+{
+    switch (info.commandID)
+    {
+        case CommandIDs::openFile:
+        {
+            FileChooser chooser("Choose a .md file");
+            if (chooser.browseForFileToOpen())
+            {
+                File mdfile = chooser.getResult();
+                String mdtext = mdfile.loadFileAsString();
+                markdownView.setMarkdownText(mdtext.toStdString());
+            }
+        }
+            break;
+        default:
+            return false;
+    }
+
+    return true;
 }

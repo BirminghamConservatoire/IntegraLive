@@ -11,7 +11,6 @@
 		7D110745189FC8ED00B4A72E /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D110743189FC8DB00B4A72E /* CoreAudio.framework */; };
 		7D110748189FC91C00B4A72E /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D110746189FC90D00B4A72E /* CoreFoundation.framework */; };
 		7D11074B189FC9E900B4A72E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D110749189FC9DA00B4A72E /* Carbon.framework */; };
-		7D21319B1892AE4300C270A7 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D21319A1892AE4300C270A7 /* libz.dylib */; };
 		7D2131B61892B7A300C270A7 /* partconv~.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131B21892B7A300C270A7 /* partconv~.c */; };
 		7D2131B71892B7A300C270A7 /* iemlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D2131B41892B7A300C270A7 /* iemlib.h */; };
 		7D2131B81892B7A300C270A7 /* soundfile_info.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D2131B51892B7A300C270A7 /* soundfile_info.c */; };
@@ -134,7 +133,6 @@
 		7D8452D9187DBBA5008639D2 /* validator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D84527F187DBBA5008639D2 /* validator.cpp */; };
 		7D8452DA187DBBA5008639D2 /* validator.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D845280187DBBA5008639D2 /* validator.h */; };
 		7D8452DB187DBBA5008639D2 /* value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7D845281187DBBA5008639D2 /* value.cpp */; };
-		7D8452DD187DBCCD008639D2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D8452DC187DBCCD008639D2 /* libxml2.dylib */; };
 		7D8454E3187DC023008639D2 /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8453FB187DC023008639D2 /* crypt.h */; };
 		7D8454E4187DC023008639D2 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 7D8453FC187DC023008639D2 /* ioapi.c */; };
 		7D8454E5187DC023008639D2 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D8453FD187DC023008639D2 /* ioapi.h */; };
@@ -183,7 +181,6 @@
 		7D110743189FC8DB00B4A72E /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		7D110746189FC90D00B4A72E /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		7D110749189FC9DA00B4A72E /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
-		7D21319A1892AE4300C270A7 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		7D2131B21892B7A300C270A7 /* partconv~.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "partconv~.c"; sourceTree = "<group>"; };
 		7D2131B41892B7A300C270A7 /* iemlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iemlib.h; sourceTree = "<group>"; };
 		7D2131B51892B7A300C270A7 /* soundfile_info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = soundfile_info.c; sourceTree = "<group>"; };
@@ -325,7 +322,6 @@
 		7D84527F187DBBA5008639D2 /* validator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = validator.cpp; sourceTree = "<group>"; };
 		7D845280187DBBA5008639D2 /* validator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = validator.h; sourceTree = "<group>"; };
 		7D845281187DBBA5008639D2 /* value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = value.cpp; sourceTree = "<group>"; };
-		7D8452DC187DBCCD008639D2 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		7D8453FB187DC023008639D2 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		7D8453FC187DC023008639D2 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		7D8453FD187DC023008639D2 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
@@ -391,8 +387,6 @@
 				7DFC159C18D9CD4900CA083C /* libportmidi_s.a in Frameworks */,
 				7DC426421F791C4E00334F11 /* libpd-osx.a in Frameworks */,
 				7DC426441F791C6D00334F11 /* libfftw3f.a in Frameworks */,
-				7D21319B1892AE4300C270A7 /* libz.dylib in Frameworks */,
-				7D8452DD187DBCCD008639D2 /* libxml2.dylib in Frameworks */,
 				7DFC159618D9CD2300CA083C /* libsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -666,12 +660,10 @@
 		7D8452DE187DBCE2008639D2 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				7D21319A1892AE4300C270A7 /* libz.dylib */,
 				7D110749189FC9DA00B4A72E /* Carbon.framework */,
 				7D110746189FC90D00B4A72E /* CoreFoundation.framework */,
 				7D110743189FC8DB00B4A72E /* CoreAudio.framework */,
 				7D110740189FC8A700B4A72E /* CoreMIDI.framework */,
-				7D8452DC187DBCCD008639D2 /* libxml2.dylib */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";

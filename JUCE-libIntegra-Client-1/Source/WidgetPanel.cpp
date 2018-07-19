@@ -3,7 +3,7 @@
 WidgetPanel::WidgetPanel(IntegraServer& server)
 : integra(server)
 {
-    setFramesPerSecond(5);
+    setFramesPerSecond(15);
 }
 
 WidgetPanel::~WidgetPanel()

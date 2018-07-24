@@ -4,8 +4,8 @@
 #include "interface_definition.h"
 
 //==============================================================================
-WidgetBuilder::WidgetBuilder (Component& v)
-:   view (v)
+WidgetBuilder::WidgetBuilder (Component& ownerView)
+:   ownerView (ownerView)
 {
 }
 
@@ -45,7 +45,7 @@ void WidgetBuilder::buildWidget (integra_api::IWidgetDefinition& widgetDefinitio
 //==============================================================================
 void WidgetBuilder::setupWidget (Widget& widget, integra_api::IWidgetDefinition& widgetDefinition)
 {
-    view.addAndMakeVisible (widget);
+    ownerView.addAndMakeVisible (widget);
     
     Rectangle<int> bounds (widgetDefinition.get_position ().get_x (),
                            widgetDefinition.get_position ().get_y (),

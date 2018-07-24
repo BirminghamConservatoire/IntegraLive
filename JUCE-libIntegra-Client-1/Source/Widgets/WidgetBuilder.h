@@ -9,7 +9,7 @@ class WidgetBuilder
 {
 public:
     //==========================================================================
-    WidgetBuilder (Component& view);
+    explicit WidgetBuilder (Component& ownerView);
     ~WidgetBuilder();
     
     //==========================================================================
@@ -17,7 +17,7 @@ public:
     
 private:
     //==========================================================================
-    Component& view;
+    Component& ownerView;
     
     //==========================================================================
     void setupWidget (Widget& widget, integra_api::IWidgetDefinition& widgetDefinition);

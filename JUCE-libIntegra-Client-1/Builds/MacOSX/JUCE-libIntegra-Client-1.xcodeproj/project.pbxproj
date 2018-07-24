@@ -17,6 +17,39 @@
 		6064DF5ECEF78A3AA2C3AE09 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E18FC70B7DFD7A2F4DA75D35 /* Cocoa.framework */; };
 		6F37BA35B09AAC1E257D2917 /* MainComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2A7DA91962A24E1D74AE4F51 /* MainComponent.cpp */; };
 		74DE158CADA62F1246CA83B9 /* include_juce_graphics.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3AE49E972BA91036287D4CCF /* include_juce_graphics.mm */; };
+		849A2CBD21075D2600FE66B2 /* Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C7221075D2600FE66B2 /* Widget.cpp */; };
+		849A2CBE21075D2600FE66B2 /* KnobWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C7521075D2600FE66B2 /* KnobWidget.cpp */; };
+		849A2CBF21075D2600FE66B2 /* RadioGroupWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C7721075D2600FE66B2 /* RadioGroupWidget.cpp */; };
+		849A2CC021075D2600FE66B2 /* CheckboxWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C7921075D2600FE66B2 /* CheckboxWidget.cpp */; };
+		849A2CC121075D2600FE66B2 /* NumberBoxWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C7B21075D2600FE66B2 /* NumberBoxWidget.cpp */; };
+		849A2CC221075D2600FE66B2 /* VuMeterWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C7D21075D2600FE66B2 /* VuMeterWidget.cpp */; };
+		849A2CC321075D2600FE66B2 /* TriggerWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C7E21075D2600FE66B2 /* TriggerWidget.cpp */; };
+		849A2CC421075D2600FE66B2 /* CheckboxController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C8121075D2600FE66B2 /* CheckboxController.cpp */; };
+		849A2CC521075D2600FE66B2 /* VuMeterController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C8421075D2600FE66B2 /* VuMeterController.cpp */; };
+		849A2CC621075D2600FE66B2 /* KnobController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C8621075D2600FE66B2 /* KnobController.cpp */; };
+		849A2CC721075D2600FE66B2 /* TriggerController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C8721075D2600FE66B2 /* TriggerController.cpp */; };
+		849A2CC821075D2600FE66B2 /* XyScratchPadWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C8B21075D2600FE66B2 /* XyScratchPadWidget.cpp */; };
+		849A2CC921075D2600FE66B2 /* XyPan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C8F21075D2600FE66B2 /* XyPan.cpp */; };
+		849A2CCA21075D2600FE66B2 /* XyPanPadWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C9021075D2600FE66B2 /* XyPanPadWidget.cpp */; };
+		849A2CCB21075D2600FE66B2 /* PlayButtonWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C9521075D2600FE66B2 /* PlayButtonWidget.cpp */; };
+		849A2CCC21075D2600FE66B2 /* RecordButtonWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C9621075D2600FE66B2 /* RecordButtonWidget.cpp */; };
+		849A2CCD21075D2600FE66B2 /* StopButtonWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C9721075D2600FE66B2 /* StopButtonWidget.cpp */; };
+		849A2CCE21075D2600FE66B2 /* MidiLearnButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C9B21075D2600FE66B2 /* MidiLearnButton.cpp */; };
+		849A2CCF21075D2600FE66B2 /* SoundFileLoadDialogWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2C9F21075D2600FE66B2 /* SoundFileLoadDialogWidget.cpp */; };
+		849A2CD021075D2600FE66B2 /* SoundFileLoadDialogController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CA121075D2600FE66B2 /* SoundFileLoadDialogController.cpp */; };
+		849A2CD121075D2600FE66B2 /* FileSaveDialogController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CA321075D2600FE66B2 /* FileSaveDialogController.cpp */; };
+		849A2CD221075D2600FE66B2 /* FileSaveDialogWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CA521075D2600FE66B2 /* FileSaveDialogWidget.cpp */; };
+		849A2CD321075D2600FE66B2 /* EarlyLateBalanceWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CA821075D2600FE66B2 /* EarlyLateBalanceWidget.cpp */; };
+		849A2CD421075D2600FE66B2 /* PanoramaBalanceWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CAC21075D2600FE66B2 /* PanoramaBalanceWidget.cpp */; };
+		849A2CD521075D2600FE66B2 /* SliderWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CAE21075D2600FE66B2 /* SliderWidget.cpp */; };
+		849A2CD621075D2600FE66B2 /* RangeSliderWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CAF21075D2600FE66B2 /* RangeSliderWidget.cpp */; };
+		849A2CD721075D2600FE66B2 /* DryWetBalanceWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CB021075D2600FE66B2 /* DryWetBalanceWidget.cpp */; };
+		849A2CD821075D2600FE66B2 /* RangeSliderController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CB521075D2600FE66B2 /* RangeSliderController.cpp */; };
+		849A2CD921075D2600FE66B2 /* SliderController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CB621075D2600FE66B2 /* SliderController.cpp */; };
+		849A2CDA21075D2600FE66B2 /* PanoramaBalanceController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CB721075D2600FE66B2 /* PanoramaBalanceController.cpp */; };
+		849A2CDB21075D2600FE66B2 /* DryWetBalanceController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CB821075D2600FE66B2 /* DryWetBalanceController.cpp */; };
+		849A2CDC21075D2600FE66B2 /* EarlyLateBalanceController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CBB21075D2600FE66B2 /* EarlyLateBalanceController.cpp */; };
+		849A2CDF2107679F00FE66B2 /* WidgetBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 849A2CDE2107679E00FE66B2 /* WidgetBuilder.cpp */; };
 		8D5A2BE18D0CB5F1203C7C1C /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E309D6232C37028FCEEAE293 /* WebKit.framework */; };
 		8E9E323FAF2CB412462DFF26 /* include_juce_events.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8ACD2E33E1859E0B0905B298 /* include_juce_events.mm */; };
 		9B29CD96A985903E748E83B3 /* include_juce_gui_extra.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1B38A061CC5F1A424530E63C /* include_juce_gui_extra.mm */; };
@@ -77,6 +110,73 @@
 		682A56DE912A9B667AEEA700 /* string_helper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = string_helper.h; path = ../../../libIntegra/api/string_helper.h; sourceTree = SOURCE_ROOT; };
 		706AC6FC56D185C919BCE905 /* include_juce_gui_basics.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_gui_basics.mm; path = ../../JuceLibraryCode/include_juce_gui_basics.mm; sourceTree = SOURCE_ROOT; };
 		808787FAB04AE80B99163650 /* node_endpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = node_endpoint.h; path = ../../../libIntegra/api/node_endpoint.h; sourceTree = SOURCE_ROOT; };
+		849A2C7221075D2600FE66B2 /* Widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Widget.cpp; sourceTree = "<group>"; };
+		849A2C7421075D2600FE66B2 /* RadioGroupWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadioGroupWidget.h; sourceTree = "<group>"; };
+		849A2C7521075D2600FE66B2 /* KnobWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KnobWidget.cpp; sourceTree = "<group>"; };
+		849A2C7621075D2600FE66B2 /* VuMeterWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VuMeterWidget.h; sourceTree = "<group>"; };
+		849A2C7721075D2600FE66B2 /* RadioGroupWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RadioGroupWidget.cpp; sourceTree = "<group>"; };
+		849A2C7821075D2600FE66B2 /* TriggerWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriggerWidget.h; sourceTree = "<group>"; };
+		849A2C7921075D2600FE66B2 /* CheckboxWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CheckboxWidget.cpp; sourceTree = "<group>"; };
+		849A2C7A21075D2600FE66B2 /* NumberBoxWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberBoxWidget.h; sourceTree = "<group>"; };
+		849A2C7B21075D2600FE66B2 /* NumberBoxWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NumberBoxWidget.cpp; sourceTree = "<group>"; };
+		849A2C7C21075D2600FE66B2 /* KnobWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnobWidget.h; sourceTree = "<group>"; };
+		849A2C7D21075D2600FE66B2 /* VuMeterWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VuMeterWidget.cpp; sourceTree = "<group>"; };
+		849A2C7E21075D2600FE66B2 /* TriggerWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriggerWidget.cpp; sourceTree = "<group>"; };
+		849A2C7F21075D2600FE66B2 /* CheckboxWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckboxWidget.h; sourceTree = "<group>"; };
+		849A2C8121075D2600FE66B2 /* CheckboxController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CheckboxController.cpp; sourceTree = "<group>"; };
+		849A2C8221075D2600FE66B2 /* VuMeterController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VuMeterController.h; sourceTree = "<group>"; };
+		849A2C8321075D2600FE66B2 /* TriggerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriggerController.h; sourceTree = "<group>"; };
+		849A2C8421075D2600FE66B2 /* VuMeterController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VuMeterController.cpp; sourceTree = "<group>"; };
+		849A2C8521075D2600FE66B2 /* CheckboxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CheckboxController.h; sourceTree = "<group>"; };
+		849A2C8621075D2600FE66B2 /* KnobController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KnobController.cpp; sourceTree = "<group>"; };
+		849A2C8721075D2600FE66B2 /* TriggerController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriggerController.cpp; sourceTree = "<group>"; };
+		849A2C8821075D2600FE66B2 /* KnobController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnobController.h; sourceTree = "<group>"; };
+		849A2C8A21075D2600FE66B2 /* XyPanPadWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XyPanPadWidget.h; sourceTree = "<group>"; };
+		849A2C8B21075D2600FE66B2 /* XyScratchPadWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XyScratchPadWidget.cpp; sourceTree = "<group>"; };
+		849A2C8D21075D2600FE66B2 /* XyPan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XyPan.h; sourceTree = "<group>"; };
+		849A2C8F21075D2600FE66B2 /* XyPan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XyPan.cpp; sourceTree = "<group>"; };
+		849A2C9021075D2600FE66B2 /* XyPanPadWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XyPanPadWidget.cpp; sourceTree = "<group>"; };
+		849A2C9121075D2600FE66B2 /* XyScratchPadWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XyScratchPadWidget.h; sourceTree = "<group>"; };
+		849A2C9321075D2600FE66B2 /* PlayButtonWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayButtonWidget.h; sourceTree = "<group>"; };
+		849A2C9421075D2600FE66B2 /* RecordButtonWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordButtonWidget.h; sourceTree = "<group>"; };
+		849A2C9521075D2600FE66B2 /* PlayButtonWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlayButtonWidget.cpp; sourceTree = "<group>"; };
+		849A2C9621075D2600FE66B2 /* RecordButtonWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecordButtonWidget.cpp; sourceTree = "<group>"; };
+		849A2C9721075D2600FE66B2 /* StopButtonWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StopButtonWidget.cpp; sourceTree = "<group>"; };
+		849A2C9821075D2600FE66B2 /* StopButtonWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StopButtonWidget.h; sourceTree = "<group>"; };
+		849A2C9921075D2600FE66B2 /* Widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Widget.h; sourceTree = "<group>"; };
+		849A2C9A21075D2600FE66B2 /* Widgets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Widgets.h; sourceTree = "<group>"; };
+		849A2C9B21075D2600FE66B2 /* MidiLearnButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MidiLearnButton.cpp; sourceTree = "<group>"; };
+		849A2C9D21075D2600FE66B2 /* FileSaveDialogWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSaveDialogWidget.h; sourceTree = "<group>"; };
+		849A2C9E21075D2600FE66B2 /* SoundFileLoadDialogWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundFileLoadDialogWidget.h; sourceTree = "<group>"; };
+		849A2C9F21075D2600FE66B2 /* SoundFileLoadDialogWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundFileLoadDialogWidget.cpp; sourceTree = "<group>"; };
+		849A2CA121075D2600FE66B2 /* SoundFileLoadDialogController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundFileLoadDialogController.cpp; sourceTree = "<group>"; };
+		849A2CA221075D2600FE66B2 /* FileSaveDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSaveDialogController.h; sourceTree = "<group>"; };
+		849A2CA321075D2600FE66B2 /* FileSaveDialogController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSaveDialogController.cpp; sourceTree = "<group>"; };
+		849A2CA421075D2600FE66B2 /* SoundFileLoadDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundFileLoadDialogController.h; sourceTree = "<group>"; };
+		849A2CA521075D2600FE66B2 /* FileSaveDialogWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSaveDialogWidget.cpp; sourceTree = "<group>"; };
+		849A2CA621075D2600FE66B2 /* MidiLearnButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiLearnButton.h; sourceTree = "<group>"; };
+		849A2CA821075D2600FE66B2 /* EarlyLateBalanceWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EarlyLateBalanceWidget.cpp; sourceTree = "<group>"; };
+		849A2CA921075D2600FE66B2 /* SliderWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderWidget.h; sourceTree = "<group>"; };
+		849A2CAA21075D2600FE66B2 /* PanoramaBalanceWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanoramaBalanceWidget.h; sourceTree = "<group>"; };
+		849A2CAB21075D2600FE66B2 /* EarlyLateBalanceWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EarlyLateBalanceWidget.h; sourceTree = "<group>"; };
+		849A2CAC21075D2600FE66B2 /* PanoramaBalanceWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanoramaBalanceWidget.cpp; sourceTree = "<group>"; };
+		849A2CAD21075D2600FE66B2 /* RangeSliderWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeSliderWidget.h; sourceTree = "<group>"; };
+		849A2CAE21075D2600FE66B2 /* SliderWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SliderWidget.cpp; sourceTree = "<group>"; };
+		849A2CAF21075D2600FE66B2 /* RangeSliderWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RangeSliderWidget.cpp; sourceTree = "<group>"; };
+		849A2CB021075D2600FE66B2 /* DryWetBalanceWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DryWetBalanceWidget.cpp; sourceTree = "<group>"; };
+		849A2CB121075D2600FE66B2 /* DryWetBalanceWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DryWetBalanceWidget.h; sourceTree = "<group>"; };
+		849A2CB321075D2600FE66B2 /* RangeSliderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeSliderController.h; sourceTree = "<group>"; };
+		849A2CB421075D2600FE66B2 /* PanoramaBalanceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanoramaBalanceController.h; sourceTree = "<group>"; };
+		849A2CB521075D2600FE66B2 /* RangeSliderController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RangeSliderController.cpp; sourceTree = "<group>"; };
+		849A2CB621075D2600FE66B2 /* SliderController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SliderController.cpp; sourceTree = "<group>"; };
+		849A2CB721075D2600FE66B2 /* PanoramaBalanceController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PanoramaBalanceController.cpp; sourceTree = "<group>"; };
+		849A2CB821075D2600FE66B2 /* DryWetBalanceController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DryWetBalanceController.cpp; sourceTree = "<group>"; };
+		849A2CB921075D2600FE66B2 /* DryWetBalanceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DryWetBalanceController.h; sourceTree = "<group>"; };
+		849A2CBA21075D2600FE66B2 /* SliderController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderController.h; sourceTree = "<group>"; };
+		849A2CBB21075D2600FE66B2 /* EarlyLateBalanceController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EarlyLateBalanceController.cpp; sourceTree = "<group>"; };
+		849A2CBC21075D2600FE66B2 /* EarlyLateBalanceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EarlyLateBalanceController.h; sourceTree = "<group>"; };
+		849A2CDD2107679E00FE66B2 /* WidgetBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WidgetBuilder.h; sourceTree = "<group>"; };
+		849A2CDE2107679E00FE66B2 /* WidgetBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WidgetBuilder.cpp; sourceTree = "<group>"; };
 		87E45A259709890106DA1F93 /* module_manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = module_manager.h; path = ../../../libIntegra/api/module_manager.h; sourceTree = SOURCE_ROOT; };
 		8ACD2E33E1859E0B0905B298 /* include_juce_events.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_events.mm; path = ../../JuceLibraryCode/include_juce_events.mm; sourceTree = SOURCE_ROOT; };
 		9100D3C91D9C979CFA2D64A6 /* interface_definition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = interface_definition.h; path = ../../../libIntegra/api/interface_definition.h; sourceTree = SOURCE_ROOT; };
@@ -161,6 +261,153 @@
 			name = "JUCE Library Code";
 			sourceTree = "<group>";
 		};
+		849A2C7121075D2600FE66B2 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				849A2C9221075D2600FE66B2 /* Buttons */,
+				849A2C9C21075D2600FE66B2 /* Dialogs */,
+				849A2C7321075D2600FE66B2 /* Misc */,
+				849A2CA721075D2600FE66B2 /* Sliders */,
+				849A2C8921075D2600FE66B2 /* XYPads */,
+				849A2C9B21075D2600FE66B2 /* MidiLearnButton.cpp */,
+				849A2CA621075D2600FE66B2 /* MidiLearnButton.h */,
+				849A2C7221075D2600FE66B2 /* Widget.cpp */,
+				849A2C9921075D2600FE66B2 /* Widget.h */,
+				849A2CDE2107679E00FE66B2 /* WidgetBuilder.cpp */,
+				849A2CDD2107679E00FE66B2 /* WidgetBuilder.h */,
+				849A2C9A21075D2600FE66B2 /* Widgets.h */,
+			);
+			name = Widgets;
+			path = ../../Source/Widgets;
+			sourceTree = "<group>";
+		};
+		849A2C7321075D2600FE66B2 /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				849A2C8021075D2600FE66B2 /* Controllers */,
+				849A2C7921075D2600FE66B2 /* CheckboxWidget.cpp */,
+				849A2C7F21075D2600FE66B2 /* CheckboxWidget.h */,
+				849A2C7521075D2600FE66B2 /* KnobWidget.cpp */,
+				849A2C7C21075D2600FE66B2 /* KnobWidget.h */,
+				849A2C7A21075D2600FE66B2 /* NumberBoxWidget.h */,
+				849A2C7B21075D2600FE66B2 /* NumberBoxWidget.cpp */,
+				849A2C7721075D2600FE66B2 /* RadioGroupWidget.cpp */,
+				849A2C7421075D2600FE66B2 /* RadioGroupWidget.h */,
+				849A2C7E21075D2600FE66B2 /* TriggerWidget.cpp */,
+				849A2C7821075D2600FE66B2 /* TriggerWidget.h */,
+				849A2C7D21075D2600FE66B2 /* VuMeterWidget.cpp */,
+				849A2C7621075D2600FE66B2 /* VuMeterWidget.h */,
+			);
+			path = Misc;
+			sourceTree = "<group>";
+		};
+		849A2C8021075D2600FE66B2 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				849A2C8121075D2600FE66B2 /* CheckboxController.cpp */,
+				849A2C8521075D2600FE66B2 /* CheckboxController.h */,
+				849A2C8621075D2600FE66B2 /* KnobController.cpp */,
+				849A2C8821075D2600FE66B2 /* KnobController.h */,
+				849A2C8721075D2600FE66B2 /* TriggerController.cpp */,
+				849A2C8321075D2600FE66B2 /* TriggerController.h */,
+				849A2C8421075D2600FE66B2 /* VuMeterController.cpp */,
+				849A2C8221075D2600FE66B2 /* VuMeterController.h */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		849A2C8921075D2600FE66B2 /* XYPads */ = {
+			isa = PBXGroup;
+			children = (
+				849A2C8C21075D2600FE66B2 /* Controllers */,
+				849A2C9021075D2600FE66B2 /* XyPanPadWidget.cpp */,
+				849A2C8A21075D2600FE66B2 /* XyPanPadWidget.h */,
+				849A2C8B21075D2600FE66B2 /* XyScratchPadWidget.cpp */,
+				849A2C9121075D2600FE66B2 /* XyScratchPadWidget.h */,
+			);
+			path = XYPads;
+			sourceTree = "<group>";
+		};
+		849A2C8C21075D2600FE66B2 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				849A2C8D21075D2600FE66B2 /* XyPan.h */,
+				849A2C8F21075D2600FE66B2 /* XyPan.cpp */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		849A2C9221075D2600FE66B2 /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				849A2C9321075D2600FE66B2 /* PlayButtonWidget.h */,
+				849A2C9421075D2600FE66B2 /* RecordButtonWidget.h */,
+				849A2C9521075D2600FE66B2 /* PlayButtonWidget.cpp */,
+				849A2C9621075D2600FE66B2 /* RecordButtonWidget.cpp */,
+				849A2C9721075D2600FE66B2 /* StopButtonWidget.cpp */,
+				849A2C9821075D2600FE66B2 /* StopButtonWidget.h */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
+		849A2C9C21075D2600FE66B2 /* Dialogs */ = {
+			isa = PBXGroup;
+			children = (
+				849A2CA021075D2600FE66B2 /* Controllers */,
+				849A2CA521075D2600FE66B2 /* FileSaveDialogWidget.cpp */,
+				849A2C9D21075D2600FE66B2 /* FileSaveDialogWidget.h */,
+				849A2C9F21075D2600FE66B2 /* SoundFileLoadDialogWidget.cpp */,
+				849A2C9E21075D2600FE66B2 /* SoundFileLoadDialogWidget.h */,
+			);
+			path = Dialogs;
+			sourceTree = "<group>";
+		};
+		849A2CA021075D2600FE66B2 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				849A2CA321075D2600FE66B2 /* FileSaveDialogController.cpp */,
+				849A2CA221075D2600FE66B2 /* FileSaveDialogController.h */,
+				849A2CA121075D2600FE66B2 /* SoundFileLoadDialogController.cpp */,
+				849A2CA421075D2600FE66B2 /* SoundFileLoadDialogController.h */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		849A2CA721075D2600FE66B2 /* Sliders */ = {
+			isa = PBXGroup;
+			children = (
+				849A2CB221075D2600FE66B2 /* Controllers */,
+				849A2CB021075D2600FE66B2 /* DryWetBalanceWidget.cpp */,
+				849A2CB121075D2600FE66B2 /* DryWetBalanceWidget.h */,
+				849A2CA821075D2600FE66B2 /* EarlyLateBalanceWidget.cpp */,
+				849A2CAB21075D2600FE66B2 /* EarlyLateBalanceWidget.h */,
+				849A2CAC21075D2600FE66B2 /* PanoramaBalanceWidget.cpp */,
+				849A2CAA21075D2600FE66B2 /* PanoramaBalanceWidget.h */,
+				849A2CAF21075D2600FE66B2 /* RangeSliderWidget.cpp */,
+				849A2CAD21075D2600FE66B2 /* RangeSliderWidget.h */,
+				849A2CAE21075D2600FE66B2 /* SliderWidget.cpp */,
+				849A2CA921075D2600FE66B2 /* SliderWidget.h */,
+			);
+			path = Sliders;
+			sourceTree = "<group>";
+		};
+		849A2CB221075D2600FE66B2 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				849A2CB821075D2600FE66B2 /* DryWetBalanceController.cpp */,
+				849A2CB921075D2600FE66B2 /* DryWetBalanceController.h */,
+				849A2CBB21075D2600FE66B2 /* EarlyLateBalanceController.cpp */,
+				849A2CBC21075D2600FE66B2 /* EarlyLateBalanceController.h */,
+				849A2CB721075D2600FE66B2 /* PanoramaBalanceController.cpp */,
+				849A2CB421075D2600FE66B2 /* PanoramaBalanceController.h */,
+				849A2CB521075D2600FE66B2 /* RangeSliderController.cpp */,
+				849A2CB321075D2600FE66B2 /* RangeSliderController.h */,
+				849A2CB621075D2600FE66B2 /* SliderController.cpp */,
+				849A2CBA21075D2600FE66B2 /* SliderController.h */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		85DAA8122414047ED6B65AF6 /* api */ = {
 			isa = PBXGroup;
 			children = (
@@ -235,6 +482,7 @@
 		F904741E806A04190A73A02F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				849A2C7121075D2600FE66B2 /* Widgets */,
 				3444B06320DF9E76005DA0D1 /* IntegraServer.cpp */,
 				3444B06420DF9E76005DA0D1 /* IntegraServer.h */,
 				EB2AEF58962B2FDE47DF0A88 /* MainComponent.h */,
@@ -345,16 +593,49 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				849A2CD421075D2600FE66B2 /* PanoramaBalanceWidget.cpp in Sources */,
 				3444B06520DF9E76005DA0D1 /* IntegraServer.cpp in Sources */,
+				849A2CC221075D2600FE66B2 /* VuMeterWidget.cpp in Sources */,
+				849A2CCC21075D2600FE66B2 /* RecordButtonWidget.cpp in Sources */,
+				849A2CDF2107679F00FE66B2 /* WidgetBuilder.cpp in Sources */,
 				6F37BA35B09AAC1E257D2917 /* MainComponent.cpp in Sources */,
+				849A2CC321075D2600FE66B2 /* TriggerWidget.cpp in Sources */,
+				849A2CBE21075D2600FE66B2 /* KnobWidget.cpp in Sources */,
+				849A2CCF21075D2600FE66B2 /* SoundFileLoadDialogWidget.cpp in Sources */,
+				849A2CBD21075D2600FE66B2 /* Widget.cpp in Sources */,
 				3F7296DA4D40DFFDEC11E385 /* Main.cpp in Sources */,
 				12A9FFCDD63F6C57D6DD0DFC /* include_juce_core.mm in Sources */,
+				849A2CD521075D2600FE66B2 /* SliderWidget.cpp in Sources */,
+				849A2CCB21075D2600FE66B2 /* PlayButtonWidget.cpp in Sources */,
+				849A2CCD21075D2600FE66B2 /* StopButtonWidget.cpp in Sources */,
+				849A2CC621075D2600FE66B2 /* KnobController.cpp in Sources */,
+				849A2CC721075D2600FE66B2 /* TriggerController.cpp in Sources */,
 				DCB168711345C638C8187DFF /* include_juce_data_structures.mm in Sources */,
+				849A2CDC21075D2600FE66B2 /* EarlyLateBalanceController.cpp in Sources */,
+				849A2CD121075D2600FE66B2 /* FileSaveDialogController.cpp in Sources */,
+				849A2CDA21075D2600FE66B2 /* PanoramaBalanceController.cpp in Sources */,
 				8E9E323FAF2CB412462DFF26 /* include_juce_events.mm in Sources */,
 				344DE71920E4CDA7005E4167 /* WidgetPanel.cpp in Sources */,
+				849A2CC821075D2600FE66B2 /* XyScratchPadWidget.cpp in Sources */,
+				849A2CCE21075D2600FE66B2 /* MidiLearnButton.cpp in Sources */,
+				849A2CD721075D2600FE66B2 /* DryWetBalanceWidget.cpp in Sources */,
+				849A2CCA21075D2600FE66B2 /* XyPanPadWidget.cpp in Sources */,
+				849A2CD021075D2600FE66B2 /* SoundFileLoadDialogController.cpp in Sources */,
+				849A2CC521075D2600FE66B2 /* VuMeterController.cpp in Sources */,
+				849A2CD621075D2600FE66B2 /* RangeSliderWidget.cpp in Sources */,
+				849A2CC121075D2600FE66B2 /* NumberBoxWidget.cpp in Sources */,
 				74DE158CADA62F1246CA83B9 /* include_juce_graphics.mm in Sources */,
+				849A2CC921075D2600FE66B2 /* XyPan.cpp in Sources */,
+				849A2CD821075D2600FE66B2 /* RangeSliderController.cpp in Sources */,
+				849A2CC421075D2600FE66B2 /* CheckboxController.cpp in Sources */,
+				849A2CD221075D2600FE66B2 /* FileSaveDialogWidget.cpp in Sources */,
 				E1851D950F67EA7044CB5E33 /* include_juce_gui_basics.mm in Sources */,
+				849A2CC021075D2600FE66B2 /* CheckboxWidget.cpp in Sources */,
 				9B29CD96A985903E748E83B3 /* include_juce_gui_extra.mm in Sources */,
+				849A2CD921075D2600FE66B2 /* SliderController.cpp in Sources */,
+				849A2CDB21075D2600FE66B2 /* DryWetBalanceController.cpp in Sources */,
+				849A2CD321075D2600FE66B2 /* EarlyLateBalanceWidget.cpp in Sources */,
+				849A2CBF21075D2600FE66B2 /* RadioGroupWidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,7 +680,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					../../JuceLibraryCode,
+					"${PROJECT_DIR}/../../JuceLibraryCode",
 					../../../../../../JUCE/modules,
 					../../../libIntegra/api,
 					"$(inherited)",
@@ -490,7 +771,7 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					../../JuceLibraryCode,
+					"${PROJECT_DIR}/../../JuceLibraryCode",
 					../../../../../../JUCE/modules,
 					../../../libIntegra/api,
 					"$(inherited)",

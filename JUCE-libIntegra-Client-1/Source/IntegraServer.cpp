@@ -229,6 +229,16 @@ CError IntegraServer::start()
     return err;
 }
 
+CError IntegraServer::stop()
+{
+    if (!session_started) return CError::SUCCESS;
+
+    CError err = session.end_session();
+    if (err != CError::SUCCESS) DBG(err.get_text());
+    else session_started = false;
+    return err;
+}
+
 void IntegraServer::dump_modules_details()
 {
     CServerLock server = session.get_server();
@@ -433,14 +443,4 @@ CError IntegraServer::save_file(std::string saveFilePath)
     CServerLock server = session.get_server();
 
     return server->process_command(ISaveCommand::create(saveFilePath, lastLoadedPath));
-}
-
-CError IntegraServer::stop()
-{
-    if (!session_started) return CError::SUCCESS;
-    
-    CError err = session.end_session();
-    if (err != CError::SUCCESS) DBG(err.get_text());
-    else session_started = false;
-    return err;
 }

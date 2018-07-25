@@ -11,7 +11,7 @@ class SoundFileLoadDialogWidget : public Widget
 {
 public:
     //==========================================================================
-    SoundFileLoadDialogWidget ();
+    SoundFileLoadDialogWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~SoundFileLoadDialogWidget () override;
 
     //==========================================================================

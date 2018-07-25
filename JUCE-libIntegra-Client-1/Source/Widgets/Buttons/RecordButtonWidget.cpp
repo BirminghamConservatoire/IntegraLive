@@ -2,8 +2,9 @@
 #include "RecordButtonWidget.h"
 
 //==============================================================================
-RecordButtonWidget::RecordButtonWidget ()
-: button ({ "Record" }, DrawableButton::ButtonStyle::ImageFitted)
+RecordButtonWidget::RecordButtonWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition),
+    button ({ "Record" }, DrawableButton::ButtonStyle::ImageFitted)
 //:   ButtonWidgetBase (ButtonType::Record, { "Record" })
 {
     Widget::setWidgetLabel (button.getName ());

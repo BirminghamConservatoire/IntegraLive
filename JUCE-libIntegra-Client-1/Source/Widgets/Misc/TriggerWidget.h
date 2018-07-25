@@ -11,7 +11,7 @@ class TriggerWidget : public Widget
 {
 public:
     //==========================================================================
-    TriggerWidget ();
+    TriggerWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~TriggerWidget () override;
     
     //==========================================================================

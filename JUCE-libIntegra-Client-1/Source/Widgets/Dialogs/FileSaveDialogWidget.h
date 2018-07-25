@@ -11,7 +11,7 @@ class FileSaveDialogWidget : public Widget
 {
 public:
     //==========================================================================
-    FileSaveDialogWidget ();
+    FileSaveDialogWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~FileSaveDialogWidget () override;
 
     //==========================================================================

@@ -1,9 +1,9 @@
 #include "JuceHeader.h"
-
 #include "VuMeterWidget.h"
 
 //==============================================================================
-VuMeterWidget::VuMeterWidget ()
+VuMeterWidget::VuMeterWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("VU Meter");
 
@@ -26,7 +26,8 @@ void VuMeterWidget::resized ()
 }
 
 //==============================================================================
-void VuMeterWidget::setValue (double value)
+void VuMeterWidget::setValue (var value)
 {
+    DBG ("VU CHANGE");
     meter.setValue (value);
 }

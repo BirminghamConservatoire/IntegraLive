@@ -3,7 +3,8 @@
 #include "CheckboxWidget.h"
 
 //==============================================================================
-CheckboxWidget::CheckboxWidget ()
+CheckboxWidget::CheckboxWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Checkbox");
     toggle.setButtonText ("Toggle");

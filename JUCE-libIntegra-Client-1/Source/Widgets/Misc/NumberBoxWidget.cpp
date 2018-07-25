@@ -3,7 +3,10 @@
 #include "NumberBoxWidget.h"
 
 //==============================================================================
-NumberBoxWidget::NumberBoxWidget () = default;
+NumberBoxWidget::NumberBoxWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
+{
+}
 
 NumberBoxWidget::~NumberBoxWidget () = default;
 

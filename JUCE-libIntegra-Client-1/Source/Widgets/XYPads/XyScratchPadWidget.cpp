@@ -3,15 +3,14 @@
 #include "XyScratchPadWidget.h"
 
 //==============================================================================
-XyScratchPadWidget::XyScratchPadWidget()
+XyScratchPadWidget::XyScratchPadWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     // Widget not yet implemented
     jassertfalse;
 }
 
-XyScratchPadWidget::~XyScratchPadWidget()
-{
-}
+XyScratchPadWidget::~XyScratchPadWidget () = default;
 
 //==============================================================================
 void XyScratchPadWidget::paint (Graphics& g)

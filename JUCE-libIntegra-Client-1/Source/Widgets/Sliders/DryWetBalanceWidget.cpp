@@ -3,7 +3,8 @@
 #include "DryWetBalanceWidget.h"
 
 //==============================================================================
-DryWetBalanceWidget::DryWetBalanceWidget ()
+DryWetBalanceWidget::DryWetBalanceWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Dry / Wet");
 
@@ -15,6 +16,8 @@ DryWetBalanceWidget::DryWetBalanceWidget ()
 
     addAndMakeVisible (slider);
 }
+
+DryWetBalanceWidget::~DryWetBalanceWidget () = default;
 
 //==============================================================================
 void DryWetBalanceWidget::paint (Graphics& g)

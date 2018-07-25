@@ -2,7 +2,8 @@
 #include "KnobWidget.h"
 
 //==============================================================================
-KnobWidget::KnobWidget ()
+KnobWidget::KnobWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Knob");
 

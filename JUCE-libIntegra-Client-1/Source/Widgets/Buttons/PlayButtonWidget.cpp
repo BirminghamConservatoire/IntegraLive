@@ -3,8 +3,9 @@
 #include "PlayButtonWidget.h"
 
 //==============================================================================
-PlayButtonWidget::PlayButtonWidget ()
-: button ({ "Play" }, DrawableButton::ButtonStyle::ImageFitted)
+PlayButtonWidget::PlayButtonWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition),
+    button ({ "Play" }, DrawableButton::ButtonStyle::ImageFitted)
 {
     Widget::setWidgetLabel (button.getName ());
 

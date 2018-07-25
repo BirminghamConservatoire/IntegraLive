@@ -10,8 +10,8 @@ class XyScratchPadWidget    : public Widget
 {
 public:
     //==========================================================================
-    XyScratchPadWidget();
-    ~XyScratchPadWidget();
+    XyScratchPadWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~XyScratchPadWidget () override;
 
     //==========================================================================
     void paint (Graphics&) override;

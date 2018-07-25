@@ -10,7 +10,7 @@ class RadioGroupWidget : public Widget
 {
 public:
     //==========================================================================
-    RadioGroupWidget ();
+    RadioGroupWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~RadioGroupWidget () override;
 
     //==========================================================================

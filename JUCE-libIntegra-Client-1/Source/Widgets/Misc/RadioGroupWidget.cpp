@@ -3,7 +3,10 @@
 #include "RadioGroupWidget.h"
 
 //==============================================================================
-RadioGroupWidget::RadioGroupWidget() = default;
+RadioGroupWidget::RadioGroupWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
+{
+}
 
 RadioGroupWidget::~RadioGroupWidget() = default;
 

@@ -12,8 +12,8 @@ class VuMeterWidget    : public Widget
 {
 public:
     //==========================================================================
-    VuMeterWidget();
-    ~VuMeterWidget();
+    VuMeterWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~VuMeterWidget () override;
 
     //==========================================================================
     void paint (Graphics&) override;
@@ -24,7 +24,7 @@ private:
     VuMeterController meter;
 
     //==========================================================================
-    void setValue (double value);
+    void setValue (var value) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VuMeterWidget)
 };

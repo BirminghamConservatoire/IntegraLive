@@ -12,8 +12,8 @@ class XyPanPadWidget    : public Widget
 {
 public:
     //==========================================================================
-    XyPanPadWidget();
-    ~XyPanPadWidget();
+    XyPanPadWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~XyPanPadWidget () override;
 
     //==========================================================================
     void paint (Graphics&) override;

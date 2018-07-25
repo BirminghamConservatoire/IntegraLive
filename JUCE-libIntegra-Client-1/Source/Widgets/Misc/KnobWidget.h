@@ -12,7 +12,7 @@ class KnobWidget : public Widget
 {
 public:
     //==========================================================================
-    KnobWidget ();
+    KnobWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~KnobWidget () override;
 
     //==========================================================================

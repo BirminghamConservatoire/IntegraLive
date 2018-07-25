@@ -1,9 +1,9 @@
 #include "JuceHeader.h"
-
 #include "TriggerWidget.h"
 
 //==============================================================================
-TriggerWidget::TriggerWidget()
+TriggerWidget::TriggerWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Trigger");
 
@@ -13,7 +13,7 @@ TriggerWidget::TriggerWidget()
     addAndMakeVisible (button);
 }
 
-TriggerWidget::~TriggerWidget() = default;
+TriggerWidget::~TriggerWidget () = default;
 
 //==============================================================================
 void TriggerWidget::paint (Graphics& g)

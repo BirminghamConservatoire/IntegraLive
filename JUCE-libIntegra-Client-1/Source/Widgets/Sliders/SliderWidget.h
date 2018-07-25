@@ -12,8 +12,9 @@ class SliderWidget : public Widget
 {
 public:
     //==========================================================================
-    SliderWidget ();
-
+    SliderWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~SliderWidget () override;
+    
     //==========================================================================
     void paint (Graphics& g) override;
     void resized () override;
@@ -24,6 +25,9 @@ public:
 private:
     //==========================================================================
     SliderController slider;
+    
+    //==========================================================================
+    void setValue (var value) override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SliderWidget)
 };

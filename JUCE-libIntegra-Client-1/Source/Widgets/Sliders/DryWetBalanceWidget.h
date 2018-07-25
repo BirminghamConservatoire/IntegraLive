@@ -12,7 +12,8 @@ class DryWetBalanceWidget : public Widget
 {
 public:
     //==========================================================================
-    DryWetBalanceWidget ();
+    DryWetBalanceWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~DryWetBalanceWidget () override;
 
     //==========================================================================
     void paint (Graphics& g) override;

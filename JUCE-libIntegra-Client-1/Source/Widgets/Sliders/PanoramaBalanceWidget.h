@@ -12,8 +12,9 @@ class PanoramaBalanceWidget : public Widget
 {
 public:
     //==========================================================================
-    PanoramaBalanceWidget ();
-
+    PanoramaBalanceWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~PanoramaBalanceWidget () override;
+    
     //==========================================================================
     void paint (Graphics& g) override;
     void resized () override;

@@ -2,6 +2,8 @@
 
 #include "JuceHeader.h"
 #include "MidiLearnButton.h"
+#include "interface_definition.h"
+#include "path.h"
 
 //==============================================================================
 /*
@@ -10,8 +12,8 @@ class Widget    : public Component
 {
 public:
     //==========================================================================
-    Widget();
-    ~Widget() override;
+    explicit Widget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~Widget () override;
     
     //==========================================================================
     void paint (Graphics&) override;
@@ -20,13 +22,20 @@ public:
     //==========================================================================
     void setWidgetLabel (const String&);
     
+    //==========================================================================
+    virtual void setValue (var value);
+    
+    //==========================================================================
+    Rectangle<int> getWidgetBounds () noexcept;
+    
 protected:
     //==========================================================================
     Rectangle<int> controllerBounds = {};
 
 private:
     //==========================================================================
-    String primaryEndpointPath = {};
+    integra_api::IWidgetDefinition& widgetDefinition;
+    Rectangle<float> bounds;
     
     //==========================================================================
     Label widgetLabel;
@@ -34,5 +43,4 @@ private:
     MidiLearnButton midiLearnButton;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Widget)
-    
 };

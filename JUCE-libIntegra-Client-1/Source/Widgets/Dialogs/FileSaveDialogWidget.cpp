@@ -2,7 +2,8 @@
 #include "FileSaveDialogWidget.h"
 
 //==============================================================================
-FileSaveDialogWidget::FileSaveDialogWidget ()
+FileSaveDialogWidget::FileSaveDialogWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Save File");
 

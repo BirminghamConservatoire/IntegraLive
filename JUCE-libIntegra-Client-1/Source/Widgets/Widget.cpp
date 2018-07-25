@@ -2,7 +2,8 @@
 #include "Widget.h"
 
 //==============================================================================
-Widget::Widget ()
+Widget::Widget (integra_api::IWidgetDefinition& widgetDefinition)
+:   widgetDefinition (widgetDefinition)
 {
     const Colour tickColour (Colour::fromRGB (186, 201, 207));
     showInPerformanceToggle.setColour (ToggleButton::ColourIds::tickColourId, tickColour);
@@ -14,6 +15,12 @@ Widget::Widget ()
     addAndMakeVisible (showInPerformanceToggle);
     addAndMakeVisible (midiLearnButton);
     addAndMakeVisible (widgetLabel);
+    
+    const auto& positionInfo = widgetDefinition.get_position ();
+    bounds = { positionInfo.get_x (),
+               positionInfo.get_y (),
+               positionInfo.get_width (),
+               positionInfo.get_height () };
 }
 
 Widget::~Widget () = default;
@@ -57,4 +64,10 @@ void Widget::resized ()
 void Widget::setWidgetLabel (const String& label)
 {
     widgetLabel.setText (label, dontSendNotification);
+}
+
+//==============================================================================
+Rectangle<int> Widget::getWidgetBounds() noexcept
+{
+    return bounds.toNearestInt();
 }

@@ -2,7 +2,8 @@
 #include "PanoramaBalanceWidget.h"
 
 //==============================================================================
-PanoramaBalanceWidget::PanoramaBalanceWidget ()
+PanoramaBalanceWidget::PanoramaBalanceWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Balance");
 
@@ -14,6 +15,8 @@ PanoramaBalanceWidget::PanoramaBalanceWidget ()
 
     addAndMakeVisible (slider);
 }
+
+PanoramaBalanceWidget::~PanoramaBalanceWidget () = default;
 
 //==============================================================================
 void PanoramaBalanceWidget::paint (Graphics& g)

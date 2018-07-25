@@ -11,8 +11,8 @@ class RecordButtonWidget : public Widget
 {
 public:
     //==========================================================================
-    RecordButtonWidget ();
-    ~RecordButtonWidget ();
+    RecordButtonWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~RecordButtonWidget () override;
 
     //==========================================================================
     void paint (Graphics& g) override;

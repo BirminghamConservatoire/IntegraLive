@@ -2,16 +2,15 @@
 #include "XyPanPadWidget.h"
 
 //==============================================================================
-XyPanPadWidget::XyPanPadWidget()
+XyPanPadWidget::XyPanPadWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     // Widget not yet implemented
     jassertfalse;
     addAndMakeVisible (pad);
 }
 
-XyPanPadWidget::~XyPanPadWidget()
-{
-}
+XyPanPadWidget::~XyPanPadWidget () = default;
 
 //==============================================================================
 void XyPanPadWidget::paint (Graphics& g)

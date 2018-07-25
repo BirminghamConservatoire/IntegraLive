@@ -3,7 +3,8 @@
 #include "RangeSliderWidget.h"
 
 //==============================================================================
-RangeSliderWidget::RangeSliderWidget ()
+RangeSliderWidget::RangeSliderWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     // Widget not yet implemented
     jassertfalse;

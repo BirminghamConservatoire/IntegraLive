@@ -11,7 +11,7 @@ class StopButtonWidget : public Widget
 {
 public:
     //==========================================================================
-    StopButtonWidget ();
+    StopButtonWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~StopButtonWidget () override;
 
     //==========================================================================

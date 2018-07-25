@@ -2,8 +2,9 @@
 #include "StopButtonWidget.h"
 
 //==============================================================================
-StopButtonWidget::StopButtonWidget ()
-: button ({ "Stop" }, DrawableButton::ButtonStyle::ImageFitted)
+StopButtonWidget::StopButtonWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition),
+    button ({ "Stop" }, DrawableButton::ButtonStyle::ImageFitted)
 {
     Widget::setWidgetLabel (button.getName ());
 

@@ -2,7 +2,8 @@
 #include "EarlyLateBalanceWidget.h"
 
 //==============================================================================
-EarlyLateBalanceWidget::EarlyLateBalanceWidget ()
+EarlyLateBalanceWidget::EarlyLateBalanceWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Early / Late");
 
@@ -14,6 +15,8 @@ EarlyLateBalanceWidget::EarlyLateBalanceWidget ()
 
     addAndMakeVisible (slider);
 }
+
+EarlyLateBalanceWidget::~EarlyLateBalanceWidget () = default;
 
 //==============================================================================
 void EarlyLateBalanceWidget::paint (Graphics& g)

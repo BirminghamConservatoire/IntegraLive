@@ -11,8 +11,8 @@ class RangeSliderWidget : public Widget
 {
 public:
     //==========================================================================
-    RangeSliderWidget ();
-    ~RangeSliderWidget ();
+    RangeSliderWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~RangeSliderWidget () override;
 
     //==========================================================================
     void paint (Graphics&) override;

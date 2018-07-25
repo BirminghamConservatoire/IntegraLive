@@ -11,7 +11,7 @@ class PlayButtonWidget : public Widget
 {
 public:
     //==========================================================================
-    PlayButtonWidget ();
+    PlayButtonWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~PlayButtonWidget () override;
 
     //==========================================================================

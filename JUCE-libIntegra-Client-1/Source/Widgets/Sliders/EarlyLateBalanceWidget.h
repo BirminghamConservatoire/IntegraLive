@@ -12,7 +12,8 @@ class EarlyLateBalanceWidget : public Widget
 {
 public:
     //==========================================================================
-    EarlyLateBalanceWidget ();
+    EarlyLateBalanceWidget (integra_api::IWidgetDefinition& widgetDefinition);
+    ~EarlyLateBalanceWidget () override;
 
     //==========================================================================
     void paint (Graphics& g) override;

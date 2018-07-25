@@ -2,7 +2,8 @@
 #include "SoundFileLoadDialogWidget.h"
 
 //==============================================================================
-SoundFileLoadDialogWidget::SoundFileLoadDialogWidget ()
+SoundFileLoadDialogWidget::SoundFileLoadDialogWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     Widget::setWidgetLabel ("Sound File Load");
 

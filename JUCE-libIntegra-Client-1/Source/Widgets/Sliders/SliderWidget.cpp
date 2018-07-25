@@ -1,9 +1,9 @@
 #include "JuceHeader.h"
-
 #include "SliderWidget.h"
 
 //==============================================================================
-SliderWidget::SliderWidget ()
+SliderWidget::SliderWidget (integra_api::IWidgetDefinition& widgetDefinition)
+:   Widget (widgetDefinition)
 {
     slider.onValueChange = [this] { sliderMoved (); };
 
@@ -11,6 +11,8 @@ SliderWidget::SliderWidget ()
 
     addAndMakeVisible (slider);
 }
+
+SliderWidget::~SliderWidget () = default;
 
 //==============================================================================
 void SliderWidget::paint (Graphics& g)
@@ -40,4 +42,9 @@ void SliderWidget::resized ()
 void SliderWidget::sliderMoved ()
 {
     DBG ("SLIDER MOVED");
+}
+
+void SliderWidget::setValue (var value)
+{
+    slider.setValue (value);
 }

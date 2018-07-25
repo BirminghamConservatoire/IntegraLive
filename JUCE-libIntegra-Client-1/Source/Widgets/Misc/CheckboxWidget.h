@@ -11,7 +11,7 @@ class CheckboxWidget : public Widget
 {
 public:
     //==========================================================================
-    CheckboxWidget ();
+    CheckboxWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~CheckboxWidget () override;
 
     //==========================================================================

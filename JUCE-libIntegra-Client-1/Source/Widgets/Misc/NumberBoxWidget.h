@@ -11,7 +11,7 @@ class NumberBoxWidget    : public Widget
 {
 public:
     //==========================================================================
-    NumberBoxWidget ();
+    NumberBoxWidget (integra_api::IWidgetDefinition& widgetDefinition);
     ~NumberBoxWidget () override;
 
     //==========================================================================

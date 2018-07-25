@@ -24,7 +24,7 @@ void WidgetPanel::resized()
 void WidgetPanel::clear()
 {
     deleteAllChildren();
-    widget_map.clear();
+    widgetMap.clear();
 }
 
 void WidgetPanel::populate (CPath activeNodePath)
@@ -33,28 +33,70 @@ void WidgetPanel::populate (CPath activeNodePath)
     nodePath = activeNodePath;
 
     auto server = integra.get_session ().get_server ();
-    const auto node = server->find_node (activeNodePath);
+    const auto* node = server->find_node (activeNodePath);
     const auto& nodeDefinition = node->get_interface_definition ();
 
-    for (auto& widget : nodeDefinition.get_widget_definitions())
-        widgetBuilder.buildWidget (*widget);
+    for (auto& widgetDefinition : nodeDefinition.get_widget_definitions())
+    {
+        auto* widget = widgetBuilder.createWidget (*widgetDefinition);
+        const auto& widgetEndpointName = widget->getEndpointName ();
+        const auto* endpoint = node->get_node_endpoint (widgetEndpointName);
+        const auto& endpointPath = endpoint->get_path ();
+        
+        DBG ("Setup: " + endpointPath);
+        
+        const auto endpointType = endpoint->get_endpoint_definition ().get_control_info ()->get_state_info ()->get_type ();
+        
+        if (endpointType == CValue::type::INTEGER)
+        {
+            auto value = static_cast<CIntegerValue> ( widget->getValue () );
+            widget->onValueChange = [&] { setIntegraValue (endpointPath, value); };
+        }
+        else if (endpointType == CValue::type::FLOAT)
+        {
+            auto value = static_cast<CFloatValue> ( widget->getValue () );
+            widget->onValueChange = [&] { setIntegraValue (endpointPath, value); };
+        }
+        else
+        {
+            auto value = static_cast<CStringValue> (String ((float) widget->getValue ()).toStdString()  );
+                widget->onValueChange = [&] { setIntegraValue (endpointPath, value); };
+        }
+        
+        widgetMap[widget->getEndpointName ()] = widget;
+        
+    }
 }
 
 void WidgetPanel::update()
 {
-    CPollingNotificationSink::changed_endpoint_map change_map;
-    integra.get_changed_endpoints(change_map);
-    if (change_map.empty()) return;
+    CPollingNotificationSink::changed_endpoint_map changes;
+    integra.get_changed_endpoints (changes);
+    if (changes.empty ())
+        return;
 
-    for (auto change : change_map)
+    for (auto& change : changes)
     {
-        std::string endpoint_name(change.first);
-        //CCommandSource source(change.second);
-
-        auto it = widget_map.find(endpoint_name);
-        if (it != widget_map.end())
+        auto endpointName { change.first };
+        
+        DBG ("Changed: " + endpointName);
+        
+        auto iterator = widgetMap.find (endpointName);
+        if (iterator != widgetMap.end())
         {
-            //TODO: Implement Integra Session communication between widgets
+            auto& widget = iterator->second;
+            
+            auto server = integra.get_session ().get_server ();
+            const auto* value = server->get_value ({ endpointName });
+            DBG (value->get_type ());
+            widget->setValue (value);
         }
     }
+}
+
+template <typename Type>
+void WidgetPanel::setIntegraValue (integra_api::CPath path, Type value)
+{
+    auto server = integra.get_session ().get_server ();
+    server->process_command (ISetCommand::create (path, value));
 }

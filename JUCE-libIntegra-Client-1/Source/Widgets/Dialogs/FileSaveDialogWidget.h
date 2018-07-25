@@ -21,9 +21,13 @@ public:
 private:
     //==========================================================================
     FileSaveDialogController button;
+    File loadedFile;
 
     //==========================================================================
     void displayFileDialog (StringRef extensionForFileToSave);
+    
+    //==========================================================================
+    var getValue() override;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FileSaveDialogWidget)
 };

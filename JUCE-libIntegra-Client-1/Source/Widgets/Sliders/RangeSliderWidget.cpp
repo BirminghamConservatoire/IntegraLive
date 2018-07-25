@@ -39,3 +39,8 @@ void RangeSliderWidget::sliderMoved ()
 {
     DBG ("Range Slider Moved");
 }
+
+var RangeSliderWidget::getValue()
+{
+    return slider.getValue();
+}

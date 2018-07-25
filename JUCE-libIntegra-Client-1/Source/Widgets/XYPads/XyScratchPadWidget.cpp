@@ -22,3 +22,10 @@ void XyScratchPadWidget::resized()
 {
     Widget::resized();
 }
+
+var XyScratchPadWidget::getValue()
+{
+    // Not yet implemented
+    jassertfalse;
+    return -1;
+}

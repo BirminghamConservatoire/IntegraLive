@@ -113,3 +113,8 @@ void PlayButtonWidget::buttonClicked ()
 {
     DBG ("BUTTON CLICKED");
 }
+
+var PlayButtonWidget::getValue()
+{
+    return button.getToggleState();
+}

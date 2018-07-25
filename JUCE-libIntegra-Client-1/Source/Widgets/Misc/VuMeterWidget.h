@@ -25,6 +25,9 @@ private:
 
     //==========================================================================
     void setValue (var value) override;
-
+    
+    //==========================================================================
+    var getValue() override;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VuMeterWidget)
 };

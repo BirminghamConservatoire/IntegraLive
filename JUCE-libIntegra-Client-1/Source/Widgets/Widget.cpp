@@ -67,7 +67,21 @@ void Widget::setWidgetLabel (const String& label)
 }
 
 //==============================================================================
+void Widget::setValue (var value)
+{
+    
+    const auto temp = 2;
+}
+
+//==============================================================================
 Rectangle<int> Widget::getWidgetBounds() noexcept
 {
     return bounds.toNearestInt();
+}
+
+const std::string Widget::getEndpointName()
+{
+    auto endpointNameString = endpointName.toStdString();
+    
+    return endpointNameString;
 }

@@ -30,6 +30,8 @@ void FileSaveDialogWidget::resized ()
 //==============================================================================
 void FileSaveDialogWidget::displayFileDialog (StringRef extensionForFileToSave)
 {
+    loadedFile = File();
+    
     FileChooser chooser ("Select A Sound File",
                          File::getSpecialLocation (File::userHomeDirectory),
                          extensionForFileToSave);
@@ -37,7 +39,12 @@ void FileSaveDialogWidget::displayFileDialog (StringRef extensionForFileToSave)
     if (chooser.browseForFileToSave (true))
     {
         auto file = chooser.getResult ();
-        std::cout << file.getFullPathName () << std::endl;
+        loadedFile = file;
     }
 
+}
+
+var FileSaveDialogWidget::getValue()
+{
+    return loadedFile.getFullPathName();
 }

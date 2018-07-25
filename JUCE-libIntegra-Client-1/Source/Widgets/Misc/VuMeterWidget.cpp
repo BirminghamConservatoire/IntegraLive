@@ -8,6 +8,8 @@ VuMeterWidget::VuMeterWidget (integra_api::IWidgetDefinition& widgetDefinition)
     Widget::setWidgetLabel ("VU Meter");
 
     addAndMakeVisible (meter);
+    
+    endpointName = widgetDefinition.get_attribute_mappings ().find ("level")->second;
 }
 
 VuMeterWidget::~VuMeterWidget () = default;
@@ -30,4 +32,9 @@ void VuMeterWidget::setValue (var value)
 {
     DBG ("VU CHANGE");
     meter.setValue (value);
+}
+
+var VuMeterWidget::getValue()
+{
+    return -1;
 }

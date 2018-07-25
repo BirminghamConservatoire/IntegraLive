@@ -34,3 +34,8 @@ void PanoramaBalanceWidget::sliderMoved ()
 {
     std::cout << "PANORAMA BALANCE MOVED" << std::endl;
 }
+
+var PanoramaBalanceWidget::getValue()
+{
+    return slider.getValue();
+}

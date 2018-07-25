@@ -35,3 +35,8 @@ void DryWetBalanceWidget::sliderMoved ()
 {
     std::cout << "DRY WET MOVED" << std::endl;
 }
+
+var DryWetBalanceWidget::getValue()
+{
+    return slider.getValue();
+}

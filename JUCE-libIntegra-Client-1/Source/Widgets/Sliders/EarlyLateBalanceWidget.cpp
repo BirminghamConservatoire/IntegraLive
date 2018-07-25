@@ -30,7 +30,13 @@ void EarlyLateBalanceWidget::resized ()
 
     slider.setBounds (controllerBounds);
 }
+
 void EarlyLateBalanceWidget::sliderMoved ()
 {
     std::cout << "EARLY LATE MOVED" << std::endl;
+}
+
+var EarlyLateBalanceWidget::getValue()
+{
+    return slider.getValue();
 }

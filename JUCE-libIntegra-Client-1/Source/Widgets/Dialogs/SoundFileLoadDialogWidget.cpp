@@ -30,6 +30,8 @@ void SoundFileLoadDialogWidget::resized ()
 //==============================================================================
 void SoundFileLoadDialogWidget::displayFileDialog (StringRef extensionsToSearchFor)
 {
+    loadedFile = File();
+    
     FileChooser chooser ("Select A Sound File",
                          File::getSpecialLocation (File::userHomeDirectory),
                          extensionsToSearchFor);
@@ -37,6 +39,11 @@ void SoundFileLoadDialogWidget::displayFileDialog (StringRef extensionsToSearchF
     if (chooser.browseForFileToOpen ())
     {
         auto file = chooser.getResult ();
-        std::cout << file.getFullPathName () << std::endl;
+        loadedFile = file;
     }
+}
+
+var SoundFileLoadDialogWidget::getValue()
+{
+    return loadedFile.getFullPathName();
 }

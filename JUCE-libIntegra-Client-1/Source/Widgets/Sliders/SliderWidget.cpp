@@ -10,6 +10,8 @@ SliderWidget::SliderWidget (integra_api::IWidgetDefinition& widgetDefinition)
     slider.setTextBoxStyle (Slider::NoTextBox, false, 0, 0);
 
     addAndMakeVisible (slider);
+    
+    endpointName = widgetDefinition.get_attribute_mappings ().find ("value")->second;
 }
 
 SliderWidget::~SliderWidget () = default;
@@ -47,4 +49,9 @@ void SliderWidget::sliderMoved ()
 void SliderWidget::setValue (var value)
 {
     slider.setValue (value);
+}
+
+var SliderWidget::getValue()
+{
+    return slider.getValue();
 }

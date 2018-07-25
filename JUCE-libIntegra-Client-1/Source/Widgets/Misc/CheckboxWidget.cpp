@@ -35,5 +35,9 @@ void CheckboxWidget::resized ()
 void CheckboxWidget::toggleAction ()
 {
     std::cout << "Checkbox Clicked" << std::endl;
+}
 
+var CheckboxWidget::getValue()
+{
+    return toggle.getToggleState();
 }

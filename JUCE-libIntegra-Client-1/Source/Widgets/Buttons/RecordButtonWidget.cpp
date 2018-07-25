@@ -96,3 +96,8 @@ void RecordButtonWidget::buttonClicked ()
     String state (button.getToggleState () ? "On" : "Off");
     std::cout << "RECORD BUTTON: " + state << std::endl;
 }
+
+var RecordButtonWidget::getValue()
+{
+    return button.getToggleState();
+}

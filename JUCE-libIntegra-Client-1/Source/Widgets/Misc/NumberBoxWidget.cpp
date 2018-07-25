@@ -6,6 +6,8 @@
 NumberBoxWidget::NumberBoxWidget (integra_api::IWidgetDefinition& widgetDefinition)
 :   Widget (widgetDefinition)
 {
+    // Not yet implemented
+    jassertfalse;
 }
 
 NumberBoxWidget::~NumberBoxWidget () = default;
@@ -18,4 +20,11 @@ void NumberBoxWidget::paint (Graphics& g)
 
 void NumberBoxWidget::resized ()
 {
+}
+
+var NumberBoxWidget::getValue()
+{
+    // Not yet implemented
+    jassertfalse;
+    return -1;
 }

@@ -33,3 +33,8 @@ void TriggerWidget::buttonAction()
 //    setEndpointValue ("TriggerWidget", 5);
 //    getEndpointValue<bool> ("TriggerWidget");
 }
+
+var TriggerWidget::getValue()
+{
+    return button.getToggleState();
+}

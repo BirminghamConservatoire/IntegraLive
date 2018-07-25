@@ -71,3 +71,8 @@ void StopButtonWidget::buttonClicked ()
 {
     DBG ("BUTTON CLICKED");
 }
+
+var StopButtonWidget::getValue()
+{
+    return button.getToggleState();
+}

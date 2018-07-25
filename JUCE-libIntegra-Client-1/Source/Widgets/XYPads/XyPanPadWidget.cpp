@@ -23,3 +23,10 @@ void XyPanPadWidget::resized()
     Widget::resized ();
     pad.setBounds (controllerBounds);
 }
+
+var XyPanPadWidget::getValue()
+{
+    // Not yet implemented
+    jassertfalse;
+    return -1;
+}

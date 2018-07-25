@@ -22,6 +22,9 @@ public:
 private:
     //==========================================================================
     XyPan pad;
-
+    
+    //==========================================================================
+    var getValue() override;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XyPanPadWidget)
 };

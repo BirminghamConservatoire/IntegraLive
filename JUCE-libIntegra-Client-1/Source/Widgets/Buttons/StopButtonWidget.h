@@ -36,6 +36,9 @@ private:
         Down
     };
     const DrawablePath createIcon (const IconStyle style) const;
-
+    
+    //==========================================================================
+    var getValue() override;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StopButtonWidget)
 };
